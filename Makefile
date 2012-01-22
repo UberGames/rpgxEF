@@ -332,7 +332,8 @@ ifneq (,$(findstring "$(PLATFORM)", "linux" "gnu_kfreebsd" "kfreebsd-gnu"))
   CLIENT_CFLAGS += $(SDL_CFLAGS)
 
   ifeq ($(USE_CODEC_MP3),1)
-    BASE_CFLAGS += -DUSE_CODEC_MP3=1
+    BASE_CFLAGS += -DUSE_CODEC_MP3
+    CLIENT_LIBS += -lmad
   endif
 
   OPTIMIZEVM = -O3 -funroll-loops -fomit-frame-pointer
@@ -471,7 +472,7 @@ ifeq ($(PLATFORM),darwin)
   endif
 
   ifeq ($(USE_CODEC_MP3),1)
-    BASE_CFLAGS += -DUSE_CODEC_MP3=1
+    BASE_CFLAGS += -DUSE_CODEC_MP3
     CLIENT_LIBS += -lmad
   endif
 
@@ -534,7 +535,8 @@ ifeq ($(PLATFORM),mingw32)
   endif
   
   ifeq ($(USE_CODEC_MP3),1)
-    BASE_CFLAGS += -DUSE_CODEC_MP3=1
+    BASE_CFLAGS += -DUSE_CODEC_MP3
+    CLIENT_LIBS += -lmad
   endif
 
   ifeq ($(ARCH),x64)
@@ -672,7 +674,7 @@ ifeq ($(PLATFORM),freebsd)
   endif
 
   ifeq ($(USE_CODEC_MP3),1)
-    CLIENT_CFLAGS += -DUSE_CODEC_MP3=1
+    CLIENT_CFLAGS += -DUSE_CODEC_MP3
     CLIENT_LIBS += -lmad
   endif
 
