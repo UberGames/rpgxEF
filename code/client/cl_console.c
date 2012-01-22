@@ -610,21 +610,7 @@ void Con_DrawNotify (void)
 	// draw the chat line
 	if ( Key_GetCatcher( ) & KEYCATCH_MESSAGE )
 	{
-#ifdef ELITEFORCE
-		if (chat_team)
-		{
-			SCR_DrawSmallString (8, v, "say_team:", 1.0f );
-			skip = 11;
-		}
-		else
-		{
-			SCR_DrawSmallString (8, v, "say:", 1.0f );
-			skip = 6;
-		}
-
-		Field_Draw(&chatField, skip * SMALLCHAR_WIDTH, v,
-			SCREEN_WIDTH - ( skip + 1 ) * SMALLCHAR_WIDTH, qtrue, qtrue);
-#elif defined(XTRA)
+#ifdef XTRA
 		if (chat_team)
 		{
 			SCR_DrawSmallString (8, v, "global:", 1.0f );
@@ -644,6 +630,20 @@ void Con_DrawNotify (void)
 		{
 			SCR_DrawSmallString (8, v, "local:", 1.0f );
 			skip = 7;
+		}
+
+		Field_Draw(&chatField, skip * SMALLCHAR_WIDTH, v,
+			SCREEN_WIDTH - ( skip + 1 ) * SMALLCHAR_WIDTH, qtrue, qtrue);
+#elif defined(ELITEFORCE)
+		if (chat_team)
+		{
+			SCR_DrawSmallString (8, v, "say_team:", 1.0f );
+			skip = 11;
+		}
+		else
+		{
+			SCR_DrawSmallString (8, v, "say:", 1.0f );
+			skip = 6;
 		}
 
 		Field_Draw(&chatField, skip * SMALLCHAR_WIDTH, v,

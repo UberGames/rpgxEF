@@ -262,12 +262,12 @@ PROTOCOL
 ==============================================================
 */
 
-#ifdef ELITEFORCE
-  #define PROTOCOL_VERSION		26
-  #define PROTOCOL_LEGACY_VERSION	24
-#elif defined(XTRA)
+#ifdef XTRA
   #define PROTOCOL_VERSION		60
   #define PROTOCOL_LEGACY_VERSION	59
+#elif defined(ELITEFORCE)
+  #define PROTOCOL_VERSION		26
+  #define PROTOCOL_LEGACY_VERSION	24
 #else
   #define PROTOCOL_VERSION		71
   #define PROTOCOL_LEGACY_VERSION	68

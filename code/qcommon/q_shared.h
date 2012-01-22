@@ -37,23 +37,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define GAMENAME_FOR_MASTER		"foobar"	// must NOT contain whitespace
 //  #define LEGACY_PROTOCOL	// You probably don't need this for your standalone game
 #else
-  #ifdef ELITEFORCE
-    #define PRODUCT_NAME		"ioST:V HM"
-    #define BASEGAME			"baseEF"
-    #define CLIENT_WINDOW_TITLE     	"iostvoyHM"
-    #define CLIENT_WINDOW_MIN_TITLE 	"iostvoyHM"
-    #define HOMEPATH_NAME_UNIX		".stvef"
-    #define HOMEPATH_NAME_WIN		"STVEF"
-    #define HOMEPATH_NAME_MACOSX	HOMEPATH_NAME_WIN
-    #define GAMENAME_FOR_MASTER		"EliteForce"
-    #define LEGACY_PROTOCOL
-  #elif defined(XTRA)
+  #ifdef XTRA
     #define PRODUCT_NAME		"rpgxEF"
     #define BASEGAME			"baseEF"
     #define CLIENT_WINDOW_TITLE     	"rpgxEF"
     #define CLIENT_WINDOW_MIN_TITLE 	"rpgxEF"
     #define HOMEPATH_NAME_UNIX		".rpgxef"
     #define HOMEPATH_NAME_WIN		"RPGXEF"
+    #define HOMEPATH_NAME_MACOSX	HOMEPATH_NAME_WIN
+    #define GAMENAME_FOR_MASTER		"EliteForce"
+    #define LEGACY_PROTOCOL
+  #elif defined(ELITEFORCE)
+    #define PRODUCT_NAME		"ioST:V HM"
+    #define BASEGAME			"baseEF"
+    #define CLIENT_WINDOW_TITLE     	"iostvoyHM"
+    #define CLIENT_WINDOW_MIN_TITLE 	"iostvoyHM"
+    #define HOMEPATH_NAME_UNIX		".stvef"
+    #define HOMEPATH_NAME_WIN		"STVEF"
     #define HOMEPATH_NAME_MACOSX	HOMEPATH_NAME_WIN
     #define GAMENAME_FOR_MASTER		"EliteForce"
     #define LEGACY_PROTOCOL
