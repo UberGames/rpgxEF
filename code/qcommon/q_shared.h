@@ -47,7 +47,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     #define HOMEPATH_NAME_MACOSX	HOMEPATH_NAME_WIN
     #define GAMENAME_FOR_MASTER		"EliteForce"
     #define LEGACY_PROTOCOL
-  #elif XTRA
+  #elif defined(XTRA)
     #define PRODUCT_NAME		"rpgxEF"
     #define BASEGAME			"baseEF"
     #define CLIENT_WINDOW_TITLE     	"rpgxEF"

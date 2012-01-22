@@ -624,7 +624,7 @@ void Con_DrawNotify (void)
 
 		Field_Draw(&chatField, skip * SMALLCHAR_WIDTH, v,
 			SCREEN_WIDTH - ( skip + 1 ) * SMALLCHAR_WIDTH, qtrue, qtrue);
-#elif XTRA
+#elif defined(XTRA)
 		if (chat_team)
 		{
 			SCR_DrawSmallString (8, v, "global:", 1.0f );

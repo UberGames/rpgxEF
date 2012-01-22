@@ -265,7 +265,7 @@ PROTOCOL
 #ifdef ELITEFORCE
   #define PROTOCOL_VERSION		26
   #define PROTOCOL_LEGACY_VERSION	24
-#elif XTRA
+#elif defined(XTRA)
   #define PROTOCOL_VERSION		60
   #define PROTOCOL_LEGACY_VERSION	59
 #else

@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 int demo_protocols[] =
 #ifdef ELITEFORCE
 { 0 };
-#elif XTRA
+#elif defined(XTRA)
 { 25, 59, 0 };
 #else
 { 67, 66, 0 };
