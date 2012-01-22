@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // Q3 MP3 codec
 snd_codec_t mp3_codec =
 {
-	".mp3",
+	"mp3",
 	S_MP3_CodecLoad,
 	S_MP3_CodecOpenStream,
 	S_MP3_CodecReadStream,
@@ -692,7 +692,7 @@ void *S_MP3_CodecLoad(const char *filename, snd_info_t *info)
         info->dataofs = stream->info.dataofs;
 	
 	// allocate enough buffer for all pcm data
-	pcmbuffer = Z_Malloc(stream->info.size);
+	pcmbuffer = Hunk_AllocateTempMemory(stream->info.size);
 	if(!pcmbuffer)
 	{
 		S_MP3_CodecCloseStream(stream);
@@ -704,7 +704,7 @@ void *S_MP3_CodecLoad(const char *filename, snd_info_t *info)
 	if(info->size <= 0)
 	{
 		// we didn't read anything at all. darn.
-		Z_Free(pcmbuffer);
+		Hunk_FreeTempMemory(pcmbuffer);
 		pcmbuffer = NULL;
 	}
 
