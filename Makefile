@@ -39,10 +39,10 @@ ifndef BUILD_SERVER
   BUILD_SERVER     =
 endif
 ifndef BUILD_GAME_SO
-  BUILD_GAME_SO    =
+  BUILD_GAME_SO    = 0
 endif
 ifndef BUILD_GAME_QVM
-  BUILD_GAME_QVM   =
+  BUILD_GAME_QVM   = 0
 endif
 ifndef BUILD_BASEGAME
   BUILD_BASEGAME =
@@ -51,7 +51,8 @@ ifndef BUILD_MISSIONPACK
   BUILD_MISSIONPACK=
 endif
 
-BUILD_ELITEFORCE =
+BUILD_ELITEFORCE = 1
+BUILD_XTRA = 1
 
 ifneq ($(PLATFORM),darwin)
   BUILD_CLIENT_SMP = 0
@@ -101,6 +102,10 @@ ifndef VERSION
   else
     VERSION=1.36
   endif
+endif
+
+ifeq ($(BUILD_XTRA),1)
+  VERSION=1.0
 endif
 
 ifndef CLIENTBIN
@@ -247,6 +252,10 @@ LIBSDIR=$(MOUNT_DIR)/libs
 
 ifeq ($(BUILD_ELITEFORCE),1)
   CFLAGS += -DELITEFORCE
+endif
+
+ifeq ($(BUILD_XTRA),1)
+  CFLAGS += -DXTRA
 endif
 
 bin_path=$(shell which $(1) 2> /dev/null)
