@@ -1,5 +1,5 @@
 #
-# ioq3 Makefile
+# rpgxEF Makefile
 #
 # GNU Make required
 #
@@ -109,11 +109,19 @@ ifeq ($(BUILD_XTRA),1)
 endif
 
 ifndef CLIENTBIN
+ifeq ($(BUILD_XTRA),1)
+CLIENTBIN=rpgxEF
+else
 CLIENTBIN=ioquake3
+endif
 endif
 
 ifndef SERVERBIN
+ifeq ($(BUILD_XTRA),1)
+SERVERBIN=rpgxEFded
+else
 SERVERBIN=ioq3ded
+endif
 endif
 
 ifndef BASEGAME
