@@ -770,9 +770,6 @@
     <ClInclude Include="..\..\code\qcommon\vm_local.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\win32\win_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\sys\win_resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
