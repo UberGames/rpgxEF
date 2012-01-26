@@ -1,8 +1,8 @@
 #!/bin/sh
-APPBUNDLE=ioquake3.app
-BINARY=ioquake3.x86_64
-DEDBIN=ioq3ded.x86_64
-PKGINFO=APPLIOQ3
+APPBUNDLE=rpgxEF.app
+BINARY=rpgxEF.x86_64
+DEDBIN=rpgxEFded.x86_64
+PKGINFO=APPLRPGXEF
 ICNS=misc/quake3.icns
 DESTDIR=build/release-darwin-x86_64
 BASEDIR=baseq3
@@ -10,10 +10,10 @@ MPACKDIR=missionpack
 RENDERDIR=build/release-darwin-x86_64
 
 BIN_OBJ="
-	build/release-darwin-x86_64/ioquake3.x86_64
+	build/release-darwin-x86_64/rpgxEF.x86_64
 "
 BIN_DEDOBJ="
-	build/release-darwin-x86_64/ioq3ded.x86_64
+	build/release-darwin-x86_64/rpgxEFded.x86_64
 "
 BASE_OBJ="
 	build/release-darwin-x86_64/$BASEDIR/cgamex86_64.dylib
@@ -33,7 +33,7 @@ RENDER_OBJ="
 
 cd `dirname $0`
 if [ ! -f Makefile ]; then
-	echo "This script must be run from the ioquake3 build directory"
+	echo "This script must be run from the rpgxEF build directory"
 	exit 1
 fi
 
@@ -69,6 +69,7 @@ NCPU=`sysctl -n hw.ncpu`
 # intel client and server
 if [ -d build/release-darwin-x86_64 ]; then
 	rm -r build/release-darwin-x86_64
+
 fi
 (ARCH=x86_64 CFLAGS=$X86_CFLAGS LDFLAGS=$X86_LDFLAGS make -j$NCPU) || exit 1;
 
@@ -96,15 +97,15 @@ echo "
 		<key>CFBundleExecutable</key>
 		<string>$BINARY</string>
 		<key>CFBundleGetInfoString</key>
-		<string>ioquake3 $Q3_VERSION</string>
+		<string>rpgxEF $Q3_VERSION</string>
 		<key>CFBundleIconFile</key>
 		<string>ioquake3.icns</string>
 		<key>CFBundleIdentifier</key>
-		<string>org.ioquake.ioquake3</string>
+		<string>org.rpgxEF.rpgxEF</string>
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
-		<string>ioquake3</string>
+		<string>rpgxEF</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>

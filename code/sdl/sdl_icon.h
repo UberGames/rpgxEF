@@ -134,11 +134,11 @@ static const struct {
 /* GIMP RGBA C-Source image dump (rpgxef.c) */
 
 static const struct {
-  guint  	 width;
-  guint  	 height;
-  guint  	 bytes_per_pixel; /* 3:RGB, 4:RGBA */ 
-  guint8 	 pixel_data[32 * 32 * 4 + 1];
-} gimp_image = {
+  unsigned int 	 width;
+  unsigned int 	 height;
+  unsigned int	 bytes_per_pixel; /* 3:RGB, 4:RGBA */ 
+  unsigned char  pixel_data[32 * 32 * 4 + 1];
+} CLIENT_WINDOW_ICON = {
   32, 32, 4,
   "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
   "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"

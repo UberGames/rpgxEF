@@ -1,20 +1,20 @@
 #!/bin/sh
-APPBUNDLE=ioquake3.app
-BINARY=ioquake3.ub
-DEDBIN=ioq3ded.ub
-PKGINFO=APPLIOQ3
+APPBUNDLE=rpgxEF.app
+BINARY=rpgxEF.ub
+DEDBIN=rpgxEFded.ub
+PKGINFO=APPLRPGXEF
 ICNS=misc/quake3.icns
 DESTDIR=build/release-darwin-ub
 BASEDIR=baseq3
 MPACKDIR=missionpack
 
 BIN_OBJ="
-	build/release-darwin-ppc/ioquake3-smp.ppc
-	build/release-darwin-i386/ioquake3-smp.i386
+	build/release-darwin-ppc/rpgxEF-smp.ppc
+	build/release-darwin-i386/rpgxEF-smp.i386
 "
 BIN_DEDOBJ="
-	build/release-darwin-ppc/ioq3ded.ppc
-	build/release-darwin-i386/ioq3ded.i386
+	build/release-darwin-ppc/rpgxEFded.ppc
+	build/release-darwin-i386/rpgxEFded.i386
 "
 BASE_OBJ="
 	build/release-darwin-ppc/$BASEDIR/cgameppc.dylib
@@ -35,7 +35,7 @@ MPACK_OBJ="
 
 cd `dirname $0`
 if [ ! -f Makefile ]; then
-	echo "This script must be run from the ioquake3 build directory"
+	echo "This script must be run from the rpgxEF build directory"
 	exit 1
 fi
 
@@ -147,15 +147,15 @@ echo "
 		<key>CFBundleExecutable</key>
 		<string>$BINARY</string>
 		<key>CFBundleGetInfoString</key>
-		<string>ioquake3 $Q3_VERSION</string>
+		<string>rpgxEF $Q3_VERSION</string>
 		<key>CFBundleIconFile</key>
 		<string>ioquake3.icns</string>
 		<key>CFBundleIdentifier</key>
-		<string>org.ioquake.ioquake3</string>
+		<string>org.rpgxEF.rpgxEF</string>
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
-		<string>ioquake3</string>
+		<string>rpgxEF</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>
