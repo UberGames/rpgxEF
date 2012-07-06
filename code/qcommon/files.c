@@ -3175,7 +3175,7 @@ static void FS_Startup( const char *gameName )
 		homePath = fs_basepath->string;
 	}
 	fs_homepath = Cvar_Get ("fs_homepath", homePath, CVAR_INIT|CVAR_PROTECTED );
-	fs_gamedirvar = Cvar_Get ("fs_game", "", CVAR_INIT|CVAR_SYSTEMINFO );
+	fs_gamedirvar = Cvar_Get ("fs_game", "rpgxEF", CVAR_INIT|CVAR_SYSTEMINFO );
 
 	// add search path elements in reverse priority order
 	if (fs_basepath->string[0]) {
@@ -3222,7 +3222,7 @@ static void FS_Startup( const char *gameName )
 		cvar_t	*fs;
 
 		Com_ReadCDKey(BASEGAME);
-		fs = Cvar_Get ("fs_game", "", CVAR_INIT|CVAR_SYSTEMINFO );
+		fs = Cvar_Get ("fs_game", "rgpxEF", CVAR_INIT|CVAR_SYSTEMINFO );
 		if (fs && fs->string[0] != 0) {
 			Com_AppendCDKey( fs->string );
 		}
@@ -3937,7 +3937,7 @@ void FS_InitFilesystem( void ) {
 	Com_StartupVariable("fs_game");
 
 	if(!FS_FilenameCompare(Cvar_VariableString("fs_game"), com_basegame->string))
-		Cvar_Set("fs_game", "");
+		Cvar_Set("fs_game", "rpgxEF");
 
 	// try to start up normally
 	FS_Startup(com_basegame->string);
