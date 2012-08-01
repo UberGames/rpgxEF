@@ -1111,7 +1111,7 @@ typedef enum {
 #define	ENTITYNUM_WORLD		(MAX_GENTITIES-2)
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-2)
 
-#ifdef XTRA
+#ifndef XTRA
 #define MODELNUM_BITS 8
 #else
 #define MODELNUM_BITS 9
