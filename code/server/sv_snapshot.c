@@ -154,9 +154,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg ) {
 
 	MSG_WriteByte (msg, svc_snapshot);
 
-	#ifdef ELITEFORCE
-        if(msg->compat)
-        #endif
+    if(msg->compat)
 		MSG_WriteLong( msg, client->lastClientCommand );
                         
 
@@ -241,11 +239,7 @@ Build a client snapshot structure
 =============================================================================
 */
 
-#ifndef XTRA
-#define	MAX_SNAPSHOT_ENTITIES	1024
-#else
 #define	MAX_SNAPSHOT_ENTITIES	2048
-#endif
 typedef struct {
 	int		numSnapshotEntities;
 	int		snapshotEntities[MAX_SNAPSHOT_ENTITIES];	
@@ -424,15 +418,6 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 
 		// if it's a portal entity, add everything visible from its camera position
 		if ( ent->r.svFlags & SVF_PORTAL ) {
-#ifndef ELITEFORCE
-			if ( ent->s.generic1 ) {
-				vec3_t dir;
-				VectorSubtract(ent->s.origin, origin, dir);
-				if ( VectorLengthSquared(dir) > (float) ent->s.generic1 * ent->s.generic1 ) {
-					continue;
-				}
-			}
-#endif
 			SV_AddEntitiesVisibleFromPoint( ent->s.origin2, frame, eNums, qtrue );
 		}
 
@@ -620,22 +605,18 @@ void SV_SendClientSnapshot( client_t *client ) {
 		return;
 	}
 
-#ifdef ELITEFORCE
 	if(client->compat)
 	{
 		MSG_InitOOB(&msg, msg_buf, sizeof(msg_buf));
 		msg.compat = qtrue;
 	}
 	else
-#endif
 		MSG_Init (&msg, msg_buf, sizeof(msg_buf));
 	msg.allowoverflow = qtrue;
 
 	// NOTE, MRE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received
-#ifdef ELITEFORCE
 	if(!client->compat)
-#endif
 		MSG_WriteLong( &msg, client->lastClientCommand );
 
 	// (re)send any reliable server commands

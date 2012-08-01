@@ -579,9 +579,6 @@ void RB_DeformTessGeometry( void ) {
 		case DEFORM_TEXT5:
 		case DEFORM_TEXT6:
 		case DEFORM_TEXT7:
-#ifndef ELITEFORCE
-			DeformText( backEnd.refdef.text[ds->deformation - DEFORM_TEXT0] );
-#endif
 			break;
 		}
 	}
@@ -693,12 +690,8 @@ void RB_CalcWaveColor( const waveForm_t *wf, unsigned char *dstColors )
   if ( wf->func == GF_NOISE ) {
 		glow = wf->base + R_NoiseGet4f( 0, 0, 0, ( tess.shaderTime + wf->phase ) * wf->frequency ) * wf->amplitude;
 	} else if( wf->func == GF_RANDOM ) {
-		#ifndef XTRA
-		glow = wf->base + R_RandomOn( (tess.shaderTime + wf->phase) * wf->frequency ) * wf->amplitude;		
-		#else
 		// mutiply wf->frequence with 25 creates a random result much closer to vEF
 		glow = wf->base + R_RandomOn( (tess.shaderTime + wf->phase) * (wf->frequency * 25) ) * wf->amplitude;
-		#endif	
 	} else {
 		glow = EvalWaveForm( wf ) * tr.identityLight;
 	}

@@ -89,10 +89,8 @@ Con_MessageMode_f
 void Con_MessageMode_f (void) {
 	chat_playerNum = -1;
 	chat_team = qfalse;
-#ifdef XTRA
 	chat_class = qfalse;
 	chat_tell = qfalse;
-#endif
 	Field_Clear( &chatField );
 	chatField.widthInChars = 30;
 
@@ -107,10 +105,8 @@ Con_MessageMode2_f
 void Con_MessageMode2_f (void) {
 	chat_playerNum = -1;
 	chat_team = qtrue;
-#ifdef XTRA
 	chat_class = qfalse;
 	chat_tell =  qfalse;
-#endif
 	Field_Clear( &chatField );
 	chatField.widthInChars = 25;
 	Key_SetCatcher( Key_GetCatcher( ) ^ KEYCATCH_MESSAGE );
@@ -128,10 +124,8 @@ void Con_MessageMode3_f (void) {
 		return;
 	}
 	chat_team = qfalse;
-#ifdef XTRA
 	chat_class = qfalse;
 	chat_tell = qtrue;
-#endif
 	Field_Clear( &chatField );
 	chatField.widthInChars = 30;
 	Key_SetCatcher( Key_GetCatcher( ) ^ KEYCATCH_MESSAGE );
@@ -149,16 +143,13 @@ void Con_MessageMode4_f (void) {
 		return;
 	}
 	chat_team = qfalse;
-#ifdef XTRA
 	chat_class = qfalse;
 	chat_tell = qfalse;
-#endif
 	Field_Clear( &chatField );
 	chatField.widthInChars = 30;
 	Key_SetCatcher( Key_GetCatcher( ) ^ KEYCATCH_MESSAGE );
 }
 
-#ifdef XTRA
 /*
 ================
 Con_MessageMode5_f
@@ -173,7 +164,6 @@ void Con_MessageMode5_f (void) {
 	chatField.widthInChars = 25;
 	Key_SetCatcher( Key_GetCatcher( ) ^ KEYCATCH_MESSAGE );
 }
-#endif
 
 /*
 ================
@@ -369,9 +359,7 @@ void Con_Init (void) {
 	Cmd_AddCommand ("messagemode2", Con_MessageMode2_f);
 	Cmd_AddCommand ("messagemode3", Con_MessageMode3_f);
 	Cmd_AddCommand ("messagemode4", Con_MessageMode4_f);
-#ifdef XTRA
 	Cmd_AddCommand ("messagemode5", Con_MessageMode5_f);
-#endif
 	Cmd_AddCommand ("clear", Con_Clear_f);
 	Cmd_AddCommand ("condump", Con_Dump_f);
 	Cmd_SetCommandCompletionFunc( "condump", Cmd_CompleteTxtName );
@@ -610,7 +598,6 @@ void Con_DrawNotify (void)
 	// draw the chat line
 	if ( Key_GetCatcher( ) & KEYCATCH_MESSAGE )
 	{
-#ifdef XTRA
 		if (chat_team)
 		{
 			SCR_DrawSmallString (8, v, "global:", 1.0f );
@@ -634,35 +621,6 @@ void Con_DrawNotify (void)
 
 		Field_Draw(&chatField, skip * SMALLCHAR_WIDTH, v,
 			SCREEN_WIDTH - ( skip + 1 ) * SMALLCHAR_WIDTH, qtrue, qtrue);
-#elif defined(ELITEFORCE)
-		if (chat_team)
-		{
-			SCR_DrawSmallString (8, v, "say_team:", 1.0f );
-			skip = 11;
-		}
-		else
-		{
-			SCR_DrawSmallString (8, v, "say:", 1.0f );
-			skip = 6;
-		}
-
-		Field_Draw(&chatField, skip * SMALLCHAR_WIDTH, v,
-			SCREEN_WIDTH - ( skip + 1 ) * SMALLCHAR_WIDTH, qtrue, qtrue);
-#else
-		if (chat_team)
-		{
-			SCR_DrawBigString (8, v, "say_team:", 1.0f, qfalse );
-			skip = 10;
-		}
-		else
-		{
-			SCR_DrawBigString (8, v, "say:", 1.0f, qfalse );
-			skip = 5;
-		}
-
-		Field_BigDraw( &chatField, skip * BIGCHAR_WIDTH, v,
-			SCREEN_WIDTH - ( skip + 1 ) * BIGCHAR_WIDTH, qtrue, qtrue );
-#endif
 
 		v += BIGCHAR_HEIGHT;
 	}
@@ -704,13 +662,11 @@ void Con_DrawSolidConsole( float frac ) {
 		y = 0;
 	}
 	else {
-		#ifdef ELITEFORCE
 		color[0] = 0;
 		color[1] = 0;
 		color[2] = 0;
 		color[3] = 0.85;
 		re.SetColor(color);
-		#endif
 		SCR_DrawPic( 0, 0, SCREEN_WIDTH, y, cls.consoleShader );
 	}
 

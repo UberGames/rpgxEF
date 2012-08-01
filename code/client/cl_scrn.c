@@ -30,13 +30,11 @@ cvar_t		*cl_debuggraph;
 cvar_t		*cl_graphheight;
 cvar_t		*cl_graphscale;
 cvar_t		*cl_graphshift;
-#ifdef XTRA
 cvar_t		*cl_drawtime;
 cvar_t		*cl_drawtimeMode;
 cvar_t		*cl_drawtimeX;
 cvar_t		*cl_drawtimeY;
 cvar_t		*cl_drawtimeSize;
-#endif
 
 /*
 ================
@@ -185,11 +183,7 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 	frow = row*0.0625;
 	fcol = col*0.0625;
 	vsize = 0.0625;
-#ifdef ELITEFORCE
 	hsize = 0.03125;
-#else
-	hsize = 0.0625;
-#endif
 
 	re.DrawStretchPic( x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT,
 					   fcol, frow, 
@@ -265,7 +259,6 @@ void SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean
 	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, qtrue, noColorEscape );
 }
 
-#ifdef ELITEFORCE
 void SCR_DrawSmallString(int x, int y, const char *s, float alpha)
 {
 	float   color[4];
@@ -274,7 +267,6 @@ void SCR_DrawSmallString(int x, int y, const char *s, float alpha)
 	color[3] = alpha;
 	SCR_DrawSmallStringExt(x, y, s, color, qfalse, qfalse);
 }
-#endif
 
 /*
 ==================
@@ -366,7 +358,6 @@ void SCR_DrawDemoRecording( void ) {
 	SCR_DrawStringExt( 320 - strlen( string ) * 4, 20, 8, string, g_color_table[7], qtrue, qfalse );
 }
 
-#ifdef XTRA
 /*
 =================
 SCR_DrawClock
@@ -385,7 +376,6 @@ void SCR_DrawClock( void ) {
 		SCR_DrawStringExt( cl_drawtimeX->integer - strlen( string ) * 4, cl_drawtimeY->integer, cl_drawtimeSize->value, string, g_color_table[7], qtrue,qtrue);
 	}
 }
-#endif
 
 #ifdef USE_VOIP
 /*
@@ -498,13 +488,11 @@ void SCR_Init( void ) {
 	cl_graphheight = Cvar_Get ("graphheight", "32", CVAR_CHEAT);
 	cl_graphscale = Cvar_Get ("graphscale", "1", CVAR_CHEAT);
 	cl_graphshift = Cvar_Get ("graphshift", "0", CVAR_CHEAT);
-	#ifdef XTRA
 	cl_drawtime = Cvar_Get ("cl_drawtime", "0", CVAR_ARCHIVE);
 	cl_drawtimeMode = Cvar_Get("cl_drawtimeMode", "0", CVAR_ARCHIVE);
 	cl_drawtimeX = Cvar_Get("cl_drawtimeX", "320", CVAR_ARCHIVE);
 	cl_drawtimeY = Cvar_Get("cl_drawtimeY", "11", CVAR_ARCHIVE);
 	cl_drawtimeSize = Cvar_Get("cl_drawtimeSize", "12", CVAR_ARCHIVE);
-	#endif
 
 	scr_initialized = qtrue;
 }
@@ -574,9 +562,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame ) {
 			// always supply STEREO_CENTER as vieworg offset is now done by the engine.
 			CL_CGameRendering(stereoFrame);
 			SCR_DrawDemoRecording();
-			#ifdef XTRA
 			SCR_DrawClock();
-			#endif
 #ifdef USE_VOIP
 			SCR_DrawVoipMeter();
 #endif

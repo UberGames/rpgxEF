@@ -28,7 +28,6 @@ static snd_codec_t *codecs;
 
 static void *S_CodecGetSound(const char *filename, snd_info_t *info);
 
-#ifdef ELITEFORCE
 int sem = qtrue;
 #define VOXDIR "sound/voice"
 
@@ -52,7 +51,6 @@ void *S_MangleNameEF(char *filename, snd_info_t *info)
 
 	return NULL;
 }
-#endif
 
 /*
 =================
@@ -74,11 +72,9 @@ static void *S_CodecGetSound(const char *filename, snd_info_t *info)
 
 	Q_strncpyz(localName, filename, MAX_QPATH);
 
-	#ifdef ELITEFORCE
 	rtn = S_MangleNameEF(localName, info);
 	if(rtn)
 		return rtn;
-	#endif
 
 	ext = COM_GetExtension(localName);
 

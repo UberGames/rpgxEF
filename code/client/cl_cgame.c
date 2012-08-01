@@ -301,16 +301,12 @@ rescan:
 		// allow server to indicate why they were disconnected
 		if ( argc >= 2 )
 		{
-			#ifdef ELITEFORCE
 			Cbuf_AddText(va("err_dialog \"%s\"", Cmd_Argv(1)));
-			#endif
 			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected - %s", Cmd_Argv( 1 ) );
 		}
 		else
 		{
-			#ifdef ELITEFORCE
 			Cbuf_AddText(va("err_dialog \"%s\"", Cmd_Argv(1)));
-			#endif
 			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected" );
 		}
 	}
@@ -428,6 +424,9 @@ The cgame module is making a system call
 */
 intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	switch( args[0] ) {
+	case CG_R_REMAP_SHADER:
+		re.RemapShader( (const char*)VMA(1), (const char*)VMA(2), (const char*)VMA(3) );
+		return 0;
 	case CG_PRINT:
 		Com_Printf( "%s", (const char*)VMA(1) );
 		return 0;
@@ -467,21 +466,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_FS_FCLOSEFILE:
 		FS_FCloseFile( args[1] );
 		return 0;
-#ifndef ELITEFORCE
-	case CG_FS_SEEK:
-		return FS_Seek( args[1], args[2], args[3] );
-#endif
 	case CG_SENDCONSOLECOMMAND:
 		Cbuf_AddText( VMA(1) );
 		return 0;
 	case CG_ADDCOMMAND:
 		CL_AddCgameCommand( VMA(1) );
 		return 0;
-#ifndef ELITEFORCE
-	case CG_REMOVECOMMAND:
-		Cmd_RemoveCommandSafe( VMA(1) );
-		return 0;
-#endif
 	case CG_SENDCLIENTCOMMAND:
 		CL_AddReliableCommand(VMA(1), qfalse);
 		return 0;
@@ -502,10 +492,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return CM_InlineModel( args[1] );
 	case CG_CM_TEMPBOXMODEL:
 		return CM_TempBoxModel( VMA(1), VMA(2), /*int capsule*/ qfalse );
-#ifndef ELITEFORCE
-	case CG_CM_TEMPCAPSULEMODEL:
-		return CM_TempBoxModel( VMA(1), VMA(2), /*int capsule*/ qtrue );
-#endif
 	case CG_CM_POINTCONTENTS:
 		return CM_PointContents( VMA(1), args[2] );
 	case CG_CM_TRANSFORMEDPOINTCONTENTS:
@@ -513,19 +499,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_CM_BOXTRACE:
 		CM_BoxTrace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule*/ qfalse );
 		return 0;
-#ifndef ELITEFORCE
-	case CG_CM_CAPSULETRACE:
-		CM_BoxTrace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule*/ qtrue );
-		return 0;
-#endif
 	case CG_CM_TRANSFORMEDBOXTRACE:
 		CM_TransformedBoxTrace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9), /*int capsule*/ qfalse );
 		return 0;
-#ifndef ELITEFORCE
-	case CG_CM_TRANSFORMEDCAPSULETRACE:
-		CM_TransformedBoxTrace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9), /*int capsule*/ qtrue );
-		return 0;
-#endif
 	case CG_CM_MARKFRAGMENTS:
 		return re.MarkFragments( args[1], VMA(2), VMA(3), args[4], VMA(5), args[6], VMA(7) );
 	case CG_S_STARTSOUND:
@@ -540,14 +516,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_S_ADDLOOPINGSOUND:
 		S_AddLoopingSound( args[1], VMA(2), VMA(3), args[4] );
 		return 0;
-#ifndef ELITEFORCE
-	case CG_S_ADDREALLOOPINGSOUND:
-		S_AddRealLoopingSound( args[1], VMA(2), VMA(3), args[4] );
-		return 0;
-	case CG_S_STOPLOOPINGSOUND:
-		S_StopLoopingSound( args[1] );
-		return 0;
-#endif
 	case CG_S_UPDATEENTITYPOSITION:
 		S_UpdateEntityPosition( args[1], VMA(2) );
 		return 0;
@@ -557,11 +525,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_S_REGISTERSOUND:
 		return S_RegisterSound( VMA(1), args[2] );
 	case CG_S_STARTBACKGROUNDTRACK:
-#ifdef ELITEFORCE
 		if(!VMA(1) || !*((char *) VMA(1)))
 			S_StopBackgroundTrack();
 		else
-#endif
 			S_StartBackgroundTrack(VMA(1), VMA(2));
 		return 0;
 	case CG_R_LOADWORLDMAP:
@@ -575,11 +541,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return re.RegisterShader( VMA(1) );
 	case CG_R_REGISTERSHADERNOMIP:
 		return re.RegisterShaderNoMip( VMA(1) );
-#ifndef ELITEFORCE
-	case CG_R_REGISTERFONT:
-		re.RegisterFont( VMA(1), args[2], VMA(3));
-		return 0;
-#endif
 	case CG_R_CLEARSCENE:
 		re.ClearScene();
 		return 0;
@@ -589,21 +550,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 	case CG_R_ADDPOLYTOSCENE:
 		re.AddPolyToScene( args[1], args[2], VMA(3), 1 );
 		return 0;
-#ifndef ELITEFORCE
-	case CG_R_ADDPOLYSTOSCENE:
-		re.AddPolyToScene( args[1], args[2], VMA(3), args[4] );
-		return 0;
-	case CG_R_LIGHTFORPOINT:
-		return re.LightForPoint( VMA(1), VMA(2), VMA(3), VMA(4) );
-#endif
 	case CG_R_ADDLIGHTTOSCENE:
 		re.AddLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
 		return 0;
-#ifndef ELITEFORCE
-	case CG_R_ADDADDITIVELIGHTTOSCENE:
-		re.AddAdditiveLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
-		return 0;
-#endif
 	case CG_R_RENDERSCENE:
 		re.RenderScene( VMA(1) );
 		return 0;
@@ -640,19 +589,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return 0;
 	case CG_MEMORY_REMAINING:
 		return Hunk_MemoryRemaining();
-#ifndef ELITEFORCE
-  case CG_KEY_ISDOWN:
-		return Key_IsDown( args[1] );
-  case CG_KEY_GETCATCHER:
-		return Key_GetCatcher();
-  case CG_KEY_SETCATCHER:
-		// Don't allow the cgame module to close the console
-		Key_SetCatcher( args[1] | ( Key_GetCatcher( ) & KEYCATCH_CONSOLE ) );
-    return 0;
-  case CG_KEY_GETKEY:
-		return Key_GetKey( VMA(1) );
-#endif
-
 
 	case CG_MEMSET:
 		Com_Memset( VMA(1), args[2], args[3] );
@@ -675,77 +611,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args ) {
 		return FloatAsInt( floor( VMF(1) ) );
 	case CG_CEIL:
 		return FloatAsInt( ceil( VMF(1) ) );
-#ifndef ELITEFORCE
-	case CG_ACOS:
-		return FloatAsInt( Q_acos( VMF(1) ) );
-	case CG_PC_ADD_GLOBAL_DEFINE:
-		return botlib_export->PC_AddGlobalDefine( VMA(1) );
-	case CG_PC_LOAD_SOURCE:
-		return botlib_export->PC_LoadSourceHandle( VMA(1) );
-	case CG_PC_FREE_SOURCE:
-		return botlib_export->PC_FreeSourceHandle( args[1] );
-	case CG_PC_READ_TOKEN:
-		return botlib_export->PC_ReadTokenHandle( args[1], VMA(2) );
-	case CG_PC_SOURCE_FILE_AND_LINE:
-		return botlib_export->PC_SourceFileAndLine( args[1], VMA(2), VMA(3) );
-
-	case CG_S_STOPBACKGROUNDTRACK:
-		S_StopBackgroundTrack();
-		return 0;
-
-	case CG_REAL_TIME:
-		return Com_RealTime( VMA(1) );
-	case CG_SNAPVECTOR:
-		Q_SnapVector(VMA(1));
-		return 0;
-
-	case CG_CIN_PLAYCINEMATIC:
-	  return CIN_PlayCinematic(VMA(1), args[2], args[3], args[4], args[5], args[6]);
-
-	case CG_CIN_STOPCINEMATIC:
-	  return CIN_StopCinematic(args[1]);
-
-	case CG_CIN_RUNCINEMATIC:
-	  return CIN_RunCinematic(args[1]);
-
-	case CG_CIN_DRAWCINEMATIC:
-	  CIN_DrawCinematic(args[1]);
-	  return 0;
-
-	case CG_CIN_SETEXTENTS:
-	  CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
-	  return 0;
-
-	case CG_R_REMAP_SHADER:
-		re.RemapShader( VMA(1), VMA(2), VMA(3) );
-		return 0;
-
-/*
-	case CG_LOADCAMERA:
-		return loadCamera(VMA(1));
-
-	case CG_STARTCAMERA:
-		startCamera(args[1]);
-		return 0;
-
-	case CG_GETCAMERAINFO:
-		return getCameraInfo(args[1], VMA(2), VMA(3));
-*/
-	case CG_GET_ENTITY_TOKEN:
-		return re.GetEntityToken( VMA(1), args[2] );
-	case CG_R_INPVS:
-		return re.inPVS( VMA(1), VMA(2) );
-#else
 	case CG_R_REGISTERSHADER3D:
 		return re.RegisterShader3D( VMA(1) );
 	case CG_CVAR_SET_NO_MODIFY:
 		return qfalse;
-#endif
-#ifdef XTRA
-	case CG_R_REMAP_SHADER:
-		re.RemapShader( VMA(1), VMA(2), VMA(3) );
-		return 0;
-#endif
 	default:
 	        assert(0);
 		Com_Error( ERR_DROP, "Bad cgame system trap: %ld", (long int) args[0] );

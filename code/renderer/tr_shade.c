@@ -1109,10 +1109,8 @@ static void ComputeTexCoords( shaderStage_t *pStage ) {
 static void RB_IterateStagesGeneric( shaderCommands_t *input )
 {
 	int stage;
-#ifdef ELITEFORCE
 	qboolean overridealpha;
 	int oldalphaGen = 0;
-#endif
 
 	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
 	{
@@ -1123,7 +1121,6 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 			break;
 		}
 
-		#ifdef ELITEFORCE
 		// Override the shader alpha channel if requested.
 		if(backEnd.currentEntity->e.renderfx & RF_FORCE_ENT_ALPHA)
 		{
@@ -1133,14 +1130,11 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 		}
 		else
 			overridealpha = qfalse;
-		#endif
 
 		ComputeColors( pStage );
 		
-		#ifdef ELITEFORCE
 		if(overridealpha)
 			pStage->alphaGen = oldalphaGen;
-		#endif
 		
 		ComputeTexCoords( pStage );
 
@@ -1174,14 +1168,12 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 			else 
 				R_BindAnimatedImage( &pStage->bundle[0] );
 
-			#ifdef ELITEFORCE
 			if(overridealpha && backEnd.currentEntity->e.shaderRGBA[3] < 0xFF && !(pStage->stateBits & GLS_ATEST_BITS))
 			{
 				GL_State((pStage->stateBits & ~(GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_ATEST_BITS))  // remove the shader set values.
 					 | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_ATEST_GT_0); // Now add the default values.
 			}
 			else
-			#endif
 				GL_State( pStage->stateBits );
 
 			//

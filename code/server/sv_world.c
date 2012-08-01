@@ -222,7 +222,6 @@ void SV_LinkEntity( sharedEntity_t *gEnt ) {
 	// encode the size into the entityState_t for client prediction
 	if ( gEnt->r.bmodel ) {
 		gEnt->s.solid = SOLID_BMODEL;		// a solid_box will never create this value
-#ifdef ELITEFORCE
 	} else if ( gEnt->r.contents & ( CONTENTS_SOLID | CONTENTS_BODY | CONTENTS_SHOTCLIP ) ) {
 		if(gEnt->r.svFlags & SVF_SHIELD_BBOX)
 		{
@@ -277,9 +276,6 @@ void SV_LinkEntity( sharedEntity_t *gEnt ) {
 		}
 		else
 		{
-#else
-	} else if ( gEnt->r.contents & ( CONTENTS_SOLID | CONTENTS_BODY ) ) {
-#endif
 			// assume that x/y are equal and symetric
 			i = gEnt->r.maxs[0];
 			if (i<1)
@@ -300,9 +296,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt ) {
 				k = 1;
 			if (k>255)
 				k = 255;
-#ifdef ELITEFORCE
 		}
-#endif
 		
 		gEnt->s.solid = (k<<16) | (j<<8) | i;
 	} else {

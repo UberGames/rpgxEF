@@ -43,10 +43,8 @@ extern	field_t	g_consoleField;
 extern	field_t	chatField;
 extern	int				anykeydown;
 extern	qboolean	chat_team;
-#ifdef XTRA
 extern qboolean		chat_class;
 extern qboolean		chat_tell;
-#endif
 extern	int			chat_playerNum;
 
 void Key_WriteBindings( fileHandle_t f );

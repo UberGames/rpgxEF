@@ -1020,11 +1020,7 @@ int R_SpriteFogNum( trRefEntity_t *ent ) {
 		return 0;
 	}
 
-	#ifdef ELITEFORCE
 	radius = ent->e.data.sprite.radius;
-	#else
-	radius = ent->e.radius;
-	#endif
 
 	for ( i = 1 ; i < tr.world->numfogs ; i++ ) {
 		fog = &tr.world->fogs[i];
@@ -1231,7 +1227,6 @@ void R_AddEntitySurfaces (void) {
 		case RT_PORTALSURFACE:
 			break;		// don't draw anything
 
-#ifdef ELITEFORCE
 		case RT_ORIENTEDSPRITE:
 		case RT_ALPHAVERTPOLY:
 		case RT_LINE:
@@ -1240,7 +1235,6 @@ void R_AddEntitySurfaces (void) {
 		case RT_BEZIER:
 		case RT_CYLINDER:
 		case RT_ELECTRICITY:
-#endif
 
 		case RT_SPRITE:
 		case RT_BEAM:

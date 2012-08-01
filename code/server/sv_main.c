@@ -317,19 +317,12 @@ void SV_MasterHeartbeat(const char *message)
 
 		// this command should be changed if the server info / status format
 		// ever incompatably changes
-		#ifdef ELITEFORCE
 		if(adr[i][0].type != NA_BAD)
 			NET_OutOfBandPrint(NS_SERVER, adr[i][0], "\\heartbeat\\%d\\gamename\\%s\\",
 					   Cvar_VariableIntegerValue("net_port"), message);
 		if(adr[i][1].type != NA_BAD)
 			NET_OutOfBandPrint(NS_SERVER, adr[i][1], "\\heartbeat\\%d\\gamename\\%s\\",
 					   Cvar_VariableIntegerValue("net_port6"), message);
-		#else
-		if(adr[i][0].type != NA_BAD)
-			NET_OutOfBandPrint( NS_SERVER, adr[i][0], "heartbeat %s\n", message);
-		if(adr[i][1].type != NA_BAD)
-			NET_OutOfBandPrint( NS_SERVER, adr[i][1], "heartbeat %s\n", message);
-		#endif
 	}
 }
 
@@ -685,11 +678,7 @@ void SVC_Info( netadr_t from ) {
 		Info_SetValueForKey( infostring, "game", gamedir );
 	}
 
-#ifdef ELITEFORCE
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse \"%s\"", infostring );
-#else
-	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
-#endif
 }
 
 /*
@@ -794,12 +783,6 @@ static void SV_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	MSG_BeginReadingOOB( msg );
 	MSG_ReadLong( msg );		// skip the -1 marker
 
-#ifndef ELITEFORCE
-	if (!Q_strncmp("connect", (char *) &msg->data[4], 7)) {
-		Huff_Decompress(msg, 12);
-	}
-#endif
-
 	s = MSG_ReadStringLine( msg );
 	Cmd_TokenizeString( s );
 
@@ -876,9 +859,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg ) {
 			cl->netchan.remoteAddress.port = from.port;
 		}
 
-		#ifdef ELITEFORCE
 		msg->compat = cl->compat;
-		#endif
 
 		// make sure it is a valid, in sequence packet
 		if (SV_Netchan_Process(cl, msg)) {

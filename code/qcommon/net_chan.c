@@ -99,7 +99,6 @@ void Netchan_Setup(netsrc_t sock, netchan_t *chan, netadr_t adr, int qport, int 
 #endif
 }
 
-#ifdef ELITEFORCE
 /*
 ==============
 Netchan_ScramblePacket
@@ -193,7 +192,6 @@ static void Netchan_UnScramblePacket( msg_t *buf ) {
 		buf->data[i] ^= seq[i];
 	}
 }
-#endif
 
 /*
 =================
@@ -234,13 +232,11 @@ void Netchan_TransmitNextFragment( netchan_t *chan ) {
 	MSG_WriteShort( &send, fragmentLength );
 	MSG_WriteData( &send, chan->unsentBuffer + chan->unsentFragmentStart, fragmentLength );
 
-	#ifdef ELITEFORCE
 	if(chan->compat)
 	{
 		// the original eliteforce uses the old scrambling routines only slightly modified.	
 		Netchan_ScramblePacket( &send );
 	}
-	#endif
 
 	// send the datagram
 	NET_SendPacket(chan->sock, send.cursize, send.data, chan->remoteAddress);
@@ -317,13 +313,11 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
 
 	MSG_WriteData( &send, data, length );
 
-	#ifdef ELITEFORCE
 	if(chan->compat)
 	{
 		// the original eliteforce uses the old scrambling routines only slightly modified.	
 		Netchan_ScramblePacket( &send );
 	}
-	#endif
 
 	// send the datagram
 	NET_SendPacket( chan->sock, send.cursize, send.data, chan->remoteAddress );
@@ -359,10 +353,8 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 	qboolean	fragmented;
 
 	// XOR unscramble all data in the packet after the header
-#ifdef ELITEFORCE
 	if(chan->compat)
 		Netchan_UnScramblePacket( msg );
-#endif
 
 	// get sequence numbers		
 	MSG_BeginReadingOOB( msg );
@@ -509,9 +501,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 
 		// TTimo
 		// clients were not acking fragmented messages
-		#ifdef ELITEFORCE
 		if(!chan->compat)
-		#endif
 			chan->incomingSequence = sequence;
 		
 		return qtrue;
@@ -539,11 +529,7 @@ LOOPBACK BUFFERS FOR LOCAL PLAYER
 
 // there needs to be enough loopback messages to hold a complete
 // gamestate of maximum size
-#ifndef XTRA
-#define	MAX_LOOPBACK	16
-#else
 #define	MAX_LOOPBACK	46
-#endif
 
 typedef struct {
 	byte	data[MAX_PACKETLEN];

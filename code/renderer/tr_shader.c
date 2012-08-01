@@ -745,12 +745,10 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				depthFuncBits = 0;
 			}
-#ifdef ELITEFORCE
 			if ( !Q_stricmp( token, "disable" ) )
 			{
 				depthFuncBits = 0;
 			}
-#endif
 			else if ( !Q_stricmp( token, "equal" ) )
 			{
 				depthFuncBits = GLS_DEPTHFUNC_EQUAL;
@@ -2792,7 +2790,7 @@ qhandle_t RE_RegisterShaderNoMip( const char *name ) {
 
 	return sh->index;
 }
-#ifdef ELITEFORCE
+
 /*
 ====================
 RE_RegisterShader3D
@@ -2822,7 +2820,6 @@ qhandle_t RE_RegisterShader3D( const char *name ) {
 
 	return sh->index;
 }
-#endif
 
 /*
 ====================

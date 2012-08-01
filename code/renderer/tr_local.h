@@ -813,11 +813,7 @@ extern	refimport_t		ri;
 #define	MAX_SKINS				1024
 
 
-#ifndef XTRA
-#define	MAX_DRAWSURFS			0x10000
-#else
 #define	MAX_DRAWSURFS			0x20000
-#endif
 #define	DRAWSURF_MASK			(MAX_DRAWSURFS-1)
 
 /*
@@ -839,18 +835,9 @@ the bits are allocated as follows:
 7-16  : entity index
 17-30 : sorted shader index
 */
-#ifndef XTRA
 #define	QSORT_FOGNUM_SHIFT	2
 #define	QSORT_ENTITYNUM_SHIFT	7
 #define	QSORT_SHADERNUM_SHIFT	(QSORT_ENTITYNUM_SHIFT+ENTITYNUM_BITS)
-#if (QSORT_SHADERNUM_SHIFT+SHADERNUM_BITS) > 32
-	#error "Need to update sorting, too many bits."
-#endif
-#else
-#define	QSORT_FOGNUM_SHIFT	2
-#define	QSORT_ENTITYNUM_SHIFT	7
-#define	QSORT_SHADERNUM_SHIFT	(QSORT_ENTITYNUM_SHIFT+ENTITYNUM_BITS)
-#endif
 
 extern	int			gl_filter_min, gl_filter_max;
 
@@ -1070,9 +1057,7 @@ extern cvar_t	*r_primitives;			// "0" = based on compiled vertex array existance
 
 extern cvar_t	*r_inGameVideo;				// controls whether in game video should be draw
 extern cvar_t	*r_fastsky;				// controls whether sky should be cleared or drawn
-#ifdef ELITEFORCE
 extern cvar_t	*r_origfastsky;				// controls whether fastsky color is like in original EF.
-#endif
 extern cvar_t	*r_drawSun;				// controls drawing of sun quad
 extern cvar_t	*r_dynamiclight;		// dynamic lights enabled/disabled
 extern cvar_t	*r_dlightBacks;			// dlight non-facing surfaces for continuity
@@ -1294,10 +1279,8 @@ const void *RB_TakeVideoFrameCmd( const void *data );
 qhandle_t		 RE_RegisterShaderLightMap( const char *name, int lightmapIndex );
 qhandle_t		 RE_RegisterShader( const char *name );
 qhandle_t		 RE_RegisterShaderNoMip( const char *name );
-#ifdef ELITEFORCE
 qhandle_t		 RE_RegisterShader3D( const char *name );
-#endif
-qhandle_t RE_RegisterShaderFromImage(const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage);
+qhandle_t		 RE_RegisterShaderFromImage(const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage);
 
 shader_t	*R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 shader_t	*R_GetShaderByHandle( qhandle_t hShader );

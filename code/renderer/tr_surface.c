@@ -159,13 +159,8 @@ static void RB_SurfaceSprite( void ) {
 	float		rotation;
 
 	// calculate the xyz locations for the four corners
-	#ifdef ELITEFORCE
 	radius = backEnd.currentEntity->e.data.sprite.radius;
 	rotation = backEnd.currentEntity->e.data.sprite.rotation;
-	#else
-	radius = backEnd.currentEntity->e.radius;
-	rotation = backEnd.currentEntity->e.rotation;
-	#endif
 
 	if ( rotation == 0 ) {
 		VectorScale( backEnd.viewParms.or.axis[1], radius, left );
@@ -556,8 +551,6 @@ static void RB_SurfaceLightningBolt( void ) {
 		VectorCopy( temp, right );
 	}
 }
-
-#ifdef ELITEFORCE
 
 /*
 ==============
@@ -1125,7 +1118,6 @@ void RB_SurfaceElectricity(void)
 		RB_Line(segstartpos, segendpos, linedirection, left, prevend, 0, e->data.electricity.stscale, e);
 	}
 }
-#endif
 
 /*
 ** VectorArrayNormalize
@@ -1760,9 +1752,7 @@ Entities that have a single procedurally generated surface
 */
 static void RB_SurfaceEntity( surfaceType_t *surfType ) {
 	switch( backEnd.currentEntity->e.reType ) {
-#ifdef ELITEFORCE
 	case RT_ALPHAVERTPOLY:
-#endif
 	case RT_SPRITE:
 		RB_SurfaceSprite();
 		break;
@@ -1778,7 +1768,6 @@ static void RB_SurfaceEntity( surfaceType_t *surfType ) {
 	case RT_LIGHTNING:
 		RB_SurfaceLightningBolt();
 		break;
-#ifdef ELITEFORCE
 	case RT_ORIENTEDSPRITE:
 		RB_SurfaceOrientedSprite();
 		break;
@@ -1800,7 +1789,6 @@ static void RB_SurfaceEntity( surfaceType_t *surfType ) {
 	case RT_ELECTRICITY:
 		RB_SurfaceElectricity();
 		break;
-#endif
 	default:
 		RB_SurfaceAxis();
 		break;

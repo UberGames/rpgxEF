@@ -84,128 +84,6 @@ void LAN_SaveServersToCache( void ) {
 	FS_FCloseFile(fileOut);
 }
 
-#ifndef ELITEFORCE
-/*
-====================
-LAN_ResetPings
-====================
-*/
-static void LAN_ResetPings(int source) {
-	int count,i;
-	serverInfo_t *servers = NULL;
-	count = 0;
-
-	switch (source) {
-		case AS_LOCAL :
-			servers = &cls.localServers[0];
-			count = MAX_OTHER_SERVERS;
-			break;
-		case AS_MPLAYER:
-		case AS_GLOBAL :
-			servers = &cls.globalServers[0];
-			count = MAX_GLOBAL_SERVERS;
-			break;
-		case AS_FAVORITES :
-			servers = &cls.favoriteServers[0];
-			count = MAX_OTHER_SERVERS;
-			break;
-	}
-	if (servers) {
-		for (i = 0; i < count; i++) {
-			servers[i].ping = -1;
-		}
-	}
-}
-
-/*
-====================
-LAN_AddServer
-====================
-*/
-static int LAN_AddServer(int source, const char *name, const char *address) {
-	int max, *count, i;
-	netadr_t adr;
-	serverInfo_t *servers = NULL;
-	max = MAX_OTHER_SERVERS;
-	count = NULL;
-
-	switch (source) {
-		case AS_LOCAL :
-			count = &cls.numlocalservers;
-			servers = &cls.localServers[0];
-			break;
-		case AS_MPLAYER:
-		case AS_GLOBAL :
-			max = MAX_GLOBAL_SERVERS;
-			count = &cls.numglobalservers;
-			servers = &cls.globalServers[0];
-			break;
-		case AS_FAVORITES :
-			count = &cls.numfavoriteservers;
-			servers = &cls.favoriteServers[0];
-			break;
-	}
-	if (servers && *count < max) {
-		NET_StringToAdr( address, &adr, NA_IP );
-		for ( i = 0; i < *count; i++ ) {
-			if (NET_CompareAdr(servers[i].adr, adr)) {
-				break;
-			}
-		}
-		if (i >= *count) {
-			servers[*count].adr = adr;
-			Q_strncpyz(servers[*count].hostName, name, sizeof(servers[*count].hostName));
-			servers[*count].visible = qtrue;
-			(*count)++;
-			return 1;
-		}
-		return 0;
-	}
-	return -1;
-}
-
-/*
-====================
-LAN_RemoveServer
-====================
-*/
-static void LAN_RemoveServer(int source, const char *addr) {
-	int *count, i;
-	serverInfo_t *servers = NULL;
-	count = NULL;
-	switch (source) {
-		case AS_LOCAL :
-			count = &cls.numlocalservers;
-			servers = &cls.localServers[0];
-			break;
-		case AS_MPLAYER:
-		case AS_GLOBAL :
-			count = &cls.numglobalservers;
-			servers = &cls.globalServers[0];
-			break;
-		case AS_FAVORITES :
-			count = &cls.numfavoriteservers;
-			servers = &cls.favoriteServers[0];
-			break;
-	}
-	if (servers) {
-		netadr_t comp;
-		NET_StringToAdr( addr, &comp, NA_IP );
-		for (i = 0; i < *count; i++) {
-			if (NET_CompareAdr( comp, servers[i].adr)) {
-				int j = i;
-				while (j < *count - 1) {
-					Com_Memcpy(&servers[j], &servers[j+1], sizeof(servers[j]));
-					j++;
-				}
-				(*count)--;
-				break;
-			}
-		}
-	}
-}
-#endif
-
 /*
 ====================
 LAN_GetServerCount
@@ -256,186 +134,6 @@ static void LAN_GetServerAddressString( int source, int n, char *buf, int buflen
 	buf[0] = '\0';
 }
 
-#ifndef ELITEFORCE
-/*
-====================
-LAN_GetServerInfo
-====================
-*/
-static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
-	char info[MAX_STRING_CHARS];
-	serverInfo_t *server = NULL;
-	info[0] = '\0';
-	switch (source) {
-		case AS_LOCAL :
-			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				server = &cls.localServers[n];
-			}
-			break;
-		case AS_MPLAYER:
-		case AS_GLOBAL :
-			if (n >= 0 && n < MAX_GLOBAL_SERVERS) {
-				server = &cls.globalServers[n];
-			}
-			break;
-		case AS_FAVORITES :
-			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				server = &cls.favoriteServers[n];
-			}
-			break;
-	}
-	if (server && buf) {
-		buf[0] = '\0';
-		Info_SetValueForKey( info, "hostname", server->hostName);
-		Info_SetValueForKey( info, "mapname", server->mapName);
-		Info_SetValueForKey( info, "clients", va("%i",server->clients));
-		Info_SetValueForKey( info, "sv_maxclients", va("%i",server->maxClients));
-		Info_SetValueForKey( info, "ping", va("%i",server->ping));
-		Info_SetValueForKey( info, "minping", va("%i",server->minPing));
-		Info_SetValueForKey( info, "maxping", va("%i",server->maxPing));
-		Info_SetValueForKey( info, "game", server->game);
-		Info_SetValueForKey( info, "gametype", va("%i",server->gameType));
-		Info_SetValueForKey( info, "nettype", va("%i",server->netType));
-		Info_SetValueForKey( info, "addr", NET_AdrToStringwPort(server->adr));
-		Info_SetValueForKey( info, "punkbuster", va("%i", server->punkbuster));
-		Info_SetValueForKey( info, "g_needpass", va("%i", server->g_needpass));
-		Info_SetValueForKey( info, "g_humanplayers", va("%i", server->g_humanplayers));
-		Q_strncpyz(buf, info, buflen);
-	} else {
-		if (buf) {
-			buf[0] = '\0';
-		}
-	}
-}
-
-/*
-====================
-LAN_GetServerPing
-====================
-*/
-static int LAN_GetServerPing( int source, int n ) {
-	serverInfo_t *server = NULL;
-	switch (source) {
-		case AS_LOCAL :
-			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				server = &cls.localServers[n];
-			}
-			break;
-		case AS_MPLAYER:
-		case AS_GLOBAL :
-			if (n >= 0 && n < MAX_GLOBAL_SERVERS) {
-				server = &cls.globalServers[n];
-			}
-			break;
-		case AS_FAVORITES :
-			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				server = &cls.favoriteServers[n];
-			}
-			break;
-	}
-	if (server) {
-		return server->ping;
-	}
-	return -1;
-}
-
-/*
-====================
-LAN_GetServerPtr
-====================
-*/
-static serverInfo_t *LAN_GetServerPtr( int source, int n ) {
-	switch (source) {
-		case AS_LOCAL :
-			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				return &cls.localServers[n];
-			}
-			break;
-		case AS_MPLAYER:
-		case AS_GLOBAL :
-			if (n >= 0 && n < MAX_GLOBAL_SERVERS) {
-				return &cls.globalServers[n];
-			}
-			break;
-		case AS_FAVORITES :
-			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				return &cls.favoriteServers[n];
-			}
-			break;
-	}
-	return NULL;
-}
-/*
-====================
-LAN_CompareServers
-====================
-*/
-static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 ) {
-	int res;
-	serverInfo_t *server1, *server2;
-
-	server1 = LAN_GetServerPtr(source, s1);
-	server2 = LAN_GetServerPtr(source, s2);
-	if (!server1 || !server2) {
-		return 0;
-	}
-
-	res = 0;
-	switch( sortKey ) {
-		case SORT_HOST:
-			res = Q_stricmp( server1->hostName, server2->hostName );
-			break;
-
-		case SORT_MAP:
-			res = Q_stricmp( server1->mapName, server2->mapName );
-			break;
-		case SORT_CLIENTS:
-			if (server1->clients < server2->clients) {
-				res = -1;
-			}
-			else if (server1->clients > server2->clients) {
-				res = 1;
-			}
-			else {
-				res = 0;
-			}
-			break;
-		case SORT_GAME:
-			if (server1->gameType < server2->gameType) {
-				res = -1;
-			}
-			else if (server1->gameType > server2->gameType) {
-				res = 1;
-			}
-			else {
-				res = 0;
-			}
-			break;
-		case SORT_PING:
-			if (server1->ping < server2->ping) {
-				res = -1;
-			}
-			else if (server1->ping > server2->ping) {
-				res = 1;
-			}
-			else {
-				res = 0;
-			}
-			break;
-	}
-
-	if (sortDir) {
-		if (res < 0)
-			return 1;
-		if (res > 0)
-			return -1;
-		return 0;
-	}
-	return res;
-}
-
-#endif
-
 /*
 ====================
 LAN_GetPingQueueCount
@@ -471,87 +169,6 @@ LAN_GetPingInfo
 static void LAN_GetPingInfo( int n, char *buf, int buflen ) {
 	CL_GetPingInfo( n, buf, buflen );
 }
-
-#ifndef ELITEFORCE
-/*
-====================
-LAN_MarkServerVisible
-====================
-*/
-static void LAN_MarkServerVisible(int source, int n, qboolean visible ) {
-	if (n == -1) {
-		int count = MAX_OTHER_SERVERS;
-		serverInfo_t *server = NULL;
-		switch (source) {
-			case AS_LOCAL :
-				server = &cls.localServers[0];
-				break;
-			case AS_MPLAYER:
-			case AS_GLOBAL :
-				server = &cls.globalServers[0];
-				count = MAX_GLOBAL_SERVERS;
-				break;
-			case AS_FAVORITES :
-				server = &cls.favoriteServers[0];
-				break;
-		}
-		if (server) {
-			for (n = 0; n < count; n++) {
-				server[n].visible = visible;
-			}
-		}
-
-	} else {
-		switch (source) {
-			case AS_LOCAL :
-				if (n >= 0 && n < MAX_OTHER_SERVERS) {
-					cls.localServers[n].visible = visible;
-				}
-				break;
-			case AS_MPLAYER:
-			case AS_GLOBAL :
-				if (n >= 0 && n < MAX_GLOBAL_SERVERS) {
-					cls.globalServers[n].visible = visible;
-				}
-				break;
-			case AS_FAVORITES :
-				if (n >= 0 && n < MAX_OTHER_SERVERS) {
-					cls.favoriteServers[n].visible = visible;
-				}
-				break;
-		}
-	}
-}
-
-
-/*
-=======================
-LAN_ServerIsVisible
-=======================
-*/
-static int LAN_ServerIsVisible(int source, int n ) {
-	switch (source) {
-		case AS_LOCAL :
-			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				return cls.localServers[n].visible;
-			}
-			break;
-		case AS_MPLAYER:
-		case AS_GLOBAL :
-			if (n >= 0 && n < MAX_GLOBAL_SERVERS) {
-				return cls.globalServers[n].visible;
-			}
-			break;
-		case AS_FAVORITES :
-			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				return cls.favoriteServers[n].visible;
-			}
-			break;
-	}
-	return qfalse;
-}
-
-#endif
 
 /*
 =======================
@@ -628,29 +245,6 @@ static void Key_GetBindingBuf( int keynum, char *buf, int buflen ) {
 
 /*
 ====================
-CLUI_GetCDKey
-====================
-*/
-  #ifndef ELITEFORCE
-static void CLUI_GetCDKey( char *buf, int buflen ) {
-#ifndef STANDALONE
-	cvar_t	*fs;
-	fs = Cvar_Get ("fs_game", "", CVAR_INIT|CVAR_SYSTEMINFO );
-	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0) {
-		Com_Memcpy( buf, &cl_cdkey[16], 16);
-		buf[16] = 0;
-	} else {
-		Com_Memcpy( buf, cl_cdkey, 16);
-		buf[16] = 0;
-	}
-#else
-	*buf = 0;
-#endif
-}
-  #endif
-
-/*
-====================
 CLUI_SetCDKey
 ====================
 */
@@ -664,12 +258,8 @@ static void CLUI_SetCDKey( char *buf ) {
 		// set the flag so the fle will be written at the next opportunity
 		cvar_modifiedFlags |= CVAR_ARCHIVE;
 	} else {
-		#ifdef ELITEFORCE
 		Com_Memcpy(cl_cdkey, buf, 22);
 		cl_cdkey[22] = '\0';
-		#else
-		Com_Memcpy( cl_cdkey, buf, 16 );
-		#endif
 		// set the flag so the fle will be written at the next opportunity
 		cvar_modifiedFlags |= CVAR_ARCHIVE;
 	}
@@ -803,11 +393,6 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 
 	case UI_FS_GETFILELIST:
 		return FS_GetFileList( VMA(1), VMA(2), VMA(3), args[4] );
-
-#ifndef ELITEFORCE
-	case UI_FS_SEEK:
-		return FS_Seek( args[1], args[2], args[3] );
-#endif
 	
 	case UI_R_REGISTERMODEL:
 		return re.RegisterModel( VMA(1) );
@@ -914,23 +499,6 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 	case UI_GETCONFIGSTRING:
 		return GetConfigString( args[1], VMA(2), args[3] );
 
-#ifndef ELITEFORCE
-	case UI_LAN_LOADCACHEDSERVERS:
-		LAN_LoadCachedServers();
-		return 0;
-
-	case UI_LAN_SAVECACHEDSERVERS:
-		LAN_SaveServersToCache();
-		return 0;
-
-	case UI_LAN_ADDSERVER:
-		return LAN_AddServer(args[1], VMA(2), VMA(3));
-
-	case UI_LAN_REMOVESERVER:
-		LAN_RemoveServer(args[1], VMA(2));
-		return 0;
-#endif
-
 	case UI_LAN_GETPINGQUEUECOUNT:
 		return LAN_GetPingQueueCount();
 
@@ -946,7 +514,6 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 		LAN_GetPingInfo( args[1], VMA(2), args[3] );
 		return 0;
 
-#ifdef ELITEFORCE
 	case UI_LAN_GETLOCALSERVERCOUNT:
 		return LAN_GetServerCount(AS_LOCAL);
 
@@ -959,64 +526,14 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 	case UI_LAN_GETGLOBALSERVERADDRESSSTRING:
 		LAN_GetServerAddressString( AS_GLOBAL, args[1], VMA(2), args[3] );
 		return 0;
-#else
-	case UI_LAN_GETSERVERCOUNT:
-		return LAN_GetServerCount(args[1]);
-
-	case UI_LAN_GETSERVERADDRESSSTRING:
-		LAN_GetServerAddressString( args[1], args[2], VMA(3), args[4] );
-		return 0;
-	case UI_LAN_GETSERVERINFO:
-		LAN_GetServerInfo( args[1], args[2], VMA(3), args[4] );
-		return 0;
-
-	case UI_LAN_GETSERVERPING:
-		return LAN_GetServerPing( args[1], args[2] );
-
-	case UI_LAN_MARKSERVERVISIBLE:
-		LAN_MarkServerVisible( args[1], args[2], args[3] );
-		return 0;
-
-	case UI_LAN_SERVERISVISIBLE:
-		return LAN_ServerIsVisible( args[1], args[2] );
-
-	case UI_LAN_UPDATEVISIBLEPINGS:
-		return LAN_UpdateVisiblePings( args[1] );
-
-	case UI_LAN_RESETPINGS:
-		LAN_ResetPings( args[1] );
-		return 0;
-
-	case UI_LAN_SERVERSTATUS:
-		return LAN_GetServerStatus( VMA(1), VMA(2), args[3] );
-
-	case UI_LAN_COMPARESERVERS:
-		return LAN_CompareServers( args[1], args[2], args[3], args[4], args[5] );
-#endif
 
 	case UI_MEMORY_REMAINING:
 		return Hunk_MemoryRemaining();
 
-  #ifndef ELITEFORCE
-	case UI_GET_CDKEY:
-		CLUI_GetCDKey( VMA(1), args[2] );
-		return 0;
-  #endif
 	case UI_SET_CDKEY:
 #ifndef STANDALONE
 		CLUI_SetCDKey( VMA(1) );
-		#ifdef ELITEFORCE
 		return qtrue;
-		#endif
-#endif
-		return 0;
-#ifndef ELITEFORCE
-	case UI_SET_PBCLSTATUS:
-		return 0;	
-
-	case UI_R_REGISTERFONT:
-		re.RegisterFont( VMA(1), args[2], VMA(3));
-		return 0;
 #endif
 
 	case UI_MEMSET:
@@ -1048,54 +565,6 @@ intptr_t CL_UISystemCalls( intptr_t *args ) {
 
 	case UI_CEIL:
 		return FloatAsInt( ceil( VMF(1) ) );
-
-#ifndef ELITEFORCE
-	case UI_PC_ADD_GLOBAL_DEFINE:
-		return botlib_export->PC_AddGlobalDefine( VMA(1) );
-	case UI_PC_LOAD_SOURCE:
-		return botlib_export->PC_LoadSourceHandle( VMA(1) );
-	case UI_PC_FREE_SOURCE:
-		return botlib_export->PC_FreeSourceHandle( args[1] );
-	case UI_PC_READ_TOKEN:
-		return botlib_export->PC_ReadTokenHandle( args[1], VMA(2) );
-	case UI_PC_SOURCE_FILE_AND_LINE:
-		return botlib_export->PC_SourceFileAndLine( args[1], VMA(2), VMA(3) );
-
-	case UI_S_STOPBACKGROUNDTRACK:
-		S_StopBackgroundTrack();
-		return 0;
-	case UI_S_STARTBACKGROUNDTRACK:
-		S_StartBackgroundTrack( VMA(1), VMA(2));
-		return 0;
-
-	case UI_REAL_TIME:
-		return Com_RealTime( VMA(1) );
-
-	case UI_CIN_PLAYCINEMATIC:
-	  Com_DPrintf("UI_CIN_PlayCinematic\n");
-	  return CIN_PlayCinematic(VMA(1), args[2], args[3], args[4], args[5], args[6]);
-
-	case UI_CIN_STOPCINEMATIC:
-	  return CIN_StopCinematic(args[1]);
-
-	case UI_CIN_RUNCINEMATIC:
-	  return CIN_RunCinematic(args[1]);
-
-	case UI_CIN_DRAWCINEMATIC:
-	  CIN_DrawCinematic(args[1]);
-	  return 0;
-
-	case UI_CIN_SETEXTENTS:
-	  CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
-	  return 0;
-
-	case UI_R_REMAP_SHADER:
-		re.RemapShader( VMA(1), VMA(2), VMA(3) );
-		return 0;
-
-	case UI_VERIFY_CDKEY:
-		return CL_CDKeyValidate(VMA(1), VMA(2));
-#endif
 		
 	default:
 		Com_Error( ERR_DROP, "Bad UI system trap: %ld", (long int) args[0] );
@@ -1153,9 +622,7 @@ void CL_InitUI( void ) {
 		// init for this gamestate
 		VM_Call( uivm, UI_INIT, (clc.state >= CA_AUTHORIZING && clc.state < CA_ACTIVE));
 
-		#ifdef ELITEFORCE
 		Cvar_SetValue("ui_cdkeychecked2", 1);
-		#endif
 	}
 	else if (v != UI_API_VERSION) {
 		// Free uivm now, so UI_SHUTDOWN doesn't get called later.
@@ -1169,23 +636,13 @@ void CL_InitUI( void ) {
 		// init for this gamestate
 		VM_Call( uivm, UI_INIT, (clc.state >= CA_AUTHORIZING && clc.state < CA_ACTIVE) );
 
-		#ifdef ELITEFORCE
 		Cvar_SetValue("ui_cdkeychecked2", 1);
-		#endif
 	}
 }
 
 #ifndef STANDALONE
 qboolean UI_usesUniqueCDKey( void ) {
-#ifdef ELITEFORCE
 	return qfalse;
-#else
-	if (uivm) {
-		return (VM_Call( uivm, UI_HASUNIQUECDKEY) == qtrue);
-	} else {
-		return qfalse;
-	}
-#endif
 }
 #endif
 

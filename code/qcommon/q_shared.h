@@ -37,54 +37,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define GAMENAME_FOR_MASTER		"foobar"	// must NOT contain whitespace
 //  #define LEGACY_PROTOCOL	// You probably don't need this for your standalone game
 #else
-  #ifdef XTRA
-    #define PRODUCT_NAME		"rpgxEF"
-    #define BASEGAME			"baseEF"
-    #define CLIENT_WINDOW_TITLE     	"rpgxEF"
-    #define CLIENT_WINDOW_MIN_TITLE 	"rpgxEF"
-    #define HOMEPATH_NAME_UNIX		".rpgxef"
-    #define HOMEPATH_NAME_WIN		"RPGXEF"
-    #define HOMEPATH_NAME_MACOSX	HOMEPATH_NAME_WIN
-    #define GAMENAME_FOR_MASTER		"EliteForce"
-    #define LEGACY_PROTOCOL
-  #elif defined(ELITEFORCE)
-    #define PRODUCT_NAME		"ioST:V HM"
-    #define BASEGAME			"baseEF"
-    #define CLIENT_WINDOW_TITLE     	"iostvoyHM"
-    #define CLIENT_WINDOW_MIN_TITLE 	"iostvoyHM"
-    #define HOMEPATH_NAME_UNIX		".stvef"
-    #define HOMEPATH_NAME_WIN		"STVEF"
-    #define HOMEPATH_NAME_MACOSX	HOMEPATH_NAME_WIN
-    #define GAMENAME_FOR_MASTER		"EliteForce"
-    #define LEGACY_PROTOCOL
-  #else
-    #define PRODUCT_NAME		"ioq3"
-    #define BASEGAME			"baseq3"
-    #define CLIENT_WINDOW_TITLE     	"ioquake3"
-    #define CLIENT_WINDOW_MIN_TITLE	"ioq3"
-    #define HOMEPATH_NAME_UNIX		".q3a"
-    #define HOMEPATH_NAME_WIN		"Quake3"
-    #define HOMEPATH_NAME_MACOSX	HOMEPATH_NAME_WIN
-    #define GAMENAME_FOR_MASTER		"Quake3Arena"
-    #define LEGACY_PROTOCOL
-  #endif
+	#define PRODUCT_NAME		"rpgxEF"
+	#define BASEGAME			"baseEF"
+	#define CLIENT_WINDOW_TITLE     	"rpgxEF"
+	#define CLIENT_WINDOW_MIN_TITLE 	"rpgxEF"
+	#define HOMEPATH_NAME_UNIX		".rpgxef"
+	#define HOMEPATH_NAME_WIN		"RPGXEF"
+	#define HOMEPATH_NAME_MACOSX	HOMEPATH_NAME_WIN
+	#define GAMENAME_FOR_MASTER		"EliteForce"
+	#define LEGACY_PROTOCOL
 #endif
 
 // Heartbeat for dpmaster protocol. You shouldn't change this unless you know what you're doing
-#ifdef ELITEFORCE
-  #define HEARTBEAT_FOR_MASTER		"STEF1"
-#else
-  #define HEARTBEAT_FOR_MASTER		"DarkPlaces"
-#endif
+#define HEARTBEAT_FOR_MASTER		"STEF1"
 
 #define BASETA				"missionpack"
 
 #ifndef PRODUCT_VERSION
- #ifndef XTRA
-  #define PRODUCT_VERSION "1.36"
- #else
-  #define PRODUCT_VERSION "1.0"
- #endif
+	#define PRODUCT_VERSION "1.0"
 #endif
 
 #define Q3_VERSION PRODUCT_NAME " " PRODUCT_VERSION
@@ -1097,11 +1067,7 @@ typedef enum {
 #define	MAX_CLIENTS			64		// absolute limit
 #define MAX_LOCATIONS		64
 
-#ifdef XTRA
 #define	GENTITYNUM_BITS		11		// don't need to send any more
-#else
-#define	GENTITYNUM_BITS		10		// don't need to send any more
-#endif
 #define	MAX_GENTITIES		(1<<GENTITYNUM_BITS)
 
 // entitynums are communicated with GENTITY_BITS, so any reserved
@@ -1111,19 +1077,11 @@ typedef enum {
 #define	ENTITYNUM_WORLD		(MAX_GENTITIES-2)
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-2)
 
-#ifndef XTRA
-#define MODELNUM_BITS 8
-#else
 #define MODELNUM_BITS 9
-#endif
 #define	MAX_MODELS			(1<<MODELNUM_BITS)	// these are sent over the net as 8 bits
 #define	MAX_SOUNDS			256					// so they cannot be blindly increased
 
-#ifndef XTRA
-#define	MAX_CONFIGSTRINGS	1024
-#else
 #define	MAX_CONFIGSTRINGS	4096
-#endif
 
 // these are the only configstrings that the system reserves, all the
 // other ones are strictly for servergame to clientgame communication
@@ -1132,11 +1090,7 @@ typedef enum {
 
 #define	RESERVED_CONFIGSTRINGS	2	// game can't modify below this, only the system can
 
-#ifndef XTRA
-#define	MAX_GAMESTATE_CHARS	16000
-#else
 #define	MAX_GAMESTATE_CHARS	64000
-#endif
 typedef struct {
 	int			stringOffsets[MAX_CONFIGSTRINGS];
 	char		stringData[MAX_GAMESTATE_CHARS];
@@ -1150,12 +1104,7 @@ typedef struct {
 #define	MAX_PERSISTANT			16
 #define	MAX_POWERUPS			16
 #define	MAX_WEAPONS				16		
-
-#ifdef ELITEFORCE
 #define MAX_PS_EVENTS			4
-#else
-#define	MAX_PS_EVENTS			2
-#endif
 
 #define PS_PMOVEFRAMECOUNTBITS	6
 
@@ -1179,11 +1128,9 @@ typedef struct playerState_s {
 	vec3_t		origin;
 	vec3_t		velocity;
 	int			weaponTime;
-#ifdef ELITEFORCE
-        int                     rechargeTime;           // for the phaser
-        short           useTime;                        // use debounce
-        int                     introTime;                      // for the holodoor
-#endif
+	int         rechargeTime;           // for the phaser
+	short       useTime;                        // use debounce
+	int         introTime;                      // for the holodoor
 	int			gravity;
 	int			speed;
 	int			delta_angles[3];	// add to command angles to get view direction
@@ -1201,10 +1148,6 @@ typedef struct playerState_s {
 								// of movement to the view angle (axial and diagonals)
 								// when at rest, the value will remain unchanged
 								// used to twist the legs during strafing
-
-#ifndef ELITEFORCE
-	vec3_t		grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
-#endif
 
 	int			eFlags;			// copied to entityState_t->eFlags
 
@@ -1228,27 +1171,15 @@ typedef struct playerState_s {
 	int			damageYaw;
 	int			damagePitch;
 	int			damageCount;
-#ifdef ELITEFORCE
 	int			damageShieldCount;
-#endif
 
 	int			stats[MAX_STATS];
 	int			persistant[MAX_PERSISTANT];	// stats that aren't cleared on death
 	int			powerups[MAX_POWERUPS];	// level.time that the powerup runs out
 	int			ammo[MAX_WEAPONS];
 
-#ifndef ELITEFORCE
-	int			generic1;
-	int			loopSound;
-	int			jumppad_ent;	// jumppad entity hit this frame
-#endif
-
 	// not communicated over the net at all
 	int			ping;			// server to game info for scoreboard
-#ifndef ELITEFORCE
-	int			pmove_framecount;	// FIXME: don't transmit over the network
-	int			jumppad_frame;
-#endif
 	int			entityEventSequence;
 } playerState_t;
 
@@ -1283,7 +1214,6 @@ typedef struct playerState_s {
 										// then BUTTON_WALKING should be set
 
 // usercmd_t is sent to the server each client frame
-#ifdef ELITEFORCE
 typedef struct usercmd_s {
         int             serverTime;
         byte    buttons;
@@ -1291,15 +1221,6 @@ typedef struct usercmd_s {
         int             angles[3];
         signed char     forwardmove, rightmove, upmove;
 } usercmd_t;
-#else
-typedef struct usercmd_s {
-	int				serverTime;
-	int				angles[3];
-	int 			buttons;
-	byte			weapon;           // weapon 
-	signed char	forwardmove, rightmove, upmove;
-} usercmd_t;
-#endif
 //===================================================================
 
 // if entityState->solid == SOLID_BMODEL, modelindex is an inline model number
@@ -1369,10 +1290,6 @@ typedef struct entityState_s {
 	int		weapon;			// determines weapon and flash model, etc
 	int		legsAnim;		// mask off ANIM_TOGGLEBIT
 	int		torsoAnim;		// mask off ANIM_TOGGLEBIT
-
-#ifndef ELITEFORCE
-	int		generic1;
-#endif
 } entityState_t;
 
 typedef enum {

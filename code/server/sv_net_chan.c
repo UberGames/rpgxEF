@@ -24,116 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #include "server.h"
 
-#ifndef ELITEFORCE
-#ifdef LEGACY_PROTOCOL
-/*
-==============
-SV_Netchan_Encode
-
-	// first four bytes of the data are always:
-	long reliableAcknowledge;
-
-==============
-*/
-static void SV_Netchan_Encode(client_t *client, msg_t *msg, const char *clientCommandString)
-{
-	long i, index;
-	byte key, *string;
-	int	srdc, sbit;
-	qboolean soob;
-
-	if ( msg->cursize < SV_ENCODE_START ) {
-		return;
-	}
-
-	srdc = msg->readcount;
-	sbit = msg->bit;
-	soob = msg->oob;
-
-	msg->bit = 0;
-	msg->readcount = 0;
-	msg->oob = qfalse;
-
-	/* reliableAcknowledge = */ MSG_ReadLong(msg);
-
-	msg->oob = soob;
-	msg->bit = sbit;
-	msg->readcount = srdc;
-
-	string = (byte *) clientCommandString;
-	index = 0;
-	// xor the client challenge with the netchan sequence number
-	key = client->challenge ^ client->netchan.outgoingSequence;
-	for (i = SV_ENCODE_START; i < msg->cursize; i++) {
-		// modify the key with the last received and with this message acknowledged client command
-		if (!string[index])
-			index = 0;
-		if (string[index] > 127 || string[index] == '%') {
-			key ^= '.' << (i & 1);
-		}
-		else {
-			key ^= string[index] << (i & 1);
-		}
-		index++;
-		// encode the data with this key
-		*(msg->data + i) = *(msg->data + i) ^ key;
-	}
-}
-
-/*
-==============
-SV_Netchan_Decode
-
-	// first 12 bytes of the data are always:
-	long serverId;
-	long messageAcknowledge;
-	long reliableAcknowledge;
-
-==============
-*/
-static void SV_Netchan_Decode( client_t *client, msg_t *msg ) {
-	int serverId, messageAcknowledge, reliableAcknowledge;
-	int i, index, srdc, sbit;
-	qboolean soob;
-	byte key, *string;
-
-	srdc = msg->readcount;
-	sbit = msg->bit;
-	soob = msg->oob;
-
-	msg->oob = qfalse;
-
-	serverId = MSG_ReadLong(msg);
-	messageAcknowledge = MSG_ReadLong(msg);
-	reliableAcknowledge = MSG_ReadLong(msg);
-
-	msg->oob = soob;
-	msg->bit = sbit;
-	msg->readcount = srdc;
-
-	string = (byte *)client->reliableCommands[ reliableAcknowledge & (MAX_RELIABLE_COMMANDS-1) ];
-	index = 0;
-	//
-	key = client->challenge ^ serverId ^ messageAcknowledge;
-	for (i = msg->readcount + SV_DECODE_START; i < msg->cursize; i++) {
-		// modify the key with the last sent and acknowledged server command
-		if (!string[index])
-			index = 0;
-		if (string[index] > 127 || string[index] == '%') {
-			key ^= '.' << (i & 1);
-		}
-		else {
-			key ^= string[index] << (i & 1);
-		}
-		index++;
-		// decode the data with this key
-		*(msg->data + i) = *(msg->data + i) ^ key;
-	}
-}
-#endif
-#endif
-
-
 /*
 =================
 SV_Netchan_FreeQueue
@@ -164,13 +54,6 @@ void SV_Netchan_TransmitNextInQueue(client_t *client)
 		
 	Com_DPrintf("#462 Netchan_TransmitNextFragment: popping a queued message for transmit\n");
 	netbuf = client->netchan_start_queue;
-
-#ifndef ELITEFORCE
-#ifdef LEGACY_PROTOCOL
-	if(client->compat)
-		SV_Netchan_Encode(client, &netbuf->msg, netbuf->clientCommandString);
-#endif
-#endif
 
 	Netchan_Transmit(&client->netchan, netbuf->msg.cursize, netbuf->msg.data);
 
@@ -226,9 +109,7 @@ then buffer them and make sure they get sent in correct order
 
 void SV_Netchan_Transmit( client_t *client, msg_t *msg)
 {
-	#ifdef ELITEFORCE
 	if(!msg->compat)
-	#endif
 		MSG_WriteByte( msg, svc_EOF );
 	
 
@@ -253,12 +134,6 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg)
 	}
 	else
 	{
-#ifndef ELITEFORCE
-#ifdef LEGACY_PROTOCOL
-		if(client->compat)
-			SV_Netchan_Encode(client, msg, client->lastClientCommandString);
-#endif
-#endif
 		Netchan_Transmit( &client->netchan, msg->cursize, msg->data );
 	}
 }
@@ -273,12 +148,7 @@ qboolean SV_Netchan_Process( client_t *client, msg_t *msg ) {
 	ret = Netchan_Process( &client->netchan, msg );
 	if (!ret)
 		return qfalse;
-#ifndef ELITEFORCE
-#ifdef LEGACY_PROTOCOL
-	if(client->compat)
-		SV_Netchan_Decode(client, msg);
-#endif
-#endif
+
 	return qtrue;
 }
 

@@ -171,7 +171,6 @@ void EA_Attack(int client)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-#ifdef ELITEFORCE
 void EA_AltAttack(int client)
 {
 	bot_input_t *bi;
@@ -186,7 +185,6 @@ void EA_AltAttack(int client)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-#endif
 void EA_Talk(int client)
 {
 	bot_input_t *bi;
@@ -220,12 +218,7 @@ void EA_Respawn(int client)
 	bot_input_t *bi;
 
 	bi = &botinputs[client];
-
-#ifdef ELITEFORCE
 	bi->actionflags |= ACTION_ATTACK;
-#else
-	bi->actionflags |= ACTION_RESPAWN;
-#endif
 } //end of the function EA_Respawn
 //===========================================================================
 //
