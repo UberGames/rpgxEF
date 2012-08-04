@@ -3810,6 +3810,8 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	char	*gamename;
 	qboolean gameMismatch;
 
+	Q_UNUSED(type);
+
 	// eliteforce doesn't send a \n after infoResponse..
 	infoString = strchr((char *) msg->data, '"');
 	if(!infoString)

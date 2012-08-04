@@ -30,13 +30,13 @@ ifndef BUILD_STANDALONE
   BUILD_STANDALONE =
 endif
 ifndef BUILD_CLIENT
-  BUILD_CLIENT     = 0
+  BUILD_CLIENT     = 1
 endif
 ifndef BUILD_CLIENT_SMP
   BUILD_CLIENT_SMP =
 endif
 ifndef BUILD_SERVER
-  BUILD_SERVER     = 0
+  BUILD_SERVER     = 1
 endif
 ifndef BUILD_GAME_SO
   BUILD_GAME_SO    = 1

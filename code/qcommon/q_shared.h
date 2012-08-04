@@ -90,6 +90,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //#pragma intrinsic( memset, memcpy )
 #endif
 
+#define Q_UNUSED(x) (void)x;
+
 //Ignore __attribute__ on non-gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__
@@ -129,7 +131,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  **********************************************************************/
 
+// meh somehow preprocessor G_LUA won't work for me
+#define G_LUA 1
+#define CG_LUA 1
+
 #ifdef Q3_VM
+#error "Q3_VM is defined - QVMs are no longer supported by RPG-X2"
 
 #include "../game/bg_lib.h"
 
@@ -1397,5 +1404,18 @@ typedef enum _flag_status {
 
 #define LERP( a, b, w ) ( ( a ) * ( 1.0f - ( w ) ) + ( b ) * ( w ) )
 #define LUMA( red, green, blue ) ( 0.2126f * ( red ) + 0.7152f * ( green ) + 0.0722f * ( blue ) )
+
+//Strictly not directly related to string Id tables, but is only used (so far) in the animation parsing string table.
+#define ENUM2STRING(arg)   #arg,arg
+
+typedef struct stringID_table_s
+{
+	char	*name;
+	int		id;
+} stringID_table_t;
+
+int GetIDForString ( stringID_table_t *table, const char *string );
+const char *GetStringForID( stringID_table_t *table, int id );		
+
 
 #endif	// __Q_SHARED_H
