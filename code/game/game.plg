@@ -1,0 +1,140 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: game - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\marcin\LOCALS~1\Temp\RSP18F.tmp" with contents
+[
+/nologo /G5 /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "DEBUG" /D "QAGAME" /FR".\Release/" /Fp".\Release/game.pch" /YX /Fo".\Release/" /Fd".\Release/" /FD /c 
+"C:\stvoy\code-dm\game\ai_chat.c"
+"C:\stvoy\code-dm\game\ai_cmd.c"
+"C:\stvoy\code-dm\game\ai_dmnet.c"
+"C:\stvoy\code-dm\game\ai_dmq3.c"
+"C:\stvoy\code-dm\game\ai_main.c"
+"C:\stvoy\code-dm\game\ai_team.c"
+"C:\stvoy\code-dm\game\bg_misc.c"
+"C:\stvoy\code-dm\game\bg_pmove.c"
+"C:\stvoy\code-dm\game\bg_slidemove.c"
+"C:\stvoy\code-dm\game\g_active.c"
+"C:\stvoy\code-dm\game\g_arenas.c"
+"C:\stvoy\code-dm\game\g_bot.c"
+"C:\stvoy\code-dm\game\g_breakable.c"
+"C:\stvoy\code-dm\game\g_client.c"
+"C:\stvoy\code-dm\game\g_cmds.c"
+"C:\stvoy\code-dm\game\g_combat.c"
+"C:\stvoy\code-dm\game\g_fx.c"
+"C:\stvoy\code-dm\game\g_items.c"
+"C:\stvoy\code-dm\game\g_log.c"
+"C:\stvoy\code-dm\game\g_main.c"
+"C:\stvoy\code-dm\game\g_mem.c"
+"C:\stvoy\code-dm\game\g_misc.c"
+"C:\stvoy\code-dm\game\g_missile.c"
+"C:\stvoy\code-dm\game\g_mover.c"
+"C:\stvoy\code-dm\game\g_session.c"
+"C:\stvoy\code-dm\game\g_spawn.c"
+"C:\stvoy\code-dm\game\g_svcmds.c"
+"C:\stvoy\code-dm\game\g_syscalls.c"
+"C:\stvoy\code-dm\game\g_target.c"
+"C:\stvoy\code-dm\game\g_team.c"
+"C:\stvoy\code-dm\game\g_trigger.c"
+"C:\stvoy\code-dm\game\g_turrets.c"
+"C:\stvoy\code-dm\game\g_usable.c"
+"C:\stvoy\code-dm\game\g_utils.c"
+"C:\stvoy\code-dm\game\g_weapon.c"
+]
+Creating command line "cl.exe @C:\DOCUME~1\marcin\LOCALS~1\Temp\RSP18F.tmp" 
+Creating temporary file "C:\DOCUME~1\marcin\LOCALS~1\Temp\RSP190.tmp" with contents
+[
+kernel32.lib user32.lib winmm.lib /nologo /base:"0x20000000" /subsystem:windows /dll /incremental:yes /pdb:".\Debug/qagamex86.pdb" /map:".\Release/qagamex86.map" /debug /machine:I386 /def:".\game.def" /out:"../debug/qagamex86.dll" /implib:".\Debug/qagamex86.lib" 
+".\Release\ai_chat.obj"
+".\Release\ai_cmd.obj"
+".\Release\ai_dmnet.obj"
+".\Release\ai_dmq3.obj"
+".\Release\ai_main.obj"
+".\Release\ai_team.obj"
+".\Release\bg_misc.obj"
+".\Release\bg_oums.obj"
+".\Release\bg_pmove.obj"
+".\Release\bg_slidemove.obj"
+".\Release\g_active.obj"
+".\Release\g_arenas.obj"
+".\Release\g_bot.obj"
+".\Release\g_breakable.obj"
+".\Release\g_client.obj"
+".\Release\g_cmds.obj"
+".\Release\g_combat.obj"
+".\Release\g_fx.obj"
+".\Release\g_items.obj"
+".\Release\g_log.obj"
+".\Release\g_main.obj"
+".\Release\g_mem.obj"
+".\Release\g_misc.obj"
+".\Release\g_missile.obj"
+".\Release\g_mover.obj"
+".\Release\g_session.obj"
+".\Release\g_spawn.obj"
+".\Release\g_svcmds.obj"
+".\Release\g_syscalls.obj"
+".\Release\g_target.obj"
+".\Release\g_team.obj"
+".\Release\g_trigger.obj"
+".\Release\g_turrets.obj"
+".\Release\g_usable.obj"
+".\Release\g_utils.obj"
+".\Release\g_weapon.obj"
+".\Release\q_math.obj"
+".\Release\q_shared.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\marcin\LOCALS~1\Temp\RSP190.tmp"
+<h3>Output Window</h3>
+Compiling...
+ai_chat.c
+ai_cmd.c
+ai_dmnet.c
+C:\stvoy\code-dm\game\ai_dmnet.c(298) : warning C4101: 'netname' : unreferenced local variable
+ai_dmq3.c
+ai_main.c
+ai_team.c
+bg_misc.c
+bg_pmove.c
+bg_slidemove.c
+g_active.c
+g_arenas.c
+g_bot.c
+g_breakable.c
+g_client.c
+g_cmds.c
+g_combat.c
+g_fx.c
+g_items.c
+g_log.c
+g_main.c
+g_mem.c
+g_misc.c
+g_missile.c
+g_mover.c
+g_session.c
+g_spawn.c
+g_svcmds.c
+g_syscalls.c
+g_target.c
+C:\stvoy\code-dm\game\g_target.c(1187) : warning C4013: 'BG_LanguageFilename' undefined; assuming extern returning int
+g_team.c
+g_trigger.c
+g_turrets.c
+g_usable.c
+g_utils.c
+g_weapon.c
+Linking...
+   Creating library .\Debug/qagamex86.lib and object .\Debug/qagamex86.exp
+
+
+
+<h3>Results</h3>
+qagamex86.dll - 0 error(s), 2 warning(s)
+</pre>
+</body>
+</html>

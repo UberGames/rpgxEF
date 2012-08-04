@@ -1,24 +1,4 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+// Copyright (C) 1999-2000 Id Software, Inc.
 //
 
 // this file holds commands that can be executed by the server console, but not remote clients
@@ -37,8 +17,7 @@ You can add or remove addresses from the filter list with:
 addip <ip>
 removeip <ip>
 
-The ip address is specified in dot format, and you can use '*' to match any value
-so you can specify an entire class C network with "addip 192.246.40.*"
+The ip address is specified in dot format, and any unspecified digits will match any value, so you can specify an entire class C network with "addip 192.246.40".
 
 Removeip will only remove an address specified exactly the same way.  You cannot addip a subnet, then removeip a single host.
 
@@ -51,13 +30,13 @@ If 1 (the default), then ip addresses matching the current list will be prohibit
 
 If 0, then only addresses matching the list will be allowed.  This lets you easily set up a private game, or a game that only allows players from your local network.
 
-TTimo NOTE: for persistence, bans are stored in g_banIPs cvar MAX_CVAR_VALUE_STRING
-The size of the cvar string buffer is limiting the banning to around 20 masks
-this could be improved by putting some g_banIPs2 g_banIps3 etc. maybe
-still, you should rely on PB for banning instead
 
 ==============================================================================
 */
+
+// extern	vmCvar_t	g_banIPs;
+// extern	vmCvar_t	g_filterBan;
+
 
 typedef struct ipFilter_s
 {
@@ -65,10 +44,21 @@ typedef struct ipFilter_s
 	unsigned	compare;
 } ipFilter_t;
 
+typedef struct
+{
+	unsigned long	playerID;
+	char			playerName[36];
+	char			banReason[128];
+} idFilter_t;
+
 #define	MAX_IPFILTERS	1024
+#define MAX_IDFILTERS	1024
 
 static ipFilter_t	ipFilters[MAX_IPFILTERS];
 static int			numIPFilters;
+
+static idFilter_t	idFilters[MAX_IDFILTERS];
+static int			numIDFilters;
 
 /*
 =================
@@ -92,15 +82,6 @@ static qboolean StringToFilter (char *s, ipFilter_t *f)
 	{
 		if (*s < '0' || *s > '9')
 		{
-			if (*s == '*') // 'match any'
-			{
-				// b[i] and m[i] to 0
-				s++;
-				if (!*s)
-					break;
-				s++;
-				continue;
-			}
 			G_Printf( "Bad filter address: %s\n", s );
 			return qfalse;
 		}
@@ -112,7 +93,8 @@ static qboolean StringToFilter (char *s, ipFilter_t *f)
 		}
 		num[j] = 0;
 		b[i] = atoi(num);
-		m[i] = 255;
+		if (b[i] != 0)
+			m[i] = 255;
 
 		if (!*s)
 			break;
@@ -133,40 +115,21 @@ UpdateIPBans
 static void UpdateIPBans (void)
 {
 	byte	b[4];
-	byte	m[4];
-	int		i,j;
-	char	iplist_final[MAX_CVAR_VALUE_STRING];
-	char	ip[64];
+	int		i;
+	char	iplist[MAX_INFO_STRING];
 
-	*iplist_final = 0;
+	*iplist = 0;
 	for (i = 0 ; i < numIPFilters ; i++)
 	{
 		if (ipFilters[i].compare == 0xffffffff)
 			continue;
 
 		*(unsigned *)b = ipFilters[i].compare;
-		*(unsigned *)m = ipFilters[i].mask;
-		*ip = 0;
-		for (j = 0 ; j < 4 ; j++)
-		{
-			if (m[j]!=255)
-				Q_strcat(ip, sizeof(ip), "*");
-			else
-				Q_strcat(ip, sizeof(ip), va("%i", b[j]));
-			Q_strcat(ip, sizeof(ip), (j<3) ? "." : " ");
-		}		
-		if (strlen(iplist_final)+strlen(ip) < MAX_CVAR_VALUE_STRING)
-		{
-			Q_strcat( iplist_final, sizeof(iplist_final), ip);
-		}
-		else
-		{
-			Com_Printf("g_banIPs overflowed at MAX_CVAR_VALUE_STRING\n");
-			break;
-		}
+		Com_sprintf( iplist + strlen(iplist), sizeof(iplist) - strlen(iplist), 
+			"%i.%i.%i.%i ", b[0], b[1], b[2], b[3]);
 	}
 
-	trap_Cvar_Set( "g_banIPs", iplist_final );
+	trap_Cvar_Set( "g_banIPs", iplist );
 }
 
 /*
@@ -197,8 +160,12 @@ qboolean G_FilterPacket (char *from)
 	in = *(unsigned *)m;
 
 	for (i=0 ; i<numIPFilters ; i++)
+	{
 		if ( (in & ipFilters[i].mask) == ipFilters[i].compare)
+		{
 			return g_filterBan.integer != 0;
+		}
+	}
 
 	return g_filterBan.integer == 0;
 }
@@ -215,6 +182,7 @@ static void AddIP( char *str )
 	for (i = 0 ; i < numIPFilters ; i++)
 		if (ipFilters[i].compare == 0xffffffff)
 			break;		// free spot
+
 	if (i == numIPFilters)
 	{
 		if (numIPFilters == MAX_IPFILTERS)
@@ -239,7 +207,7 @@ G_ProcessIPBans
 void G_ProcessIPBans(void) 
 {
 	char *s, *t;
-	char		str[MAX_CVAR_VALUE_STRING];
+	char		str[MAX_TOKEN_CHARS];
 
 	Q_strncpyz( str, g_banIPs.string, sizeof(str) );
 
@@ -255,6 +223,339 @@ void G_ProcessIPBans(void)
 	}
 }
 
+/*
+============================================
+TiM: Client side ID filter system
+============================================
+*/
+
+qboolean CheckID( char *id )
+{
+	int i;
+
+	//TiM - screw it if we haven't got a valid ID yet
+	if ( atoul( id ) == SECURITY_PID )
+		return qfalse;
+
+	for( i = 0; i < numIDFilters; i++ )
+	{
+		if ( atoul(id) == idFilters[i].playerID )
+			return qtrue;
+	}
+
+	return qfalse;
+}
+
+static void UpdateIDBans (void)
+{
+	fileHandle_t	f;
+	int				i;
+	char			buffer[1024];
+	idFilter_t		*id;
+
+	//TiM: Create and/reset the ban file
+	trap_FS_FOpenFile( "RPG-X_Banned_Players.txt", &f, FS_WRITE );
+
+	if ( !f )
+	{
+		G_Printf( "ERROR: Couldn't update the ban file.\n" );	
+		return;
+	}
+
+	//file header
+	memset( buffer, 0, sizeof( buffer ) );
+	Q_strcat( buffer, sizeof(buffer), "//***************************************************\n" );
+	Q_strcat( buffer, sizeof(buffer), "//RPG-X Banned Users ID List\n" );
+	Q_strcat( buffer, sizeof(buffer), "//\n" );
+	Q_strcat( buffer, sizeof(buffer), "//The formatting for each entry goes as such:\n" );
+	Q_strcat( buffer, sizeof(buffer), "//{\n" );
+	Q_strcat( buffer, sizeof(buffer), "//\t-ID : Unique Player ID\n" );
+	Q_strcat( buffer, sizeof(buffer), "//\t-Name : User name of the banned player\n" );
+	Q_strcat( buffer, sizeof(buffer), "//\t-Ban Reason : Reason for being banned.\n" );
+	Q_strcat( buffer, sizeof(buffer), "//}\n" );
+	Q_strcat( buffer, sizeof(buffer), "//\n" );
+	Q_strcat( buffer, sizeof(buffer), "//***************************************************\n" );
+	Q_strcat( buffer, sizeof(buffer), "\n" );
+
+	//write the header to the file
+	trap_FS_Write( buffer, strlen(buffer), f );
+
+	//write out the data for each banned player
+	for ( i = 0; i < numIDFilters; i++ )
+	{
+		id = &idFilters[i];
+
+		if ( !id || id->playerID == 0 )
+			continue;
+
+		memset( buffer, 0, sizeof( buffer ) );
+
+		//will produce this output:
+		//i
+		//{
+		//	<ID>
+		//	<Name>
+		//	<Reason>
+		//}
+		//When parsed back in, the line breaks will be used to divide it up
+
+		Com_sprintf( buffer, sizeof( buffer ), "%i\n{\n\t%ul\n\t\"%s\"\n\t\"%s\"\n}\n\n", i, id->playerID, id->playerName, id->banReason );
+
+		trap_FS_Write( buffer, strlen(buffer), f );
+	}
+
+	trap_FS_FCloseFile(	f );
+}
+
+static void AddID( idFilter_t *id )
+{
+	int	i;
+
+	for ( i = 0; i < numIDFilters; i++ )
+		if ( idFilters[i].playerID == 0 ) break;
+
+	if ( i == numIDFilters )
+	{
+		if ( i >= MAX_IDFILTERS )
+		{
+			G_Printf( "ID Filter list is full.\n" );
+			return;
+		}
+
+		numIDFilters++;
+	}
+
+	//idFilters[i].playerID	=	id->playerID;
+	//idFilters[i].playerName =	id->playerName;
+	//idFilters[i].banReason	=	id->banReason;
+	memcpy( &idFilters[i], id, sizeof( idFilter_t ) );
+
+}
+
+void G_ProcessIDBans( void )
+{
+	fileHandle_t	f;
+	int				fileLen;
+	char			buffer[16000];
+	char			*token, *filePtr;
+	idFilter_t		id;
+
+	fileLen = trap_FS_FOpenFile( "RPG-X_Banned_Players.txt", &f, FS_READ );
+
+	if ( !f || !fileLen )
+		return;
+
+	trap_FS_Read( buffer, fileLen, f );
+
+	if ( !buffer[0] )
+		return;
+
+	buffer[fileLen] = '\0';
+
+	trap_FS_FCloseFile( f );
+
+	COM_BeginParseSession();
+
+	filePtr = buffer;
+
+	while ( 1 )
+	{
+		token = COM_Parse( &filePtr );
+		if ( !token[0] ) break;
+
+		if ( !Q_stricmp( token, "{" ) )
+		{
+			memset( &id, 0, sizeof( id ) );
+
+			token = COM_ParseExt( &filePtr, qtrue );
+			if ( !token[0] ) continue;
+			
+			//parse player id
+			id.playerID = atoul( token );
+			
+			token = COM_ParseExt( &filePtr, qtrue );
+			if ( !token[0] ) continue;
+
+			//parse player name
+			Q_strncpyz( id.playerName, token, sizeof( id.playerName ) );
+
+			token = COM_ParseExt( &filePtr, qtrue );
+			if ( !token[0] ) continue;
+
+			//parse ban reason
+			Q_strncpyz( id.banReason, token, sizeof( id.banReason ) );
+
+			AddID( &id );
+		}
+	}
+
+	G_Printf( "%i ban entries were successfully loaded.\n", numIDFilters );
+}
+
+/*
+=================
+Svcmd_BanUser_f
+=================
+*/
+extern void ClientCleanName( const char *in, char *out, int outSize );
+
+void Svcmd_BanUser_f( void )
+{
+	char		str[MAX_TOKEN_CHARS];
+	char		userInfo[MAX_TOKEN_CHARS];
+	idFilter_t	id;
+	int			playerNum;
+	char		*ip;
+
+	if ( trap_Argc() < 2 )
+	{
+		G_Printf("Usage: banUser <client ID> <reason for banning>\n");
+		return;		
+	}
+
+	trap_Argv( 1, str, sizeof( str ) );
+
+	playerNum = atoi(str);
+	if ( playerNum > MAX_CLIENTS || playerNum < 0 || !g_entities[playerNum].client )
+	{
+		G_Printf("Error: Player ID wasn't valid.\n");
+		return;			
+	}
+	
+	trap_GetUserinfo( playerNum, userInfo, sizeof( userInfo ) );
+	if ( !userInfo[0] )
+		return;
+
+	//get unique Ban ID
+	id.playerID = atoul( Info_ValueForKey( userInfo, "sv_securityCode" ) );
+	
+	//Get player name and clean it of color tags
+	Q_strncpyz( id.playerName, Q_CleanStr(Info_ValueForKey( userInfo, "name" )), sizeof( id.playerName ) );
+	//( Info_ValueForKey( userInfo, "name" ), id.playerName, sizeof( id.playerName ) );
+	
+	//get ban reason
+	trap_Argv( 2, id.banReason, sizeof( id.banReason ) );
+
+	if ( !id.banReason[0] )
+		Q_strncpyz( id.banReason, "No reason given.", sizeof( id.banReason ) );
+
+	AddID( &id );
+	
+	ip = g_entities[playerNum].client->pers.ip;
+
+	UpdateIDBans();
+
+	//G_Printf( S_COLOR_RED "%s\n", ip );
+
+	//Scooter's filter list
+	if( Q_stricmp( ip, "localhost" )		//localhost
+		&& Q_strncmp( ip, "10.", 3 )		//class A
+		&& Q_strncmp( ip, "172.16.", 7 )	//class B
+		&& Q_strncmp( ip, "192.168.", 8 )	//class C
+		&& Q_strncmp( ip, "127.", 4 )		//loopback
+		&& Q_strncmp( ip, "169.254.", 8 )	//link-local
+		)
+	{
+		AddIP( ip );
+		G_Printf( "User: %s ( %i - %s ) ^7was successfully banned.\n", Info_ValueForKey( userInfo, "name" ), playerNum, ip );
+	}
+
+	trap_DropClient( playerNum, "Banned from the server" );
+	G_Printf( "User: %s ( %i ) ^7was successfully banned.\n", id.playerName, playerNum );
+}
+
+/*
+=================
+Svcmd_FindID_f
+=================
+*/
+void Svcmd_FindID_f ( void )
+{
+	char		str[MAX_TOKEN_CHARS];
+	char		outputBuf[MAX_TOKEN_CHARS];
+	char		searchLine[256];
+	char		name[36]; //local stores to ensure pointer data isn't carried over.
+	char		reason[64];
+	int			i;
+	idFilter_t	*id;
+	int			resultsFound = 0;
+
+	if ( trap_Argc() < 2 )
+	{
+		G_Printf("Usage: findUser <search string in name and/or reason>\n");
+		return;		
+	}
+
+	trap_Argv( 1, str, sizeof( str ) );
+	Q_strlwr( str );
+
+	for ( i = 0; i < numIDFilters; i++ )
+	{
+		id = &idFilters[i];
+
+		if ( !id || id->playerID <= 0 )
+			continue;
+
+		memset( name, 0, sizeof( name ) );
+		Q_strncpyz( name, id->playerName, sizeof(name) );
+		Q_strlwr( name );
+
+		memset( reason, 0, sizeof( reason ) );
+		Q_strncpyz( reason, id->banReason, sizeof( reason ) );
+		Q_strlwr( reason );
+
+		if ( strstr( name, str  ) != NULL || strstr( reason, str ) != NULL )
+		{
+			Com_sprintf( searchLine, sizeof( searchLine ), "%4i %-16.16s %-45.45s\n", i, id->playerName, id->banReason );
+			
+			if ( !resultsFound )
+				Q_strncpyz( outputBuf, searchLine, sizeof(outputBuf) );
+			else
+				Q_strcat( outputBuf, sizeof(outputBuf), searchLine  );
+
+			resultsFound++;
+		}
+	}
+
+	G_Printf( "%i %s found.\n\n", resultsFound, resultsFound == 1 ? "result" : "results" );
+
+	if ( resultsFound > 0 )
+	{
+		G_Printf( "%-4.4s %-16.16s %-45.45s\n", "ID:", "Name:", "Reason:" );
+		G_Printf( "%-4.4s %-16.16s %-45.45s\n", "----", "-----------------", "-------------------------------------" );
+		G_Printf( outputBuf );
+	}
+}
+
+/*
+=================
+Svcmd_DeleteID_f
+=================
+*/
+void Svcmd_RemoveID_f ( void )
+{
+	char str[MAX_TOKEN_CHARS];
+	idFilter_t	*id;
+
+	if ( trap_Argc() < 2 )
+	{
+		G_Printf( "Usage: removeID <Ban ID>\n" );
+		return;
+	}
+
+	trap_Argv( 1, str, sizeof( str ) );
+
+	id = &idFilters[atoi(str)];
+	if ( !id )
+	{
+		G_Printf( "Specified ID not found.\n" );
+		return;
+	}
+
+	memset( id, 0, sizeof( idFilter_t ) );
+
+	UpdateIDBans();
+}
 
 /*
 =================
@@ -318,60 +619,112 @@ Svcmd_EntityList_f
 */
 void	Svcmd_EntityList_f (void) {
 	int			e;
-	gentity_t		*check;
+	gentity_t	*check;
+	char		arg[MAX_QPATH*4];
+	int			length = 0;
+	//int			numArgs;
+
+	if(trap_Argc() > 1) {
+		trap_Argv(1, arg, sizeof(arg));
+		length = strlen(arg);
+	}
 
 	check = g_entities+1;
 	for (e = 1; e < level.num_entities ; e++, check++) {
 		if ( !check->inuse ) {
 			continue;
 		}
-		G_Printf("%3i:", e);
-		switch ( check->s.eType ) {
-		case ET_GENERAL:
-			G_Printf("ET_GENERAL          ");
-			break;
-		case ET_PLAYER:
-			G_Printf("ET_PLAYER           ");
-			break;
-		case ET_ITEM:
-			G_Printf("ET_ITEM             ");
-			break;
-		case ET_MISSILE:
-			G_Printf("ET_MISSILE          ");
-			break;
-		case ET_MOVER:
-			G_Printf("ET_MOVER            ");
-			break;
-		case ET_BEAM:
-			G_Printf("ET_BEAM             ");
-			break;
-		case ET_PORTAL:
-			G_Printf("ET_PORTAL           ");
-			break;
-		case ET_SPEAKER:
-			G_Printf("ET_SPEAKER          ");
-			break;
-		case ET_PUSH_TRIGGER:
-			G_Printf("ET_PUSH_TRIGGER     ");
-			break;
-		case ET_TELEPORT_TRIGGER:
-			G_Printf("ET_TELEPORT_TRIGGER ");
-			break;
-		case ET_INVISIBLE:
-			G_Printf("ET_INVISIBLE        ");
-			break;
-		case ET_GRAPPLE:
-			G_Printf("ET_GRAPPLE          ");
-			break;
-		default:
-			G_Printf("%3i                 ", check->s.eType);
-			break;
+		if(!arg[0]) {
+			if ( check->classname && Q_stricmpn(check->classname, "noclass", 7) && Q_stricmpn(check->classname, "bodyque", 7) ) {
+				G_Printf("%3i:", e);
+				switch ( check->s.eType ) {
+				case ET_GENERAL:
+					G_Printf("ET_GENERAL          ");
+					break;
+				case ET_PLAYER:
+					G_Printf("ET_PLAYER           ");
+					break;
+				case ET_ITEM:
+					G_Printf("ET_ITEM             ");
+					break;
+				case ET_MISSILE:
+					G_Printf("ET_MISSILE          ");
+					break;
+				case ET_MOVER:
+				case ET_MOVER_STR: //RPG-X | GSIO01 | 13/05/2009
+					G_Printf("ET_MOVER            ");
+					break;
+				case ET_BEAM:
+					G_Printf("ET_BEAM             ");
+					break;
+				case ET_PORTAL:
+					G_Printf("ET_PORTAL           ");
+					break;
+				case ET_SPEAKER:
+					G_Printf("ET_SPEAKER          ");
+					break;
+				case ET_PUSH_TRIGGER:
+					G_Printf("ET_PUSH_TRIGGER     ");
+					break;
+				case ET_TELEPORT_TRIGGER:
+					G_Printf("ET_TELEPORT_TRIGGER ");
+					break;
+				case ET_INVISIBLE:
+					G_Printf("ET_INVISIBLE        ");
+					break;
+				default:
+					G_Printf("%3i                 ", check->s.eType);
+					break;
+				}
+				G_Printf("%s", check->classname);
+				G_Printf("\n");
+			}
+		} else {
+			if ( check->classname && Q_stricmpn(check->classname, "noclass", 7) && Q_stricmpn(check->classname, "bodyque", 7) && !Q_stricmpn(check->classname, arg, length)) {
+				G_Printf("%3i:", e);
+				switch ( check->s.eType ) {
+				case ET_GENERAL:
+					G_Printf("ET_GENERAL          ");
+					break;
+				case ET_PLAYER:
+					G_Printf("ET_PLAYER           ");
+					break;
+				case ET_ITEM:
+					G_Printf("ET_ITEM             ");
+					break;
+				case ET_MISSILE:
+					G_Printf("ET_MISSILE          ");
+					break;
+				case ET_MOVER:
+				case ET_MOVER_STR: //RPG-X | GSIO01 | 13/05/2009
+					G_Printf("ET_MOVER            ");
+					break;
+				case ET_BEAM:
+					G_Printf("ET_BEAM             ");
+					break;
+				case ET_PORTAL:
+					G_Printf("ET_PORTAL           ");
+					break;
+				case ET_SPEAKER:
+					G_Printf("ET_SPEAKER          ");
+					break;
+				case ET_PUSH_TRIGGER:
+					G_Printf("ET_PUSH_TRIGGER     ");
+					break;
+				case ET_TELEPORT_TRIGGER:
+					G_Printf("ET_TELEPORT_TRIGGER ");
+					break;
+				case ET_INVISIBLE:
+					G_Printf("ET_INVISIBLE        ");
+					break;
+				default:
+					G_Printf("%3i                 ", check->s.eType);
+					break;
+				}
+				G_Printf("%s", check->classname);
+				G_Printf("\n");
+			}
 		}
-
-		if ( check->classname ) {
-			G_Printf("%s", check->classname);
-		}
-		G_Printf("\n");
 	}
 }
 
@@ -435,7 +788,18 @@ void	Svcmd_ForceTeam_f( void ) {
 	SetTeam( &g_entities[cl - level.clients], str );
 }
 
-char	*ConcatArgs( int start );
+/*
+=================
+Svcmd_LuaRestart_f
+=================
+*/
+#ifdef G_LUA
+static void Svcmd_LuaRestart_f(void)
+{
+	G_LuaShutdown();
+	G_LuaInit();
+}
+#endif
 
 /*
 =================
@@ -443,10 +807,30 @@ ConsoleCommand
 
 =================
 */
-qboolean	ConsoleCommand( void ) {
+qboolean	ConsoleCommand( void ) { //void
 	char	cmd[MAX_TOKEN_CHARS];
+	//gentity_t	*ent;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
+
+	/*if ( Q_stricmp (cmd, "kick2") == 0 ) {
+		Svcmd_Kick2_f();
+		return qtrue;
+	}*/
+
+	#ifdef G_LUA
+	if(Q_stricmp(cmd, "lua_status") == 0)
+	{
+		G_LuaStatus(NULL);
+		return qtrue;
+	}
+
+	if(Q_stricmp(cmd, "lua_restart") == 0)
+	{
+		Svcmd_LuaRestart_f();
+		return qtrue;
+	}
+	#endif
 
 	if ( Q_stricmp (cmd, "entitylist") == 0 ) {
 		Svcmd_EntityList_f();
@@ -489,17 +873,22 @@ qboolean	ConsoleCommand( void ) {
 	}
 
 	if (Q_stricmp (cmd, "listip") == 0) {
-		trap_SendConsoleCommand( EXEC_NOW, "g_banIPs\n" );
+		trap_SendConsoleCommand( EXEC_INSERT, "g_banIPs\n" );
 		return qtrue;
 	}
 
-	if (g_dedicated.integer) {
-		if (Q_stricmp (cmd, "say") == 0) {
-			trap_SendServerCommand( -1, va("print \"server: %s\n\"", ConcatArgs(1) ) );
-			return qtrue;
-		}
-		// everything else will also be printed as a say command
-		trap_SendServerCommand( -1, va("print \"server: %s\n\"", ConcatArgs(0) ) );
+	if (Q_stricmp (cmd, "banUser") == 0) {
+		Svcmd_BanUser_f();
+		return qtrue;
+	}
+
+	if ( Q_stricmp (cmd, "findID") == 0 ) {
+		Svcmd_FindID_f();
+		return qtrue;
+	}
+
+	if ( Q_stricmp (cmd, "removeID") == 0 ) {
+		Svcmd_RemoveID_f();
 		return qtrue;
 	}
 

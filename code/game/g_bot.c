@@ -1,24 +1,4 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // g_bot.c
 
@@ -34,7 +14,7 @@ static char		*g_arenaInfos[MAX_ARENAS];
 
 
 #define BOT_BEGIN_DELAY_BASE		2000
-#define BOT_BEGIN_DELAY_INCREMENT	1500
+#define BOT_BEGIN_DELAY_INCREMENT	2000
 
 #define BOT_SPAWN_QUEUE_DEPTH	16
 
@@ -43,6 +23,7 @@ typedef struct {
 	int		spawnTime;
 } botSpawnQueue_t;
 
+static int				botBeginDelay;
 static botSpawnQueue_t	botSpawnQueue[BOT_SPAWN_QUEUE_DEPTH];
 
 vmCvar_t bot_minplayers;
@@ -50,14 +31,7 @@ vmCvar_t bot_minplayers;
 extern gentity_t	*podium1;
 extern gentity_t	*podium2;
 extern gentity_t	*podium3;
-
-float trap_Cvar_VariableValue( const char *var_name ) {
-	char buf[128];
-
-	trap_Cvar_VariableStringBuffer(var_name, buf, sizeof(buf));
-	return atof(buf);
-}
-
+extern int	numKilled;
 
 
 /*
@@ -132,7 +106,7 @@ static void G_LoadArenasFromFile( char *filename ) {
 		return;
 	}
 	if ( len >= MAX_ARENAS_TEXT ) {
-		trap_Printf( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n", filename, len, MAX_ARENAS_TEXT ) );
+		trap_Printf( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_ARENAS_TEXT ) );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -153,7 +127,7 @@ static void G_LoadArenas( void ) {
 	int			numdirs;
 	vmCvar_t	arenasFile;
 	char		filename[128];
-	char		dirlist[1024];
+	char		dirlist[4096];
 	char*		dirptr;
 	int			i, n;
 	int			dirlen;
@@ -169,9 +143,10 @@ static void G_LoadArenas( void ) {
 	}
 
 	// get all arenas from .arena files
-	numdirs = trap_FS_GetFileList("scripts", ".arena", dirlist, 1024 );
+	numdirs = trap_FS_GetFileList("scripts", ".arena", dirlist, sizeof(dirlist) );
 	dirptr  = dirlist;
-	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
+	for (i = 0; i < numdirs; i++, dirptr += dirlen+1)
+	{
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
 		strcat(filename, dirptr);
@@ -213,7 +188,7 @@ static void PlayerIntroSound( const char *modelAndSkin ) {
 	char	*skin;
 
 	Q_strncpyz( model, modelAndSkin, sizeof(model) );
-	skin = strrchr( model, '/' );
+	skin = Q_strrchr( model, '/' );
 	if ( skin ) {
 		*skin++ = '\0';
 	}
@@ -224,8 +199,14 @@ static void PlayerIntroSound( const char *modelAndSkin ) {
 	if( Q_stricmp( skin, "default" ) == 0 ) {
 		skin = model;
 	}
-
-	trap_SendConsoleCommand( EXEC_APPEND, va( "play sound/player/announce/%s.wav\n", skin ) );
+	if( Q_stricmp( skin, "red" ) == 0 ) {
+		skin = model;
+	}
+	if( Q_stricmp( skin, "blue" ) == 0 ) {
+		skin = model;
+	}
+	//precached in cg_info.c, CG_LoadingClient
+	trap_SendConsoleCommand( EXEC_APPEND, va( "play sound/voice/computer/misc/%s.wav\n", skin ) );
 }
 
 /*
@@ -234,8 +215,7 @@ G_AddRandomBot
 ===============
 */
 void G_AddRandomBot( int team ) {
-	int		i, n, num;
-	float	skill;
+	int		i, n, num, skill;
 	char	*value, netname[36], *teamstr;
 	gclient_t	*cl;
 
@@ -284,14 +264,14 @@ void G_AddRandomBot( int team ) {
 		if (i >= g_maxclients.integer) {
 			num--;
 			if (num <= 0) {
-				skill = trap_Cvar_VariableValue( "g_spSkill" );
+				skill = trap_Cvar_VariableIntegerValue( "g_spSkill" );
 				if (team == TEAM_RED) teamstr = "red";
 				else if (team == TEAM_BLUE) teamstr = "blue";
 				else teamstr = "";
 				strncpy(netname, value, sizeof(netname)-1);
 				netname[sizeof(netname)-1] = '\0';
 				Q_CleanStr(netname);
-				trap_SendConsoleCommand( EXEC_INSERT, va("addbot %s %f %s %i\n", netname, skill, teamstr, 0) );
+				trap_SendConsoleCommand( EXEC_INSERT, va("addbot %s %i %s %i\n", netname, skill, teamstr, 0) );
 				return;
 			}
 		}
@@ -305,6 +285,7 @@ G_RemoveRandomBot
 */
 int G_RemoveRandomBot( int team ) {
 	int i;
+	char netname[36];
 	gclient_t	*cl;
 
 	for ( i=0 ; i< g_maxclients.integer ; i++ ) {
@@ -318,7 +299,9 @@ int G_RemoveRandomBot( int team ) {
 		if ( team >= 0 && cl->sess.sessionTeam != team ) {
 			continue;
 		}
-		trap_SendConsoleCommand( EXEC_INSERT, va("clientkick %d\n", cl->ps.clientNum) );
+		strcpy(netname, cl->pers.netname);
+		Q_CleanStr(netname);
+		trap_SendConsoleCommand( EXEC_INSERT, va("kick \"%s\"\n", netname) );
 		return qtrue;
 	}
 	return qfalse;
@@ -400,18 +383,27 @@ void G_CheckMinimumPlayers( void ) {
 	if (checkminimumplayers_time > level.time - 10000) {
 		return;
 	}
+
 	checkminimumplayers_time = level.time;
 	trap_Cvar_Update(&bot_minplayers);
 	minplayers = bot_minplayers.integer;
 	if (minplayers <= 0) return;
 
+	if (g_gametype.integer != GT_TOURNAMENT)
+	{
+		botplayers = G_CountBotPlayers( TEAM_SPECTATOR );
+		if ( botplayers > 0 )
+		{
+			G_RemoveRandomBot( TEAM_SPECTATOR );
+		}
+	}
+
 	if (g_gametype.integer >= GT_TEAM) {
 		if (minplayers >= g_maxclients.integer / 2) {
 			minplayers = (g_maxclients.integer / 2) -1;
 		}
-
 		humanplayers = G_CountHumanPlayers( TEAM_RED );
-		botplayers = G_CountBotPlayers(	TEAM_RED );
+		botplayers = G_CountBotPlayers( TEAM_RED );
 		//
 		if (humanplayers + botplayers < minplayers) {
 			G_AddRandomBot( TEAM_RED );
@@ -428,7 +420,7 @@ void G_CheckMinimumPlayers( void ) {
 			G_RemoveRandomBot( TEAM_BLUE );
 		}
 	}
-	else if (g_gametype.integer == GT_TOURNAMENT ) {
+	else if (g_gametype.integer == GT_TOURNAMENT) {
 		if (minplayers >= g_maxclients.integer) {
 			minplayers = g_maxclients.integer-1;
 		}
@@ -478,7 +470,7 @@ void G_CheckBotSpawn( void ) {
 		if ( botSpawnQueue[n].spawnTime > level.time ) {
 			continue;
 		}
-		ClientBegin( botSpawnQueue[n].clientNum );
+		ClientBegin( botSpawnQueue[n].clientNum, qfalse, qtrue, qfalse );
 		botSpawnQueue[n].spawnTime = 0;
 
 		if( g_gametype.integer == GT_SINGLE_PLAYER ) {
@@ -506,27 +498,18 @@ static void AddBotToSpawnQueue( int clientNum, int delay ) {
 	}
 
 	G_Printf( S_COLOR_YELLOW "Unable to delay spawn\n" );
-	ClientBegin( clientNum );
+	ClientBegin( clientNum, qfalse, qtrue, qfalse );
 }
 
 
 /*
 ===============
-G_RemoveQueuedBotBegin
-
-Called on client disconnect to make sure the delayed spawn
-doesn't happen on a freed index
+G_QueueBotBegin
 ===============
 */
-void G_RemoveQueuedBotBegin( int clientNum ) {
-	int		n;
-
-	for( n = 0; n < BOT_SPAWN_QUEUE_DEPTH; n++ ) {
-		if( botSpawnQueue[n].clientNum == clientNum ) {
-			botSpawnQueue[n].spawnTime = 0;
-			return;
-		}
-	}
+void G_QueueBotBegin( int clientNum ) {
+	AddBotToSpawnQueue( clientNum, botBeginDelay );
+	botBeginDelay += BOT_BEGIN_DELAY_INCREMENT;
 }
 
 
@@ -542,12 +525,20 @@ qboolean G_BotConnect( int clientNum, qboolean restart ) {
 	trap_GetUserinfo( clientNum, userinfo, sizeof(userinfo) );
 
 	Q_strncpyz( settings.characterfile, Info_ValueForKey( userinfo, "characterfile" ), sizeof(settings.characterfile) );
-	settings.skill = atof( Info_ValueForKey( userinfo, "skill" ) );
+	settings.skill = atoi( Info_ValueForKey( userinfo, "skill" ) );
 	Q_strncpyz( settings.team, Info_ValueForKey( userinfo, "team" ), sizeof(settings.team) );
+	Q_strncpyz( settings.pclass, Info_ValueForKey( userinfo, "class" ), sizeof(settings.pclass) );
 
-	if (!BotAISetupClient( clientNum, &settings, restart )) {
+	if (!BotAISetupClient( clientNum, &settings )) {
 		trap_DropClient( clientNum, "BotAISetupClient failed" );
 		return qfalse;
+	}
+
+	if( restart && g_gametype.integer == GT_SINGLE_PLAYER ) {
+		g_entities[clientNum].botDelayBegin = qtrue;
+	}
+	else {
+		g_entities[clientNum].botDelayBegin = qfalse;
 	}
 
 	return qtrue;
@@ -559,7 +550,7 @@ qboolean G_BotConnect( int clientNum, qboolean restart ) {
 G_AddBot
 ===============
 */
-static void G_AddBot( const char *name, float skill, const char *team, int delay, char *altname) {
+static void G_AddBot( const char *name, float skill, const char *team, const char *pclass, int delay, char *altname) {
 	int				clientNum;
 	char			*botinfo;
 	gentity_t		*bot;
@@ -567,8 +558,8 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	char			*s;
 	char			*botname;
 	char			*model;
-	char			*headmodel;
 	char			userinfo[MAX_INFO_STRING];
+	int				preTeam = 0;
 
 	// get the botinfo from bots.txt
 	botinfo = G_GetBotInfoByName( name );
@@ -593,7 +584,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	Info_SetValueForKey( userinfo, "snaps", "20" );
 	Info_SetValueForKey( userinfo, "skill", va("%1.2f", skill) );
 
-	if ( skill >= 1 && skill < 2 ) {
+/*	if ( skill >= 1 && skill < 2 ) {
 		Info_SetValueForKey( userinfo, "handicap", "50" );
 	}
 	else if ( skill >= 2 && skill < 3 ) {
@@ -601,25 +592,14 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	}
 	else if ( skill >= 3 && skill < 4 ) {
 		Info_SetValueForKey( userinfo, "handicap", "90" );
-	}
+	} */
 
 	key = "model";
 	model = Info_ValueForKey( botinfo, key );
 	if ( !*model ) {
-		model = "visor/default";
+		model = "munro/main/default"; //RPG-X MODEL SYSTEM
 	}
 	Info_SetValueForKey( userinfo, key, model );
-	key = "team_model";
-	Info_SetValueForKey( userinfo, key, model );
-
-	key = "headmodel";
-	headmodel = Info_ValueForKey( botinfo, key );
-	if ( !*headmodel ) {
-		headmodel = model;
-	}
-	Info_SetValueForKey( userinfo, key, headmodel );
-	key = "team_headmodel";
-	Info_SetValueForKey( userinfo, key, headmodel );
 
 	key = "gender";
 	s = Info_ValueForKey( botinfo, key );
@@ -628,17 +608,10 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	}
 	Info_SetValueForKey( userinfo, "sex", s );
 
-	key = "color1";
+	key = "color";
 	s = Info_ValueForKey( botinfo, key );
 	if ( !*s ) {
 		s = "4";
-	}
-	Info_SetValueForKey( userinfo, key, s );
-
-	key = "color2";
-	s = Info_ValueForKey( botinfo, key );
-	if ( !*s ) {
-		s = "5";
 	}
 	Info_SetValueForKey( userinfo, key, s );
 
@@ -651,7 +624,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	// have the server allocate a client slot
 	clientNum = trap_BotAllocateClient();
 	if ( clientNum == -1 ) {
-		G_Printf( S_COLOR_RED "Unable to add bot. All player slots are in use.\n" );
+		G_Printf( S_COLOR_RED "Unable to add bot.  All player slots are in use.\n" );
 		G_Printf( S_COLOR_RED "Start server with more 'open' slots (or check setting of sv_maxclients cvar).\n" );
 		return;
 	}
@@ -681,13 +654,59 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	// register the userinfo
 	trap_SetUserinfo( clientNum, userinfo );
 
+	if (g_gametype.integer >= GT_TEAM)
+	{
+		if (team && Q_stricmp(team, "red") == 0)
+		{
+			bot->client->sess.sessionTeam = TEAM_RED;
+		}
+		else if (team && Q_stricmp(team, "blue") == 0)
+		{
+			bot->client->sess.sessionTeam = TEAM_BLUE;
+		}
+		else
+		{
+			bot->client->sess.sessionTeam = PickTeam( -1 );
+		}
+	}
+
+	preTeam = bot->client->sess.sessionTeam;
+
 	// have it connect to the game as a normal client
 	if ( ClientConnect( clientNum, qtrue, qtrue ) ) {
 		return;
 	}
 
+	if (bot->client->sess.sessionTeam != preTeam)
+	{
+		trap_GetUserinfo(clientNum, userinfo, MAX_INFO_STRING);
+
+		if (bot->client->sess.sessionTeam == TEAM_SPECTATOR)
+		{
+			bot->client->sess.sessionTeam = preTeam;
+		}
+
+		if (bot->client->sess.sessionTeam == TEAM_RED)
+		{
+			team = "Red";
+		}
+		else
+		{
+			team = "Blue";
+		}
+
+		Info_SetValueForKey( userinfo, "team", team );
+
+		trap_SetUserinfo( clientNum, userinfo );
+
+		bot->client->ps.persistant[ PERS_TEAM ] = bot->client->sess.sessionTeam;
+
+		G_ReadSessionData( bot->client );
+		ClientUserinfoChanged( clientNum );
+	}
+
 	if( delay == 0 ) {
-		ClientBegin( clientNum );
+		ClientBegin( clientNum, qfalse, qfalse, qfalse );
 		return;
 	}
 
@@ -701,12 +720,13 @@ Svcmd_AddBot_f
 ===============
 */
 void Svcmd_AddBot_f( void ) {
-	float			skill;
+	int				skill;
 	int				delay;
 	char			name[MAX_TOKEN_CHARS];
 	char			altname[MAX_TOKEN_CHARS];
 	char			string[MAX_TOKEN_CHARS];
 	char			team[MAX_TOKEN_CHARS];
+	char			pclass[MAX_TOKEN_CHARS];
 
 	// are bots enabled?
 	if ( !trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
@@ -716,7 +736,7 @@ void Svcmd_AddBot_f( void ) {
 	// name
 	trap_Argv( 1, name, sizeof( name ) );
 	if ( !name[0] ) {
-		trap_Printf( "Usage: Addbot <botname> [skill 1-5] [team] [msec delay] [altname]\n" );
+		trap_Printf( "Usage: Addbot <botname> [skill 1-4] [team] [class] [msec delay] [altname]\n" );
 		return;
 	}
 
@@ -726,14 +746,17 @@ void Svcmd_AddBot_f( void ) {
 		skill = 4;
 	}
 	else {
-		skill = atof( string );
+		skill = atoi( string );
 	}
 
 	// team
 	trap_Argv( 3, team, sizeof( team ) );
 
+	// class
+	trap_Argv( 4, pclass, sizeof( pclass ) );
+
 	// delay
-	trap_Argv( 4, string, sizeof( string ) );
+	trap_Argv( 5, string, sizeof( string ) );
 	if ( !string[0] ) {
 		delay = 0;
 	}
@@ -742,15 +765,15 @@ void Svcmd_AddBot_f( void ) {
 	}
 
 	// alternative name
-	trap_Argv( 5, altname, sizeof( altname ) );
+	trap_Argv( 6, altname, sizeof( altname ) );
 
-	G_AddBot( name, skill, team, delay, altname );
+	G_AddBot( name, skill, team, pclass, delay, altname );
 
 	// if this was issued during gameplay and we are playing locally,
 	// go ahead and load the bot's media immediately
 	if ( level.time - level.startTime > 1000 &&
 		trap_Cvar_VariableIntegerValue( "cl_running" ) ) {
-		trap_SendServerCommand( -1, "loaddefered\n" );	// FIXME: spelled wrong, but not changing for demo
+		trap_SendServerCommand( -1, "loaddeferred\n" );	// FIXME: spelled wrong, but not changing for demo
 	}
 }
 
@@ -770,7 +793,7 @@ void Svcmd_BotList_f( void ) {
 	for (i = 0; i < g_numBots; i++) {
 		strcpy(name, Info_ValueForKey( g_botInfos[i], "name" ));
 		if ( !*name ) {
-			strcpy(name, "UnnamedPlayer");
+			strcpy(name, "RedShirt");
 		}
 		strcpy(funname, Info_ValueForKey( g_botInfos[i], "funname" ));
 		if ( !*funname ) {
@@ -778,7 +801,7 @@ void Svcmd_BotList_f( void ) {
 		}
 		strcpy(model, Info_ValueForKey( g_botInfos[i], "model" ));
 		if ( !*model ) {
-			strcpy(model, "visor/default");
+			strcpy(model, "munro/main/default"); //RPG-X MODEL SYSTEM
 		}
 		strcpy(aifile, Info_ValueForKey( g_botInfos[i], "aifile"));
 		if (!*aifile ) {
@@ -797,7 +820,7 @@ G_SpawnBots
 static void G_SpawnBots( char *botList, int baseDelay ) {
 	char		*bot;
 	char		*p;
-	float		skill;
+	int			skill;
 	int			delay;
 	char		bots[MAX_INFO_VALUE];
 
@@ -805,14 +828,10 @@ static void G_SpawnBots( char *botList, int baseDelay ) {
 	podium2 = NULL;
 	podium3 = NULL;
 
-	skill = trap_Cvar_VariableValue( "g_spSkill" );
-	if( skill < 1 ) {
-		trap_Cvar_Set( "g_spSkill", "1" );
-		skill = 1;
-	}
-	else if ( skill > 5 ) {
-		trap_Cvar_Set( "g_spSkill", "5" );
-		skill = 5;
+	skill = trap_Cvar_VariableIntegerValue( "g_spSkill" );
+	if( skill < 1 || skill > 5 ) {
+		trap_Cvar_Set( "g_spSkill", "2" );
+		skill = 2;
 	}
 
 	Q_strncpyz( bots, botList, sizeof(bots) );
@@ -840,7 +859,7 @@ static void G_SpawnBots( char *botList, int baseDelay ) {
 
 		// we must add the bot this way, calling G_AddBot directly at this stage
 		// does "Bad Things"
-		trap_SendConsoleCommand( EXEC_INSERT, va("addbot %s %f free %i\n", bot, skill, delay) );
+		trap_SendConsoleCommand( EXEC_INSERT, va("addbot %s %i free %i\n", bot, skill, delay) );
 
 		delay += BOT_BEGIN_DELAY_INCREMENT;
 	}
@@ -863,7 +882,7 @@ static void G_LoadBotsFromFile( char *filename ) {
 		return;
 	}
 	if ( len >= MAX_BOTS_TEXT ) {
-		trap_Printf( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n", filename, len, MAX_BOTS_TEXT ) );
+		trap_Printf( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT ) );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -875,6 +894,7 @@ static void G_LoadBotsFromFile( char *filename ) {
 	g_numBots += G_ParseInfos( buf, MAX_BOTS - g_numBots, &g_botInfos[g_numBots] );
 }
 
+
 /*
 ===============
 G_LoadBots
@@ -884,7 +904,7 @@ static void G_LoadBots( void ) {
 	vmCvar_t	botsFile;
 	int			numdirs;
 	char		filename[128];
-	char		dirlist[1024];
+	char		dirlist[4096];
 	char*		dirptr;
 	int			i;
 	int			dirlen;
@@ -904,9 +924,10 @@ static void G_LoadBots( void ) {
 	}
 
 	// get all bots from .bot files
-	numdirs = trap_FS_GetFileList("scripts", ".bot", dirlist, 1024 );
+	numdirs = trap_FS_GetFileList("scripts", ".bot", dirlist, sizeof(dirlist) );
 	dirptr  = dirlist;
-	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
+	for (i = 0; i < numdirs; i++, dirptr += dirlen+1)
+	{
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
 		strcat(filename, dirptr);
@@ -1000,7 +1021,14 @@ void G_InitBots( qboolean restart ) {
 			trap_Cvar_Set( "timelimit", "0" );
 		}
 
-		basedelay = BOT_BEGIN_DELAY_BASE;
+		if (g_holoIntro.integer)
+		{	// The player will be looking at the holodeck doors for the first five seconds, so take that into account.
+			basedelay = BOT_BEGIN_DELAY_BASE + TIME_INTRO;
+		}
+		else
+		{
+			basedelay = BOT_BEGIN_DELAY_BASE;
+		}
 		strValue = Info_ValueForKey( arenainfo, "special" );
 		if( Q_stricmp( strValue, "training" ) == 0 ) {
 			basedelay += 10000;

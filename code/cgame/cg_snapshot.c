@@ -1,24 +1,4 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_snapshot.c -- things that happen on snapshot transition,
 // not necessarily every single rendered frame
@@ -33,13 +13,12 @@ CG_ResetEntity
 ==================
 */
 static void CG_ResetEntity( centity_t *cent ) {
-	// if the previous snapshot this entity was updated in is at least
-	// an event window back in time then we can reset the previous event
-	if ( cent->snapShotTime < cg.time - EVENT_VALID_MSEC ) {
-		cent->previousEvent = 0;
-	}
+	// if an event is set, assume it is new enough to use
+	// if the event had timed out, it would have been cleared
+	cent->previousEvent = 0;
 
 	cent->trailTime = cg.snap->serverTime;
+	cent->thinkFlag = 0;
 
 	VectorCopy (cent->currentState.origin, cent->lerpOrigin);
 	VectorCopy (cent->currentState.angles, cent->lerpAngles);
@@ -55,8 +34,24 @@ CG_TransitionEntity
 cent->nextState is moved to cent->currentState and events are fired
 ===============
 */
-static void CG_TransitionEntity( centity_t *cent ) {
+static void CG_TransitionEntity( centity_t *cent )
+{
+/*	qboolean bNoDrawFlag = (cent->currentState.eFlags & EF_CLIENT_NODRAW);
+	if (cent->nextState.eFlags & EF_NODRAW)
+	{
+		// kef -- remove our special client-only flag because the game now believes we should have EF_NODRAW
+		bNoDrawFlag = qfalse;
+	}
+*/
+	// kef -- this will automatically remove EF_CLIENT_NODRAW because the game never sets it
 	cent->currentState = cent->nextState;
+
+/*	if (bNoDrawFlag)
+	{
+		cent->currentState.eFlags |= EF_NODRAW;
+		cent->currentState.eFlags |= EF_CLIENT_NODRAW;
+	}
+*/
 	cent->currentValid = qtrue;
 
 	// reset if the entity wasn't in the last frame or was teleported
@@ -105,8 +100,7 @@ void CG_SetInitialSnapshot( snapshot_t *snap ) {
 		state = &cg.snap->entities[ i ];
 		cent = &cg_entities[ state->number ];
 
-		memcpy(&cent->currentState, state, sizeof(entityState_t));
-		//cent->currentState = *state;
+		cent->currentState = *state;
 		cent->interpolate = qfalse;
 		cent->currentValid = qtrue;
 
@@ -132,9 +126,11 @@ static void CG_TransitionSnapshot( void ) {
 
 	if ( !cg.snap ) {
 		CG_Error( "CG_TransitionSnapshot: NULL cg.snap" );
+		return;
 	}
 	if ( !cg.nextSnap ) {
 		CG_Error( "CG_TransitionSnapshot: NULL cg.nextSnap" );
+		return;
 	}
 
 	// execute any server string commands before transitioning entities
@@ -160,9 +156,6 @@ static void CG_TransitionSnapshot( void ) {
 	for ( i = 0 ; i < cg.snap->numEntities ; i++ ) {
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		CG_TransitionEntity( cent );
-
-		// remember time of snapshot this entity was last updated in
-		cent->snapShotTime = cg.snap->serverTime;
 	}
 
 	cg.nextSnap = NULL;
@@ -176,6 +169,11 @@ static void CG_TransitionSnapshot( void ) {
 		// teleporting checks are irrespective of prediction
 		if ( ( ps->eFlags ^ ops->eFlags ) & EF_TELEPORT_BIT ) {
 			cg.thisFrameTeleport = qtrue;	// will be cleared by prediction code
+
+			//TiM - since the cg_view.c file seems to be out of scope here,
+			//manually reset the 3rd view
+			CG_ResetThirdPersonViewDamp();
+			cg.thirdPersonNoLerp = qtrue;
 		}
 
 		// if we are not doing client side movement prediction for any
@@ -184,6 +182,7 @@ static void CG_TransitionSnapshot( void ) {
 			|| cg_nopredict.integer || cg_synchronousClients.integer ) {
 			CG_TransitionPlayerState( ps, ops );
 		}
+
 	}
 
 }
@@ -211,8 +210,7 @@ static void CG_SetNextSnap( snapshot_t *snap ) {
 		es = &snap->entities[num];
 		cent = &cg_entities[ es->number ];
 
-		memcpy(&cent->nextState, es, sizeof(entityState_t));
-		//cent->nextState = *es;
+		cent->nextState = *es;
 
 		// if this frame is a teleport, or the entity wasn't in the
 		// previous frame, don't interpolate
@@ -261,7 +259,7 @@ static snapshot_t *CG_ReadNextSnapshot( void ) {
 	snapshot_t	*dest;
 
 	if ( cg.latestSnapshotNum > cgs.processedSnapshotNum + 1000 ) {
-		CG_Printf( "WARNING: CG_ReadNextSnapshot: way out of range, %i > %i\n", 
+		CG_Printf( "WARNING: CG_ReadNextSnapshot: way out of range, %i > %i", 
 			cg.latestSnapshotNum, cgs.processedSnapshotNum );
 	}
 
@@ -276,11 +274,6 @@ static snapshot_t *CG_ReadNextSnapshot( void ) {
 		// try to read the snapshot from the client system
 		cgs.processedSnapshotNum++;
 		r = trap_GetSnapshot( cgs.processedSnapshotNum, dest );
-
-		// FIXME: why would trap_GetSnapshot return a snapshot with the same server time
-		if ( cg.snap && r && dest->serverTime == cg.snap->serverTime ) {
-			//continue;
-		}
 
 		// if it succeeded, return
 		if ( r ) {
@@ -371,10 +364,10 @@ void CG_ProcessSnapshots( void ) {
 
 			CG_SetNextSnap( snap );
 
-
 			// if time went backwards, we have a level restart
 			if ( cg.nextSnap->serverTime < cg.snap->serverTime ) {
 				CG_Error( "CG_ProcessSnapshots: Server time went backwards" );
+				return;
 			}
 		}
 
@@ -390,6 +383,7 @@ void CG_ProcessSnapshots( void ) {
 	// assert our valid conditions upon exiting
 	if ( cg.snap == NULL ) {
 		CG_Error( "CG_ProcessSnapshots: cg.snap == NULL" );
+		return;
 	}
 	if ( cg.time < cg.snap->serverTime ) {
 		// this can happen right after a vid_restart

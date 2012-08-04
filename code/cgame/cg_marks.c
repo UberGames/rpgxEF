@@ -1,24 +1,4 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_marks.c -- wall marks
 
@@ -36,7 +16,6 @@ MARK POLYS
 markPoly_t	cg_activeMarkPolys;			// double linked list
 markPoly_t	*cg_freeMarkPolys;			// single linked list
 markPoly_t	cg_markPolys[MAX_MARK_POLYS];
-static		int	markTotal;
 
 /*
 ===================
@@ -65,6 +44,8 @@ CG_FreeMarkPoly
 ==================
 */
 void CG_FreeMarkPoly( markPoly_t *le ) {
+	if(!le) return;
+
 	if ( !le->prevMark ) {
 		CG_Error( "CG_FreeLocalEntity: not active" );
 	}
@@ -140,17 +121,21 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	vec3_t			markPoints[MAX_MARK_POINTS];
 	vec3_t			projection;
 
+#ifdef _DEBUG
+	if (!markShader)
+	{
+		Com_Printf("CG_ImpactMark: NULL shader\n");
+	}
+#endif
+
 	if ( !cg_addMarks.integer ) {
 		return;
 	}
 
 	if ( radius <= 0 ) {
-		CG_Error( "CG_ImpactMark called with <= 0 radius" );
+		//CG_Error( "CG_ImpactMark called with <= 0 radius" );
+		return;
 	}
-
-	//if ( markTotal >= MAX_MARK_POLYS ) {
-	//	return;
-	//}
 
 	// create the texture axis
 	VectorNormalize2( dir, axis[0] );
@@ -217,7 +202,6 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 		mark->color[2] = blue;
 		mark->color[3] = alpha;
 		memcpy( mark->verts, verts, mf->numPoints * sizeof( verts[0] ) );
-		markTotal++;
 	}
 }
 
@@ -227,8 +211,9 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 CG_AddMarks
 ===============
 */
-#define	MARK_TOTAL_TIME		10000
-#define	MARK_FADE_TIME		1000
+#define	MARK_TOTAL_TIME		500000
+#define	MARK_FADE_TIME		50000
+#define MARK_DIV_3000		1.0/3000.0
 
 void CG_AddMarks( void ) {
 	int			j;
@@ -255,7 +240,7 @@ void CG_AddMarks( void ) {
 		// fade out the energy bursts
 		if ( mp->markShader == cgs.media.energyMarkShader ) {
 
-			fade = 450 - 450 * ( (cg.time - mp->time ) / 3000.0 );
+			fade = 450 - 450 * ( (cg.time - mp->time ) * MARK_DIV_3000 );
 			if ( fade < 255 ) {
 				if ( fade < 0 ) {
 					fade = 0;
@@ -291,3 +276,4 @@ void CG_AddMarks( void ) {
 		trap_R_AddPolyToScene( mp->markShader, mp->poly.numVerts, mp->verts );
 	}
 }
+

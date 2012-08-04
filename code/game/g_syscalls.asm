@@ -41,11 +41,6 @@ equ	trap_GetEntityToken		-38
 equ	trap_FS_GetFileList		-39
 equ trap_DebugPolygonCreate	-40
 equ trap_DebugPolygonDelete	-41
-equ trap_RealTime			-42
-equ trap_SnapVector			-43
-equ trap_TraceCapsule		-44
-equ trap_EntityContactCapsule	-45
-equ trap_FS_Seek -46
 
 equ	memset					-101
 equ	memcpy					-102
@@ -72,14 +67,14 @@ equ trap_BotLibUpdateEntity				-208
 equ trap_BotLibTest						-209
 
 equ trap_BotGetSnapshotEntity			-210
-equ trap_BotGetServerCommand		-211
+equ trap_BotGetConsoleMessage			-211
 equ trap_BotUserCommand					-212
 
 
 
-equ trap_AAS_EnableRoutingArea		-301
-equ trap_AAS_BBoxAreas				-302
-equ trap_AAS_AreaInfo				-303
+equ trap_AAS_EntityVisible				-301
+equ trap_AAS_InFieldOfVision			-302
+equ trap_AAS_VisibleClients				-303
 equ trap_AAS_EntityInfo					-304
 
 equ trap_AAS_Initialized				-305
@@ -105,33 +100,37 @@ equ trap_AAS_PredictClientMovement		-319
 
 
 
+
 equ trap_EA_Say							-401
 equ trap_EA_SayTeam						-402
-equ trap_EA_Command						-403
+equ trap_EA_UseItem						-403
+equ trap_EA_DropItem					-404
+equ trap_EA_UseInv						-405
+equ trap_EA_DropInv						-406
+equ trap_EA_Gesture						-407
+equ trap_EA_Command						-408
 
-equ trap_EA_Action						-404
-equ trap_EA_Gesture						-405
-equ trap_EA_Talk						-406
-equ trap_EA_Attack						-407
-equ trap_EA_Use							-408
-equ trap_EA_Respawn						-409
-equ trap_EA_Crouch						-410
-equ trap_EA_MoveUp						-411
-equ trap_EA_MoveDown					-412
-equ trap_EA_MoveForward					-413
-equ trap_EA_MoveBack					-414
-equ trap_EA_MoveLeft					-415
-equ trap_EA_MoveRight					-416
+equ trap_EA_SelectWeapon				-409
+equ trap_EA_Talk						-410
+equ trap_EA_Attack						-411
+equ trap_EA_Use							-412
+equ trap_EA_Respawn						-413
+equ trap_EA_Jump						-414
+equ trap_EA_DelayedJump					-415
+equ trap_EA_Crouch						-416
+equ trap_EA_MoveUp						-417
+equ trap_EA_MoveDown					-418
+equ trap_EA_MoveForward					-419
+equ trap_EA_MoveBack					-420
+equ trap_EA_MoveLeft					-421
+equ trap_EA_MoveRight					-422
+equ trap_EA_Move						-423
+equ trap_EA_View						-424
 
-equ trap_EA_SelectWeapon				-417
-equ trap_EA_Jump						-418
-equ trap_EA_DelayedJump					-419
-equ trap_EA_Move						-420
-equ trap_EA_View						-421
-
-equ trap_EA_EndRegular					-422
-equ trap_EA_GetInput					-423
-equ trap_EA_ResetInput					-424
+equ trap_EA_EndRegular					-425
+equ trap_EA_GetInput					-426
+equ trap_EA_ResetInput					-427
+equ trap_EA_Alt_Attack					-428
 
 
 
@@ -212,14 +211,10 @@ equ trap_BotNumInitialChats				-570
 equ trap_BotGetChatMessage				-571
 equ trap_BotRemoveFromAvoidGoals		-572
 equ trap_BotPredictVisiblePosition		-573
-equ trap_BotSetAvoidGoalTime			-574
-equ trap_BotAddAvoidSpot				-575
-equ trap_AAS_AlternativeRouteGoals		-576
-equ trap_AAS_PredictRoute				-577
-equ trap_AAS_PointReachabilityAreaIndex	-578
 
-equ trap_BotLibLoadSource				-579
-equ trap_BotLibFreeSource				-580
-equ trap_BotLibReadToken				-581
-equ trap_BotLibSourceFileAndLine		-582
- 
+equ trap_SQL_UserLogin					-601
+equ trap_SQL_CreateTables				-602
+equ trap_SQL_UserAdd					-603
+equ trap_SQL_UserMod					-604
+equ trap_SQL_UserCheckRight				-605
+equ trap_SQL_UserDel					-606

@@ -30,16 +30,16 @@ ifndef BUILD_STANDALONE
   BUILD_STANDALONE =
 endif
 ifndef BUILD_CLIENT
-  BUILD_CLIENT     =
+  BUILD_CLIENT     = 0
 endif
 ifndef BUILD_CLIENT_SMP
   BUILD_CLIENT_SMP =
 endif
 ifndef BUILD_SERVER
-  BUILD_SERVER     =
+  BUILD_SERVER     = 0
 endif
 ifndef BUILD_GAME_SO
-  BUILD_GAME_SO    = 0
+  BUILD_GAME_SO    = 1
 endif
 ifndef BUILD_GAME_QVM
   BUILD_GAME_QVM   = 0
@@ -48,7 +48,7 @@ ifndef BUILD_BASEGAME
   BUILD_BASEGAME =
 endif
 ifndef BUILD_MISSIONPACK
-  BUILD_MISSIONPACK=
+  BUILD_MISSIONPACK= 0
 endif
 
 BUILD_ELITEFORCE = 1
@@ -125,7 +125,7 @@ endif
 endif
 
 ifndef BASEGAME
-BASEGAME=baseq3
+BASEGAME=rpgxEF
 endif
 
 ifndef BASEGAME_CFLAGS
@@ -244,7 +244,7 @@ CGDIR=$(MOUNT_DIR)/cgame
 BLIBDIR=$(MOUNT_DIR)/botlib
 NDIR=$(MOUNT_DIR)/null
 UIDIR=$(MOUNT_DIR)/ui
-Q3UIDIR=$(MOUNT_DIR)/q3_ui
+Q3UIDIR=$(MOUNT_DIR)/ui
 JPDIR=$(MOUNT_DIR)/jpeg-8c
 SPEEXDIR=$(MOUNT_DIR)/libspeex
 ZDIR=$(MOUNT_DIR)/zlib
@@ -384,7 +384,11 @@ ifneq (,$(findstring "$(PLATFORM)", "linux" "gnu_kfreebsd" "kfreebsd-gnu"))
 
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC -fvisibility=hidden
-  SHLIBLDFLAGS=-shared $(LDFLAGS)
+  SHLIBLDFLAGS=-shared $(LDFLAGS) -pthread
+  
+  ifeq ($(VM_USE_SQL), 1)
+    SHLIBCFLAGS+=-DSQL
+  endif
 
   THREAD_LIBS=-lpthread
   LIBS=-ldl -lm
@@ -503,7 +507,11 @@ ifeq ($(PLATFORM),darwin)
 
   SHLIBEXT=dylib
   SHLIBCFLAGS=-fPIC -fno-common
-  SHLIBLDFLAGS=-dynamiclib $(LDFLAGS) -Wl,-U,_com_altivec
+  SHLIBLDFLAGS=-dynamiclib $(LDFLAGS) -Wl,-U,_com_altivec -pthread
+  
+  ifeq ($(VM_USE_SQL), 1)
+    SHLIBCFLAGS+=-DSQL
+  endif
 
   NOTSHLIBCFLAGS=-mdynamic-no-pic
 
@@ -565,6 +573,10 @@ ifeq ($(PLATFORM),mingw32)
   SHLIBEXT=dll
   SHLIBCFLAGS=
   SHLIBLDFLAGS=-shared $(LDFLAGS)
+  
+  ifeq ($(VM_USE_SQL), 1)
+    SHLIBCFLAGS+=-DSQL
+  endif
 
   BINEXT=.exe
 
@@ -653,7 +665,11 @@ ifeq ($(PLATFORM),freebsd)
 
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC
-  SHLIBLDFLAGS=-shared $(LDFLAGS)
+  SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread
+  
+  ifeq ($(VM_USE_SQL), 1)
+    SHLIBCFLAGS+=-DSQL
+  endif
 
   THREAD_LIBS=-lpthread
   # don't need -ldl (FreeBSD)
@@ -721,8 +737,12 @@ ifeq ($(PLATFORM),openbsd)
   SHLIBEXT=so
   SHLIBNAME=.$(SHLIBEXT)
   SHLIBCFLAGS=-fPIC
-  SHLIBLDFLAGS=-shared $(LDFLAGS)
+  SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread
 
+  ifeq ($(VM_USE_SQL), 1)
+    SHLIBCFLAGS+=-DSQL
+  endif
+  
   THREAD_LIBS=-pthread
   LIBS=-lm
 
@@ -762,8 +782,12 @@ ifeq ($(PLATFORM),netbsd)
   LIBS=-lm
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC
-  SHLIBLDFLAGS=-shared $(LDFLAGS)
+  SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread
   THREAD_LIBS=-lpthread
+  
+  ifeq ($(VM_USE_SQL), 1)
+    SHLIBCFLAGS+=-DSQL
+  endif
 
   BASE_CFLAGS = -Wall -fno-strict-aliasing -Wimplicit -Wstrict-prototypes
 
@@ -793,8 +817,12 @@ ifeq ($(PLATFORM),irix64)
   
   SHLIBEXT=so
   SHLIBCFLAGS=
-  SHLIBLDFLAGS=-shared
+  SHLIBLDFLAGS=-shared -lptrhead
 
+  ifeq ($(VM_USE_SQL), 1)
+    SHLIBCFLAGS+=-DSQL
+  endif
+  
   LIBS=-ldl -lm -lgen
   # FIXME: The X libraries probably aren't necessary?
   CLIENT_LIBS=-L/usr/X11/$(LIB) $(SDL_LIBS) \
@@ -853,8 +881,12 @@ ifeq ($(PLATFORM),sunos)
 
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC
-  SHLIBLDFLAGS=-shared $(LDFLAGS)
+  SHLIBLDFLAGS=-shared $(LDFLAGS) -pthread
 
+  ifeq ($(VM_USE_SQL), 1)
+    SHLIBCFLAGS+=-DSQL
+  endif
+  
   THREAD_LIBS=-lpthread
   LIBS=-lsocket -lnsl -ldl -lm
 
@@ -1073,13 +1105,13 @@ endef
 
 define DO_GAME_CC
 $(echo_cmd) "GAME_CC $<"
-$(Q)$(CC) $(BASEGAME_CFLAGS) -DQAGAME $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZEVM) -o $@ -c $<
+$(Q)$(CC) $(BASEGAME_CFLAGS) -DQAGAME -DLUA_COMPAT_ALL $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZEVM) -o $@ -c $<
 $(Q)$(DO_QVM_DEP)
 endef
 
 define DO_CGAME_CC
 $(echo_cmd) "CGAME_CC $<"
-$(Q)$(CC) $(BASEGAME_CFLAGS) -DCGAME $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZEVM) -o $@ -c $<
+$(Q)$(CC) $(BASEGAME_CFLAGS) -DCGAME -DLUA_COMPAT_ALL $(SHLIBCFLAGS) $(CFLAGS) $(OPTIMIZEVM) -o $@ -c $<
 $(Q)$(DO_QVM_DEP)
 endef
 
@@ -1993,35 +2025,88 @@ $(B)/$(SERVERBIN)$(FULLBINEXT): $(Q3DOBJ)
 ## BASEQ3 CGAME
 #############################################################################
 
+CGLUAOBJ = \
+  $(B)/$(BASEGAME)/cgame/lapi.o \
+  $(B)/$(BASEGAME)/cgame/lauxlib.o \
+  $(B)/$(BASEGAME)/cgame/lbaselib.o \
+  $(B)/$(BASEGAME)/cgame/lbitlib.o \
+  $(B)/$(BASEGAME)/cgame/lcode.o \
+  $(B)/$(BASEGAME)/cgame/lcorolib.o \
+  $(B)/$(BASEGAME)/cgame/lctype.o \
+  $(B)/$(BASEGAME)/cgame/ldblib.o \
+  $(B)/$(BASEGAME)/cgame/ldebug.o \
+  $(B)/$(BASEGAME)/cgame/ldo.o \
+  $(B)/$(BASEGAME)/cgame/ldump.o \
+  $(B)/$(BASEGAME)/cgame/lfunc.o \
+  $(B)/$(BASEGAME)/cgame/lgc.o \
+  $(B)/$(BASEGAME)/cgame/linit.o \
+  $(B)/$(BASEGAME)/cgame/liolib.o \
+  $(B)/$(BASEGAME)/cgame/llex.o \
+  $(B)/$(BASEGAME)/cgame/lmathlib.o \
+  $(B)/$(BASEGAME)/cgame/lmem.o \
+  $(B)/$(BASEGAME)/cgame/loadlib.o \
+  $(B)/$(BASEGAME)/cgame/lobject.o \
+  $(B)/$(BASEGAME)/cgame/lopcodes.o \
+  $(B)/$(BASEGAME)/cgame/loslib.o \
+  $(B)/$(BASEGAME)/cgame/lparser.o \
+  $(B)/$(BASEGAME)/cgame/lstate.o \
+  $(B)/$(BASEGAME)/cgame/lstring.o \
+  $(B)/$(BASEGAME)/cgame/lstrlib.o \
+  $(B)/$(BASEGAME)/cgame/ltable.o \
+  $(B)/$(BASEGAME)/cgame/ltablib.o \
+  $(B)/$(BASEGAME)/cgame/ltm.o \
+  $(B)/$(BASEGAME)/cgame/lua.o \
+  $(B)/$(BASEGAME)/cgame/luac.o \
+  $(B)/$(BASEGAME)/cgame/lundump.o \
+  $(B)/$(BASEGAME)/cgame/lvm.o \
+  $(B)/$(BASEGAME)/cgame/lzio.o
+
 Q3CGOBJ_ = \
   $(B)/$(BASEGAME)/cgame/cg_main.o \
   $(B)/$(BASEGAME)/cgame/bg_misc.o \
   $(B)/$(BASEGAME)/cgame/bg_pmove.o \
   $(B)/$(BASEGAME)/cgame/bg_slidemove.o \
-  $(B)/$(BASEGAME)/cgame/bg_lib.o \
   $(B)/$(BASEGAME)/cgame/cg_consolecmds.o \
   $(B)/$(BASEGAME)/cgame/cg_draw.o \
   $(B)/$(BASEGAME)/cgame/cg_drawtools.o \
   $(B)/$(BASEGAME)/cgame/cg_effects.o \
   $(B)/$(BASEGAME)/cgame/cg_ents.o \
   $(B)/$(BASEGAME)/cgame/cg_event.o \
-  $(B)/$(BASEGAME)/cgame/cg_info.o \
+  $(B)/$(BASEGAME)/cgame/cg_env.o \
   $(B)/$(BASEGAME)/cgame/cg_localents.o \
+  $(B)/$(BASEGAME)/cgame/cg_info.o \
   $(B)/$(BASEGAME)/cgame/cg_marks.o \
-  $(B)/$(BASEGAME)/cgame/cg_particles.o \
   $(B)/$(BASEGAME)/cgame/cg_players.o \
   $(B)/$(BASEGAME)/cgame/cg_playerstate.o \
   $(B)/$(BASEGAME)/cgame/cg_predict.o \
+  $(B)/$(BASEGAME)/cgame/cg_screenfx.o \
   $(B)/$(BASEGAME)/cgame/cg_scoreboard.o \
   $(B)/$(BASEGAME)/cgame/cg_servercmds.o \
   $(B)/$(BASEGAME)/cgame/cg_snapshot.o \
   $(B)/$(BASEGAME)/cgame/cg_view.o \
   $(B)/$(BASEGAME)/cgame/cg_weapons.o \
+  $(B)/$(BASEGAME)/cgame/cg_lua.o \
+  $(B)/$(BASEGAME)/cgame/lua_vector.o \
+  $(B)/$(BASEGAME)/cgame/lua_qmath.o \
+  $(B)/$(BASEGAME)/cgame/lua_cfx.o \
+  $(B)/$(BASEGAME)/cgame/lua_cent.o \
+  $(B)/$(BASEGAME)/cgame/lua_refent.o \
+  $(B)/$(BASEGAME)/cgame/fx_transporter.o \
+  $(B)/$(BASEGAME)/cgame/fx_tetrion.o \
+  $(B)/$(BASEGAME)/cgame/fx_disruptor.o \
+  $(B)/$(BASEGAME)/cgame/fx_hypospray.o \
+  $(B)/$(BASEGAME)/cgame/fx_quantum.o \
+  $(B)/$(BASEGAME)/cgame/fx_phaser.o \
+  $(B)/$(BASEGAME)/cgame/fx_misc.o \
+  $(B)/$(BASEGAME)/cgame/fx_lib.o \
+  $(B)/$(BASEGAME)/cgame/fx_item.o \
+  $(B)/$(BASEGAME)/cgame/fx_grenade.o \
+  $(B)/$(BASEGAME)/cgame/fx_compression.o \
   \
-  $(B)/$(BASEGAME)/qcommon/q_math.o \
-  $(B)/$(BASEGAME)/qcommon/q_shared.o
+  $(B)/$(BASEGAME)/cgame/q_math.o \
+  $(B)/$(BASEGAME)/cgame/q_shared.o
 
-Q3CGOBJ = $(Q3CGOBJ_) $(B)/$(BASEGAME)/cgame/cg_syscalls.o
+Q3CGOBJ = $(Q3CGOBJ_) $(B)/$(BASEGAME)/cgame/cg_syscalls.o $(CGLUAOBJ)
 Q3CGVMOBJ = $(Q3CGOBJ_:%.o=%.asm)
 
 $(B)/$(BASEGAME)/cgame$(SHLIBNAME): $(Q3CGOBJ)
@@ -2037,7 +2122,6 @@ $(B)/$(BASEGAME)/vm/cgame.qvm: $(Q3CGVMOBJ) $(CGDIR)/cg_syscalls.asm $(Q3ASM)
 #############################################################################
 
 MPCGOBJ_ = \
-  $(B)/$(MISSIONPACK)/cgame/cg_main.o \
   $(B)/$(MISSIONPACK)/cgame/bg_misc.o \
   $(B)/$(MISSIONPACK)/cgame/bg_pmove.o \
   $(B)/$(MISSIONPACK)/cgame/bg_slidemove.o \
@@ -2052,6 +2136,7 @@ MPCGOBJ_ = \
   $(B)/$(MISSIONPACK)/cgame/cg_info.o \
   $(B)/$(MISSIONPACK)/cgame/cg_localents.o \
   $(B)/$(MISSIONPACK)/cgame/cg_marks.o \
+  $(B)/$(MISSIONPACK)/cgame/cg_main.o \
   $(B)/$(MISSIONPACK)/cgame/cg_particles.o \
   $(B)/$(MISSIONPACK)/cgame/cg_players.o \
   $(B)/$(MISSIONPACK)/cgame/cg_playerstate.o \
@@ -2083,6 +2168,42 @@ $(B)/$(MISSIONPACK)/vm/cgame.qvm: $(MPCGVMOBJ) $(CGDIR)/cg_syscalls.asm $(Q3ASM)
 ## BASEQ3 GAME
 #############################################################################
 
+GLUAOBJ = \
+  $(B)/$(BASEGAME)/game/lapi.o \
+  $(B)/$(BASEGAME)/game/lauxlib.o \
+  $(B)/$(BASEGAME)/game/lbaselib.o \
+  $(B)/$(BASEGAME)/game/lbitlib.o \
+  $(B)/$(BASEGAME)/game/lcode.o \
+  $(B)/$(BASEGAME)/game/lcorolib.o \
+  $(B)/$(BASEGAME)/game/lctype.o \
+  $(B)/$(BASEGAME)/game/ldblib.o \
+  $(B)/$(BASEGAME)/game/ldebug.o \
+  $(B)/$(BASEGAME)/game/ldo.o \
+  $(B)/$(BASEGAME)/game/ldump.o \
+  $(B)/$(BASEGAME)/game/lfunc.o \
+  $(B)/$(BASEGAME)/game/lgc.o \
+  $(B)/$(BASEGAME)/game/linit.o \
+  $(B)/$(BASEGAME)/game/liolib.o \
+  $(B)/$(BASEGAME)/game/llex.o \
+  $(B)/$(BASEGAME)/game/lmathlib.o \
+  $(B)/$(BASEGAME)/game/lmem.o \
+  $(B)/$(BASEGAME)/game/loadlib.o \
+  $(B)/$(BASEGAME)/game/lobject.o \
+  $(B)/$(BASEGAME)/game/lopcodes.o \
+  $(B)/$(BASEGAME)/game/loslib.o \
+  $(B)/$(BASEGAME)/game/lparser.o \
+  $(B)/$(BASEGAME)/game/lstate.o \
+  $(B)/$(BASEGAME)/game/lstring.o \
+  $(B)/$(BASEGAME)/game/lstrlib.o \
+  $(B)/$(BASEGAME)/game/ltable.o \
+  $(B)/$(BASEGAME)/game/ltablib.o \
+  $(B)/$(BASEGAME)/game/ltm.o \
+  $(B)/$(BASEGAME)/game/lua.o \
+  $(B)/$(BASEGAME)/game/luac.o \
+  $(B)/$(BASEGAME)/game/lundump.o \
+  $(B)/$(BASEGAME)/game/lvm.o \
+  $(B)/$(BASEGAME)/game/lzio.o
+
 Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/g_main.o \
   $(B)/$(BASEGAME)/game/ai_chat.o \
@@ -2091,11 +2212,10 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/ai_dmq3.o \
   $(B)/$(BASEGAME)/game/ai_main.o \
   $(B)/$(BASEGAME)/game/ai_team.o \
-  $(B)/$(BASEGAME)/game/ai_vcmd.o \
   $(B)/$(BASEGAME)/game/bg_misc.o \
   $(B)/$(BASEGAME)/game/bg_pmove.o \
   $(B)/$(BASEGAME)/game/bg_slidemove.o \
-  $(B)/$(BASEGAME)/game/bg_lib.o \
+  $(B)/$(BASEGAME)/game/bg_oums.o \
   $(B)/$(BASEGAME)/game/g_active.o \
   $(B)/$(BASEGAME)/game/g_arenas.o \
   $(B)/$(BASEGAME)/game/g_bot.o \
@@ -2115,11 +2235,33 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/g_trigger.o \
   $(B)/$(BASEGAME)/game/g_utils.o \
   $(B)/$(BASEGAME)/game/g_weapon.o \
+  $(B)/$(BASEGAME)/game/g_ui.o \
+  $(B)/$(BASEGAME)/game/g_lua.o \
+  $(B)/$(BASEGAME)/game/g_usable.o \
+  $(B)/$(BASEGAME)/game/g_turrets.o \
+  $(B)/$(BASEGAME)/game/g_log.o \
+  $(B)/$(BASEGAME)/game/g_fx.o \
+  $(B)/$(BASEGAME)/game/g_sql.o \
+  $(B)/$(BASEGAME)/game/g_breakable.o \
+  $(B)/$(BASEGAME)/game/g_cinematic.o \
+  $(B)/$(BASEGAME)/game/lua_game.o \
+  $(B)/$(BASEGAME)/game/lua_entity.o \
+  $(B)/$(BASEGAME)/game/lua_vector.o \
+  $(B)/$(BASEGAME)/game/lua_mover.o \
+  $(B)/$(BASEGAME)/game/lua_qmath.o \
+  $(B)/$(BASEGAME)/game/lua_cinematic.o \
+  $(B)/$(BASEGAME)/game/lua_sound.o \
+  $(B)/$(BASEGAME)/game/lua_weapons.o \
+  $(B)/$(BASEGAME)/game/lua_trace.o \
+  $(B)/$(BASEGAME)/game/lua_cvar.o \
+  $(B)/$(BASEGAME)/game/sqlite3.o \
+  $(B)/$(BASEGAME)/game/md5.o \
+  $(B)/$(BASEGAME)/game/list.o \
   \
-  $(B)/$(BASEGAME)/qcommon/q_math.o \
-  $(B)/$(BASEGAME)/qcommon/q_shared.o
+  $(B)/$(BASEGAME)/game/q_math.o \
+  $(B)/$(BASEGAME)/game/q_shared.o
 
-Q3GOBJ = $(Q3GOBJ_) $(B)/$(BASEGAME)/game/g_syscalls.o
+Q3GOBJ = $(Q3GOBJ_) $(B)/$(BASEGAME)/game/g_syscalls.o $(GLUAOBJ)
 Q3GVMOBJ = $(Q3GOBJ_:%.o=%.asm)
 
 $(B)/$(BASEGAME)/qagame$(SHLIBNAME): $(Q3GOBJ)
@@ -2190,35 +2332,28 @@ $(B)/$(MISSIONPACK)/vm/qagame.qvm: $(MPGVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
 Q3UIOBJ_ = \
   $(B)/$(BASEGAME)/ui/ui_main.o \
   $(B)/$(BASEGAME)/ui/bg_misc.o \
-  $(B)/$(BASEGAME)/ui/bg_lib.o \
   $(B)/$(BASEGAME)/ui/ui_addbots.o \
   $(B)/$(BASEGAME)/ui/ui_atoms.o \
   $(B)/$(BASEGAME)/ui/ui_cdkey.o \
-  $(B)/$(BASEGAME)/ui/ui_cinematics.o \
   $(B)/$(BASEGAME)/ui/ui_confirm.o \
   $(B)/$(BASEGAME)/ui/ui_connect.o \
   $(B)/$(BASEGAME)/ui/ui_controls2.o \
   $(B)/$(BASEGAME)/ui/ui_credits.o \
   $(B)/$(BASEGAME)/ui/ui_demo2.o \
-  $(B)/$(BASEGAME)/ui/ui_display.o \
   $(B)/$(BASEGAME)/ui/ui_gameinfo.o \
   $(B)/$(BASEGAME)/ui/ui_ingame.o \
-  $(B)/$(BASEGAME)/ui/ui_loadconfig.o \
   $(B)/$(BASEGAME)/ui/ui_menu.o \
   $(B)/$(BASEGAME)/ui/ui_mfield.o \
   $(B)/$(BASEGAME)/ui/ui_mods.o \
   $(B)/$(BASEGAME)/ui/ui_network.o \
-  $(B)/$(BASEGAME)/ui/ui_options.o \
   $(B)/$(BASEGAME)/ui/ui_playermodel.o \
   $(B)/$(BASEGAME)/ui/ui_players.o \
   $(B)/$(BASEGAME)/ui/ui_playersettings.o \
   $(B)/$(BASEGAME)/ui/ui_preferences.o \
   $(B)/$(BASEGAME)/ui/ui_qmenu.o \
   $(B)/$(BASEGAME)/ui/ui_removebots.o \
-  $(B)/$(BASEGAME)/ui/ui_saveconfig.o \
   $(B)/$(BASEGAME)/ui/ui_serverinfo.o \
   $(B)/$(BASEGAME)/ui/ui_servers2.o \
-  $(B)/$(BASEGAME)/ui/ui_setup.o \
   $(B)/$(BASEGAME)/ui/ui_sound.o \
   $(B)/$(BASEGAME)/ui/ui_sparena.o \
   $(B)/$(BASEGAME)/ui/ui_specifyserver.o \
@@ -2229,9 +2364,16 @@ Q3UIOBJ_ = \
   $(B)/$(BASEGAME)/ui/ui_team.o \
   $(B)/$(BASEGAME)/ui/ui_teamorders.o \
   $(B)/$(BASEGAME)/ui/ui_video.o \
+  $(B)/$(BASEGAME)/ui/ui_turbolift.o \
+  $(B)/$(BASEGAME)/ui/ui_transporter.o \
+  $(B)/$(BASEGAME)/ui/ui_motd.o \
+  $(B)/$(BASEGAME)/ui/ui_admin.o \
+  $(B)/$(BASEGAME)/ui/ui_fonts.o \
+  $(B)/$(BASEGAME)/ui/ui_emotes.o \
+  $(B)/$(BASEGAME)/ui/ui_cvars.o \
   \
-  $(B)/$(BASEGAME)/qcommon/q_math.o \
-  $(B)/$(BASEGAME)/qcommon/q_shared.o
+  $(B)/$(BASEGAME)/ui/q_math.o \
+  $(B)/$(BASEGAME)/ui/q_shared.o
 
 Q3UIOBJ = $(Q3UIOBJ_) $(B)/$(MISSIONPACK)/ui/ui_syscalls.o
 Q3UIVMOBJ = $(Q3UIOBJ_:%.o=%.asm)
@@ -2377,6 +2519,12 @@ endif
 
 $(B)/$(BASEGAME)/cgame/bg_%.o: $(GDIR)/bg_%.c
 	$(DO_CGAME_CC)
+	
+$(B)/$(BASEGAME)/cgame/l%.o: $(GDIR)/l%.c
+	$(DO_CGAME_CC)	
+	
+$(B)/$(BASEGAME)/cgame/q_%.o: $(GDIR)/q_%.c
+	$(DO_CGAME_CC)	
 
 $(B)/$(BASEGAME)/cgame/%.o: $(CGDIR)/%.c
 	$(DO_CGAME_CC)
@@ -2399,6 +2547,8 @@ $(B)/$(MISSIONPACK)/cgame/bg_%.asm: $(GDIR)/bg_%.c $(Q3LCC)
 $(B)/$(MISSIONPACK)/cgame/%.asm: $(CGDIR)/%.c $(Q3LCC)
 	$(DO_CGAME_Q3LCC_MISSIONPACK)
 
+$(B)/$(BASEGAME)/game/q_%.o: $(GDIR)/q_%.c
+	$(DO_GAME_CC)
 
 $(B)/$(BASEGAME)/game/%.o: $(GDIR)/%.c
 	$(DO_GAME_CC)
@@ -2416,6 +2566,9 @@ $(B)/$(MISSIONPACK)/game/%.asm: $(GDIR)/%.c $(Q3LCC)
 $(B)/$(BASEGAME)/ui/bg_%.o: $(GDIR)/bg_%.c
 	$(DO_UI_CC)
 
+$(B)/$(BASEGAME)/ui/q_%.o: $(GDIR)/q_%.c
+	$(DO_UI_CC)
+	
 $(B)/$(BASEGAME)/ui/%.o: $(Q3UIDIR)/%.c
 	$(DO_UI_CC)
 

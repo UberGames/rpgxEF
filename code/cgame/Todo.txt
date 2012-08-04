@@ -1,0 +1,3 @@
+- Find and remove unused things
+- Run static code analysis and fix things
+- Completely debug

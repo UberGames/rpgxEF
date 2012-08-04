@@ -1,60 +1,94 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+// Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
+#include "list.h"
+//#include <windows.h> //TiM : WTF?
 
 //==========================================================
 
 /*QUAKED target_give (1 0 0) (-8 -8 -8) (8 8 8)
-Gives the activator all the items pointed to.
+Gives all the weapons specified here in the list.
+
+"items" - separated by ' | ', specify the items
+EG "WP_5 | WP_14" etc
+(Don't forget the spaces!)
 */
 void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
-	gentity_t	*t;
-	trace_t		trace;
+	int			i;
+	playerState_t *ps = &activator->client->ps;
 
-	if ( !activator->client ) {
+	if ( !activator || !activator->client ) {
 		return;
 	}
 
-	if ( !ent->target ) {
-		return;
-	}
+	for ( i=0; i < MAX_WEAPONS; i++ )
+	{
+		if ( (unsigned int)(ent->s.time) & (1 << i) )
+		{
+			ps->stats[STAT_WEAPONS] ^= ( 1 << i );
 
-	memset( &trace, 0, sizeof( trace ) );
-	t = NULL;
-	while ( (t = G_Find (t, FOFS(targetname), ent->target)) != NULL ) {
-		if ( !t->item ) {
+			if ( ps->stats[STAT_WEAPONS] & ( 1 << i ) )
+				ps->ammo[i] = 1;
+			else
+				ps->ammo[i] = 0;
 			continue;
 		}
-		Touch_Item( t, activator, &trace );
-
-		// make sure it isn't going to respawn or show any events
-		t->nextthink = 0;
-		trap_UnlinkEntity( t );
 	}
-}
 
-void SP_target_give( gentity_t *ent ) {
+	//Com_Printf( S_COLOR_RED "Final flags: %u\n", (unsigned int)(ent->s.time) );
+}
+//FIXME: Make the text parsed on load time. saves on resources!!
+void SP_target_give( gentity_t *ent ) 
+{
+	char	*items;
+	char	*textPtr;
+	char	*token;
+	int		weapon;
+
+	G_SpawnString( "items", "", &items );
+
+	if(!items[0] && ent->target) // spawnTEnt
+		items = G_NewString(ent->target);
+
+	textPtr = items;
+
+	//Com_Printf( S_COLOR_RED "Using the Give! Message is %s\n", textPtr );
+
+	COM_BeginParseSession();
+
+	while ( 1 ) 
+	{
+		token = COM_Parse( &textPtr );
+		if ( !token[0] )
+			break;
+
+		//Com_Printf( S_COLOR_RED "Token: %s\n", token );
+
+		if ( !Q_stricmpn( token, "|", 1 ) )
+			continue;
+
+		if( !Q_stricmpn( token, "WP_", 3 ) ) 
+		{
+			weapon = GetIDForString( WeaponTable, token );
+
+			if ( weapon >= 0 ) 
+			{
+				ent->s.time |= (1<<weapon);
+			}
+		}
+	}
+
+	//TiM - remove items per server discretion
+	if ( rpg_mapGiveFlags.integer > 0 )
+		ent->s.time &= rpg_mapGiveFlags.integer;
+
+	//Com_Printf( S_COLOR_RED "Final flags: %u\n", (ent->s.time) );
+
 	ent->use = Use_Target_Give;
+
+	// don't need to send this to clients
+	ent->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
 }
 
 
@@ -65,17 +99,15 @@ takes away all the activators powerups.
 Used to drop flight powerups into death puts.
 */
 void Use_target_remove_powerups( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
-	if( !activator->client ) {
+	if ( !activator || !activator->client ) {
 		return;
 	}
 
-	if( activator->client->ps.powerups[PW_REDFLAG] ) {
-		Team_ReturnFlag( TEAM_RED );
-	} else if( activator->client->ps.powerups[PW_BLUEFLAG] ) {
-		Team_ReturnFlag( TEAM_BLUE );
-	} else if( activator->client->ps.powerups[PW_NEUTRALFLAG] ) {
-		Team_ReturnFlag( TEAM_FREE );
-	}
+	/*if ( activator->client->ps.powerups[PW_REDFLAG] ) {
+	Team_ReturnFlag(TEAM_RED);
+	} else if ( activator->client->ps.powerups[PW_BORG_ADAPT] ) {
+	Team_ReturnFlag(TEAM_BLUE);
+	}*/
 
 	memset( activator->client->ps.powerups, 0, sizeof( activator->client->ps.powerups ) );
 }
@@ -87,12 +119,30 @@ void SP_target_remove_powerups( gentity_t *ent ) {
 
 //==========================================================
 
-/*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8)
+/*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8) SELF
+SELF   use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+
 "wait" seconds to pause before firing targets.
 "random" delay variance, total delay = delay +/- random seconds
 */
 void Think_Target_Delay( gentity_t *ent ) {
-	G_UseTargets( ent, ent->activator );
+#ifdef G_LUA
+	if(ent->luaTrigger)
+	{
+		if(ent->activator)
+		{
+			LuaHook_G_EntityTrigger(ent->luaTrigger, ent->s.number, ent->activator->s.number);
+		}
+		else
+		{
+			LuaHook_G_EntityTrigger(ent->luaTrigger, ent->s.number, ENTITYNUM_WORLD);
+		}
+	}
+#endif
+	if(ent->spawnflags & 1)
+		G_UseTargets(ent, ent);
+	else
+		G_UseTargets( ent, ent->activator );
 }
 
 void Use_Target_Delay( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
@@ -102,27 +152,44 @@ void Use_Target_Delay( gentity_t *ent, gentity_t *other, gentity_t *activator ) 
 }
 
 void SP_target_delay( gentity_t *ent ) {
-	// check delay for backwards compatability
-	if ( !G_SpawnFloat( "delay", "0", &ent->wait ) ) {
-		G_SpawnFloat( "wait", "1", &ent->wait );
-	}
-
 	if ( !ent->wait ) {
-		ent->wait = 1;
+		G_SpawnFloat("delay", "0", &ent->wait);
+		if(!ent->wait)
+			ent->wait = 1;
 	}
+	ent->count = (int)ent->wait;
 	ent->use = Use_Target_Delay;
+
+	// don't need to send this to clients
+	ent->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
 }
 
 
 //==========================================================
 
-/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8)
+/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8) TEAMSCORE
+TEAMSCORE - points are added to activator's team's score, not the individual
+
 "count" number of points to add, default 1
 
 The activator is given this many points.
 */
+void Team_AddScore( int team, int points );
 void Use_Target_Score (gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	AddScore( activator, ent->r.currentOrigin, ent->count );
+	if(!activator) return;
+	if ( ent->spawnflags & 1 )
+	{
+		if ( activator->client )
+		{
+			Team_AddScore( activator->client->sess.sessionTeam, ent->count );
+		}
+	}
+	else
+	{
+		AddScore( activator, ent->count );
+	}
+	CalculateRanks( qfalse );
 }
 
 void SP_target_score( gentity_t *ent ) {
@@ -140,22 +207,22 @@ void SP_target_score( gentity_t *ent ) {
 If "private", only the activator gets the message.  If no checks, all clients get the message.
 */
 void Use_Target_Print (gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if ( activator->client && ( ent->spawnflags & 4 ) ) {
-		trap_SendServerCommand( activator-g_entities, va("cp \"%s\"", ent->message ));
+	if ( activator && activator->client && ( ent->spawnflags & 4 ) ) {
+		trap_SendServerCommand( activator-g_entities, va("servermsg %s", ent->message ));
 		return;
 	}
 
 	if ( ent->spawnflags & 3 ) {
 		if ( ent->spawnflags & 1 ) {
-			G_TeamCommand( TEAM_RED, va("cp \"%s\"", ent->message) );
+			G_TeamCommand( TEAM_RED, va("servermsg %s", ent->message) );
 		}
 		if ( ent->spawnflags & 2 ) {
-			G_TeamCommand( TEAM_BLUE, va("cp \"%s\"", ent->message) );
+			G_TeamCommand( TEAM_BLUE, va("servermsg %s", ent->message) );
 		}
 		return;
 	}
 
-	trap_SendServerCommand( -1, va("cp \"%s\"", ent->message ));
+	trap_SendServerCommand( -1, va("servermsg %s", ent->message ));
 }
 
 void SP_target_print( gentity_t *ent ) {
@@ -166,7 +233,7 @@ void SP_target_print( gentity_t *ent ) {
 //==========================================================
 
 
-/*QUAKED target_speaker (1 0 0) (-8 -8 -8) (8 8 8) looped-on looped-off global activator
+/*QUAKED target_speaker (1 0 0) (-8 -8 -8) (8 8 8) looped-on looped-off global activator 
 "noise"		wav file to play
 
 A global sound will play full volume throughout the level.
@@ -185,7 +252,7 @@ void Use_Target_Speaker (gentity_t *ent, gentity_t *other, gentity_t *activator)
 		else
 			ent->s.loopSound = ent->noise_index;	// start it
 	}else {	// normal sound
-		if ( ent->spawnflags & 8 ) {
+		if ( activator && (ent->spawnflags & 8) ) {
 			G_AddEvent( activator, EV_GENERAL_SOUND, ent->noise_index );
 		} else if (ent->spawnflags & 4) {
 			G_AddEvent( ent, EV_GLOBAL_SOUND, ent->noise_index );
@@ -202,22 +269,27 @@ void SP_target_speaker( gentity_t *ent ) {
 	G_SpawnFloat( "wait", "0", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
 
-	if ( !G_SpawnString( "noise", "NOSOUND", &s ) ) {
-		G_Error( "target_speaker without a noise key at %s", vtos( ent->s.origin ) );
+	if ( !G_SpawnString( "noise", "NOSOUND", &s ) && !ent->count ) { // if ent->count then it is a spawned sound, either by spawnEnt or *.spawn
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_speaker without a noise key at %s", vtos( ent->s.origin ) ););
+		G_FreeEntity(ent);//let's not error out so that we can use SP maps with their funky speakers.
+		return;
 	}
 
-	// force all client reletive sounds to be "activator" speakers that
-	// play on the entity that activates it
-	if ( s[0] == '*' ) {
-		ent->spawnflags |= 8;
-	}
+	if(!ent->count) { // not by spawnTEnt/*.spawn
+		// force all client reletive sounds to be "activator" speakers that
+		// play on the entity that activates it
+		if ( s[0] == '*' ) {
+			ent->spawnflags |= 8;
+		}
 
-	if (!strstr( s, ".wav" )) {
-		Com_sprintf (buffer, sizeof(buffer), "%s.wav", s );
-	} else {
+		memset(buffer, 0, sizeof(buffer));
+
 		Q_strncpyz( buffer, s, sizeof(buffer) );
+		COM_DefaultExtension( buffer, sizeof(buffer), ".wav");
+		ent->noise_index = G_SoundIndex(buffer);
+	} else { // by spawnTEnt or *.spawn file
+		ent->noise_index = ent->count;
 	}
-	ent->noise_index = G_SoundIndex(buffer);
 
 	// a repeating speaker can be done completely client side
 	ent->s.eType = ET_SPEAKER;
@@ -296,7 +368,8 @@ void target_laser_off (gentity_t *self)
 
 void target_laser_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-	self->activator = activator;
+	if(activator)
+		self->activator = activator;
 	if ( self->nextthink > 0 )
 		target_laser_off (self);
 	else
@@ -312,7 +385,9 @@ void target_laser_start (gentity_t *self)
 	if (self->target) {
 		ent = G_Find (NULL, FOFS(targetname), self->target);
 		if (!ent) {
-			G_Printf ("%s at %s: %s is a bad target\n", self->classname, vtos(self->s.origin), self->target);
+			DEVELOPER(G_Printf (S_COLOR_YELLOW "[Entity-Error] %s at %s: %s is a bad target\n", self->classname, vtos(self->s.origin), self->target););
+			G_FreeEntity(self);
+			return;
 		}
 		self->enemy = ent;
 	} else {
@@ -344,55 +419,134 @@ void SP_target_laser (gentity_t *self)
 
 void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	gentity_t	*dest;
+	vec3_t		destPoint;
+	vec3_t		tracePoint;
+	trace_t		tr;
 
-	if (!activator->client)
-		return;
-	dest = 	G_PickTarget( self->target );
-	if (!dest) {
-		G_Printf ("Couldn't find teleporter destination\n");
+	if(!Q_stricmp(self->swapname, activator->target)) {
+		self->flags ^= FL_LOCKED;
 		return;
 	}
 
-	TeleportPlayer( activator, dest->s.origin, dest->s.angles );
+	if(self->flags & FL_LOCKED)
+		return;
+
+	if (!activator || !activator->client)
+		return;
+	dest = 	G_PickTarget( self->target );
+	if (!dest) {
+		DEVELOPER(G_Printf (S_COLOR_YELLOW "[Entity-Error] Couldn't find teleporter destination\n"););
+		G_FreeEntity(self);
+		return;
+	}
+
+	VectorCopy(dest->s.origin, destPoint);
+
+	if ( self->spawnflags & 2 )
+	{
+		destPoint[2] += dest->r.mins[2]; 
+		destPoint[2] -= other->r.mins[2];
+		destPoint[2] += 1;
+	}
+	else
+	{
+		VectorCopy( dest->s.origin, tracePoint );
+		tracePoint[2] -= 4096;
+
+		trap_Trace( &tr, dest->s.origin, dest->r.mins, dest->r.maxs, tracePoint, dest->s.number, MASK_PLAYERSOLID ); 
+		VectorCopy( tr.endpos, destPoint );
+
+		//offset the player's bounding box.
+		destPoint[2] -= activator->r.mins[2]; //other->r.mins[2];
+
+		//add 1 to ensure non-direct collision
+		destPoint[2] += 1;
+	}
+
+	if ( self->spawnflags & 1 ) {
+		if ( TransDat[activator->client->ps.clientNum].beamTime == 0 ) {
+			G_InitTransport( activator->client->ps.clientNum, destPoint, dest->s.angles );				 
+		}
+	}
+	else {
+		TeleportPlayer( activator, destPoint, dest->s.angles, TP_NORMAL );
+	}
 }
 
-/*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8)
-The activator will be teleported away.
+/*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8) VISUAL_FX SUSPENDED DEACTIVATED
+The activator will be instantly teleported away.
+VISUAL_FX - Instead of instant teleportation with no FX, entity will play the Star Trek style
+transporter effect and teleport over the course of an 8 second cycle.
+SUSPENDED - Unless this is checked, the player will materialise on top of the first solid
+surface underneath the entity
+
+"targetname" - Any entities targeting this will activate it when used.
+"target"     - Name of one or more notnull entities that the player teleport to.
+"swapname"	 - Activate/Deactivate (Using entity needs SELF/NOACTIVATOR)
+
+NB-If using the transporter VISUAL_FX, place the target entity so it's right on top of
+the surface you want the player to appear on.  It's been hardcoded to take this offset into
+account only when the VISUAL_FX flag is on.
 */
 void SP_target_teleporter( gentity_t *self ) {
-	if (!self->targetname)
-		G_Printf("untargeted %s at %s\n", self->classname, vtos(self->s.origin));
+	if (!self->targetname) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] untargeted %s at %s\n", self->classname, vtos(self->s.origin)););
+	}
+
+	if(self->spawnflags & 4)
+		self->flags ^= FL_LOCKED;
 
 	self->use = target_teleporter_use;
 }
 
 //==========================================================
 
-
-/*QUAKED target_relay (.5 .5 .5) (-8 -8 -8) (8 8 8) RED_ONLY BLUE_ONLY RANDOM
+/*QUAKED target_relay (.5 .5 .5) (-8 -8 -8) (8 8 8) RED_ONLY BLUE_ONLY RANDOM SELF
 This doesn't perform any actions except fire its targets.
 The activator can be forced to be from a certain team.
 if RANDOM is checked, only one of the targets will be fired, not all of them
+
+SELF	use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
 */
+
 void target_relay_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
-	if ( ( self->spawnflags & 1 ) && activator->client 
+	if ( ( self->spawnflags & 1 ) && activator && activator->client 
 		&& activator->client->sess.sessionTeam != TEAM_RED ) {
-		return;
+			return;
 	}
-	if ( ( self->spawnflags & 2 ) && activator->client 
+	if ( ( self->spawnflags & 2 ) && activator && activator->client 
 		&& activator->client->sess.sessionTeam != TEAM_BLUE ) {
-		return;
+			return;
 	}
+
+	if(!activator) return;
+
 	if ( self->spawnflags & 4 ) {
 		gentity_t	*ent;
 
 		ent = G_PickTarget( self->target );
 		if ( ent && ent->use ) {
-			ent->use( ent, self, activator );
+			if(self->spawnflags & 8) {
+				ent->use(ent, self, self);
+#ifdef G_LUA
+				if(ent->luaUse)
+					LuaHook_G_EntityUse(self->luaUse, self->s.number, other->s.number, activator->s.number);
+#endif
+			}
+			else {
+				ent->use( ent, self, activator );
+#ifdef G_LUA
+				if(ent->luaUse)
+					LuaHook_G_EntityUse(self->luaUse, self->s.number, other->s.number, self->s.number);
+#endif
+			}
 		}
 		return;
 	}
-	G_UseTargets (self, activator);
+	if(self->spawnflags & 8)
+		G_UseTargets(self, self);
+	else
+		G_UseTargets (self, activator);
 }
 
 void SP_target_relay (gentity_t *self) {
@@ -406,11 +560,16 @@ void SP_target_relay (gentity_t *self) {
 Kills the activator.
 */
 void target_kill_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
-	G_Damage ( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+	if(activator)
+		G_Damage ( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 }
 
 void SP_target_kill( gentity_t *self ) {
 	self->use = target_kill_use;
+
+	// don't need to send this to clients
+	self->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(self);
 }
 
 /*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
@@ -424,6 +583,7 @@ static void target_location_linkup(gentity_t *ent)
 {
 	int i;
 	int n;
+	//gentity_t *tent;
 
 	if (level.locationLinked) 
 		return;
@@ -435,17 +595,19 @@ static void target_location_linkup(gentity_t *ent)
 	trap_SetConfigstring( CS_LOCATIONS, "unknown" );
 
 	for (i = 0, ent = g_entities, n = 1;
-			i < level.num_entities;
-			i++, ent++) {
-		if (ent->classname && !Q_stricmp(ent->classname, "target_location")) {
-			// lets overload some variables!
-			ent->health = n; // use for location marking
-			trap_SetConfigstring( CS_LOCATIONS + n, ent->message );
-			n++;
-			ent->nextTrain = level.locationHead;
-			level.locationHead = ent;
-		}
+		i < level.num_entities;
+		i++, ent++) {
+			if (ent->classname && !Q_stricmp(ent->classname, "target_location")) {
+				// lets overload some variables!
+				ent->health = n; // use for location marking
+				trap_SetConfigstring( CS_LOCATIONS + n, ent->message );
+				n++;
+				ent->nextTrain = level.locationHead;
+				level.locationHead = ent;
+			}
 	}
+
+
 
 	// All linked together now
 }
@@ -462,6 +624,2555 @@ void SP_target_location( gentity_t *self ){
 	self->think = target_location_linkup;
 	self->nextthink = level.time + 200;  // Let them all spawn first
 
+	//G_Printf( S_COLOR_RED "Location loaded! %s\n", self->message );
+
 	G_SetOrigin( self, self->s.origin );
 }
+
+/*QUAKED target_counter (1.0 0 0) (-4 -4 -4) (4 4 4) x x x x x x x x
+Acts as an intermediary for an action that takes multiple inputs.
+
+After the counter has been triggered "count" times (default 2), it will fire all of it's targets and remove itself.
+*/
+
+void target_counter_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	if ( self->count == 0 )
+	{
+		return;
+	}
+
+	self->count--;
+
+	if ( self->count )
+	{
+		return;
+	}
+
+	if(activator)
+		self->activator = activator;
+	else 
+		self->activator = self;
+	G_UseTargets( self, activator );
+}
+
+void SP_target_counter (gentity_t *self)
+{
+	self->wait = -1;
+	if (!self->count)
+	{
+		self->count = 2;
+	}
+
+	self->use = target_counter_use;
+
+	// don't need to send this to clients
+	self->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(self);
+}
+
+/*QUAKED target_objective (1.0 0 0) (-4 -4 -4) (4 4 4)
+When used, the objective in the <mapname>.efo with this objective's "count" will be marked as completed
+
+count - number of objective (as listed in the maps' <mapname>.efo)
+
+NOTE: the objective with the lowest "count" will be considered the current objective
+*/
+
+void target_objective_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	gentity_t *tent;
+
+	tent = G_TempEntity( self->r.currentOrigin, EV_OBJECTIVE_COMPLETE );
+
+	if(!tent) return; // uh ohhhh 
+
+	//Be sure to send the event to everyone
+	tent->r.svFlags |= SVF_BROADCAST;
+	tent->s.eventParm = self->count;
+}
+
+void SP_target_objective (gentity_t *self)
+{
+	if ( self->count <= 0 )
+	{
+		//FIXME: error msg
+		G_FreeEntity( self );
+		return;
+	}
+	if ( self->targetname )
+	{
+		self->use = target_objective_use;
+	}
+	level.numObjectives++;
+}
+
+/*================
+RPG-X Modification
+Phenix
+13/06/2004
+================*/
+
+/*QUAKED target_boolean (.5 .5 .5) (-8 -8 -8) (8 8 8) START_TRUE SWAP_FIRE SELF
+Acts as an if statement. When fired normaly if true it fires one target, if false it fires another.
+START_TRUE		the boolean starts true.
+SWAP_FIRE		when the swap command is issued it will also fire the new target.
+SELF   			use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+
+"targetname"	this when fired will fire the target according to which state the boolean is in
+"swapname"		this when fired will swap the boolean from one state to the opposite
+"truename"		this when fired will swap the boolean's state to true
+"falsename"		this when fired will sawp the boolean's state to false
+"truetarget"	this will be fired if the boolean is true then the targetname is recieved
+"falsetarget"	this will be fired if the boolean is false then the targetname is recieved
+*/
+
+void target_boolean_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
+
+	if ((!self) || (!other) || (!activator))
+	{
+		return;
+	}
+
+	if (Q_stricmp(self->truetarget,"(NULL)") == 0)
+	{
+		G_SpawnString( "truetarget", "DEFAULTTARGET", &self->truetarget );
+	}
+
+	if (Q_stricmp(other->target, self->targetname) == 0) {	
+		if (self->booleanstate == qtrue) {
+			if(self->spawnflags & 4) {
+				self->target = self->truetarget;
+				G_UseTargets2( self, self, self->truetarget );
+			} else {
+				G_UseTargets2( self, activator, self->truetarget );
+			}
+			return;
+		} else {
+			if(self->spawnflags & 4) {
+				self->target = self->falsetarget;
+				G_UseTargets2( self, self, self->falsetarget );
+			} else {
+				G_UseTargets2( self, activator, self->falsetarget );
+			}
+			return;
+		}
+
+	} else if (Q_stricmp(other->target, self->truename) == 0) {
+		self->booleanstate = qtrue;					//Make the boolean true
+		return;
+	} else if (Q_stricmp(other->target, self->falsename) == 0) {
+		self->booleanstate = qfalse;					//Make the boolean false
+		return;
+
+	} else if (Q_stricmp(other->target, self->swapname) == 0) {
+		if (self->booleanstate==qtrue) {			//If the boolean is true then swap to false
+			self->booleanstate = qfalse;
+			if (self->spawnflags & 2) {
+				if(self->spawnflags & 4) {
+					self->target = self->falsetarget;
+					G_UseTargets2( self, self, self->falsetarget );
+				} else {
+					G_UseTargets2( self, activator, self->falsetarget );
+				}
+			}
+		} else {
+			self->booleanstate = qtrue;
+			if (self->spawnflags & 2) {
+				if(self->spawnflags & 4) {
+					self->target = self->truetarget;
+					G_UseTargets2( self, self, self->truetarget );
+				} else {
+					G_UseTargets2( self, activator, self->truetarget );
+				}
+			}
+		}
+
+		return;
+	}
+}
+
+void SP_target_boolean (gentity_t *self) {
+	if (!self->booleanstate && self->spawnflags & 1) {
+		self->booleanstate = qtrue;
+	} else if (!self->booleanstate) {
+		self->booleanstate = qfalse;
+	}
+
+	self->use = target_boolean_use;
+
+	// don't need to send this to clients
+	self->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(self);
+}
+
+/*QUAKED target_gravity (.5 .5 .5) (-8 -8 -8) (8 8 8) PLAYER_ONLY MAP_GRAV
+This changes the servers gravity to the ammount set.
+PLAYER_ONLY		If select this will only change the gravity for teh actiator. TiM: an actiator eh?
+MAP_GRAV		Will reset player to the current global gravity.
+
+"gravity"	gravity value (default = g_gravity default = 800)
+*/
+
+void target_gravity_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
+{
+	//CIf spawn flag 1 is set, change gravity to specific user
+	if((self->spawnflags & 1) && activator && activator->client)
+	{
+		activator->client->ps.gravity = atoi(self->targetname2);
+		activator->client->SpecialGrav = qtrue;
+	}
+	//resyncing players grav to map grav.
+	else if((self->spawnflags & 2) && activator && activator->client)
+	{
+		activator->client->ps.gravity = g_gravity.integer;
+		activator->client->SpecialGrav = qfalse;
+	}
+	//Else change gravity for all clients
+	else
+	{
+		trap_Cvar_Set( "g_gravity", self->targetname2 );
+	}
+}
+
+void SP_target_gravity (gentity_t *self) {
+	char *temp;
+	if(!self->tmpEntity) { // check for spawnTEnt
+		G_SpawnString("gravity", "800", &temp);
+		self->targetname2 = G_NewString(temp);
+	}
+	if(self->count) // support for SP
+		self->targetname2 = G_NewString(va("%i", self->count));
+	self->use = target_gravity_use;
+
+	// don't need to send this to clients
+	self->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(self);
+}
+
+/*QUAKED target_shake (.5 .5 .5) (-8 -8 -8) (8 8 8)
+When fired every clients monitor will shake as if in an explition //TiM: explition eh?
+
+"wait"	Time that the shaking lasts for in seconds
+"intensity"	Strength of shake
+*/
+
+void target_shake_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
+{
+	//trap_SendConsoleCommand( EXEC_APPEND, va("shake %f %2f HRkq1yF22o06Zng9FZXH5sle\n", self->intensity, self->wait) ); //Start Shaking
+	//Com_Printf( "Intensity: %f, Duration %i ", self->intensity, ( (int)(level.time - level.startTime) + (int)( self->wait*1000 ) ) ) ;
+
+	trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%f %i", self->distance/*was self->intensity*/, ( (int)(level.time - level.startTime) + (int)( self->wait*1000 ) ) ) );
+}
+
+void SP_target_shake (gentity_t *self) {
+
+	//TiM: Phenix, you're a n00b. You should always put default values in. ;P
+	G_SpawnFloat( "intensity", "5", &self->distance /*was &self->intensity*/ );
+	G_SpawnFloat( "wait", "5", &self->wait );
+
+	self->use = target_shake_use;
+}
+
+/*QUAKED target_evosuit (.5 .5 .5) (-8 -8 -8) (8 8 8)
+Used to put an evosuit on or off for each player
+*/
+
+void target_evosuit_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
+{
+
+	if(!activator || !activator->client) return;
+
+	activator->flags ^= FL_EVOSUIT;
+	if (!(activator->flags & FL_EVOSUIT))
+	{
+		G_PrintfClient(activator, "%s\n", "You have taken an EVA Suit off\n");
+		activator->client->ps.powerups[PW_EVOSUIT] = 0;
+	}        
+	else
+	{
+		G_PrintfClient(activator, "%s\n", "You have put an EVA Suit on\n");
+		activator->client->ps.powerups[PW_EVOSUIT] = level.time + 1000000000;
+	}
+}
+
+void SP_target_evosuit (gentity_t *self) {
+	self->use = target_evosuit_use;
+
+	// don't need to send this to clients
+	self->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(self);
+}
+
+//==================================================================================
+//
+//TiM - Turbolift Ent
+//Multiple phases are broken up into multiple think functions
+//
+//==================================================================================
+
+static void target_turbolift_unlock ( gentity_t *ent )
+{
+	gentity_t* otherLift;
+
+	//get target deck number lift entity
+	otherLift = &g_entities[ent->count];
+
+	//last phase - unlock turbolift doors
+	{
+		gentity_t *door=NULL;
+
+		while ( ( door = G_Find( door, FOFS( targetname ), ent->target )) != NULL  )
+		{
+			if ( !Q_stricmp( door->classname, "func_door" ) )
+			{
+				door->flags &= ~FL_CLAMPED;
+			}
+		}
+
+		door = NULL;
+		if ( otherLift ) 
+		{
+			while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
+			{
+				if ( !Q_stricmp( door->classname, "func_door" ) )
+				{
+					door->flags &= ~FL_CLAMPED;
+				}
+			}
+		}
+	}
+
+	//reset lifts
+	if ( otherLift )
+		otherLift->count = 0;
+
+	ent->s.time2 = 0;
+	if(otherLift)
+		otherLift->s.time2 = 0;
+
+	ent->count = 0;
+	ent->nextthink = 0;
+	ent->think = 0;
+}
+
+
+static void target_turbolift_endMove ( gentity_t *ent )
+{
+	gentity_t* lights=NULL;
+	gentity_t* otherLift=NULL;
+	//gentity_t* tent=NULL;
+	float f = 0;
+
+	otherLift = &g_entities[ent->count];
+	if ( !otherLift )
+	{
+		target_turbolift_unlock( ent );
+		return;
+	}	
+
+	//unplay move sound
+	ent->r.svFlags |= SVF_NOCLIENT;
+	otherLift->r.svFlags |= SVF_NOCLIENT;
+
+	//play end sound
+	G_Sound( ent, ent->s.otherEntityNum2 );
+	G_Sound( otherLift, otherLift->s.otherEntityNum2 );
+
+	//unshow flashy bits
+	//find any usables parented to the lift ent, and use them
+	{
+		while ( ( lights = G_Find( lights, FOFS( targetname ), ent->target ) ) != NULL )
+		{
+			if ( !Q_stricmp( lights->classname, "func_usable" ) )
+			{	
+				if(!rpg_calcLiftTravelDuration.integer) {
+					lights->use( lights, lights, ent );
+#ifdef G_LUA
+					if(lights->luaUse)
+						LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+				}
+				else {
+					if(ent->s.eventParm < 0 && lights->targetname2) {
+						if(!Q_stricmp(lights->targetname2, va("%s_dn", ent->target))) {
+							lights->use(lights, lights, ent);
+#ifdef G_LUA
+							if(lights->luaUse)
+								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+						}
+					} else if(ent->s.eventParm > 0 && lights->targetname2) {
+						if(!Q_stricmp(lights->targetname2, va("%s_up", ent->target))) {
+							lights->use(lights, lights, ent);
+#ifdef G_LUA
+							if(lights->luaUse)
+								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+						}
+					} else {
+						lights->use(lights, lights, ent);
+#ifdef G_LUA
+						if(lights->luaUse)
+							LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+					}
+				}
+			}
+		}
+
+		lights = NULL;
+		while ( ( lights = G_Find( lights, FOFS( targetname ), otherLift->target ) ) != NULL )
+		{
+			if ( !Q_stricmp( lights->classname, "func_usable" ) )
+			{
+				if(!rpg_calcLiftTravelDuration.integer) {
+					lights->use( lights, lights, ent );
+#ifdef G_LUA
+					if(lights->luaUse)
+						LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+				}
+				else {
+					if(ent->s.eventParm < 0 && lights->targetname2) {
+						if(!Q_stricmp(lights->targetname2, va("%s_dn", otherLift->target))) {
+							lights->use(lights, lights, ent);
+#ifdef G_LUA
+							if(lights->luaUse)
+								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+						}
+					} else if(ent->s.eventParm && lights->targetname2) {
+						if(!Q_stricmp(lights->targetname2, va("%s_up", otherLift->target))) {
+							lights->use(lights, lights, ent);
+#ifdef G_LUA
+							if(lights->luaUse)
+								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+						}
+					} else {
+						lights->use(lights, lights, ent);
+#ifdef G_LUA
+						if(lights->luaUse)
+							LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+					}
+				}
+			}
+		}
+	}
+
+	// check for shader remaps
+	if(rpg_calcLiftTravelDuration.integer) {
+		if((ent->truename && otherLift->truename) || (ent->falsename && otherLift->falsename)) {
+			f = level.time * 0.001;
+			AddRemap(ent->targetShaderName, ent->targetShaderName, f);
+			AddRemap(otherLift->targetShaderName, otherLift->targetShaderName, f);
+		}
+		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
+	}
+
+	//next phase, teleport player
+	ent->nextthink = level.time + ent->sound1to2;
+	ent->think = target_turbolift_unlock;
+}
+
+//TiM - we'll have two sets of teleports, so let's re-use this
+static void TeleportPlayers ( gentity_t* ent, gentity_t* targetLift, int numEnts, int *touch )
+{
+	int			i = 0;
+	gentity_t	*player=NULL;
+	float		dist;
+	vec3_t		temp;
+	vec3_t		angles;
+	vec3_t		newOrigin;
+	vec3_t		viewAng;
+
+	if ( numEnts <= 0 )
+		return;
+
+	for ( i = 0; i < numEnts; i++ )
+	{
+		player = &g_entities[touch[i]];
+
+		if ( !player->client )
+			continue;
+
+		//to teleport them, we need two things.  Their distance and angle from the origin
+		VectorSubtract( player->client->ps.origin, ent->s.origin, temp );
+
+		//distance + angles
+		dist = VectorLength( temp );
+		VectorNormalize( temp );
+		vectoangles( temp, angles );
+
+		angles[YAW] = AngleNormalize360( angles[YAW] - ent->s.angles[YAW] );
+
+		//now... calc their new origin and view angles
+		angles[YAW] = AngleNormalize360( angles[YAW] + targetLift->s.angles[YAW] );
+		AngleVectors( angles, temp, NULL, NULL );
+
+		VectorMA( targetLift->s.origin, dist, temp, newOrigin );
+
+		VectorCopy( player->client->ps.viewangles, viewAng );
+		viewAng[YAW] = AngleNormalize360( viewAng[YAW] + ( targetLift->s.angles[YAW] - ent->s.angles[YAW] ) );
+
+		TeleportPlayer( player, newOrigin, viewAng, TP_TURBO );
+	}
+}
+
+static void target_turbolift_TeleportPlayers ( gentity_t *ent )
+{
+	gentity_t	*targetLift;
+	vec3_t		mins, maxs;
+	float		time;
+
+	//store both sets of data so they can be swapped at the same time
+	int			*liftTouch;
+	int			*targetLiftTouch;
+	int			liftNumEnts;
+	int			targetLiftNumEnts;
+
+	//teleport the players
+	targetLift = &g_entities[ent->count];
+
+	if ( !targetLift ) {
+		target_turbolift_unlock( ent );
+		return;
+	}
+
+	liftTouch = (int *)malloc(MAX_GENTITIES * sizeof(int));
+	if(!liftTouch) {
+		target_turbolift_unlock( ent );
+		return;
+	}
+
+	//scan the turbo region for players
+	//in the current lift
+	{
+		if(!ent->tmpEntity) {
+			VectorCopy( ent->r.maxs, maxs );
+			VectorCopy( ent->r.mins, mins );
+		} else {
+			VectorAdd(ent->r.maxs, ent->s.origin, maxs);
+			VectorAdd(ent->r.mins, ent->s.origin, mins);
+		}
+
+		liftNumEnts = trap_EntitiesInBox( mins, maxs, liftTouch, MAX_GENTITIES );
+	}
+
+	targetLiftTouch = (int *)malloc(MAX_GENTITIES * sizeof(int));
+	if(!targetLiftTouch) {
+		target_turbolift_unlock( ent );
+		free(liftTouch);
+		return;
+	}
+
+	//the target lift
+	{
+		if(!targetLift->tmpEntity) {
+			VectorCopy( targetLift->r.maxs, maxs );
+			VectorCopy( targetLift->r.mins, mins );
+		} else {
+			VectorAdd(targetLift->r.maxs, targetLift->s.origin, maxs);
+			VectorAdd(targetLift->r.mins, targetLift->s.origin, mins);
+		}
+
+		targetLiftNumEnts = trap_EntitiesInBox( mins, maxs, targetLiftTouch, MAX_GENTITIES );
+	}
+
+	//TiM - Teleport the players from the other target to this one
+	TeleportPlayers( targetLift, ent, targetLiftNumEnts, targetLiftTouch );
+
+	//TiM - Teleport the main players
+	TeleportPlayers( ent, targetLift, liftNumEnts, liftTouch );
+
+	if(rpg_calcLiftTravelDuration.integer) {
+		time = targetLift->health - ent->health;
+		if(time < 0)
+			time *= -1;
+		time *= rpg_liftDurationModifier.value;
+		time *= 1000;
+		ent->think = target_turbolift_endMove;
+		ent->nextthink = level.time + (time * 0.5f);
+	} else {
+		//first thing's first
+		ent->think = target_turbolift_endMove;
+		ent->nextthink = level.time + (ent->wait*0.5f);
+	}
+
+	free(liftTouch);
+	free(targetLiftTouch);
+}
+
+static void target_turbolift_startSoundEnd(gentity_t *ent) {
+	ent->nextthink = -1;
+	ent->parent->r.svFlags &= ~SVF_NOCLIENT;
+	ent->touched->r.svFlags &= ~SVF_NOCLIENT;
+}
+
+static void target_turbolift_startMove ( gentity_t *ent )
+{
+	gentity_t*	lights=NULL;
+	gentity_t*	otherLift=NULL;
+	gentity_t*  tent=NULL;
+	float		time = 0, time2 = 0;
+	float f = 0;
+
+	otherLift = &g_entities[ent->count];
+	if ( !otherLift )
+	{
+		target_turbolift_unlock( ent );
+		return;
+	}	
+
+	//play move sound
+	if( rpg_calcLiftTravelDuration.integer ) {
+		time = time2 = ent->health - otherLift->health;
+		if(time < 0)
+			time *= -1;
+		if(ent->sound2to1) {
+			if( rpg_liftDurationModifier.value * 1000 * time >= ent->distance * 1000 ) {
+				tent = G_Spawn();
+				tent->think = target_turbolift_startSoundEnd;
+				tent->nextthink = level.time + (ent->distance * 1000);
+				tent->parent = ent;
+				tent->touched = otherLift;
+				G_AddEvent(ent, EV_GENERAL_SOUND, ent->sound2to1);
+			}
+		} else {
+			ent->r.svFlags &= ~SVF_NOCLIENT;
+			otherLift->r.svFlags &= ~SVF_NOCLIENT;
+		}
+	} else {
+		ent->r.svFlags					&= ~SVF_NOCLIENT;
+
+		otherLift->r.svFlags			&= ~SVF_NOCLIENT;
+	}
+	//show flashy bits
+	//find any usables parented to the lift ent, and use them
+	{
+		while ( ( lights = G_Find( lights, FOFS( targetname ), ent->target ) ) != NULL )
+		{
+			if ( !Q_stricmp( lights->classname, "func_usable" ) )
+			{
+				if(!rpg_calcLiftTravelDuration.integer) {
+					lights->use( lights, lights, ent );
+#ifdef G_LUA
+					if(lights->luaUse)
+						LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+				}
+				else {
+					if ( time2 < 0 && lights->targetname2 ) {
+						if(!Q_stricmp(lights->targetname2, va("%s_dn", ent->target))) {
+							lights->use(lights, lights, ent );
+#ifdef G_LUA
+							if(lights->luaUse)
+								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+						}
+					} else if ( time2 > 0 && lights->targetname2 ) {
+						if(!Q_stricmp(lights->targetname2, va("%s_up", ent->target))) {
+							lights->use(lights, lights, ent );
+#ifdef G_LUA
+							if(lights->luaUse)
+								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+						}
+					} else {
+						lights->use( lights, lights, ent);
+#ifdef G_LUA
+						if(lights->luaUse)
+							LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+					}
+				}
+			}
+		}
+
+		lights = NULL;
+		while ( ( lights = G_Find( lights, FOFS( targetname ), otherLift->target ) ) != NULL )
+		{
+			if ( !Q_stricmp( lights->classname, "func_usable" ) )
+			{
+				if(!rpg_calcLiftTravelDuration.integer) {
+					lights->use( lights, lights, ent );
+#ifdef G_LUA
+					if(lights->luaUse)
+						LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+				}
+				else {
+					if(time2 < 0 && lights->targetname2) {
+						if(!Q_stricmp(lights->targetname2, va("%s_dn", otherLift->target))) {
+							lights->use(lights, lights, ent);
+#ifdef G_LUA
+							if(lights->luaUse);
+							LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+						}
+					} else if(time2 > 0 && lights->targetname2) {
+						if(!Q_stricmp(lights->targetname2, va("%s_up", otherLift->target))) {
+							lights->use(lights, lights, ent);
+#ifdef G_LUA
+							if(lights->luaUse)
+								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);			
+#endif
+						}
+					} else {
+						lights->use(lights, lights, ent);
+#ifdef G_LUA
+						if(lights->luaUse)
+							LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+#endif
+					}
+				}
+			}
+		}
+	}
+
+	// check for shader remaps
+	if(rpg_calcLiftTravelDuration.integer) {
+		if(time2 < 0 && ent->truename && otherLift->truename) {
+			f = level.time * 0.001;
+			AddRemap(ent->targetShaderName, ent->truename, f);
+			AddRemap(otherLift->targetShaderName, otherLift->truename, f);
+		} else if(time2 >  0 && ent->falsename && otherLift->falsename) {
+			f = level.time * 0.001;
+			AddRemap(ent->targetShaderName, ent->falsename, f);
+			AddRemap(otherLift->targetShaderName, otherLift->falsename, f);
+		}
+		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());	
+	}
+
+	if(rpg_calcLiftTravelDuration.integer) {
+		/*time = ent->health - otherLift->health;
+		if(time < 0)
+		time *= -1;*/
+		ent->s.eventParm = time2;
+		time *= rpg_liftDurationModifier.value;
+		time *= 1000;
+		ent->s.time2 = level.time + time;
+		otherLift->s.time2 = level.time + time;
+		ent->nextthink = level.time + (time * 0.5f);
+		ent->think = target_turbolift_TeleportPlayers;
+	} else {
+		//sent to the client for client-side rotation
+		ent->s.time2 = level.time+ent->wait;
+		otherLift->s.time2 = level.time+ent->wait;
+
+		//next phase, teleport player
+		ent->nextthink = level.time + (ent->wait*0.5f);
+		ent->think = target_turbolift_TeleportPlayers;
+	}
+}
+
+static void target_turbolift_shutDoors ( gentity_t *ent )
+{
+	gentity_t* door=NULL;
+	gentity_t* otherLift=NULL;
+
+	otherLift = &g_entities[ent->count];
+	if ( !otherLift )
+	{
+		target_turbolift_unlock( ent );
+		return;
+	}
+
+	while ( ( door = G_Find( door, FOFS( targetname ), ent->target )) != NULL  )
+	{
+		if ( !Q_stricmp( door->classname, "func_door" ) )
+		{
+			if ( door->moverState != MOVER_POS1 ) {
+				ent->nextthink = level.time + 500;
+				return;
+			}
+		}
+	}
+
+	door = NULL;
+	while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
+	{
+		if ( !Q_stricmp( door->classname, "func_door" ) )
+		{
+			if ( door->moverState != MOVER_POS1 ) {
+				ent->nextthink = level.time + 500;
+				return;
+			}
+		}
+	}
+
+	//start phase 3
+	ent->think = target_turbolift_startMove;
+	ent->nextthink = level.time + FRAMETIME;
+}
+
+void target_turbolift_start ( gentity_t *self )
+{
+	gentity_t* otherLift;
+
+	//get target deck number lift entity
+	otherLift = &g_entities[self->count];
+
+	if ( !otherLift )
+	{
+		target_turbolift_unlock( self );
+		return;
+	}
+
+	//phase 1 - lock turbolift doors
+	//lock the doors on both lifts
+	{
+		gentity_t *door=NULL;
+
+		while ( ( door = G_Find( door, FOFS( targetname ), self->target )) != NULL  )
+		{
+			if ( !Q_stricmp( door->classname, "func_door" ) )
+			{
+				door->flags |= FL_CLAMPED;
+				if ( door->moverState != MOVER_POS1 )
+				{
+					door->nextthink = level.time;
+				}
+			}
+		}
+
+		door = NULL;
+		while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
+		{
+			if ( !Q_stricmp( door->classname, "func_door" ) )
+			{
+				door->flags |= FL_CLAMPED;
+				if ( door->moverState != MOVER_POS1 )
+				{
+					door->nextthink = level.time;
+				}
+			}
+		}
+	}
+
+	//phase 2 - wait until both doors are shut
+	self->think = target_turbolift_shutDoors;
+	self->nextthink = level.time + 500;
+}
+
+static void target_turbolift_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+{
+	if(!Q_stricmp(self->swapname, activator->target)) {
+		if(self->soundPos1)
+			G_AddEvent(self, EV_GENERAL_SOUND, self->soundPos1);
+		self->flags ^= FL_LOCKED;
+	}
+
+	if(self->flags & FL_LOCKED) return;
+
+	if ( self->count > 0 )
+	{
+		trap_SendServerCommand( activator-g_entities, "print \"Unable to comply. The lift is currently in use.\n\" " );
+		return;
+	}
+
+	//trap_SendServerCommand( activator-g_entities, va( "lift %i", (int)(self-g_entities) ) );
+	trap_SendServerCommand( activator-g_entities, "lift" );
+}
+
+extern void BG_LanguageFilename(char *baseName,char *baseExtension,char *finalName);
+
+/*
+QUAKED target_turbolift (.5 .5 .5) ? x x x x x x x x OFFLINE
+Turbolifts are delayed teleporters that send players between
+each other, maintaining their view and position so the transition is seamless.
+If you target this entity with a func_usable, upon activating that useable,
+a menu will appear to select decks.  If you target any useables with this
+entity, they'll be triggered when the sequence starts (ie scrolling light texture brushes).
+If rpg_calcLiftTravelDuration is set to one it is possible to have two usables targeted, one for the
+up and one for the down driection in order to use this set targetname2 of those to 
+<targetname>_up and <targetname>_dn.
+If you target any doors with this entity, they will shut and lock for this sequence.
+For the angles, the entity's angle must be aimed at the main set of doors to the lift area.
+
+OFFLINE				Turbolift is offline at start
+
+"deck"				- which deck number this is (You can have multiple lifts of the same deck. Entity fails spawn if not specified)
+"deckName"			- name of the main features on this deck (Appears in the deck menu, defaults to 'Unknown')
+"wait"				- number of seconds to wait until teleporting the players (1000 = 1 second, default 3000)
+"soundLoop"			- looping sound that plays in the wait period (Defaults to EF SP's sound. '*' for none)
+"soundEnd"			- sound that plays as the wait period ends. (Defaults to EF SP's sound. '*' for none)
+"soundStart			- sound that plays when the lift starts moving
+"soundStartLength"	- how long the start sound is in seconds
+"soundDeactivate"	- sound to play if player tries to use an deactivated turbolift
+"waitEnd"			- how long to wait from the lift stopping to the doors opening (default 1000 )
+"swapname"			- toggles turbolift on/off
+"targetShaderName"	- lights off shader
+"falsename"			- lights up
+"truename"			- lights down
+*/
+
+void SP_target_turbolift ( gentity_t *self )
+{
+	int				i;
+	char*			loopSound;
+	char*			endSound;
+	char*			idleSound;
+	char*			startSound;
+	char*			deactSound;
+	int				len;
+	fileHandle_t	f;
+	char			fileRoute[MAX_QPATH];
+	char			mapRoute[MAX_QPATH];
+	char			serverInfo[MAX_TOKEN_CHARS];
+
+	//cache the moving sounds
+	G_SpawnString( "soundLoop", "sound/movers/plats/turbomove.wav", &loopSound );
+	G_SpawnString( "soundEnd", "sound/movers/plats/turbostop.wav", &endSound );
+	G_SpawnString( "soundIdle", "100", &idleSound);
+	G_SpawnString( "soundStart", "100", &startSound);
+	G_SpawnFloat( "soundStartLength", "100", &self->distance);
+	G_SpawnString( "soundDeactivate", "100", &deactSound );
+
+	self->s.loopSound				= G_SoundIndex( loopSound ); //looping sound
+	self->s.otherEntityNum2			= G_SoundIndex( endSound );	//End Phase sound
+	/*self->soundLocked				= G_SoundIndex( idleSound );*/
+	self->n00bCount					= G_SoundIndex( idleSound );
+	self->sound2to1					= G_SoundIndex( startSound );
+	self->soundPos1					= G_SoundIndex( deactSound );
+
+	if(self->spawnflags & 512)
+		self->flags ^= FL_LOCKED;
+
+	//get deck num
+	G_SpawnInt( "deck", "0", &i );
+	//kill the ent if it isn't valid
+	if ( i <= 0 && !(self->tmpEntity))
+	{
+		DEVELOPER(G_Printf( S_COLOR_YELLOW "[Entity-Error] A turbolift entity does not have a valid deck number!\n" ););
+		G_FreeEntity( self );
+		return;
+	}
+
+	if(!self->tmpEntity)
+		self->health = i;
+	self->count = 0; //target/targetted lift
+	G_SpawnFloat( "wait", "3000", &self->wait );
+	G_SpawnInt( "waitEnd", "1000", &self->sound1to2 );
+
+	if(!self->tmpEntity)
+		trap_SetBrushModel( self, self->model );
+	self->r.contents = CONTENTS_TRIGGER;		// replaces the -1 from trap_SetBrushModel
+	self->r.svFlags = SVF_NOCLIENT;
+	self->s.eType = ET_TURBOLIFT;				//TiM - Client-side sound FX
+
+	trap_LinkEntity( self );
+
+	VectorCopy( self->r.mins, self->s.angles2 );
+	VectorCopy( self->r.maxs, self->s.origin2 );
+
+	VectorAverage( self->r.mins, self->r.maxs, self->s.origin );
+	G_SetOrigin( self, self->s.origin );
+
+	//insert code to worry about deck name later
+	self->use = target_turbolift_use;
+
+	if ( level.numDecks >= MAX_DECKS )
+		return;
+
+	//get the map name out of the server data
+	trap_GetServerinfo( serverInfo, sizeof( serverInfo ) );
+
+	//TiM - Configure the deck number and description into a config string
+	Com_sprintf( mapRoute, sizeof( mapRoute ), "maps/%s", Info_ValueForKey( serverInfo, "mapname" ) );
+	BG_LanguageFilename( mapRoute, "turbolift", fileRoute );
+
+	//Check for a turbolift cfg
+	len = trap_FS_FOpenFile( fileRoute, &f, FS_READ );
+	trap_FS_FCloseFile( f );
+
+	//if no file was found, resort to the string system.
+	//BUT! we shouldn't rely on this system if we can 
+	if ( len <= 0 )
+	{
+		char		infoString[MAX_TOKEN_CHARS];
+		char*		deckNamePtr;
+		char		deckName[57];
+		gentity_t*	prevDeck=NULL;
+		qboolean	deckFound=qfalse;
+
+		while ( ( prevDeck = G_Find( prevDeck, FOFS( classname ), "target_turbolift" ) ) != NULL )
+		{
+			if ( prevDeck != self && prevDeck->health == self->health )
+			{
+				deckFound = qtrue;
+				break;
+			}
+		}
+
+		//this deck number hasn't been registered b4
+		if ( !deckFound )
+		{
+			G_SpawnString( "deckName", "Unknown", &deckNamePtr );
+			Q_strncpyz( deckName, deckNamePtr, sizeof( deckName ) );
+
+			trap_GetConfigstring( CS_TURBOLIFT_DATA, infoString, sizeof( infoString ) );
+
+			if ( !infoString[0] )
+			{
+				Com_sprintf( infoString, sizeof( infoString ), "d%i\\%i\\n%i\\%s\\", level.numDecks, self->health, level.numDecks, deckName );
+			}
+			else
+			{
+				Com_sprintf( infoString, sizeof( infoString ), "%sd%i\\%i\\n%i\\%s\\", infoString, level.numDecks, self->health, level.numDecks, deckName );
+			}
+
+			trap_SetConfigstring( CS_TURBOLIFT_DATA, infoString );
+			level.numDecks++;
+		}
+	}
+
+	level.numBrushEnts++;
+}
+
+
+
+/* ==============
+END MODIFICATION
+===============*/
+
+//RPG-X | GSIO01 | 08/05/2009
+/*QUAKED target_doorlock (1 0 0) (-8 -8 -8) (8 8 8) PRIVATE
+Locks/Unlocks a door.
+
+PRIVATE		if set, lockMsg/unlockMsg are only printed for activator
+
+"target"    breakable to repair (either it's targetname or it's targetname2)
+"lockMsg"   message printed if door gets locked
+"unlockMsg" message printed if door gets unlocked
+*/
+void target_doorLock_use(gentity_t *ent, gentity_t *other, gentity_t* activator) {
+	gentity_t	*target = NULL;
+	target = G_Find(NULL, FOFS(targetname2), ent->target);
+	if(!target) 
+		return;
+	if(!(target->flags & FL_LOCKED)) {
+		if(ent->swapname) {
+			if((ent->spawnflags & 1) && activator && activator->client)
+				trap_SendServerCommand(activator-g_entities, va("servermsg %s", ent->swapname));
+			else
+				trap_SendServerCommand(-1, va("servermsg %s", ent->swapname));
+		}
+	}
+	else 
+	{
+		if(ent->truename) {
+			if((ent->spawnflags & 1) && activator && activator->client)
+				trap_SendServerCommand(activator-g_entities, va("servermsg %s", ent->truename));
+			else
+				trap_SendServerCommand(-1, va("servermsg %s", ent->truename));
+		}
+	}
+	if(!Q_stricmp(target->classname, "func_door") || !Q_stricmp(target->classname, "func_door_rotating")) {
+		target->flags ^= FL_LOCKED;
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Target %s of target_doorlock at %s is not a door!\n", ent->target, vtos(ent->s.origin)););
+		return;
+	}
+}
+
+void SP_target_doorLock(gentity_t *ent) {
+	char *temp;
+	if(!ent->target) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_doorlock at %s without target!\n"););
+		G_FreeEntity(ent);
+		return;
+	}
+	G_SpawnString("lockMsg", "", &temp);
+	ent->swapname = G_NewString(temp); // ent->swapnmae = temp or strcpy(...) screws everthing up
+	G_SpawnString("unlockMsg", "", &temp);
+	ent->truename = G_NewString(temp);
+	ent->use = target_doorLock_use;
+
+	// don't need to send this to clients
+	ent->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
+}
+
+//RPG-X | GSIO01 | 11/05/2009 | MOD START
+/*QUAKED target_alert (1 0 0) (-8 -8 -8) (8 8 8) SOUND_TOGGLE SOUND_OFF
+This entity acts like 3-Alert-Conditions scripts.
+
+Any of the func_usables that are used as buttons must have the NO_ACTIVATOR spawnflag.
+
+SOUND_TOGGLE		if set the alert sound can be toggled on/off by using the alerts trigger again.
+SOUND_OFF			if SOUND_TOGGLE is set, the alert will be silent at beginning
+
+"greenname"			the trigger for green alert should target this				
+"yellowname"		the trigger for yellow alert should target this				
+"redname"			the trigger for red alert should target this				
+"bluename"			the trigger for blue alert should target this				
+"greentarget"		anything that should be toggled when activating green alert	
+"yellowtarget"		anything that should be toggled when activating yellow alert
+"redtarget"			anything that should be toggled when activating red alert	
+"bluetarget"		anything that should be toggled when activating blue alert	
+"greensnd"			targetname of target_speaker with sound for green alert		
+"yellowsnd"			targetname of target_speaker with sound for yellow alert		
+"redsnd"			targetname of target_speaker with sound for red alert			
+"bluesnd"			targetname of target_speaker with sound for blue alert
+
+----------shader remapping----------
+"greenshader"		shadername of condition green
+"yellowshader"		shadername of condition yellow
+"redshader"			shadername of condition red
+"blueshader"		shadername of condition blue
+
+You can remap multiple shaders by separating them with \n.
+Example: "greenshader"	"textures/alert/green1\ntextures/alert/green2"
+*/
+typedef struct {
+	char	*greenShaders[10];
+	char	*redShaders[10];
+	char	*yellowShaders[10];
+	char	*blueShaders[10];
+	int		numShaders;
+} target_alert_Shaders_s;
+
+static target_alert_Shaders_s alertShaders;
+
+void target_alert_remapShaders(int target_condition) {
+	float f = 0;
+	int i;
+
+	switch(target_condition) {
+	case 1: // yellow
+		for(i = 0; i < alertShaders.numShaders; i++) {
+			f = level.time * 0.001;
+			if(!alertShaders.greenShaders[i] || !alertShaders.yellowShaders[i]) break;
+			AddRemap(alertShaders.greenShaders[i], alertShaders.yellowShaders[i], f);
+		}
+		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
+		break;
+	case 2: // red
+		for(i = 0; i < alertShaders.numShaders; i++) {
+			f = level.time * 0.001;
+			if(!alertShaders.greenShaders[i] || !alertShaders.redShaders[i]) break;
+			AddRemap(alertShaders.greenShaders[i], alertShaders.redShaders[i], f);
+		}
+		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
+		break;
+	case 3: // blue
+		for(i = 0; i < alertShaders.numShaders; i++) {
+			f = level.time * 0.001;
+			if(!alertShaders.greenShaders[i] || !alertShaders.blueShaders[i]) break;
+			AddRemap(alertShaders.greenShaders[i], alertShaders.blueShaders[i], f);
+		}
+		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
+		break;
+	case 0: // green
+	default:
+		for(i = 0; i < alertShaders.numShaders; i++) {
+			f = level.time * 0.001;
+			if(!alertShaders.greenShaders[i]) break;
+			AddRemap(alertShaders.greenShaders[i], alertShaders.greenShaders[i], f);
+		}
+		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
+		break;
+	}
+
+}
+
+void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	if(!activator) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_alert_use called with NULL activator.\n"););
+		return;
+	}
+	if(!Q_stricmp(activator->target, ent->swapname)) {
+		if(ent->damage == 0) {
+			if(ent->spawnflags & 1) {
+				ent->health = !ent->health;
+				ent->target = ent->greensound;
+				G_UseTargets(ent, ent);
+			}
+		} else {
+			switch(ent->damage) {
+			case 1: // yellow
+				if(ent->health) {
+					ent->target = ent->yellowsound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				}
+				/*if(!ent->spawnflags) {
+				ent->target = ent->yellowsound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->falsetarget;
+				G_UseTargets(ent, ent);
+				break;
+			case 2: // red
+				if(ent->health) {
+					ent->target = ent->redsound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				}
+				/*if(!ent->spawnflags) {
+				ent->target = ent->redsound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->paintarget;
+				G_UseTargets(ent, ent);
+				break;
+			case 3: // blue
+				if(ent->health) {
+					ent->target = ent->bluesound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				} 
+				/*if(!ent->spawnflags) {
+				ent->target = ent->bluesound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->targetname2;
+				G_UseTargets(ent, ent);
+				break;
+			}
+			if(!ent->spawnflags) {
+				ent->target = ent->greensound;
+				G_UseTargets(ent, ent);
+			} else if(ent->spawnflags & 2) {
+				ent->health = 0;
+			} else {
+				if(ent->spawnflags) {
+					ent->target = ent->greensound;
+					G_UseTargets(ent, ent);
+					ent->health = 1;
+				}
+			}
+			target_alert_remapShaders(0);
+			ent->target = ent->truetarget;
+			G_UseTargets(ent, ent);
+			ent->damage = 0;
+		}
+	} else if(!Q_stricmp(activator->target, ent->truename)) {
+		if(ent->damage == 1) {
+			if(ent->spawnflags & 1) {
+				ent->health = !ent->health;
+				ent->target = ent->yellowsound;
+				G_UseTargets(ent, ent);
+			}
+		} else {
+			switch(ent->damage) {
+			case 0: // green
+				if(ent->health) {
+					ent->target = ent->greensound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				}
+				/*if(!ent->spawnflags) {
+				ent->target = ent->greensound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->truetarget;
+				G_UseTargets(ent, ent);
+				break;
+			case 2: // red
+				if(ent->health) {
+					ent->target = ent->redsound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				}
+				/*if(!ent->spawnflags) {
+				ent->target = ent->redsound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->paintarget;
+				G_UseTargets(ent, ent);
+				break;
+			case 3: // blue
+				if(ent->health) {
+					ent->target = ent->bluesound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				}
+				/*if(!ent->spawnflags) {
+				ent->target = ent->bluesound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->targetname2;
+				G_UseTargets(ent, ent);
+				break;
+			}
+			if(!ent->spawnflags) {
+				ent->target = ent->yellowsound;
+				G_UseTargets(ent, ent);
+			} else if(ent->spawnflags & 2) {
+				ent->health = 0;
+			} else {
+				if(ent->spawnflags) {
+					ent->target = ent->yellowsound;
+					G_UseTargets(ent, ent);
+					ent->health = 1;
+				}
+			}
+			target_alert_remapShaders(1);
+			ent->target = ent->falsetarget;
+			G_UseTargets(ent, ent);
+			ent->damage = 1;
+		}
+	} else if(!Q_stricmp(activator->target, ent->falsename)) {
+		if(ent->damage == 2) {
+			if(ent->spawnflags & 1) {
+				ent->health = !ent->health;
+				ent->target = ent->redsound;
+				G_UseTargets(ent, ent);
+			}
+		} else {
+			switch(ent->damage) {
+			case 0: // green
+				if(ent->health) {
+					ent->target = ent->greensound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				}
+				/*if(!ent->spawnflags) {
+				ent->target = ent->greensound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->truetarget;
+				G_UseTargets(ent, ent);
+				break;
+			case 1: // ryellow
+				if(ent->health) {
+					ent->target = ent->yellowsound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				}
+				/*if(!ent->spawnflags) {
+				ent->target = ent->yellowsound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->falsetarget;
+				G_UseTargets(ent, ent);
+				break;
+			case 3: // blue
+				if(ent->health) {
+					ent->target = ent->bluesound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				}
+				/*if(!ent->spawnflags) {
+				ent->target = ent->bluesound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->targetname2;
+				G_UseTargets(ent, ent);
+				break;
+			}
+			if(!ent->spawnflags) {
+				ent->target = ent->redsound;
+				G_UseTargets(ent, ent);
+			} else if(ent->spawnflags & 2) {
+				ent->health = 0;
+			} else {
+				if(ent->spawnflags) {
+					ent->target = ent->redsound;
+					G_UseTargets(ent, ent);
+					ent->health = 1;
+				}
+			}
+			target_alert_remapShaders(2);
+			ent->target = ent->paintarget;
+			G_UseTargets(ent, ent);
+			ent->damage = 2;
+		}
+	} if(!Q_stricmp(activator->target, ent->bluename)) {
+		if(ent->damage == 3) {
+			if(ent->spawnflags & 1) {
+				ent->health = !ent->health;
+				ent->target = ent->bluesound;
+				G_UseTargets(ent, ent);
+			}
+		} else {
+			switch(ent->damage) {
+			case 0: // green
+				if(ent->health) {
+					ent->target = ent->greensound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				} 
+				/*if(!ent->spawnflags) {
+				ent->target = ent->greensound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->truetarget;
+				G_UseTargets(ent, ent);
+				break;
+			case 1: // yellow
+				if(ent->health) {
+					ent->target = ent->yellowsound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				} 
+				/*if(!ent->spawnflags) {
+				ent->target = ent->yellowsound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->falsetarget;
+				G_UseTargets(ent, ent);
+				break;
+			case 2: // red
+				if(ent->health) {
+					ent->target = ent->redsound;
+					G_UseTargets(ent, ent);
+					ent->health = !ent->health;
+				} 
+				/*if(!ent->spawnflags) {
+				ent->target = ent->redsound;
+				G_UseTargets(ent, ent);
+				}*/
+				ent->target = ent->paintarget;
+				G_UseTargets(ent, ent);
+				break;
+			}
+			if(!ent->spawnflags) {
+				ent->target = ent->bluesound;
+				G_UseTargets(ent, ent);
+			} else if(ent->spawnflags & 2) {
+				ent->health = 0;
+			} else {
+				if(ent->spawnflags) {
+					ent->target = ent->bluesound;
+					G_UseTargets(ent, ent);
+					ent->health = 1;
+				}
+			}
+			target_alert_remapShaders(3);
+			ent->target = ent->targetname2;
+			G_UseTargets(ent, ent);
+			ent->damage = 3;
+		}
+	}
+	// Free activator if no classname <-- alert command
+	if(!activator->classname)
+		G_FreeEntity(activator);
+}
+
+void target_alert_parseShaders(gentity_t *ent) {
+	char	buffer[BIG_INFO_STRING];
+	char	*txtPtr;
+	char	*token;
+	int		currentNum = 0;
+
+	alertShaders.numShaders = 0;
+
+	memset(buffer, 0, sizeof(buffer));
+
+	// condition green shaders
+	if(!ent->message) return;
+	Q_strncpyz(buffer, ent->message, strlen(ent->message));
+	txtPtr = buffer;
+	token = COM_Parse(&txtPtr);
+	while(1) {
+		if(!token[0]) break;
+		alertShaders.greenShaders[alertShaders.numShaders] = G_NewString(token);
+		alertShaders.numShaders++;
+		if(alertShaders.numShaders > 9) break;
+		token = COM_Parse(&txtPtr);
+	}
+
+	// condition red shaders
+	if(ent->model) {
+		Q_strncpyz(buffer, ent->model, strlen(ent->model));
+		txtPtr = buffer;
+		token = COM_Parse(&txtPtr);
+		while(1) {
+			if(!token[0]) break;
+			alertShaders.redShaders[currentNum] = G_NewString(token);
+			currentNum++;
+			if(currentNum > 9) break;
+			token = COM_Parse(&txtPtr);
+		}
+
+		if(currentNum < alertShaders.numShaders || currentNum > alertShaders.numShaders) {
+			G_Printf(S_COLOR_RED "ERROR - target_alert: number of red shaders(%i) does not equal number of green shaders(%i)!\n", currentNum, alertShaders.numShaders);
+		}
+
+		currentNum = 0;
+	}
+
+	// condition blue shaders
+	if(ent->model2) {
+		Q_strncpyz(buffer, ent->model2, strlen(ent->model2));
+		txtPtr = buffer;
+		token = COM_Parse(&txtPtr);
+		while(1) {
+			if(!token[0]) break;
+			alertShaders.blueShaders[currentNum] = G_NewString(token);
+			currentNum++;
+			if(currentNum > 9) break;
+			token = COM_Parse(&txtPtr);
+		}
+
+		if(currentNum < alertShaders.numShaders || currentNum > alertShaders.numShaders) {
+			G_Printf(S_COLOR_RED "ERROR - target_alert: number of blue shaders(%i) does not equal number of green shaders(%i)!\n", currentNum, alertShaders.numShaders);
+		}
+
+		currentNum = 0;
+	}
+
+	// condition yellow shaders
+	if(ent->team) {
+		Q_strncpyz(buffer, ent->team, strlen(ent->team));
+		txtPtr = buffer;
+		token = COM_Parse(&txtPtr);
+		while(1) {
+			if(!token[0]) break;
+			alertShaders.yellowShaders[currentNum] = G_NewString(token);
+			currentNum++;
+			if(currentNum > 9) break;
+			token = COM_Parse(&txtPtr);
+		}
+
+		if(currentNum < alertShaders.numShaders || currentNum > alertShaders.numShaders) {
+			G_Printf(S_COLOR_RED "ERROR - target_alert: number of yellow shaders(%i) does not equal number of green shaders(%i)!\n", currentNum, alertShaders.numShaders);
+		}
+	}
+}
+
+void SP_target_alert(gentity_t *ent) {
+	//int			errorNum = 0;
+	//qboolean	error = qfalse;
+	char		*temp;
+	//char		*origin = vtos(ent->s.origin);
+	G_SpawnString("greenname", "", &temp);
+	ent->swapname = G_NewString(temp);
+	G_SpawnString("yellowname", "", &temp);
+	ent->truename = G_NewString(temp);
+	G_SpawnString("redname", "", &temp);
+	ent->falsename = G_NewString(temp);
+	G_SpawnString("greentarget", "", &temp);
+	ent->truetarget = G_NewString(temp);
+	G_SpawnString("yellowtarget", "", &temp);
+	ent->falsetarget = G_NewString(temp);
+	G_SpawnString("redtarget", "", &temp);
+	ent->paintarget = G_NewString(temp);
+	G_SpawnString("bluetarget", "", &temp);
+	ent->targetname2 = G_NewString(temp);
+
+	if(G_SpawnString("greenshader", "", &temp))
+		ent->message = G_NewString(temp);
+	if(G_SpawnString("yellowshader", "", &temp))
+		ent->team = G_NewString(temp);
+	if(G_SpawnString("redshader", "", &temp))
+		ent->model = G_NewString(temp);
+	if(G_SpawnString("blueshader", "", &temp))
+		ent->model2 = G_NewString(temp);
+
+	target_alert_parseShaders(ent);
+
+	if(!ent->swapname || !ent->truename || !ent->falsename || !ent->bluename ||
+		!ent->truetarget || !ent->falsetarget || !ent->paintarget || !ent->targetname2) {
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] One or more needed keys for target_alert at %s where not set.\n", vtos(ent->s.origin)););
+			return;
+	}
+
+	if(!ent->wait)
+		ent->wait = 1000;
+	else
+		ent->wait *= 1000;
+
+	ent->use = target_alert_use;
+
+	ent->damage = 0;
+
+	ent->health = !(ent->spawnflags & 2);
+
+	// don't need to send this to clients
+	ent->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
+}
+//RPG-X | GSIO01 | 11/05/2009 | MOD END
+
+//RPG-X | GSIO01 | 19/05/2009 | MOD START
+/*QUAKED target_warp (1 0 0) (-8 -8 -8) (8 8 8) START_ON START_EJECTED START_WARP SELF
+An entity that manages warp and warpcore.
+
+Any func_usable using this must have NO_ACTIVATOR flag.
+Any target_relay, target_delay, or target_boolean using this must have SELF flag.
+
+START_ON - If set, warpcore is on at start
+START_EJECTED - If set, core is ejected at start
+START_WARP - ship is on warp at start
+
+"swapWarp"		 targetname to toggle warp
+"swapCoreState"	 targetname to toggle core on/off state
+"swapCoreEject"	 targetname to toggle core ejected state
+"warpTarget"	 target to fire when going to warp
+"core"			 target core(func_train)
+"coreSwap"		 target for visibility swap
+"wait"			 time before warp can be toggled again after retrieving the core(seconds)
+"greensnd"		 target_speaker with warp in sound
+"yellowsnd"		 target_speaker with warp out sound
+"redsnd"		 target_speaker with core off sound
+"bluesnd"		 target_speaker with core on sound
+*/
+void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t* activator);
+
+void target_warp_reactivate(gentity_t *ent) {
+	ent->use = target_warp_use;
+	ent->nextthink = -1;
+}
+
+void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	int i;
+	qboolean first = qtrue;
+	gentity_t *target;
+
+	if(!activator) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_warp_use called with NULL activator!\n"););
+		return;
+	}
+
+	// swapWarp
+	if(!Q_stricmp(activator->target, ent->truename)) {
+		if(ent->n00bCount) {
+			ent->target = ent->truetarget;
+			G_UseTargets(ent, activator);
+			ent->n00bCount = 0;
+			ent->target = ent->yellowsound;
+			G_UseTargets(ent, activator);
+		}
+		/*ent->target = ent->bluename;
+		G_UseTargets(ent, ent);*/
+		for(i = 0; i < MAX_GENTITIES; i++) {
+			if(!&g_entities[i]) continue;
+			if(Q_stricmp(g_entities[i].classname, "func_train") && !Q_stricmp(g_entities[i].swapname, ent->bluename)) {
+				target = &g_entities[i];
+				if(!target) continue;
+				if(ent->spawnflags & 4) {
+					target->use(target, ent, ent);
+#ifdef G_LUA
+					if(target->luaUse)
+						LuaHook_G_EntityUse(target->luaUse, target-g_entities, ent-g_entities, ent-g_entities);
+#endif
+				} else {
+					target->use(target, ent, activator);
+#ifdef G_LUA
+					if(target->luaUse)
+						LuaHook_G_EntityUse(target->luaUse, target-g_entities, ent-g_entities, activator-g_entities);
+#endif
+				}
+			} else if(!Q_stricmp(g_entities[i].classname, "func_train") && !Q_stricmp(g_entities[i].swapname, ent->bluename)) {
+				target = &g_entities[i];
+				if(!target) continue;
+				if(target->count == 1) {
+					target->s.solid = 0;
+					target->r.contents = 0;
+					target->clipmask = 0;
+					target->r.svFlags |= SVF_NOCLIENT;
+					target->s.eFlags |= EF_NODRAW;
+					target->count = 0;
+					if(first){
+						ent->target = ent->redsound;
+						G_UseTargets(ent, activator);
+						first = qfalse;
+					}
+				} else {
+					target->clipmask = CONTENTS_BODY;
+					trap_SetBrushModel( target, target->model );
+					//VectorCopy( ent->s.origin, ent->s.pos.trBase );
+					//VectorCopy( ent->s.origin, ent->r.currentOrigin );
+					target->r.svFlags &= ~SVF_NOCLIENT;
+					target->s.eFlags &= ~EF_NODRAW;
+					target->clipmask = 0;
+					target->count = 1;
+					if(first) {
+						ent->target = ent->bluesound;
+						G_UseTargets(ent, activator);
+						first = qfalse;
+					}
+				}
+			}
+		}
+		ent->sound1to2 = !ent->sound1to2;
+	} else if(!Q_stricmp(activator->target, ent->falsename)) { //eject
+		if(ent->n00bCount) {
+			ent->target = ent->truetarget;
+			G_UseTargets(ent, activator);
+			ent->n00bCount = 0;
+			ent->target = ent->yellowsound;
+			G_UseTargets(ent, activator);
+		}
+		if(ent->sound2to1) {
+			ent->use = 0;
+			ent->think = target_warp_reactivate;
+			ent->nextthink =  level.time + (ent->wait * 1000);
+		}
+		ent->target = ent->falsetarget;
+		G_UseTargets(ent, activator);
+		ent->sound2to1 = !ent->sound2to1;
+	} else if(!Q_stricmp(activator->target, ent->swapname)) { // toggle warp
+		if(ent->sound1to2 && (ent->sound2to1 == 0)) {
+			ent->target = ent->truetarget;
+			G_UseTargets(ent, activator);
+			if(ent->n00bCount)
+				ent->target = ent->yellowsound;
+			else
+				ent->target = ent->greensound;
+			G_UseTargets(ent, activator);
+			ent->n00bCount = !ent->n00bCount;
+		} else {
+			if(ent->soundPos1)
+				G_AddEvent(ent, EV_GENERAL_SOUND, ent->soundPos1);
+		}
+	}
+}
+
+void SP_target_warp(gentity_t *ent) {
+	char *temp;
+
+	G_SpawnString("swapWarp", "", &temp);
+	ent->swapname = G_NewString(temp);
+	G_SpawnString("swapCoreState", "", &temp);
+	ent->truename = G_NewString(temp);
+	G_SpawnString("swapCoreEject", "", &temp);
+	ent->falsename = G_NewString(temp);
+	G_SpawnString("warpTarget", "", &temp);
+	ent->truetarget = G_NewString(temp);
+	G_SpawnString("core", "", &temp);
+	ent->falsetarget = G_NewString(temp);
+	G_SpawnString("coreSwap", "", &temp);
+	ent->bluename = G_NewString(temp);
+	G_SpawnString("soundDeactivate", "100", &temp);
+	ent->soundPos1 = G_SoundIndex(temp);
+
+	//set corestate
+	ent->sound1to2 = (ent->spawnflags & 1);
+
+	//set ejected state
+	ent->sound2to1 = (ent->spawnflags & 2);
+
+	//set warpstate
+	ent->n00bCount = (ent->spawnflags & 4);
+
+	ent->use = target_warp_use;
+
+	// don't need to send this to clients
+	ent->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
+}
+
+//RPG-X | GSIO01 | 19/05/2009 | MOD END
+/*QUAKED target_deactivate (1 0 0) (-8 -8 -8) (8 8 8)
+This entity can be used to de/activate all func_usables with "target" as targetname2.
+
+"target"	func_usable to de/activate(targetname2).
+"soundDeactivate" sound to play if going to warp but core is deactivated/ejected
+*/
+void target_deactivate_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	gentity_t *target = NULL;
+	while((target = G_Find(target, FOFS(targetname2), ent->target)) != NULL) {
+		if(!Q_stricmp(target->classname, "func_usable")) {
+			target->flags ^= FL_LOCKED;
+		}
+	}
+}
+
+void SP_target_deactivate(gentity_t *ent) {
+	if(!ent->target) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_deactivate at %s without target!\n", vtos(ent->r.currentOrigin)););
+		return;
+	}
+
+	ent->use = target_deactivate_use;
+
+	// don't need to send this to clients
+	ent->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
+}
+
+/*QUAKED target_serverchange (1 0 0) (-8 -8 -8) (8 8 8) START_ON
+This will make any client inside it connect to a different server.
+
+Can be toggled by an usable if the usable has NO_ACTIVATOR spawnflag.
+
+"serverNum"	server to connect to (rpg_server<serverNum> cvar)
+*/
+void target_serverchange_think(gentity_t *ent) {
+	if(!ent->touched || !ent->touched->client) return;
+	trap_SendServerCommand(ent->touched->client->ps.clientNum, va("cg_connect \"%s\"\n", ent->targetname2));
+	ent->nextthink = -1;
+}
+
+void target_serverchange_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	char *server;
+
+	if(!activator || !activator->client) {
+		ent->s.time2 = !ent->s.time2;
+		return;
+	}
+
+	if(activator->flags & FL_LOCKED)
+		return;
+
+	activator->flags ^= FL_LOCKED;
+
+	if(rpg_serverchange.integer && ent->s.time2) {
+		switch(ent->count) {
+		default:
+		case 1:
+			server = rpg_server1.string;
+			break;
+		case 2:
+			server = rpg_server2.string;
+			break;
+		case 3:
+			server = rpg_server3.string;
+			break;
+		case 4:
+			server = rpg_server4.string;
+			break;
+		case 5:
+			server = rpg_server5.string;
+			break;
+		case 6:
+			server = rpg_server6.string;
+			break;
+		}
+		ent->think = target_serverchange_think;
+		ent->nextthink = level.time + 3000;
+		TransDat[ent->client->ps.clientNum].beamTime = level.time + 8000;
+		activator->client->ps.powerups[PW_BEAM_OUT] = level.time + 8000;
+		ent->touched = activator;
+		ent->targetname2 = server;
+	}
+}
+
+void SP_target_serverchange(gentity_t *ent) {
+	int serverNum;
+	G_SpawnInt("serverNum", "1", &serverNum);
+	ent->count = serverNum;
+	if(!ent->count)
+		ent->count = 1;
+	if(ent->spawnflags & 1)
+		ent->s.time2 = 1;
+
+	ent->use = target_serverchange_use;
+	trap_LinkEntity(ent);
+}
+
+/*QUAKED target_levelchange (1 0 0) (-8 -8 -8) (8 8 8) 
+This will change the map if rpg_allowSPLevelChange is set to 1.
+
+"target" map to load (for example: borg2)
+"wait" time to wait before levelchange (whole numbers only, -1 for intermediate levelchange, 0 for default = 5)
+*/
+void target_levelchange_think(gentity_t *ent) {
+	if(ent->count > 0) {
+		ent->count--;
+		trap_SendServerCommand(-1, va("servercprint \"Mapchange in %i ...\"", ent->count)); 
+	} else {
+		trap_SendConsoleCommand(EXEC_APPEND, va("devmap \"%s\"", ent->target));
+		ent->nextthink = -1;
+		return;
+	}
+	ent->nextthink = level.time + 1000;
+}
+
+void target_levelchange_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	if(rpg_allowSPLevelChange.integer) {
+		ent->think = target_levelchange_think;
+		ent->nextthink = level.time + 1000;
+		trap_SendServerCommand(-1, va("servercprint \"Mapchange in %i ...\"", ent->count)); 
+	}
+}
+
+void SP_target_levelchange(gentity_t *ent) {
+	if(!ent->target) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_levelchange without target at %s!\n", vtos(ent->s.origin)););
+		G_FreeEntity(ent);
+		return;
+	}
+
+	if(!ent->wait)
+		ent->count = 5;
+	else if(ent->wait < -1)
+		ent->count = -1;
+	else
+		ent->count = (int)ent->wait;
+
+	ent->use = target_levelchange_use;
+}
+
+/*QUAKED target_holodeck (1 0 0) (-8 -8 -8) (8 8 8)
+
+*/
+
+void SP_target_holodeck(gentity_t *ent) {
+	G_FreeEntity(ent);
+	return;
+
+	// don't need to send this to clients
+	ent->r.svFlags &= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
+}
+
+//RPG-X | Harry Young | 15/10/2011 | MOD START
+/*QUAKED target_shaderremap (1 0 0) (-8 -8 -8) (8 8 8)
+This will remap the shader "falsename" with shader "truename" and vice versa.
+It will save you some vfx-usables.
+
+This Entity only works on RPGXEF
+
+*/
+void target_shaderremap_think(gentity_t *ent) {
+	float f = 0;
+	if(!ent->spawnflags) {
+		f = level.time * 0.001;
+		AddRemap(ent->falsename, ent->truename, f);
+		ent->spawnflags = 1;
+		ent->nextthink = -1;
+	} else {
+		f = level.time * 0.001;
+		AddRemap(ent->falsename, ent->falsename, f);
+		ent->spawnflags = 0;
+		ent->nextthink = -1;
+	}
+	trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
+}
+
+void target_shaderremap_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	ent->think = target_shaderremap_think;
+	ent->nextthink = level.time + 50; /* level.time + one frame */
+}
+
+void SP_target_shaderremap(gentity_t *ent) {
+	if(!ent->falsename) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shaderremap without falsename-shader at %s!\n", vtos(ent->s.origin)););
+		G_FreeEntity(ent);
+		return;
+	}
+
+	if(!ent->truename) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shaderremap without truename-shader at %s!\n", vtos(ent->s.origin)););
+		G_FreeEntity(ent);
+		return;
+	}
+
+	ent->use = target_shaderremap_use;
+}
+//RPG-X | Harry Young | 15/10/2011 | MOD END
+
+//RPG-X | Harry Young | 25/07/2012 | MOD START
+/*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8)
+This entity manages the self destruct.
+For now this should only be used via the selfdestruct console command, however it might be usable from within the radiant at a later date.
+
+Keys:
+wait: total Countdown-Time in secs
+count: warning intervall up to 60 secs in secs
+n00bCount: warning intervall within 60 secs in secs
+health: warning intervall within 10 secs in secs
+flags: are audio warnings 1 or 0?
+target: Things to fire once the countdown hits 0
+
+damage: leveltime of countdowns end
+spawnflags: 1 tells ent to free once aborted
+*/
+static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) {
+	int i, n, num, cur = 0, cur2 = 0;
+	list_iter_p iter;
+	safeZone_t* sz;
+	int entlist[MAX_GENTITIES];
+	gentity_t *safePlayers[MAX_GENTITIES];
+	qboolean add = qtrue;
+
+	if(selfdestructSafeZones != NULL && selfdestructSafeZones->length > 0) {
+		// go through all safe zones and compose a list of sade players
+		iter = list_iterator(selfdestructSafeZones, FRONT);
+		for(sz = (safeZone_t *)list_next(iter); sz != NULL; sz = (safeZone_t *)list_next(iter)) {
+			if(!sz->active) {
+				continue;
+			}
+			num = trap_EntitiesInBox(sz->mins, sz->maxs, entlist, MAX_GENTITIES);
+			for(n = 0; n < num; n++) {
+				if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
+					safePlayers[cur] = &g_entities[entlist[n]];
+					cur++;
+				}
+			}
+		}
+	}
+
+	// now use that information to determines all unsafe players
+	for(i = 0; i < MAX_CLIENTS; i++) {
+		for(n = 0; n < cur; n++) {
+			if(&g_entities[i] == safePlayers[n]) {
+				add = qfalse;
+				break;
+			}
+		}
+		if(add) {
+			if(&g_entities[i].client) {
+				ents[cur2] = &g_entities[i];
+				cur2++;
+			}
+		}
+	}
+
+	free(iter);
+	return cur2;
+}
+
+void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
+	trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
+	G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
+	//set wait to -1...
+	ent->wait = -1;
+	//and arrange for a think in a sec
+	ent->nextthink = level.time + 1000;
+	return;
+}
+
+void target_selfdestruct_think(gentity_t *ent) {
+	gentity_t*	client;	
+	double		ETAmin, ETAsec, temp;
+	int			i = 0;
+
+	//now we have 3 destinct stages the entity can think about.
+	//it starts with ent->wait being set to the new remaining time
+
+	if (ent->wait > 60000 ) {
+		temp = ent->wait - ent->count;
+	} else {
+		if (ent->wait > 10000 ) {
+			temp = ent->wait - ent->n00bCount;
+		} else if (ent->wait == 0) { //overshot goal...
+			ent->wait = 0; //continue won't work here and I'm not sure about return and break so I'll just do sth pointless...
+		} else {
+			temp = ent->wait - ent->health;
+		}
+	}
+	ent->wait = temp;
+
+	if (ent->wait > 0){
+		//The first is the intervall-warning-loop
+		//We're doing this to give a new warning, so let's do that. I'll need to do a language switch here sometime...
+		ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
+		if (ent->flags == 1) {
+			if (ETAmin > 1) { // stating minutes
+				if (ETAsec > 1) // stating seconds
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
+				if (ETAsec == 1) // stating second
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f second.\"", ETAmin, ETAsec ));
+				if (ETAsec == 0) // stating minutes only
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
+			} 
+			if (ETAmin == 1) { // stating minutes
+				if (ETAsec > 1) // stating seconds
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
+				if (ETAsec == 1) // stating second
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f second.\"", ETAmin, ETAsec ));
+				if (ETAsec == 0) // stating minutes only
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
+			} 
+			if (ETAmin == 0) { // stating minutes
+				if (ETAsec > 1) // stating seconds
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
+				if (ETAsec == 1) // stating second
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
+				if (ETAsec == 0) // savety measure only
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct executing.\""));
+			} 
+		}
+
+		// with that out of the way let's set the next think
+		if (ent->wait > 60000 ) {
+			ent->nextthink = level.time + ent->count;
+		} else {
+			if (ent->wait > 10000 ) {
+				ent->nextthink = level.time + ent->n00bCount;
+			} else {
+				ent->nextthink = level.time + ent->health;
+			}
+		}
+
+		//fail horribly if an intervall overshoots bang-time
+		if (ent->nextthink > ent->damage){
+			ent->nextthink = ent->damage;
+			ent->wait = 0;
+		}
+
+	} else if (ent->wait == 0) { //bang time ^^
+		//if we have a target fire that, else kill everyone that is not marked as escaped.
+		if (!ent->target || !ent->target[0]) {
+			int num;
+			gentity_t *ents[MAX_GENTITIES];
+
+
+			num = target_selfdestruct_get_unsafe_players(ents);
+
+			//Loop trough all clients on the server.
+			for(i = 0; i < num; i++) {
+				client = ents[i];
+				G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+			}
+			//let's hear it
+			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
+			//let's be shakey for a sec... I hope lol ^^
+			trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
+			//let's clear the lower right corner
+			trap_SendServerCommand( -1, va("servermsg \" \""));
+			//we're done here so let's finish up in a sec.	
+			ent->wait = -1;
+			ent->nextthink = level.time + 1000;
+			return;
+		} else {
+			G_UseTargets(ent, ent);
+		}  
+	} else if (ent->wait < 0) {
+
+		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
+		ent->nextthink = -1;
+		ent->wait = ent->splashDamage;
+		//free ent if it was command-spawned
+		if (ent->spawnflags == 1)
+			G_FreeEntity(ent);
+
+		return; //And we're done.
+	}
+}
+
+void SP_target_selfdestruct(gentity_t *ent) {
+	double		ETAmin, ETAsec;
+	float		temp;
+	//I'd like a failsave-check here at some point...
+
+	//There's a little bit of math to do here so let's do that.
+	//convert all times from secs to millisecs if that hasn't been done in an earlier pass.
+
+	if (!ent->splashRadius){
+		temp = ent->wait * 1000;
+		ent->wait = temp;
+		temp = ent->count * 1000;
+		ent->count = temp;
+		temp = ent->n00bCount * 1000;
+		ent->n00bCount = temp;
+		temp = ent->health * 1000;
+		ent->health = temp;
+		ent->splashRadius = 1;
+	}
+
+	//we'll need to back up the total for a possible reset.
+	ent->splashDamage = ent->wait;
+
+	//let's find out when this thing will hit hard
+	ent->damage = ent->wait + level.time;
+
+	//time's set so let's let everyone know that we're counting. I'll need to do a language switch here sometime...
+	ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
+	if (ent->flags == 1) {
+		if (ETAmin > 1) { // stating minutes
+			if (ETAsec > 1) // stating seconds
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
+			if (ETAsec == 1) // stating second
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f second.\"", ETAmin, ETAsec ));
+			if (ETAsec == 0) // stating minutes only
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
+		} 
+		if (ETAmin == 1) { // stating minutes
+			if (ETAsec > 1) // stating seconds
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
+			if (ETAsec == 1) // stating second
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f second.\"", ETAmin, ETAsec ));
+			if (ETAsec == 0) // stating minutes only
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
+		} 
+		if (ETAmin == 0) { // stating minutes
+			if (ETAsec > 1) // stating seconds
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
+			if (ETAsec == 1) // stating second
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
+			if (ETAsec == 0) // savety measure only
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct executing.\""));
+		} 
+	} else {
+		if (ETAmin > 1) { // stating minutes
+			if (ETAsec > 1) // stating seconds
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds. There will be no further audio warnings.\"", ETAmin, ETAsec ));
+			if (ETAsec == 1) // stating second
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f second. There will be no further audio warnings.\"", ETAmin, ETAsec ));
+			if (ETAsec == 0) // stating minutes only
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes. There will be no further audio warnings.\"", ETAmin ));
+		} 
+		if (ETAmin == 1) { // stating minutes
+			if (ETAsec > 1) // stating seconds
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds. There will be no further audio warnings.\"", ETAmin, ETAsec ));
+			if (ETAsec == 1) // stating second
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f second. There will be no further audio warnings.\"", ETAmin, ETAsec ));
+			if (ETAsec == 0) // stating minutes only
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute. There will be no further audio warnings.\"", ETAmin ));
+		} 
+		if (ETAmin == 0) { // stating minutes
+			if (ETAsec > 1) // stating seconds
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f seconds. There will be no further audio warnings.\"", ETAsec ));
+			if (ETAsec == 1) // stating second
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f second. There will be no further audio warnings.\"", ETAsec ));
+			if (ETAsec == 0) // savety measure only
+				trap_SendServerCommand( -1, va("servermsg \"Self Destruct executing.\""));
+		} 
+	}
+
+	ent->r.svFlags |= SVF_BROADCAST;
+	trap_LinkEntity(ent);
+
+	//Additionally we have some audio files ready to go in english with automatic german counterparts. Play them as well.
+	if (ent->wait == 1200000) {
+		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/20-a1.mp3"));
+	} else if (ent->wait == 900000) {
+		if (ent->flags == 1)
+			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a1.mp3"));
+		else
+			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a0.mp3"));
+	} else if (ent->wait == 600000) {
+		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/10-a1.mp3"));
+	} else if (ent->wait == 300000) {
+		if (ent->flags == 1)
+			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a1.mp3"));
+		else
+			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a0.mp3"));
+	} else {
+		if (ent->flags == 1)
+			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a1.mp3"));
+		else
+			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a0.mp3"));
+	}
+
+	// Now all that's left is to plan the next think.
+
+	ent->use = target_selfdestruct_use;
+	ent->think = target_selfdestruct_think;
+
+	// we have 3 different intervalls so we need to do some if's based on the to-be-updated duration...
+	if (ent->wait > 60000 ) {
+		ent->nextthink = level.time + ent->count;
+	} else {
+		if (ent->wait > 10000 ) {
+			ent->nextthink = level.time + ent->n00bCount;
+		} else {
+			ent->nextthink = level.time + ent->health;
+		}
+	}
+
+	//fail horribly if an intervall overshoots bang-time
+	if (ent->nextthink > ent->damage){
+		ent->nextthink = ent->damage;
+		ent->wait = 0;
+	}
+
+	trap_LinkEntity(ent);
+}
+
+/*QUAKED target_safezone (1 0 0) ? STARTON
+This is a safezone for the self destruct sequence.
+*/
+void target_safezone_destructor(void *p) {
+	safeZone_t *sz = (safeZone_t *)p;
+
+	if(p == NULL) {
+		return;
+	}
+
+	if(sz->name != NULL) {
+		free(sz->name);
+	}
+	free(sz);
+}
+
+void SP_target_safezone(gentity_t *ent) {
+	safeZone_t* sz = (safeZone_t *)malloc(sizeof(safeZone_s));
+
+	if(!ent->targetname || !ent->targetname[0]) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Safezone without targetname at %s.\n", vtos(ent->s.origin)););
+		return;
+	}
+
+	if(selfdestructSafeZones == NULL) {
+		selfdestructSafeZones = create_list();
+		selfdestructSafeZones->destructor = target_safezone_destructor;
+	}
+
+	if(!ent->luaEntity) {
+		trap_SetBrushModel(ent, ent->model);
+	}
+	VectorCopy(ent->r.maxs, sz->maxs);
+	VectorCopy(ent->r.mins, sz->mins);
+	VectorAdd(ent->s.origin, ent->r.mins, sz->mins);
+	VectorAdd(ent->s.origin, ent->r.maxs, sz->maxs);
+	ent->r.contents = CONTENTS_NONE;
+	ent->r.svFlags |= SVF_NOCLIENT;
+	trap_LinkEntity(ent);
+	sz->name = (char *)malloc(strlen(ent->targetname)+1);
+	strcpy(sz->name, ent->targetname);
+	sz->active = (qboolean)(ent->spawnflags & 1);
+
+	list_add(selfdestructSafeZones, sz, sizeof(safeZone_s));
+
+	G_FreeEntity(ent);
+}
+
+/*QUAKED target_shiphealth (1 0 0) (-8 -8 -8) (8 8 8)
+This Entity manages a ships healt. Ship Health is reduced via administrative/delegable console command "/shipdamage [damage]"
+Repairing is based on a % per minute basis for both shields and hull.
+The entity features interconnectivity with other systems such as warpdrive or turbolift with a random yet incresing chance to turn them off whenever hulldamage occurs. This includes Shields.
+Further more the entity will automatically toggle red alert should it be any other and will activate shields if alert is set to any but green.
+If hull health hit's 0 it will kill any client outside an active savezone.
+
+Keys:
+health: Total Hull strength
+splashRadius: total shield strenght
+angle: Hull repair in % per minute
+speed: Shield repair in % per minute (only active if shield's aren't fried)
+
+greensound: Things to fire every time damage occurs (like FX)
+falsetarget: swapname for target_warp
+bluename: swapname for target_turbolift
+bluesound: swapname for ui_transporter
+falsename: redname for target_alert
+*/
+static int target_shiphealth_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) {
+	int i, n, num, cur = 0, cur2 = 0;
+	list_iter_p iter;
+	safeZone_t* sz;
+	int entlist[MAX_GENTITIES];
+	gentity_t *safePlayers[MAX_GENTITIES];
+	qboolean add = qtrue;
+
+	if(selfdestructSafeZones != NULL && selfdestructSafeZones->length > 0) {
+		// go through all safe zones and compose a list of sade players
+		iter = list_iterator(selfdestructSafeZones, FRONT);
+		for(sz = (safeZone_t *)list_next(iter); sz != NULL; sz = (safeZone_t *)list_next(iter)) {
+			if(!sz->active) {
+				continue;
+			}
+			num = trap_EntitiesInBox(sz->mins, sz->maxs, entlist, MAX_GENTITIES);
+			for(n = 0; n < num; n++) {
+				if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
+					safePlayers[cur] = &g_entities[entlist[n]];
+					cur++;
+				}
+			}
+		}
+	}
+
+	// now use that information to determines all unsafe players
+	for(i = 0; i < MAX_CLIENTS; i++) {
+		for(n = 0; n < cur; n++) {
+			if(&g_entities[i] == safePlayers[n]) {
+				add = qfalse;
+				break;
+			}
+		}
+		if(add) {
+			if(&g_entities[i].client) {
+				ents[cur2] = &g_entities[i];
+				cur2++;
+			}
+		}
+	}
+
+	free(iter);
+	return cur2;
+}
+
+void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	int			NSS, NHS, SD, HD, i, num;
+	float		BT;
+	gentity_t	*alertEnt, *warpEnt, *turboEnt, *transEnt, *client;
+	
+	if(ent->splashDamage == 1){ //shields are active so we're just bleeding trough on the hull
+		BT = ((1 - (ent->count / ent->health)) / 10);
+		SD = (ent->damage - ceil(ent->damage * BT));
+
+		if(SD > ent->n00bCount){ //we're draining the shields...
+			HD = (ent->damage - ent->n00bCount);
+			NHS = (ent->count - HD);
+			ent->n00bCount = 0;
+		} else { //shields will survive so let's just bleed trough
+			HD = floor(ent->damage * BT);
+			NHS = (ent->count - HD);
+			NSS = (ent->n00bCount - SD);
+			ent->n00bCount = NSS;
+		}
+	} else { //shields are off, guess where the blow goes...
+		NHS = (ent->count - ent->damage);
+	}
+	
+	ent->count = NHS;
+
+	//enough math, let's trigger things
+
+	//activate shields if inactive
+	if(ent->splashDamage == 0)
+		ent->splashDamage = 1;
+
+	//go to red alert if we are on green
+	if(ent->falsename){
+		alertEnt = G_Find(NULL, FOFS(falsename), ent->falsename);
+		if(alertEnt->damage == 0){
+			ent->target = ent->falsename;
+			G_UseTargets(ent, ent);
+		}
+	}
+
+	//time to fire the FX
+	ent->target = ent->greensound;
+	G_UseTargets(ent, ent);
+
+	//disable UI_Transporter if need be.
+	if(ent->bluesound){
+		transEnt = G_Find(NULL, FOFS(swapname), ent->bluesound);
+		if (transEnt->flags & FL_LOCKED){
+			return;
+		} else {
+			if(((ent->count / ent->health) * crandom()) < 0.3){
+				ent->target = ent->bluesound;
+				G_UseTargets(ent, ent);
+			}
+		}
+	}
+
+	//disable target_turbolift if need be.
+	if(ent->bluename){
+		turboEnt = G_Find(NULL, FOFS(swapname), ent->bluename);
+		if (turboEnt->flags & FL_LOCKED){
+			return;
+		} else {
+			if(((ent->count / ent->health) * crandom()) < 0.3){
+				ent->target = ent->bluename;
+				G_UseTargets(ent, ent);
+			}
+		}
+	}
+
+	//disable target_warp if need be.
+	if(ent->falsetarget){
+		warpEnt = G_Find(NULL, FOFS(swapname), ent->falsetarget);
+		if (warpEnt->n00bCount == 0){
+			return;
+		} else {
+			if(((ent->count / ent->health) * crandom()) < 0.3){
+				ent->target = ent->falsetarget;
+				G_UseTargets(ent, ent);
+			}
+		}
+	}
+
+	//disable shield-subsystem if need be.
+	if(((ent->count / ent->health) * crandom()) < 0.3){
+		ent->n00bCount = 0;
+		ent->splashDamage = -1;
+	}
+
+	//and of course...
+	if(ent->count <= 0){
+		gentity_t *ents[MAX_GENTITIES];
+
+
+		num = target_shiphealth_get_unsafe_players(ents);
+
+		//Loop trough all clients on the server.
+		for(i = 0; i < num; i++) {
+			client = ents[i];
+			G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+		}
+		//let's hear it
+		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
+		//let's be shakey for a sec... I hope lol ^^
+		trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
+	}
+}	
+
+void target_shiphealth_think(gentity_t *ent) {
+	//this will do the healing each minute
+	int			NSS, NHS;
+	gentity_t*	alertEnt;
+
+	//We have interconnectivity with target_alert here in that at condition green we regenerate twice as fast
+	//so let's find the entity
+	if(ent->falsename)
+		alertEnt = G_Find(NULL, FOFS(falsename), ent->falsename);
+	else
+		alertEnt = G_Find(NULL, FOFS(classname), "target_alert");
+
+	if(!alertEnt){ //failsave in case we don't have a target_alert present
+		alertEnt = G_Spawn();
+		alertEnt->damage = 0;
+	}
+
+	// Hull Repair
+	if(ent->count < ent->health){
+		if(alertEnt->damage == 0) //condition green
+			NHS = (ent->count + (ent->health * ent->angle / 100));
+		else
+			NHS = (ent->count + (ent->health * ent->angle / 200));
+
+		if(NHS > ent->health)
+			ent->count = ent->health;
+		else
+			ent->count = NHS;
+	}
+
+	// Shield Repair
+	if(ent->splashDamage != -1){ //skip if shields are toast
+		if(ent->n00bCount < ent->splashRadius){
+			if(alertEnt->damage == 0) //condition green
+				NSS = (ent->n00bCount + (ent->splashRadius * ent->speed / 100));
+			else
+				NSS = (ent->n00bCount + (ent->splashRadius * ent->speed / 200));
+
+			if(NSS > ent->splashRadius)
+				ent->n00bCount = ent->splashRadius;
+			else
+				ent->n00bCount = NSS;
+		}
+	}
+
+	//shield reenstatement
+	if(ent->splashDamage == -1){ //else we don't need to run this
+		if((ent->count / ent->health) > 0.5){
+			if(alertEnt->damage == 0) //what symbol is and AND? cause I'd like to failsave 1 if we don't have alerts...
+				ent->splashDamage = 0;
+			else
+				ent->splashDamage = 1;
+		} else {
+			if((ent->count / ent->health * crandom()) > 1){
+				if(alertEnt->damage == 0)
+					ent->splashDamage = 0;
+				else
+					ent->splashDamage = 1;
+			}
+		}
+	}
+	ent->nextthink = level.time + 60000;
+}
+
+
+void SP_target_shiphealth(gentity_t *ent) {
+
+	//we need to put the total health in for the current
+	ent->count = ent->health;
+	ent->n00bCount = ent->splashRadius;
+
+	//now for the shieldindicator I need to know if we have an alertEnt available
+	if(G_Find(NULL, FOFS(classname), "target_alert"))
+		ent->splashDamage = 0;
+	else
+		ent->splashDamage = 1;
+
+	ent->think = target_shiphealth_think;
+	ent->use = target_shiphealth_use;
+	ent->nextthink = level.time + 60000;
+
+	trap_LinkEntity(ent);
+}
+
 

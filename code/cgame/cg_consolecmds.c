@@ -1,35 +1,23 @@
 /*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
-//
-// cg_consolecmds.c -- text commands typed in at the local console, or
-// executed by a key binding
+ *
+ * Copyright (C) 1999-2000 Id Software, Inc.
+ *
+ * cg_consolecmds.c -- text commands typed in at the local console, or
+ * executed by a key binding
+ */
 
 #include "cg_local.h"
-#include "../ui/ui_shared.h"
-#ifdef MISSIONPACK
-extern menuDef_t *menuScoreboard;
-#endif
 
+#define	 emotesDEF
 
+static void CG_ObjectivesDown_f( void ) {
+	cg.showObjectives = qtrue;
+}
+
+static void CG_ObjectivesUp_f( void ) 
+{
+	cg.showObjectives = qfalse;
+}
 
 void CG_TargetCommand_f( void ) {
 	int		targetNum;
@@ -74,111 +62,57 @@ static void CG_SizeDown_f (void) {
 =============
 CG_Viewpos_f
 
-Debugging command to print the current position
+Debugging command to print the current view position
 =============
 */
 static void CG_Viewpos_f (void) {
-	CG_Printf ("(%i %i %i) : %i\n", (int)cg.refdef.vieworg[0],
+	CG_Printf ("%s (%i %i %i) : %f\n", cgs.mapname, (int)cg.refdef.vieworg[0],
 		(int)cg.refdef.vieworg[1], (int)cg.refdef.vieworg[2], 
 		(int)cg.refdefViewAngles[YAW]);
 }
 
+/*
+=============
+CG_ClientPos_f
+
+Debugging command to print the current client position
+=============
+*/
+static void CG_ClientPos_f ( void )
+{
+	CG_Printf( "OUTPUT: %s | ORIGIN( %f %f %f ) | ANGLES( %f %f %f )\n", cgs.mapname, 
+																			cg.snap->ps.origin[0],
+																			cg.snap->ps.origin[1],
+																			cg.snap->ps.origin[2],
+																			cg.snap->ps.viewangles[0],
+																			cg.snap->ps.viewangles[1],
+																			cg.snap->ps.viewangles[2] );
+}
 
 static void CG_ScoresDown_f( void ) {
-
-#ifdef MISSIONPACK
-		CG_BuildSpectatorString();
-#endif
 	if ( cg.scoresRequestTime + 2000 < cg.time ) {
-		// the scores are more than two seconds out of data,
-		// so request new ones
+		/* the scores are more than two seconds out of data,
+		   so request new ones */
 		cg.scoresRequestTime = cg.time;
 		trap_SendClientCommand( "score" );
 
-		// leave the current scores up if they were already
-		// displayed, but if this is the first hit, clear them out
+		/* leave the current scores up if they were already
+		   displayed, but if this is the first hit, clear them out */
 		if ( !cg.showScores ) {
 			cg.showScores = qtrue;
 			cg.numScores = 0;
 		}
 	} else {
-		// show the cached contents even if they just pressed if it
-		// is within two seconds
+		/* show the cached contents even if they just pressed if it
+		   is within two seconds */
 		cg.showScores = qtrue;
 	}
 }
 
 static void CG_ScoresUp_f( void ) {
-	if ( cg.showScores ) {
-		cg.showScores = qfalse;
-		cg.scoreFadeTime = cg.time;
-	}
+	cg.showScores = qfalse;
+	cg.scoreFadeTime = cg.time;
 }
-
-#ifdef MISSIONPACK
-extern menuDef_t *menuScoreboard;
-void Menu_Reset( void );			// FIXME: add to right include file
-
-static void CG_LoadHud_f( void) {
-  char buff[1024];
-	const char *hudSet;
-  memset(buff, 0, sizeof(buff));
-
-	String_Init();
-	Menu_Reset();
-	
-	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
-	hudSet = buff;
-	if (hudSet[0] == '\0') {
-		hudSet = "ui/hud.txt";
-	}
-
-	CG_LoadMenus(hudSet);
-  menuScoreboard = NULL;
-}
-
-
-static void CG_scrollScoresDown_f( void) {
-	if (menuScoreboard && cg.scoreBoardShowing) {
-		Menu_ScrollFeeder(menuScoreboard, FEEDER_SCOREBOARD, qtrue);
-		Menu_ScrollFeeder(menuScoreboard, FEEDER_REDTEAM_LIST, qtrue);
-		Menu_ScrollFeeder(menuScoreboard, FEEDER_BLUETEAM_LIST, qtrue);
-	}
-}
-
-
-static void CG_scrollScoresUp_f( void) {
-	if (menuScoreboard && cg.scoreBoardShowing) {
-		Menu_ScrollFeeder(menuScoreboard, FEEDER_SCOREBOARD, qfalse);
-		Menu_ScrollFeeder(menuScoreboard, FEEDER_REDTEAM_LIST, qfalse);
-		Menu_ScrollFeeder(menuScoreboard, FEEDER_BLUETEAM_LIST, qfalse);
-	}
-}
-
-
-static void CG_spWin_f( void) {
-	trap_Cvar_Set("cg_cameraOrbit", "2");
-	trap_Cvar_Set("cg_cameraOrbitDelay", "35");
-	trap_Cvar_Set("cg_thirdPerson", "1");
-	trap_Cvar_Set("cg_thirdPersonAngle", "0");
-	trap_Cvar_Set("cg_thirdPersonRange", "100");
-	CG_AddBufferedSound(cgs.media.winnerSound);
-	//trap_S_StartLocalSound(cgs.media.winnerSound, CHAN_ANNOUNCER);
-	CG_CenterPrint("YOU WIN!", SCREEN_HEIGHT * .30, 0);
-}
-
-static void CG_spLose_f( void) {
-	trap_Cvar_Set("cg_cameraOrbit", "2");
-	trap_Cvar_Set("cg_cameraOrbitDelay", "35");
-	trap_Cvar_Set("cg_thirdPerson", "1");
-	trap_Cvar_Set("cg_thirdPersonAngle", "0");
-	trap_Cvar_Set("cg_thirdPersonRange", "100");
-	CG_AddBufferedSound(cgs.media.loserSound);
-	//trap_S_StartLocalSound(cgs.media.loserSound, CHAN_ANNOUNCER);
-	CG_CenterPrint("YOU LOSE...", SCREEN_HEIGHT * .30, 0);
-}
-
-#endif
 
 static void CG_TellTarget_f( void ) {
 	int		clientNum;
@@ -210,240 +144,576 @@ static void CG_TellAttacker_f( void ) {
 	trap_SendClientCommand( command );
 }
 
-static void CG_VoiceTellTarget_f( void ) {
-	int		clientNum;
-	char	command[128];
-	char	message[128];
+void CG_Cough_cmd( void )
+{
+	CG_Printf("                       ,.                      \n");	CG_Printf("          ..:,        :Xt.       ,:.            \n");
+    CG_Printf("         ,=+t:       .IRX=       :++=.         \n");	CG_Printf("        .=iVt:.      :RYYI.      .itt+         \n");    
+	CG_Printf("       .:tXI=;.      tRtiV;       ,IYY:.       \n");	CG_Printf("      .+;ii=;.      ,XVi+Vt.       :tIi+      \n");    
+	CG_Printf("     .;ti;;:.       +RI++IY,        ,+tt=.     \n");	CG_Printf("    ,++YY;.        ,XXi+++X=         ;IYI=.    \n");    
+	CG_Printf("    ;ttY+;.    .,=iVRI++++YX+;.       ;VYt;    \n");	CG_Printf("   .;ii+=,   .;IXRRXVi++++iVRXVi:.    ,=iii.   \n");    
+	CG_Printf("  .==;ti,  .;YRRVVXYii+++++IVIVRXt,   ,+=tI=   \n");	CG_Printf("  .iitY=, .tRRVXXVRV+++ii++YRXVIYXV;   :tYti,  \n");   
+	CG_Printf("  .+iii=,,IBVVXYiiXViiiiiiitVtIXViVR=  ,+t+I:  \n");	CG_Printf("   =+=I:.tBVXVt=;tRIiiiiiiiiXi:=YXiIX; :+=It;  \n");    
+	CG_Printf(" .;;tYt:;RVVV+=:,YRiiiiiiiiiYI,.:IXiVY..+IYi=  \n");	CG_Printf(" .ti=t+;tRIXi;, :XViiiiiiiiiIV:  ,YViX=.:titt. \n");
+	CG_Printf("  iY++I;YVYY=:  +BIiiiiiiiiiiX=   +XiVi;i++Vi, \n"); CG_Printf(" ,+YYYI:VYYY;. .YRiiiiiiiiiiiVt.  ;RIYt:IIVVi: \n");	
+	CG_Printf(" ,+tYXi;YVIX;  ;RVtiiiiIXXtiiVI,  iRIVt,=XVit: \n"); CG_Printf(" .+iiti++XiXI. iBIiiiiYXIIXtiIV: :XXIV++;i+iI;.\n");
+	CG_Printf("  ;Ii=ii:VYtRi,VRtiiiVVi=;IXitX=;VBYXI=i+;iV+;.\n"); CG_Printf("  ;tYtVt;;XYIRXBVttiVV+;:.:VYiXVRBVXY+;+IYVt+, \n");	
+	CG_Printf("  =iiItii,=XVIRRIttXV+=:..,tRtVBXVRI+=i:iIit+. \n"); CG_Printf("  :t==++I:.=YXYIIiYBXYIttIVRBYtVXXI+;;t+;;+Y=, \n");
+	CG_Printf("   +I=;+Y= .:IRItYIVXRRRBBRXXVIRY+=;.:i=;iVi;. \n"); CG_Printf("   .+IYVV+:  +BYXXVXXXXXXXXXVRVVi;:.:;tVYY+=:  \n");	
+	CG_Printf("    .+ttii+ .IBXY++ittIIIti++tXXi, .++=tI+;:   \n"); CG_Printf("     ;YYtIY;;VBI+;:,::;;;;;:,:IBt,::tItYV=.    \n");
+	CG_Printf("      =IYYI++ti+;,   .......  :Xt;i=iYYI+;.    \n"); CG_Printf("      .:+i++ii;;.             .=i=+i=t+;;:.    \n");
+	CG_Printf("        ,tYIVI==:,..       ..,;=+iYIVt:..      \n"); CG_Printf("         ,itt+iIYYti;.   ,;itYIIt:iIi=;.       \n");
+	CG_Printf("          .:;;:+tIIVIi:.;iYYIii+=:,;;:.        \n"); CG_Printf("            .  ,:=itIXi.tXYit=;::,  .          \n");	
+	CG_Printf("                 .+tti=,,iIt+;.                \n"); CG_Printf("                  .:;;:. ,;;;:.                \n");	
+}
 
-	clientNum = CG_CrosshairPlayer();
-	if ( clientNum == -1 ) {
+/*
+=========================
+CG_RankList_cmd
+TiM: Scans the rank struct, and gets
+the names of all the ranks we can use ATM
+=========================
+*/
+void CG_RankList_cmd( void ) {
+	int i;
+
+	/* Print Titles */
+	CG_Printf( S_COLOR_CYAN "RPG-X: Available Ranks\n");
+	CG_Printf( S_COLOR_GREEN "Console Name \t - \t Formal Name\n" );
+
+	/* Loop thru each val and print them */
+	for ( i = 0; i < MAX_RANKS; i++ ) {
+		/*if ( strlen( cgs.ranksData[i].consoleName ) < 1 || strlen( cgs.ranksData[i].formalName ) < 1 )
+			return; */
+		
+		if ( cgs.ranksData[i].consoleName[0] ) 
+			CG_Printf( "%s \t - \t %s\n", cgs.ranksData[i].consoleName, cgs.ranksData[i].formalName );
+		else
+			break;
+	}
+}
+
+/*
+=========================
+CG_ClassList_cmd
+TiM: Scans the class struct, and gets
+the names of all the ranks we can use ATM
+=========================
+*/
+void CG_ClassList_cmd( void ) {
+	int i;
+
+	/* Print Titles */
+	CG_Printf( S_COLOR_CYAN "RPG-X: Available Classes\n");
+	CG_Printf( S_COLOR_GREEN "Formal Name\n" );
+
+	/* Loop thru each val and print them */
+	for ( i = 0; i < MAX_CLASSES; i++ ) {
+		/* if ( strlen( cgs.ranksData[i].consoleName ) < 1 || strlen( cgs.ranksData[i].formalName ) < 1 )
+			return; */
+		
+		if ( cgs.classData[i].formalName[0] ) 
+			CG_Printf( "%s\n", cgs.classData[i].formalName[0] );
+		else
+			break;
+	}
+}
+
+/*
+=========================
+CG_BeamList_cmd
+TiM: Returns a list showing
+the index of each target_location
+ent so people know the data needed
+to beam to various locations.
+=========================
+*/
+void CG_BeamList_cmd( void ) {
+	const char *locStr;
+	int i;
+
+	/* Print Titles */
+	CG_Printf( S_COLOR_CYAN "RPG-X Current Beam Locations\n" );
+	CG_Printf( S_COLOR_GREEN "Location Name \t - \t Location Index\n" );
+
+	/* Based off the string data that is transmitted to the CG on Init
+	   Get the name and index of each location */
+	for ( i = 1; i < MAX_LOCATIONS; i++ ) {
+		locStr = CG_ConfigString( CS_LOCATIONS + i );
+
+		if ( locStr[0] ) {
+			CG_Printf( "%s \t - \t%i\n", locStr, i );
+		}
+		locStr = NULL; /* reset just in case */
+	}
+}
+
+/*
+=========================
+CG_Emote_f
+TiM: The first portion of the
+emote system.  While JKA works
+by storing a copy of animations 
+on the server (something we cannot
+replicate easily here without
+destroying user freedom futhur >.<), so it
+automatically knows the length of time
+each anim should run for, here, we'll
+hacikly override this by calculating the 
+run length on the client as they have the data, 
+and then transmitting it to the server. 
+Hacky, I know.
+
+And if other players don't have the same model,
+it could potentially show animation glitches.
+Although not as bad as the alternative...
+=========================
+*/
+
+void CG_Emote_f( void ) {
+	const char		*argStr;
+	emoteList_t		*emote = NULL;
+	int				i;
+	animation_t		*anims;
+	int				animLength;
+	/* int				animLengthUpper;
+	   int				animLengthLower; */
+	qboolean		emoteFound=qfalse;
+
+	argStr = CG_Argv( 1 );
+	if ( !argStr[0] ) {
+		CG_Printf( S_COLOR_RED "ERROR: No emote specified.\n" );
 		return;
 	}
 
-	trap_Args( message, 128 );
-	Com_sprintf( command, 128, "vtell %i %s", clientNum, message );
-	trap_SendClientCommand( command );
-}
-
-static void CG_VoiceTellAttacker_f( void ) {
-	int		clientNum;
-	char	command[128];
-	char	message[128];
-
-	clientNum = CG_LastAttacker();
-	if ( clientNum == -1 ) {
+	/* TiM: Hack override for eyes shut, angry eyes and alert mode.
+	   No more data is needed */
+	if ( !Q_stricmp( argStr, "eyes_shut" ) || !Q_stricmp( argStr, "eyes_frown" ) || !Q_stricmpn( argStr, "alert", 5 ) || !Q_stricmpn( argStr, "alert2", 6 ) ) 
+	{
+		trap_SendClientCommand( va( "doEmote %s", argStr ) );
 		return;
 	}
 
-	trap_Args( message, 128 );
-	Com_sprintf( command, 128, "vtell %i %s", clientNum, message );
-	trap_SendClientCommand( command );
+	if ( cg.predictedPlayerEntity.currentState.eFlags & EF_DEAD ) {
+		CG_Printf( S_COLOR_RED "ERROR: Cannot play emotes when dead.\n" );
+		return;
+	} 
+
+	/* find out emote in the list
+	   value of numEmotes calced in bg_misc.c
+	   or if an int was supplied as an arg, use that */
+	/*if ( !argStr[0] >= '0' && argStr[0] <= '9' ) 
+	{
+		i = atoi( argStr );
+
+		if ( i > 0 || i < bg_numEmotes ) {
+			emote = &bg_emoteList[i];
+			emoteFound = qtrue;
+		}
+		else {
+			CG_Printf( S_COLOR_RED "ERROR: An invalid emote number was given.\n" );
+			return;			
+		}
+	}
+	else 
+	{*/
+		for ( i = 0; i < bg_numEmotes; i++ ) 
+		{ /* i < sizeof( emoteList ) / sizeof( emoteList[0] ) */
+			emote = &bg_emoteList[i];
+
+			if ( emote && !Q_stricmp( emote->name, argStr ) ) 
+			{
+				emoteFound = qtrue;
+				break;
+			}
+		}
+	/*} */
+
+	if ( !emoteFound ) {
+		CG_Printf( S_COLOR_RED "ERROR: Specified emote not found\n" );
+		return;
+	}
+
+	anims = &cg_animsList[cgs.clientinfo[ cg.predictedPlayerState.clientNum ].animIndex].animations[ emote->enumName ];
+	
+	/* if anim num less than 0, then this is a stub anim */
+	if ( !anims || anims->numFrames < 0 ) {
+		CG_Printf( S_COLOR_RED "ERROR: Current character cannot perform that emote.\n" );
+		return;
+	}
+
+	/* Anim length for lower model */
+	if ( !( emote->animFlags & EMOTE_LOOP_UPPER ) && !( emote->animFlags & EMOTE_LOOP_LOWER ) ) {
+		/* numFrames * (1000 / fps = frameLerp ) = time length */
+		animLength = anims->numFrames * anims->frameLerp;
+	}
+	else {
+		animLength = -1;
+	}
+
+	/* send the command to the server */
+	trap_SendClientCommand( va( "doEmote %i %i", i, animLength ) );
+
+	/* add this emote to the emotes recently played menu */
+	{
+		int j;
+		char* cvar;
+		char buffer[256];
+		qboolean foundSlot=qfalse;
+
+		for ( j = 1; j <= NUM_CVAR_STORES; j++ ) {
+			cvar = va( "ui_recentEmote%i", j );
+
+			/* found a free slot */
+			trap_Cvar_VariableStringBuffer( cvar, buffer, 256 );
+
+			/* oh this emote's already here... no point adding it again */
+			if ( atoi(buffer) == i ) {
+				foundSlot = qtrue;
+				break;				
+			}
+
+			if ( atoi(buffer) == -1 ) {
+				trap_Cvar_Set( cvar, va( "%i", i ) );
+				foundSlot = qtrue;
+				break;
+			}
+		}
+
+		/* whup... no slot found. better push them all forward one */
+		if ( !foundSlot ) {
+			char* cvar2;
+
+			for ( j = 2; j <= NUM_CVAR_STORES; j++ ) {
+				cvar = va( "ui_recentEmote%i", j-1 );
+				cvar2 = va( "ui_recentEmote%i", j );
+				
+				trap_Cvar_VariableStringBuffer( cvar2, buffer, 256 );
+				trap_Cvar_Set( cvar, va( "%i", atoi(buffer) ) );
+
+				if ( j == NUM_CVAR_STORES ) {
+					cvar = va( "ui_recentEmote%i", NUM_CVAR_STORES );
+					trap_Cvar_Set( cvar, va( "%i", i ) );
+				}
+			}
+		}
+	}
 }
 
-#ifdef MISSIONPACK
-static void CG_NextTeamMember_f( void ) {
-  CG_SelectNextPlayer();
-}
 
-static void CG_PrevTeamMember_f( void ) {
-  CG_SelectPrevPlayer();
-}
+/*
+=========================
+CG_LocEdit_f
+=========================
+*/
+static fileHandle_t f;
+void CG_LocEdit_f(void) {
+	char path[MAX_QPATH];
+	char buffer[MAX_STRING_CHARS];
+	const char *argptr;
+	int  i;
 
-// ASS U ME's enumeration order as far as task specific orders, OFFENSE is zero, CAMP is last
-//
-static void CG_NextOrder_f( void ) {
-	clientInfo_t *ci = cgs.clientinfo + cg.snap->ps.clientNum;
-	if (ci) {
-		if (!ci->teamLeader && sortedTeamPlayers[cg_currentSelectedPlayer.integer] != cg.snap->ps.clientNum) {
+	argptr = CG_Argv(1);
+
+	if(!Q_stricmpn(argptr, "start", 5)) {
+		Com_sprintf(path, sizeof(path), "%s", cgs.mapname);
+
+		COM_StripExtension(path, path);
+		Com_sprintf(path, sizeof(path), "%s.locations");
+
+		trap_FS_FOpenFile(path, &f, FS_READ);
+
+		if(f) {
+			CG_Printf(S_COLOR_RED "locedit: %s.locations already exist! Skipping.\n", path);
+			trap_FS_FCloseFile(f);
 			return;
 		}
-	}
-	if (cgs.currentOrder < TEAMTASK_CAMP) {
-		cgs.currentOrder++;
 
-		if (cgs.currentOrder == TEAMTASK_RETRIEVE) {
-			if (!CG_OtherTeamHasFlag()) {
-				cgs.currentOrder++;
+		trap_FS_FOpenFile(path, &f, FS_APPEND);
+
+		if(f) {
+			if((argptr = CG_Argv(2)) != NULL) {
+				i = atoi(argptr);
+				if(i) {
+					trap_FS_Write("LocationsList2\n", 15, f);
+				} else {
+					trap_FS_Write("LocationsList\n", 14, f);
+				}
+				trap_FS_Write("{\n", 2, f);
+				CG_Printf(S_COLOR_YELLOW "locedit: file created...\n");
+				CG_Printf(S_COLOR_YELLOW "locedit: writing file header...\n");
+			} else {
+				CG_Printf(S_COLOR_RED "locedit: insufficent number of arguments.\n");
+				trap_FS_FCloseFile(f);
+				return;
 			}
 		}
-
-		if (cgs.currentOrder == TEAMTASK_ESCORT) {
-			if (!CG_YourTeamHasFlag()) {
-				cgs.currentOrder++;
-			}
+	} else if(!Q_stricmpn(argptr, "stop", 4)) {
+		if(!f) {
+			CG_Printf(S_COLOR_RED "locedit: no locations file loaded!\n");
+			return;
+		}
+		trap_FS_Write("}", 1, f);
+		CG_Printf(S_COLOR_YELLOW "locedit: writing file end...\n");
+		trap_FS_FCloseFile(f);
+		CG_Printf(S_COLOR_YELLOW "locedit: closed file.\n");
+	} else if(!Q_stricmpn(argptr, "add", 3)) {
+		if(!f) {
+			CG_Printf(S_COLOR_RED "locedit: no locations file loaded!\n");
+			return;
 		}
 
-	} else {
-		cgs.currentOrder = TEAMTASK_OFFENSE;
+		memset(buffer, 0, sizeof(buffer));
+
+		Com_sprintf(buffer, sizeof(buffer), "\t{ %f, %f, %f } { 0, %f, 0 } ", floor(cg.snap->ps.origin[0]),
+																				floor(cg.snap->ps.origin[1]),
+																				floor(cg.snap->ps.origin[2]),
+																				floor(cg.snap->ps.viewangles[1] - 24.0f));
+
+		argptr = CG_Argv(2);
+		Com_sprintf(buffer, sizeof(buffer), "%s \"%s\"", buffer, argptr);
+		argptr = CG_Argv(3);
+		if(argptr) {
+			Com_sprintf(buffer, sizeof(buffer), "%s \"%s\"", buffer, argptr);
+		}
+		Com_sprintf(buffer, sizeof(buffer), "%s;\n", buffer);
+		trap_FS_Write(buffer, strlen(buffer), f);
+		CG_Printf(S_COLOR_YELLOW "locedit - added location: %s\n", buffer);
+	} else if(!Q_stricmpn(argptr, "nl", 2)) {
+		if(!f) {
+			CG_Printf(S_COLOR_RED "locedit: no locations file loaded!\n");
+			return;
+		}
+
+		trap_FS_Write("\n", 1, f);
+		CG_Printf(S_COLOR_YELLOW "locedit: added an empty line.\n");
 	}
-	cgs.orderPending = qtrue;
-	cgs.orderTime = cg.time + 3000;
 }
 
+/*=================================================================================
+Third Person Camera View Commands
+TiM : These commands activate code in the thirdperson rendering code to let players
+zoom around their characters smoothly.
+==================================================================================*/
 
-static void CG_ConfirmOrder_f (void ) {
-	trap_SendConsoleCommand(va("cmd vtell %d %s\n", cgs.acceptLeader, VOICECHAT_YES));
-	trap_SendConsoleCommand("+button5; wait; -button5");
-	if (cg.time < cgs.acceptOrderTime) {
-		trap_SendClientCommand(va("teamtask %d\n", cgs.acceptTask));
-		cgs.acceptOrderTime = 0;
+void CG_ThirdPersonForwardDown_f ( void ) {
+	if ( !cg.zoomedForward ) {
+		cg.zoomedForward = qtrue;
+	}
+}
+void CG_ThirdPersonForwardUp_f ( void ) {
+	if ( cg.zoomedForward ) {
+		cg.zoomedForward = qfalse;
 	}
 }
 
-static void CG_DenyOrder_f (void ) {
-	trap_SendConsoleCommand(va("cmd vtell %d %s\n", cgs.acceptLeader, VOICECHAT_NO));
-	trap_SendConsoleCommand("+button6; wait; -button6");
-	if (cg.time < cgs.acceptOrderTime) {
-		cgs.acceptOrderTime = 0;
+
+
+void CG_ThirdPersonBackwardDown_f ( void ) {
+	if ( !cg.zoomedBackward ) {
+		cg.zoomedBackward = qtrue;
+	}
+}
+void CG_ThirdPersonBackwardUp_f ( void ) {
+	if ( cg.zoomedBackward ) {
+		cg.zoomedBackward = qfalse;
 	}
 }
 
-static void CG_TaskOffense_f (void ) {
-	if (cgs.gametype == GT_CTF || cgs.gametype == GT_1FCTF) {
-		trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONGETFLAG));
-	} else {
-		trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONOFFENSE));
+
+
+void CG_ThirdPersonLeftDown_f ( void ) {
+	if ( !cg.zoomedLeft ) {
+		cg.zoomedLeft = qtrue;
 	}
-	trap_SendClientCommand(va("teamtask %d\n", TEAMTASK_OFFENSE));
+}
+void CG_ThirdPersonLeftUp_f ( void ) {
+	if ( cg.zoomedLeft ) {
+		cg.zoomedLeft = qfalse;
+	}
 }
 
-static void CG_TaskDefense_f (void ) {
-	trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONDEFENSE));
-	trap_SendClientCommand(va("teamtask %d\n", TEAMTASK_DEFENSE));
+
+
+void CG_ThirdPersonRightDown_f ( void ) {
+	if ( !cg.zoomedRight ) {
+		cg.zoomedRight = qtrue;
+	}
+}
+void CG_ThirdPersonRightUp_f ( void ) {
+	if ( cg.zoomedRight ) {
+		cg.zoomedRight = qfalse;
+	}
 }
 
-static void CG_TaskPatrol_f (void ) {
-	trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONPATROL));
-	trap_SendClientCommand(va("teamtask %d\n", TEAMTASK_PATROL));
+
+
+void CG_ThirdPersonUpDown_f ( void ) {
+	if ( !cg.zoomedUp ) {
+		cg.zoomedUp = qtrue;
+	}
+}
+void CG_ThirdPersonUpUp_f ( void ) {
+	if ( cg.zoomedUp ) {
+		cg.zoomedUp = qfalse;
+	}
 }
 
-static void CG_TaskCamp_f (void ) {
-	trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONCAMPING));
-	trap_SendClientCommand(va("teamtask %d\n", TEAMTASK_CAMP));
+
+
+void CG_ThirdPersonDownDown_f ( void ) {
+	if ( !cg.zoomedDown ) {
+		cg.zoomedDown = qtrue;
+	}
+}
+void CG_ThirdPersonDownUp_f ( void ) {
+	if ( cg.zoomedDown ) {
+		cg.zoomedDown = qfalse;
+	}
 }
 
-static void CG_TaskFollow_f (void ) {
-	trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONFOLLOW));
-	trap_SendClientCommand(va("teamtask %d\n", TEAMTASK_FOLLOW));
+
+
+void CG_ThirdPersonAngleLeftDown_f ( void ) {
+	if ( !cg.zoomAngleLeft ) {
+		cg.zoomAngleLeft = qtrue;
+	}
+}
+void CG_ThirdPersonAngleLeftUp_f ( void ) {
+	if ( cg.zoomAngleLeft ) {
+		cg.zoomAngleLeft = qfalse;
+	}
 }
 
-static void CG_TaskRetrieve_f (void ) {
-	trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONRETURNFLAG));
-	trap_SendClientCommand(va("teamtask %d\n", TEAMTASK_RETRIEVE));
+
+
+void CG_ThirdPersonAngleRightDown_f ( void ) {
+	if ( !cg.zoomAngleRight ) {
+		cg.zoomAngleRight = qtrue;
+	}
+}
+void CG_ThirdPersonAngleRightUp_f ( void ) {
+	if ( cg.zoomAngleRight ) {
+		cg.zoomAngleRight = qfalse;
+	}
 }
 
-static void CG_TaskEscort_f (void ) {
-	trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_ONFOLLOWCARRIER));
-	trap_SendClientCommand(va("teamtask %d\n", TEAMTASK_ESCORT));
+
+
+void CG_ThirdPersonPitchDownDown_f ( void ) {
+	if ( !cg.zoomPitchDown ) {
+		cg.zoomPitchDown = qtrue;
+	}
+}
+void CG_ThirdPersonPitchDownUp_f ( void ) {
+	if ( cg.zoomPitchDown ) {
+		cg.zoomPitchDown = qfalse;
+	}
 }
 
-static void CG_TaskOwnFlag_f (void ) {
-	trap_SendConsoleCommand(va("cmd vsay_team %s\n", VOICECHAT_IHAVEFLAG));
+
+
+void CG_ThirdPersonPitchUpDown_f ( void ) {
+	if ( !cg.zoomPitchUp ) {
+		cg.zoomPitchUp = qtrue;
+	}
+}
+void CG_ThirdPersonPitchUpUp_f ( void ) {
+	if ( cg.zoomPitchUp ) {
+		cg.zoomPitchUp = qfalse;
+	}
 }
 
-static void CG_TauntKillInsult_f (void ) {
-	trap_SendConsoleCommand("cmd vsay kill_insult\n");
+
+/*------------------------------------------------------------------------------*/
+
+const char*		cVars[] = { "cg_thirdPersonRange", "cg_thirdPersonAngle",
+						"cg_thirdPersonVertOffset", "cg_thirdPersonHorzOffset",
+						"cg_thirdPersonPitchOffset" };
+
+vmCvar_t*		TPSVars[] = { &cg_thirdPersonRange, &cg_thirdPersonAngle, 
+						&cg_thirdPersonVertOffset, &cg_thirdPersonHorzOffset,
+						&cg_thirdPersonPitchOffset };
+
+/* Set the third person values back to their hard-coded CVAR counter parts
+   Ie revert any temporary changes. */
+void CG_ThirdPersonRevert_f ( void ) {
+
+	int i;
+	char	value[MAX_TOKEN_CHARS];
+
+	for (i = 0; i < 5; i++ ){
+		trap_Cvar_VariableStringBuffer ( cVars[i], value, sizeof( value ) );
+		TPSVars[i]->value = atof( value );
+		/* Q_strncpyz( TPSVars[i]->string, value, 256 ); */
+	}
 }
 
-static void CG_TauntPraise_f (void ) {
-	trap_SendConsoleCommand("cmd vsay praise\n");
+/*
+ * TiM : If the default values for these CVARs are changed in cg_main.c, update them here.
+ * I would consider linking directly to the values, but with scope, and then locating them in the
+ * struct array, this is way faster.
+ * Resets the values to the game's defaults. Useful if you screwed up the view big time.
+ */
+void CG_ThirdPersonReset_f ( void ) {
+	int	defValues[] = { 80, 0, 16, 0, 0 };
+	int i;
+
+	for (i = 0; i < 5; i++ ) {
+		TPSVars[i]->value = defValues[i];
+		trap_Cvar_Set( cVars[i], va( "%i", defValues[i] ) );
+	}
 }
 
-static void CG_TauntTaunt_f (void ) {
-	trap_SendConsoleCommand("cmd vtaunt\n");
+/*
+ * Takes the current values from all of the thirdperson pointer variables, and sets the
+ * hard coded CVARs to the same value, effectively making them permanent
+ */
+void CG_ThirdPersonCommit_f ( void ) {
+	int i;
+
+	for (i = 0; i < 5; i++ ) {
+		trap_Cvar_Set( cVars[i], va("%f", TPSVars[i]->value ) );
+	}
+	CG_Printf( "Current Third Person CVAR values committed.\n" ); 
+	//since no screen changes occur. Let the user know something happened.
 }
 
-static void CG_TauntDeathInsult_f (void ) {
-	trap_SendConsoleCommand("cmd vsay death_insult\n");
+/* Toggles between first and third person */
+void CG_ToggleThirdPerson_f ( void ) {
+	int value;
+
+	value = !( cg_thirdPerson.integer > 0 ); /* This is cool. It'll toggle the value each call. */
+
+	trap_Cvar_Set( "cg_thirdPerson", va( "%i", value ) );
 }
 
-static void CG_TauntGauntlet_f (void ) {
-	trap_SendConsoleCommand("cmd vsay kill_guantlet\n");
-}
+/*TiM - Test the ability to handle binary data streams
+void CG_LoadBinaryData( void )
+{
+	const char *fileRoute = "rpgx.idkey";
+	fileHandle_t		f;
+	int					len;
+	byte				buffer[SECURITY_SIZE];
+	rpgxSecurityFile_t	*c;
 
-static void CG_TaskSuicide_f (void ) {
-	int		clientNum;
-	char	command[128];
-
-	clientNum = CG_CrosshairPlayer();
-	if ( clientNum == -1 ) {
+	if (!fileRoute)
 		return;
-	}
 
-	Com_sprintf( command, 128, "tell %i suicide", clientNum );
-	trap_SendClientCommand( command );
-}
+	len = trap_FS_FOpenFile( fileRoute, &f, FS_READ );
 
-
-
-/*
-==================
-CG_TeamMenu_f
-==================
-*/
-/*
-static void CG_TeamMenu_f( void ) {
-  if (trap_Key_GetCatcher() & KEYCATCH_CGAME) {
-    CG_EventHandling(CGAME_EVENT_NONE);
-    trap_Key_SetCatcher(0);
-  } else {
-    CG_EventHandling(CGAME_EVENT_TEAMMENU);
-    //trap_Key_SetCatcher(KEYCATCH_CGAME);
-  }
-}
-*/
-
-/*
-==================
-CG_EditHud_f
-==================
-*/
-/*
-static void CG_EditHud_f( void ) {
-  //cls.keyCatchers ^= KEYCATCH_CGAME;
-  //VM_Call (cgvm, CG_EVENT_HANDLING, (cls.keyCatchers & KEYCATCH_CGAME) ? CGAME_EVENT_EDITHUD : CGAME_EVENT_NONE);
-}
-*/
-
-#endif
-
-/*
-==================
-CG_StartOrbit_f
-==================
-*/
-
-static void CG_StartOrbit_f( void ) {
-	char var[MAX_TOKEN_CHARS];
-
-	trap_Cvar_VariableStringBuffer( "developer", var, sizeof( var ) );
-	if ( !atoi(var) ) {
+	if ( !len )
 		return;
-	}
-	if (cg_cameraOrbit.value != 0) {
-		trap_Cvar_Set ("cg_cameraOrbit", "0");
-		trap_Cvar_Set("cg_thirdPerson", "0");
-	} else {
-		trap_Cvar_Set("cg_cameraOrbit", "5");
-		trap_Cvar_Set("cg_thirdPerson", "1");
-		trap_Cvar_Set("cg_thirdPersonAngle", "0");
-		trap_Cvar_Set("cg_thirdPersonRange", "100");
-	}
-}
 
-/*
-static void CG_Camera_f( void ) {
-	char name[1024];
-	trap_Argv( 1, name, sizeof(name));
-	if (trap_loadCamera(name)) {
-		cg.cameraMode = qtrue;
-		trap_startCamera(cg.time);
-	} else {
-		CG_Printf ("Unable to load camera %s\n",name);
-	}
-}
-*/
+	trap_FS_Read( buffer, len,	f );
+	trap_FS_FCloseFile( f );
 
+	c = (rpgxSecurityFile_t *)((byte *)buffer);
+
+	CG_Printf( "ID: %i, Hash: %i, PID: %i\n", c->ID, c->hash > 0xFFFF ? 1 : 0, c->playerID > 0xFFFF ? 1 : 0);
+	CG_Printf( "%i\n", (unsigned)atoi( sv_securityHash.string ) > 0xFFFF ? 1 : 0 );
+}*/
+
+/*================================================================================*/
 
 typedef struct {
 	char	*cmd;
@@ -451,56 +721,66 @@ typedef struct {
 } consoleCommand_t;
 
 static consoleCommand_t	commands[] = {
-	{ "testgun", CG_TestGun_f },
-	{ "testmodel", CG_TestModel_f },
-	{ "nextframe", CG_TestModelNextFrame_f },
-	{ "prevframe", CG_TestModelPrevFrame_f },
-	{ "nextskin", CG_TestModelNextSkin_f },
-	{ "prevskin", CG_TestModelPrevSkin_f },
-	{ "viewpos", CG_Viewpos_f },
-	{ "+scores", CG_ScoresDown_f },
-	{ "-scores", CG_ScoresUp_f },
-	{ "+zoom", CG_ZoomDown_f },
-	{ "-zoom", CG_ZoomUp_f },
-	{ "sizeup", CG_SizeUp_f },
-	{ "sizedown", CG_SizeDown_f },
-	{ "weapnext", CG_NextWeapon_f },
-	{ "weapprev", CG_PrevWeapon_f },
-	{ "weapon", CG_Weapon_f },
-	{ "tell_target", CG_TellTarget_f },
-	{ "tell_attacker", CG_TellAttacker_f },
-	{ "vtell_target", CG_VoiceTellTarget_f },
-	{ "vtell_attacker", CG_VoiceTellAttacker_f },
-	{ "tcmd", CG_TargetCommand_f },
-#ifdef MISSIONPACK
-	{ "loadhud", CG_LoadHud_f },
-	{ "nextTeamMember", CG_NextTeamMember_f },
-	{ "prevTeamMember", CG_PrevTeamMember_f },
-	{ "nextOrder", CG_NextOrder_f },
-	{ "confirmOrder", CG_ConfirmOrder_f },
-	{ "denyOrder", CG_DenyOrder_f },
-	{ "taskOffense", CG_TaskOffense_f },
-	{ "taskDefense", CG_TaskDefense_f },
-	{ "taskPatrol", CG_TaskPatrol_f },
-	{ "taskCamp", CG_TaskCamp_f },
-	{ "taskFollow", CG_TaskFollow_f },
-	{ "taskRetrieve", CG_TaskRetrieve_f },
-	{ "taskEscort", CG_TaskEscort_f },
-	{ "taskSuicide", CG_TaskSuicide_f },
-	{ "taskOwnFlag", CG_TaskOwnFlag_f },
-	{ "tauntKillInsult", CG_TauntKillInsult_f },
-	{ "tauntPraise", CG_TauntPraise_f },
-	{ "tauntTaunt", CG_TauntTaunt_f },
-	{ "tauntDeathInsult", CG_TauntDeathInsult_f },
-	{ "tauntGauntlet", CG_TauntGauntlet_f },
-	{ "spWin", CG_spWin_f },
-	{ "spLose", CG_spLose_f },
-	{ "scoresDown", CG_scrollScoresDown_f },
-	{ "scoresUp", CG_scrollScoresUp_f },
-#endif
-	{ "startOrbit", CG_StartOrbit_f },
-	//{ "camera", CG_Camera_f },
-	{ "loaddeferred", CG_LoadDeferredPlayers }	
+	{ "testgun",				CG_TestGun_f },
+	{ "testmodel",				CG_TestModel_f },
+	{ "nextframe",				CG_TestModelNextFrame_f },
+	{ "prevframe",				CG_TestModelPrevFrame_f },
+	{ "nextskin",				CG_TestModelNextSkin_f },
+	{ "prevskin",				CG_TestModelPrevSkin_f },
+	{ "viewpos",				CG_Viewpos_f },
+	{ "+info",					CG_ScoresDown_f },
+	{ "-info",					CG_ScoresUp_f },
+	{ "+zoom",					CG_ZoomDown_f },
+	{ "-zoom",					CG_ZoomUp_f },
+
+	/* TiM : Modelview code */
+	{ "+thirdPersonForward",	CG_ThirdPersonForwardDown_f },		/* moving the camera forward */
+	{ "-thirdPersonForward",	CG_ThirdPersonForwardUp_f }, 
+	{ "+thirdPersonBackward",	CG_ThirdPersonBackwardDown_f },		/* moving the camera backward */
+	{ "-thirdPersonBackward",	CG_ThirdPersonBackwardUp_f },
+	{ "+thirdPersonLeft",		CG_ThirdPersonLeftDown_f },			/* moving the camera left */
+	{ "-thirdPersonLeft",		CG_ThirdPersonLeftUp_f },
+	{ "+thirdPersonRight",		CG_ThirdPersonRightDown_f },		/* moving the camera right */
+	{ "-thirdPersonRight",		CG_ThirdPersonRightUp_f },
+	{ "+thirdPersonUp",			CG_ThirdPersonUpDown_f },			/* moving the camera up */
+	{ "-thirdPersonUp",			CG_ThirdPersonUpUp_f },
+	{ "+thirdPersonDown",		CG_ThirdPersonDownDown_f },			/* moving the camera down */
+	{ "-thirdPersonDown",		CG_ThirdPersonDownUp_f },
+	{ "+thirdPersonAngleLeft",	CG_ThirdPersonAngleLeftDown_f },	/* rotating the camera left */
+	{ "-thirdPersonAngleLeft",	CG_ThirdPersonAngleLeftUp_f },
+	{ "+thirdPersonAngleRight",	CG_ThirdPersonAngleRightDown_f },	/* rotating the camera right */
+	{ "-thirdPersonAngleRight",	CG_ThirdPersonAngleRightUp_f },
+	{ "+thirdPersonPitchDown",	CG_ThirdPersonPitchDownDown_f },	/* pitching the camera down */
+	{ "-thirdPersonPitchDown",	CG_ThirdPersonPitchDownUp_f },
+	{ "+thirdPersonPitchUp",	CG_ThirdPersonPitchUpDown_f },		/* pitching the camera up */
+	{ "-thirdPersonPitchUp",	CG_ThirdPersonPitchUpUp_f },
+	{ "thirdPersonRevert",		CG_ThirdPersonRevert_f },			/* revert current view to previous settings */
+	{ "thirdPersonReset",		CG_ThirdPersonReset_f },			/* reset values to CVAR defaults */
+	{ "thirdPersonCommit",		CG_ThirdPersonCommit_f },			/* set CVARs to current settings */
+	{ "thirdPerson",			CG_ToggleThirdPerson_f },			/* Toggle the 3rd persn CVAR */
+	/* TiM */
+
+	{ "clientPos",				CG_ClientPos_f },
+	{ "sizeup",					CG_SizeUp_f },
+	{ "sizedown",				CG_SizeDown_f },
+	{ "weapnext",				CG_NextWeapon_f },
+	{ "weapprev",				CG_PrevWeapon_f },
+	{ "weapon",					CG_Weapon_f },
+	{ "tell_target",			CG_TellTarget_f },
+	{ "tell_attacker",			CG_TellAttacker_f },
+	{ "tcmd",					CG_TargetCommand_f },
+	{ "loaddefered",			CG_LoadDeferredPlayers },			/* spelled wrong, but not changing for demo... */
+	{ "+analysis",				CG_ObjectivesDown_f },
+	{ "-analysis",				CG_ObjectivesUp_f },
+	/*{ "+shake",				CG_ShakeCamera_cmd },*/
+	{ "iloverpg-x",				CG_Cough_cmd },
+	/*{ "commandList",			 CG_CmdList_cmd },*/
+	{ "rankList",				CG_RankList_cmd },
+	{ "locationList",			CG_BeamList_cmd },
+	{ "classList",				CG_ClassList_cmd },
+	{ "emote",					CG_Emote_f },
+	{ "locedit",				CG_LocEdit_f },
+	/*{ "fileID",					CG_LoadBinaryData }*/
 };
 
 
@@ -518,7 +798,7 @@ qboolean CG_ConsoleCommand( void ) {
 
 	cmd = CG_Argv(0);
 
-	for ( i = 0 ; i < ARRAY_LEN( commands ) ; i++ ) {
+	for ( i = 0 ; i < sizeof( commands ) / sizeof( commands[0] ) ; i++ ) {
 		if ( !Q_stricmp( cmd, commands[i].cmd ) ) {
 			commands[i].function();
 			return qtrue;
@@ -527,7 +807,6 @@ qboolean CG_ConsoleCommand( void ) {
 
 	return qfalse;
 }
-
 
 /*
 =================
@@ -540,39 +819,156 @@ so it can perform tab completion
 void CG_InitConsoleCommands( void ) {
 	int		i;
 
-	for ( i = 0 ; i < ARRAY_LEN( commands ) ; i++ ) {
+	for ( i = 0 ; i < sizeof( commands ) / sizeof( commands[0] ) ; i++ ) {
 		trap_AddCommand( commands[i].cmd );
 	}
 
-	//
-	// the game server will interpret these commands, which will be automatically
-	// forwarded to the server after they are not recognized locally
-	//
+	/*
+	 * the game server will interpret these commands, which will be automatically
+	 * forwarded to the server after they are not recognized locally
+	 *
+	 *	TiM: This trap command also adds the commands to the 'tab list' that users can
+	 *	use thru the console, so adding any and all game side commands (that we want the users to know about/access of course lol ;P )
+	 *	would be a good idea too. :)
+	 */
 	trap_AddCommand ("kill");
 	trap_AddCommand ("say");
 	trap_AddCommand ("say_team");
-	trap_AddCommand ("tell");
-	trap_AddCommand ("vsay");
-	trap_AddCommand ("vsay_team");
-	trap_AddCommand ("vtell");
-	trap_AddCommand ("vtaunt");
-	trap_AddCommand ("vosay");
-	trap_AddCommand ("vosay_team");
-	trap_AddCommand ("votell");
+	/* START MOD */
+	trap_AddCommand ("say_class");
+	/*trap_AddCommand ("giveTo");*/
+	trap_AddCommand ("forceName");
+	trap_AddCommand ("forceKill");
+	trap_AddCommand ("forceKillRadius");
+	trap_AddCommand ("forceClass");
+	trap_AddCommand ("kickTarget");
+	/* END MOD */
 	trap_AddCommand ("give");
 	trap_AddCommand ("god");
 	trap_AddCommand ("notarget");
 	trap_AddCommand ("noclip");
 	trap_AddCommand ("team");
+	trap_AddCommand ("class");
 	trap_AddCommand ("follow");
 	trap_AddCommand ("levelshot");
 	trap_AddCommand ("addbot");
 	trap_AddCommand ("setviewpos");
-	trap_AddCommand ("callvote");
 	trap_AddCommand ("vote");
-	trap_AddCommand ("callteamvote");
-	trap_AddCommand ("teamvote");
-	trap_AddCommand ("stats");
-	trap_AddCommand ("teamtask");
-	trap_AddCommand ("loaddefered");	// spelled wrong, but not changing for demo
+	trap_AddCommand ("callvote");
+	trap_AddCommand ("loaddeferred");	/* spelled wrong, but not changing for demo */
+
+	/*TiM - uh START MOD AGAIN */
+	trap_AddCommand("laser");
+	trap_AddCommand("flashlight");
+	trap_AddCommand("cloak");
+	trap_AddCommand("flight");
+	trap_AddCommand("EVASuit");
+	trap_AddCommand("forceName");
+	trap_AddCommand("forceKill");
+	trap_AddCommand("forceKillRadius");
+	trap_AddCommand("shake");
+	trap_AddCommand("drag");
+	trap_AddCommand("undrag");
+	trap_AddCommand("flushTripmines"); /* disarm_tripmines */
+	trap_AddCommand("rank");
+	trap_AddCommand("forceRank");
+	trap_AddCommand("forceModel");
+	trap_AddCommand("forcePlayer");
+	trap_AddCommand("adminLogin");
+	trap_AddCommand("adminList");
+	trap_AddCommand("revive");
+	trap_AddCommand("n00b");
+	trap_AddCommand("msg");
+	trap_AddCommand("playMusic");
+	trap_AddCommand("stopMusic");
+	trap_AddCommand("playSound");
+	trap_AddCommand("fxGun");
+	trap_AddCommand("flushFX");
+	trap_AddCommand("clampInfo");
+	trap_AddCommand("spawnChar");
+	trap_AddCommand("flushChars");
+	trap_AddCommand("flushEmote");
+	trap_AddCommand("beamToPlayer");
+	trap_AddCommand("beamToLocation");
+
+	trap_AddCommand("kick2");
+	trap_AddCommand("botlist");
+	trap_AddCommand("addip");
+	trap_AddCommand("removeip");
+	trap_AddCommand("listip");
+	trap_AddCommand("game_memory");
+	trap_AddCommand("entitylist");
+	trap_AddCommand("useEnt" );
+
+	trap_AddCommand("banUser");
+	trap_AddCommand("findID");
+	trap_AddCommand("removeID");
+
+	trap_AddCommand("me");
+	trap_AddCommand("meLocal");
+
+	trap_AddCommand("mapsList");
+
+	/*
+	 * END MOD AGAIN
+	 * TiM - May I just say. WOAH! THAT'S A LOT!! O_O!
+	 */
+
+    /*
+     * START MOD AGAIN - xD
+     * by Marcin - 04/12/2008
+     */
+    trap_AddCommand("drop");
+    trap_AddCommand("flushDropped");
+    /* END MOD */
+
+	/*
+	 * START MOD ANOTHER TIME xD
+	 * GSIO01 | 08/05/2009
+	 */
+	trap_AddCommand("lock");
+	trap_AddCommand("ffColor");
+	trap_AddCommand("remodulate");
+	trap_AddCommand("unlockAll");
+	trap_AddCommand("lockAll");
+	trap_AddCommand("changeFreq");
+	trap_AddCommand("alert");
+	trap_AddCommand("msg2");
+	trap_AddCommand("forcevote");
+	trap_AddCommand("listSPs");
+	trap_AddCommand("getEntInfo");
+	trap_AddCommand("getOrigin");
+	trap_AddCommand("getEntByTargetname");
+	trap_AddCommand("getEntByTarget");
+	trap_AddCommand("getEntByBmodel");
+	trap_AddCommand("setOrigin");
+	trap_AddCommand("getBrushEntCount");
+	trap_AddCommand("findEntitiesInRadius");
+	trap_AddCommand("spawnTEnt");
+	trap_AddCommand("flushTEnts");
+
+	/* temp */
+	trap_AddCommand("ui_holodeck");
+
+	/* sql */
+	/* TODO some might be removed */
+	trap_AddCommand("userlogin");
+	trap_AddCommand("userAdd");
+	trap_AddCommand("sql_setup");
+	trap_AddCommand("userMod");
+	trap_AddCommand("userDel");
+
+	/* lua */
+	#ifdef CG_LUA
+	trap_AddCommand("lua_status");
+	#endif
+
+	/* cinematic cam test */
+	trap_AddCommand("camtest");
+	trap_AddCommand("camtestend");
+
+	trap_AddCommand("selfdestruct");
+	trap_AddCommand("shipdamage");
+	trap_AddCommand("shiphealth");
 }
+

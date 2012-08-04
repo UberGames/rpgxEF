@@ -1,54 +1,35 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+// Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
 
 // this file is only included when building a dll
 // g_syscalls.asm is included instead when building a qvm
-#ifdef Q3_VM
-#error "Do not use in VM build"
-#endif
 
 static intptr_t (QDECL *syscall)( intptr_t arg, ... ) = (intptr_t (QDECL *)( intptr_t, ...))-1;
 
-
-Q_EXPORT void dllEntry( intptr_t (QDECL *syscallptr)( intptr_t arg,... ) ) {
+void dllEntry( intptr_t (QDECL *syscallptr)( intptr_t arg,... ) ) {
 	syscall = syscallptr;
 }
 
+/*static int (QDECL *syscall)( int arg, ... ) = (int (QDECL *)( int, ...))-1;
+
+
+void dllEntry( int (QDECL *syscallptr)( int arg,... ) ) {
+	syscall = syscallptr;
+}*/
+
 int PASSFLOAT( float x ) {
-	floatint_t fi;
-	fi.f = x;
-	return fi.i;
+	float	floatTemp;
+	floatTemp = x;
+	return *(int *)&floatTemp;
 }
 
 void	trap_Printf( const char *fmt ) {
 	syscall( G_PRINT, fmt );
 }
 
-void trap_Error(const char *fmt)
-{
-	syscall(G_ERROR, fmt);
-	exit(1);
+void	trap_Error( const char *fmt ) {
+	syscall( G_ERROR, fmt );
 }
 
 int		trap_Milliseconds( void ) {
@@ -80,10 +61,6 @@ void	trap_FS_FCloseFile( fileHandle_t f ) {
 
 int trap_FS_GetFileList(  const char *path, const char *extension, char *listbuf, int bufsize ) {
 	return syscall( G_FS_GETFILELIST, path, extension, listbuf, bufsize );
-}
-
-int trap_FS_Seek( fileHandle_t f, long offset, int origin ) {
-	return syscall( G_FS_SEEK, f, offset, origin );
 }
 
 void	trap_SendConsoleCommand( int exec_when, const char *text ) {
@@ -121,6 +98,11 @@ void trap_DropClient( int clientNum, const char *reason ) {
 }
 
 void trap_SendServerCommand( int clientNum, const char *text ) {
+	if(strlen(text) > 1022) {
+		G_LogPrintf( "trap_SendServerCommand( %d, ... ) length exceeds 1022.\n", clientNum );
+		G_LogPrintf( "text [%s]\n", text );
+		return;
+	}
 	syscall( G_SEND_SERVER_COMMAND, clientNum, text );
 }
 
@@ -152,10 +134,6 @@ void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
 	syscall( G_TRACE, results, start, mins, maxs, end, passEntityNum, contentmask );
 }
 
-void trap_TraceCapsule( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask ) {
-	syscall( G_TRACECAPSULE, results, start, mins, maxs, end, passEntityNum, contentmask );
-}
-
 int trap_PointContents( const vec3_t point, int passEntityNum ) {
 	return syscall( G_POINT_CONTENTS, point, passEntityNum );
 }
@@ -185,16 +163,13 @@ void trap_UnlinkEntity( gentity_t *ent ) {
 	syscall( G_UNLINKENTITY, ent );
 }
 
+
 int trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int *list, int maxcount ) {
 	return syscall( G_ENTITIES_IN_BOX, mins, maxs, list, maxcount );
 }
 
 qboolean trap_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *ent ) {
 	return syscall( G_ENTITY_CONTACT, mins, maxs, ent );
-}
-
-qboolean trap_EntityContactCapsule( const vec3_t mins, const vec3_t maxs, const gentity_t *ent ) {
-	return syscall( G_ENTITY_CONTACTCAPSULE, mins, maxs, ent );
 }
 
 int trap_BotAllocateClient( void ) {
@@ -221,15 +196,6 @@ void trap_DebugPolygonDelete(int id) {
 	syscall( G_DEBUG_POLYGON_DELETE, id );
 }
 
-int trap_RealTime( qtime_t *qtime ) {
-	return syscall( G_REAL_TIME, qtime );
-}
-
-void trap_SnapVector( float *v ) {
-	syscall( G_SNAPVECTOR, v );
-	return;
-}
-
 // BotLib traps start here
 int trap_BotLibSetup( void ) {
 	return syscall( BOTLIB_SETUP );
@@ -248,7 +214,7 @@ int trap_BotLibVarGet(char *var_name, char *value, int size) {
 }
 
 int trap_BotLibDefine(char *string) {
-	return syscall( BOTLIB_PC_ADD_GLOBAL_DEFINE, string );
+	return syscall( BOTLIB_DEFINE, string );
 }
 
 int trap_BotLibStartFrame(float time) {
@@ -271,7 +237,7 @@ int trap_BotGetSnapshotEntity( int clientNum, int sequence ) {
 	return syscall( BOTLIB_GET_SNAPSHOT_ENTITY, clientNum, sequence );
 }
 
-int trap_BotGetServerCommand(int clientNum, char *message, int size) {
+int trap_BotGetConsoleMessage(int clientNum, char *message, int size) {
 	return syscall( BOTLIB_GET_CONSOLE_MESSAGE, clientNum, message, size );
 }
 
@@ -292,29 +258,17 @@ void trap_AAS_PresenceTypeBoundingBox(int presencetype, vec3_t mins, vec3_t maxs
 }
 
 float trap_AAS_Time(void) {
-	floatint_t fi;
-	fi.i = syscall( BOTLIB_AAS_TIME );
-	return fi.f;
+	int temp;
+	temp = syscall( BOTLIB_AAS_TIME );
+	return (*(float*)&temp);
 }
 
 int trap_AAS_PointAreaNum(vec3_t point) {
 	return syscall( BOTLIB_AAS_POINT_AREA_NUM, point );
 }
 
-int trap_AAS_PointReachabilityAreaIndex(vec3_t point) {
-	return syscall( BOTLIB_AAS_POINT_REACHABILITY_AREA_INDEX, point );
-}
-
 int trap_AAS_TraceAreas(vec3_t start, vec3_t end, int *areas, vec3_t *points, int maxareas) {
 	return syscall( BOTLIB_AAS_TRACE_AREAS, start, end, areas, points, maxareas );
-}
-
-int trap_AAS_BBoxAreas(vec3_t absmins, vec3_t absmaxs, int *areas, int maxareas) {
-	return syscall( BOTLIB_AAS_BBOX_AREAS, absmins, absmaxs, areas, maxareas );
-}
-
-int trap_AAS_AreaInfo( int areanum, void /* struct aas_areainfo_s */ *info ) {
-	return syscall( BOTLIB_AAS_AREA_INFO, areanum, info );
 }
 
 int trap_AAS_PointContents(vec3_t point) {
@@ -349,22 +303,6 @@ int trap_AAS_AreaTravelTimeToGoalArea(int areanum, vec3_t origin, int goalareanu
 	return syscall( BOTLIB_AAS_AREA_TRAVEL_TIME_TO_GOAL_AREA, areanum, origin, goalareanum, travelflags );
 }
 
-int trap_AAS_EnableRoutingArea( int areanum, int enable ) {
-	return syscall( BOTLIB_AAS_ENABLE_ROUTING_AREA, areanum, enable );
-}
-
-int trap_AAS_PredictRoute(void /*struct aas_predictroute_s*/ *route, int areanum, vec3_t origin,
-							int goalareanum, int travelflags, int maxareas, int maxtime,
-							int stopevent, int stopcontents, int stoptfl, int stopareanum) {
-	return syscall( BOTLIB_AAS_PREDICT_ROUTE, route, areanum, origin, goalareanum, travelflags, maxareas, maxtime, stopevent, stopcontents, stoptfl, stopareanum );
-}
-
-int trap_AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int goalareanum, int travelflags,
-										void /*struct aas_altroutegoal_s*/ *altroutegoals, int maxaltroutegoals,
-										int type) {
-	return syscall( BOTLIB_AAS_ALTERNATIVE_ROUTE_GOAL, start, startareanum, goal, goalareanum, travelflags, altroutegoals, maxaltroutegoals, type );
-}
-
 int trap_AAS_Swimming(vec3_t origin) {
 	return syscall( BOTLIB_AAS_SWIMMING, origin );
 }
@@ -381,16 +319,36 @@ void trap_EA_SayTeam(int client, char *str) {
 	syscall( BOTLIB_EA_SAY_TEAM, client, str );
 }
 
-void trap_EA_Command(int client, char *command) {
-	syscall( BOTLIB_EA_COMMAND, client, command );
+void trap_EA_SayClass(int client, char *str) {
+	syscall( BOTLIB_EA_SAY_TEAM, client, str );
 }
 
-void trap_EA_Action(int client, int action) {
-	syscall( BOTLIB_EA_ACTION, client, action );
+void trap_EA_UseItem(int client, char *it) {
+	syscall( BOTLIB_EA_USE_ITEM, client, it );
+}
+
+void trap_EA_DropItem(int client, char *it) {
+	syscall( BOTLIB_EA_DROP_ITEM, client, it );
+}
+
+void trap_EA_UseInv(int client, char *inv) {
+	syscall( BOTLIB_EA_USE_INV, client, inv );
+}
+
+void trap_EA_DropInv(int client, char *inv) {
+	syscall( BOTLIB_EA_DROP_INV, client, inv );
 }
 
 void trap_EA_Gesture(int client) {
 	syscall( BOTLIB_EA_GESTURE, client );
+}
+
+void trap_EA_Command(int client, char *command) {
+	syscall( BOTLIB_EA_COMMAND, client, command );
+}
+
+void trap_EA_SelectWeapon(int client, int weapon) {
+	syscall( BOTLIB_EA_SELECT_WEAPON, client, weapon );
 }
 
 void trap_EA_Talk(int client) {
@@ -401,12 +359,24 @@ void trap_EA_Attack(int client) {
 	syscall( BOTLIB_EA_ATTACK, client );
 }
 
+void trap_EA_Alt_Attack(int client) {
+	syscall( BOTLIB_EA_ALT_ATTACK, client );
+}
+
 void trap_EA_Use(int client) {
 	syscall( BOTLIB_EA_USE, client );
 }
 
 void trap_EA_Respawn(int client) {
 	syscall( BOTLIB_EA_RESPAWN, client );
+}
+
+void trap_EA_Jump(int client) {
+	syscall( BOTLIB_EA_JUMP, client );
+}
+
+void trap_EA_DelayedJump(int client) {
+	syscall( BOTLIB_EA_DELAYED_JUMP, client );
 }
 
 void trap_EA_Crouch(int client) {
@@ -437,18 +407,6 @@ void trap_EA_MoveRight(int client) {
 	syscall( BOTLIB_EA_MOVE_RIGHT, client );
 }
 
-void trap_EA_SelectWeapon(int client, int weapon) {
-	syscall( BOTLIB_EA_SELECT_WEAPON, client, weapon );
-}
-
-void trap_EA_Jump(int client) {
-	syscall( BOTLIB_EA_JUMP, client );
-}
-
-void trap_EA_DelayedJump(int client) {
-	syscall( BOTLIB_EA_DELAYED_JUMP, client );
-}
-
 void trap_EA_Move(int client, vec3_t dir, float speed) {
 	syscall( BOTLIB_EA_MOVE, client, dir, PASSFLOAT(speed) );
 }
@@ -469,8 +427,8 @@ void trap_EA_ResetInput(int client) {
 	syscall( BOTLIB_EA_RESET_INPUT, client );
 }
 
-int trap_BotLoadCharacter(char *charfile, float skill) {
-	return syscall( BOTLIB_AI_LOAD_CHARACTER, charfile, PASSFLOAT(skill));
+int trap_BotLoadCharacter(char *charfile, int skill) {
+	return syscall( BOTLIB_AI_LOAD_CHARACTER, charfile, skill);
 }
 
 void trap_BotFreeCharacter(int character) {
@@ -478,15 +436,15 @@ void trap_BotFreeCharacter(int character) {
 }
 
 float trap_Characteristic_Float(int character, int index) {
-	floatint_t fi;
-	fi.i = syscall( BOTLIB_AI_CHARACTERISTIC_FLOAT, character, index );
-	return fi.f;
+	int temp;
+	temp = syscall( BOTLIB_AI_CHARACTERISTIC_FLOAT, character, index );
+	return (*(float*)&temp);
 }
 
 float trap_Characteristic_BFloat(int character, int index, float min, float max) {
-	floatint_t fi;
-	fi.i = syscall( BOTLIB_AI_CHARACTERISTIC_BFLOAT, character, index, PASSFLOAT(min), PASSFLOAT(max) );
-	return fi.f;
+	int temp;
+	temp = syscall( BOTLIB_AI_CHARACTERISTIC_BFLOAT, character, index, PASSFLOAT(min), PASSFLOAT(max) );
+	return (*(float*)&temp);
 }
 
 int trap_Characteristic_Integer(int character, int index) {
@@ -577,8 +535,8 @@ void trap_BotSetChatGender(int chatstate, int gender) {
 	syscall( BOTLIB_AI_SET_CHAT_GENDER, chatstate, gender );
 }
 
-void trap_BotSetChatName(int chatstate, char *name, int client) {
-	syscall( BOTLIB_AI_SET_CHAT_NAME, chatstate, name, client );
+void trap_BotSetChatName(int chatstate, char *name) {
+	syscall( BOTLIB_AI_SET_CHAT_NAME, chatstate, name );
 }
 
 void trap_BotResetGoalState(int goalstate) {
@@ -625,12 +583,12 @@ int trap_BotGetSecondGoal(int goalstate, void /* struct bot_goal_s */ *goal) {
 	return syscall( BOTLIB_AI_GET_SECOND_GOAL, goalstate, goal );
 }
 
-int trap_BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelflags) {
-	return syscall( BOTLIB_AI_CHOOSE_LTG_ITEM, goalstate, origin, inventory, travelflags );
+int trap_BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelflags, qboolean botRoamsOnly) {
+	return syscall( BOTLIB_AI_CHOOSE_LTG_ITEM, goalstate, origin, inventory, travelflags, botRoamsOnly );
 }
 
-int trap_BotChooseNBGItem(int goalstate, vec3_t origin, int *inventory, int travelflags, void /* struct bot_goal_s */ *ltg, float maxtime) {
-	return syscall( BOTLIB_AI_CHOOSE_NBG_ITEM, goalstate, origin, inventory, travelflags, ltg, PASSFLOAT(maxtime) );
+int trap_BotChooseNBGItem(int goalstate, vec3_t origin, int *inventory, int travelflags, void /* struct bot_goal_s */ *ltg, float maxtime, qboolean botRoamsOnly) {
+	return syscall( BOTLIB_AI_CHOOSE_NBG_ITEM, goalstate, origin, inventory, travelflags, ltg, PASSFLOAT(maxtime), botRoamsOnly );
 }
 
 int trap_BotTouchingGoal(vec3_t origin, void /* struct bot_goal_s */ *goal) {
@@ -654,13 +612,9 @@ int trap_BotGetMapLocationGoal(char *name, void /* struct bot_goal_s */ *goal) {
 }
 
 float trap_BotAvoidGoalTime(int goalstate, int number) {
-	floatint_t fi;
-	fi.i = syscall( BOTLIB_AI_AVOID_GOAL_TIME, goalstate, number );
-	return fi.f;
-}
-
-void trap_BotSetAvoidGoalTime(int goalstate, int number, float avoidtime) {
-	syscall( BOTLIB_AI_SET_AVOID_GOAL_TIME, goalstate, number, PASSFLOAT(avoidtime));
+	int temp;
+	temp = syscall( BOTLIB_AI_AVOID_GOAL_TIME, goalstate, number );
+	return (*(float*)&temp);
 }
 
 void trap_BotInitLevelItems(void) {
@@ -703,10 +657,6 @@ void trap_BotResetMoveState(int movestate) {
 	syscall( BOTLIB_AI_RESET_MOVE_STATE, movestate );
 }
 
-void trap_BotAddAvoidSpot(int movestate, vec3_t origin, float radius, int type) {
-	syscall( BOTLIB_AI_ADD_AVOID_SPOT, movestate, origin, PASSFLOAT(radius), type);
-}
-
 void trap_BotMoveToGoal(void /* struct bot_moveresult_s */ *result, int movestate, void /* struct bot_goal_s */ *goal, int travelflags) {
 	syscall( BOTLIB_AI_MOVE_TO_GOAL, result, movestate, goal, travelflags );
 }
@@ -747,8 +697,8 @@ void trap_BotInitMoveState(int handle, void /* struct bot_initmove_s */ *initmov
 	syscall( BOTLIB_AI_INIT_MOVE_STATE, handle, initmove );
 }
 
-int trap_BotChooseBestFightWeapon(int weaponstate, int *inventory) {
-	return syscall( BOTLIB_AI_CHOOSE_BEST_FIGHT_WEAPON, weaponstate, inventory );
+int trap_BotChooseBestFightWeapon(int weaponstate, int *inventory, qboolean meleeRange ) {
+	return syscall( BOTLIB_AI_CHOOSE_BEST_FIGHT_WEAPON, weaponstate, inventory, meleeRange );
 }
 
 void trap_BotGetWeaponInfo(int weaponstate, int weapon, void /* struct weaponinfo_s */ *weaponinfo) {
@@ -775,18 +725,3 @@ int trap_GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent
 	return syscall( BOTLIB_AI_GENETIC_PARENTS_AND_CHILD_SELECTION, numranks, ranks, parent1, parent2, child );
 }
 
-int trap_PC_LoadSource( const char *filename ) {
-	return syscall( BOTLIB_PC_LOAD_SOURCE, filename );
-}
-
-int trap_PC_FreeSource( int handle ) {
-	return syscall( BOTLIB_PC_FREE_SOURCE, handle );
-}
-
-int trap_PC_ReadToken( int handle, pc_token_t *pc_token ) {
-	return syscall( BOTLIB_PC_READ_TOKEN, handle, pc_token );
-}
-
-int trap_PC_SourceFileAndLine( int handle, char *filename, int *line ) {
-	return syscall( BOTLIB_PC_SOURCE_FILE_AND_LINE, handle, filename, line );
-}

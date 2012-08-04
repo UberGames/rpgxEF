@@ -1,46 +1,51 @@
 /*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
+ * Copyright (C) 1999-2000 Id Software, Inc.
+ *
+ * g_utils.c -- misc utility functions for game module
+ *
+ */
 
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
-//
-// g_utils.c -- misc utility functions for game module
 
 #include "g_local.h"
 
+/**
+ * \brief Data structure for a singele shader remap.
+ *
+ * Data structure for a single shader remap
+ *
+ */
 typedef struct {
-  char oldShader[MAX_QPATH];
-  char newShader[MAX_QPATH];
-  float timeOffset;
+	/** The original shader */
+	char oldShader[MAX_QPATH];
+	/** The replacement shader */
+	char newShader[MAX_QPATH];
+	/** time offset */
+  	float timeOffset;
 } shaderRemap_t;
 
+/** The maximum count of shader remaps */
 #define MAX_SHADER_REMAPS 128
 
-int remapCount = 0;
-shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
+/** Current count of remapped shaders  */
+static int remapCount = 0;
+/** List of shader remaps */
+static shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
 
+/**
+ * \brief Add a new shader remap.
+ *
+ * Remaps oldShader with newShader.
+ *
+ * @param oldShader shader to be remapped
+ * @param newShader replacement shader
+ * @param timeOffset time offset
+ */
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	int i;
 
 	for (i = 0; i < remapCount; i++) {
 		if (Q_stricmp(oldShader, remappedShaders[i].oldShader) == 0) {
-			// found it, just update this one
+			/* found it, just update this one */
 			strcpy(remappedShaders[i].newShader,newShader);
 			remappedShaders[i].timeOffset = timeOffset;
 			return;
@@ -54,6 +59,13 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	}
 }
 
+/**
+ * \brief Builds the shader state config.
+ *
+ * Builds the shader state config.
+ *
+ * @return the shader state config
+ */
 const char *BuildShaderStateConfig(void) {
 	static char	buff[MAX_STRING_CHARS*4];
 	char out[(MAX_QPATH * 2) + 5];
@@ -76,11 +88,17 @@ model / sound configstring indexes
 */
 
 /*
-================
-G_FindConfigstringIndex
-
-================
-*/
+ * \brief Finds the index a config string starts at.
+ *
+ * Finds the index a config string start at.
+ *
+ * @param name name of the config string
+ * @param start look from here
+ * @param max look until here
+ * @param create create a new config string?
+ * 
+ * @return The config strings index
+ */
 int G_FindConfigstringIndex( char *name, int start, int max, qboolean create ) {
 	int		i;
 	char	s[MAX_STRING_CHARS];
@@ -104,7 +122,8 @@ int G_FindConfigstringIndex( char *name, int start, int max, qboolean create ) {
 	}
 
 	if ( i == max ) {
-		G_Error( "G_FindConfigstringIndex: overflow" );
+		/*G_Error( "G_FindConfigstringIndex: overflow" );*/
+		G_Printf( S_COLOR_RED "G_FindConfigstringIndex: Full!! Could not add value: %s\n", name );
 	}
 
 	trap_SetConfigstring( start + i, name );
@@ -112,25 +131,56 @@ int G_FindConfigstringIndex( char *name, int start, int max, qboolean create ) {
 	return i;
 }
 
-
+/**
+ * \brief Get the model index for a model.
+ *
+ * Get the model index for a model.
+ *
+ * @param name the model name
+ *
+ * @return the models index
+ */
 int G_ModelIndex( char *name ) {
 	return G_FindConfigstringIndex (name, CS_MODELS, MAX_MODELS, qtrue);
 }
 
+/**
+ * \brief Get the sound index for a sound.
+ *
+ * Get the sound index for a sound.
+ *
+ * @param name the sound name
+ *
+ * @return the sounds index
+ */
 int G_SoundIndex( char *name ) {
 	return G_FindConfigstringIndex (name, CS_SOUNDS, MAX_SOUNDS, qtrue);
+}
+
+/**
+ * \brief Get the tric string index.
+ *
+ * Get the tric string index.
+ *
+ * @param name the tric string name
+ *
+ * @return the tric strings index
+ */
+int G_TricStringIndex( char *name ) {
+	return G_FindConfigstringIndex (name, CS_TRIC_STRINGS, MAX_TRIC_STRINGS, qtrue);
 }
 
 //=====================================================================
 
 
-/*
-================
-G_TeamCommand
-
-Broadcasts a command to only a specific team
-================
-*/
+/**
+ * \brief Issue a team command.
+ *
+ * Issue a team command.
+ *
+ * @param team the team
+ * @param cmd the command
+ */
 void G_TeamCommand( team_t team, char *cmd ) {
 	int		i;
 
@@ -144,18 +194,21 @@ void G_TeamCommand( team_t team, char *cmd ) {
 }
 
 
-/*
-=============
-G_Find
-
-Searches all active entities for the next one that holds
-the matching string at fieldofs (use the FOFS() macro) in the structure.
-
-Searches beginning at the entity after from, or the beginning if NULL
-NULL will be returned if the end of the list is reached.
-
-=============
-*/
+/**
+ *
+ * \brief Finds an entity.
+ *
+ * Searches all active entities for the next one that holds
+ * the matching string at fieldofs (use the FOFS() macro) in the structure.
+ * Searches beginning at the entity after from, or the beginning if NULL
+ * NULL will be returned if the end of the list is reached.
+ *
+ * @param from search from this entity on
+ * @param fieldofs in which field to look
+ * @param match string to match
+ *
+ * @return an matching entity or NULL
+ */
 gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
 {
 	char	*s;
@@ -180,15 +233,18 @@ gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
 }
 
 
-/*
-=============
-G_PickTarget
+/** Maximum number of possible choices for G_PickTarget. */
+#define MAXCHOICES 	32
 
-Selects a random entity from among the targets
-=============
-*/
-#define MAXCHOICES	32
-
+/**
+ * \brief Pick a target.
+ *
+ * Selects a random entity from among the targets.
+ *
+ * @param targetname the targets targetname
+ *
+ * @return an entity or NULL
+ */
 gentity_t *G_PickTarget (char *targetname)
 {
 	gentity_t	*ent = NULL;
@@ -201,6 +257,7 @@ gentity_t *G_PickTarget (char *targetname)
 		return NULL;
 	}
 
+	/* BOOKMARK */
 	while(1)
 	{
 		ent = G_Find (ent, FOFS(targetname), targetname);
@@ -211,6 +268,54 @@ gentity_t *G_PickTarget (char *targetname)
 			break;
 	}
 
+	/*================
+	RPG-X Modification
+	Phenix
+	13/06/2004
+	================*/
+	if (!num_choices)
+	{
+		while(1)
+		{
+			ent = G_Find (ent, FOFS(swapname), targetname);
+			if (!ent)
+				break;
+			choice[num_choices++] = ent;
+			if (num_choices == MAXCHOICES)
+				break;
+		}
+	}
+	
+	if (!num_choices)
+	{
+		while(1)
+		{
+			ent = G_Find (ent, FOFS(truename), targetname);
+			if (!ent)
+				break;
+			choice[num_choices++] = ent;
+			if (num_choices == MAXCHOICES)
+				break;
+		}
+	}
+
+	if (!num_choices)
+	{
+		while(1)
+		{
+			ent = G_Find (ent, FOFS(falsename), targetname);
+			if (!ent)
+				break;
+			choice[num_choices++] = ent;
+			if (num_choices == MAXCHOICES)
+				break;
+		}
+	}
+
+	/*================
+	End Modification
+	================*/
+
 	if (!num_choices)
 	{
 		G_Printf("G_PickTarget: target %s not found\n", targetname);
@@ -220,20 +325,22 @@ gentity_t *G_PickTarget (char *targetname)
 	return choice[rand() % num_choices];
 }
 
-
-/*
-==============================
-G_UseTargets
-
-"activator" should be set to the entity that initiated the firing.
-
-Search for (string)targetname in all entities that
-match (string)self.target and call their .use function
-
-==============================
-*/
-void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
+/**
+ * \brief Use all targets of the given entity.
+ *
+ * Goes through all entities and calls ther use function if their
+ * targetname, swapname, truename, falsename, bluename are matching
+ * the target. activator should be set the the inflictor of this function
+ * call.
+ *
+ * @param ent the entity
+ * @param activator the activator
+ * @param target target to match
+ */
+void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	gentity_t		*t;
+	list_iter_p		szIter;
+	safeZone_t		*sz;
 	
 	if ( !ent ) {
 		return;
@@ -245,42 +352,210 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 	}
 
-	if ( !ent->target ) {
+	if ( !target ) {
 		return;
 	}
 
 	t = NULL;
-	while ( (t = G_Find (t, FOFS(targetname), ent->target)) != NULL ) {
+	while ( (t = G_Find (t, FOFS(targetname), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf ("WARNING: Entity used itself.\n");
+			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, activator);
+				#ifdef G_LUA
+				if(t->luaUse)
+				{
+					if(activator)
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, activator->s.number);
+					}
+					else
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, ENTITYNUM_WORLD);
+					}
+				}
+				#endif
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf("entity was removed while using targets\n");
+			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 			return;
+		}
+	}
+
+	/*================
+	RPG-X Modification
+	Phenix
+	13/06/2004
+	================*/
+	t = NULL;
+	while ( (t = G_Find (t, FOFS(swapname), target)) != NULL ) {
+		if ( t == ent ) {
+			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+		} else {
+			if ( t->use ) {
+				t->use (t, ent, activator);
+				#ifdef G_LUA
+				if(t->luaUse)
+				{
+					if(activator)
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, activator->s.number);
+					}
+					else
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, ENTITYNUM_WORLD);
+					}
+				}
+				#endif
+			}
+		}
+		if ( !ent->inuse ) {
+			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			return;
+		}
+	}
+
+	t = NULL;
+	while ( (t = G_Find (t, FOFS(truename), target)) != NULL ) {
+		if ( t == ent ) {
+			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+		} else {
+			if ( t->use ) {
+				t->use (t, ent, activator);
+				#ifdef G_LUA
+				if(t->luaUse)
+				{
+					if(activator)
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, activator->s.number);
+					}
+					else
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, ENTITYNUM_WORLD);
+					}
+				}
+				#endif
+			}
+		}
+		if ( !ent->inuse ) {
+			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			return;
+		}
+	}
+
+	t = NULL;
+	while ( (t = G_Find (t, FOFS(falsename), target)) != NULL ) {
+		if ( t == ent ) {
+			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+		} else {
+			if ( t->use ) {
+				t->use (t, ent, activator);
+				#ifdef G_LUA
+				if(t->luaUse)
+				{
+					if(activator)
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, activator->s.number);
+					}
+					else
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, ENTITYNUM_WORLD);
+					}
+				}
+				#endif
+			}
+		}
+		if ( !ent->inuse ) {
+			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			return;
+		}
+	}
+	/*================
+	End Modification
+	================*/
+
+	/*
+ 	 * RPG-X | GSIO01 | 11/05/2009 | MOD START
+	 * target_alert
+	 */
+	t = NULL;
+	while( (t = G_Find(t, FOFS(bluename), target)) != NULL ) {
+		if ( t == ent ) {
+			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+		} else {
+			if ( t->use ) {
+				t->use (t, ent, ent);
+				#ifdef G_LUA
+				if(t->luaUse)
+				{
+					if(activator)
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, activator->s.number);
+					}
+					else
+					{
+						LuaHook_G_EntityUse(t->luaUse, t->s.number, ent->s.number, ENTITYNUM_WORLD);
+					}
+				}
+				#endif
+			}
+		}
+		if ( !ent->inuse ) {
+			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			return;
+		}
+	}
+
+	/* self destruct safe zones */
+	if(selfdestructSafeZones != NULL && selfdestructSafeZones->length > 0) {
+		szIter = list_iterator(selfdestructSafeZones, FRONT);
+		for(sz = (safeZone_t *)list_next(szIter); sz != NULL; sz = (safeZone_t *)list_next(szIter)) {
+			if(!strcmp(sz->name, target)) {
+				sz->active = (qboolean)!sz->active;
+			}
 		}
 	}
 }
 
+/**
+ * \brief Use all of the given entity's targets.
+ *
+ * Use all of the given entity's targets.
+ *
+ * @param ent the entity
+ * @param activator the initiator of the function call
+ */
+void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
+	if ( !ent ) {
+		return;
+	}
+	G_UseTargets2( ent, activator, ent->target );
+}
 
-/*
-=============
-TempVector
 
-This is just a convenience function
-for making temporary vectors for function calls
-=============
-*/
+/**
+ * \brief Create a temporary vector.
+ *
+ * This is just a convenience function
+ * for making temporary vectors for function calls
+ *
+ * @param x x-value
+ * @param y y-value
+ * @param z z-value
+ *
+ * @return temporary vector
+ */
 float	*tv( float x, float y, float z ) {
 	static	int		index;
 	static	vec3_t	vecs[8];
 	float	*v;
 
-	// use an array so that multiple tempvectors won't collide
-	// for a while
+	/*
+ 	 *  use an array so that multiple tempvectors won't collide
+	 *  for a while
+	 */
 	v = vecs[index];
 	index = (index + 1)&7;
 
@@ -292,20 +567,22 @@ float	*tv( float x, float y, float z ) {
 }
 
 
-/*
-=============
-VectorToString
-
-This is just a convenience function
-for printing vectors
-=============
-*/
+/**
+ * \brief Converts a vector to a string to be printed.
+ *
+ * This is just a convenience function
+ * for printing vectors
+ *
+ * @param v the vector
+ *
+ * @return string representation of the vector
+ */
 char	*vtos( const vec3_t v ) {
 	static	int		index;
 	static	char	str[8][32];
 	char	*s;
 
-	// use an array so that multiple vtos won't collide
+	/* use an array so that multiple vtos won't collide */
 	s = str[index];
 	index = (index + 1)&7;
 
@@ -315,16 +592,18 @@ char	*vtos( const vec3_t v ) {
 }
 
 
-/*
-===============
-G_SetMovedir
 
-The editor only specifies a single value for angles (yaw),
-but we have special constants to generate an up or down direction.
-Angles will be cleared, because it is being used to represent a direction
-instead of an orientation.
-===============
-*/
+/**
+ * \brief Converts angles to move directions.
+ *
+ * The editor only specifies a single value for angles (yaw),
+ * but we have special constants to generate an up or down direction.
+ * Angles will be cleared, because it is being used to represent a direction
+ * instead of an orientation.
+ *
+ * @param angles the angles
+ * @param movedir the movedir
+ */
 void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
 	static vec3_t VEC_UP		= {0, -1, 0};
 	static vec3_t MOVEDIR_UP	= {0, 0, 1};
@@ -341,7 +620,15 @@ void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
 	VectorClear( angles );
 }
 
-
+/**
+ * \brief Get the yaw from a vector.
+ *
+ * Get the yaw from a vector.
+ *
+ * @param vec the vector
+ *
+ * @return the yaw
+ */
 float vectoyaw( const vec3_t vec ) {
 	float	yaw;
 	
@@ -363,7 +650,13 @@ float vectoyaw( const vec3_t vec ) {
 	return yaw;
 }
 
-
+/**
+ * \brief Init the entity.
+ *
+ * Inits a given game entity.
+ *
+ * @param e the entity
+ */
 void G_InitGentity( gentity_t *e ) {
 	e->inuse = qtrue;
 	e->classname = "noclass";
@@ -371,61 +664,92 @@ void G_InitGentity( gentity_t *e ) {
 	e->r.ownerNum = ENTITYNUM_NONE;
 }
 
-/*
-=================
-G_Spawn
-
-Either finds a free entity, or allocates a new one.
-
-  The slots from 0 to MAX_CLIENTS-1 are always reserved for clients, and will
-never be used by anything else.
-
-Try to avoid reusing an entity that was recently freed, because it
-can cause the client to think the entity morphed into something else
-instead of being removed and recreated, which can cause interpolated
-angles and bad trails.
-=================
-*/
+/**
+ * \brief Spawns a new entity.
+ *
+ * Either finds a free entity, or allocates a new one.
+ * The slots from 0 to MAX_CLIENTS-1 are always reserved for clients, 
+ * and will never be used by anything else.
+ * Try to avoid reusing an entity that was recently freed, because it
+ * can cause the client to think the entity morphed into something else
+ * instead of being removed and recreated, which can cause interpolated
+ * angles and bad trails.
+ *
+ * @return a new entity or NULL
+ */
 gentity_t *G_Spawn( void ) {
 	int			i, force;
 	gentity_t	*e;
+	/* RPG-X: RedTechie - Get rid of tripmines first */
+	gentity_t	*tripwire = NULL;
+	int			foundTripWires[MAX_GENTITIES] = {ENTITYNUM_NONE};
+	int			tripcount = 0;
 
-	e = NULL;	// shut up warning
-	i = 0;		// shut up warning
+	e = NULL;	/* shut up warning */
+	i = 0;		/* shut up warning */
 	for ( force = 0 ; force < 2 ; force++ ) {
-		// if we go through all entities and can't find one to free,
-		// override the normal minimum times before use
+		/* if we go through all entities and can't find one to free, */
+		/* override the normal minimum times before use */
 		e = &g_entities[MAX_CLIENTS];
 		for ( i = MAX_CLIENTS ; i<level.num_entities ; i++, e++) {
 			if ( e->inuse ) {
 				continue;
 			}
 
-			// the first couple seconds of server time can involve a lot of
-			// freeing and allocating, so relax the replacement policy
+			/* the first couple seconds of server time can involve a lot of */
+			/* freeing and allocating, so relax the replacement policy */
 			if ( !force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000 ) {
 				continue;
 			}
 
-			// reuse this slot
+			/* reuse this slot */
 			G_InitGentity( e );
 			return e;
 		}
-		if ( i != MAX_GENTITIES ) {
+		if ( i != ENTITYNUM_MAX_NORMAL ) {
 			break;
 		}
 	}
+	
+	/* RPG-X: RedTechie DEBUG: SHOW HOW MANY ENT's WE HAVE LEFT */
+	/*trap_SendServerCommand( -1, va("print \"^1DEBUG: current:%i total:%i\n\"", i, ENTITYNUM_MAX_NORMAL));*/
+
 	if ( i == ENTITYNUM_MAX_NORMAL ) {
-		for (i = 0; i < MAX_GENTITIES; i++) {
-			G_Printf("%4i: %s\n", i, g_entities[i].classname);
+		/* RPG-X: RedTechie - Do some rpg-x house cleaning before we decalre the server dead */
+		while ( (tripwire = G_Find( tripwire, FOFS(classname), "tripwire" )) != NULL )
+		{
+			foundTripWires[tripcount++] = tripwire->s.number;
 		}
-		G_Error( "G_Spawn: no free entities" );
+		
+		if(tripcount != 0){
+			for ( i = 0; i < tripcount; i++ )
+			{
+				/* remove it... or blow it? */
+				if ( &g_entities[foundTripWires[i]] != NULL )
+				{
+					G_FreeEntity( &g_entities[foundTripWires[i]] );
+					foundTripWires[i] = ENTITYNUM_NONE;
+				}
+			}
+			
+			G_LogPrintf("RPG-X WARNING: Max entities hit! Removed all tripmines. Restart the server ASAP or suffer a server crash!\n");
+			trap_SendServerCommand( -1, va("print \"^1RPG-X WARNING: Max entities hit! Removed all tripmines. Restart the server ASAP or suffer a server crash!\n\"", i, ENTITYNUM_MAX_NORMAL));
+			
+			if ( i == ENTITYNUM_MAX_NORMAL ) {
+				G_Error( "G_Spawn: no free entities" );
+			}
+		}else{
+			G_Error( "G_Spawn: no free entities" );
+		}
 	}
 	
-	// open up a new slot
+	/* RPG-X: RedTechie - Update global entity count */
+	RPGEntityCount = i;
+
+	/* open up a new slot */
 	level.num_entities++;
 
-	// let the server system know that there are more entities
+	/* let the server system know that there are more entities */
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ), 
 		&level.clients[0].ps, sizeof( level.clients[0] ) );
 
@@ -433,40 +757,28 @@ gentity_t *G_Spawn( void ) {
 	return e;
 }
 
-/*
-=================
-G_EntitiesFree
-=================
-*/
-qboolean G_EntitiesFree( void ) {
-	int			i;
-	gentity_t	*e;
 
-	e = &g_entities[MAX_CLIENTS];
-	for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++) {
-		if ( e->inuse ) {
-			continue;
-		}
-		// slot available
-		return qtrue;
-	}
-	return qfalse;
-}
-
-
-/*
-=================
-G_FreeEntity
-
-Marks the entity as free
-=================
-*/
+/**
+ * \brief Free an entity.
+ *
+ * Marks the entity as free.
+ *
+ * @param ed entity to free
+ */
 void G_FreeEntity( gentity_t *ed ) {
-	trap_UnlinkEntity (ed);		// unlink from world
+	trap_UnlinkEntity (ed);		/* unlink from world */
 
 	if ( ed->neverFree ) {
 		return;
 	}
+
+	#ifdef G_LUA
+	/* Lua API callbacks */
+	if(ed->luaFree && !ed->client)
+	{
+		LuaHook_G_EntityFree(ed->luaFree, ed->s.number);
+	}
+	#endif
 
 	memset (ed, 0, sizeof(*ed));
 	ed->classname = "freed";
@@ -474,15 +786,18 @@ void G_FreeEntity( gentity_t *ed ) {
 	ed->inuse = qfalse;
 }
 
-/*
-=================
-G_TempEntity
-
-Spawns an event entity that will be auto-removed
-The origin will be snapped to save net bandwidth, so care
-must be taken if the origin is right on a surface (snap towards start vector first)
-=================
-*/
+/**
+ * \brief Spawn an temporary entity.
+ *
+ * Spawns an event entity that will be auto-removed
+ * The origin will be snapped to save net bandwidth, so care
+ * must be taken if the origin is right on a surface (snap towards start vector first)
+ *
+ * @param origin the origin
+ * @param event the event to use for this entity
+ *
+ * @return the temporary entity
+ */
 gentity_t *G_TempEntity( vec3_t origin, int event ) {
 	gentity_t		*e;
 	vec3_t		snapped;
@@ -495,10 +810,10 @@ gentity_t *G_TempEntity( vec3_t origin, int event ) {
 	e->freeAfterEvent = qtrue;
 
 	VectorCopy( origin, snapped );
-	SnapVector( snapped );		// save network bandwidth
+	SnapVector( snapped );		/* save network bandwidth */
 	G_SetOrigin( e, snapped );
 
-	// find cluster for PVS
+	/* find cluster for PVS */
 	trap_LinkEntity( e );
 
 	return e;
@@ -514,17 +829,17 @@ Kill box
 ==============================================================================
 */
 
-/*
-=================
-G_KillBox
-
-Kills all entities that would touch the proposed new positioning
-of ent.  Ent should be unlinked before calling this!
-=================
-*/
+/**
+ * \brief Kill all that would be inside a new one.
+ *
+ * Kills all entities that would touch the proposed new positioning
+ * of ent.  Ent should be unlinked before calling this!
+ * 
+ * @param ent the entity
+ */
 void G_KillBox (gentity_t *ent) {
-	int			i, num;
-	int			touch[MAX_GENTITIES];
+	int		i, num;
+	int		touch[MAX_GENTITIES];
 	gentity_t	*hit;
 	vec3_t		mins, maxs;
 
@@ -537,25 +852,72 @@ void G_KillBox (gentity_t *ent) {
 		if ( !hit->client ) {
 			continue;
 		}
-
-		// nail it
+	
+		/* nail it */
 		G_Damage ( hit, ent, ent, NULL, NULL,
 			100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 	}
 
 }
 
+/**
+ * \author J2J
+ * \brief Push all entities away that are inside a new entity.
+ *
+ * Basically does teh same as G_KillBox except it will
+ * push players and other entities away instead of killing them.
+ *
+ * @param ent the entity
+ *
+ * @return was an ent moved?
+ */
+qboolean G_MoveBox (gentity_t *ent )
+{
+	int		i, num;
+	int		touch[MAX_GENTITIES];
+	gentity_t	*hit;
+	vec3_t		mins, maxs;
+	vec3_t		dir;
+	qboolean	movedPlayer = qfalse;
+	
+	VectorAdd( ent->client->ps.origin, ent->r.mins, mins );
+	VectorAdd( ent->client->ps.origin, ent->r.maxs, maxs );
+
+	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+
+	for (i=0 ; i<num ; i++) 
+	{
+		hit = &g_entities[touch[i]];
+		if ( !hit->client || hit->client->ps.clientNum == ent->client->ps.clientNum ) 
+		{
+			continue;
+		}
+		
+		VectorSet( dir, 0, hit->client->ps.viewangles[YAW], 0 );
+		AngleVectors( dir, hit->client->ps.velocity, NULL, NULL );
+		VectorScale( hit->client->ps.velocity, -150, hit->client->ps.velocity );
+		hit->client->ps.pm_time = 160;		/* hold time */
+		hit->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+		
+		movedPlayer = qtrue;
+	}
+
+	return movedPlayer;	
+}
+
 //==============================================================================
 
-/*
-===============
-G_AddPredictableEvent
-
-Use for non-pmove events that would also be predicted on the
-client side: jumppads and item pickups
-Adds an event+parm and twiddles the event counter
-===============
-*/
+/**
+ * \brief Adds a new Predictable event.
+ *
+ * Use for non-pmove events that would also be predicted on the
+ * client side: jumppads and item pickups
+ * Adds an event+parm and twiddles the event counter
+ *
+ * @param ent the entity
+ * @param event the event
+ * @param eventParm any parameters for the event
+ */
 void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm ) {
 	if ( !ent->client ) {
 		return;
@@ -564,28 +926,31 @@ void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm ) {
 }
 
 
-/*
-===============
-G_AddEvent
-
-Adds an event+parm and twiddles the event counter
-===============
-*/
+/**
+ * \brief Add a new event.
+ * 
+ * Adds an event+parm and twiddles the event counter
+ *
+ * @param ent the entity
+ * @param event the event
+ * @param eventParm parameter for the event
+ */
 void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 	int		bits;
+	playerState_t *ps = &ent->client->ps;
 
 	if ( !event ) {
 		G_Printf( "G_AddEvent: zero event added for entity %i\n", ent->s.number );
 		return;
 	}
 
-	// clients need to add the event in playerState_t instead of entityState_t
+	/* clients need to add the event in playerState_t instead of entityState_t */
 	if ( ent->client ) {
-		bits = ent->client->ps.externalEvent & EV_EVENT_BITS;
+		bits = ps->externalEvent & EV_EVENT_BITS;
 		bits = ( bits + EV_EVENT_BIT1 ) & EV_EVENT_BITS;
-		ent->client->ps.externalEvent = event | bits;
-		ent->client->ps.externalEventParm = eventParm;
-		ent->client->ps.externalEventTime = level.time;
+		ps->externalEvent = event | bits;
+		ps->externalEventParm = eventParm;
+		ps->externalEventTime = level.time;
 	} else {
 		bits = ent->s.event & EV_EVENT_BITS;
 		bits = ( bits + EV_EVENT_BIT1 ) & EV_EVENT_BITS;
@@ -596,12 +961,15 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 }
 
 
-/*
-=============
-G_Sound
-=============
-*/
-void G_Sound( gentity_t *ent, int channel, int soundIndex ) {
+/**
+ * \brief Makes an entity to play a non looping sound.
+ *
+ * Makes an entity to play a non looping sound.
+ *
+ * @param ent the entity
+ * @param soundIndex the sounds index
+ */
+void G_Sound( gentity_t *ent, int soundIndex ) {
 	gentity_t	*te;
 
 	te = G_TempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND );
@@ -612,13 +980,14 @@ void G_Sound( gentity_t *ent, int channel, int soundIndex ) {
 //==============================================================================
 
 
-/*
-================
-G_SetOrigin
-
-Sets the pos trajectory for a fixed position
-================
-*/
+/**
+ * \brief Set the Origin of an entity.
+ *
+ * Sets the pos trajectory for a fixed position
+ *
+ * @param ent the entity
+ * @param origin the new origin
+ */
 void G_SetOrigin( gentity_t *ent, vec3_t origin ) {
 	VectorCopy( origin, ent->s.pos.trBase );
 	ent->s.pos.trType = TR_STATIONARY;
@@ -627,40 +996,364 @@ void G_SetOrigin( gentity_t *ent, vec3_t origin ) {
 	VectorClear( ent->s.pos.trDelta );
 
 	VectorCopy( origin, ent->r.currentOrigin );
+	VectorCopy( origin, ent->s.origin); /* RPG-X | GSIO01 | 24.08.2009 */
 }
 
-/*
-================
-DebugLine
+/**
+ * \brief Set the angles of an entity.
+ *
+ * Sets the pos trajectory for a fixed angular position
+ *
+ * @param ent the entity
+ * @param angles the new angles
+ */
+void G_SetAngles(gentity_t *ent, vec3_t angles) {
+	VectorCopy(angles, ent->s.apos.trBase);
+	ent->s.apos.trType = TR_STATIONARY;
+	ent->s.apos.trTime = 0;
+	ent->s.apos.trDuration = 0;
+	VectorClear(ent->s.apos.trDelta);
 
-  debug polygons only work when running a local game
-  with r_debugSurface set to 2
-================
+	VectorCopy(angles, ent->r.currentAngles);
+	VectorCopy(angles, ent->s.angles);
+}
+
+/**
+ * \brief Get list of entities around a given origin,
+ *
+ * Given an origin and a radius, return all entities that are in use that are within the list
+ *
+ * @param origin the origin
+ * @param radius the radius to look in around
+ * @param ignore entity to ignore
+ * @param takeDamage only list ents that may get damaged?
+ * @param ent_list the resulting list
+ *
+ * @return the number of found entities in the list
+ */
+int G_RadiusList ( vec3_t origin, float radius,	gentity_t *ignore, qboolean takeDamage, gentity_t *ent_list[MAX_GENTITIES])					  
+{
+	float		dist;
+	gentity_t	*ent;
+	int			entityList[MAX_GENTITIES];
+	int			numListedEntities;
+	vec3_t		mins, maxs;
+	vec3_t		v;
+	int			i, e;
+	int			ent_count = 0;
+
+	if ( radius < 1 ) 
+	{
+		radius = 1;
+	}
+
+	for ( i = 0 ; i < 3 ; i++ ) 
+	{
+		mins[i] = origin[i] - radius;
+		maxs[i] = origin[i] + radius;
+	}
+
+	numListedEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+
+	for ( e = 0 ; e < numListedEntities ; e++ ) 
+	{
+		ent = &g_entities[entityList[e]];
+
+		if ((ent == ignore) || !(ent->inuse) || ent->takedamage != takeDamage)
+			continue;
+
+		/* find the distance from the edge of the bounding box */
+		for ( i = 0 ; i < 3 ; i++ ) 
+		{
+			if ( origin[i] < ent->r.absmin[i] ) 
+			{
+				v[i] = ent->r.absmin[i] - origin[i];
+			} else if ( origin[i] > ent->r.absmax[i] ) 
+			{
+				v[i] = origin[i] - ent->r.absmax[i];
+			} else 
+			{
+				v[i] = 0;
+			}
+		}
+
+		dist = VectorLength( v );
+		if ( dist >= radius ) 
+		{
+			continue;
+		}
+		
+		/* ok, we are within the radius, add us to the incoming list */
+		ent_list[ent_count] = ent;
+		ent_count++;
+
+	}
+	/*  we are done, return how many we found */
+	return(ent_count);
+}
+
+int G_RadiusListOfType(char *classname, vec3_t origin, float radius, gentity_t *ignore, gentity_t *ent_list[MAX_GENTITIES]) {
+	float		dist;
+	gentity_t	*ent;
+	int			entityList[MAX_GENTITIES];
+	int			numListedEntities;
+	vec3_t		mins, maxs;
+	vec3_t		v;
+	int			i, e;
+	int			ent_count = 0;
+
+	if ( radius < 1 ) 
+	{
+		radius = 1;
+	}
+
+	for ( i = 0 ; i < 3 ; i++ ) 
+	{
+		mins[i] = origin[i] - radius;
+		maxs[i] = origin[i] + radius;
+	}
+
+	numListedEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+
+	for ( e = 0 ; e < numListedEntities ; e++ ) 
+	{
+		ent = &g_entities[entityList[e]];
+
+		if ((ent == ignore) || !(ent->inuse) || strcmp(classname, ent->classname))
+			continue;
+
+		/* find the distance from the edge of the bounding box */
+		for ( i = 0 ; i < 3 ; i++ ) 
+		{
+			if ( origin[i] < ent->r.absmin[i] ) 
+			{
+				v[i] = ent->r.absmin[i] - origin[i];
+			} else if ( origin[i] > ent->r.absmax[i] ) 
+			{
+				v[i] = origin[i] - ent->r.absmax[i];
+			} else 
+			{
+				v[i] = 0;
+			}
+		}
+
+		dist = VectorLength( v );
+		if ( dist >= radius ) 
+		{
+			continue;
+		}
+		
+		/* ok, we are within the radius, add us to the incoming list */
+		ent_list[ent_count] = ent;
+		ent_count++;
+
+	}
+	/*  we are done, return how many we found */
+	return(ent_count);
+}
+
+/**
+ * \brief Find the nearest entity
+ *
+ * Find the nearest entity.
+ *
+ * @param classname filter the results by this classname
+ * @param origin the origin
+ * @param the radoius to look in around
+ * @param ignore entity to ignore
+ * @param takeDamage only return an entity that may take damage?
+ *
+ * @return the nearest entity
+ */
+gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, gentity_t *ignore, qboolean takeDamage) {
+	gentity_t	*entList[MAX_GENTITIES], *nearest = NULL;
+	int			count, i;
+	float		distance, minDist;
+	vec3_t		dist;
+
+	if(!radius) { /* we don't care how far it is away */
+		radius = 9999999;
+	}
+
+	minDist = radius;
+
+	count = G_RadiusList(origin, radius, ignore, takeDamage, entList);
+
+	for(i = 0; i < count; i++) {
+		if(entList[i] != ignore) {
+			if(entList[i]->s.origin[0] || entList[i]->s.origin[1] || entList[i]->s.origin[2]) {
+				VectorSubtract(origin, entList[i]->s.origin, dist);
+			} else if(entList[i]->r.currentOrigin[0] || entList[i]->r.currentOrigin[1] || entList[i]->r.currentOrigin[2]) {
+				VectorSubtract(origin, entList[i]->r.currentOrigin, dist);
+			} else if(entList[i]->s.pos.trBase[0] || entList[i]->s.pos.trBase[1] || entList[i]->s.pos.trBase[2]) {
+				VectorSubtract(origin, entList[i]->s.pos.trBase, dist);
+			} else { /* wow none of above ... well then assume it's origin is 0 0 0*/
+				VectorCopy(origin, dist);
+			}
+			distance = VectorLength(dist);
+			if(distance < 0) {
+				distance *= -1;
+			}
+			if(distance < minDist) {
+				if(classname && !Q_stricmp(classname, entList[i]->classname)) {
+					minDist = distance;
+					nearest = entList[i];
+				} else if(!classname) {
+					minDist = distance;
+					nearest = entList[i];
+				}
+			}
+		}
+	}
+
+	return nearest;
+}
+
+/**
+ * \brief Find the nearest player.
+ *
+ * Find the nearest player
+ *
+ * @param origin the origin
+ * @param radius the radius to look in around
+ * @param ignore entity to ignore
+ *
+ * @return the nearest player
+ */
+gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, gentity_t *ignore ) {
+	gentity_t	*entList[MAX_GENTITIES], *nearest = NULL;
+	int			count, i;
+	float		distance, minDist;
+	vec3_t		dist;
+
+	if(!radius)
+		radius = 999999;
+
+	minDist = radius;
+
+	count = G_RadiusList(origin, radius, ignore, qtrue, entList);
+	
+	for(i = 0; i < MAX_CLIENTS; i++) {
+		if(entList[i]->client) {
+			VectorSubtract(origin, entList[i]->r.currentOrigin, dist);
+			distance = VectorLength(dist);
+			if(distance < 0)
+				distance *= -1;
+			if(distance < minDist) {
+				minDist = distance;
+				nearest = entList[i];
+			}
+		}
+	}
+
+	return nearest;
+}
+
+/**
+ * \author GSIO01
+ * \brief Get all entities with the specified targetname.
+ *
+ * Get all entities with the specified targetname.
+ *
+ * @param targetname the targetname
+ * @param entities the result
+ *
+ * @return number of entities found
+ */
+int G_GetEntityByTargetname(const char *targetname, gentity_t *entities[MAX_GENTITIES]) {
+	int i;
+	int cnt = 0;
+	gentity_t *t;
+
+	for(i = MAX_GENTITIES - 1; i > -1; i--) {
+		if(!&g_entities[i]) continue;
+		t = &g_entities[i];
+		if(t->targetname && !Q_strncmp(t->targetname, targetname, strlen(targetname))) {
+			entities[cnt] = t;
+			cnt++;
+		}
+	}
+
+	return cnt;
+}
+
+/**
+ * \author GSIO01
+ * \brief Get all entities with specified target.
+ * 
+ *  Get all entities matching the specifie target.
+ *
+ *  @param target target the entities should have
+ *  @param entities the result
+ *
+ *  @return number of matches found
+ */
+int G_GetEntityByTarget(const char *target, gentity_t *entities[MAX_GENTITIES]) {
+	int i;
+	int cnt = 0;
+	gentity_t *t;
+
+	for(i = MAX_GENTITIES - 1; i > -1; i--) {
+		if(!&g_entities[i]) continue;
+		t = &g_entities[i];
+		if(t->target && !Q_strncmp(t->target, target, strlen(target))) {
+			entities[cnt] = t;
+			cnt++;
+		}
+	}
+
+	return cnt;
+}
+
+/**
+ * \author GSIO01
+ * \brief Get all entities with specified brush model
+ *
+ * Get all entities matching the specified brush model.
+ * Normally this only shoud be one entity.
+ *
+ * @param bmodel brush model to match
+ * @param entities the result
+ *
+ * @return number of matches found
+ */
+int G_GetEntityByBmodel(char *bmodel, gentity_t *entities[MAX_GENTITIES]) {
+	int i;
+	int cnt = 0;
+	gentity_t *t;
+
+	for(i = MAX_GENTITIES - 1; i > -1; i--) {
+		if(!&g_entities[i]) continue;
+		t = &g_entities[i];
+		if(t->model && !Q_strncmp(t->model, bmodel, strlen(bmodel))) {
+			entities[cnt] = t;
+			cnt++;
+		}
+	}
+
+	return cnt;
+}
+
+/**
+*	Checks if the line of sight between two entities is blocked.
+*
+*	\author Ubergames - Phenix
+*	\date 2/8/2004
+*
+*	@param ent1 entity one
+*	@param ent2 entity two
+*
+*	@return is line of sight blocked?
 */
-int DebugLine(vec3_t start, vec3_t end, int color) {
-	vec3_t points[4], dir, cross, up = {0, 0, 1};
-	float dot;
+qboolean LineOfSight( gentity_t *ent1, gentity_t *ent2 ) {
+	trace_t         trace;
 
-	VectorCopy(start, points[0]);
-	VectorCopy(start, points[1]);
-	//points[1][2] -= 2;
-	VectorCopy(end, points[2]);
-	//points[2][2] -= 2;
-	VectorCopy(end, points[3]);
+	trap_Trace (&trace, ent1->s.pos.trBase, NULL, NULL, ent2->s.pos.trBase, ent1->s.number, MASK_SHOT );
 
-
-	VectorSubtract(end, start, dir);
-	VectorNormalize(dir);
-	dot = DotProduct(dir, up);
-	if (dot > 0.99 || dot < -0.99) VectorSet(cross, 1, 0, 0);
-	else CrossProduct(dir, up, cross);
-
-	VectorNormalize(cross);
-
-	VectorMA(points[0], 2, cross, points[0]);
-	VectorMA(points[1], -2, cross, points[1]);
-	VectorMA(points[2], -2, cross, points[2]);
-	VectorMA(points[3], 2, cross, points[3]);
-
-	return trap_DebugPolygonCreate(color, 4, points);
+	if ( trace.contents & CONTENTS_SOLID ) {
+		return qfalse;
+	}
+	
+	return qtrue;
 }
+

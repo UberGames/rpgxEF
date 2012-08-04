@@ -1,24 +1,4 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_predict.c -- this file generates cg.predictedPlayerState by either
 // interpolating between snapshots from the server or locally predicting
@@ -82,6 +62,8 @@ CG_ClipMoveToEntities
 
 ====================
 */
+#define SHIELD_HALFTHICKNESS		4	// should correspond with the #define in g_active.c
+
 static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 							int skipNumber, int mask, trace_t *tr ) {
 	int			i, x, zd, zu;
@@ -105,11 +87,71 @@ static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const
 			cmodel = trap_CM_InlineModel( ent->modelindex );
 			VectorCopy( cent->lerpAngles, angles );
 			BG_EvaluateTrajectory( &cent->currentState.pos, cg.physicsTime, origin );
-		} else {
+		}
+		else if (ent->eFlags & EF_SHIELD_BOX_X)
+		{	// "specially" encoded bbox for x-axis aligned shield
+
+			//CG_Printf( S_COLOR_RED "Mins[ %d %d %d ] Maxs[ %d %d %d ]\n", mins[0], mins[1], mins[2], maxs[0], maxs[1], maxs[2] );
+
+			//this is a bit of a hack. Only deny entry to elements
+			//that do not specifiy collision boundaries.
+			//This will mean things like players won't be affected
+			//(there'll be a slight jerk as the server boots them back)
+			//but any FX like phaser beams will be.
+			if ( !mins || !VectorCompare( mins, vec3_origin ) || !VectorCompare( maxs, vec3_origin ) )
+				continue;
+
+			/*x = (ent->solid & 255); // i on server side
+			zd = ((ent->solid>>8) & 255);  // j on server side
+			zu = ((ent->solid>>16) & 255);  // k on server side*/
+
+			x = (ent->time2 & 1023); // i on server side
+			zd = ((ent->time2>>10) & 1023);  // j on server side
+			zu = ((ent->time2>>20) & 1023);  // k on server side
+
+			bmins[0] = -x; //-zd
+			bmaxs[0] = zd; //x
+			bmins[1] = -SHIELD_HALFTHICKNESS;
+			bmaxs[1] = SHIELD_HALFTHICKNESS;
+			bmins[2] = 0;
+			bmaxs[2] = zu;
+
+			cmodel = trap_CM_TempBoxModel( bmins, bmaxs );
+			VectorCopy( vec3_origin, angles );
+			VectorCopy( cent->lerpOrigin, origin );
+
+			//CG_Printf( S_COLOR_RED "X Aligned! Bmins = [ %f %f %f ],\nBMaxs = [%f %f %f]\n", bmins[0], bmins[1], bmins[2], bmaxs[0],bmaxs[1],bmaxs[2] );
+		}
+		else if (ent->eFlags & EF_SHIELD_BOX_Y)
+		{	// "specially" encoded bbox for y-axis aligned shield
+			/*x = (ent->solid & 255); // i on server side
+			zd = ((ent->solid>>8) & 255);  // j on server side
+			zu = ((ent->solid>>16) & 255);  // k on server side*/
+
+			if ( !VectorCompare( mins, vec3_origin ) || !VectorCompare( maxs, vec3_origin ) )
+				continue;
+
+			x = (ent->time2 & 1023); // i on server side
+			zd = ((ent->time2>>10) & 1023);  // j on server side
+			zu = ((ent->time2>>20) & 1023);  // k on server side
+
+			bmins[1] = -x;
+			bmaxs[1] = zd;
+			bmins[0] = -SHIELD_HALFTHICKNESS;
+			bmaxs[0] = SHIELD_HALFTHICKNESS;
+			bmins[2] = 0;
+			bmaxs[2] = zu;
+
+			cmodel = trap_CM_TempBoxModel( bmins, bmaxs );
+			VectorCopy( vec3_origin, angles );
+			VectorCopy( cent->lerpOrigin, origin );
+		}
+		else
+		{
 			// encoded bbox
-			x = (ent->solid & 255);
-			zd = ((ent->solid>>8) & 255);
-			zu = ((ent->solid>>16) & 255) - 32;
+			x = (ent->solid & 255); // i on server side
+			zd = ((ent->solid>>8) & 255);  // j on server side
+			zu = ((ent->solid>>16) & 255) - 32;  // k on server side
 
 			bmins[0] = bmins[1] = -x;
 			bmaxs[0] = bmaxs[1] = x;
@@ -186,7 +228,7 @@ int		CG_PointContents( const vec3_t point, int passEntityNum ) {
 			continue;
 		}
 
-		contents |= trap_CM_TransformedPointContents( point, cmodel, cent->lerpOrigin, cent->lerpAngles );
+		contents |= trap_CM_TransformedPointContents( point, cmodel, ent->origin, ent->angles );
 	}
 
 	return contents;
@@ -261,10 +303,13 @@ CG_TouchItem
 static void CG_TouchItem( centity_t *cent ) {
 	gitem_t		*item;
 
+    //RPG-X | Marcin | 03/12/2008
+    //this can't be predicted because as don't know whether USE was pressed...
+    if (qtrue) {
+        return;
+    }    
+
 	if ( !cg_predictItems.integer ) {
-		return;
-	}
-	if ( !BG_PlayerTouchesItem( &cg.predictedPlayerState, &cent->currentState, cg.time ) ) {
 		return;
 	}
 
@@ -272,8 +317,13 @@ static void CG_TouchItem( centity_t *cent ) {
 	if ( cent->miscTime == cg.time ) {
 		return;
 	}
+	
+	if ( !BG_PlayerTouchesItem( &cg.predictedPlayerState, &cent->currentState, cg.time ) ) {
+		return;
+	}
 
-	if ( !BG_CanItemBeGrabbed( cgs.gametype, &cent->currentState, &cg.predictedPlayerState ) ) {
+	// RPG-X: Marcin: Can't predict this any more sorry - 30/12/2008
+	if ( 0 ) /* ( !BG_CanItemBeGrabbed( &cent->currentState, &cg.predictedPlayerState ) ) */ {
 		return;		// can't hold it
 	}
 
@@ -281,38 +331,45 @@ static void CG_TouchItem( centity_t *cent ) {
 
 	// Special case for flags.  
 	// We don't predict touching our own flag
-#ifdef MISSIONPACK
-	if( cgs.gametype == GT_1FCTF ) {
-		if( item->giTag != PW_NEUTRALFLAG ) {
+	if (item->giType == IT_TEAM)
+	{	// NOTE:  This code used to JUST check giTag.  The problem is that the giTag for PW_REDFLAG 
+		// is the same as WP_9.  The giTag should be a SUBCHECK after giType.
+		/*if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_RED &&
+			item->giTag == PW_REDFLAG)
+			return;*/
+		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_BLUE &&
+			item->giTag == PW_BORG_ADAPT)
 			return;
+	}
+
+	if (!(cent->currentState.eFlags & (EF_ITEMPLACEHOLDER | EF_NODRAW)))
+	{
+		// grab it
+		BG_AddPredictableEventToPlayerstate( EV_ITEM_PICKUP, cent->currentState.modelindex , &cg.predictedPlayerState);
+
+		// Draw the techy-itemplaceholder for weapons and powerups, not ammo, etc.
+		if (item->giType == IT_WEAPON || item->giType == IT_POWERUP)
+		{	// draw it "gridded out"
+			cent->currentState.eFlags |= EF_ITEMPLACEHOLDER;
+		}
+		else
+		{	// remove it from the frame so it won't be drawn
+			cent->currentState.eFlags |= EF_NODRAW;
+			// kef -- special client-only flag to prevent double pickup sounds
+			//cent->currentState.eFlags |= EF_CLIENT_NODRAW;
+		}
+		// if its a weapon, give them some predicted ammo so the autoswitch will work
+		if ( item->giType == IT_WEAPON )
+		{
+			cg.predictedPlayerState.stats[ STAT_WEAPONS ] |= 1 << item->giTag;
+			if ( !cg.predictedPlayerState.ammo[ item->giTag ] ) {
+				cg.predictedPlayerState.ammo[ item->giTag ] = 1;
+			}
 		}
 	}
-#endif
-	if( cgs.gametype == GT_CTF ) {
-		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_RED &&
-			item->giTag == PW_REDFLAG)
-			return;
-		if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_BLUE &&
-			item->giTag == PW_BLUEFLAG)
-			return;
-	}
-
-	// grab it
-	BG_AddPredictableEventToPlayerstate( EV_ITEM_PICKUP, cent->currentState.modelindex , &cg.predictedPlayerState);
-
-	// remove it from the frame so it won't be drawn
-	cent->currentState.eFlags |= EF_NODRAW;
 
 	// don't touch it again this prediction
 	cent->miscTime = cg.time;
-
-	// if it's a weapon, give them some predicted ammo so the autoswitch will work
-	if ( item->giType == IT_WEAPON ) {
-		cg.predictedPlayerState.stats[ STAT_WEAPONS ] |= 1 << item->giTag;
-		if ( !cg.predictedPlayerState.ammo[ item->giTag ] ) {
-			cg.predictedPlayerState.ammo[ item->giTag ] = 1;
-		}
-	}
 }
 
 
@@ -368,19 +425,33 @@ static void CG_TouchTriggerPrediction( void ) {
 		}
 
 		if ( ent->eType == ET_TELEPORT_TRIGGER ) {
-			cg.hyperspace = qtrue;
-		} else if ( ent->eType == ET_PUSH_TRIGGER ) {
-			BG_TouchJumpPad( &cg.predictedPlayerState, ent );
+			//cg.hyperspace = qtrue;
+			continue;
+		} else {
+			float	s;
+			vec3_t	dir;
+
+			// we hit this push trigger
+			if ( spectator ) {
+				continue;
+			}
+
+			// flying characters don't hit bounce pads
+			if ( cg.predictedPlayerState.powerups[PW_FLIGHT] ) {
+				continue;
+			}
+
+			// if we are already flying along the bounce direction, don't play sound again
+			VectorNormalize2( ent->origin2, dir );
+			s = DotProduct( cg.predictedPlayerState.velocity, dir );
+			if ( s < 500 ) {
+				// don't play the event sound again if we are in a fat trigger
+				BG_AddPredictableEventToPlayerstate( EV_JUMP_PAD, 0, &cg.predictedPlayerState );
+			}
+			VectorCopy( ent->origin2, cg.predictedPlayerState.velocity );
 		}
 	}
-
-	// if we didn't touch a jump pad this pmove frame
-	if ( cg.predictedPlayerState.jumppad_frame != cg.predictedPlayerState.pmove_framecount ) {
-		cg.predictedPlayerState.jumppad_frame = 0;
-		cg.predictedPlayerState.jumppad_ent = 0;
-	}
 }
-
 
 
 /*
@@ -415,6 +486,7 @@ void CG_PredictPlayerState( void ) {
 	qboolean	moved;
 	usercmd_t	oldestCmd;
 	usercmd_t	latestCmd;
+	char		temp_string[200];
 
 	cg.hyperspace = qfalse;	// will be set if touching a trigger_teleport
 
@@ -424,6 +496,11 @@ void CG_PredictPlayerState( void ) {
 	if ( !cg.validPPS ) {
 		cg.validPPS = qtrue;
 		cg.predictedPlayerState = cg.snap->ps;
+		// if we need to, we should check our model cvar and update it with the right value from the userinfo strings
+		// since it may have been modified by the server
+		Com_sprintf(temp_string, sizeof(temp_string), "%s/%s/%s", cgs.clientinfo[cg.predictedPlayerState.clientNum].charName, cgs.clientinfo[cg.predictedPlayerState.clientNum].modelName, 
+			cgs.clientinfo[cg.predictedPlayerState.clientNum].skinName);
+		updateSkin(cg.predictedPlayerState.clientNum, temp_string);
 	}
 
 
@@ -443,16 +520,22 @@ void CG_PredictPlayerState( void ) {
 	cg_pmove.ps = &cg.predictedPlayerState;
 	cg_pmove.trace = CG_Trace;
 	cg_pmove.pointcontents = CG_PointContents;
+
+	cg_pmove.admin = cgs.clientinfo[cg.snap->ps.clientNum].isAdmin;
+	cg_pmove.medic = cgs.classData[cgs.clientinfo[cg.snap->ps.clientNum].pClass].isMedic;
+	cg_pmove.borg  = cgs.classData[cgs.clientinfo[cg.snap->ps.clientNum].pClass].isBorg;
+
 	if ( cg_pmove.ps->pm_type == PM_DEAD ) {
 		cg_pmove.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
 	}
 	else {
 		cg_pmove.tracemask = MASK_PLAYERSOLID;
 	}
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
+	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR /*|| (cg.snap->ps.eFlags&EF_ELIMINATED)*/ ) {
 		cg_pmove.tracemask &= ~CONTENTS_BODY;	// spectators can fly through bodies
 	}
 	cg_pmove.noFootsteps = ( cgs.dmflags & DF_NO_FOOTSTEPS ) > 0;
+	cg_pmove.pModDisintegration = cgs.pModDisintegration > 0;
 
 	// save the state before the pmove so we can detect transitions
 	oldPlayerState = cg.predictedPlayerState;
@@ -487,25 +570,11 @@ void CG_PredictPlayerState( void ) {
 		cg.physicsTime = cg.snap->serverTime;
 	}
 
-	if ( pmove_msec.integer < 8 ) {
-		trap_Cvar_Set("pmove_msec", "8");
-	}
-	else if (pmove_msec.integer > 33) {
-		trap_Cvar_Set("pmove_msec", "33");
-	}
-
-	cg_pmove.pmove_fixed = pmove_fixed.integer;// | cg_pmove_fixed.integer;
-	cg_pmove.pmove_msec = pmove_msec.integer;
-
 	// run cmds
 	moved = qfalse;
 	for ( cmdNum = current - CMD_BACKUP + 1 ; cmdNum <= current ; cmdNum++ ) {
 		// get the command
 		trap_GetUserCmd( cmdNum, &cg_pmove.cmd );
-
-		if ( cg_pmove.pmove_fixed ) {
-			PM_UpdateViewAngles( cg_pmove.ps, &cg_pmove.cmd );
-		}
 
 		// don't do anything if the time is before the snapshot player time
 		if ( cg_pmove.cmd.serverTime <= cg.predictedPlayerState.commandTime ) {
@@ -516,6 +585,14 @@ void CG_PredictPlayerState( void ) {
 		if ( cg_pmove.cmd.serverTime > latestCmd.serverTime ) {
 			continue;
 		}
+
+		/*if (cg.predictedPlayerState.introTime > cg.time)	//what's this for? TiM: I think it's for the holoIntro...
+		{
+			cg_pmove.cmd.buttons = 0;
+			cg_pmove.cmd.weapon = 0;
+//			cg_pmove.cmd.angles[0] = cg_pmove.cmd.angles[1] = cg_pmove.cmd.angles[2] = 0;
+			cg_pmove.cmd.forwardmove = cg_pmove.cmd.rightmove = cg_pmove.cmd.upmove = 0;
+		}*/
 
 		// check for a prediction error from last frame
 		// on a lan, this will often be the exact value
@@ -571,23 +648,12 @@ void CG_PredictPlayerState( void ) {
 			}
 		}
 
-		// don't predict gauntlet firing, which is only supposed to happen
-		// when it actually inflicts damage
-		cg_pmove.gauntletHit = qfalse;
-
-		if ( cg_pmove.pmove_fixed ) {
-			cg_pmove.cmd.serverTime = ((cg_pmove.cmd.serverTime + pmove_msec.integer-1) / pmove_msec.integer) * pmove_msec.integer;
-		}
-
 		Pmove (&cg_pmove);
 
 		moved = qtrue;
 
 		// add push trigger movement effects
 		CG_TouchTriggerPrediction();
-
-		// check for predictable events that changed from previous predictions
-		//CG_CheckChangedPredictableEvents(&cg.predictedPlayerState);
 	}
 
 	if ( cg_showmiss.integer > 1 ) {
@@ -615,12 +681,13 @@ void CG_PredictPlayerState( void ) {
 	// fire events and other transition triggered things
 	CG_TransitionPlayerState( &cg.predictedPlayerState, &oldPlayerState );
 
-	if ( cg_showmiss.integer ) {
+/*	if ( cg_showmiss.integer ) {
 		if (cg.eventSequence > cg.predictedPlayerState.eventSequence) {
 			CG_Printf("WARNING: double event\n");
 			cg.eventSequence = cg.predictedPlayerState.eventSequence;
 		}
 	}
+*/
 }
 
 

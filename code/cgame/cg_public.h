@@ -1,26 +1,10 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
 
-This file is part of Quake III Arena source code.
 
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
 
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+
+// Copyright (C) 1999-2000 Id Software, Inc.
 //
-
 
 #define	CMD_BACKUP			64	
 #define	CMD_MASK			(CMD_BACKUP - 1)
@@ -53,13 +37,6 @@ typedef struct {
 	int				serverCommandSequence;	// snapshot becomes current
 } snapshot_t;
 
-enum {
-  CGAME_EVENT_NONE,
-  CGAME_EVENT_TEAMMENU,
-  CGAME_EVENT_SCOREBOARD,
-  CGAME_EVENT_EDITHUD
-};
-
 
 /*
 ==================================================================
@@ -69,8 +46,9 @@ functions imported from the main executable
 ==================================================================
 */
 
-#define	CGAME_IMPORT_API_VERSION	4
+#define	CGAME_IMPORT_API_VERSION	3
 
+//these must match up with cg_syscalls.asm
 typedef enum {
 	CG_PRINT,
 	CG_ERROR,
@@ -133,7 +111,7 @@ typedef enum {
 	CG_MEMORY_REMAINING,
     CG_R_REGISTERSHADER3D,  //59
     CG_CVAR_SET_NO_MODIFY,  // 60
-    CG_R_REMAP_SHADER,
+	CG_R_REMAP_SHADER,
 
 	CG_MEMSET = 100,
 	CG_MEMCPY,
@@ -147,6 +125,8 @@ typedef enum {
 	CG_TESTPRINTINT,
 	CG_TESTPRINTFLOAT,
 } cgameImport_t;
+//these must match up with cg_syscalls.asm
+
 
 
 /*
@@ -159,7 +139,7 @@ functions exported to the main executable
 
 typedef enum {
 	CG_INIT,
-//	void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
+//	void CG_Init( int serverMessageNum, int serverCommandSequence )
 	// called when the level loads or when the renderer is restarted
 	// all media should be registered at this time
 	// cgame will display loading status by calling SCR_Update, which
@@ -186,7 +166,7 @@ typedef enum {
 	CG_CROSSHAIR_PLAYER,
 //	int (*CG_CrosshairPlayer)( void );
 
-	CG_LAST_ATTACKER,
+	CG_LAST_ATTACKER
 //	int (*CG_LastAttacker)( void );
 } cgameExport_t;
 
