@@ -31,9 +31,9 @@ int		infoStringCount;
 
 static qboolean drawCrosshairName=qfalse;
 
-extern void InitPostGameMenuStruct();
+extern void InitPostGameMenuStruct(void);
 
-static void CG_InterfaceStartup();
+static void CG_InterfaceStartup(void);
 
 char *ingame_text[IGT_MAX];		/*	Holds pointers to ingame text */
 
@@ -748,7 +748,6 @@ Used for both the status bar and the scoreboard
 
 void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t headAngles ) {
 	clipHandle_t	cm;
-	centity_t		*cent;
 	clientInfo_t	*ci;
 	playerState_t	*ps;
 	float		value;
@@ -756,7 +755,6 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 	vec3_t			origin;
 	vec3_t			mins, maxs;
 
-	cent = &cg_entities[ clientNum ];
 	ci = &cgs.clientinfo[ clientNum ];
 
 	ps = &cg.snap->ps;
@@ -955,15 +953,6 @@ CG_DrawAmmo
 */
 static void CG_DrawAmmo(centity_t	*cent)
 {
-	float		value;
-//	float		xLength;
-	playerState_t	*ps;
-//	int			max,brightColor_i,darkColor_i,numColor_i;
-
-	ps = &cg.snap->ps;
-	
-	value = ps->ammo[cent->currentState.weapon];
-	
 	return;
 }
 
@@ -1257,17 +1246,16 @@ CG_DrawStatusBar
 static void CG_DrawStatusBar( void ) 
 {
 	centity_t	*cent;
-	playerState_t	*ps;
 	vec3_t		angles;
-	int y=0;
-	vec4_t	whiteA;
-	int		x, z, i, h, yZ;
-	vec3_t	tmpVec, eAngle, forward, dAngle;
+	int			y=0;
+	vec4_t		whiteA;
+	int			x, z, i, h, yZ;
+	vec3_t		tmpVec, eAngle, forward, dAngle;
 	//RPG-X: Redtechie - for the HACK code below
-	//int     rpg_shakemycamera;
-	int healthBarWidth;
-	//float	rpg_shakemycamera_intensity;
-	//const char	*info;
+	//int		rpg_shakemycamera;
+	int			healthBarWidth;
+	//float		rpg_shakemycamera_intensity;
+	//const		char	*info;
 
 	/*static float colors[4][4] = 
 	{ 
@@ -1294,8 +1282,6 @@ static void CG_DrawStatusBar( void )
 
 	// draw the team background
 	CG_DrawTeamBackground( 0, 420, 640, 60, 0.33, cg.snap->ps.persistant[PERS_TEAM], qfalse );
-
-	ps = &cg.snap->ps;
 
 	VectorClear( angles );
 
@@ -2141,16 +2127,7 @@ Draw the small two score display
 */
 static float CG_DrawScores( float y ) 
 {
-//	const char	*s;
-	int			s1, s2; //, score;
-//	int			x, w;
-//	int			v;
-//	vec4_t		color;
-	float		y1;
-//	gitem_t		*item;
-
-	s1 = cgs.scores1;
-	s2 = cgs.scores2;
+	float y1;
 
 	y -=  BIGCHAR_HEIGHT + 8;
 	y1 = y;
@@ -3223,7 +3200,6 @@ CG_LabelCrosshairEntity
 
 static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, vec3_t entMaxs, char *name, qboolean scanAll, vec4_t color, qboolean drawHealth, int health, char *pClass, char *rank, char *race, char* age, char *height, char *weight, char *weapon ) 
 {//ID teammates, ID enemies, ID objectives, etc.
-	centity_t		*cent;
 	//clientInfo_t	*ci;
 	vec3_t			center, maxs, mins, top, bottom, topLeft, topRight, bottomLeft, bottomRight;
 	vec3_t			worldEast = {1.0f, 0, 0}, worldNorth = {0, 1.0f, 0}, worldUp = {0, 0, 1.0f};
@@ -3250,8 +3226,6 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 	char			showAge[1024];
 	char			showClass[1024];
 	//char			*health = "100";
-
-	cent = &cg_entities[clientNum];
 	
 	/*if ( clientNum < MAX_CLIENTS ) {  
 		ci = &cgs.clientinfo[clientNum];
@@ -4319,7 +4293,6 @@ static void CG_DrawWarmup( void ) {
 	int			sec;
 	int			i;
 	clientInfo_t	*ci1, *ci2;
-	int			cw;
 	const char	*s;
 
 	sec = cg.warmup;
@@ -4357,11 +4330,6 @@ static void CG_DrawWarmup( void ) {
 //			w = CG_DrawStrlen( s );
 			w = UI_ProportionalStringWidth(s,UI_BIGFONT);
 
-			if ( w > 640 / BIGCHAR_WIDTH ) {
-				cw = 640 / w;
-			} else {
-				cw = BIGCHAR_WIDTH;
-			}
 //			CG_DrawStringExt( 320 - w * cw/2, 20,s, colorWhite, 
 //					qfalse, qtrue, cw, (int)(cw * 1.5), 0 );
 			UI_DrawProportionalString( (SCREEN_WIDTH/2), 20,s, UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
@@ -4386,12 +4354,6 @@ static void CG_DrawWarmup( void ) {
 
 		w = UI_ProportionalStringWidth(s,UI_BIGFONT);
 
-		if ( w > 640 / BIGCHAR_WIDTH ) {
-			cw = 640 / w;
-		} else {
-			cw = BIGCHAR_WIDTH;
-		}
-
 		UI_DrawProportionalString((SCREEN_WIDTH/2) , 20,gamename, UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
 	}
 
@@ -4415,20 +4377,6 @@ static void CG_DrawWarmup( void ) {
 		default:
 			break;
 		}
-	}
-	switch ( cg.warmupCount ) {
-	case 0:
-		cw = 28;
-		break;
-	case 1:
-		cw = 24;
-		break;
-	case 2:
-		cw = 20;
-		break;
-	default:
-		cw = 16;
-		break;
 	}
 
 //	w = CG_DrawStrlen( s );

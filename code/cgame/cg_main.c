@@ -433,7 +433,7 @@ void QDECL CG_Printf( const char *msg, ... ) {
 	char		*msgPtr;
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	Q_vsnprintf(text, sizeof(text), msg, argptr);
 	va_end (argptr);
 
 	if ( cg_chatColor.integer > 0 && cg_chatColor.integer < 8 )
@@ -496,7 +496,7 @@ void QDECL CG_Error( const char *msg, ... ) {
 	char		text[1024];
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	Q_vsnprintf (text,sizeof(text), msg, argptr);
 	va_end (argptr);
 
 	trap_Error( text );
@@ -510,7 +510,7 @@ void QDECL Com_Error( int level, const char *error, ... ) {
 	char		text[1024];
 
 	va_start (argptr, error);
-	vsprintf (text, error, argptr);
+	Q_vsnprintf (text,sizeof(text), error, argptr);
 	va_end (argptr);
 
 	CG_Error( "%s", text);
@@ -521,7 +521,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 	char		text[1024];
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	Q_vsnprintf (text, sizeof(text), msg, argptr);
 	va_end (argptr);
 
 	CG_Printf ("%s", text);
@@ -2312,7 +2312,7 @@ qboolean CG_LoadUsablesStrings( void )
 			token = COM_Parse( &textPtr );
 			if ( Q_strncmp( token, "{", 1 ) != 0 )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: UsableDescriptions had no opening brace ( { )!\n", fileRoute );
+				CG_Printf( S_COLOR_RED "ERROR: UsableDescriptions had no opening brace ( { )!\n" );
 				continue;
 			}
 

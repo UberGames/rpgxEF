@@ -90,8 +90,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //#pragma intrinsic( memset, memcpy )
 #endif
 
-#define Q_UNUSED(x) (void)x;
-
 //Ignore __attribute__ on non-gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__

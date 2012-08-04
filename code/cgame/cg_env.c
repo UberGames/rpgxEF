@@ -671,7 +671,7 @@ void CG_FountainSpurt( vec3_t org, vec3_t end )
 	//vec3_t		rgb = { 0.4f, 0.7f, 0.8f };
 	//float		distance;
 	//FXBezier	*fxb;
-	localEntity_t	*le;
+	localEntity_t UNUSED_VAR	*le;
 
 	// offset table, could have used sin/cos, I suppose
 	//TiM - This was for the 4-way fountain. not needed no more
@@ -800,10 +800,10 @@ void electric_spark( vec3_t pos, vec3_t normal, vec3_t dir, vec3_t user )
 void CG_ElectricalExplosion( vec3_t start, vec3_t dir, float radius )
 {
 	localEntity_t	*le;
-	localEntity_t	*particle; //FXTrail
+	localEntity_t UNUSED_VAR *particle; //FXTrail
 	vec3_t			pos, temp/*, angles*/;
 	int				i, numSparks;
-	float			scale, dscale;
+	float			scale;
 
 	// Spawn some delayed smoke
 	/*FX_AddSpawner( start, dir, NULL, NULL, 150, 40, qfalse, 9000, smoke_puffs );
@@ -816,7 +816,6 @@ void CG_ElectricalExplosion( vec3_t start, vec3_t dir, float radius )
 	for ( i = 0; i < numSparks; i++ )
 	{	
 		scale = 0.7f + random(); //0.2
-		dscale = -scale*2;
 
 		particle = FX_AddTrail( start,
 								NULL,
@@ -919,7 +918,7 @@ void CG_PhaserFX(centity_t *cent) {
 
 qboolean TorpedoQFX_Think(localEntity_t *le)
 {
-	vec3_t	line1end, line2end, axis[3], rgb, vel, dis;
+	vec3_t	line1end, line2end, axis[3], vel, dis;
 	float	dist;
 
 	VectorSubtract(le->refEntity.origin, le->addOrigin, dis);
@@ -958,8 +957,6 @@ qboolean TorpedoQFX_Think(localEntity_t *le)
 	FX_AddLine( line1end, line2end, 1.0f, random() * 25 + 2, 0.0f, /*0.1 + random() * 0.2*/0.0f, 0.0f, 1, cgs.media.quantumGlow);
 	//FX_AddSprite(line1end, NULL, qfalse, random() * 90 + 30, 4, 1.0f, 0.0f, 0, 0.0f, 1.0f, cgs.media.photonStar);
 
-	VectorSet( rgb, 1.0f, 0.45f, 0.15f ); // orange
-
 	FX_AddSprite( le->refEntity.origin, NULL,qfalse,random() * 60 + 30, 4, 0.5f, 0.0f, 0, 0.0f, 1.0f, cgs.media.quantumRays);	
 	//FX_AddSprite2(le->refEntity.origin, NULL,qfalse,random() * 10 + 60, 0.0f, 0.1f, 0.1f, rgb, rgb, 0.0f, 0.0f, 1, cgs.media.whiteRingShader);
 	FX_AddSprite( le->refEntity.origin, NULL,qfalse,random() * 40 + 8, 4, 0.5f, 0.0f, 0, 0.0f, 1.0f, cgs.media.quantumGlow );	
@@ -975,7 +972,7 @@ qboolean TorpedoQFX_Think(localEntity_t *le)
 
 qboolean TorpedoPFX_Think(localEntity_t *le)
 {
-	vec3_t	line1end, line2end, axis[3], rgb, vel, dis;
+	vec3_t	line1end, line2end, axis[3], vel, dis;
 	float	dist;
 
 	VectorSubtract(le->refEntity.origin, le->addOrigin, dis);
@@ -1013,8 +1010,6 @@ qboolean TorpedoPFX_Think(localEntity_t *le)
 	VectorMA( le->refEntity.origin,  128.0f, axis[2], line2end ); // 48 to high
 	FX_AddLine( line1end, line2end, 1.0f, random() * 25 + 2, 0.0f, /*0.1 + random() * 0.2*/0.0f, 0.0f, 1, cgs.media.photonGlow);
 	//FX_AddSprite(line1end, NULL, qfalse, random() * 90 + 30, 4, 1.0f, 0.0f, 0, 0.0f, 1.0f, cgs.media.photonStar);
-
-	VectorSet( rgb, 1.0f, 0.45f, 0.15f ); // orange
 
 	FX_AddSprite( le->refEntity.origin, NULL,qfalse,random() * 60 + 30, 4, 0.5f, 0.0f, 0, 0.0f, 1.0f, cgs.media.photonRay);	
 	//FX_AddSprite2(le->refEntity.origin, NULL,qfalse,random() * 10 + 60, 0.0f, 0.1f, 0.1f, rgb, rgb, 0.0f, 0.0f, 1, cgs.media.whiteRingShader);
@@ -1087,7 +1082,7 @@ qboolean ParticleFire_Think(localEntity_t *le) {
 }
 
 void CG_ParticleFire(vec3_t origin, int killtime, int size) {
-	localEntity_t *le;
+	localEntity_t UNUSED_VAR *le;
 	le = FX_AddSpawner(origin, NULL, NULL, NULL, qfalse, 0, 0, killtime, ParticleFire_Think, 10);
 	//le->data.spawner.data1 = size;
 }
@@ -1560,7 +1555,8 @@ Creates an orange electricity bolt effect with a pulse that travels down the bea
 ======================
 */
 
-/*void ForgeBoltFireback( vec3_t start, vec3_t end, vec3_t velocity, vec3_t user )
+#if 0
+void ForgeBoltFireback( vec3_t start, vec3_t end, vec3_t velocity, vec3_t user )
 {
 	FX_AddElectricity( start, end, 1.0, user[DATA_RADIUS], 5.0, 1.0, 0.0, 200, cgs.media.pjBoltShader, 
 						(int)user[DATA_EFFECTS], user[DATA_CHAOS] );
@@ -1614,7 +1610,7 @@ bool ForgeBoltPulse( FXPrimitive *fx, centity_t *ent )
 }
 
 //-----------------------------
-/*void CG_ForgeBolt( centity_t *cent )
+void CG_ForgeBolt( centity_t *cent )
 {
 	qboolean	pulse;
 	int			effects;
@@ -1676,6 +1672,7 @@ bool ForgeBoltPulse( FXPrimitive *fx, centity_t *ent )
 		BoltSparkSpew( cent->currentState.origin2, dir, cgs.media.dkorangeParticleShader );
 	}
 }
+#endif
 
 /*
 ===========================
@@ -1687,8 +1684,8 @@ Create directed and scaled plasma jet
 
 void CG_Plasma( vec3_t start, vec3_t end, vec3_t sRGB, vec3_t eRGB, int startalpha, int endalpha )
 {
-	vec3_t	v, sp;
-	float	detail, len, salpha = (startalpha / 255) , ealpha = (endalpha / 255);
+	vec3_t	v;
+	float	len, salpha = (startalpha / 255) , ealpha = (endalpha / 255);
 
 	//detail = FX_DetailLevel( start, 16, 1200 );
 	//if ( detail == 0 )
@@ -1697,7 +1694,6 @@ void CG_Plasma( vec3_t start, vec3_t end, vec3_t sRGB, vec3_t eRGB, int startalp
 	// Orient the plasma
 	VectorSubtract( end, start, v );
 	len = VectorNormalize( v );
-	VectorMA( start, 0.5f, v, sp );
 
 	// Stash a quad at the base to make the effect look a bit more solid
 	//FX_AddQuad( sp, v, NULL, NULL, len * 0.36f, 0.0f, salpha, salpha, sRGB, sRGB, 0.0f, 45.0f, 0.0f, 200, cgs.media.prifleImpactShader );
@@ -1724,7 +1720,8 @@ particle stream fx for STASIS level
 ======================
 */
 
-/*bool particle_stream_think( FXPrimitive *fx, centity_t *ent )
+#if 0
+bool particle_stream_think( FXPrimitive *fx, centity_t *ent )
 {
 	vec3_t old_org;
 
@@ -1794,7 +1791,7 @@ The particles will accelerate up to the half-way point of the cylinder, then dec
 ======================
 */
 
-/*void CG_TransporterStream( centity_t *cent )
+void CG_TransporterStream( centity_t *cent )
 {
 	vec3_t	vel, accel, dir, pos, right, up;
 	float	len, time, acceleration, scale, dis, vf;
@@ -1878,7 +1875,7 @@ CG_ExplosionTrail
 -------------------------
 */
 
-/*qboolean explosionTrailThink( localEntity_t	*fx )
+qboolean explosionTrailThink( localEntity_t	*fx )
 {
 	localEntity_t	*le=0;
 	vec3_t			direction, origin, new_org, angles, dir;
@@ -1955,7 +1952,7 @@ A scanning type beam
 ----------------------
 */
 
-/*void CG_BorgEnergyBeam( centity_t *cent )
+void CG_BorgEnergyBeam( centity_t *cent )
 {
 	vec3_t		normal, angles, base, dir, dir2, rgb;
 	float		len, alpha;
@@ -2018,6 +2015,7 @@ A scanning type beam
 	VectorCopy( base, cent->gent->pos1 );
 	cent->gent->angle += cent->gent->speed * 0.08f;
 }
+#endif
 
 /*
 ----------------------

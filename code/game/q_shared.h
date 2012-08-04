@@ -37,6 +37,20 @@
 
 #endif
 
+
+//Ignore __attribute__ on non-gcc platforms
+#ifndef __GNUC__
+#ifndef __attribute__
+#define __attribute__(x)
+#endif
+#endif
+
+#ifdef __GNUC__
+#define UNUSED_VAR __attribute__((unused))
+#else
+#define UNUSED_VAR
+#endif
+
 /**********************************************************************
   VM Considerations
 
@@ -74,6 +88,7 @@
 #include <ctype.h>
 #include <limits.h>
 
+#define Q_vsnprintf vsnprintf
 #endif
 
 #ifdef _WIN32
@@ -740,8 +755,8 @@ qboolean Info_Validate( const char *s );
 void Info_NextPair( const char **s, char key[MAX_INFO_KEY], char value[MAX_INFO_VALUE] );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void	QDECL Com_Error( int errlevel, const char *error, ... );
-void	QDECL Com_Printf( const char *msg, ... );
+void	QDECL Com_Error( int errlevel, const char *error, ... ) __attribute__ ((format(printf, 2, 3)));
+void	QDECL Com_Printf( const char *msg, ... ) __attribute__ ((format (printf, 1, 2)));
 
 
 /*
