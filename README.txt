@@ -14,15 +14,20 @@ a newer version of this engine which as you'll note does not have any of
 the graphical enhancements as I plan to use this new renderer once it is 
 finished.
 
+#################
+###  License  ###
+#################
+rpgxEF is licensed under GPL v2, ecluding the contents of the folders 
+code/game, code/cgame, and code/ui which are licensed under a different
+license (see README-RPG-X2-.txt).
 
-############
+#################
 ### Changelog ###
-############
+#################
 
 Version 1.0 (this version):
 - Maximal number of chat lines displayed is back to original count (will 
   be changed to 10 again later)
-- Support for external lightmaps removed (will be back in the next release)
 - Bloom effect was removed
 - Motion blur was removed
 - Framebuffer GLSL post processign effects where removed
