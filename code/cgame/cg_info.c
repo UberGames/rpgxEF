@@ -558,7 +558,7 @@ static void ObjectivePrint_Line(int strIndex,int color,centity_t *cent)
 	int y,pixelLen,charLen;
 	char holdText[1024], holdText2[2];
 	char finalText[MAX_OBJ_LENGTH];
-	int len,maxPixLength,charHeight;
+	int len,len_s,maxPixLength,charHeight;
 
 	assert(cgs.objectives[strIndex].text);
 
@@ -567,6 +567,7 @@ static void ObjectivePrint_Line(int strIndex,int color,centity_t *cent)
 	len = strlen(str);
 	len++;
 	Q_strncpyz(finalText,str,len);
+	len_s = strlen(str);
 
 	pixelLen = UI_ProportionalStringWidth(finalText,UI_SMALLFONT);
 
@@ -657,7 +658,7 @@ static int Objective_LineCnt(int strIndex,centity_t *cent)
 	int pixelLen,charLen;
 	char holdText[1024], holdText2[2];
 	char finalText[MAX_OBJ_LENGTH];
-	int len,maxPixLength;
+	int len,len_s,maxPixLength;
 	int	lineCnt;
 
 	assert(cgs.objectives[strIndex].text);
@@ -666,6 +667,7 @@ static int Objective_LineCnt(int strIndex,centity_t *cent)
 	len = strlen(str);
 	len++;
 	Q_strncpyz(finalText,str,len);
+	len_s = strlen(str);
 
 	pixelLen = UI_ProportionalStringWidth(finalText,UI_SMALLFONT);
 	lineCnt = 0;

@@ -11,7 +11,6 @@
 // special server behaviors
 #define	SVF_NOCLIENT			0x00000001	// don't send entity to clients, even if it has effects
 #define SVF_SHIELD_BBOX			0x00000002  // signals that SV_LinkEntity needs to use special client-side bbox encoding
-#define SVF_CLIENTMASK			0x00000004
 #define SVF_BOT					0x00000008
 #define	SVF_ELIMINATED			0x00000010	// Just so we know he's been eliminated without adding the EF_ELIMINATED flag which has all sorts of side effects
 #define	SVF_BROADCAST			0x00000020	// send to all connected clients

@@ -1280,8 +1280,8 @@ qboolean	LuaHook_G_EntityReached(char *function, int entnum);
 qboolean	LuaHook_G_EntityReachedAngular(char *function, int entnum);
 
 void		G_LuaStatus(gentity_t * ent);
-qboolean	G_LuaInit(void);
-void		G_LuaShutdown(void);
+qboolean	G_LuaInit();
+void		G_LuaShutdown();
 
 extern vmCvar_t g_debugLua;
 extern vmCvar_t lua_allowedModules;

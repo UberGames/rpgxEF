@@ -952,7 +952,7 @@ static qboolean CG_ParseModelDataFile( clientInfo_t *ci, const char *charName,
 	fileHandle_t	file;
 	int				file_len;
 	char			charText[20000];
-	char			*textPtr;
+	char			*textPtr, *prevValue;
 	char			fileName[MAX_QPATH];
 	//char			animPath[MAX_QPATH];
 	int				i, n;
@@ -1017,6 +1017,7 @@ static qboolean CG_ParseModelDataFile( clientInfo_t *ci, const char *charName,
 	}
 
 	while ( 1 ) {
+		prevValue = textPtr; //set a backup
 		token = COM_Parse( &textPtr );
 
 		if (!token[0] || !token ) { //we've hit the end of the file. w00t! exit!

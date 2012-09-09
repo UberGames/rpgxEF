@@ -54,7 +54,7 @@ typedef struct list_iter * list_iter_p;
 
 /* Create a linked_list object. This pointer is created on the heap and must be
 cleared with a call to destroy_list to avoid memory leaks */
-list_p create_list(void);
+list_p create_list();
 
 /* Create a list_iter object for the linked_list list. The flag init can be
 either FRONT or BACK and indicates whether to start the iterator from the first

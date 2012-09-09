@@ -871,7 +871,7 @@ Also called by client movement prediction code
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out ) {
 	centity_t	*cent;
 	vec3_t	oldOrigin, origin, deltaOrigin;
-	vec3_t	oldAngles, angles, UNUSED_VAR deltaAngles;
+	vec3_t	oldAngles, angles, deltaAngles;
 
 	if ( moverNum <= 0 || moverNum >= ENTITYNUM_MAX_NORMAL ) {
 		VectorCopy( in, out );
