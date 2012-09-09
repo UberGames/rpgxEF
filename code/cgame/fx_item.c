@@ -181,11 +181,10 @@ void FX_Detpack(vec3_t origin)
 //RPG-X ToDo: Modify force field Code Here
 void FX_DrawPortableShield(centity_t *cent)
 {
-	int				xaxis, height, posWidth, negWidth, team; // light;
+	int				xaxis, height, posWidth, negWidth; // light;
 	vec3_t			start, end, normal;
 	//vec4_t			RGBA;
 	float			halfHeight;
-	localEntity_t	*le;
 	qhandle_t		shader;
 
 	if (cent->currentState.eFlags & EF_NODRAW)
@@ -200,107 +199,45 @@ void FX_DrawPortableShield(centity_t *cent)
 	height = ((cent->currentState.time2 >> 20) & 1023); //16
 	posWidth = ((cent->currentState.time2 >> 10) & 1023); //8
 	negWidth = (cent->currentState.time2 & 1023);
-
-	team = (cent->currentState.otherEntityNum2);
 	halfHeight = (float)height * .5;
 
-	/*if ( !vert )
-	{*/
-		VectorCopy(cent->lerpOrigin, start);
-		VectorCopy(cent->lerpOrigin, end);
-		start[2] += halfHeight;
-		end[2] += halfHeight;
+	VectorCopy(cent->lerpOrigin, start);
+	VectorCopy(cent->lerpOrigin, end);
+	start[2] += halfHeight;
+	end[2] += halfHeight;
 
-		VectorClear(normal);
-		if (xaxis) // drawing along x-axis
-		{
-			start[0] -= negWidth;
-			end[0] += posWidth;
-			normal[1] = 1;
-		}
-		else
-		{
-			start[1] -= negWidth;
-			end[1] += posWidth;
-			normal[0] = 1;
-		}
-	//}
-	//else
-	//{
-	//	VectorCopy(cent->lerpOrigin, start);
-	//	VectorCopy(cent->lerpOrigin, end);
-	//	if ( xaxis ) {
-	//		start[1] += halfHeight;
-	//		end[1] += halfHeight;
-	//	}
-	//	else
-	//	{
-	//		start[0] += halfHeight;
-	//		end[0] += halfHeight;
-	//	}
-
-	//	VectorClear(normal);
-	//	if (xaxis) // drawing along x-axis
-	//	{
-	//		start[0] -= negWidth;
-	//		end[0] += posWidth;
-	//		normal[2] = 1;
-	//	}
-	//	else
-	//	{
-	//		start[1] -= negWidth;
-	//		end[1] += posWidth;
-	//		normal[2] = 1;
-	//	}
-	//}
-	// draw a rectangle o' shieldness
-/*
-	if (team == TEAM_RED)
+	VectorClear(normal);
+	if (xaxis) // drawing along x-axis
 	{
-		if (cent->currentState.eFlags & EF_ITEMPLACEHOLDER)
-		{	// Damaged.
-			shader = cgs.media.shieldDamageShaderRed;
-		}
-		else
-		{
-			shader = cgs.media.shieldActivateShaderRed;
-		}
+		start[0] -= negWidth;
+		end[0] += posWidth;
+		normal[1] = 1;
 	}
 	else
-	{*/
+	{
+		start[1] -= negWidth;
+		end[1] += posWidth;
+		normal[0] = 1;
+	}
 
-		//TiM - Show the forcefield when the place flag is active only
-		//This way, we canhave it flare on events, and invisible the rest of the time
+	//TiM - Show the forcefield when the place flag is active only
+	//This way, we canhave it flare on events, and invisible the rest of the time
 	
-		//tho make sure admins can see it
-		if((int)cent->currentState.origin2[0] == 1) {
-			shader = cgs.media.shieldActivateShaderBorg;
-		}
-		else if((int)cent->currentState.origin2[0] == 2) {
-			shader = cgs.media.shieldActivateShaderYellow;
-		}
-		else if((int)cent->currentState.origin2[0] == 3) {
-			shader = cgs.media.shieldActivateShaderRed;
-		}
-		else {
-			shader = cgs.media.shieldActivateShaderBlue;
-		}
-		if ( cent->currentState.eFlags & EF_ITEMPLACEHOLDER || cgs.clientinfo[cg.snap->ps.clientNum].isAdmin/*cg.snap->ps.persistant[PERS_CLASS] == PC_ADMIN*/ )
-			le = FX_AddOrientedLine(start, end, normal, 1.0f, height, 0.0f, 1.0f, 1.0f, 50.0, shader);
-		//TiM
-		//if (cent->currentState.eFlags & EF_ITEMPLACEHOLDER)
-		//{	// Damaged.
-		//	shader = cgs.media.shieldDamageShaderBlue;
-		//}
-		//else
-		//{
-		//	shader = cgs.media.shieldActivateShaderBlue;
-		//}
-		//-
-//	}
-
-	//le = FX_AddOrientedLine(start, end, normal, 1.0f, height, 0.0f, 1.0f, 1.0f, 50.0, shader);
-//	le->leFlags |= LEF_ONE_FRAME;
+	//tho make sure admins can see it
+	if((int)cent->currentState.origin2[0] == 1) {
+		shader = cgs.media.shieldActivateShaderBorg;
+	}
+	else if((int)cent->currentState.origin2[0] == 2) {
+		shader = cgs.media.shieldActivateShaderYellow;
+	}
+	else if((int)cent->currentState.origin2[0] == 3) {
+		shader = cgs.media.shieldActivateShaderRed;
+	}
+	else {
+		shader = cgs.media.shieldActivateShaderBlue;
+	}
+	if ( cent->currentState.eFlags & EF_ITEMPLACEHOLDER || cgs.clientinfo[cg.snap->ps.clientNum].isAdmin/*cg.snap->ps.persistant[PERS_CLASS] == PC_ADMIN*/ )
+		FX_AddOrientedLine(start, end, normal, 1.0f, height, 0.0f, 1.0f, 1.0f, 50.0, shader);
 }
 
 

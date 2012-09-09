@@ -55,10 +55,10 @@ static int Refent_GetType(lua_State *L) {
 }
 
 static int Refent_SetType(lua_State *L) {
-	rent_t *rent;
+	//rent_t *rent;
 	refEntityType_t type;
 
-	rent = Lua_GetRent(L, 1);
+	//rent = Lua_GetRent(L, 1);
 	type = (refEntityType_t)((int)luaL_checknumber(L, 2));
 
 	if(type < 0 || type >= RT_MAX_REF_ENTITY_TYPE)

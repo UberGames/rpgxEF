@@ -252,7 +252,7 @@ void FX_fxfunc_Explosion( vec3_t start, vec3_t origin, vec3_t normal )
 	vec3_t			velocity;
 //	vec3_t			end;
 //	trace_t			trace;
-	float			scale, dscale;
+	float			scale;
 	int				i, j, numSparks;
 	//weaponInfo_t	*weaponInfo = &cg_weapons[WP_6];
 	//float	scale, dscale;
@@ -265,9 +265,8 @@ void FX_fxfunc_Explosion( vec3_t start, vec3_t origin, vec3_t normal )
 	for ( i = 0; i < numSparks; i++ )
 	{	
 		scale = 0.25f + (random() * 1.0f);
-		dscale = -scale;
 
-				//Randomize the direction
+		//Randomize the direction
 		for (j = 0; j < 3; j ++ )
 		{
 			dir[j] = normal[j] + (0.75 * crandom());

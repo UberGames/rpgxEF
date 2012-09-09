@@ -981,7 +981,6 @@ void CG_CoffeeSteamThirdPerson ( refEntity_t* parent, weaponInfo_t *weapon) {
 
 void CG_CoffeeSteam( refEntity_t* parent, weaponInfo_t *weapon, qboolean thirdperson ) {
 	refEntity_t steam;
-	localEntity_t *le;
 
 	vec3_t angle = { 0.0, 0.0, 10.0 };
 
@@ -1002,7 +1001,7 @@ void CG_CoffeeSteam( refEntity_t* parent, weaponInfo_t *weapon, qboolean thirdpe
 	parent->renderfx &= ~RF_DEPTHHACK;
 
 	if (cg.time % 10 == 0 ) { //release a sprite every .01 of a second
-		le = FX_AddSprite( steam.origin, 
+		FX_AddSprite( steam.origin, 
 						angle, qfalse, 
 						( thirdperson ? random() * 1.2 + 0.5 : random() * 1 + 1), ( thirdperson ? 7 : 10), //random() * 4 + 2 //12
 						0.05 + random() * 0.1, 0.0,
@@ -1618,7 +1617,7 @@ void CG_DrawWeaponSelect( void ) {
 	int		i, rowCount, cellCount;
 	int		bits;
 	//int		count;
-	int		x, y, w, defaultX, defaultY;
+	int		x, y, defaultX, defaultY;
 	char	*name;
 	float	*color;
 	qboolean	WeapOnThisRow = qfalse;
@@ -1694,7 +1693,7 @@ void CG_DrawWeaponSelect( void ) {
 	if ( cg_weapons[ cg.weaponSelect ].item ) {
 		name = cg_weapons[ cg.weaponSelect ].item->pickup_name;
 		if ( name ) {
-			w= UI_ProportionalStringWidth(name,UI_SMALLFONT);
+			UI_ProportionalStringWidth(name,UI_SMALLFONT);
 			UI_DrawProportionalString(x, y, name, UI_SMALLFONT,color);
 
 		}
@@ -2353,29 +2352,14 @@ extern qboolean PM_PlayerCrouching ( int legsAnim );
 
 qboolean	CG_CalcMuzzlePoint( centity_t *cent, vec3_t muzzle, qboolean isDecoy ) {
 	vec3_t		forward;
-	//centity_t	*cent;
-	int			anim;
 
-	/*if ( entityNum == cg.snap->ps.clientNum && !isDecoy ) {
-		VectorCopy( cg.snap->ps.origin, muzzle );
-		muzzle[2] += cg.snap->ps.viewheight;
-		AngleVectors( cg.snap->ps.viewangles, forward, NULL, NULL );
-		VectorMA( muzzle, 14, forward, muzzle );
-		return qtrue;
-	}*/
-
-	//cent = &cg_entities[entityNum];
 	if ( !cent->currentValid ) {
 		return qfalse;
 	}
 
-	//if ( !isDecoy )
-		VectorCopy( cent->currentState.pos.trBase, muzzle );
-	//else
-	//	VectorCopy( cent->currentState.origin, muzzle );
+	VectorCopy( cent->currentState.pos.trBase, muzzle );
 
 	AngleVectors( cent->currentState.apos.trBase, forward, NULL, NULL );
-	anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
 	if ( PM_PlayerCrouching( cent->currentState.legsAnim ) ) {
 		muzzle[2] += CROUCH_VIEWHEIGHT;
 	} else {
@@ -2407,7 +2391,7 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 	vec3_t			direction, new_org;
 	vec3_t			sprayvel, velocity		= { 0, 0, 0 };
 	vec3_t			temp_org, temp_vel;
-	float			scale, dscale;
+	float			scale;
 	int				i, numSparks;
 
 	//Sparks
@@ -2419,7 +2403,6 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 	for ( i = 0; i < numSparks; i++ )
 	{	
 		scale = 0.25f + (random() * 2.0f);
-		dscale = -scale*0.5;
 
 		FXE_Spray( normal, 500, 150, 1.0f, sprayvel);
 

@@ -426,7 +426,6 @@ int CG_LastAttacker( void ) {
 	return cg.snap->ps.persistant[PERS_ATTACKER];
 }
 
-
 void QDECL CG_Printf( const char *msg, ... ) {
 	va_list		argptr;
 	char		text[1024];
@@ -2312,7 +2311,7 @@ qboolean CG_LoadUsablesStrings( void )
 			token = COM_Parse( &textPtr );
 			if ( Q_strncmp( token, "{", 1 ) != 0 )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: UsableDescriptions had no opening brace ( { )!\n", fileRoute );
+				CG_Printf( S_COLOR_RED "ERROR: UsableDescriptions had no opening brace ( { )!\n" );
 				continue;
 			}
 

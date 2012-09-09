@@ -31,9 +31,9 @@ int		infoStringCount;
 
 static qboolean drawCrosshairName=qfalse;
 
-extern void InitPostGameMenuStruct();
+extern void InitPostGameMenuStruct(void);
 
-static void CG_InterfaceStartup();
+static void CG_InterfaceStartup(void);
 
 char *ingame_text[IGT_MAX];		/*	Holds pointers to ingame text */
 
@@ -748,7 +748,6 @@ Used for both the status bar and the scoreboard
 
 void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t headAngles ) {
 	clipHandle_t	cm;
-	centity_t		*cent;
 	clientInfo_t	*ci;
 	playerState_t	*ps;
 	float		value;
@@ -756,7 +755,6 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 	vec3_t			origin;
 	vec3_t			mins, maxs;
 
-	cent = &cg_entities[ clientNum ];
 	ci = &cgs.clientinfo[ clientNum ];
 
 	ps = &cg.snap->ps;
@@ -799,12 +797,6 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 	} else if ( cg_drawIcons.integer ) {
 		CG_DrawPic( x, y, w, h, ci->modelIcon );
 	}
-	
-	//if ( cgs.clientinfo[clientNum].health <= 1 ) {//if eliminated, draw the cross-out
-	//	CG_DrawPic( x, y, w, h, cgs.media.eliminatedShader );
-	//} else if ( ci->deferred ) {// if they are deferred, draw a cross out
-//		CG_DrawPic( x, y, w, h, cgs.media.deferShader );
-	//}
 }
 
 /*
@@ -955,220 +947,9 @@ CG_DrawAmmo
 */
 static void CG_DrawAmmo(centity_t	*cent)
 {
-	float		value;
-//	float		xLength;
-	playerState_t	*ps;
-//	int			max,brightColor_i,darkColor_i,numColor_i;
-
-	ps = &cg.snap->ps;
-	
-	value = ps->ammo[cent->currentState.weapon];
-	
+	// unused function ... lol might be removed
 	return;
 }
-
-//RPG-X: - RedTechie NO ARMOR! how many times do i have to say it!
-/*
-================
-CG_DrawArmor
-
-================
-*/
-/*
-static void CG_DrawArmor(centity_t	*cent)
-{
-	int			max;
-	float		value,xLength;
-	playerState_t	*ps;
-	int			lengthMax;
-
-	ps = &cg.snap->ps;
-
-	value = ps->stats[STAT_ARMOR];
-
-	interface_graphics[IG_ARMOR_COUNT].max = value;
-
-	if (interface_graphics[IG_ARMOR_COUNT].max <= ps->stats[STAT_MAX_HEALTH])
-	{
-		interface_graphics[IG_ARMOR_COUNT].color = CT_LTPURPLE1;		// 
-		interface_graphics[IG_ARMOR_SLIDERFULL].color = CT_LTPURPLE1;	// 
-		interface_graphics[IG_ARMOR_COUNT].style &= ~UI_PULSE;			// Numbers
-	}
-	else
-	{
-		interface_graphics[IG_ARMOR_COUNT].color = CT_LTGREY;			// Numbers
-		interface_graphics[IG_ARMOR_SLIDERFULL].color = CT_LTGREY;		// 
-		interface_graphics[IG_ARMOR_COUNT].style |= UI_PULSE;			// Numbers
-	}
-
-
-
-//	if (cg.oldarmor < value)
-//	{
-//		cg.oldArmorTime = cg.time + 100;
-//	}
-
-//	cg.oldarmor = value;
-
-//	if (cg.oldArmorTime < cg.time)
-//	{ 
-//		interface_graphics[IG_ARMOR_COUNT].color = CT_LTPURPLE1;	// Numbers
-//	}
-//	else
-//	{
-//		interface_graphics[IG_ARMOR_COUNT].color = CT_YELLOW;	// Numbers
-//	}
-
-
-	max = ps->stats[STAT_MAX_HEALTH];
-	lengthMax = 73;
-	if (max > 0)
-	{
-		if (value > max)
-		{
-			xLength = lengthMax;
-		}
-		else
-		{
-			xLength = lengthMax * (value/max);
-		}
-
-	}
-	else
-	{
-		max = 0;
-		xLength = 0;
-	}
-
-	// Armor empty section
-	interface_graphics[IG_ARMOR_SLIDEREMPTY].x = 72 + xLength;
-	interface_graphics[IG_ARMOR_SLIDEREMPTY].width = lengthMax - xLength;
-
-	// Armor full section
-	interface_graphics[IG_ARMOR_SLIDERFULL].width = xLength;
-
-	CG_PrintInterfaceGraphics(IG_ARMOR_START + 1,IG_ARMOR_END);
-
-}
-*/
-
-//RPG-X: - RedTechie Close but no cigar we need 3 stage health not a bar
-/*
-================
-CG_DrawHealth
-
-================
-*/
-
-/*static void CG_DrawHealth(centity_t	*cent)
-{
-	int			max;
-	float		value,xLength;
-	playerState_t	*ps;
-	int			lengthMax;
-
-	ps = &cg.snap->ps;
-
-	value = ps->stats[STAT_HEALTH];
-
-
-	// Changing colors on numbers
-//	if (cg.oldhealth < value)
-//	{
-//		cg.oldHealthTime = cg.time + 100;
-//	}
-//	cg.oldhealth = value;
-
-	// Is health changing?
-//	if (cg.oldHealthTime < cg.time)
-//	{
-//		interface_graphics[IG_HEALTH_COUNT].color = CT_LTBROWN1;	// Numbers
-//	}
-//	else
-//	{
-//	}
-	interface_graphics[IG_HEALTH_COUNT].max = value;
-
-	if (interface_graphics[IG_HEALTH_COUNT].max <= ps->stats[STAT_MAX_HEALTH])
-	{
-		interface_graphics[IG_HEALTH_COUNT].color = CT_LTBROWN1;	// 
-		interface_graphics[IG_HEALTH_SLIDERFULL].color = CT_LTBROWN1;	// 
-		interface_graphics[IG_HEALTH_SLIDEREMPTY].color = CT_DKBROWN1;	// 
-		interface_graphics[IG_HEALTH_COUNT].style &= ~UI_PULSE;			// Numbers
-	}
-	else
-	{
-		interface_graphics[IG_HEALTH_COUNT].color = CT_LTGREY;			// Numbers
-		interface_graphics[IG_HEALTH_SLIDERFULL].color = CT_LTGREY;		// 
-		interface_graphics[IG_HEALTH_COUNT].style |= UI_PULSE;			// Numbers
-	}
-
-	// Calculating size of health bar
-	max = ps->stats[STAT_MAX_HEALTH];
-	lengthMax = 73;
-	if (max > 0)
-	{
-		if (value < max)
-		{
-			xLength = lengthMax * (value/max);
-		}
-		else	// So the graphic doesn't extend past the cap
-		{
-			xLength = lengthMax;
-		}
-	}
-	else
-	{
-		max = 0;
-		xLength = 0;
-	}
-
-	// Health empty section
-	interface_graphics[IG_HEALTH_SLIDEREMPTY].x = 72 + xLength;
-	interface_graphics[IG_HEALTH_SLIDEREMPTY].width = lengthMax - xLength;
-
-	// Health full section
-	interface_graphics[IG_HEALTH_SLIDERFULL].width = xLength;
-
-	// Print it
-	CG_PrintInterfaceGraphics(IG_HEALTH_START + 1,IG_HEALTH_END);
-}*/
-
-//RPG-X: - RedTechie This is more like it
-/*
-================
-CG_DrawHealth
-New Draw health function by yours truly RedTechie
-New version by TiM lol
-================
-*/
-
-//static int CG_DrawHealth( centity_t *cent )
-//{
-//	float value;
-//	float offset;
-//	float yOffset;
-//
-//	value = cg.snap->ps.stats[STAT_HEALTH];
-//
-//	//Draw static graphics first
-//	CG_FillRect( 8, 428, 89, 1, colorTable[CT_LTPURPLE1] );
-//	CG_FillRect( 8, 429, 1, 44, colorTable[CT_LTPURPLE1] );
-//	CG_FillRect( 8, 473, 89, 1, colorTable[CT_LTPURPLE1] );
-//	CG_FillRect( 96, 429, 1, 44, colorTable[CT_LTPURPLE1] );
-//
-//	//Okay... we'll need to work out some funky math here later...
-//	//For now, let's just test
-//	offset = (( (float)(cg.time % 2000) / 2000.0f ) * (1.0f+(1.0f-(value/100.0f)) * 0.25f));
-//	yOffset = (value / 100.0f ) * 21.0f ;
-//	//CG_Printf( "%f\n", offset );
-//
-//	trap_R_SetColor( NULL );
-//	CG_DrawStretchPic( 9, 450 - yOffset, 87, yOffset * 2.0f, 0.0f + offset, 0.0f, (1.0f+(1.0f-(value/100.0f)) * 0.25f) + offset, 1.0f, cgs.media.healthSineWave );
-//	//CG_DrawStretchPic( 16, 413, 123, 60, 1.0f, 1.0f, 2.0f, 2.0f, cgs.media.healthSineWave );
-//
-//	return 125;
-//}
 
 static int CG_DrawHealth(centity_t	*cent)
 {
@@ -1257,24 +1038,12 @@ CG_DrawStatusBar
 static void CG_DrawStatusBar( void ) 
 {
 	centity_t	*cent;
-	playerState_t	*ps;
 	vec3_t		angles;
 	int y=0;
 	vec4_t	whiteA;
 	int		x, z, i, h, yZ;
 	vec3_t	tmpVec, eAngle, forward, dAngle;
-	//RPG-X: Redtechie - for the HACK code below
-	//int     rpg_shakemycamera;
 	int healthBarWidth;
-	//float	rpg_shakemycamera_intensity;
-	//const char	*info;
-
-	/*static float colors[4][4] = 
-	{ 
-		{ 1, 0.69, 0, 1.0 } ,		// normal
-		{ 1.0, 0.2, 0.2, 1.0 },		// low health
-		{0.5, 0.5, 0.5, 1},			// weapon firing
-		{ 1, 1, 1, 1 } };			// health > 100*/
 
 	whiteA[0] = whiteA[1] = whiteA[2] = 1.0f;	whiteA[3] = 0.3f;
 	
@@ -1295,23 +1064,10 @@ static void CG_DrawStatusBar( void )
 	// draw the team background
 	CG_DrawTeamBackground( 0, 420, 640, 60, 0.33, cg.snap->ps.persistant[PERS_TEAM], qfalse );
 
-	ps = &cg.snap->ps;
-
 	VectorClear( angles );
 
 	// draw any 3D icons first, so the changes back to 2D are minimized
 	y = (SCREEN_HEIGHT - (4*ICON_SIZE) - 20);
-	/*if (cg.predictedPlayerState.powerups[PW_REDFLAG])
-	{	//fixme: move to powerup renderer?  make it pulse?
-	//	CG_FillRect(      5, y, ICON_SIZE*2, ICON_SIZE*2, whiteA);
-		CG_DrawFlagModel( 5, y, ICON_SIZE*2, ICON_SIZE*2, TEAM_RED );
-	}*/
-	/*else if (cg.predictedPlayerState.powerups[PW_BORG_ADAPT])
-	{
-	//	CG_FillRect(      5, y, ICON_SIZE*2, ICON_SIZE*2, whiteA);
-	//	CG_DrawFlagModel( 5, y, ICON_SIZE*2, ICON_SIZE*2, TEAM_BLUE ); 
-	//RPG-X | GSIO01 | 08/05/2009: we have flag in rpg? haha
-	}*/
 
 	// Do start
 	if (!cg.interfaceStartupDone)
@@ -1397,45 +1153,8 @@ static void CG_DrawStatusBar( void )
 				// Convert Angle back to Vector
 				AngleVectors(dAngle, forward, NULL, NULL);
 				VectorScale(forward, h/32, forward);
-//				if (h/32 < 100 && h/32 > 0) // Limit Radar Range
-//				{
-					// Draw up arrow if above, down if below, or an ordinary blip if level
-					// With tolerance of +- 5 units
-					//RPG-X: RedTechie - No teams in a RP
-					/*if ( cgs.gametype >= GT_TEAM )
-					{
-						if ( cgs.clientinfo[cg.snap->entities[i].number].team == TEAM_BLUE )
-						{
-							if (z > 64)
-							{
-								CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_blue_up);
-							}
-							else if (z < -64)
-							{
-								CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_blue_down);
-							}
-							else
-							{
-								CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_blue_level);
-							}
-						}
-						else if ( cgs.clientinfo[cg.snap->entities[i].number].team == TEAM_RED )
-						{
-							if (z > 64)
-							{
-								CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_red_up);
-							}
-							else if (z < -64)
-							{
-								CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_red_down);
-							}
-							else
-							{
-								CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_red_level);
-							}
-						}
-					}*/
-					//RPG-X: RedTechie - If Dead show them as a medical symbol
+
+				//RPG-X: RedTechie - If Dead show them as a medical symbol
 				//.number
 				if (h/32 < 100 && h/32 > 0) { // Limit Radar Range
 					if ( cg_entities[cg.snap->entities[i].number].currentState.eFlags & EF_DEAD )
@@ -1457,118 +1176,6 @@ static void CG_DrawStatusBar( void )
 					}
 					else
 					{
-						//if ( cgs.clientinfo[cg.snap->entities[i].number].pClass == PC_COMMAND )
-						//{
-						//	/*if (z > 64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_red_up);
-						//	}
-						//	else if (z < -64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_red_down);
-						//	}
-						//	else
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_red_level);
-						//	}*/
-						//	//trap_R_SetColor( colorTable[CT_RED] );
-						//	VectorCopy( colorTable[CT_RED], radColor );
-						//	radColor[3] = colorTable[CT_RED][3];
-						//}
-						//else if ( cgs.clientinfo[cg.snap->entities[i].number].pClass == PC_SCIENCE )
-						//{
-						//	/*if (z > 64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_teal_up);
-						//	}
-						//	else if (z < -64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_teal_down);
-						//	}
-						//	else
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_teal_level);
-						//	}*/
-						//	//trap_R_SetColor( colorTable[CT_TEAL] );
-						//	VectorCopy( colorTable[CT_TEAL], radColor );
-						//	radColor[3] = colorTable[CT_TEAL][3];
-						//}
-						//else if ( cgs.clientinfo[cg.snap->entities[i].number].pClass == PC_SECURITY )
-						//{
-						//	/*if (z > 64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_blue_up);
-						//	}
-						//	else if (z < -64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_blue_down);
-						//	}
-						//	else
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_blue_level);
-						//	}*/
-						//	//trap_R_SetColor( colorTable[CT_GOLD] );
-						//	VectorCopy( colorTable[CT_GOLD], radColor );
-						//	radColor[3] = colorTable[CT_GOLD][3];
-						//}
-						//else if ( cgs.clientinfo[cg.snap->entities[i].number].pClass == PC_MEDICAL )
-						//{
-						//	/*if (z > 64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_white_up);
-						//	}
-						//	else if (z < -64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_white_down);
-						//	}
-						//	else
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_white_level);
-						//	}*/
-						//	//trap_R_SetColor( colorTable[CT_TEAL] );
-						//	VectorCopy( colorTable[CT_TEAL], radColor );
-						//	radColor[3] = colorTable[CT_TEAL][3];
-						//}
-						//else if ( cgs.clientinfo[cg.snap->entities[i].number].pClass == PC_ENGINEER )
-						//{
-						//	/*if (z > 64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_up);
-						//	}
-						//	else if (z < -64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_down);
-						//	}
-						//	else
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_level);
-						//	}*/
-						//	//trap_R_SetColor( colorTable[CT_GOLD] );
-						//	VectorCopy( colorTable[CT_GOLD], radColor );
-						//	radColor[3] = colorTable[CT_GOLD][3];
-						//}
-						//else if ( cgs.clientinfo[cg.snap->entities[i].number].pClass == PC_ALPHAOMEGA22 )
-						//{
-						//	/*if (z > 64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_teal_up);
-						//	}
-						//	else if (z < -64)
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_teal_down);
-						//	}
-						//	else
-						//	{
-						//		CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_teal_level);
-						//	}*/
-						//	//trap_R_SetColor( colorTable[CT_GREEN] );
-						//	VectorCopy( colorTable[CT_GREEN], radColor );
-						//	radColor[3] = colorTable[CT_GREEN][3];
-						//}
-						//else if ( cgs.clientinfo[cg.snap->entities[i].number].pClass == PC_ADMIN && cg.snap->ps.persistant[PERS_CLASS] != PC_ADMIN )
-						//{
-						//	//RPG-X: RedTechie - Dont show admins on radar unless you are a admin
-						//}
 						if ( cgs.clientinfo[cg.snap->entities[i].number].pClass >= 0 )
 						{
 							radColor[0] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[0] / 255.0f;
@@ -1578,20 +1185,6 @@ static void CG_DrawStatusBar( void )
 						}
 						else
 						{
-
-							/*if (z > 64)
-							{
-								CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_black_up);
-							}
-							else if (z < -64)
-							{
-								CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_black_down);
-							}
-							else
-							{
-								CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_black_level);
-							}*/
-							//trap_R_SetColor( colorTable[CT_BLACK] );
 							VectorCopy( colorTable[CT_BLACK], radColor );
 							radColor[3] = colorTable[CT_BLACK][3];
 						}
@@ -2141,16 +1734,7 @@ Draw the small two score display
 */
 static float CG_DrawScores( float y ) 
 {
-//	const char	*s;
-	int			s1, s2; //, score;
-//	int			x, w;
-//	int			v;
-//	vec4_t		color;
 	float		y1;
-//	gitem_t		*item;
-
-	s1 = cgs.scores1;
-	s2 = cgs.scores2;
 
 	y -=  BIGCHAR_HEIGHT + 8;
 	y1 = y;
@@ -3223,17 +2807,14 @@ CG_LabelCrosshairEntity
 
 static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, vec3_t entMaxs, char *name, qboolean scanAll, vec4_t color, qboolean drawHealth, int health, char *pClass, char *rank, char *race, char* age, char *height, char *weight, char *weapon ) 
 {//ID teammates, ID enemies, ID objectives, etc.
-	centity_t		*cent;
-	//clientInfo_t	*ci;
 	vec3_t			center, maxs, mins, top, bottom, topLeft, topRight, bottomLeft, bottomRight;
 	vec3_t			worldEast = {1.0f, 0, 0}, worldNorth = {0, 1.0f, 0}, worldUp = {0, 0, 1.0f};
-	//vec4_t			hcolor;
 	float			x = 0, y = 0; 
 	float			topLeftx, topLefty, topRightx, topRighty, bottomLeftx, bottomLefty, bottomRightx, bottomRighty;
 	int				corner, topSize, bottomSize, leftSize, rightSize;
 	int				charIndex, classCharIndex, rankCharIndex, ageCharIndex, raceCharIndex, htCharIndex, wtCharIndex, weapCharIndex, healthCharIndex;
 	float			lineHorzLength = 8.0f, lineVertLength = 8.0f, lineWidth = 2.0f;
-	float			fUpDot, fEastDot, fNorthDot, uNorthDot, uEastDot;//, hwidth;//, timedScale = 1.0f;
+	float			fUpDot, fEastDot, fNorthDot, uNorthDot, uEastDot;
 	qboolean		doTopLeft = qfalse;
 	qboolean		doTopRight = qfalse;
 	qboolean		doBottomLeft = qfalse;
@@ -3249,13 +2830,6 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 	char			showHealth[1024];
 	char			showAge[1024];
 	char			showClass[1024];
-	//char			*health = "100";
-
-	cent = &cg_entities[clientNum];
-	
-	/*if ( clientNum < MAX_CLIENTS ) {  
-		ci = &cgs.clientinfo[clientNum];
-	}*/
 
 	infoStringCount += cg.frametime;
 	rankCharIndex = raceCharIndex = classCharIndex = ageCharIndex = htCharIndex = wtCharIndex = weapCharIndex = charIndex = healthCharIndex = floor(infoStringCount/33);
@@ -4319,7 +3893,6 @@ static void CG_DrawWarmup( void ) {
 	int			sec;
 	int			i;
 	clientInfo_t	*ci1, *ci2;
-	int			cw;
 	const char	*s;
 
 	sec = cg.warmup;
@@ -4354,18 +3927,8 @@ static void CG_DrawWarmup( void ) {
 
 		if ( ci1 && ci2 ) {
 			s = va( "%s vs %s", ci1->name, ci2->name );
-//			w = CG_DrawStrlen( s );
 			w = UI_ProportionalStringWidth(s,UI_BIGFONT);
-
-			if ( w > 640 / BIGCHAR_WIDTH ) {
-				cw = 640 / w;
-			} else {
-				cw = BIGCHAR_WIDTH;
-			}
-//			CG_DrawStringExt( 320 - w * cw/2, 20,s, colorWhite, 
-//					qfalse, qtrue, cw, (int)(cw * 1.5), 0 );
 			UI_DrawProportionalString( (SCREEN_WIDTH/2), 20,s, UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
-
 		}
 	} else {
 		char	gamename[1024];
@@ -4385,12 +3948,6 @@ static void CG_DrawWarmup( void ) {
 		CG_AddGameModNameToGameName( gamename );
 
 		w = UI_ProportionalStringWidth(s,UI_BIGFONT);
-
-		if ( w > 640 / BIGCHAR_WIDTH ) {
-			cw = 640 / w;
-		} else {
-			cw = BIGCHAR_WIDTH;
-		}
 
 		UI_DrawProportionalString((SCREEN_WIDTH/2) , 20,gamename, UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
 	}
@@ -4416,24 +3973,6 @@ static void CG_DrawWarmup( void ) {
 			break;
 		}
 	}
-	switch ( cg.warmupCount ) {
-	case 0:
-		cw = 28;
-		break;
-	case 1:
-		cw = 24;
-		break;
-	case 2:
-		cw = 20;
-		break;
-	default:
-		cw = 16;
-		break;
-	}
-
-//	w = CG_DrawStrlen( s );
-//	CG_DrawStringExt( 320 - w * cw/2, 70, s, colorWhite, 
-//			qfalse, qtrue, cw, (int)(cw * 1.5), 0 );
 
 	w = UI_ProportionalStringWidth(s,UI_BIGFONT);
 	UI_DrawProportionalString(  (SCREEN_WIDTH/2), 70, s, UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);

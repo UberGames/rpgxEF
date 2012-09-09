@@ -145,7 +145,7 @@ void FX_CompressionExplosion( vec3_t start, vec3_t origin, vec3_t normal, qboole
 	vec3_t			dir;
 	vec3_t			velocity;  //, shot_dir;
 	vec3_t			hitpos;
-	float			scale, dscale;
+	float			scale;
 	int				i, j, numSparks;
 	weaponInfo_t	*weaponInfo = &cg_weapons[WP_6];
 	float distance;	
@@ -173,9 +173,8 @@ void FX_CompressionExplosion( vec3_t start, vec3_t origin, vec3_t normal, qboole
 	for ( i = 0; i < numSparks; i++ )
 	{	
 		scale = 10.0f + (random() * 1.0f); //.25
-		dscale = -scale;
 
-				//Randomize the direction
+		//Randomize the direction
 		for (j = 0; j < 3; j ++ )
 		{
 			//if ( j !=5 )

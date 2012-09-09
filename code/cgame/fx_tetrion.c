@@ -13,11 +13,9 @@ void FX_TetrionShot( vec3_t start, vec3_t forward ) // TODO check whether I'm ne
 	vec3_t	end, dir, new_start, new_end, radial, start2, spreadFwd;
 	float	off, len, i, numBullets = 3;
 	float	firingRadius = 6, minDeviation = 0.95, maxDeviation = 1.1;
-	qboolean	render_impact = qtrue;
 
 	for (i = 0; i < numBullets; i++)
 	{
-		render_impact = qtrue;
 		// determine new firing position 
 		fxRandCircumferencePos(start, forward, firingRadius, new_start);
 		VectorSubtract(new_start, start, radial);
@@ -42,15 +40,6 @@ void FX_TetrionShot( vec3_t start, vec3_t forward ) // TODO check whether I'm ne
 			// Draw the tracer
 			FX_AddLine( new_end, new_start, 1.0f, 1.5f + random(), 0.0f, flrandom(0.3,0.6), 0.0,
 				flrandom(300,500), cgs.media.borgFlareShader );
-		}
-		// put the impact effect where this tracer hits
-		if (len >= 32)
-		{
-			// Rendering things like impacts when hitting a sky box would look bad, but you still want to see the tracer
-			if ( trace.surfaceFlags & SURF_NOIMPACT ) 
-			{
-				render_impact = qfalse;
-			}
 		}
 	}
 }

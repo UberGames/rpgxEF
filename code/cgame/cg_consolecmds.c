@@ -66,7 +66,7 @@ Debugging command to print the current view position
 =============
 */
 static void CG_Viewpos_f (void) {
-	CG_Printf ("%s (%i %i %i) : %f\n", cgs.mapname, (int)cg.refdef.vieworg[0],
+	CG_Printf ("%s (%i %i %i) : %i\n", cgs.mapname, (int)cg.refdef.vieworg[0],
 		(int)cg.refdef.vieworg[1], (int)cg.refdef.vieworg[2], 
 		(int)cg.refdefViewAngles[YAW]);
 }
@@ -212,7 +212,7 @@ void CG_ClassList_cmd( void ) {
 			return; */
 		
 		if ( cgs.classData[i].formalName[0] ) 
-			CG_Printf( "%s\n", cgs.classData[i].formalName[0] );
+			CG_Printf( "%s\n", cgs.classData[i].formalName );
 		else
 			break;
 	}
@@ -418,7 +418,7 @@ void CG_LocEdit_f(void) {
 		Com_sprintf(path, sizeof(path), "%s", cgs.mapname);
 
 		COM_StripExtension(path, path);
-		Com_sprintf(path, sizeof(path), "%s.locations");
+		Com_sprintf(path, sizeof(path), "%s.locations", path);
 
 		trap_FS_FOpenFile(path, &f, FS_READ);
 

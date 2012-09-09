@@ -15,7 +15,7 @@ TiM: Fixed!  An improperly formatted directional vector was being sent.  it's al
 
 void FX_HypoSpray( vec3_t origin, vec3_t dir, qboolean red )  // When not red, it'll be blue
 {
-	vec3_t	color, vel, accel, angles, work;
+	vec3_t  vel, angles, work;
 	float	scale, dscale;
 	int i;
 	localEntity_t *le;
@@ -24,14 +24,6 @@ void FX_HypoSpray( vec3_t origin, vec3_t dir, qboolean red )  // When not red, i
 
 	for ( i = 0; i < NUM_HYPO_PUFFS; i++ )
 	{
-		if ( red )
-		{
-			VectorSet( color, 1.0f, random() * 0.4f, random() * 0.4f ); // mostly red
-		}
-		else
-		{
-			VectorSet( color, random() * 0.5f, random() * 0.5f + 0.5f, 1.0f ); // mostly blue
-		}
 
 		VectorCopy( angles, work );
 
@@ -43,7 +35,6 @@ void FX_HypoSpray( vec3_t origin, vec3_t dir, qboolean red )  // When not red, i
 		scale = random() * 256.0f + 128.0f;
 
 		VectorScale( vel, scale, vel );
-		VectorScale( vel, random() * -0.3f, accel );
 
 		scale = random() * 4.0f + 2.0f;
 		dscale = random() * 64.0f + 24.0f;

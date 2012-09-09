@@ -24,5 +24,5 @@ extern screenFX_t theScreenFX;
 
 void CG_AddFullScreenEffect(int screenfx, int clientNum);
 
-void CG_DrawFullScreenFX();
+void CG_DrawFullScreenFX(void);
 

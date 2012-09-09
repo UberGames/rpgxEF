@@ -271,7 +271,7 @@ void ParseAnimationSndBlock(const char *filename, animsounds_t *animSounds, anim
 		}
 		else
 		{
-			animSounds->soundIndex[0] = trap_S_RegisterSound( va( soundString ) );
+			animSounds->soundIndex[0] = trap_S_RegisterSound( va( "%s", soundString ) );
 #ifndef FINAL_BUILD
 			if ( !animSounds->soundIndex[0] )
 			{//couldn't register it - file not found
@@ -952,7 +952,7 @@ static qboolean CG_ParseModelDataFile( clientInfo_t *ci, const char *charName,
 	fileHandle_t	file;
 	int				file_len;
 	char			charText[20000];
-	char			*textPtr, *prevValue;
+	char			*textPtr;
 	char			fileName[MAX_QPATH];
 	//char			animPath[MAX_QPATH];
 	int				i, n;
@@ -1017,7 +1017,6 @@ static qboolean CG_ParseModelDataFile( clientInfo_t *ci, const char *charName,
 	}
 
 	while ( 1 ) {
-		prevValue = textPtr; //set a backup
 		token = COM_Parse( &textPtr );
 
 		if (!token[0] || !token ) { //we've hit the end of the file. w00t! exit!
@@ -1204,38 +1203,6 @@ static qboolean CG_ParseModelDataFile( clientInfo_t *ci, const char *charName,
 				ci->hasRanks = qfalse;
 			continue;
 		} 
-
-		//player footsteps.
-		//FIXME: Is it possible to make these things dynamic, so we can
-		//put in our own footstep sounds?
-		/*else if ( !Q_stricmp( token, "footsteps" ) ) {
-			token = COM_Parse( &textPtr );
-			if ( !token ) {
-				break;
-			}
-			if ( !Q_stricmp( token, "default" ) || !Q_stricmp( token, "normal" ) ) {
-				ci->footsteps = FOOTSTEP_NORMAL;
-			} else if ( !Q_stricmp( token, "borg" ) ) {
-				ci->footsteps = FOOTSTEP_BORG;
-			} else if ( !Q_stricmp( token, "reaver" ) ) {
-				ci->footsteps = FOOTSTEP_REAVER;
-			} else if ( !Q_stricmp( token, "species" ) ) {
-				ci->footsteps = FOOTSTEP_SPECIES;
-			} else if ( !Q_stricmp( token, "warbot" ) ) {
-				ci->footsteps = FOOTSTEP_WARBOT;
-			} else if ( !Q_stricmp( token, "boot" ) ) {		
-				ci->footsteps = FOOTSTEP_BOOT;
-			} else if ( !Q_stricmp( token, "flesh" ) ) {	// Old Q3 defaults, for compatibility.	-PJL
-				ci->footsteps = FOOTSTEP_SPECIES;
-			} else if ( !Q_stricmp( token, "mech" ) ) {		// Ditto
-				ci->footsteps = FOOTSTEP_BORG;
-			} else if ( !Q_stricmp( token, "energy" ) ) {	// Ditto
-				ci->footsteps = FOOTSTEP_BORG;
-			} else {
-				CG_Printf( "Bad footsteps parm in %s: %s\n", fileName, token );
-			}
-			continue;
-		} */
 		
 		//offset for player head in the scoreboard or whatever
 		else if ( !Q_stricmp( token, "headoffset" ) ) {
@@ -1297,7 +1264,7 @@ static qboolean CG_ParseModelDataFile( clientInfo_t *ci, const char *charName,
 
 	if ( !skinSetFound )
 	{
-		if ( !CG_ParseSkinSetDataFile( ci, va("%s_*", modelName, skinName ), charName, skinName ) )
+		if ( !CG_ParseSkinSetDataFile( ci, va("%s_*", modelName ), charName, skinName ) )
 		{
 			CG_Printf( S_COLOR_RED "ERROR: Tried loading default skin set, however it failed.\n");
 		}	
@@ -1986,7 +1953,7 @@ void CG_NewClientInfo( int clientNum ) {
 					skin = "default";
 				}
 
-				Com_sprintf( model, len - strlen(skin), model);
+				Com_sprintf( model, len - strlen(skin), "%s", model);
 			}
 		}
 
@@ -4541,10 +4508,10 @@ void CG_Player( centity_t *cent ) {
 		
 		if ( cent->currentState.legsAnim != cg.fpsBody.anim ) {
 			refEntity_t		ref;
-			vec3_t			temp;
+			//vec3_t			temp;
 
 			CG_PositionEntityOnTag( &ref, &torso, torso.hModel, "tag_head");
-			VectorSubtract( cg.refdef.vieworg, ref.origin, temp );
+			//VectorSubtract( cg.refdef.vieworg, ref.origin, temp );
 
 			//make the body smaller if need be
 			//if ( cg.refdef.vieworg[2] < ref.origin[2] )
@@ -5042,7 +5009,7 @@ void CG_Player( centity_t *cent ) {
 		refEntity_t*	target = NULL;
 		qhandle_t		targetModel;
 
-		for (i = 0; ( ( i < MAX_BOLTONS ) || ( ci->boltonTags[i].tagModel || ci->boltonTags[i].tagName[0] ) ); i++ ) {
+		for (i = 0; ( ( i < MAX_BOLTONS ) && ( ci->boltonTags[i].tagModel || ci->boltonTags[i].tagName[0] ) ); i++ ) {
 			//if there's no data in there... no point to rendering it
 			//ROFL... uh, we can't use .modelBase since 0 is a valid entry for that one :P
 			if ( !ci->boltonTags[i].tagName[0] || !ci->boltonTags[i].tagModel ) {
@@ -5309,7 +5276,7 @@ void CG_ResetPlayerEntity( centity_t *cent ) {
 	}
 
 	if ( cg_debugPosition.integer ) {
-		CG_Printf("%i ResetPlayerEntity yaw=%i\n", cent->currentState.number, cent->pe.torso.yawAngle );
+		CG_Printf("%i ResetPlayerEntity yaw=%i\n", cent->currentState.number, (int)cent->pe.torso.yawAngle );
 	}
 }
 

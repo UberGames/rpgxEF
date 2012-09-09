@@ -99,8 +99,8 @@ qboolean LoadLuaFile(char *path, int num_vm)
 
 qboolean CG_LuaInit()
 {
-	char fxfilename[MAX_QPATH];
-	fileHandle_t fxfile;
+	//char fxfilename[MAX_QPATH];
+	//fileHandle_t fxfile;
 	
 	CG_Printf("------- CG_LuaInit -------\n");
 

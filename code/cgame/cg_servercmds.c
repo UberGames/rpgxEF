@@ -813,7 +813,7 @@ static void CG_ServerCommand( void ) {
 	//TiM - client received a command from a turbolift ent
 	//Show the decks UI
 	if ( !strcmp( cmd, "lift" ) ) {
-		trap_SendConsoleCommand( va( "ui_turbolift %i", CG_Argv( 1 ) ) );
+		trap_SendConsoleCommand( va( "ui_turbolift %s", CG_Argv( 1 ) ) );
 		return;
 	}
 
@@ -896,13 +896,13 @@ static void CG_ServerCommand( void ) {
 	}
 
 	if(!strcmp(cmd, "ui_holodeck")) {
-		trap_SendClientCommand(va("ui_holodeck %i", CG_Argv(1)));
+		trap_SendClientCommand(va("ui_holodeck %s", CG_Argv(1)));
 		return;
 	}
 
 	/* TODO remove me? */
 	if(!strcmp(cmd, "sqlkey")) {
-		trap_SendClientCommand(va("sqlkey %i", CG_Argv(1)));
+		trap_SendClientCommand(va("sqlkey %s", CG_Argv(1)));
 		return;
 	}
 

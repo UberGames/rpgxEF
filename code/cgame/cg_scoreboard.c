@@ -249,8 +249,6 @@ static void CG_DrawClientScore_Big( int y, score_t *score, float *color, float f
 	//RPG-X: Not Needed without a head
 	//vec3_t			headAngles;
 	clientInfo_t	*ci;
-	int				picSize;
-	float			hcolor[4];
 	char	        *rpg_class;
 	vec4_t	        rpg_color;
 	vec_t			*ping_txtcolor = NULL;
@@ -258,213 +256,20 @@ static void CG_DrawClientScore_Big( int y, score_t *score, float *color, float f
 
 	ci = &cgs.clientinfo[score->client];
 
-	// Black background
-	/*if (cgs.gametype < GT_TEAM)
-	{
-		hcolor[0] = 0;
-		hcolor[1] = 0;
-		hcolor[2] = 0;
-		hcolor[3] = fade * 0.7;
-		
-		if (cg.numScores > SB_MAXCLIENTS_BIG)
-		{
-			//CG_FillRect( SCOREBOARD_X, y,SB_TOPLINE_LENGTH , SB_NORMAL_HEIGHT+20, hcolor );
-		}
-		else
-		{
-			//CG_FillRect( SCOREBOARD_X, y,SB_TOPLINE_LENGTH , SB_NORMAL_HEIGHT_BIG+200, hcolor );
-		}
-	}*/
-
 	//RPG-X: RedTechie - Side Strips
 	CG_FillRect( SCOREBOARD_X-15, SB_HEADER+20, 15, SB_RPG_X_FIXHEIGHT-4, colorTable[CT_DKBLUE1] ); //RPG-X: RedTechie - Left Strip
 	CG_FillRect( SB_TOPLINE_LENGTH+53, SB_HEADER+20, 15, SB_RPG_X_FIXHEIGHT-4, colorTable[CT_DKBLUE1] ); //RPG-X: RedTechie - Right Strip
 
-	picSize = (SB_NORMAL_HEIGHT_BIG * .75);
-	// draw the handicap or bot skill marker (unless player has flag)
-	//RPG-X: RedTechie - Dont need this in RPG
-	/*if ( ci->powerups & ( 1 << PW_REDFLAG ) ) 
-	{
-		CG_DrawFlagModel( SB_BOTICON_X, y, picSize, picSize, TEAM_RED );
-	} 
-	else if ( ci->powerups & ( 1 << PW_BORG_ADAPT ) ) 
-	{
-		CG_DrawFlagModel( SB_BOTICON_X, y, picSize, picSize, TEAM_BLUE );
-	} 
-	else 
-	{
-		if ( ci->pClass > PC_NOCLASS )
-		{
-				qhandle_t	icon;
-				//Special hack: if it's Borg who has regen going, must be Borg queen
-				if ( ci->pClass == PC_BORG && (ci->powerups&(1<<PW_LASER)) )
-				{
-					if ( cg_drawIcons.integer ) 
-					{
-						icon = cgs.media.borgQueenIconShader;
-						CG_DrawPic( SB_BOTICON_X, y, picSize, picSize, icon );
-					}
-				}
-				else*/
-				//if ( ci->pClass > PC_NOCLASS )
-				//{
-					//icon = cgs.media.pClassShaders[ci->pClass];
-					//RPG-X: RedTechie - New class output
-					//VectorSet( rpg_color, 1.0, 1.0, 1.0 );
-
-					rpg_class = cgs.classData[ci->pClass].formalName;
-					rpg_color[0] = (float)cgs.classData[ci->pClass].radarColor[0] / 255.0f;
-					rpg_color[1] = (float)cgs.classData[ci->pClass].radarColor[1] / 255.0f;
-					rpg_color[2] = (float)cgs.classData[ci->pClass].radarColor[2] / 255.0f;
-					rpg_color[3] = 1.0f;
-
-					/*switch(ci->pClass){
-						case PC_COMMAND:
-						rpg_class = va("COMMAND");
-						//VectorSet( rpg_color, 0.604, 0, 0 );
-						rpg_color = colorTable[CT_RED];
-						break;
-						case PC_SECURITY:
-						rpg_class = va("SECURITY");
-						//VectorSet( rpg_color, 0.761, 0.537, 0.024 );
-						rpg_color = colorTable[CT_YELLOW];
-						break;
-						case PC_MEDICAL:
-						rpg_class = va("MEDICAL");
-						//VectorSet( rpg_color, 0.082, 0.337, 0.357 );
-						rpg_color = colorTable[CT_BLUE];
-						break;
-						case PC_ADMIN:
-						rpg_class = va("ADMIN");
-						rpg_color = colorTable[CT_LTORANGE];
-						//VectorCopy( colorTable[CT_LTORANGE], rpg_color );
-						break;
-						case PC_N00B:
-						rpg_class = va("N00b");
-						rpg_color = colorTable[CT_LTORANGE];
-						//VectorCopy( colorTable[CT_LTORANGE], rpg_color );
-						break;
-						case PC_SCIENCE:
-						rpg_class = va("SCIENCE");
-						rpg_color = colorTable[CT_BLUE];
-						//VectorSet( rpg_color, 0.082, 0.337, 0.357 );
-						break;
-						case PC_ENGINEER:
-						rpg_class = va("ENGINEER");
-						rpg_color = colorTable[CT_YELLOW];
-						//VectorSet( rpg_color, 0.761, 0.537, 0.024 );
-						break;
-						case PC_ALIEN:
-						rpg_class = va("ALIEN");
-						rpg_color = colorTable[CT_LTORANGE];
-						//VectorCopy( colorTable[CT_LTORANGE], rpg_color );
-						break;
-						case PC_ALPHAOMEGA22:
-						rpg_class = va("MARINE");
-						rpg_color = colorTable[CT_GREEN];
-						//VectorSet( rpg_color, 0.012, 0.443, 0.047 );
-						break;
-						case PC_NOCLASS:
-						rpg_class = va("<N/A>");
-						rpg_color = colorTable[CT_WHITE];
-						//VectorCopy( colorTable[CT_WHITE], rpg_color );
-						break;
-					}*/
-					//rpg_color[3] = 1.0f; //100% alpha
-				//}
-				
-		//}
-		//RPG-X: RedTechie - Dont need this in RPG
-		/*else if ( ci->botSkill > 0 && ci->botSkill <= 5 ) 
-		{
-			if ( cg_drawIcons.integer ) 
-			{
-				CG_DrawPic( SB_BOTICON_X, y, picSize, picSize, cgs.media.botSkillShaders[ ci->botSkill - 1 ] );
-			}
-		} 
-		else if ( ci->handicap < 100 ) 
-		{
-			Com_sprintf( string, sizeof( string ), "%i", ci->handicap );
-			if ( cgs.gametype == GT_TOURNAMENT )
-			{
-//				CG_DrawSmallStringColor( iconx, y - SMALLCHAR_HEIGHT/2, string, color );
-				UI_DrawProportionalString( SB_BOTICON_X,  y - SMALLCHAR_HEIGHT/2, string, UI_SMALLFONT, color);
-			}
-			else
-			{
-//				CG_DrawSmallStringColor( iconx, y, string, color );
-				UI_DrawProportionalString( SB_BOTICON_X,  y , string, UI_SMALLFONT, color);
-			}
-		}
-
-		// draw the wins / losses
-		if ( cgs.gametype == GT_TOURNAMENT ) {
-			Com_sprintf( string, sizeof( string ), "%i/%i", ci->wins, ci->losses );
-			if( ci->handicap < 100 && !ci->botSkill ) 
-			{
-//				CG_DrawSmallStringColor( iconx, y + SMALLCHAR_HEIGHT/2, string, color );
-				UI_DrawProportionalString( SB_BOTICON_X,  y + SMALLCHAR_HEIGHT/2 , string, UI_SMALLFONT, color);
-			}
-			else 
-			{
-//				CG_DrawSmallStringColor( iconx, y, string, color );
-				UI_DrawProportionalString( SB_BOTICON_X,  y , string, UI_SMALLFONT, color);
-			}
-		}
-	}*/
-	//RPG-X: No face needed in new scoreboard
-	// draw the face
-	//VectorClear( headAngles );
-	//headAngles[YAW] = 180;
-	//CG_DrawHead( SB_HEAD_X, y, picSize, picSize, score->client, headAngles );
-	
+	rpg_class = cgs.classData[ci->pClass].formalName;
+	rpg_color[0] = (float)cgs.classData[ci->pClass].radarColor[0] / 255.0f;
+	rpg_color[1] = (float)cgs.classData[ci->pClass].radarColor[1] / 255.0f;
+	rpg_color[2] = (float)cgs.classData[ci->pClass].radarColor[2] / 255.0f;
+	rpg_color[3] = 1.0f;
 	
 	// highlight your position
 	if ( score->client == cg.snap->ps.clientNum ) 
 	{
-		int		rank;
-
 		localClient = qtrue;
-
-		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR 
-			|| cgs.gametype >= GT_TEAM ) 
-		{
-			rank = -1;
-		} 
-		else 
-		{
-			rank = cg.snap->ps.persistant[PERS_RANK] & ~RANK_TIED_FLAG;
-		}
-		if ( rank == 0 ) 
-		{
-			hcolor[0] = 0;
-			hcolor[1] = 0;
-			hcolor[2] = 0.7;
-		} 
-		else if ( rank == 1 ) 
-		{
-			hcolor[0] = 0.7;
-			hcolor[1] = 0;
-			hcolor[2] = 0;
-		} 
-		else if ( rank == 2 ) 
-		{
-			hcolor[0] = 0.7;
-			hcolor[1] = 0.7;
-			hcolor[2] = 0;
-		} 
-		else 
-		{
-			hcolor[0] = 0.7;
-			hcolor[1] = 0.7;
-			hcolor[2] = 0.7;
-		}
-
-		hcolor[3] = fade * 0.7;
-		//RPG-X: RedTechie No highlighting player info in rpg
-	/*	CG_FillRect( SB_SCORELINE_X_BIG - SMALLCHAR_WIDTH, y, 
-		SB_TOPLINE_LENGTH - ((SB_SCORELINE_X_BIG - SMALLCHAR_WIDTH) - SCOREBOARD_X), BIGCHAR_HEIGHT+1, hcolor );
-	*/
 	}
 
 
@@ -549,79 +354,6 @@ static void CG_DrawClientScore_Big( int y, score_t *score, float *color, float f
 		UI_DrawProportionalString( SB_PING_X_BIG, y, va("%i", intClamp), UI_TINYFONT | UI_LEFT, ping_txtcolor);	
 
 	}
-
-	/*//RPG-X: RedTechie - Connecting
-	if ( score->ping == -1 ) {
-		Com_sprintf(string,sizeof(string),"(%s)%s",ingame_text[IGT_CONNECTING],ci->name);
-		UI_DrawProportionalString( SB_NAME_X_BIG, y , string, UI_TINYFONT, colorTable[CT_WHITE]);
-	} 
-	//J2J Book 
-	//RPG-X: RedTechie - Spectator
-	
-	else if ( ci->team == TEAM_SPECTATOR ) 
-	{
-		Com_sprintf(string,sizeof(string),"(%s)%s",ingame_text[IGT_SPECTABBREV],ci->name);
-		CG_NamePrep(string2,string,200,UI_TINYFONT); //RPG-X ADDED: RedTechie - 200 pixels in the name column use to be 184
-		UI_DrawProportionalString( SB_NAME_X_BIG, y , string2, UI_TINYFONT, colorTable[CT_WHITE]);
-		if(rpg_class && rpg_color){
-			UI_DrawProportionalString( SB_RPGCLASS_X_BIG, y , rpg_class, UI_TINYFONT, rpg_color); //CT_VLTPURPLE1 CT_WHITE
-		}
-		Com_sprintf(string,sizeof(string),"%5i",cg_entities[score->client].currentState.clientNum);					//RPG-X: J2J Switched Scoore to Client No.
-		UI_DrawProportionalString( SB_SCORE_X_BIG, y ,  string, UI_TINYFONT, colorTable[CT_WHITE]);
-
-		Com_sprintf(string,sizeof(string),"%5i",score->time);
-		UI_DrawProportionalString( SB_TIME_X_BIG, y ,  string, UI_TINYFONT, colorTable[CT_WHITE]);
-
-		Com_sprintf(string,sizeof(string),"%5i",score->ping);
-		UI_DrawProportionalString( SB_PING_X_BIG, y,  string, UI_TINYFONT, ping_txtcolor);
-		CG_DrawRank(SB_RANK_X_BIG, y-2,ci->pClass, score->score);
-	} 
-	//RPG-X: RedTechie - Pinged out
-	else if ( score->ping >= 827 ) 
-	{
-		Com_sprintf(string,sizeof(string),"(%s)%s",ingame_text[IGT_PINGEDOUT],ci->name);
-		CG_NamePrep(string2,string,200,UI_TINYFONT); //RPG-X ADDED: RedTechie - 200 pixels in the name column use to be 184
-		UI_DrawProportionalString( SB_NAME_X_BIG, y , string2, UI_TINYFONT, colorTable[CT_WHITE]);
-		if(rpg_class && rpg_color){
-			UI_DrawProportionalString( SB_RPGCLASS_X_BIG, y , rpg_class, UI_TINYFONT, rpg_color); //CT_VLTPURPLE1 CT_WHITE
-		}
-		Com_sprintf(string,sizeof(string),"%5i",cg_entities[score->client].currentState.clientNum);					//RPG-X: J2J Switched Scoore to Client No.
-		UI_DrawProportionalString( SB_SCORE_X_BIG, y ,  string, UI_TINYFONT, colorTable[CT_WHITE]);
-
-		Com_sprintf(string,sizeof(string),"%5i",score->time);
-		UI_DrawProportionalString( SB_TIME_X_BIG, y ,  string, UI_TINYFONT, colorTable[CT_WHITE]);
-
-		Com_sprintf(string,sizeof(string),"%5i",score->ping);
-		UI_DrawProportionalString( SB_PING_X_BIG, y,  string, UI_TINYFONT, ping_txtcolor);
-		CG_DrawRank(SB_RANK_X_BIG, y-2,ci->pClass, score->score);
-	}
-	//RPG-X: RedTechie - Regular
-	else 
-	{
-		//draw rank image
-		CG_DrawRank( SB_RANK_X_BIG, y-2,ci->pClass, score->score);
-
-		//draw player class name
-		if(rpg_class && rpg_color){
-			UI_DrawProportionalString( SB_RPGCLASS_X_BIG, y , rpg_class, UI_TINYFONT, rpg_color); //CT_VLTPURPLE1 CT_WHITE
-		}
-
-		//prep name and then render it
-		CG_NamePrep(string,ci->name,200,UI_TINYFONT); //RPG-X ADDED: RedTechie - 200 pixels in the name column use to be 184
-		UI_DrawProportionalString( SB_NAME_X_BIG, y , string, UI_TINYFONT, colorTable[CT_WHITE]);
-		
-		//player client Num
-		Com_sprintf(string,sizeof(string),"%3i",cg_entities[score->client].currentState.clientNum);				//RPG-X: J2J Switched Scoore to Client No.
-		UI_DrawProportionalString( SB_SCORE_X_BIG, y ,  string, UI_TINYFONT, colorTable[CT_WHITE]);
-
-		//player time
-		Com_sprintf(string,sizeof(string),"%5i",score->time);
-		UI_DrawProportionalString( SB_TIME_X_BIG, y ,  string, UI_TINYFONT, colorTable[CT_WHITE]);
-
-		//player ping
-		Com_sprintf(string,sizeof(string),"%3i",score->ping);
-		UI_DrawProportionalString( SB_PING_X_BIG, y,  string, UI_TINYFONT, ping_txtcolor);		
-	}*/
 
 	//RPG-X: RedTechie - Draw live divider after every client
 	CG_FillRect( SB_NAME_X_BIG, y+11, SB_TOPLINE_LENGTH-119, 1, colorTable[CT_VDKBLUE2] ); // y off - 10, thickness - 2 //150
@@ -1043,9 +775,6 @@ qboolean CG_DrawScoreboard( void )
 	//char	buf[64];
 	int		maxClients;
 	int		lineHeight;
-	int		topBorderSize, bottomBorderSize;
-	int		rankOfClient;
-	int		tTeam/*, bTeam*/;
 	float	hcolor[4];
 	int		inIntermission;
 	char	gamename[1024];
@@ -1075,8 +804,6 @@ qboolean CG_DrawScoreboard( void )
 		return qfalse;
 	}
 
-	tTeam = TEAM_RED;  // Compiler needed initialization here for some reason...
-
 	// FADE SETUP... ??  
 	if ( cg.showScores || cg.predictedPlayerState.pm_type == PM_DEAD ||
 		 inIntermission ) 
@@ -1100,32 +827,9 @@ qboolean CG_DrawScoreboard( void )
 
 	// IN GAME SCOREBOARD HEADER STUFF
 	//---------------------------------
-	rankOfClient = cg.snap->ps.persistant[PERS_RANK];
 
 	if ( !inIntermission && cg.snap->ps.persistant[PERS_TEAM]!=TEAM_SPECTATOR) 
 	{
-		//  Display Your Rank / Your Team 
-		//-----------------------------------------------
-		//RPG-X: RedTechie Dont need this for rpg This code prints out what team your on and if your winning when you call the scoreboard just takes up to much room (i'll probly muck it all up but here it goes
-		/*if (cgs.gametype<=GT_SINGLE_PLAYER)
-		{
-			if (rankOfClient & RANK_TIED_FLAG)
-				Com_sprintf( buf, sizeof(buf), "%s %i", ingame_text[IGT_TIED_FOR], (rankOfClient&~RANK_TIED_FLAG)+1);
-			else
-				Com_sprintf( buf, sizeof(buf), "%s %i", ingame_text[IGT_YOUR_RANK], (rankOfClient&~RANK_TIED_FLAG)+1);
-			UI_DrawProportionalString( 14, AWARD_Y, buf, UI_BIGFONT|UI_LEFT, colorTable[CT_LTGOLD1] );
-		}
-		if (cgs.gametype>GT_SINGLE_PLAYER)
-		{
-			if ( cg.teamScores[0] == cg.teamScores[1] ) 
-				s = va("%s %i", ingame_text[IGT_TEAMSARETIED],cg.teamScores[0] );
-			else if ( cg.teamScores[0] >= cg.teamScores[1] ) 
-				s = va("%s %i %s %i",ingame_text[IGT_REDTEAMLEADS],cg.teamScores[0],ingame_text[IGT_TO], cg.teamScores[1] );
-			else 
-				s = va("%s %i %s %i",ingame_text[IGT_BLUETEAMLEADS],cg.teamScores[1],ingame_text[IGT_TO], cg.teamScores[0] );
-
-			UI_DrawProportionalString(14, AWARD_Y, s, UI_BIGFONT|UI_LEFT, colorTable[CT_LTGOLD1]);
-		}*/
 		//  Display Who Killed You
 		//-----------------------------------------------
 		if ( cg.killerName[0] ) 
@@ -1144,38 +848,17 @@ qboolean CG_DrawScoreboard( void )
 	// scoreboard
 	y = SB_HEADER;
 
-	// Top of scoreboard
-	//trap_R_SetColor( colorTable[CT_DKORANGE] );
-//	CG_DrawPic( SCOREBOARD_X, y + 27, 16, -32, cgs.media.corner_12_24 );	// Corner
-//	CG_DrawPic( SCOREBOARD_X, y, 16, 32, cgs.media.corner_12_24 );	// Corner
-	//RPG-X: Bookmark
-	//CG_FillRect( SCOREBOARD_X, y, SB_TOPLINE_LENGTH, 24, colorTable[CT_DKORANGE]);
-	
-	// Black background
-	//if (cgs.gametype < GT_TEAM)
-	//{
-		hcolor[0] = 0;
-		hcolor[1] = 0;
-		hcolor[2] = 0;
-		hcolor[3] = fade * 0.7;
-		//CG_FillRect( SCOREBOARD_X, y + 20,SB_TOPLINE_LENGTH, 12, hcolor );
-		//RPG-X: RedTechie - Fixed black background height
-		CG_FillRect( SCOREBOARD_X, y + 5,SB_TOPLINE_LENGTH + 26, SB_RPG_X_FIXHEIGHT+15, hcolor );//RPG-X: RedTechie - Before CG_FillRect( SCOREBOARD_X, y + 20,SB_TOPLINE_LENGTH, SB_RPG_X_FIXHEIGHT, hcolor );
-	//}
+	hcolor[0] = 0;
+	hcolor[1] = 0;
+	hcolor[2] = 0;
+	hcolor[3] = fade * 0.7;
+	CG_FillRect( SCOREBOARD_X, y + 5,SB_TOPLINE_LENGTH + 26, SB_RPG_X_FIXHEIGHT+15, hcolor );//RPG-X: RedTechie - Before CG_FillRect( SCOREBOARD_X, y + 20,SB_TOPLINE_LENGTH, SB_RPG_X_FIXHEIGHT, hcolor );
 
 	trap_R_SetColor( colorTable[CT_DKBLUE1] );
 	CG_DrawPic( SCOREBOARD_X-15,		SB_TOP-28,	25, 28, cgs.media.scoreboardtopleft ); //RPG-X: - RedTechie Top Left
 	CG_DrawPic( SB_TOPLINE_LENGTH+43,	SB_TOP-28,	25, 28, cgs.media.scoreboardtopright ); //RPG-X: - RedTechie Top Right
 	CG_DrawPic( SCOREBOARD_X-15,		SB_TOP+325, 36, 28, cgs.media.scoreboardbotleft ); //RPG-X: - RedTechie Bottom Left
 	CG_DrawPic( SB_TOPLINE_LENGTH+32,	SB_TOP+321, 36, 32, cgs.media.scoreboardbotright ); //RPG-X: - RedTechie Bottom Right
-
-/*#define SB_RANK_X_BIG		( SB_SCORELINE_X_BIG + 6	) //Before RPG-X: (SB_SCORELINE_X_BIG + 6) = 43
-#define SB_RPGCLASS_X_BIG	( SB_RANK_X_BIG + 78		) //70	= 121
-#define SB_NAME_X_BIG		( SB_RPGCLASS_X_BIG + 46	) //132 = 167
-#define SB_LOC_X_BIG		( SB_NAME_X_BIG + 187		)
-#define SB_SCORE_X_BIG		( SB_LOC_X_BIG + 148		) //405 = 464 //335 //332
-#define SB_TIME_X_BIG		( SB_SCORE_X_BIG + 44		) //	= 493
-#define SB_PING_X_BIG		( SB_TIME_X_BIG + 35		) //491 = 528*/
 
 	CG_FillRect( SCOREBOARD_X,			y+5,	( SB_RPGCLASS_X_BIG - 5 ) - SCOREBOARD_X,			15, colorTable[CT_DKBLUE1]); //RPG-X: Rank Bar //75 //79
 	CG_FillRect( SB_RPGCLASS_X_BIG - 3, y+5,	( SB_NAME_X_BIG - 5 ) - ( SB_RPGCLASS_X_BIG - 3 ), 15, colorTable[CT_DKBLUE1]); //RPG-X: Class Bar //46 - 60
@@ -1191,40 +874,16 @@ qboolean CG_DrawScoreboard( void )
 	CG_FillRect( SB_TIME_X_BIG - 3,		y+5,	( SB_PING_X_BIG - 5 ) - ( SB_TIME_X_BIG - 3 ),		15, colorTable[CT_DKBLUE1]); //RPG-X: Time Bar //34
 	CG_FillRect( SB_PING_X_BIG - 3,		y+5,	602 - ( SB_PING_X_BIG - 3 ),						15, colorTable[CT_DKBLUE1]); //RPG-X: Ping Bar //35
 
-	//if ( inIntermission ) 
-//	{
-	//	UI_DrawProportionalString( SB_BOTICON_X+26,	SB_HEADERTEXT, ingame_text[IGT_READY],UI_TINYFONT, colorTable[CT_BLACK] );
-	//	UI_DrawProportionalString( SB_NAME_X,	SB_HEADERTEXT, ingame_text[IGT_SB_NAME],UI_TINYFONT, colorTable[CT_BLACK] );
-	//	UI_DrawProportionalString( SB_SCORE_X,	SB_HEADERTEXT, ingame_text[IGT_SB_SCORE],UI_TINYFONT, colorTable[CT_BLACK] );
-	//	UI_DrawProportionalString( SB_TIME_X,	SB_HEADERTEXT, ingame_text[IGT_SB_TIME],UI_TINYFONT, colorTable[CT_BLACK] );
-	//	UI_DrawProportionalString( SB_PING_X,	SB_HEADERTEXT, ingame_text[IGT_SB_PING],UI_TINYFONT, colorTable[CT_BLACK] );
-	//	UI_DrawProportionalString( SB_KILLEDCNT_X, SB_HEADERTEXT,ingame_text[IGT_TITLEELIMINATED],UI_TINYFONT, colorTable[CT_BLACK] );
-	//	UI_DrawProportionalString( SB_WORSTENEMY_X, SB_HEADERTEXT,ingame_text[IGT_WORSTENEMY],UI_TINYFONT, colorTable[CT_BLACK] );
-	//	UI_DrawProportionalString( SB_FAVEWEAPON_X, SB_HEADERTEXT,ingame_text[IGT_FAVORITEWEAPON],UI_TINYFONT, colorTable[CT_BLACK] );
-	//}
-	//else
-	//{
-		//RPG-X: RedTechie (Rank BookMark)
-		UI_DrawProportionalString( SB_RANK_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_RANK],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
-		UI_DrawProportionalString( SB_RPGCLASS_X_BIG,	SB_HEADERTEXT, ingame_text[IGT_SB_RPGCLASS],UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
-		UI_DrawProportionalString( SB_NAME_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_NAME],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
-		if ( cgs.locations ) {
-			UI_DrawProportionalString( SB_LOC_X_BIG,	SB_HEADERTEXT, ingame_text[IGT_SB_LOC],		UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
-		}
-		UI_DrawProportionalString( SB_SCORE_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_SCORE],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
-		UI_DrawProportionalString( SB_TIME_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_TIME],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
-		UI_DrawProportionalString( SB_PING_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_PING],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
-	//}
-
-	//trap_R_SetColor( colorTable[CT_DKORANGE] );
-	//CG_DrawPic( 605, y, 16, 32, cgs.media.scoreboardEndcap );
-	
-	/*trap_R_SetColor( colorTable[CT_DKBLUE1] );
-	CG_DrawPic( SCOREBOARD_X-15, y-28, 25, 28, cgs.media.scoreboardtopleft ); //RPG-X: - RedTechie Top Left
-	CG_DrawPic( SB_TOPLINE_LENGTH+43, y-28, 25, 28, cgs.media.scoreboardtopright ); //RPG-X: - RedTechie Top Right
-	CG_DrawPic( SCOREBOARD_X-15, y+325, 36, 28, cgs.media.scoreboardbotleft ); //RPG-X: - RedTechie Bottom Left
-	CG_DrawPic( SB_TOPLINE_LENGTH+32, y+321, 36, 32, cgs.media.scoreboardbotright ); //RPG-X: - RedTechie Bottom Right
-*/
+	//RPG-X: RedTechie (Rank BookMark)
+	UI_DrawProportionalString( SB_RANK_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_RANK],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
+	UI_DrawProportionalString( SB_RPGCLASS_X_BIG,	SB_HEADERTEXT, ingame_text[IGT_SB_RPGCLASS],UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
+	UI_DrawProportionalString( SB_NAME_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_NAME],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
+	if ( cgs.locations ) {
+		UI_DrawProportionalString( SB_LOC_X_BIG,	SB_HEADERTEXT, ingame_text[IGT_SB_LOC],		UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
+	}
+	UI_DrawProportionalString( SB_SCORE_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_SCORE],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
+	UI_DrawProportionalString( SB_TIME_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_TIME],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
+	UI_DrawProportionalString( SB_PING_X_BIG,		SB_HEADERTEXT, ingame_text[IGT_SB_PING],	UI_TINYFONT | UI_LEFT, colorTable[CT_BLACK] );
 
 	y = SB_TOP;
 
@@ -1235,77 +894,22 @@ qboolean CG_DrawScoreboard( void )
 	{// POSTGAME
 		maxClients = SB_MAXCLIENTS_NORMAL;
 		lineHeight = SB_NORMAL_HEIGHT;
-		topBorderSize = 16;
-		bottomBorderSize = 16;
 	}
 	else
 	{// INGAME
 		maxClients = SB_MAXCLIENTS_BIG;
 		lineHeight = SB_NORMAL_HEIGHT_BIG;
-		topBorderSize = 16;
-		bottomBorderSize = 16;
 	}
 
 	localClient = qfalse;
 	
-	//TiM
-	/*if ( cgs.gametype >= GT_TEAM ) 
-	{
-		y-=6;
-		// TEAM PLAY
-		//----------
-		if ( cg.teamScores[0] >= cg.teamScores[1] ) 
-		{
-			tTeam = TEAM_RED;
-			bTeam = TEAM_BLUE;
-		}
-		else
-		{
-			tTeam = TEAM_BLUE;
-			bTeam = TEAM_RED;
-		}
+	n1 = CG_TeamScoreboard( y, TEAM_FREE, fade, maxClients, lineHeight );
+	y += (n1 * lineHeight);
+	maxClients -= n1;
 
-		// TOP TEAM
-		n1 = CG_GetTeamCount(tTeam, maxClients);
-		CG_DrawTeamBackground( SCOREBOARD_X+15, y, SB_TOPLINE_LENGTH - 14, n1*lineHeight, 0.33, tTeam, qtrue );
-		CG_TeamScoreboard( y, tTeam, fade, maxClients, lineHeight );
-
-		if(tTeam==TEAM_BLUE)
-			CG_FillRect( SCOREBOARD_X+12, y, 2, (n1*lineHeight), colorTable[CT_BLUE]);
-		else
-			CG_FillRect( SCOREBOARD_X+12, y, 2, (n1*lineHeight), colorTable[CT_RED]);
-		y += (n1*lineHeight);
-		maxClients -= n1;
-
-		// BOTTOM TEAM
-		n2 = CG_GetTeamCount(bTeam, maxClients);
-		CG_DrawTeamBackground( SCOREBOARD_X+15, y, SB_TOPLINE_LENGTH - 14, n2*lineHeight, 0.33, bTeam, qtrue );
-		CG_TeamScoreboard( y, bTeam, fade, maxClients, lineHeight );
-
-		if(bTeam==TEAM_BLUE)
-			CG_FillRect( SCOREBOARD_X+12, y, 2, (n2*lineHeight), colorTable[CT_BLUE]);
-		else
-			CG_FillRect( SCOREBOARD_X+12, y, 2, (n2*lineHeight), colorTable[CT_RED]);
-		y += (n2*lineHeight);
-		maxClients -= n2;
-
-		// SPECTATOR TEAM
-		n3 = CG_TeamScoreboard( y, TEAM_SPECTATOR, fade, maxClients, lineHeight );
-		y += (n3 * lineHeight);
-		maxClients -= n3;
-	} 
-	else 
-	{*/
-		// FREE FOR ALL
-		//-------------
-		n1 = CG_TeamScoreboard( y, TEAM_FREE, fade, maxClients, lineHeight );
-		y += (n1 * lineHeight);
-		maxClients -= n1;
-
-		n2 = CG_TeamScoreboard( y, TEAM_SPECTATOR, fade, maxClients, lineHeight );
-		y += (n2 * lineHeight);
-		maxClients -= n2;
-	//}
+	n2 = CG_TeamScoreboard( y, TEAM_SPECTATOR, fade, maxClients, lineHeight );
+	y += (n2 * lineHeight);
+	maxClients -= n2;
 
 	//LOCAL CLIENT AT BOTTOM OF SCOREBOARD
 	//------------------------------------
@@ -1331,85 +935,15 @@ qboolean CG_DrawScoreboard( void )
 	}
 
 	// Bottom of scoreboard
-	//trap_R_SetColor( colorTable[CT_DKORANGE] );
-	//CG_DrawPic( 13, y-3, 16, 32, cgs.media.corner_12_24 );	// Corner
 	//RPG-X BookMark Bottum bar
 	CG_FillRect( SCOREBOARD_X, SB_RPG_X_FIXHEIGHT+60, SB_TOPLINE_LENGTH, 15, colorTable[CT_DKBLUE1]);
-	//trap_R_SetColor( colorTable[CT_DKORANGE] );
-	//CG_DrawPic( 605, y,  16, 32, cgs.media.scoreboardEndcap );
-	
-	//RPG-X: - RedTechie no PRESS FIRE TO CONTINUE!
-	/*if ( inIntermission ) 
-	{
-		if ( cgs.gametype != GT_SINGLE_PLAYER)
-		{
-			static int flashTime = 0;
-			static int flashColor = CT_RED;
-			if ( cg.time - flashTime >= 500 )
-			{
-				flashTime = cg.time;
-				if ( flashColor == CT_RED )
-				{
-					flashColor = CT_BLACK; 
-				}
-				else
-				{
-					flashColor = CT_RED;
-				}
-			}
-			UI_DrawProportionalString( SB_TOPLINE_LENGTH, y+10+BIGCHAR_HEIGHT, ingame_text[IGT_CLICK_PLAY_AGAIN], UI_RIGHT, colorTable[flashColor] );
-		}
-	}*/
 
-	//if (cgs.gametype < GT_TEAM)
-		s = va("%s: %i", ingame_text[IGT_PLAYERS], cg.numScores); // Number of Players
-	//}
-	//RPG-X: - RedTechie Dont need extra crap
-	//TiM: Yeah.... crap suxx. ;P
-	/*else
-	{
-		n1=n2=n3=0;
+	s = va("%s: %i", ingame_text[IGT_PLAYERS], cg.numScores); // Number of Players
 
-		for (i=0; i<cg.numScores; i++)
-		{
-			if (cgs.clientinfo[cg.scores[i].client].team==TEAM_RED)
-				n1++;
-			if (cgs.clientinfo[cg.scores[i].client].team==TEAM_BLUE)
-				n2++;
-			if (cgs.clientinfo[cg.scores[i].client].team==TEAM_SPECTATOR)
-				n3++;
-		}
-
-		s = va("%s: ^1%i ^4%i ^0%i", ingame_text[IGT_PLAYERS], n1, n2, n3);
-	}*/
-	
 	Q_strncpyz( gamename, s, sizeof(gamename) );
 
 	strcat( gamename, "      "S_COLOR_YELLOW );
 
-	//Game Type
-	//RPG-X: RedTechie Dont need Game Type in scoreboard
-	/*if ( cgs.gametype == GT_FFA )
-	{
-		strcat( gamename, ingame_text[IGT_GAME_FREEFORALL] );
-	}
-	else if ( cgs.gametype == GT_TOURNAMENT )
-	{
-		strcat( gamename, ingame_text[IGT_GAME_TOURNAMENT] );
-	}
-	else if ( cgs.gametype == GT_SINGLE_PLAYER )
-	{
-		strcat( gamename, ingame_text[IGT_GAME_SINGLEPLAYER] );
-	}
-	else if ( cgs.gametype == GT_TEAM )
-	{
-		strcat( gamename, ingame_text[IGT_GAME_TEAMHOLOMATCH] );
-	}
-	else if ( cgs.gametype == GT_CTF )
-	{
-		strcat( gamename, ingame_text[IGT_GAME_CAPTUREFLAG] );
-	}
-*/
 	//CG_AddGameModNameToGameName( gamename );
 	//RPG-X: RedTechie - Number of Characters in server
 	UI_DrawProportionalString( SCOREBOARD_X+10, SB_RPG_X_FIXHEIGHT+63, gamename, UI_TINYFONT, colorTable[CT_BLACK]);
@@ -1629,7 +1163,7 @@ typedef struct {
 static postgameMenuInfo_t	postgameMenuInfo;
 static qboolean				postGameMenuStructInited = qfalse;
 
-void InitPostGameMenuStruct()
+void InitPostGameMenuStruct(void)
 {
 	if (qfalse == postGameMenuStructInited)
 	{
@@ -1990,15 +1524,12 @@ static qboolean AW_Draw( void )
 	int		timer;
 	int		y=0, yfrom=0;
 	int		len;
-	vec4_t	white, red, blue, yellow, blueA;	// new colors
+	vec4_t	white, yellow;	// new colors
 
 	//         RED                GREEN             BLUE               ALPHA
 	//-----------------------------------------------------------------------
 	white[0] =         white[1] =        white[2] = 1.0f;	white[3] = 1.0f;
-	red[0]   = 1.0f;   red[1]   = 0.5f;  red[2]   = 0.5f;	red[3]   = 1.0f;
-	blue[0]  = 0.5f;   blue[1]  = 0.5f;  blue[2]  = 1.0f;	blue[3]  = 1.0f;
 	yellow[0]= 1.0f;   yellow[1]= 1.0f;  yellow[2]= 0.5f;	yellow[3]= 1.0f;
-	blueA[0] = 0.367f; blueA[1] = 0.261f;blueA[2] = 0.722f; blueA[3] = 0.5f;
 
 	// REASONS NOT TO SHOW THE AWARDS CEREMONY:
 	//--------------------------------------------
@@ -2020,53 +1551,6 @@ static qboolean AW_Draw( void )
 	//  anything in the awards ceremony and go straight to the spiffy scoreboard...
 	if (postgameMenuInfo.starttime==0)
 		return qtrue;
-
-
-
-
-
-	//RPG-X: RedTechie Dont need this aswell this also prints out what team your on and if your winning just takes up to much room
-	// ALL PHASES 
-	//  Display Your Rank / Your Team Wins
-	//-----------------------------------------------
-	/*if (cg.snap->ps.persistant[PERS_TEAM]!=TEAM_SPECTATOR)
-	{
-		if (cgs.gametype <= GT_SINGLE_PLAYER )
-		{
-			if (postgameMenuInfo.playerTied)
-				Com_sprintf( buf, sizeof(buf), "%s %i", ingame_text[IGT_TIED_FOR], postgameMenuInfo.playerTied);
-			else
-				Com_sprintf( buf, sizeof(buf), "%s %i", ingame_text[IGT_YOUR_RANK], postgameMenuInfo.playerGameRank+1);
-			UI_DrawProportionalString( 14, AWARD_Y, buf, UI_BIGFONT|UI_LEFT, white );
-		}
-		else
-		{
-			char	*teamName = NULL;
-
-			switch ( cg.snap->ps.persistant[PERS_TEAM] )
-			{
-			case TEAM_RED:
-				teamName = (char *)CG_ConfigString( CS_RED_GROUP );
-				break;
-			case TEAM_BLUE:
-				teamName = (char *)CG_ConfigString( CS_BLUE_GROUP );
-				break;
-			}
-			if ( teamName == NULL || teamName[0] == 0 )
-			{
-				teamName = ingame_text[IGT_YOUR_TEAM];
-			}
-
-			if (postgameMenuInfo.playersTeamWon) 
-				Com_sprintf( buf, sizeof(buf), "%s %s", teamName, ingame_text[IGT_WON]);
-			else
-				Com_sprintf( buf, sizeof(buf), "%s %s", teamName, ingame_text[IGT_LOST]);
-			if (postgameMenuInfo.playerGameRank == 2)
-				Com_sprintf( buf, sizeof(buf), "%s", ingame_text[IGT_TEAMS_TIED]);
-			UI_DrawProportionalString( 14, AWARD_Y, buf, UI_BIGFONT|UI_LEFT, white );
-
-		}
-	}*/
 
 	// PHASES I & II & III
 	//  Draw Character / Team names by podiums
@@ -2111,9 +1595,9 @@ static qboolean AW_Draw( void )
 			// THE TOP BAR
 			y=130;
 			if (cgs.gametype == GT_CTF)
-				Com_sprintf( buf, sizeof(buf), ingame_text[IGT_GAME_CAPTUREFLAG] );
+				Com_sprintf( buf, sizeof(buf), "%s", ingame_text[IGT_GAME_CAPTUREFLAG] );
 			else
-				Com_sprintf( buf, sizeof(buf), ingame_text[IGT_GAME_TEAMHOLOMATCH] );
+				Com_sprintf( buf, sizeof(buf), "%s", ingame_text[IGT_GAME_TEAMHOLOMATCH] );
 			len = UI_ProportionalStringWidth( buf, UI_SMALLFONT );
 
 			trap_R_SetColor( colorTable[CT_DKORANGE] );
@@ -2538,7 +2022,7 @@ void AW_SPPostgameMenu_f( void ) {
 			postgameMenuInfo.winnerSound = trap_S_RegisterSound( va( "sound/voice/computer/misc/%s_wins.wav", skin ) );
 			if (0 == postgameMenuInfo.winnerSound)
 			{
-				postgameMenuInfo.winnerSound = trap_S_RegisterSound( va( "sound/voice/computer/misc/progcomp.wav", skin ) );
+				postgameMenuInfo.winnerSound = trap_S_RegisterSound( va( "%s", "sound/voice/computer/misc/progcomp.wav" ) );
 			}
 			postgameMenuInfo.winnerDelay = 2500;
 			if (1 == playerGameRank || postgameMenuInfo.playerTied==2)

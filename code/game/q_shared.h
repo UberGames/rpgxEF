@@ -653,7 +653,7 @@ void Parse1DMatrix (char **buf_p, int x, float *m);
 void Parse2DMatrix (char **buf_p, int y, int x, float *m);
 void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m);
 
-void	QDECL Com_sprintf (char *dest, int size, const char *fmt, ...);
+void	QDECL Com_sprintf (char *dest, int size, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
 
 
 // mode parm for FS_FOpenFile
@@ -724,7 +724,7 @@ float	LittleFloat (float l);
 
 
 void	Swap_Init (void);
-char	* QDECL va(char *format, ...);
+char	* QDECL va(char *format, ...) __attribute__ ((format (printf, 1, 2)));
 
 //=============================================
 
@@ -740,8 +740,8 @@ qboolean Info_Validate( const char *s );
 void Info_NextPair( const char **s, char key[MAX_INFO_KEY], char value[MAX_INFO_VALUE] );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void	QDECL Com_Error( int errlevel, const char *error, ... );
-void	QDECL Com_Printf( const char *msg, ... );
+void	QDECL Com_Error( int errlevel, const char *error, ... ) __attribute__ ((format(printf, 2, 3)));
+void	QDECL Com_Printf( const char *msg, ... ) __attribute__ ((format (printf, 1, 2)));
 
 
 /*

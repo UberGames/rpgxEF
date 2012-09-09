@@ -17,7 +17,6 @@ If the ammo has gone low enough to generate the warning, play a sound
 void CG_CheckAmmo( void ) {
 	int		i;
 	int		total;
-	int		previous;
 	int		weapons;
 
 	if ( cg.lowAmmoWarning > 2 )
@@ -58,8 +57,6 @@ void CG_CheckAmmo( void ) {
 			return;
 		}
 	}
-
-	previous = cg.lowAmmoWarning;
 
 	if ( total == 0 ) {
 		cg.lowAmmoWarning = 2;

@@ -750,14 +750,8 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 	float	fcol;
 	float	fwidth;
 	float	fheight;
-	vec4_t	givenColor;
 	int		colorI;
 	int		special;
-
-	givenColor[0] = color[0];
-	givenColor[1] = color[1];
-	givenColor[2] = color[2];
-	givenColor[3] = color[3];
 
 	// draw the colored text
 	trap_R_SetColor( color );
@@ -1452,7 +1446,7 @@ qboolean CG_ParseRankData( char **data, rankMenuData_t* rankMenuData ) {
 		}
 	}
 	else {
-		Com_Printf( S_COLOR_RED, "Could not find { in current rankset file.\n" );
+		Com_Printf( S_COLOR_RED "Could not find { in current rankset file.\n" );
 		return qtrue;
 	}
 }
@@ -1467,7 +1461,7 @@ qboolean CG_LoadRanks( void ) {
 	fileHandle_t	file;
 	int				file_len;
 	char			charText[32000];
-	char			*textPtr, *prevValue;
+	char			*textPtr;
 	char			fileName[MAX_QPATH];
 	int				i;
 	int				rankCount=0;
@@ -1523,7 +1517,6 @@ qboolean CG_LoadRanks( void ) {
 	//DEFAULT I SAY!  IT'S SPECIAL!
 	//WE NEED A DEFAULT FOR ERRORS! NO DEFAULT NO RANK FOR YOU!
 	while ( 1 ) {
-		prevValue = textPtr;
 
 		token = COM_Parse( &textPtr );
 		if ( !token[0] ) {
@@ -1590,7 +1583,6 @@ qboolean CG_LoadRanks( void ) {
 	else {
 		//Parse.Rank.Data? :) *sigh* if only rofl 
 		while (1) {
-			prevValue = textPtr;
 			token = COM_Parse( &textPtr );
 			if ( !token[0] ) {
 				break;
