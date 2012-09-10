@@ -922,10 +922,9 @@ static void AdminMenu_Init( void ) {
 	AdminGeneric_InitLists();
 
 	/* point the FX list */
-	for ( i = 0; i < 11; i++ ) {
+	for ( i = 0; i < 10; i++ ) {
 		fxList[i] = s_admin_fxData[i].name;
 	}
-	fxList[11] = 0;
 
 	/* get key binds for the bound list */
 	for ( i = 0; i < 3; i++ ) {

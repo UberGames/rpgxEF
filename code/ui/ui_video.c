@@ -1849,7 +1849,7 @@ void M_VideoDriverMenu_Graphics (void)
 {
 	float labelColor[] = { 0, 1.0, 0, 1.0 };
 	float textColor[] = { 1, 1, 1, 1 };
-	int x,y,x2,x3;
+	int x,y,x2;
 
 	UI_MenuFrame(&s_videodriver.menu);
 
@@ -1860,10 +1860,6 @@ void M_VideoDriverMenu_Graphics (void)
 	UI_DrawProportionalString(  74,  395, "456730-1",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 
 	UI_Setup_MenuButtons();
-
-//	trap_R_SetColor( colorTable[CT_DKPURPLE1]);
-//	UI_DrawHandlePic(  30, 203, 47, 69, uis.whiteShader);	// Top Left column above two buttons
-//	UI_DrawHandlePic(  30, 344, 47, 45, uis.whiteShader);	// Top Left column below two buttons
 
 	// Top Frame
 	UI_DrawHandlePic( 178, 136,  32, -32, s_videodriver.corner_ll_8_16);	// UL
@@ -1904,7 +1900,6 @@ void M_VideoDriverMenu_Graphics (void)
 
 	x = 204;
 	x2 = 259;
-	x3 = x2 + 150;
 	y = 168;
 	UI_DrawProportionalString( x, y, menu_normal_text[MNT_VENDOR], UI_LEFT|UI_TINYFONT, labelColor );
 	UI_DrawProportionalString( x2, y, uis.glconfig.vendor_string, UI_LEFT|UI_TINYFONT, textColor );
@@ -2307,7 +2302,7 @@ static void VideoData2_MenuInit( void )
 UI_VideoData2SettingsGetCvars
 =================
 */
-static void	UI_VideoData2SettingsGetCvars()
+static void	UI_VideoData2SettingsGetCvars(void)
 {
 	s_videodata2.gamma_slider.curvalue = trap_Cvar_VariableValue( "r_gamma" ) *  10.0f;
 	s_videodata2.screensize_slider.curvalue = trap_Cvar_VariableValue( "cg_viewsize" );

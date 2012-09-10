@@ -1052,7 +1052,6 @@ Slider_Draw
 static void Slider_Draw( menuslider_s *s ) 
 {
 	int color;
-	int	style;
 	int textColor=CT_RED;
 	int	thumbColor=CT_LTGREY,backgroundColor=CT_DKGREY;
 	int	focus,thumbX;
@@ -1063,12 +1062,10 @@ static void Slider_Draw( menuslider_s *s )
 	if ( s->generic.flags & QMF_GRAYED )
 	{
 		color = CT_DKGREY;
-		style = UI_LEFT;
 	}
 	else if (Menu_ItemAtCursor( s->generic.parent ) == s)
 	{
 		color = s->color2;
-		style = UI_LEFT|UI_PULSE;
 		textColor = s->textcolor2;
 		thumbColor = s->thumbColor2;
 		backgroundColor = CT_LTGREY;
@@ -1077,7 +1074,6 @@ static void Slider_Draw( menuslider_s *s )
 	else
 	{
 		color = s->color;
-		style = UI_LEFT;
 		textColor = s->textcolor;
 		thumbColor = s->thumbColor;
 	}

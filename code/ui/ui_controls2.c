@@ -2577,13 +2577,9 @@ Controls_MenuEvent
 */
 static void Controls_MenuEvent (void* ptr, int event)
 {
-	menuframework_s*	m;
 
 	if (event != QM_ACTIVATED)
 		return;
-
-
-	m = ((menucommon_s*)ptr)->parent;
 
 	switch (((menucommon_s*)ptr)->id)
 	{
@@ -2690,12 +2686,7 @@ static void Controls_MenuEvent (void* ptr, int event)
 		case ID_KEYTURNPEED:
 		case ID_LOOKSPRING:
 		case ID_AUTOSWITCHWEAPONS:
-
 			Controls_SetConfig();
-//			if (event == QM_ACTIVATED)
-//			{
-//				s_controls.changesmade = qtrue;
-//			}
 			break;		
 	}
 }
@@ -3474,14 +3465,11 @@ M_Default_Event
 */
 void M_Default_Event (void* ptr, int event)
 {
-	menuframework_s*	m;
 
 	if (event != QM_ACTIVATED)
 	{
 		return;
 	}
-
-	m = ((menucommon_s*)ptr)->parent;
 
 	switch (((menucommon_s*)ptr)->id)
 	{

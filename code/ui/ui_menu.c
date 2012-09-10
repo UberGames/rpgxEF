@@ -647,14 +647,10 @@ InitialSetup_Event
 */
 static void InitialSetup_Event( void* ptr, int notification )
 {
-	menuframework_s*	m;
-
 	if (notification != QM_ACTIVATED)
 	{
 		return;
 	}
-
-	m = ((menucommon_s*)ptr)->parent;
 
 	switch (((menucommon_s*)ptr)->id)
 	{
@@ -1953,7 +1949,7 @@ M_MainMenu_Graphics
 
 static void M_MainMenu_Graphics (void)
 {
-	int x,y,pad; //i removed
+	int y,pad; //i removed
 //	void**		weaponptr;
 	char string[256];
 	char temp[128];
@@ -1998,228 +1994,6 @@ static void M_MainMenu_Graphics (void)
 
 	pad = 4;
 	y = 176 + pad;
-	// Draw a grid
-	/*trap_R_SetColor( colorTable[CT_DKPURPLE1]);
-	for (i=0;i<8;i++)
-	{
-		UI_DrawHandlePic(113,y + (i * 35), 358, 1, uis.whiteShader);
-	}
-
-	for (i=0;i<7;i++)
-	{
-		UI_DrawHandlePic(140 + (i*50),y, 1, 246, uis.whiteShader);
-	}*/
-
-	/*//Left Bracket around galaxy picture
-	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-	UI_DrawHandlePic(105,173 + pad, 16, 16, uis.graphicBracket1CornerLU);
-	UI_DrawHandlePic(105,189+ pad,  8, 83, uis.whiteShader);
-
-	trap_R_SetColor( colorTable[CT_DKRED1]); //CT_DKBROWN1
-	UI_DrawHandlePic(105,275+ pad,  8, 10, uis.whiteShader);
-
-	trap_R_SetColor( colorTable[CT_LTORANGE]);
-	UI_DrawHandlePic(107,288+ pad,  6, 21, uis.whiteShader);
-
-	trap_R_SetColor( colorTable[CT_DKRED1]); //CT_DKBROWN1
-	UI_DrawHandlePic(105,312+ pad,  8, 10, uis.whiteShader);
-
-	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-	UI_DrawHandlePic(105,325+ pad,  8, 83, uis.whiteShader);
-	UI_DrawHandlePic(105,408+ pad, 16, -16, uis.graphicBracket1CornerLU);	//LD*/
-	
-	//P_WeaponsMenu_Blinkies();
-//	UI_PrintMenuGraphics(attackmenu_graphics1,AMG_MAX); //RPG-X HACK
-
-	x = 463;
-	/*//Right Bracket around galaxy picture
-	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-	UI_DrawHandlePic(x,173+ pad, -16, 16, uis.graphicBracket1CornerLU);	//RU
-	UI_DrawHandlePic(x + 8,189+ pad,  8, 83, uis.whiteShader);
-
-	trap_R_SetColor( colorTable[CT_DKRED1]); //CT_DKBROWN1
-	UI_DrawHandlePic(x + 8,275+ pad,  8, 10, uis.whiteShader);
-
-	trap_R_SetColor( colorTable[CT_LTORANGE]);
-	UI_DrawHandlePic(x + 8,288+ pad,  6, 21, uis.whiteShader);
-
-	trap_R_SetColor( colorTable[CT_DKRED1]); //CT_DKBROWN1
-	UI_DrawHandlePic(x + 8,312+ pad,  8, 10, uis.whiteShader);
-
-	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-	UI_DrawHandlePic(x + 8,325+ pad,  8, 83, uis.whiteShader);
-	UI_DrawHandlePic(x,408+ pad, -16, -16, uis.graphicBracket1CornerLU);	//RD*/
-
-	//UI_DrawWeapon();
-
-/*	if (s_main.timer < uis.realtime)
-	{
-		weaponptr = g_weapons[s_main.currentWeapon];	
-		((menubitmap_s*)weaponptr)->textcolor = CT_BLACK;
-
-		s_main.timer = uis.realtime + WEAPON_WAIT;
-		s_main.currentWeapon++;
-		if (s_main.currentWeapon == UI_NUM_WEAPONS)
-		{
-			s_main.currentWeapon = 0;
-		}
-		//BOOKMARK
-		trap_S_StartLocalSound( uis.menu_choice1_snd, CHAN_LOCAL_SOUND );
-		weaponptr = g_weapons[s_main.currentWeapon];	
-		((menubitmap_s*)weaponptr)->textcolor = CT_LTGOLD1;
-	}
-
-	 ===REMOVED BECAUSE OF TIM's NEW Credits Menu=== 
-	switch (s_main.currentWeapon)
-	{
-
-	case 0 :	// Phaser
-		Player_UpdateModel( ANIM_WEAPON1 ); //RUNS
-		UI_DrawProportionalString( 130, 308, "RPG-X Mod Credits:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		//UI_DrawProportionalString( 130, 364, "",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		//UI_DrawProportionalString( 130, 378, "LOC : 56/895 mml",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		//UI_DrawProportionalString( 130, 392, "MIO : TC/TRR/F",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 289, 414, menu_normal_text[MNT_WEAPON1_DESC],UI_CENTER | UI_TINYFONT, colorTable[CT_YELLOW]);
-		break;
-
-	case 1 :	// Phaser rifle
-		Player_UpdateModel( ANIM_WEAPON2 );
-		
-		UI_DrawProportionalString( 130, 308, "Project Lead:                         Phenix",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 322, "Lead Coder:                           Jason2Jason",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 336, "Lead Mapper:                          Sniper",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 350, "Lead Graphics / Sound Artist:         Sharky",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 364, "Lead Modeller:                        TiM",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		
-
-		UI_DrawProportionalString( 130, 308, "Project Lead:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 322, "Lead Coder:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 336, "Lead Mapper:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 350, "Lead Graphics / Sound Artist:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 364, "Lead Modeller:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-
-		UI_DrawProportionalString( 270, 308, "Phenix",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 270, 322, "Jason2Jason",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 270, 336, "Sniper",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 270, 350, "Sharky",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 270, 364, "TiM",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-
-		UI_DrawProportionalString( 289, 414, menu_normal_text[MNT_WEAPON2_DESC],UI_CENTER | UI_TINYFONT, colorTable[CT_YELLOW]);
-		break;
-
-	case 2 :	// I-MOD
-		Player_UpdateModel( ANIM_WEAPON3 );
-		UI_DrawProportionalString( 130, 308, "RPG-X Coders:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 322, "  Jason2Jason",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 336, "  Phenix",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 350, "  RedTechie",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 289, 414, menu_normal_text[MNT_WEAPON3_DESC],UI_CENTER | UI_TINYFONT, colorTable[CT_YELLOW]);
-		break;
-
-	case 3 :	// Scavenger rifle
-		Player_UpdateModel( ANIM_WEAPON4 );
-		UI_DrawProportionalString( 130, 308, "RPG-X Mappers:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 322, "  Alpharaptor",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 336, "  Crackpatch",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 350, "  James Nukem",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 364, "  Jack Amzadi",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-
-		UI_DrawProportionalString( 220, 322, "  Johan",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 220, 336, "  Red-Rum",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 220, 350, "  Sniper",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-
-		UI_DrawProportionalString( 289, 414, menu_normal_text[MNT_WEAPON4_DESC],UI_CENTER | UI_TINYFONT, colorTable[CT_YELLOW]);
-		break;
-
-	case 4 :	// Stasis Weapon
-		Player_UpdateModel( ANIM_WEAPON5 );
-		UI_DrawProportionalString( 130, 308, "RPG-X Sound / Graphics Artists",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 322, "  Sharky",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 336, "  Simmo",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		//UI_DrawProportionalString( 130, 392, "MIO : TR/FFL/E",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 289, 414, menu_normal_text[MNT_WEAPON5_DESC],UI_CENTER | UI_TINYFONT, colorTable[CT_YELLOW]);
-		break;
-	case 5 :	// Grenade launcher
-		Player_UpdateModel( ANIM_WEAPON6 );
-		UI_DrawProportionalString( 130, 308, "RPG-X Modellers:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 322, "  Crackpatch",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 336, "  TiM",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 289, 414, menu_normal_text[MNT_WEAPON6_DESC],UI_CENTER | UI_TINYFONT, colorTable[CT_YELLOW]);
-		break;
-	case 6 :	// Tetryon
-		Player_UpdateModel( ANIM_WEAPON7 );
-		UI_DrawProportionalString( 130, 308, "Other RPG-X Team Members:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 322, "  Canon Inspector:   Scooter",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 336, "  Public Relations:   Highlander",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 289, 414, menu_normal_text[MNT_WEAPON7_DESC],UI_CENTER | UI_TINYFONT, colorTable[CT_YELLOW]);
-		break;
-	case 7 :	// Photon Burst
-		Player_UpdateModel( ANIM_WEAPON8 );
-		UI_DrawProportionalString( 130, 308, "Special Thanks:",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 322, "  Raven                   - For the orginal Elite Force",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 336, "  Gene Roddenberry   - For Star Trek",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 350, "  The RPG Community - For suggestions and beta testing",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 364, "  Steve                   - For the orginal RPG Mod for Elite Force",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 289, 414, menu_normal_text[MNT_WEAPON8_DESC],UI_CENTER | UI_TINYFONT, colorTable[CT_YELLOW]);
-		break;
-	case 8 :	// Arc Welder
-	default:
-		Player_UpdateModel( ANIM_WEAPON9 );
-		UI_DrawProportionalString( 130, 336, "All materials not oringaly part of Elite Force are",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 350, "copyrighted to the RPG-X Project. 2004",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		//UI_DrawProportionalString( 130, 378, "LOC : 15/255 mml",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 130, 378, "http://www.rpg-x.net",UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		UI_DrawProportionalString( 289, 414, menu_normal_text[MNT_WEAPON9_DESC],UI_CENTER | UI_TINYFONT, colorTable[CT_YELLOW]);
-		break;
-	}*/
-
-	// RPG-X
-//	UI_DrawProportionalString(  607,  174, "423",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
-//	UI_DrawProportionalString(  607,  406, "2-2334",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
-	// END RPG-X
-
-		//RPG-X : TiM - Watch me work my wonders of plagiarism ;P
-
-	//UI_DrawDigits();
-
-	/*
-	Courtesy of EF SP's Credits :P
-	*/	
-
-//	Com_Printf( "%s", pClass );
-
-	/*for ( i = 0; i <= MAX_QPATH; i++ ) {	
-		if ( pClass[0] > 96 && pClass[0] < 123) //if the first character is lower case 
-			pClass[0] -= 32; // make it capital
-
-		if ( pClass[i] == ' ' && ( pClass[i+1] > 96 && pClass[i+1] < 123 ) ) //if there is a space and then the next char is lowercase
-			pClass[i+1] -= 32; //make the char uppercase
-	}*/
-
-	//Rank
-	/*Q_strncpyz( pRank, UI_Cvar_VariableString("ui_playerRank"), sizeof( pRank ) );
-
-	Q_strlwr( pRank );
-
-	if ( !strcmp( pClass, "None") || !strcmp( pClass, "Alien") ) {
-		Q_strncpyz( pRank, "N/A", MAX_QPATH );
-	}
-	else {
-		for( i = 0; i < 16; i++ ) {
-			if ( !strcmp( pRank, prank_items_actual2[i] ) ){
-				Q_strncpyz( pRank, prank_items_formal2[i], MAX_QPATH );
-				break;
-			}
-		}
-
-		for ( i = 0; i <= MAX_QPATH; i++ ) {	
-			if ( pRank[0] > 96 && pRank[0] < 123) //if the first character is lower case 
-				pRank[0] -= 32; // make it capital
-
-			if ( pRank[i] == ' ' && ( pRank[i+1] > 96 && pRank[i+1] < 123 ) ) //if there is a space and then the next char is lowercase
-				pRank[i+1] -= 32; //make the char uppercase
-		}
-	}*/
 
 	//The favorite servers bar
 	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
@@ -2253,13 +2027,6 @@ static void M_MainMenu_Graphics (void)
 
 	//draw the data we have for the fave servers
 	//done separately to guarantee proper formatting
-
-	/*Com_sprintf( buff, MAX_LISTBOXWIDTH, "%s%-31.31s %s%-11.11s %2d/%2d %-8.8s %3d", //31.31
-			pongColor, servernodeptr->hostname, pingColor, servernodeptr->mapname, servernodeptr->numclients,
-	 		servernodeptr->maxclients, servernodeptr->gamename, servernodeptr->pingtime);
-		if (!servernodeptr->isPure) {	//prev length is 62, we can safely add 2 more chars.
-			strcat(buff, "*");	//mark this unpure server!
-		}*/
 
 	y = 177;
 	pad = 13;
@@ -2411,9 +2178,6 @@ static void M_MainMenu_Graphics (void)
 	}
 	UI_DrawProportionalString(  432,  y, string, UI_LEFT|UI_SMALLFONT, colorTable[CT_LTGOLD1]);
 
-	/*trap_R_SetColor( colorTable[CT_BLACK] );
-	UI_DrawHandlePic( 442, 189, 198, 89, uis.whiteShader);*/
-
 	// Grid over top of space map
 	trap_R_SetColor( colorTable[CT_LTBLUE1]);
 	UI_DrawHandlePic(  81, 228, 165,   1, uis.whiteShader); //296
@@ -2440,90 +2204,11 @@ static void M_MainMenu_Graphics (void)
 
 	UI_DrawHandlePic( (3 + 271 + (UI_ProportionalStringWidth(menu_normal_text[MNT_PLAYERSTATS],UI_SMALLFONT))), 304, ((321 - (UI_ProportionalStringWidth(menu_normal_text[MNT_PLAYERSTATS],UI_SMALLFONT))) - 3), 18, uis.whiteShader );
 
-	//UI_DrawHandlePic( 254, 288, 6, 21, uis.whiteShader ); //Little nurnie bits in between dark blue
-	//UI_DrawHandlePic( 604, 288, 6, 21, uis.whiteShader );
-
 	trap_R_SetColor( colorTable[CT_DKBROWN1]);
 	UI_DrawHandlePic( 406, 416, 51, 18, uis.whiteShader ); //main bars along the bottom //257
-	//UI_DrawHandlePic( 500, 416, 91, 18, uis.whiteShader );
 
 	UI_DrawHandlePic( 252, 351, 8, 34, uis.whiteShader ); //dark blue blocks
 	UI_DrawHandlePic( 603, 351, 8, 34, uis.whiteShader );
-
-	//UI_DrawHandlePic( 252, 312, 8, 10, uis.whiteShader );
-	//UI_DrawHandlePic( 604, 312, 8, 10, uis.whiteShader );
-	// end bracket around the buttons
-
-	//brackets around class menu
-/*
-	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-//	UI_DrawHandlePic( 288, 228, 16, 32, uis.graphic_12_8_LU );//UpperLeft Corner
-//	UI_DrawHandlePic( 288, 359, 16, -16, uis.graphic_12_8_LL );//Lower left
-//	UI_DrawHandlePic( 367, 229, 32, 32, uis.graphic_12_8_RU ); //Upper Right
-//	UI_DrawHandlePic( 367, 363, 32, 32, uis.graphic_12_8_RL );	//Lower Right
-
-	UI_DrawHandlePic( 371, 253, 18, 18, uis.whiteShader ); //Square just under UpperRight corner
-	UI_DrawHandlePic( 371, 343, 18, 18, uis.whiteShader ); //lower square
-
-	UI_DrawHandlePic( 306, 367, 59, 8, uis.whiteShader ); //Rectangle along bottom
-
-	UI_DrawHandlePic( 288, 251, 8, 41, uis.whiteShader ); //rectangle above dark blue rectangle, left side
-	UI_DrawHandlePic( 288, 316, 8, 41, uis.whiteShader ); //rectangle below
-
-	UI_DrawHandlePic( (3 + 307 + (UI_ProportionalStringWidth("CLASS",UI_SMALLFONT))), 229, ((58 - (UI_ProportionalStringWidth("CLASS",UI_SMALLFONT))) - 3), 17, uis.whiteShader );
-
-	trap_R_SetColor( colorTable[CT_DKBROWN1]);
-	UI_DrawHandlePic( 371, 273, 18, 68, uis.whiteShader ); //bar between the 2 squares
-	UI_DrawHandlePic( 288, 294, 4, 20, uis.whiteShader ); //rectangle opposite the above 
-
-	//end
-
-	//brackets around rank
-	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-//	UI_DrawHandlePic( 428, 228, 16, 32, uis.graphicRPGXBracket1CornerLU );//UpperLeft Corner
-//	UI_DrawHandlePic( 428, 391, 16, -16, uis.graphicBracket1CornerLU);//Lower left
-//	UI_DrawHandlePic( 561, 229, 32, 32, uis.graphic_18_18_RU ); //Upper Right
-//	UI_DrawHandlePic( 561, 395, 32, 32, uis.graphic_18_8_LR );	//Lower Right
-
-	UI_DrawHandlePic( 565, 253, 18, 18, uis.whiteShader ); //Square just under UpperRight corner
-	UI_DrawHandlePic( 565, 375, 18, 18, uis.whiteShader ); //lower square
-
-	UI_DrawHandlePic( 446, 399, 113, 8, uis.whiteShader ); //Rectangle along bottom
-
-	UI_DrawHandlePic( 428, 251, 8, 58, uis.whiteShader ); //rectangle above dark blue rectangle, left side
-	UI_DrawHandlePic( 428, 332, 8, 58, uis.whiteShader ); //rectangle below
-
-	UI_DrawHandlePic( 479, 229, 80, 17, uis.whiteShader ); //bar along the top
-
-	trap_R_SetColor( colorTable[CT_DKBROWN1]);
-	UI_DrawHandlePic( 565, 273, 18, 100, uis.whiteShader ); //bar between the 2 squares
-	UI_DrawHandlePic( 428, 311, 4, 19, uis.whiteShader ); //rectangle opposite the above 
-
-	//end
-*/
-
-	//Grid in RPG-X Logo Bracket
-	/*trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-	UI_DrawHandlePic(508,310 - 146 , 1, 121, uis.whiteShader);
-	UI_DrawHandlePic(561,310 - 146 , 1, 121, uis.whiteShader);
-	UI_DrawHandlePic(457,349 - 146 , 153, 1, uis.whiteShader);
-	UI_DrawHandlePic(457,392 - 146 , 153, 1, uis.whiteShader);
-
-	//Left Bracket around RPG-X Logo
-	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-	UI_DrawHandlePic(455,306 - 146, 16, 16, uis.graphicBracket1CornerLU);
-
-	UI_DrawHandlePic(455,322 - 146 , 8, 97, uis.whiteShader);
-
-	UI_DrawHandlePic(455,418 - 146 , 16, -16, uis.graphicBracket1CornerLU);
-
-	//Right Bracket around RPG-X Logo
-	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-	UI_DrawHandlePic(596, 306 - 146 , -16, 16, uis.graphicBracket1CornerLU);
-
-	UI_DrawHandlePic(604, 322 - 146 , 8, 97, uis.whiteShader);
-
-	UI_DrawHandlePic(596, 418 - 146 , -16, -16, uis.graphicBracket1CornerLU);*/
 
 	//Left Bracket around model picture
 	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
@@ -2571,62 +2256,6 @@ static void M_MainMenu_Graphics (void)
 
 	// Frame around model pictures
 	trap_R_SetColor( colorTable[CT_LTORANGE]);
-	//UI_DrawHandlePic(  114,  62,   8,  -32, s_playersettings.corner_ll_4_18);	// UL Corner
-	//UI_DrawHandlePic(  114, 341,   8,  32, s_playersettings.corner_ll_4_18);	// LL Corner
-	//UI_DrawHandlePic(  411,  62,   8,  -32, s_playersettings.corner_lr_4_18);	// UR Corner
-	//UI_DrawHandlePic(  411, 341,   8,  32, s_playersettings.corner_lr_4_18);	// LR Corner
-	//UI_DrawHandlePic(  114,  93,   4, 258, uis.whiteShader);	// Left side
-	//UI_DrawHandlePic(  414,  93,   4, 258, uis.whiteShader);	// Right side
-	//UI_DrawHandlePic(  120,  74, 293,  18, uis.whiteShader);	// Top
-	//UI_DrawHandlePic(  120, 343, 293,  18, uis.whiteShader);	// Bottom
-
-	// Description frame
-/*
-	trap_R_SetColor( colorTable[CT_LTBLUE1]);
-	UI_DrawHandlePic( 397, 163,  -16,  -16, cornerUpper);	// Top corner
-	UI_DrawHandlePic( 397, 418,  -16,   16, cornerUpper);// Bottom Left Corner
-
-	UI_DrawHandlePic(398, 182,  12, 233, uis.whiteShader);	// Block between top & bottom corner
-
-	UI_DrawHandlePic( 412, 169,  10,   7, uis.whiteShader);	// Top line 
-	UI_DrawHandlePic( 425, 169, 187,   7, uis.whiteShader);	// Top line 
-
-	UI_DrawHandlePic( 412, 421,  10,   7, uis.whiteShader);	// Top line 
-	UI_DrawHandlePic( 425, 421, 187,   7, uis.whiteShader);	// Bottom line 
-*/
-	//end
-
-	//brackets around fav server list
-	//trap_R_SetColor( colorTable[CT_DKBROWN1]); //DKPURPLE2
-	
-/*	UI_DrawHandlePic( 252, 306, 32, 32, s_main.graphic_16_12_LU );
-	UI_DrawHandlePic( 252, 410, 32, 32, s_main.graphic_16_18_LL );
-	UI_DrawHandlePic( 600, 306, -12, 12, uis.graphicButtonLeftEnd);
-	UI_DrawHandlePic( 600, 417, -18, 18, uis.graphicButtonLeftEnd);
-
-	UI_DrawHandlePic( 279, 306, 324, 12, uis.whiteShader); //main bar along top
-
-	UI_DrawHandlePic( 252, 329, 16, 16, uis.whiteShader);  //first box - up cursor
-
-	UI_DrawHandlePic( 252, 348, 16, 40, uis.whiteShader); //inbetween boxes
-
-	UI_DrawHandlePic( 252, 391, 16, 16, uis.whiteShader); //second box - down cursor
-
-//	UI_DrawHandlePic( 252, 407, 16, 12, uis.whiteShader);  //end of bar runnning down left
-
-	UI_DrawHandlePic( 276, 417, 128, 18, uis.whiteShader);  //bar running along bottom */
-
-	//Teh Uber Sound WaveForm
-	/*UI_DrawHandlePic( 253, 172, 195, 103, s_main.soundGrid );
-	UI_DrawHandlePic( 253, 172, 195, 103, s_main.soundWaveform );
-
-	UI_DrawHandlePic( 251, 170, 4, 108, uis.whiteShader); //left bar
-	UI_DrawHandlePic( 255, 170, 191, 4, uis.whiteShader); //top bar
-	UI_DrawHandlePic( 446, 170, 4, 108, uis.whiteShader); //right bar
-	UI_DrawHandlePic( 255, 274, 191, 4, uis.whiteShader); //bottom bar*/
-
-//	Com_Printf( "%i\n", trap_Milliseconds() );
-
 }
 
 
@@ -2723,10 +2352,7 @@ UI_MainMenu_Init
 */
 static void UI_MainMenu_Init(void)
 {
-	int		y,x;
-	int pad;
 	int i;
-	//void**		weaponptr;
 
 	memset( &s_main, 0, sizeof(mainmenu_t) );
 
@@ -2754,7 +2380,6 @@ static void UI_MainMenu_Init(void)
 	s_main.menu.footNoteEnum			= MNT_HOLOMATCHWEAPONRY;
 
 
-	y = 134;
 	s_main.multiplayer.generic.type		= MTYPE_BITMAP;      
 	s_main.multiplayer.generic.flags	= QMF_HIGHLIGHT_IF_FOCUS;
 	s_main.multiplayer.generic.x		= mm_buttons[0][0];
@@ -2997,74 +2622,6 @@ static void UI_MainMenu_Init(void)
 		s_main.favMenu[i].height				= 12;
 	}
 
-/*	s_main.favList.generic.type					= MTYPE_SCROLLLIST;
-	s_main.favList.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.favList.generic.id					= ID_FAVLIST;
-	s_main.favList.generic.callback				= Main_MenuEvent;
-	s_main.favList.generic.x					= 279;
-	s_main.favList.generic.y					= 319;
-	s_main.favList.width						= MAX_LISTBOXWIDTH - 3;
-	s_main.favList.height						= 6;
-	s_main.favList.itemnames					= (const char **)s_main.items;
-	for( i = 0; i < MAX_LISTBOXITEMS; i++ ) 
-	{
-		s_main.items[i] = s_main.table[i].buff;
-	}
-
-	s_main.favRefresh.generic.type				= MTYPE_BITMAP;
-	s_main.favRefresh.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.favRefresh.generic.x					= 407;
-	s_main.favRefresh.generic.y					= 417;
-	s_main.favRefresh.generic.callback			= Main_MenuEvent;
-	s_main.favRefresh.generic.id				= ID_FAVREFRESH;
-	s_main.favRefresh.generic.name				= GRAPHIC_SQUARE;
-	s_main.favRefresh.width						= 56;
-	s_main.favRefresh.height					= 18;
-	s_main.favRefresh.color						= CT_DKPURPLE1;
-	s_main.favRefresh.color2					= CT_LTPURPLE1;
-	s_main.favRefresh.textX						= MENU_BUTTON_TEXT_X;
-	s_main.favRefresh.textY						= MENU_BUTTON_TEXT_Y;
-	s_main.favRefresh.textEnum					= MBT_REFRESH;
-	s_main.favRefresh.textcolor					= CT_BLACK;
-	s_main.favRefresh.textcolor2				= CT_WHITE;
-
-	s_main.favStop.generic.type					= MTYPE_BITMAP;
-	s_main.favStop.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.favStop.generic.x					= 466;
-	s_main.favStop.generic.y					= 417;
-	s_main.favStop.generic.callback				= Main_MenuEvent;
-	s_main.favStop.generic.id					= ID_FAVSTOP;
-	s_main.favStop.generic.name					= GRAPHIC_SQUARE;
-	s_main.favStop.width						= 56;
-	s_main.favStop.height						= 18;
-	s_main.favStop.color						= CT_DKPURPLE1;
-	s_main.favStop.color2						= CT_LTPURPLE1;
-	s_main.favStop.textX						= MENU_BUTTON_TEXT_X;
-	s_main.favStop.textY						= MENU_BUTTON_TEXT_Y;
-	s_main.favStop.textEnum						= MBT_STOPREFRESH;
-	s_main.favStop.textcolor					= CT_BLACK;
-	s_main.favStop.textcolor2					= CT_WHITE;
-
-	s_main.favGo.generic.type					= MTYPE_BITMAP;
-	s_main.favGo.generic.flags					= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.favGo.generic.x						= 525;
-	s_main.favGo.generic.y						= 417;
-	s_main.favGo.generic.callback				= Main_MenuEvent;
-	s_main.favGo.generic.id						= ID_FAVGO;
-	s_main.favGo.generic.name					= GRAPHIC_SQUARE;
-	s_main.favGo.width							= 81;
-	s_main.favGo.height							= 18;
-	s_main.favGo.color							= CT_DKPURPLE1;
-	s_main.favGo.color2							= CT_LTPURPLE1;
-	s_main.favGo.textX							= MENU_BUTTON_TEXT_X;
-	s_main.favGo.textY							= MENU_BUTTON_TEXT_Y;
-	s_main.favGo.textEnum						= MBT_ENGAGEMULTIPLAYER;
-	s_main.favGo.textcolor						= CT_BLACK;
-	s_main.favGo.textcolor2						= CT_WHITE; */
-
-
-	// Label buttons
-
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
 	Menu_AddItem( &s_main.menu,	&s_main.demo );
@@ -3082,211 +2639,9 @@ static void UI_MainMenu_Init(void)
 
 	Menu_AddItem( &s_main.menu, &s_main.playerSettings);  
 	Menu_AddItem( &s_main.menu, &s_main.playerModel );
-//	Menu_AddItem( &s_main.menu, &s_main.favList);
-//	Menu_AddItem( &s_main.menu, &s_main.favStop);
-//	Menu_AddItem( &s_main.menu, &s_main.favGo);
-
-//	Menu_AddItem( &s_main.menu, &s_main.favRefresh);
-//	Menu_AddItem( &s_main.menu,	&s_main.mission );             
+            
 	s_main.currentWeapon = 0;
 
-	pad = 26;
-	y = 189;
-	x = 482;
-	/*s_main.weapon1.generic.type				= MTYPE_BITMAP;      
-	s_main.weapon1.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.weapon1.generic.x				= x;
-	s_main.weapon1.generic.y				= y;
-	s_main.weapon1.generic.name				= GRAPHIC_SQUARE;
-	s_main.weapon1.generic.id				= ID_WEAPON1;
-	s_main.weapon1.generic.callback			= Main_MenuEvent; 
-	s_main.weapon1.width					= MENU_BUTTON_MED_WIDTH;
-	s_main.weapon1.height					= MENU_BUTTON_MED_HEIGHT;
-	// COLOUR
-	s_main.weapon1.color					= CT_DKPURPLE1;
-	s_main.weapon1.color2					= CT_LTPURPLE1;
-	s_main.weapon1.textX					= MENU_BUTTON_TEXT_X;
-	s_main.weapon1.textY					= MENU_BUTTON_TEXT_Y;
-	s_main.weapon1.textEnum					= MBT_WEAPON1;
-	s_main.weapon1.textcolor				= CT_BLACK;
-	s_main.weapon1.textcolor2				= CT_BLACK; //CT_WHITE;
-
-	y = y + pad;
-	s_main.weapon2.generic.type				= MTYPE_BITMAP;      
-	s_main.weapon2.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.weapon2.generic.x				= x;
-	s_main.weapon2.generic.y				= y;
-	s_main.weapon2.generic.name				= GRAPHIC_SQUARE;
-	s_main.weapon2.generic.id				= ID_WEAPON2;
-	s_main.weapon2.generic.callback			= Main_MenuEvent; 
-	s_main.weapon2.width					= MENU_BUTTON_MED_WIDTH;
-	s_main.weapon2.height					= MENU_BUTTON_MED_HEIGHT;
-	// COLOUR
-	s_main.weapon2.color					= CT_DKPURPLE1;
-	s_main.weapon2.color2					= CT_LTPURPLE1;
-	s_main.weapon2.textX					= MENU_BUTTON_TEXT_X;
-	s_main.weapon2.textY					= MENU_BUTTON_TEXT_Y;
-	s_main.weapon2.textEnum					= MBT_WEAPON2;
-	s_main.weapon2.textcolor				= CT_BLACK;
-	s_main.weapon2.textcolor2		= CT_BLACK; //CT_WHITE;
-
-	y = y + pad;
-	s_main.weapon3.generic.type				= MTYPE_BITMAP;      
-	s_main.weapon3.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.weapon3.generic.x				= x;
-	s_main.weapon3.generic.y				= y;
-	s_main.weapon3.generic.name				= GRAPHIC_SQUARE;
-	s_main.weapon3.generic.id				= ID_WEAPON3;
-	s_main.weapon3.generic.callback			= Main_MenuEvent; 
-	s_main.weapon3.width					= MENU_BUTTON_MED_WIDTH;
-	s_main.weapon3.height					= MENU_BUTTON_MED_HEIGHT;
-	s_main.weapon3.color					= CT_DKPURPLE1;
-	s_main.weapon3.color2					= CT_LTPURPLE1;
-	s_main.weapon3.textX					= MENU_BUTTON_TEXT_X;
-	s_main.weapon3.textY					= MENU_BUTTON_TEXT_Y;
-	s_main.weapon3.textEnum					= MBT_WEAPON3;
-	s_main.weapon3.textcolor				= CT_BLACK;
-	s_main.weapon3.textcolor2		= CT_BLACK; //CT_WHITE;
-
-	y = y + pad;
-	s_main.weapon4.generic.type				= MTYPE_BITMAP;      
-	s_main.weapon4.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.weapon4.generic.x				= x;
-	s_main.weapon4.generic.y				= y;
-	s_main.weapon4.generic.name				= GRAPHIC_SQUARE;
-	s_main.weapon4.generic.id				= ID_WEAPON4;
-	s_main.weapon4.generic.callback			= Main_MenuEvent; 
-	s_main.weapon4.width					= MENU_BUTTON_MED_WIDTH;
-	s_main.weapon4.height					= MENU_BUTTON_MED_HEIGHT;
-	s_main.weapon4.color					= CT_DKPURPLE1;
-	s_main.weapon4.color2					= CT_LTPURPLE1;
-	s_main.weapon4.textX					= MENU_BUTTON_TEXT_X;
-	s_main.weapon4.textY					= MENU_BUTTON_TEXT_Y;
-	s_main.weapon4.textEnum					= MBT_WEAPON4;
-	s_main.weapon4.textcolor				= CT_BLACK;
-	s_main.weapon4.textcolor2		= CT_BLACK; //CT_WHITE;
-
-	y = y + pad;
-	s_main.weapon5.generic.type				= MTYPE_BITMAP;      
-	s_main.weapon5.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.weapon5.generic.x				= x;
-	s_main.weapon5.generic.y				= y;
-	s_main.weapon5.generic.name				= GRAPHIC_SQUARE;
-	s_main.weapon5.generic.id				= ID_WEAPON5;
-	s_main.weapon5.generic.callback			= Main_MenuEvent; 
-	s_main.weapon5.width					= MENU_BUTTON_MED_WIDTH;
-	s_main.weapon5.height					= MENU_BUTTON_MED_HEIGHT;
-	s_main.weapon5.color					= CT_DKPURPLE1;
-	s_main.weapon5.color2					= CT_LTPURPLE1;
-	s_main.weapon5.textX					= MENU_BUTTON_TEXT_X;
-	s_main.weapon5.textY					= MENU_BUTTON_TEXT_Y;
-	s_main.weapon5.textEnum					= MBT_WEAPON5;
-	s_main.weapon5.textcolor				= CT_BLACK;
-	s_main.weapon5.textcolor2		= CT_BLACK; //CT_WHITE;
-
-	y = y + pad;
-	s_main.weapon6.generic.type				= MTYPE_BITMAP;      
-	s_main.weapon6.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.weapon6.generic.x				= x;
-	s_main.weapon6.generic.y				= y;
-	s_main.weapon6.generic.name				= GRAPHIC_SQUARE;
-	s_main.weapon6.generic.id				= ID_WEAPON6;
-	s_main.weapon6.generic.callback			= Main_MenuEvent; 
-	s_main.weapon6.width					= MENU_BUTTON_MED_WIDTH;
-	s_main.weapon6.height					= MENU_BUTTON_MED_HEIGHT;
-	s_main.weapon6.color					= CT_DKPURPLE1;
-	s_main.weapon6.color2					= CT_LTPURPLE1;
-	s_main.weapon6.textX					= MENU_BUTTON_TEXT_X;
-	s_main.weapon6.textY					= MENU_BUTTON_TEXT_Y;
-	s_main.weapon6.textEnum					= MBT_WEAPON6;
-	s_main.weapon6.textcolor				= CT_BLACK;
-	s_main.weapon6.textcolor2		= CT_BLACK; //CT_WHITE;
-
-	y = y + pad;
-	s_main.weapon7.generic.type				= MTYPE_BITMAP;      
-	s_main.weapon7.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.weapon7.generic.x				= x;
-	s_main.weapon7.generic.y				= y;
-	s_main.weapon7.generic.name				= GRAPHIC_SQUARE;
-	s_main.weapon7.generic.id				= ID_WEAPON7;
-	s_main.weapon7.generic.callback			= Main_MenuEvent; 
-	s_main.weapon7.width					= MENU_BUTTON_MED_WIDTH;
-	s_main.weapon7.height					= MENU_BUTTON_MED_HEIGHT;
-	s_main.weapon7.color					= CT_DKPURPLE1;
-	s_main.weapon7.color2					= CT_LTPURPLE1;
-	s_main.weapon7.textX					= MENU_BUTTON_TEXT_X;
-	s_main.weapon7.textY					= MENU_BUTTON_TEXT_Y;
-	s_main.weapon7.textEnum					= MBT_WEAPON7;
-	s_main.weapon7.textcolor				= CT_BLACK;
-	s_main.weapon7.textcolor2		= CT_BLACK; //CT_WHITE;
-
-	y = y + pad;
-	s_main.weapon8.generic.type				= MTYPE_BITMAP;      
-	s_main.weapon8.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.weapon8.generic.x				= x;
-	s_main.weapon8.generic.y				= y;
-	s_main.weapon8.generic.name				= GRAPHIC_SQUARE;
-	s_main.weapon8.generic.id				= ID_WEAPON8;
-	s_main.weapon8.generic.callback			= Main_MenuEvent; 
-	s_main.weapon8.width					= MENU_BUTTON_MED_WIDTH;
-	s_main.weapon8.height					= MENU_BUTTON_MED_HEIGHT;
-	s_main.weapon8.color					= CT_DKPURPLE1;
-	s_main.weapon8.color2					= CT_LTPURPLE1;
-	s_main.weapon8.textX					= MENU_BUTTON_TEXT_X;
-	s_main.weapon8.textY					= MENU_BUTTON_TEXT_Y;
-	s_main.weapon8.textEnum					= MBT_WEAPON8;
-	s_main.weapon8.textcolor				= CT_BLACK;
-	s_main.weapon8.textcolor2		= CT_BLACK; //CT_WHITE;
-
-	y = y + pad;
-	s_main.weapon9.generic.type				= MTYPE_BITMAP;      
-	s_main.weapon9.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_main.weapon9.generic.x				= x;
-	s_main.weapon9.generic.y				= y;
-	s_main.weapon9.generic.name				= GRAPHIC_SQUARE;
-	s_main.weapon9.generic.id				= ID_WEAPON9;
-	s_main.weapon9.generic.callback			= Main_MenuEvent; 
-	s_main.weapon9.width					= MENU_BUTTON_MED_WIDTH;
-	s_main.weapon9.height					= MENU_BUTTON_MED_HEIGHT;
-	s_main.weapon9.color					= CT_DKPURPLE1;
-	s_main.weapon9.color2					= CT_LTPURPLE1;
-	s_main.weapon9.textX					= MENU_BUTTON_TEXT_X;
-	s_main.weapon9.textY					= MENU_BUTTON_TEXT_Y;
-	s_main.weapon9.textEnum					= MBT_WEAPON9;
-	s_main.weapon9.textcolor				= CT_BLACK;
-	s_main.weapon9.textcolor2		= CT_BLACK; //CT_WHITE;*/
-
-	/*Menu_AddItem( &s_main.menu,	&s_main.weapon1 );
-	Menu_AddItem( &s_main.menu,	&s_main.weapon2 );
-	Menu_AddItem( &s_main.menu,	&s_main.weapon3 );
-	Menu_AddItem( &s_main.menu,	&s_main.weapon4 );
-	Menu_AddItem( &s_main.menu,	&s_main.weapon5 );
-	Menu_AddItem( &s_main.menu,	&s_main.weapon6 );
-	Menu_AddItem( &s_main.menu,	&s_main.weapon7 );
-	Menu_AddItem( &s_main.menu,	&s_main.weapon8 );
-	Menu_AddItem( &s_main.menu,	&s_main.weapon9 );*/
-
-	/*
-	==========
-	RPG-X Mod
-	Phenix
-	1/6/2004
-	==========
-	
-	s_main.player.generic.type			= MTYPE_BITMAP;
-	s_main.player.generic.flags			= QMF_INACTIVE;
-	s_main.player.generic.ownerdraw		= Player_DrawPlayer;
-	s_main.player.generic.x				= 440;
-	s_main.player.generic.y				= 100;
-	s_main.player.width					= 32*6.6; //5.6 or 7.3
-	s_main.player.height				= 56*6.6;
-
-	Menu_AddItem( &s_main.menu,	&s_main.player );
-	
-	=========
-	End Mod
-	=========
-	*/
 	Menu_AddItem( &s_main.menu, ( void * )&s_main_playermdl);
 
 	// intialize the model
@@ -3294,11 +2649,6 @@ static void UI_MainMenu_Init(void)
 
 	uis.menusp = 0;
 	UI_PushMenu ( &s_main.menu );
-
-	/*s_main.timer = uis.realtime + WEAPON_WAIT;
-	s_main.currentWeapon = 0;
-	weaponptr = g_weapons[s_main.currentWeapon];	
-	((menubitmap_s*)weaponptr)->textcolor = CT_LTGOLD1;*/
 
 	if ( s_HolomatchInmenu.menu.initialized )
 		trap_S_StartLocalSound( s_main.activateSound, CHAN_LOCAL );
@@ -3765,53 +3115,6 @@ QuitMenuInterrupt
 */
 static void QuitMenuInterrupt(int labelId)
 {
-	int newSystem;
-
-	switch(labelId)
-	{
-		case ID_PHASER_LABEL :
-			newSystem = QMG_PHASER_LABEL;
-			break;
-
-		case ID_TORPEDO_LABEL :
-			newSystem = QMG_TORPEDO_LABEL;
-			break;
-
-		case ID_VENTRAL_LABEL :
-			newSystem = QMG_VENTRAL_LABEL;
-			break;
-
-		case ID_MIDHULL_LABEL :
-			newSystem = QMG_MIDHULL_LABEL;
-			break;
-
-		case ID_BUSSARD_LABEL :
-			newSystem = QMG_BUSSARD_LABEL;
-			break;
-
-		case ID_NACELLES_LABEL :
-			newSystem = QMG_NACELLES_LABEL;
-			break;
-
-		case ID_THRUSTERS_LABEL :
-			newSystem = QMG_THRUSTERS_LABEL;
-			break;
-
-		case ID_BRIDGE_LABEL :
-			newSystem = QMG_BRIDGE_LABEL;
-			break;
-
-		case ID_Q_VOYAGER_LABEL :
-			newSystem = QMG_VOYAGER_LABEL;
-			break;
-
-		default:
-			newSystem = QMG_VOYAGER_LABEL;
-			break;
-	}
-
-	//QuitMenu_ChangeAreaFocus(newSystem);
-
 	// ten seconds from now, start the auto animation again
 	quitmenu_graphics[QMG_ACTIVE_SYSTEM].timer = uis.realtime + 10000;
 }
@@ -4191,10 +3494,6 @@ UI_QuitMenu
 static void Quit_MenuInit(void)
 {
 	int y,x,i;
-	int		picColor;
-	float	*normalColor;
-	float	*highlightColor;
-
 
 	UI_QuitMenu_Cache(); 
 
@@ -4209,16 +3508,7 @@ static void Quit_MenuInit(void)
 	s_quit.menu.titleI					= MNT_QUITMENU_TITLE;
 	s_quit.menu.footNoteEnum			= MNT_SHIP_SYSTEMS;
 
-//	if (uis.stack[0] == &s_ingame_menu)
-//	{
-//		// float on top of running game
-//		s_quit.menu.fullscreen = qfalse;
-//	}
-//	else
-//	{
-		// game not running
-		s_quit.menu.fullscreen = qtrue;
-//	}
+	s_quit.menu.fullscreen = qtrue;
 
 	s_quit.mainmenu.generic.type		= MTYPE_BITMAP;      
 	s_quit.mainmenu.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
@@ -4274,216 +3564,9 @@ static void Quit_MenuInit(void)
 	s_quit.no.textcolor					= CT_BLACK;
 	s_quit.no.textcolor2		= CT_BLACK; //CT_WHITE;
 
-
-	normalColor = colorTable[CT_DKBROWN1];
-	highlightColor= colorTable[CT_WHITE];
-	picColor	= CT_LTGOLD1;
-
-/*	s_quit.phaser_label.generic.type				= MTYPE_TEXT;      
-	s_quit.phaser_label.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS | QMF_RIGHT_JUSTIFY;
-	s_quit.phaser_label.generic.x					= 152;
-	s_quit.phaser_label.generic.y					= 290;
-	s_quit.phaser_label.generic.id					= ID_PHASER_LABEL;
-	s_quit.phaser_label.generic.callback			= Main_MenuEvent; 
-	s_quit.phaser_label.buttontextEnum				= MBT_V_PHASER_LABEL;
-	s_quit.phaser_label.style						= UI_TINYFONT | UI_RIGHT;	
-	s_quit.phaser_label.color						= normalColor;
-	s_quit.phaser_label.color2						= highlightColor;
-
-	s_quit.phaser_pic.generic.type					= MTYPE_BITMAP;      
-	s_quit.phaser_pic.generic.flags					= QMF_HIDDEN | QMF_INACTIVE;
-	s_quit.phaser_pic.generic.x						= 99;
-	s_quit.phaser_pic.generic.y						= 225;
-	s_quit.phaser_pic.generic.name					= PIC_PHASER_STRIP;
-	s_quit.phaser_pic.width							= 256;
-	s_quit.phaser_pic.height						= 16;
-	s_quit.phaser_pic.color							= picColor;
-
-	s_quit.torpedo_label.generic.type				= MTYPE_TEXT;      
-	s_quit.torpedo_label.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS | QMF_RIGHT_JUSTIFY;
-	s_quit.torpedo_label.generic.x					= 250;
-	s_quit.torpedo_label.generic.y					= 278;
-	s_quit.torpedo_label.generic.id					= ID_TORPEDO_LABEL;
-	s_quit.torpedo_label.generic.callback			= Main_MenuEvent; 
-	s_quit.torpedo_label.buttontextEnum				= MBT_V_TORPEDOS_LABEL;
-	s_quit.torpedo_label.buttontextEnum2			= MBT_V_TORPEDOS_LABEL2;
-	s_quit.torpedo_label.buttontextEnum3			= MBT_V_TORPEDOS_LABEL3;
-	s_quit.torpedo_label.style						= UI_TINYFONT | UI_RIGHT;	
-	s_quit.torpedo_label.color						= normalColor;
-	s_quit.torpedo_label.color2						= highlightColor;
-
-	s_quit.torpedo_pic.generic.type					= MTYPE_BITMAP;      
-	s_quit.torpedo_pic.generic.flags				= QMF_HIDDEN | QMF_INACTIVE;
-	s_quit.torpedo_pic.generic.x					= 273;
-	s_quit.torpedo_pic.generic.y					= 265;
-	s_quit.torpedo_pic.generic.name					= PIC_PHOTON_LAUNCHER;
-	s_quit.torpedo_pic.width						= 16;
-	s_quit.torpedo_pic.height						= 16;
-	s_quit.torpedo_pic.color						= picColor;
-
-	s_quit.ventral_label.generic.type				= MTYPE_TEXT;      
-	s_quit.ventral_label.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS | QMF_RIGHT_JUSTIFY;
-	s_quit.ventral_label.generic.x					= 316;
-	s_quit.ventral_label.generic.y					= 322;
-	s_quit.ventral_label.generic.id					= ID_VENTRAL_LABEL;
-	s_quit.ventral_label.generic.callback			= Main_MenuEvent; 
-	s_quit.ventral_label.buttontextEnum				= MBT_V_VENTRAL_LABEL;
-	s_quit.ventral_label.style						= UI_TINYFONT | UI_RIGHT;	
-	s_quit.ventral_label.color						= normalColor;
-	s_quit.ventral_label.color2						= highlightColor;
-
-	s_quit.ventral_pic.generic.type					= MTYPE_BITMAP;      
-	s_quit.ventral_pic.generic.flags				= QMF_HIDDEN | QMF_INACTIVE;
-	s_quit.ventral_pic.generic.x					= 330;
-	s_quit.ventral_pic.generic.y					= 296;
-	s_quit.ventral_pic.generic.name					= PIC_BOTTOM_STRIP;
-	s_quit.ventral_pic.width						= 16;
-	s_quit.ventral_pic.height						= 16;
-	s_quit.ventral_pic.color						= picColor;
-
-	s_quit.midhull_label.generic.type				= MTYPE_TEXT;      
-	s_quit.midhull_label.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_quit.midhull_label.generic.x					= 381;
-	s_quit.midhull_label.generic.y					= 322;
-	s_quit.midhull_label.generic.id					= ID_MIDHULL_LABEL;
-	s_quit.midhull_label.generic.callback			= Main_MenuEvent; 
-	s_quit.midhull_label.buttontextEnum				= MBT_V_MIDHULL_LABEL;
-	s_quit.midhull_label.buttontextEnum2			= MBT_V_MIDHULL_LABEL2;
-	s_quit.midhull_label.style						= UI_TINYFONT;	
-	s_quit.midhull_label.color						= normalColor;
-	s_quit.midhull_label.color2						= highlightColor;
-
-	s_quit.midhull_pic.generic.type					= MTYPE_BITMAP;      
-	s_quit.midhull_pic.generic.flags				= QMF_HIDDEN | QMF_INACTIVE;
-	s_quit.midhull_pic.generic.x					= 357;
-	s_quit.midhull_pic.generic.y					= 244;
-	s_quit.midhull_pic.generic.name					= PIC_MID_HULL;
-	s_quit.midhull_pic.width						= 32;
-	s_quit.midhull_pic.height						= 8;
-	s_quit.midhull_pic.color						= picColor;
-
-	s_quit.nacelles_label.generic.type				= MTYPE_TEXT;      
-	s_quit.nacelles_label.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS | QMF_RIGHT_JUSTIFY;
-	s_quit.nacelles_label.generic.x					= 560;
-	s_quit.nacelles_label.generic.y					= 180;
-	s_quit.nacelles_label.generic.id				= ID_NACELLES_LABEL;
-	s_quit.nacelles_label.generic.callback			= Main_MenuEvent; 
-	s_quit.nacelles_label.buttontextEnum			= MBT_V_NACELLES_LABEL;
-	s_quit.nacelles_label.style						= UI_TINYFONT | UI_RIGHT;	
-	s_quit.nacelles_label.color						= normalColor;
-	s_quit.nacelles_label.color2					= highlightColor;
-
-	s_quit.nacelles_pic.generic.type				= MTYPE_BITMAP;      
-	s_quit.nacelles_pic.generic.flags				= QMF_HIDDEN | QMF_INACTIVE;
-	s_quit.nacelles_pic.generic.x					= 470;
-	s_quit.nacelles_pic.generic.y					= 265;
-	s_quit.nacelles_pic.generic.name				= PIC_WARPNAC;
-	s_quit.nacelles_pic.width						= 256;
-	s_quit.nacelles_pic.height						= 32;
-	s_quit.nacelles_pic.color						= picColor;
-
-	s_quit.bussard_label.generic.type				= MTYPE_TEXT;      
-	s_quit.bussard_label.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_quit.bussard_label.generic.x					= 489;
-	s_quit.bussard_label.generic.y					= 322;
-	s_quit.bussard_label.generic.id					= ID_BUSSARD_LABEL;
-	s_quit.bussard_label.generic.callback			= Main_MenuEvent; 
-	s_quit.bussard_label.buttontextEnum				= MBT_V_BUSSARD_LABEL;
-	s_quit.bussard_label.style						= UI_TINYFONT;	
-	s_quit.bussard_label.color						= normalColor;
-	s_quit.bussard_label.color2						= highlightColor;
-
-	s_quit.bussard_pic.generic.type					= MTYPE_BITMAP;      
-	s_quit.bussard_pic.generic.flags				= QMF_HIDDEN | QMF_INACTIVE;
-	s_quit.bussard_pic.generic.x					= 439;
-	s_quit.bussard_pic.generic.y					= 269;
-	s_quit.bussard_pic.generic.name					= PIC_BUSSARD;
-	s_quit.bussard_pic.width						= 32;
-	s_quit.bussard_pic.height						= 32;
-	s_quit.bussard_pic.color						= picColor;
-
-	s_quit.thrusters_label.generic.type				= MTYPE_TEXT;
-	s_quit.thrusters_label.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS | QMF_RIGHT_JUSTIFY;
-	s_quit.thrusters_label.generic.x				= 283;
-	s_quit.thrusters_label.generic.y				= 180;
-	s_quit.thrusters_label.generic.id				= ID_THRUSTERS_LABEL;
-	s_quit.thrusters_label.generic.callback			= Main_MenuEvent; 
-	s_quit.thrusters_label.buttontextEnum			= MBT_V_THRUSTERS_LABEL;
-	s_quit.thrusters_label.style					= UI_TINYFONT | UI_RIGHT;	
-	s_quit.thrusters_label.color					= normalColor;
-	s_quit.thrusters_label.color2					= highlightColor;
-
-	s_quit.thrusters_pic.generic.type				= MTYPE_BITMAP;
-	s_quit.thrusters_pic.generic.flags				= QMF_HIDDEN | QMF_INACTIVE;
-	s_quit.thrusters_pic.generic.x					= 314;
-	s_quit.thrusters_pic.generic.y					= 243;
-	s_quit.thrusters_pic.generic.name				= PIC_RCS;
-	s_quit.thrusters_pic.width						= 32;
-	s_quit.thrusters_pic.height						= 16;
-	s_quit.thrusters_pic.color						= picColor;
-
-	s_quit.bridge_label.generic.type				= MTYPE_TEXT;
-	s_quit.bridge_label.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS | QMF_RIGHT_JUSTIFY;
-	s_quit.bridge_label.generic.x					= 152;
-	s_quit.bridge_label.generic.y					= 195;
-	s_quit.bridge_label.generic.id					= ID_BRIDGE_LABEL;
-	s_quit.bridge_label.generic.callback			= Main_MenuEvent; 
-	s_quit.bridge_label.buttontextEnum				= MBT_V_BRIDGE_LABEL;
-	s_quit.bridge_label.style						= UI_TINYFONT | UI_RIGHT;	
-	s_quit.bridge_label.color						= normalColor;
-	s_quit.bridge_label.color2						= highlightColor;
-
-	s_quit.bridge_pic.generic.type					= MTYPE_BITMAP;
-	s_quit.bridge_pic.generic.flags					= QMF_HIDDEN | QMF_INACTIVE;
-	s_quit.bridge_pic.generic.x						= 250;
-	s_quit.bridge_pic.generic.y						= 198;
-	s_quit.bridge_pic.generic.name					= PIC_BRIDGE;
-	s_quit.bridge_pic.width							= 32;
-	s_quit.bridge_pic.height						= 32;
-	s_quit.bridge_pic.color							= picColor;
-
-	s_quit.voyager_label.generic.type				= MTYPE_TEXT;
-	s_quit.voyager_label.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_quit.voyager_label.generic.x					= 30;
-	s_quit.voyager_label.generic.y					= 325;
-	s_quit.voyager_label.generic.id					= ID_Q_VOYAGER_LABEL;
-	s_quit.voyager_label.generic.callback			= Main_MenuEvent; 
-	s_quit.voyager_label.buttontextEnum				= MBT_V_VOYAGER_LABEL;
-	s_quit.voyager_label.style						= UI_BIGFONT;	
-	s_quit.voyager_label.color						= normalColor;
-	s_quit.voyager_label.color2						= highlightColor;
-
-	s_quit.voyager_pic.generic.type					= MTYPE_BITMAP;
-	s_quit.voyager_pic.generic.flags				= QMF_INACTIVE;
-	s_quit.voyager_pic.generic.x					= 30;
-	s_quit.voyager_pic.generic.y					= 180;
-	s_quit.voyager_pic.generic.name					= PIC_VOYAGER;
-	s_quit.voyager_pic.width						= 1024;
-	s_quit.voyager_pic.height						= 256;
-	s_quit.voyager_pic.color						= CT_LTBLUE1;*/
-
 	Menu_AddItem( &s_quit.menu,	&s_quit.mainmenu );
 	Menu_AddItem( &s_quit.menu,	&s_quit.no );
 	Menu_AddItem( &s_quit.menu,	&s_quit.yes );             
-
-/*	Menu_AddItem( &s_quit.menu,	&s_quit.voyager_pic );     // This has to be first
-	Menu_AddItem( &s_quit.menu,	&s_quit.voyager_label );     
-	Menu_AddItem( &s_quit.menu,	&s_quit.bridge_pic );     
-	Menu_AddItem( &s_quit.menu,	&s_quit.bridge_label ); 
-	Menu_AddItem( &s_quit.menu,	&s_quit.thrusters_pic );    
-	Menu_AddItem( &s_quit.menu,	&s_quit.thrusters_label );  
-	Menu_AddItem( &s_quit.menu,	&s_quit.nacelles_pic );     
-	Menu_AddItem( &s_quit.menu,	&s_quit.nacelles_label );   
-	Menu_AddItem( &s_quit.menu,	&s_quit.bussard_pic );
-	Menu_AddItem( &s_quit.menu,	&s_quit.bussard_label ); 
-	Menu_AddItem( &s_quit.menu,	&s_quit.midhull_pic );     
-	Menu_AddItem( &s_quit.menu,	&s_quit.midhull_label );     
-	Menu_AddItem( &s_quit.menu,	&s_quit.ventral_pic );     
-	Menu_AddItem( &s_quit.menu,	&s_quit.ventral_label ); 
-	Menu_AddItem( &s_quit.menu,	&s_quit.torpedo_pic );     
-	Menu_AddItem( &s_quit.menu,	&s_quit.torpedo_label ); 
-	Menu_AddItem( &s_quit.menu,	&s_quit.phaser_pic );     
-	Menu_AddItem( &s_quit.menu,	&s_quit.phaser_label );*/ 
 
 	s_quit.menu.initialized = qtrue;
 
@@ -4512,8 +3595,6 @@ static void Quit_MenuInit(void)
 	// Turn on active system info
 	quitmenu_graphics[QMG_ACTIVE_SYSTEM].timer = uis.realtime + 100;	// When to change to next system
 	quitmenu_graphics[QMG_ACTIVE_SYSTEM].target = QMG_LABEL_END - 1;	// Give it an old system to turn off
-
-	//QuitMenu_ChangeAreaFocus(QMG_LABEL_START + 1);
 
 	// Force numbers to change
 	quitmenu_graphics[QMG_NUMBERS].timer = 0;	// To get numbers right away

@@ -858,7 +858,6 @@ static void StartServer_LevelshotDraw( void *self ) {
 	int				x;
 	int				y;
 	int				n;
-	int				color = CT_DKGOLD1;
 
 	b = (menubitmap_s *)self;
 
@@ -884,11 +883,6 @@ static void StartServer_LevelshotDraw( void *self ) {
 	}
 
 	n = (s_startserver.page * MAX_MAPSPERPAGE) + (b->generic.id - ID_PICTURES);
-	if (n == s_startserver.currentmap)
-	{
-		color = CT_LTGOLD1;
-	}
-
 
 	y += b->height;
 
@@ -913,24 +907,14 @@ StartServer_Graphics
 */
 void StartServer_Graphics (void)
 {
-	int x;
-
 	UI_MenuFrame2(&s_startserver.menu);
-
-//	trap_R_SetColor( colorTable[CT_DKBROWN1]);
-//	UI_DrawHandlePic(30,331, 47, 58, uis.whiteShader);
 
 	trap_R_SetColor( colorTable[CT_LTBROWN1]);
 	UI_DrawHandlePic(30,203, 47, 186, uis.whiteShader);	// Middle left line
 	UI_DrawProportionalString(  74,  150, "5164",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 
-	//trap_R_SetColor( colorTable[CT_BLACK]);
-	//UI_DrawHandlePic(30,55, 47, 280, uis.whiteShader);
-
 	// Level pics frame
 	trap_R_SetColor( colorTable[CT_DKBROWN1]);
-
-	x = START_X_POS;
 
 	UI_DrawProportionalString(  74,  30, "6801",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74, 207, "615222",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -943,12 +927,6 @@ void StartServer_Graphics (void)
 	trap_R_SetColor( colorTable[s_startserver.back.color]);
 	UI_DrawHandlePic(s_startserver.back.generic.x - 14, s_startserver.back.generic.y, 
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
-
-	trap_R_SetColor( colorTable[CT_DKBROWN1]);
-	//UI_DrawHandlePic(s_startserver.assimilation.generic.x - 24, 56, 170, 18, uis.whiteShader);		// Top
-	//UI_DrawHandlePic(s_startserver.assimilation.generic.x - 34, 46,32, -32,s_startserver.corner_ll); 
-	//UI_DrawHandlePic(s_startserver.assimilation.generic.x - 34, 64, 18, 278, uis.whiteShader);		// Side
-	//UI_DrawProportionalString(  s_startserver.assimilation.generic.x,  57, menu_normal_text[MNT_PARAMETERS],UI_SMALLFONT, colorTable[CT_BLACK]);
 
 	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
 
@@ -2310,7 +2288,7 @@ ServerOptions_MenuInit
 static void ServerOptions_MenuInit( qboolean multiplayer ) 
 {
 	int		x,y,yInc;
-	int		n,assim;
+	int		n;
 
 	memset( &s_serveroptions, 0 ,sizeof(serveroptions_t) );
 	s_serveroptions.multiplayer = multiplayer;
@@ -2541,7 +2519,6 @@ static void ServerOptions_MenuInit( qboolean multiplayer )
 		s_serveroptions.playerName[n].focusWidth		= 14 * SMALLCHAR_WIDTH;
 
 		s_serveroptions.playerTeam[n].generic.type		= MTYPE_SPINCONTROL;
-		//s_serveroptions.playerTeam[n].generic.flags		= QMF_GRAPHICLIST;
 		s_serveroptions.playerTeam[n].generic.callback	= ServerOptions_Event;
 		s_serveroptions.playerTeam[n].generic.id		= ID_PLAYER_TEAM;
 		s_serveroptions.playerTeam[n].generic.x			= 296;
@@ -2555,25 +2532,20 @@ static void ServerOptions_MenuInit( qboolean multiplayer )
 		s_serveroptions.playerTeam[n].width				= 20;
 		s_serveroptions.playerTeam[n].height			= 18;
 
-//MCG ADD:
-//		if ( s_serveroptions.specialties )
-//		{
-			s_serveroptions.playerClass[n].generic.type		= MTYPE_SPINCONTROL;
-			//s_serveroptions.playerClass[n].generic.flags	= QMF_GRAPHICLIST;
-			s_serveroptions.playerClass[n].generic.callback	= ServerOptions_Event;
-			s_serveroptions.playerClass[n].generic.id		= ID_PLAYER_CLASS;
-			s_serveroptions.playerClass[n].generic.x		= 322;
-			s_serveroptions.playerClass[n].generic.y		= y;
-			s_serveroptions.playerClass[n].listnames		= playerClass_list;
-			s_serveroptions.playerClass[n].listshaders		= s_serveroptions.pClassShaders;
-			s_serveroptions.playerClass[n].listX			= 1;
-			s_serveroptions.playerClass[n].listY			= 1;
-			s_serveroptions.playerClass[n].focusWidth		= 28;
-			s_serveroptions.playerClass[n].focusHeight		= 18;
-			s_serveroptions.playerClass[n].width			= 28;
-			s_serveroptions.playerClass[n].height			= 18;
-//		}
-//MCG END
+		s_serveroptions.playerClass[n].generic.type		= MTYPE_SPINCONTROL;
+		s_serveroptions.playerClass[n].generic.callback	= ServerOptions_Event;
+		s_serveroptions.playerClass[n].generic.id		= ID_PLAYER_CLASS;
+		s_serveroptions.playerClass[n].generic.x		= 322;
+		s_serveroptions.playerClass[n].generic.y		= y;
+		s_serveroptions.playerClass[n].listnames		= playerClass_list;
+		s_serveroptions.playerClass[n].listshaders		= s_serveroptions.pClassShaders;
+		s_serveroptions.playerClass[n].listX			= 1;
+		s_serveroptions.playerClass[n].listY			= 1;
+		s_serveroptions.playerClass[n].focusWidth		= 28;
+		s_serveroptions.playerClass[n].focusHeight		= 18;
+		s_serveroptions.playerClass[n].width			= 28;
+		s_serveroptions.playerClass[n].height			= 18;
+
 		y += ( SMALLCHAR_HEIGHT + 4 );
 	}
 
@@ -2663,13 +2635,9 @@ static void ServerOptions_MenuInit( qboolean multiplayer )
 			Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.playerTeam[n] );
 		}
 
-		//if( s_serveroptions.specialties ) 
-		{
-			Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.playerClass[n] );
-		}
-	}
 
-	assim = trap_Cvar_VariableValue( "g_pModAssimilation");
+		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.playerClass[n] );
+	}
 
 #if 0
 	if ( s_serveroptions.gametype != GT_CTF ) 
@@ -2681,11 +2649,6 @@ static void ServerOptions_MenuInit( qboolean multiplayer )
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.flaglimit );
 	}
 #endif
-
-//	if (!assim)	// No points in assimilation
-//	{
-//		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.timelimit );
-//	}
 
 	if ( s_serveroptions.gametype >= GT_TEAM ) 
 	{

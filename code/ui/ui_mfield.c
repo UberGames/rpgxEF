@@ -12,7 +12,7 @@ x, y, are in pixels
 */
 void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color,int cursor ) {
 	int		len;
-	int		charw,charh;
+	int		charw;
 	int		drawLen;
 	int		prestep;
 	int		cursorChar;
@@ -71,17 +71,14 @@ void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color,int curs
 
 	if (style & UI_SMALLFONT)
 	{
-		charh = SMALLCHAR_HEIGHT;
 		charw =	SMALLCHAR_WIDTH;
 	}
 	else if (style & UI_GIANTFONT)
 	{
-		charh = GIANTCHAR_HEIGHT;
 		charw =	GIANTCHAR_WIDTH;
 	}
 	else
 	{
-		charh = BIGCHAR_HEIGHT;
 		charw =	BIGCHAR_WIDTH;
 	}
 
@@ -91,13 +88,6 @@ void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color,int curs
 	if (style & UI_CENTER)
 	{
 		x = x + (len/2);
-		
-		//x = x + ( edit->cursor - prestep ) * charw;
-		//len = strlen(str);
-		//x -= (len * (charw/2));
-		
-		//x = x - (len * (charw/2));
-		//Com_Printf( "Dist is: %i, len is %i, width = %i\n", x, len, charw );
 	}
 	else if (style & UI_RIGHT)
 	{
@@ -106,18 +96,11 @@ void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color,int curs
 	}
 	else {
 		x = x + len;
-		//x = x + ( edit->cursor - prestep ) * charw;
 	}
 
 	if(!((uis.realtime/BLINK_DIVISOR) & 1))
 	{
-		char buff[2];
-
-		buff[0] = (unsigned char)cursorChar; 
-		buff[1] = '\0';
-
 		UI_DrawChar( x, y+2, cursorChar, style & ~(UI_CENTER|UI_RIGHT), color );
-		//UI_DrawProportionalString ( x, y+2, buff, style, color );
 	}
 }
 
@@ -370,7 +353,6 @@ void MenuField_Draw( menufield_s *f )
 	int			x;
 	int			y;
 	int			w;
-	int			h;
 	int			style;
 	qboolean	focus;
 	int			color,titleColor;
@@ -388,29 +370,21 @@ void MenuField_Draw( menufield_s *f )
 	if (f->field.style & UI_TINYFONT)
 	{
 		w = TINYCHAR_WIDTH;
-		h = TINYCHAR_HEIGHT;
-		//style = UI_TINYFONT;
 		style = f->field.style;
 	}
 	else if (f->field.style & UI_BIGFONT)
 	{
 		w = BIGCHAR_WIDTH;
-		h = BIGCHAR_HEIGHT;
-		//style = UI_BIGFONT;
 		style = f->field.style;
 	}
 	else if (f->field.style & UI_GIANTFONT)
 	{
 		w = GIANTCHAR_WIDTH;
-		h = GIANTCHAR_HEIGHT;
-		//style = UI_GIANTFONT;
 		style = f->field.style;
 	}	
 	else 
 	{
 		w = SMALLCHAR_WIDTH;
-		h = SMALLCHAR_HEIGHT;
-		//style = UI_SMALLFONT;
 		style = f->field.style;
 	}
 
@@ -493,12 +467,6 @@ void MenuField_Draw( menufield_s *f )
 
 		UI_DrawProportionalString(  x - 5, y, menu_button_text[f->field.titleEnum][0],UI_RIGHT | UI_SMALLFONT, colorTable[titleColor]);	
 	}// TiM 5 = 10 previously
-
-	//TiM: This is leftover from Quake III.  We'll be using this variable elsewhere now :)
-	/*if ( f->generic.name ) 
-	{
-		UI_DrawString( x - w, y, f->generic.name, style|UI_RIGHT, colorTable[color] );
-	}*/
 
 	MField_Draw( &f->field, x, y+offset, style, colorTable[color],focus );
 

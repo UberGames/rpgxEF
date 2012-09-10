@@ -404,7 +404,7 @@ static void ArenaServers_UpdatePicture( void ) {
 		hpic = trap_R_RegisterShaderNoMip( va("levelshots/%s.tga", servernodeptr->mapname) );
 		if (!hpic)
 		{
-			Com_sprintf( picname, sizeof(picname), "levelshots/unknownmap.tga", servernodeptr->mapname );
+			Com_sprintf( picname, sizeof(picname), "levelshots/unknownmap.tga" );
 		}
 		else
 		{
@@ -845,13 +845,11 @@ void ArenaServers_LoadFavorites( void )
 	int				i;
 	int				j;
 	int				numtempitems;
-	char			emptyinfo[MAX_INFO_STRING];
 	char			adrstr[MAX_ADDRESSLENGTH];
 	servernode_t	templist[MAX_FAVORITESERVERS];
 	qboolean		found;
 
 	found        = qfalse;
-	emptyinfo[0] = '\0';
 
 	// copy the old
 	memcpy( templist, g_favoriteserverlist, sizeof(servernode_t)*MAX_FAVORITESERVERS );
@@ -1420,8 +1418,6 @@ ArenaServers_Event
 */
 static void ArenaServers_Event( void* ptr, int event ) {
 	int		id;
-	menuframework_s*	m;
-
 
 	id = ((menucommon_s*)ptr)->id;
 
@@ -1429,8 +1425,6 @@ static void ArenaServers_Event( void* ptr, int event ) {
 	{
 		return;
 	}
-
-	m = ((menucommon_s*)ptr)->parent;
 
 	switch( id ) 
 	{

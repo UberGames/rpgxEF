@@ -2630,7 +2630,7 @@ char	MenuText[MAXMENUTEXT];
 UI_ParseMenuText
 =================
 */
-static void UI_ParseMenuText()
+static void UI_ParseMenuText(void)
 {
 	char *token;
 	char *buffer;
@@ -2728,7 +2728,7 @@ char	ButtonText[MAXBUTTONTEXT];
 UI_ParseButtonText
 =================
 */
-static void UI_ParseButtonText()
+static void UI_ParseButtonText(void)
 {
 	char	*token;
 	char *buffer;
@@ -2955,7 +2955,7 @@ void UI_SecurityCodeSetup ( void )
 		if ( !code )
 			Com_Printf( S_COLOR_RED "No data was able to be loaded\n" );
 		else
-			Com_Printf( S_COLOR_RED "ID was %u, should be %u\n", code->ID, SECURITY_ID );
+			Com_Printf( S_COLOR_RED "ID was %lu, should be %u\n", code->ID, SECURITY_ID );
 
 		UI_ConfirmMenu( menu_normal_text[MNT_ID_INVALID], 0, SecurityFeedback );
 		return;
@@ -3023,7 +3023,7 @@ void UI_SecurityCodeSetup ( void )
 		trap_FS_Write( code, SECURITY_SIZE, wf );
 		trap_FS_FCloseFile( wf );
 
-		trap_Cvar_Set( "sv_securityHash", va( "%u", code->hash ) );
+		trap_Cvar_Set( "sv_securityHash", va( "%lu", code->hash ) );
 	}
 	
 	/* TiM - NYARRR!!!!! ioEF has a weird config system which appears to trip this system. */
@@ -3050,7 +3050,7 @@ void UI_SecurityCodeSetup ( void )
  	 * update the security code value and lock it each time
 	 * from here, it is subsequently sent to the server on player connect
 	 */
-	trap_Cvar_Set( "sv_securityCode", va( "%u", code->playerID ) );
+	trap_Cvar_Set( "sv_securityCode", va( "%lu", code->playerID ) );
 
 }
 

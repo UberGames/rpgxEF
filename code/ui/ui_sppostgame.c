@@ -110,20 +110,8 @@ UI_SPPostgameMenu_NextEvent
 =================
 */
 static void UI_SPPostgameMenu_NextEvent( void* ptr, int event ) {
-//	int			currentSet;
-	int			levelSet;
 	int			level;
-//	int			currentLevel;
 	const char	*arenaInfo;
-	int			gametype;
-
-	gametype = trap_Cvar_VariableValue("g_gametype" );
-	//------------------------------------------- GAME TYPES
-	//0	GT_FFA,				// free for all
-	//1	GT_TOURNAMENT,		// one on one tournament
-	//2	GT_SINGLE_PLAYER,	// single player tournament
-	//3	GT_TEAM,			// team deathmatch
-	//4	GT_CTF,				// capture the flag
 
 
 	if (event != QM_ACTIVATED) {
@@ -131,22 +119,12 @@ static void UI_SPPostgameMenu_NextEvent( void* ptr, int event ) {
 	}
 	UI_PopMenu();
 
-//	if (gametype!=2)  // FOR ALL NON 'GT_SINGLE_PLAYER' GAMES
-//	{	return;
-//	}
-
-
 	// handle specially if we just won the training map
 	if( postgameMenuInfo.won == 0 ) {
 		level = 0;
 	}
 	else {
 		level = postgameMenuInfo.level + 1;
-	}
-	if (uis.demoversion) {
-		levelSet = level / 2;
-	} else {
-		levelSet = level / ARENAS_PER_TIER;
 	}
 #if 0
 	currentLevel = UI_GetCurrentGame();

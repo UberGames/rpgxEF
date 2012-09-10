@@ -211,11 +211,8 @@ static void ServerInfo_LinePrep( void)
 	const char		*s;
 	char			key[MAX_INFO_KEY];
 	char			value[MAX_INFO_VALUE];
-	menutext_s		*hold_key,*hold_value;
 
 	s = s_serverinfo.info;
-	hold_key = &s_serverinfo.key1;
-	hold_value = &s_serverinfo.value1;
 	s_serverinfo.lineCnt = 0;
 	i=0;
 	while ( s ) 

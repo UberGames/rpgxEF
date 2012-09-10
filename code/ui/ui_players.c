@@ -1377,18 +1377,13 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 	fileHandle_t	file;
 	int				file_len;
 	char			charText[20000];
-	char			*textPtr, *prevValue;
+	char			*textPtr;
 	char			fileName[MAX_QPATH];
-	//char			animPath[MAX_QPATH];
 	int				i, n;
 	char			*token;
 	char			legsFileRoute[MAX_QPATH];
 	qboolean		didAnims = qfalse;
 	qboolean		skinSetFound=qfalse;
-	int				noBlinking;
-
-	noBlinking = trap_Cvar_VariableValue( "cg_noBlinkingHeads" );
-	//size_t			strLen;
 
 	//create the file route
 	Com_sprintf( fileName, sizeof(fileName), "models/players_rpgx/%s/%s.model", charName, modelName);
@@ -1445,7 +1440,6 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 	}
 
 	while ( 1 ) {
-		prevValue = textPtr; //set a backup
 		token = COM_Parse( &textPtr );
 
 		if (!token[0] || !token ) { //we've hit the end of the file. w00t! exit!
@@ -1623,7 +1617,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 
 	if ( !skinSetFound )
 	{
-		if ( !UI_ParseSkinSetDataFile( pi, va("%s_*", modelName, skinName ), charName, skinName ) )
+		if ( !UI_ParseSkinSetDataFile( pi, va("%s_*", modelName ), charName, skinName ) )
 		{
 			Com_Printf( S_COLOR_RED "ERROR: Tried loading default skin set, however it failed.\n");
 		}	

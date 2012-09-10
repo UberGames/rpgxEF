@@ -144,7 +144,7 @@ static void ConfirmMenu_Draw( void )
 		char	*message;
 		char	buffer[46];
 		int		height;
-		int		x, y;
+		int		y;
 		int		i, j;
 		int		spacePoint=45;
 
@@ -152,7 +152,6 @@ static void ConfirmMenu_Draw( void )
 
 		numLines	= strlen( message ) / 45 + 1;
 		height		= (SMALLCHAR_HEIGHT + 4) * numLines;
-		x			= 345;
 		y			= 277 - (height * 0.5); //269
 
 		//Com_Printf( S_COLOR_RED "numLines: %i\n", numLines );
