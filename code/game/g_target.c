@@ -1681,7 +1681,7 @@ void target_doorLock_use(gentity_t *ent, gentity_t *other, gentity_t* activator)
 void SP_target_doorLock(gentity_t *ent) {
 	char *temp;
 	if(!ent->target) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_doorlock at %s without target!\n"););
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_doorlock at %s without target!\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
 	}
@@ -2578,7 +2578,7 @@ spawnflags: 1 tells ent to free once aborted
 */
 static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) {
 	int i, n, num, cur = 0, cur2 = 0;
-	list_iter_p iter;
+	list_iter_p iter = NULL;
 	safeZone_t* sz;
 	int entlist[MAX_GENTITIES];
 	gentity_t *safePlayers[MAX_GENTITIES];
@@ -2617,7 +2617,9 @@ static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]
 		}
 	}
 
-	free(iter);
+	if(iter != NULL) {
+		free(iter);
+	}
 	return cur2;
 }
 
@@ -2634,7 +2636,7 @@ void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 
 void target_selfdestruct_think(gentity_t *ent) {
 	gentity_t*	client;	
-	double		ETAmin, ETAsec, temp;
+	double		ETAmin, ETAsec, temp = 0.0f;
 	int			i = 0;
 
 	//now we have 3 destinct stages the entity can think about.
@@ -2940,7 +2942,7 @@ falsename: redname for target_alert
 */
 static int target_shiphealth_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) {
 	int i, n, num, cur = 0, cur2 = 0;
-	list_iter_p iter;
+	list_iter_p iter = NULL;
 	safeZone_t* sz;
 	int entlist[MAX_GENTITIES];
 	gentity_t *safePlayers[MAX_GENTITIES];
@@ -2979,7 +2981,9 @@ static int target_shiphealth_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) 
 		}
 	}
 
-	free(iter);
+	if(iter != NULL) {
+		free(iter);
+	}
 	return cur2;
 }
 

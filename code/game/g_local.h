@@ -967,10 +967,10 @@ void SP_fx_spark( gentity_t	*ent );
 void FindIntermissionPoint( void );
 void G_RunThink (gentity_t *ent);
 void SendScoreboardMessageToAllClients( void );
-void QDECL G_Printf( const char *fmt, ... );
-void QDECL G_Error( const char *fmt, ... );
-void QDECL G_PrintfClient( gentity_t *ent, const char *fmt, ...);
-void QDECL G_PrintfClientAll(const char *fmt, ...);
+void QDECL G_Printf( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
+void QDECL G_Error( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
+void QDECL G_PrintfClient( gentity_t *ent, const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
+void QDECL G_PrintfClientAll(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 
 //
 // g_sql.c
@@ -1129,7 +1129,7 @@ typedef enum
 
 #define AWARDS_MSG_LENGTH		256
 
-void QDECL G_LogPrintf( const char *fmt, ... );
+void QDECL G_LogPrintf( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
 void QDECL G_LogWeaponPickup(int client, int weaponid);
 void QDECL G_LogWeaponFire(int client, int weaponid);
 void QDECL G_LogWeaponDamage(int client, int mod, int amount);

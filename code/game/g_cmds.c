@@ -1114,7 +1114,6 @@ static void Cmd_Class_f( gentity_t *ent ) {
 	int			j;
 	char		send[100];
 	gentity_t	*other;
-	qboolean	check = qtrue;
 	char		*className;
 	gclient_t	*client;
 	clientSession_t *sess;
@@ -1157,7 +1156,6 @@ static void Cmd_Class_f( gentity_t *ent ) {
 	if ( trap_Argc() == 1 ) 
 	{
 		className = g_classData[sess->sessionClass].formalName;
-		check = qfalse;
 
 		trap_SendServerCommand( ent-g_entities, va( "print \"\nCurrent Class: %s\nUsage: Changes the user to a different class\nCommand: Class <Class Name>\n\nType '/classlist' into the console for a more complete list\n\"", className ) );
 		return;
@@ -2063,15 +2061,12 @@ Cmd_ForceName_f
 */
 void Cmd_ForceName_f( gentity_t *ent ) {
 	gclient_t	*cl;
-	gclient_t *client;
 	gentity_t *other;
 	gentity_t *sayA;
 	int j;
 	char send[100];
 	char  str[MAX_TOKEN_CHARS];
 	char  *str2;
-	//char str2[MAX_TOKEN_CHARS];
-	//char userinfo[MAX_INFO_STRING];
 	char clientCmd[MAX_INFO_STRING];
 
 	#ifndef SQL
@@ -2099,7 +2094,6 @@ void Cmd_ForceName_f( gentity_t *ent ) {
 		return;
 	}
 	other = g_entities + cl->ps.clientNum;
-	client = other->client;
 	
 	//Get there new name
 	str2 = ConcatArgs( 2 );
@@ -2341,7 +2335,7 @@ void Cmd_ForceKill_f( gentity_t *ent ) {
 	int			targetNum;
 	int			j, p;
 	char		send[80];
-	gentity_t	*target;
+	gentity_t	*target = NULL;
 	gentity_t	*other;
 	char		arg[MAX_TOKEN_CHARS];
 	playerState_t *ps;
@@ -2498,7 +2492,7 @@ void Cmd_ForceKillRadius_f( gentity_t *ent)
 	if( ( rpg_forcekillradiuswaittime.integer - (level.time - LastFKRadius[clientNum]) > 0) )
 	{
 		//Send message to client informing them so they can't flood.
-		trap_SendServerCommand( clientNum, va("cp \"Cannot use Force Kill Radius Command for %d seconds", ( rpg_forcekillradiuswaittime.integer - (level.time - LastFKRadius[clientNum]) ) * 0.001 )); // GSIO was / 1000
+		trap_SendServerCommand( clientNum, va("cp \"Cannot use Force Kill Radius Command for %d seconds", (int)(( rpg_forcekillradiuswaittime.integer - (level.time - LastFKRadius[clientNum]) ) * 0.001 ))); // GSIO was / 1000
 		return;
 	}
 
@@ -2884,7 +2878,7 @@ DragCheck			(RPG-X: J2J)
 =================
 */
 //This is used internally and run every frame to check for clients that need to be draged by someone.
-void DragCheck()
+void DragCheck(void)
 {
 	gentity_t	*ent = NULL;
 	gentity_t	*target = NULL;
@@ -2953,7 +2947,6 @@ void Cmd_disarm_f( gentity_t *ent)
 	gentity_t	*tripwire = NULL;
 	int			foundTripWires[MAX_GENTITIES] = {ENTITYNUM_NONE};
 	int			tripcount = 0;
-	int			mineornot;
 	int			i;
 	char		arg[MAX_TOKEN_CHARS];
 	
@@ -2972,7 +2965,6 @@ void Cmd_disarm_f( gentity_t *ent)
 	#endif
 
 	trap_Argv( 1, arg, sizeof( arg ) );
-	mineornot = atoi( arg );
 
 	if(arg == NULL){ //J2J
 		//Just mine
@@ -3494,7 +3486,7 @@ void Cmd_Revive_f( gentity_t *ent)
 		
 		G_LogPrintf( "%s revived everyone (%s)\n", pers->netname, pers->ip);
 
-		Com_sprintf (send, sizeof(send), "%s revived everyone\n", pers->netname, pla_str);
+		Com_sprintf (send, sizeof(send), "%s revived everyone\n", pers->netname);
 
 		for (j = MAX_CLIENTS - 1; j > -1; j--) { // again j++ to j-- and 1023 to MAX_CLIENTS
 			if(g_entities[j].client){
@@ -6267,7 +6259,7 @@ static void Cmd_alert_f(gentity_t *ent) {
 			i = 0;
 	}
 	else {
-		G_PrintfClient(ent, "Invalid alert condition %s. Valid conditions: red, blue, yellow, green.\n");
+		G_PrintfClient(ent, "Invalid alert condition \'%s\'. Valid conditions: red, blue, yellow, green.\n", arg);
 		return;
 	}
 	if(i == 1) {
@@ -6472,18 +6464,18 @@ static void Cmd_shiphealth_f(gentity_t *ent) {
 	RSS = floor((CSS / TSS * 100));
 	
 	if(CHS == 0){
-		trap_SendServerCommand( ent-g_entities, va("print \"^4The Ship is destroyed, what do you want?\n\"", RHS, CHS, THS) );
+		trap_SendServerCommand( ent-g_entities, "print \"^4The Ship is destroyed, what do you want?\n\"" );
 	} else {
 		if(SI == 1){
-			trap_SendServerCommand( ent-g_entities, va("print \"^4Shields are online\n\"", RHS, CHS, THS) );
+			trap_SendServerCommand( ent-g_entities, "print \"^4Shields are online\n\"" );
 			trap_SendServerCommand( ent-g_entities, va("print \"^4Shield Capactiy at %i Percent (%i of %i Points)\n\"", RSS, CSS, TSS) );
 			trap_SendServerCommand( ent-g_entities, va("print \"^4Structual Integrity at %i Percent (%i of %i Points)\n\"", RHS, CHS, THS) );
 		} else if(SI == 0){
-			trap_SendServerCommand( ent-g_entities, va("print \"^4Shields are offline\n\"", RHS, CHS, THS) );
+			trap_SendServerCommand( ent-g_entities, "print \"^4Shields are offline\n\"" );
 			trap_SendServerCommand( ent-g_entities, va("print \"^4Shield Capactiy at %i Percent (%i of %i Points)\n\"", RSS, CSS, TSS) );
 			trap_SendServerCommand( ent-g_entities, va("print \"^4Structual Integrity at %i Percent (%i of %i Points)\n\"", RHS, CHS, THS) );
 		} else {
-			trap_SendServerCommand( ent-g_entities, va("print \"^4Shields are inoperable\n\"", RHS, CHS, THS) );
+			trap_SendServerCommand( ent-g_entities, "print \"^4Shields are inoperable\n\"" );
 			trap_SendServerCommand( ent-g_entities, va("print \"^4Structual Integrity at %i Percent (%i of %i Points)\n\"", RHS, CHS, THS) );
 		}
 	}

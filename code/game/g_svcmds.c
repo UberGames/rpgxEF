@@ -299,7 +299,7 @@ static void UpdateIDBans (void)
 		//}
 		//When parsed back in, the line breaks will be used to divide it up
 
-		Com_sprintf( buffer, sizeof( buffer ), "%i\n{\n\t%ul\n\t\"%s\"\n\t\"%s\"\n}\n\n", i, id->playerID, id->playerName, id->banReason );
+		Com_sprintf( buffer, sizeof( buffer ), "%i\n{\n\t%lu\n\t\"%s\"\n\t\"%s\"\n}\n\n", i, id->playerID, id->playerName, id->banReason );
 
 		trap_FS_Write( buffer, strlen(buffer), f );
 	}
@@ -523,7 +523,7 @@ void Svcmd_FindID_f ( void )
 	{
 		G_Printf( "%-4.4s %-16.16s %-45.45s\n", "ID:", "Name:", "Reason:" );
 		G_Printf( "%-4.4s %-16.16s %-45.45s\n", "----", "-----------------", "-------------------------------------" );
-		G_Printf( outputBuf );
+		G_Printf( "%s", outputBuf );
 	}
 }
 

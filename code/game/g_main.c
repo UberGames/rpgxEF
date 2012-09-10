@@ -1204,7 +1204,6 @@ static void G_LoadServerChangeFile(void) {
 	char			*buffer;
 	int				file_len;
 	char			*txtPtr, *token;
-	char			*temp;
 	int				cnt = 0;
 	int				i = 0;
 
@@ -1269,17 +1268,6 @@ static void G_LoadServerChangeFile(void) {
 
 						if(cnt > 12) break;
 
-						temp = G_NewString(token);
-
-						/*if(!infoString[0])
-							Com_sprintf(infoString, sizeof(infoString), "i%i\\%s\\", cnt, temp);
-						else {
-							if(cnt % 2 == 0)
-								Com_sprintf(infoString, sizeof(infoString), "%si%i\\%s\\", infoString, i, temp);
-							else
-								Com_sprintf(infoString, sizeof(infoString), "%sd%i\\%s\\", infoString, i, temp);
-						}*/
-
 						if(cnt % 2 == 0)
 							Q_strncpyz(srvChangeData.ip[i], token, sizeof(srvChangeData.ip[i]));
 						else
@@ -1309,7 +1297,6 @@ static void G_LoadMapChangeFile(void) {
 	char			*buffer;
 	int			file_len;
 	char			*txtPtr, *token;
-	char			*temp;
 	int			cnt = 0;
 	int			i = 0;
 
@@ -1373,17 +1360,6 @@ static void G_LoadMapChangeFile(void) {
 						if(!token[0]) break;
 
 						if(cnt > 12) break;
-
-						temp = G_NewString(token);
-
-						/*if(!infoString[0])
-							Com_sprintf(infoString, sizeof(infoString), "i%i\\%s\\", cnt, temp);
-						else {
-							if(cnt % 2 == 0)
-								Com_sprintf(infoString, sizeof(infoString), "%si%i\\%s\\", infoString, i, temp);
-							else
-								Com_sprintf(infoString, sizeof(infoString), "%sd%i\\%s\\", infoString, i, temp);
-						}*/
 
 						if(cnt % 2 == 0)
 							Q_strncpyz(mapChangeData.name[i], token, sizeof(mapChangeData.name[i]));
@@ -1474,7 +1450,7 @@ static void G_LoadLocationsFile( void )
 			token = COM_Parse( &textPtr );
 			if ( Q_strncmp( token, "{", 1 ) != 0 )
 			{
-				G_Printf( S_COLOR_RED "ERROR: LocationsList2 had no opening brace ( { )!\n", fileRoute );
+				G_Printf( S_COLOR_RED "ERROR: LocationsList2 had no opening brace ( { )!\n" );
 				continue;
 			}
 
@@ -1559,7 +1535,7 @@ static void G_LoadLocationsFile( void )
 			token = COM_Parse( &textPtr );
 			if ( Q_strncmp( token, "{", 1 ) != 0 )
 			{
-				G_Printf( S_COLOR_RED "ERROR: LocationsList had no opening brace ( { )!\n", fileRoute );
+				G_Printf( S_COLOR_RED "ERROR: LocationsList had no opening brace ( { )!\n" );
 				continue;
 			}
 
@@ -1717,7 +1693,7 @@ char *G_searchGroupList(const char *name)
 	}
 	else
 	{
-		Com_sprintf(races, sizeof(races), text_p);
+		Com_sprintf(races, sizeof(races), "%s", text_p);
 	}
 	return races;
 
@@ -1898,9 +1874,7 @@ extern int LastFKRadius[];					//(RPG-X J2J) added so array can be initialised t
 extern RPGX_SiteTOSiteData TransDat[];		//(RPG-X J2J) added for tricorder transporter
 extern RPGX_DragData DragDat[];
 void G_InitGame( int levelTime, int randomSeed, int restart ) {
-	int					i;//,j;
-	//vec3_t				Zero = {0.0,0.0,0.0};			//RPG-X J2J //TiM - use vec3_origin instead
-	gentity_t*			SpawnPnt;						//RPG-X J2J
+	int					i;
 	char				fileName[MAX_QPATH];
 	float				messageTime;
 
@@ -2077,7 +2051,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 /*RPG-X J2J************************************************************************************/
 	G_Printf ("Initializing RPG-X Globals...");
-	SpawnPnt = SelectRandomSpawnPoint();			//Grab a random spawn point.
 
 	//TiM : Reset teh recon system on game init.
 	//Leave this out for now to make this data persistant.
@@ -2657,7 +2630,7 @@ void FindIntermissionPoint( void ) {
 ClearFiringFlags
 ==================
 */
-void ClearFiringFlags()
+void ClearFiringFlags(void)
 {
 	int i = 0;
 	gentity_t	*ent = NULL;
@@ -2956,118 +2929,12 @@ void CheckTournement( void ) {
 	}
 
 	if ( g_gametype.integer == GT_TOURNAMENT ) {
-
-		// pull in a spectator if needed
-		//RPG-X: RedTechie - pulling on people isnt nice
-		/*if ( level.numPlayingClients < 2 ) {
-			AddTournamentPlayer();
-		}*/
-
-		// if we don't have two players, go back to "waiting for players"
-		//RPG-X: RedTechie - No warmup!
-		/*if ( level.numPlayingClients != 2 ) {
-			if ( level.warmupTime != -1 ) {
-				level.warmupTime = -1;
-				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-				G_LogPrintf( "Warmup:\n" );
-			}
-			return;
-		}*/
-
 		if ( level.warmupTime == 0 || level.warmupTime != 0) {//RPG-X: RedTechie - No warmup Fail safe
 			return;
 		}
-
-		// if the warmup is changed at the console, restart it
-		//RPG-X: RedTechie - No warmup!
-		/*if ( g_warmup.modificationCount != level.warmupModificationCount ) {
-			level.warmupModificationCount = g_warmup.modificationCount;
-			level.warmupTime = -1;
-		}*/
-
-		// if all players have arrived, start the countdown
-		//RPG-X: RedTechie - No warmup!
-		/*if ( level.warmupTime < 0 )
-		{
-			if ( level.numPlayingClients == 2 )
-			{
-				if ( g_warmup.integer > 1 )
-				{
-					// fudge by -1 to account for extra delays
-					level.warmupTime = level.time + ( g_warmup.integer - 1 ) * 1000;
-					trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-				}
-				else
-				{
-					level.warmupTime = 0;
-				}
-			}
-			return;
-		}*/
-		
-		//RPG-X: RedTechie - No warmup!
-		// if the warmup time has counted down, restart
-		/*if ( level.time > level.warmupTime ) {
-			level.warmupTime += 10000;
-			trap_Cvar_Set( "g_restarted", "1" );
-			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
-			level.restarted = qtrue;
-			return;
-		}*/
-	} else if ( g_gametype.integer != GT_SINGLE_PLAYER /*&& g_doWarmup.integer*/ ) { //RPG-X: RedTechie - No warmup!
-		int		counts[TEAM_NUM_TEAMS];
-		//qboolean	notEnough = qfalse;
-
-		if ( g_gametype.integer > GT_TEAM ) {
-			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE );
-			counts[TEAM_RED] = TeamCount( -1, TEAM_RED );
-		
-		//RPG-X: RedTechie - Enough players always
-		/*	if (counts[TEAM_RED] < 1 || counts[TEAM_BLUE] < 1) {
-				notEnough = qtrue;
-			}
-		} else if ( level.numPlayingClients < 2 ) {
-			notEnough = qtrue;
-		}*/
-		
-		//RPG-X: RedTechie - No warmup!
-		/*if ( notEnough ) {
-			if ( level.warmupTime != -1 ) {
-				level.warmupTime = -1;
-				trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-				G_LogPrintf( "Warmup:\n" );
-			}
-			return; // still waiting for team members
-		}*/
-		
+	} else if ( g_gametype.integer != GT_SINGLE_PLAYER /*&& g_doWarmup.integer*/ ) { //RPG-X: RedTechie - No warmup!		
 		if ( level.warmupTime == 0) {
 			return;
-		}
-
-		// if the warmup is changed at the console, restart it
-		//RPG-X: RedTechie - No warmup!
-		/*if ( g_warmup.modificationCount != level.warmupModificationCount ) {
-			level.warmupModificationCount = g_warmup.modificationCount;
-			level.warmupTime = -1;
-		}*/
-
-		// if all players have arrived, start the countdown
-		//RPG-X: RedTechie - No warmup!
-		/*if ( level.warmupTime < 0 ) {
-			// fudge by -1 to account for extra delays
-			level.warmupTime = level.time + ( g_warmup.integer - 1 ) * 1000;
-			trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-			return;
-		}*/
-
-		// if the warmup time has counted down, restart
-		//RPG-X: RedTechie - No warmup!
-		/*if ( level.time > level.warmupTime ) {
-			level.warmupTime += 10000;
-			trap_Cvar_Set( "g_restarted", "1" );
-			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
-			level.restarted = qtrue;
-			return;*/
 		}
 	}
 }
@@ -3172,8 +3039,6 @@ void G_RunFrame( int levelTime ) {
 	gclient_t	*client;
 	playerState_t *ps;
 	entityState_t *es;
-	int			msec;
-int start, end;
 
 	// if we are waiting for the level to restart, do nothing
 	if ( level.restarted ) {
@@ -3183,7 +3048,6 @@ int start, end;
 	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
-	msec = level.time - level.previousTime;
 
 	// get any cvar changes
 	G_UpdateCvars();
@@ -3191,7 +3055,6 @@ int start, end;
 	//
 	// go through all allocated objects
 	//
-start = trap_Milliseconds();
 	ent = &g_entities[0];
 	for (i=0 ; i<level.num_entities ; i++, ent++) {
 		if ( !ent->inuse ) {
@@ -3263,9 +3126,7 @@ start = trap_Milliseconds();
 
 		G_RunThink( ent );
 	}
-	end = trap_Milliseconds();
 
-	start = trap_Milliseconds();
 	// perform final fixups on the players
 	ent = &g_entities[0];
 	for (i=0 ; i < level.maxclients ; i++, ent++ ) {
@@ -3273,7 +3134,6 @@ start = trap_Milliseconds();
 			ClientEndFrame( ent );
 		}
 	}
-	end = trap_Milliseconds();
 
 	// see if it is time to do a tournement restart
 	CheckTournement();

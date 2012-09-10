@@ -77,6 +77,7 @@ const char *TeamColorString(int team) {
 }
 
 // NULL for everyone
+void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) __attribute__ ((format (printf, 2, 3)));
 void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
 	char		msg[1024];
 	va_list		argptr;
@@ -84,7 +85,7 @@ void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
 	
 	va_start (argptr,fmt);
 	if (vsprintf (msg, fmt, argptr) > sizeof(msg)) {
-		G_Error ( "PrintMsg overrun" );
+		G_Error ( "%s", "PrintMsg overrun" );
 	}
 	va_end (argptr);
 
@@ -864,7 +865,6 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	gentity_t	*player;
 	int			cnt;
 	//int			h, a;
-	int			clients[TEAM_MAXOVERLAY];
 
 	//TiM : Send data regardless
 	/*if ( ! ent->client->pers.teamInfo )
@@ -881,7 +881,6 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 		player = g_entities + level.sortedClients[i];
 		if (player->inuse && player->client->sess.sessionTeam == 
 			ent->client->sess.sessionTeam ) {
-			clients[cnt++] = level.sortedClients[i];
 		}
 	}
 

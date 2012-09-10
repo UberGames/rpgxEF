@@ -434,7 +434,7 @@ qboolean G_SetupUsablesStrings( void )
 			token = COM_Parse( &textPtr );
 			if ( Q_strncmp( token, "{", 1 ) != 0 )
 			{
-				G_Printf( S_COLOR_RED "ERROR: UsableDescriptions had no opening brace ( { )!\n", fileRoute );
+				G_Printf( S_COLOR_RED "ERROR: UsableDescriptions had no opening brace ( { )!\n" );
 				continue;
 			}
 
@@ -453,7 +453,7 @@ qboolean G_SetupUsablesStrings( void )
 					token = COM_Parse( &textPtr );
 					if ( Q_strncmp( token, "{", 1 ) )
 					{
-						G_Printf( S_COLOR_RED "ERROR: UsableEntities had no opening brace ( { )!\n", fileRoute );
+						G_Printf( S_COLOR_RED "ERROR: UsableEntities had no opening brace ( { )!\n" );
 						continue;
 					}
 

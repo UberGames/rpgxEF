@@ -640,7 +640,7 @@ BotShouldDetonateDetPack
 qboolean BotShouldDetonateDetPack(bot_state_t *bs)
 {
 	int		botNum = 0, detWeight = 0;
-	vec3_t	packOrg, dir;
+	vec3_t	packOrg = { 0.0f, 0.0f, 0.0f }, dir;
 	float	dist;
 	aas_entityinfo_t botinfo;
 
@@ -1014,7 +1014,6 @@ BotCanAndWantsToRocketJump
 ==================
 */
 int BotCanAndWantsToRocketJump(bot_state_t *bs) {
-	float rocketjumper;
 
 	//if rocket jumping is disabled
 	if (!bot_rocketjump.integer) return qfalse;
@@ -1048,7 +1047,6 @@ int BotCanAndWantsToRocketJump(bot_state_t *bs) {
 			}
 		}
 	}
-	rocketjumper = 1;
 	return qtrue;
 }
 
@@ -1084,8 +1082,6 @@ BotWantsToCamp
 ==================
 */
 int BotWantsToCamp(bot_state_t *bs) {
-	float camper;
-	camper = 0;
 	return qfalse;
 }
 

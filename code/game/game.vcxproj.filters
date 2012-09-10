@@ -452,13 +452,13 @@
     <ClInclude Include="lzio.h">
       <Filter>Source Files\lua</Filter>
     </ClInclude>
-    <ClInclude Include="g_cinematic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="g_weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="g_cinematic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

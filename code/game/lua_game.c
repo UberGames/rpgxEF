@@ -272,7 +272,7 @@ static int Game_AlertAddShader(lua_State *L) {
 			return 1;
 		}
 		luaAlertState->shaders[cond] = tmp;
-		Com_sprintf(luaAlertState->shaders[cond], sizeof(luaAlertState->shaders[cond]), "%s\0%s", luaAlertState->shaders[cond], shader);
+		Com_sprintf(luaAlertState->shaders[cond], sizeof(luaAlertState->shaders[cond]), "%s\n%s", luaAlertState->shaders[cond], shader);
 	}
 
 	lua_pushboolean(L, 1);

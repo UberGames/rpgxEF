@@ -51,13 +51,12 @@ Called on a reconnect
 void G_ReadSessionData( gclient_t *client ) {
 	char	s[MAX_STRING_CHARS];
 	const char	*var;
-	int i;
 	int team, spec;
 
 	var = va( "session%i", client - level.clients );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
 
-	i = sscanf( s, "%i %i %i %i %i %i %i", 
+	sscanf( s, "%i %i %i %i %i %i %i", 
 		&team,
 		&client->sess.sessionClass,
 		&client->sess.spectatorTime,

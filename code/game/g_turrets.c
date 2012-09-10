@@ -351,7 +351,6 @@ void turret_aim( gentity_t *self )
 	vec3_t	enemyDir;
 	vec3_t	desiredAngles;
 	float	diffAngle, armAngleDiff, headAngleDiff;
-	int		upTurn = 0;
 	int		yawTurn = 0;
 	gentity_t *lastEnemy = self->lastEnemy;
 
@@ -430,7 +429,6 @@ void turret_aim( gentity_t *self )
 		{/* Add the increment */
 			lastEnemy->lastEnemy->r.currentAngles[0] += (diffAngle < 0) ? -self->speed : self->speed;
 		}
-		upTurn = (diffAngle > 0) ? 1 : -1;
 	}
 	/* Cap the range */
 	headAngleDiff = AngleSubtract(self->r.currentAngles[0], lastEnemy->lastEnemy->r.currentAngles[0]);

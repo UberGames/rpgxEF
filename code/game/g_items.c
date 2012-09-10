@@ -900,7 +900,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 	ent->use = Use_Item;
 
 	
-	Com_Printf(va("print \"giType %i!\n\"", ent->item->giType));
+	Com_Printf("print \"giType %i!\n\"", ent->item->giType);
 	//Commeted out because if statement causes sharing vialation
 	/*if ( ent->item->giType == IT_TEAM )
 	{

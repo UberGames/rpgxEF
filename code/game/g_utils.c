@@ -359,7 +359,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(targetname), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, activator);
@@ -379,7 +379,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 			return;
 		}
 	}
@@ -392,7 +392,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(swapname), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, activator);
@@ -412,7 +412,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 			return;
 		}
 	}
@@ -420,7 +420,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(truename), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, activator);
@@ -440,7 +440,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 			return;
 		}
 	}
@@ -448,7 +448,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(falsename), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, activator);
@@ -468,7 +468,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 			return;
 		}
 	}
@@ -483,7 +483,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	t = NULL;
 	while( (t = G_Find(t, FOFS(bluename), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf (va("WARNING: Entity %i used itself.\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, ent);
@@ -503,7 +503,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf(va("Entity %i was removed while using targets\n", t->s.number)); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 			return;
 		}
 	}
@@ -733,7 +733,7 @@ gentity_t *G_Spawn( void ) {
 			}
 			
 			G_LogPrintf("RPG-X WARNING: Max entities hit! Removed all tripmines. Restart the server ASAP or suffer a server crash!\n");
-			trap_SendServerCommand( -1, va("print \"^1RPG-X WARNING: Max entities hit! Removed all tripmines. Restart the server ASAP or suffer a server crash!\n\"", i, ENTITYNUM_MAX_NORMAL));
+			trap_SendServerCommand( -1, "print \"^1RPG-X WARNING: Max entities hit! Removed all tripmines. Restart the server ASAP or suffer a server crash!\n\"");
 			
 			if ( i == ENTITYNUM_MAX_NORMAL ) {
 				G_Error( "G_Spawn: no free entities" );
@@ -1222,7 +1222,7 @@ gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, gentity
  */
 gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, gentity_t *ignore ) {
 	gentity_t	*entList[MAX_GENTITIES], *nearest = NULL;
-	int			count, i;
+	int			i;
 	float		distance, minDist;
 	vec3_t		dist;
 
@@ -1231,7 +1231,7 @@ gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, gentity_t *ignore ) {
 
 	minDist = radius;
 
-	count = G_RadiusList(origin, radius, ignore, qtrue, entList);
+	G_RadiusList(origin, radius, ignore, qtrue, entList);
 	
 	for(i = 0; i < MAX_CLIENTS; i++) {
 		if(entList[i]->client) {

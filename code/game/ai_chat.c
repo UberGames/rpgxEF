@@ -315,9 +315,8 @@ BotVisibleEnemies
 ==================
 */
 int BotVisibleEnemies(bot_state_t *bs) {
-	float vis, dist;
+	float vis;
 	int i;
-	vec3_t dir;
 	aas_entityinfo_t entinfo;
 
 	for (i = 0; i < MAX_CLIENTS; i++) {
@@ -333,9 +332,7 @@ int BotVisibleEnemies(bot_state_t *bs) {
 		if (EntityIsInvisible(&entinfo) && !EntityIsShooting(&entinfo)) {
 			continue;
 		}
-		//calculate the distance towards the enemy
-		VectorSubtract(entinfo.origin, bs->origin, dir);
-		dist = VectorLength(dir);
+
 		//if on the same team
 		if (BotSameTeam(bs, i)) continue;
 		//check if the enemy is visible
@@ -895,9 +892,6 @@ BotChatTime
 ==================
 */
 float BotChatTime(bot_state_t *bs) {
-	int cpm;
-
-	cpm = 4000;
 	return 4000;
 }
 

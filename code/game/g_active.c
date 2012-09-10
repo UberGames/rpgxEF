@@ -1467,7 +1467,7 @@ void ShieldTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 void CreateShield(gentity_t *ent)
 {
 	trace_t		tr;
-	vec3_t		mins, maxs, end, posTraceEnd, negTraceEnd, start;
+	vec3_t		end, posTraceEnd, negTraceEnd, start;
 	int			height, posWidth, negWidth, halfWidth = 0;
 	qboolean	xaxis;
 	int			paramData = 0;
@@ -1481,8 +1481,6 @@ void CreateShield(gentity_t *ent)
 	height = (int)(MAX_SHIELD_HEIGHT * tr.fraction);
 
 	// use angles to find the proper axis along which to align the shield
-	VectorSet(mins, -SHIELD_HALFTHICKNESS, -SHIELD_HALFTHICKNESS, 0);
-	VectorSet(maxs, SHIELD_HALFTHICKNESS, SHIELD_HALFTHICKNESS, height);
 	VectorCopy(ent->r.currentOrigin, posTraceEnd);
 	VectorCopy(ent->r.currentOrigin, negTraceEnd);
 
@@ -1535,15 +1533,6 @@ void CreateShield(gentity_t *ent)
 		VectorSet(ent->r.maxs, SHIELD_HALFTHICKNESS, halfWidth, height>>1);
 	}
 	ent->clipmask = MASK_SHOT;
-
-	// scanable forcefield
-	/*if(rpg_scannableForceField.integer) {
-		VectorCopy(maxs, ent->s.origin2);
-		VectorCopy(mins, ent->s.angles2);
-		trap_LinkEntity(ent);
-	}*/
-
-	// Information for shield rendering.
 
 //	xaxis - 1 bit
 //	height - 0-254 8 bits //10
@@ -2415,7 +2404,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 					//VectorCopy(ps->origin, TransDat[ps->clientNum].pTransCoord);
 					//VectorCopy(ps->viewangles, TransDat[ps->clientNum].pTransCoordRot);
 					//TransDat[ps->clientNum].pUsed = qtrue;
-					trap_SendServerCommand( ent-g_entities, va("chat \"Site to Site Transporter Location Confirmed.\nPress again to Energize.\"", Q_COLOR_ESCAPE));
+					trap_SendServerCommand( ent-g_entities, va("chat \"Site to Site Transporter Location Confirmed.\nPress again to Energize.\""));
 					//trap_SendConsoleCommand( EXEC_APPEND, va("echo Site to Site Transporter Location Confirmed.\necho Press again to Energize.") );
 					ps->stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable( HI_TRANSPORTER ) - bg_itemlist;
 					ps->stats[STAT_USEABLE_PLACED] = 2; // = 1
@@ -2430,7 +2419,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 					memset( &TransDat[ps->clientNum].storedCoord[TPT_PORTABLE], 0, sizeof( TransDat[ps->clientNum].storedCoord[TPT_PORTABLE]) );
 				}
 				else {
-					trap_SendServerCommand( ent-g_entities, va("chat \"Unable to comply. Already within transport cycle.\"", Q_COLOR_ESCAPE));
+					trap_SendServerCommand( ent-g_entities, va("chat \"Unable to comply. Already within transport cycle.\""));
 				}
 
 				ps->stats[STAT_USEABLE_PLACED] = 0;
@@ -2639,7 +2628,6 @@ ClientThink
 void ClientThink_real( gentity_t *ent ) {
 	gclient_t	*client;
 	pmove_t		pm;
-	vec3_t		oldOrigin;
 	int			oldEventSequence;
 	int			msec;
 	usercmd_t	*ucmd;
@@ -2889,12 +2877,10 @@ void ClientThink_real( gentity_t *ent ) {
 
 	//pm.admin = IsAdmin(ent); // we use this way now the old way didn't work for adminlogin
 	// y call a function though???
-	pm.admin = g_classData[client->sess.sessionClass].isAdmin || client->LoggedAsAdmin;
+	pm.admin = (qboolean)(g_classData[client->sess.sessionClass].isAdmin || client->LoggedAsAdmin);
 	//pm.admin = g_classData[client->sess.sessionClass].isAdmin;
-	pm.medic = g_classData[client->sess.sessionClass].isMedical;
-	pm.borg	 = g_classData[client->sess.sessionClass].isBorg;
-
-	VectorCopy( ps->origin, oldOrigin );
+	pm.medic = (qboolean)g_classData[client->sess.sessionClass].isMedical;
+	pm.borg	 = (qboolean)g_classData[client->sess.sessionClass].isBorg;
 
 	// perform a pmove
 	Pmove (&pm);
@@ -3110,7 +3096,6 @@ ClientEndFrame
 */
 void ClientEndFrame( gentity_t *ent ) {
 	int			i;
-	clientPersistant_t	*pers;
 	playerState_t *ps = &ent->client->ps;
 
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR /*|| (ps->eFlags&EF_ELIMINATED)*/ ) {
@@ -3118,8 +3103,6 @@ void ClientEndFrame( gentity_t *ent ) {
 		ent->client->noclip = qtrue;
 		return;
 	}
-
-	pers = &ent->client->pers;
 
 	// turn off any expired powerups
 	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {

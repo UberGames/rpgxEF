@@ -153,11 +153,7 @@ G_MissileStick
 void G_MissileStick( gentity_t *ent, trace_t *trace )
 {
 	vec3_t	org, dir;
-	gentity_t	*tent = NULL;
-	gentity_t		*other = NULL;
-	gclient_t	*client;
-
-	client = ent->client;
+	gentity_t	*other = NULL;
 
 	other = &g_entities[trace->entityNum];
 
@@ -170,7 +166,7 @@ void G_MissileStick( gentity_t *ent, trace_t *trace )
 	}
 
 	// send client a message to start the grenade a-beepin'
-	tent = G_TempEntity( ent->r.currentOrigin, EV_GRENADE_SHRAPNEL );
+	G_TempEntity( ent->r.currentOrigin, EV_GRENADE_SHRAPNEL );
 
 	// Back away from the wall
 	//VectorMA( trace->endpos, 3.5, trace->plane.normal, org );

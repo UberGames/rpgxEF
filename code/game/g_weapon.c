@@ -211,13 +211,10 @@ static void WP_FirePhaser( gentity_t *ent, qboolean alt_fire )
 		 * Use the ending point of the thin trace to do two more traces, 
 		 * one on either side, for actual damaging effect.
 		 */
-		vec3_t	vUp = {0,0,1}, vRight, start2, end2;
-		float	halfBeamWidth = PHASER_ALT_RADIUS;
+		vec3_t	vUp = {0,0,1}, vRight;
 
 		CrossProduct(forward, vUp, vRight);
 		VectorNormalize(vRight);
-		VectorMA(muzzle, halfBeamWidth, vRight, start2);
-		VectorMA(end, halfBeamWidth, vRight, end2);
 		VectorCopy(tr.endpos, end);
 		trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, (CONTENTS_PLAYERCLIP|CONTENTS_BODY) );
 		if (	(tr.entityNum != (MAX_GENTITIES-1)) &&
@@ -226,8 +223,6 @@ static void WP_FirePhaser( gentity_t *ent, qboolean alt_fire )
 			trEnts[1] = tr.entityNum;
 			trEntFraction[1] = tr.fraction;
 		}
-		VectorMA(muzzle, -halfBeamWidth, vRight, start2);
-		VectorMA(end, -halfBeamWidth, vRight, end2);
 		trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, (CONTENTS_PLAYERCLIP|CONTENTS_BODY) );
 		if (	(tr.entityNum != (MAX_GENTITIES-1)) &&
 				(tr.entityNum != trEnts[0]) &&
@@ -594,11 +589,10 @@ static void WP_FireDisruptor( gentity_t *ent, qboolean alt_fire )
 static void grenadeExplode( gentity_t *ent )
 {
 	vec3_t		pos;
-	gentity_t	*tent;
 
 	VectorSet( pos, ent->r.currentOrigin[0], ent->r.currentOrigin[1], ent->r.currentOrigin[2] + 8 );
 
-	tent = G_TempEntity( pos, EV_GRENADE_EXPLODE );
+	G_TempEntity( pos, EV_GRENADE_EXPLODE );
 
 	/* splash damage (doesn't apply to person directly hit) */
 	if ( ent->splashDamage ) {
@@ -1559,11 +1553,11 @@ static void WP_TricorderScan (gentity_t *ent, qboolean alt_fire)
 			 * if u actually tried this, you'd atomically disperse the transportee in a very painful way O_o
 			 */
 			if ( TransDat[tr_ent->client->ps.clientNum].beamTime > level.time ) {
-				trap_SendServerCommand( ent-g_entities, va("chat \"Unable to comply. Subject is already within a transport cycle.\"", Q_COLOR_ESCAPE));
+				trap_SendServerCommand( ent-g_entities, "chat \"Unable to comply. Subject is already within a transport cycle.\"");
 				return;
 			}
 
-			trap_SendServerCommand( ent-g_entities, va("chat \"Energizing.\"", Q_COLOR_ESCAPE));
+			trap_SendServerCommand( ent-g_entities, "chat \"Energizing.\"");
 
 			G_InitTransport( tr_ent->client->ps.clientNum, TransDat[clientNum].storedCoord[TPT_TRICORDER].origin,
 							TransDat[clientNum].storedCoord[TPT_TRICORDER].angles );				return;
@@ -1577,12 +1571,12 @@ static void WP_TricorderScan (gentity_t *ent, qboolean alt_fire)
 			/*VectorCopy(ent->client->ps.origin, TransDat[clientNum].TransCoord);*/
 			/*VectorCopy(ent->client->ps.viewangles, TransDat[clientNum].TransCoordRot);*/
 			TransDat[clientNum].LastClick = level.time-5000;
-			trap_SendServerCommand( ent-g_entities, va("chat \"Location Confirmed.\"", Q_COLOR_ESCAPE));
+			trap_SendServerCommand( ent-g_entities, "chat \"Location Confirmed.\"");
 			/*trap_SendConsoleCommand( EXEC_APPEND, va("echo Location Confirmed.") );*/
 		}
 		else
 		{
-			trap_SendServerCommand( ent-g_entities, va("chat \"Click again to confirm Transporter Location.\"", Q_COLOR_ESCAPE));
+			trap_SendServerCommand( ent-g_entities, "chat \"Click again to confirm Transporter Location.\"");
 			/*trap_SendConsoleCommand( EXEC_APPEND, va("echo Click again to confirm Transporter Location.") );*/
 			TransDat[clientNum].LastClick = level.time;
 		}

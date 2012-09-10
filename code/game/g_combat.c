@@ -384,7 +384,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 					if (rpg_kickAfterXkills.integer < 1)
 					{
-						trap_SendServerCommand( attacker-g_entities, va("print \"^7Server: You have been caught n00bing, you have been temporary put in the n00b class.\n\"", (rpg_kickAfterXkills.integer - attacker->n00bCount) ) );
+						trap_SendServerCommand( attacker-g_entities, va("print \"^7Server: You have been caught n00bing, you have been temporary put in the n00b class.\n\"" ) );
 					} else {
 						trap_SendServerCommand( attacker-g_entities, va("print \"^7Server: You have been caught n00bing, %i more times and you will be kicked.\n\"", (rpg_kickAfterXkills.integer - attacker->n00bCount) ) );
 					}
@@ -409,7 +409,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 						{
 							if ( g_classData[i].isn00b) {
 								char	conName[64];
-								trap_Cvar_VariableStringBuffer( va( "rpg_%sPass" ), conName, sizeof(conName) ); 
+								trap_Cvar_VariableStringBuffer( va( "rpg_%sPass", conName ), conName, sizeof(conName) ); 
 
 								Q_strncpyz(attacker->client->origClass, ClassNameForValue( attacker->client->sess.sessionClass ), sizeof(attacker->client->origClass));
 								attacker->client->n00bTime = level.time + 10000;
@@ -1238,7 +1238,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			   vec3_t dir, vec3_t point, int damage, int dflags, int mod ) {
 	gclient_t	*client;
 	int			take=0;
-	int			save;
 //	int			asave;
 	int			knockback;
 	qboolean	bFriend = (targ && attacker)?OnSameTeam( targ, attacker ):qfalse;
@@ -1474,7 +1473,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	take = damage;
-	save = 0;
 
 	// save some from armor
 	//RPG-X: - RedTechie No armor in RPG

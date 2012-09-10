@@ -1162,6 +1162,9 @@ qboolean CalculateTactician(gentity_t *ent, int *kills)
 		while( weapon<WP_NUM_WEAPONS && (!wasPickedUpBySomeone[weapon] || killsWithWeapon[weapon]>0) )
 		{
 			weapon++;
+			if(weapon>=WP_NUM_WEAPONS) {
+				break;
+			}
 			nKills+=killsWithWeapon[weapon];							//  Update the number of kills
 		}
 		//

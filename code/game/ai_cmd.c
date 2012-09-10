@@ -893,14 +893,12 @@ void BotMatch_CheckPoint(bot_state_t *bs, bot_match_t *match) {
 	char buf[MAX_MESSAGE_SIZE];
 	vec3_t position;
 	bot_waypoint_t *cp;
-	int i;
 
 	if (!TeamPlayIsOn()) return;
 	//
 	trap_BotMatchVariable(match, POSITION, buf, MAX_MESSAGE_SIZE);
 	VectorClear(position);
 	//BotGPSToPosition(buf, position);
-	i = sscanf(buf, "%f %f %f", &position[0], &position[1], &position[2]);
 	position[2] += 0.5;
 	areanum = BotPointAreaNum(position);
 	if (!areanum) {
@@ -1181,7 +1179,7 @@ BotMatch_WhereAreYou
 */
 void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 	float dist, bestdist;
-	int i, bestitem, redflagtt, blueflagtt, redtobluett;
+	int i, bestitem, redflagtt, blueflagtt;
 	bot_goal_t goal;
 	char *nearbyitems[] = {
 		"Phaser Compression Rifle",
@@ -1222,7 +1220,6 @@ void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 		if (gametype == GT_CTF) {
 			redflagtt = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, ctf_redflag.areanum, TFL_DEFAULT);
 			blueflagtt = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, ctf_blueflag.areanum, TFL_DEFAULT);
-			redtobluett = trap_AAS_AreaTravelTimeToGoalArea(ctf_redflag.areanum, ctf_redflag.origin, ctf_blueflag.areanum, TFL_DEFAULT);
 			if (redflagtt < (redflagtt + blueflagtt) * 0.4) {
 				BotAI_BotInitialChat(bs, "ctflocation", nearbyitems[bestitem], "red", NULL);
 			}

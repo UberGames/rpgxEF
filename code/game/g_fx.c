@@ -189,8 +189,6 @@ void steam_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	vec3_t		dir;
-	float		len;
-	//trace_t		*tr;
 
 	if (ent->target)
 	{
@@ -209,7 +207,7 @@ void steam_link( gentity_t *ent )
 
 
 	VectorSubtract( target->s.origin, ent->s.origin, dir );
-	len = VectorNormalize(dir);
+	VectorNormalize(dir);
 	VectorCopy(dir, ent->s.angles2);
 	//vectoangles(dir, ent->s.angles2); //GSIO01: haha funny thing this made steam buggy
 	VectorShort(ent->s.angles2);
@@ -331,7 +329,6 @@ void bolt_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	vec3_t		dir;
-	float		len;
 
 	if (ent->target)
 	{
@@ -349,7 +346,7 @@ void bolt_link( gentity_t *ent )
 	}
 
 	VectorSubtract( target->s.origin, ent->s.origin, dir );
-	len = VectorNormalize( dir );
+	VectorNormalize( dir );
 	vectoangles( dir, ent->s.angles );
 	
 	VectorCopy( target->s.origin, ent->s.origin2 );
@@ -1349,7 +1346,6 @@ void forge_bolt_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	vec3_t		dir;
-	float		len;
 
 	target = G_Find (target, FOFS(targetname), ent->target);
 
@@ -1364,7 +1360,7 @@ void forge_bolt_link( gentity_t *ent )
 	}
 
 	VectorSubtract( target->s.origin, ent->s.origin, dir );
-	len = VectorNormalize( dir );
+	VectorNormalize( dir );
 	vectoangles( dir, ent->s.angles );
 	
 	VectorCopy( target->s.origin, ent->s.origin2 );
@@ -2087,7 +2083,7 @@ void borg_bolt_link( gentity_t *ent )
 
 	if (!target2)
 	{
-		Com_Printf("borg_bolt_link: unable to find target2 %s falling back to using ent's origin\n", ent->parent );
+		Com_Printf("borg_bolt_link: unable to find target2 %s falling back to using ent's origin\n", ent->target );
 	}
 	else
 	{

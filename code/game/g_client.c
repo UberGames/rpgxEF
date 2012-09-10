@@ -964,16 +964,12 @@ ClientUserInfoChanged
 void ClientUserinfoChanged( int clientNum ) {
 	gentity_t *ent;
 	int		i;
-	char	*s; //, *oldModel;
+	char	*s;
 	char	model[MAX_QPATH];
 	char	oldname[MAX_STRING_CHARS];
 	gclient_t	*client;
-	char	*c1;
 	char	userinfo[MAX_INFO_STRING];
 	qboolean	reset;
-	//char	*sex;
-//	int		pickborg = 0;
-	char	*borgytype;
 	float	weight, height;
 	char	age[MAX_NAME_LENGTH];
 	char	race[MAX_NAME_LENGTH];
@@ -981,11 +977,8 @@ void ClientUserinfoChanged( int clientNum ) {
 	qboolean	changeName = qtrue; //TiM : For the name filter
 	char	sHeight[10];
 	char	sWeight[10];
-	//int		silentCloak;
 	clientPersistant_t *pers;
 	clientSession_t *sess;
-
-	borgytype = "borg";
 
 	model[0] = 0;
 
@@ -1200,9 +1193,6 @@ void ClientUserinfoChanged( int clientNum ) {
 	else {
 		client->noAdminChat = qfalse;
 	}
-
-	// colors
-	c1 = Info_ValueForKey( userinfo, "color" );
 
 	// teamInfo
 	s = Info_ValueForKey( userinfo, "teamoverlay" );
@@ -1590,7 +1580,7 @@ void transTent_think(gentity_t *ent) {
 		if(!temp[0])
 			Com_sprintf(temp, sizeof(temp), "a%i\\%s\\", i, mapChangeData.name[i]);
 		else
-			Com_sprintf(temp, sizeof(temp), "%sa%i\\%s\\", i, mapChangeData.name[i]);
+			Com_sprintf(temp, sizeof(temp), "%sa%i\\%s\\", temp, i, mapChangeData.name[i]);
 	}
 
 	trap_SendServerCommand(ent-g_entities, va("ui_trdata \"%s\"", temp));
