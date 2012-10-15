@@ -11,8 +11,6 @@
 #define RPGX_VERSION		"RPG-X v2.2 wc18072012"
 #define RPGX_COMPILEDATE	"20/05/11"
 #define RPGX_COMPILEDBY		"GSIO01"
-//const char	GAME_VERSION[] =	strcat("RPG-X v",RPGX_VERSION);
-//ehem why not:
 #define GAME_VERSION		"RPG-X v" RPGX_VERSION
 
 #define INJURED_MODE_HEALTH		20	//!<For the injured mode health system.
@@ -22,7 +20,6 @@
 #define	GIB_HEALTH_IMPOSSIBLE			-100000//RPG-X: RedTechie - If rpg_medicsrevive is on use this
 #define	ARMOR_PROTECTION	1.0//0.66
 #define PIERCED_ARMOR_PROTECTION		0.50 //!< trek: shields only stop 50% of armor-piercing dmg
-// #define SUPER_PIERCED_ARMOR_PROTECTION	0.25 // trek: shields only stop 25% of super-armor-piercing dmg
 
 #define	MAX_ITEMS			256
 
@@ -77,29 +74,6 @@ do { \
 #else
 #define DPRINTF(x) // nothing
 #endif
-
-
-
-//TiM | Hack coz VC 6 can't understand Thilo's defnitions :S
-//typedef int intptr_t;
-
-//RPG-X (J2J) Rank Mask Values (score value is now used as the rank value)
-/*#define 	crewman		1		
-#define 	cadet1		2		
-#define 	cadet2		4		
-#define 	cadet3		8		
-#define 	cadet4		16		
-#define 	ensign		32		
-#define 	ltjg		64		
-#define 	lt			128	
-#define 	ltcmdr		256	
-#define 	cmdr		512	
-#define 	cpt			1024	
-#define 	cmmdr		2048	
-#define 	adm2		4096	
-#define 	adm3		8192	
-#define		adm4		16384
-#define 	adm5		32768*/
 
 //TiM - Used globally for hitbox definition
 #define		DEFAULT_MINS_0	-12
@@ -236,13 +210,6 @@ movement on the server game.
 ===================================================================================
 */
 
-//RPG-X - Player Model System. Anim on or off states
-/*typedef enum {
-	ANIM_ONLADDER,
-	ANIM_OFFLADDER,
-	ANIM_DIDFLY
-} animtype_t;*/
-
 /**	\enum pmtype_t
 *
 */
@@ -277,7 +244,6 @@ typedef enum {
 #define	PMF_TIME_WATERJUMP	256		//!< pm_time is waterjump
 #define	PMF_RESPAWNED		512		//!< clear after attack and jump buttons come up
 #define	PMF_USE_ITEM_HELD	1024
-//#define PMF_GRAPPLE_PULL	2048	//!< pull towards grapple location
 #define PMF_FOLLOW			4096	//!< spectate following another player
 #define PMF_SCOREBOARD		8192	//!< spectate as a scoreboard
 
@@ -285,7 +251,6 @@ typedef enum {
 #define ANIM_DIDFLY			32768
 #define	ANIM_ALERT			128		//TiM: How was this missed!?
 #define ANIM_ALERT2			2048	//TiM: This makes it full I think
-//#define ANIM_LOWER_LOOPING	2048
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
@@ -323,9 +288,6 @@ typedef struct {
 	qboolean	medic;
 	qboolean	borg;
 
-	//RPG-X  - J2J - Adding a last fire timer for weapon animations
-	///int LastFireTime;
-
 	// callbacks to test the world
 	// these will be different functions during game and cgame
 	void		(*trace)( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );
@@ -336,10 +298,6 @@ typedef struct {
 // if a full pmove isn't done on the client, you can just update the angles
 void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
 void Pmove (pmove_t *pmove);
-
-//RPG-X: J2J - Emote Vars (shared for server and client)
-//int CurrentEmote[MAX_CLIENTS];
-//QVM HACK!
 
 //===================================================================================
 
@@ -389,13 +347,7 @@ typedef enum {
 	PERS_REWARD,					//!< a reward_t
 	PERS_ATTACKER,					//!< clientnum of last damage inflicter
 	PERS_KILLED,					//!< count of the number of times you died
-	// these were added for single player awards tracking
-	//PERS_IMPRESSIVE_COUNT,
-	//PERS_EXCELLENT_COUNT,
 	PERS_CLASS,
-	//PERS_ACCURACY_SHOTS,
-	//PERS_ACCURACY_HITS,
-	//PERS_STREAK_COUNT
 } persEnum_t;
 
 
@@ -430,10 +382,6 @@ typedef enum {
 #define	EF_TURBOLIFT		0x00200000		//!< ent is in a turbolift now, so gets special rotation
 #define EF_SHIELD_BOX_Y		0x00400000		//!< tells the client to use special client-collision info, y-axis aligned
 #define	EF_MOVER_STOP		0x00800000		//!< will push otherwise - 67108864
-
-
-//#define EF_AWARD_STREAK_MASK (EF_AWARD_ACE|EF_AWARD_EXPERT|EF_AWARD_MASTER|EF_AWARD_CHAMPION)
-//#define EF_AWARD_MASK		(EF_AWARD_EXCELLENT|EF_AWARD_IMPRESSIVE|EF_AWARD_FIRSTSTRIKE|EF_AWARD_STREAK_MASK)
 
 //===================================================================================
 //TiM : Emote system definitions
@@ -540,7 +488,6 @@ typedef enum {
 	PW_BEAM_OUT, //TiM - Beam in used to be PW_BEAMING
 
 	PW_EVOSUIT, //RPG-X | Phenix | 8/8/2004
-	//PW_BOLTON,  //RPG-X | TiM	 | 6/9/2005
 	
 	PW_NUM_POWERUPS
 } powerup_t;
@@ -622,29 +569,6 @@ typedef enum {
 
 	WP_NUM_WEAPONS
 } weapon_t;
-
-/*typedef enum {
-	WP_0,
-
-	WP_5,				// 3/13/00 kef -- used to be WP_LIGHTNING
-	WP_6,	// 3/13/00 kef -- added
-	WP_1,				// 3/10/00 kef -- used to be WP_RAILGUN
-	WP_4,		// 3/13/00 kef -- used to be WP_PLASMAGUN
-	WP_10,				// 3/13/00 kef -- used to be WP_ROCKET_LAUNCHER
-	WP_8,	// 3/10/00 kef -- used to be...heh...WP_8
-	WP_7,	// 3/13/00 kef -- added
-	WP_9,		// 3/13/00 kef -- added
-	WP_13,			// 3/13/00 kef -- added
-	WP_12,		// 10/6/00 mcg -- added for MP patch/gold
-	WP_14,	// 10/12/00 jtd -- added for MP patch/gold
-	WP_11,			// 10/12/00 jtd -- added for MP patch/gold - merges single player projectile and taser
-	WP_2,			//
-	WP_3,				//
-	WP_NEUTRINO_PROBE,				//
-	WP_7,				// Phenix's Weapon ;)
-
-	WP_NUM_WEAPONS
-} weapon_t;*/
 
 // reward sounds
 typedef enum {
@@ -800,8 +724,8 @@ typedef enum {
 	EV_FX_FIRE,					 //RPG-X - Marcin			
 	EV_FX_SHAKE,				 //RPG-X - Marcin
 	
-// Additional ports from SP by Harry Young
-// You forgot the , ... I added them for you - GSIO
+	// Additional ports from SP by Harry Young
+	// You forgot the , ... I added them for you - GSIO
 
 	EV_FX_COOKING_STEAM,
 	EV_FX_ELECFIRE,
@@ -876,48 +800,6 @@ typedef enum {
 	EV_STASIS_DOOR_CLOSING,
 } entity_event_t;
 
-/* THIS IS OLD FROM HOLOMATCH (RPG-X: J2J)
-// animations
-typedef enum {
-	BOTH_DEATH1,
-	BOTH_DEAD1,
-	BOTH_DEATH2,
-	BOTH_DEAD2,
-	BOTH_DEATH3,
-	BOTH_DEAD3,
-
-	TORSO_GESTURE,
-
-	TORSO_ATTACK,
-	TORSO_ATTACK2,
-
-	TORSO_DROP,
-	TORSO_RAISE,
-
-	TORSO_STAND,
-	TORSO_STAND2,
-
-	LEGS_WALKCR,
-	LEGS_WALK,
-	LEGS_RUN,
-	LEGS_BACK,
-	LEGS_SWIM,
-
-	LEGS_JUMP,
-	LEGS_LAND,
-
-	LEGS_JUMPB,
-	LEGS_LANDB,
-
-	LEGS_IDLE,
-	LEGS_IDLECR,
-
-	LEGS_TURN,
-
-	MAX_ANIMATIONS
-} animNumber_t;
-*/
-
 //RPG-X: J2J - Moved animation enum list so that the string list can see it, Note special case for cg_players.c.
 //#include "../cgame/cg_anims.h"
 
@@ -933,7 +815,6 @@ typedef struct animation_s {
 // changes so a restart of the same anim can be detected
 
 //RPG-X: Jason - Last bit in a 2 byte integer is now the flag. (essentailly all we need as 2 byes allows values up to 65536)
-//#define	ANIM_TOGGLEBIT		32768 //RPG-X: RedTechie - FIXES THE DAMN MODEL SYSTEM YAY! cant be 128 needs to be way higher then actual animation count :D     was 128 changing to 1024
 #define		ANIM_TOGGLEBIT		1024
 
 typedef enum {
