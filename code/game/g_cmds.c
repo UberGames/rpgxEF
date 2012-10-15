@@ -6342,6 +6342,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 				G_PrintfClient(ent, "^1intervall-10 must not be 0."); 
 			G_PrintfClient(ent, "^1Removing entity.");
 			G_FreeEntity(destructEnt);
+			return;
 		}
 	} else if (!Q_stricmp(arg, "remaining")) {
 		//Is there sth running alrerady?
@@ -6393,7 +6394,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		G_PrintfClient(ent,		"intervall-60: intervall of audio warnings within T-60 seconds in seconds. Must not be 0.");
 		G_PrintfClient(ent,		"intervall-10: intervall of audio warnings within T-10 seconds in seconds. Must not be 0.");
 		G_PrintfClient(ent,		"audio: set this 0 if you do want a muted countdown, else set this 1.");
-		G_PrintfClient(ent,		"target: Optional Argument. This will be fired once the countdown hits 0. If not set the entity will play some effects and kill all clients that are not within a target_escapevehicle.");
+		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0. The entity will automatically shake everyones screen and kill all clienst outside an active target_savezone.");
 		G_PrintfClient(ent,		"^2Hint: Make sure your duration and intervalls are synced up. There is a failsave for the countdown to hit it's mark however there is nothing to make sure that you don't get your warnings at unexpected times...");
 		G_PrintfClient(ent,		"^2Try this for example: selfdestruct start 131 10 10 1 1");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining");
@@ -6426,15 +6427,25 @@ static void Cmd_shipdamage_f(gentity_t *ent) {
 	}
 	#endif
 
+	healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
+	if(!healthEnt){
+		trap_SendServerCommand( ent-g_entities, "print \"^4This map does not support the shiphealth system.\n\"" );
+		return;
+	}
+	
 	trap_Argv(1, arg, sizeof(arg));
 	if(atoi(arg) == 0){
-		G_PrintfClient(ent,	"Usage: shipdamage [damage] where damage is oviously the total amount dealt. It will be rendered to shields and hull respectively by the entity. Must be positive. You can not heal with this command.\n");
+		G_PrintfClient(ent,	"Usage: shipdamage [damage] where damage is the total amount dealt. It will be rendered to shields and hull respectively by the entity. Must be positive. You can not heal with this command.\n");
 		return;
 	}
 
-	healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
 	if(atoi(arg) > 0){
-		healthEnt->damage = atoi(arg);
+		if(healthEnt->count > 0){
+			healthEnt->damage = atoi(arg);
+		}else{
+			G_PrintfClient(ent,	"^1ERROR: The ship is destroyed.");
+			return;
+		}
 	} else {
 		G_PrintfClient(ent,	"^1ERROR: Damage must be a positive value. You can not heal with this command.");
 		return;
@@ -6451,33 +6462,59 @@ Harry Young | 02/08/2012
 */
 static void Cmd_shiphealth_f(gentity_t *ent) {
 	gentity_t	*healthEnt;
-	int			THS, CHS, TSS, CSS, SI, RHS, RSS;
+	int			THS, CHS, HCI, TSS, CSS, SCI, SI;
+	float		RHS, RSS;
 
 	healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
+
+	if(!healthEnt){
+		trap_SendServerCommand( ent-g_entities, "print \"^3This map does not support the shiphealth system.\n\"" );
+		return;
+	}
+
 	THS = healthEnt->health;
 	CHS = healthEnt->count;
 	TSS = healthEnt->splashRadius;
 	CSS = healthEnt->n00bCount;
 	SI = healthEnt->splashDamage;
 
-	RHS = floor((CHS / THS * 100));
-	RSS = floor((CSS / TSS * 100));
+	RHS = ((CHS * pow(THS, -1)) * 100);
+	if(RHS <= 100)
+		HCI = 2;//Hull Color Indicators
+	if(RHS <= 50)
+		HCI = 3;
+	if(RHS <= 25)
+		HCI = 1;
+
+	RSS = ((CSS * pow(TSS, -1)) * 100);
+	if(RSS <= 100)
+		SCI = 2;//Shield Color Indicators
+	if(RSS <= 50)
+		SCI = 3;
+	if(RSS <= 25)
+		SCI = 1;
 	
 	if(CHS == 0){
-		trap_SendServerCommand( ent-g_entities, "print \"^4The Ship is destroyed, what do you want?\n\"" );
+		trap_SendServerCommand( ent-g_entities, "print \"\n^1 The Ship is destroyed.\n\n\"" );
 	} else {
-		if(SI == 1){
-			trap_SendServerCommand( ent-g_entities, "print \"^4Shields are online\n\"" );
-			trap_SendServerCommand( ent-g_entities, va("print \"^4Shield Capactiy at %i Percent (%i of %i Points)\n\"", RSS, CSS, TSS) );
-			trap_SendServerCommand( ent-g_entities, va("print \"^4Structual Integrity at %i Percent (%i of %i Points)\n\"", RHS, CHS, THS) );
-		} else if(SI == 0){
-			trap_SendServerCommand( ent-g_entities, "print \"^4Shields are offline\n\"" );
-			trap_SendServerCommand( ent-g_entities, va("print \"^4Shield Capactiy at %i Percent (%i of %i Points)\n\"", RSS, CSS, TSS) );
-			trap_SendServerCommand( ent-g_entities, va("print \"^4Structual Integrity at %i Percent (%i of %i Points)\n\"", RHS, CHS, THS) );
-		} else {
-			trap_SendServerCommand( ent-g_entities, "print \"^4Shields are inoperable\n\"" );
-			trap_SendServerCommand( ent-g_entities, va("print \"^4Structual Integrity at %i Percent (%i of %i Points)\n\"", RHS, CHS, THS) );
+		trap_SendServerCommand( ent-g_entities, "print \"\n^3 Tactical Master Systems Display\n\"" );
+		switch(SI){
+			case -2:
+				trap_SendServerCommand( ent-g_entities, "print \"^1 Shields are offline\n\"" );
+				break;
+			case -1:
+				trap_SendServerCommand( ent-g_entities, "print \"^1 Shields are inoperable\n\"" );
+				break;
+			case 0:
+				trap_SendServerCommand( ent-g_entities, "print \"^3 Shields are standing by\n\"" );
+				break;
+			case 1:
+				trap_SendServerCommand( ent-g_entities, "print \"^2 Shields are online\n\"" );
+				break;
 		}
+		if(CSS>0)
+			trap_SendServerCommand( ent-g_entities, va("print \"^%i Shield Capactiy at %.0f Percent (%i of %i Points)\n\"", SCI, RSS, CSS, TSS) );
+		trap_SendServerCommand( ent-g_entities, va("print \"^%i Structual Integrity at %.0f Percent (%i of %i Points)\n\n\"", HCI, RHS, CHS, THS) );
 	}
 	return;
 }

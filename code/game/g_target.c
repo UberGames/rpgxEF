@@ -1780,6 +1780,9 @@ void target_alert_remapShaders(int target_condition) {
 }
 
 void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+
+	gentity_t *healthEnt;
+
 	if(!activator) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_alert_use called with NULL activator.\n"););
 		return;
@@ -2047,6 +2050,19 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 			ent->target = ent->targetname2;
 			G_UseTargets(ent, ent);
 			ent->damage = 3;
+		}
+	}
+
+	//Refresh health ent if it has interconnectivity with target_alert
+	healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
+	if(healthEnt){
+		if(!Q_stricmp(healthEnt->falsename, ent->falsename)){
+			if(healthEnt->splashDamage == 0 || healthEnt->splashDamage == 1){
+				if(ent->damage == 0)
+					healthEnt->splashDamage = 0;
+				else
+					healthEnt->splashDamage = 1;
+			}
 		}
 	}
 	// Free activator if no classname <-- alert command
@@ -2480,7 +2496,8 @@ void target_levelchange_use(gentity_t *ent, gentity_t *other, gentity_t *activat
 	if(rpg_allowSPLevelChange.integer) {
 		ent->think = target_levelchange_think;
 		ent->nextthink = level.time + 1000;
-		trap_SendServerCommand(-1, va("servercprint \"Mapchange in %i ...\"", ent->count)); 
+		if(ent->count > 0)//This is anoying if there's no delay so let's do this only if there is
+			trap_SendServerCommand(-1, va("servercprint \"Mapchange in %i ...\"", ent->count)); 
 	}
 }
 
@@ -2564,6 +2581,7 @@ void SP_target_shaderremap(gentity_t *ent) {
 /*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8)
 This entity manages the self destruct.
 For now this should only be used via the selfdestruct console command, however it might be usable from within the radiant at a later date.
+Should this thing hit 0 the killing part for everyone outside a target_savezone will be done automatically.
 
 Keys:
 wait: total Countdown-Time in secs
@@ -2571,7 +2589,7 @@ count: warning intervall up to 60 secs in secs
 n00bCount: warning intervall within 60 secs in secs
 health: warning intervall within 10 secs in secs
 flags: are audio warnings 1 or 0?
-target: Things to fire once the countdown hits 0
+target: Things like fx to fire once the countdown hits 0
 
 damage: leveltime of countdowns end
 spawnflags: 1 tells ent to free once aborted
@@ -2636,6 +2654,7 @@ void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 
 void target_selfdestruct_think(gentity_t *ent) {
 	gentity_t*	client;	
+	gentity_t   *healthEnt;	
 	double		ETAmin, ETAsec, temp = 0.0f;
 	int			i = 0;
 
@@ -2704,8 +2723,12 @@ void target_selfdestruct_think(gentity_t *ent) {
 		}
 
 	} else if (ent->wait == 0) { //bang time ^^
-		//if we have a target fire that, else kill everyone that is not marked as escaped.
-		if (!ent->target || !ent->target[0]) {
+		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
+		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
+		if(healthEnt){
+			healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have one. makes a lot of stuff easier.
+			healthEnt->use(healthEnt, NULL, NULL);
+		}else{
 			int num;
 			gentity_t *ents[MAX_GENTITIES];
 
@@ -2723,13 +2746,13 @@ void target_selfdestruct_think(gentity_t *ent) {
 			trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
 			//let's clear the lower right corner
 			trap_SendServerCommand( -1, va("servermsg \" \""));
+		}
+		if(ent->target)
+			G_UseTargets(ent, ent);
 			//we're done here so let's finish up in a sec.	
 			ent->wait = -1;
 			ent->nextthink = level.time + 1000;
 			return;
-		} else {
-			G_UseTargets(ent, ent);
-		}  
 	} else if (ent->wait < 0) {
 
 		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
@@ -2935,7 +2958,7 @@ angle: Hull repair in % per minute
 speed: Shield repair in % per minute (only active if shield's aren't fried)
 
 greensound: Things to fire every time damage occurs (like FX)
-falsetarget: swapname for target_warp
+falsetarget: truename/swapCoreState for target_warp
 bluename: swapname for target_turbolift
 bluesound: swapname for ui_transporter
 falsename: redname for target_alert
@@ -2988,43 +3011,47 @@ static int target_shiphealth_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) 
 }
 
 void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	int			NSS, NHS, SD, HD, i, num;
-	float		BT;
+	int			i, num;
+	double		NSS, NHS, SD, HD, BT;
 	gentity_t	*alertEnt, *warpEnt, *turboEnt, *transEnt, *client;
-	
-	if(ent->splashDamage == 1){ //shields are active so we're just bleeding trough on the hull
-		BT = ((1 - (ent->count / ent->health)) / 10);
-		SD = (ent->damage - ceil(ent->damage * BT));
 
-		if(SD > ent->n00bCount){ //we're draining the shields...
-			HD = (ent->damage - ent->n00bCount);
-			NHS = (ent->count - HD);
-			ent->n00bCount = 0;
-		} else { //shields will survive so let's just bleed trough
-			HD = floor(ent->damage * BT);
-			NHS = (ent->count - HD);
-			NSS = (ent->n00bCount - SD);
-			ent->n00bCount = NSS;
+	if(ent->damage <= 0){ //failsave
+		return;
+	}else{
+		if(ent->splashDamage == 1){ //shields are active so we're just bleeding trough on the hull
+			BT = ((1 - (ent->count * pow(ent->health, -1))) / 10);
+			SD = (ent->damage - ceil(ent->damage * BT));
+
+			if(SD > ent->n00bCount){ //we're draining the shields...
+				HD = (ent->damage - ent->n00bCount);
+				NHS = (ent->count - HD);
+				ent->n00bCount = 0;
+				ent->splashDamage = -2;
+			} else { //shields will survive so let's just bleed trough
+				HD = floor(ent->damage * BT);
+				NHS = (ent->count - HD);
+				NSS = (ent->n00bCount - SD);
+				ent->n00bCount = NSS;
+			}
+		} else { //shields are off, guess where the blow goes...
+			NHS = (ent->count - ent->damage);
 		}
-	} else { //shields are off, guess where the blow goes...
-		NHS = (ent->count - ent->damage);
+	ent->count = NHS;
+	ent->damage = 0;
 	}
 	
-	ent->count = NHS;
-
 	//enough math, let's trigger things
 
-	//activate shields if inactive
-	if(ent->splashDamage == 0)
-		ent->splashDamage = 1;
-
-	//go to red alert if we are on green
+	//go to red alert if we are not, this will also activate the shields
 	if(ent->falsename){
 		alertEnt = G_Find(NULL, FOFS(falsename), ent->falsename);
-		if(alertEnt->damage == 0){
+		if(alertEnt->damage != 2){
 			ent->target = ent->falsename;
 			G_UseTargets(ent, ent);
 		}
+	}else{
+		if(ent->splashDamage == 0)
+			ent->splashDamage = 1;
 	}
 
 	//time to fire the FX
@@ -3034,10 +3061,8 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	//disable UI_Transporter if need be.
 	if(ent->bluesound){
 		transEnt = G_Find(NULL, FOFS(swapname), ent->bluesound);
-		if (transEnt->flags & FL_LOCKED){
-			return;
-		} else {
-			if(((ent->count / ent->health) * crandom()) < 0.3){
+		if (!(transEnt->flags & FL_LOCKED)){
+			if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)){
 				ent->target = ent->bluesound;
 				G_UseTargets(ent, ent);
 			}
@@ -3047,10 +3072,8 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	//disable target_turbolift if need be.
 	if(ent->bluename){
 		turboEnt = G_Find(NULL, FOFS(swapname), ent->bluename);
-		if (turboEnt->flags & FL_LOCKED){
-			return;
-		} else {
-			if(((ent->count / ent->health) * crandom()) < 0.3){
+		if (!(turboEnt->flags & FL_LOCKED)){
+			if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)){
 				ent->target = ent->bluename;
 				G_UseTargets(ent, ent);
 			}
@@ -3059,11 +3082,9 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 
 	//disable target_warp if need be.
 	if(ent->falsetarget){
-		warpEnt = G_Find(NULL, FOFS(swapname), ent->falsetarget);
-		if (warpEnt->n00bCount == 0){
-			return;
-		} else {
-			if(((ent->count / ent->health) * crandom()) < 0.3){
+		warpEnt = G_Find(NULL, FOFS(truename), ent->falsetarget);
+		if ((warpEnt->sound1to2) && (warpEnt->sound2to1 == 0)){
+			if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)){
 				ent->target = ent->falsetarget;
 				G_UseTargets(ent, ent);
 			}
@@ -3071,7 +3092,7 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	}
 
 	//disable shield-subsystem if need be.
-	if(((ent->count / ent->health) * crandom()) < 0.3){
+	if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)){
 		ent->n00bCount = 0;
 		ent->splashDamage = -1;
 	}
@@ -3092,7 +3113,16 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
 		//let's be shakey for a sec... I hope lol ^^
 		trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
+		ent->count = 0;
 	}
+
+	//let's reset or lift the repair-timer
+	if(ent->count == 0)
+		ent->nextthink = -1;
+	else
+		ent->nextthink = level.time + 60000;
+
+	return;
 }	
 
 void target_shiphealth_think(gentity_t *ent) {
@@ -3128,10 +3158,13 @@ void target_shiphealth_think(gentity_t *ent) {
 	// Shield Repair
 	if(ent->splashDamage != -1){ //skip if shields are toast
 		if(ent->n00bCount < ent->splashRadius){
-			if(alertEnt->damage == 0) //condition green
+			if(alertEnt->damage == 0){ //condition green
 				NSS = (ent->n00bCount + (ent->splashRadius * ent->speed / 100));
-			else
+				ent->splashDamage = 0;
+			}else{
 				NSS = (ent->n00bCount + (ent->splashRadius * ent->speed / 200));
+				ent->splashDamage = 1;
+			}
 
 			if(NSS > ent->splashRadius)
 				ent->n00bCount = ent->splashRadius;
@@ -3142,14 +3175,14 @@ void target_shiphealth_think(gentity_t *ent) {
 
 	//shield reenstatement
 	if(ent->splashDamage == -1){ //else we don't need to run this
-		if((ent->count / ent->health) > 0.5){
-			if(alertEnt->damage == 0) //what symbol is and AND? cause I'd like to failsave 1 if we don't have alerts...
+		if((ent->count * pow(ent->health, -1)) > 0.5){
+			if(alertEnt->damage == 0 && !Q_stricmp(alertEnt->classname, "target_alert")) 
 				ent->splashDamage = 0;
 			else
 				ent->splashDamage = 1;
 		} else {
-			if((ent->count / ent->health * crandom()) > 1){
-				if(alertEnt->damage == 0)
+			if((ent->count * pow(ent->health, -1) * flrandom(0, 1)) > 0.75){
+				if(alertEnt->damage == 0 && !Q_stricmp(alertEnt->classname, "target_alert"))
 					ent->splashDamage = 0;
 				else
 					ent->splashDamage = 1;
@@ -3157,6 +3190,8 @@ void target_shiphealth_think(gentity_t *ent) {
 		}
 	}
 	ent->nextthink = level.time + 60000;
+
+	return;
 }
 
 
