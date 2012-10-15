@@ -443,7 +443,7 @@ void SP_fx_drip( gentity_t	*ent )
 	ent->nextthink = level.time + 1000;
 
 	//TiM
-	ent->s.time = 10000;
+	ent->s.powerups = 10000;
 
 	trap_LinkEntity( ent );
 }
@@ -669,7 +669,7 @@ void SP_fx_blow_chunks( gentity_t *ent )
 	if(!ent->distance) // check for spawnTEnt
 		G_SpawnFloat( "radius", "65", &ent->distance ); // was:  ent->radius
 	if(!ent->s.powerups) // check for spawnTEnt
-		G_SpawnInt( "material", "0", &ent->s.powerups );
+		G_SpawnInt( "material", "1", &ent->s.powerups );
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 

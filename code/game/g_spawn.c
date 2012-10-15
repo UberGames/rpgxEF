@@ -240,12 +240,12 @@ void SP_fx_fire(gentity_t *ent);
 // Additional ports from SP by Harry Young
 void SP_fx_cooking_steam( gentity_t	*ent );
 void SP_fx_electricfire( gentity_t	*ent );
-void SP_fx_forge_bolt( gentity_t *ent );
-void SP_fx_plasma( gentity_t *ent );
-void SP_fx_stream( gentity_t *ent );
-void SP_fx_transporter_stream( gentity_t *ent );
-void SP_fx_explosion_trail( gentity_t *ent );
-void SP_fx_borg_energy_beam( gentity_t *ent );
+//void SP_fx_forge_bolt( gentity_t *ent );
+//void SP_fx_plasma( gentity_t *ent );
+//void SP_fx_stream( gentity_t *ent );
+//void SP_fx_transporter_stream( gentity_t *ent );
+//void SP_fx_explosion_trail( gentity_t *ent );
+//void SP_fx_borg_energy_beam( gentity_t *ent );
 void SP_fx_shimmery_thing( gentity_t *ent );
 void SP_fx_borg_bolt( gentity_t *ent );
 
@@ -437,12 +437,12 @@ spawn_t	spawns[] = {
 // Additional ports from SP by Harry Young
 	{"fx_cooking_steam",			SP_fx_cooking_steam},
 	{"fx_elecfire",					SP_fx_electricfire},
-	{"fx_forge_bolt",					SP_fx_forge_bolt},
-	{"fx_plasma",					SP_fx_plasma},
-	{"fx_energy_stream",			SP_fx_stream},
-	{"fx_transporter_stream",		SP_fx_transporter_stream},
-	{"fx_explosion_trail",			SP_fx_explosion_trail},
-	{"fx_borg_energy_beam",			SP_fx_borg_energy_beam},
+	//{"fx_forge_bolt",					SP_fx_forge_bolt},
+	//{"fx_plasma",					SP_fx_plasma},
+	//{"fx_energy_stream",			SP_fx_stream},
+	//{"fx_transporter_stream",		SP_fx_transporter_stream},
+	//{"fx_explosion_trail",			SP_fx_explosion_trail},
+	//{"fx_borg_energy_beam",			SP_fx_borg_energy_beam},
 	{"fx_shimmery_thing",			SP_fx_shimmery_thing},
 	{"fx_borg_bolt",				SP_fx_borg_bolt},
 
