@@ -139,6 +139,7 @@ typedef struct animsList_s {
 //Useful for proper footstep sync and emote-based sound FX.
 #define MAX_ANIM_SOUNDS			64
 #define	MAX_RANDOM_ANIMSOUNDS	8
+
 typedef struct animsounds_s 
 {
 	int		keyFrame;							//Frame to play sound on
