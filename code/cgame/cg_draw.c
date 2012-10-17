@@ -39,12 +39,6 @@ char *ingame_text[IGT_MAX];		/*	Holds pointers to ingame text */
 
 int zoomFlashTime=0;
 
-/*typedef enum {
-	RADAR_UP,
-	RADAR_MIDDLE,
-	RADAR_DOWN
-} radarType_t;*/
-
 interfacegraphics_s interface_graphics[IG_MAX] = 
 {
 /*	type		timer	x		y		width	height	file/text										graphic,	min		max		color			style			ptr */
@@ -119,13 +113,11 @@ void CG_InitLensFlare( vec3_t worldCoord,
 
 	for (i = 0; i < MAX_LENS_FLARES; i++) { /* find the next free slot */
 		if ( !lensFlare[i].qfull ) {
-			/* VectorCopy(worldCoord, lensFlare[i].worldCoord); */
 			lensFlare[i].worldCoord[0] = worldCoord[0];
 			lensFlare[i].worldCoord[1] = worldCoord[1];
 			lensFlare[i].worldCoord[2] = worldCoord[2];
 			lensFlare[i].w1 = w1;
 			lensFlare[i].h1 = h1;
-			/* VectorCopy(glowColor, lensFlare[i].glowColor); */
 			lensFlare[i].glowColor[0] = glowColor[0];
 			lensFlare[i].glowColor[1] = glowColor[1];
 			lensFlare[i].glowColor[2] = glowColor[2];
@@ -133,7 +125,6 @@ void CG_InitLensFlare( vec3_t worldCoord,
 			lensFlare[i].hazeOffset = hazeOffset;
 			lensFlare[i].minDist = minDist;
 			lensFlare[i].maxDist = maxDist;
-			/* VectorCopy(streakColor, lensFlare[i].streakColor); */
 			lensFlare[i].streakColor[0] = streakColor[0];
 			lensFlare[i].streakColor[1] = streakColor[1];
 			lensFlare[i].streakColor[2] = streakColor[2];
@@ -181,16 +172,11 @@ static qboolean CG_WorldCoordToScreenCoord(vec3_t worldCoord, float *x, float *y
 	vec3_t	up;
 	float xzi;
 	float yzi;
-
-/*	xcenter = cg.refdef.width / 2;*//*gives screen coords adjusted for resolution*/
-/*	ycenter = cg.refdef.height / 2;*//*gives screen coords adjusted for resolution*/
 	
 	/*
 	 * NOTE: did it this way because most draw functions expect virtual 640x480 coords
 	 *	and adjust them for current resolution
 	 */
-	/*xcenter = 640 * 0.5;*//*gives screen coords in virtual 640x480, to be adjusted when drawn*/
-	/*ycenter = 480 * 0.5;*//*gives screen coords in virtual 640x480, to be adjusted when drawn*/
 	xcenter = 640 >> 1;
 	ycenter = 480 >> 1;
 
@@ -269,12 +255,10 @@ static float CG_FlareScreenTrans(int x, int y, int xmin, int ymin, int xmax, int
 
 	if ( ly < (lx * grad) ) {/* point is running along the side bar */
 		alpha = (float)( 1.0 - ( (float)lx - (float)lxmin ) / (float)xDif );
-		/* CG_Printf("SIDE BAR!!!! alpha = %f, ly = %i, lymin = %i, yDif = %i\n", alpha, ly, lymin, yDif); */
 	}
 
 	if ( ly > ( lx * grad) ) {/* point is running along the top bar */
 		alpha = (float)( 1.0 - ( (float)ly - (float)lymin ) / (float)yDif );
-		/* CG_Printf("TOP BAR!!!! alpha = %f, lx = %i, lxmin = %i, xDif = %i, xEq = %f\n", alpha, lx, lxmin, xDif, ((float)lx * grad) ); */
 	}
 
 	/* if xy has exceeded maxes, just make it 0 :P */
@@ -312,7 +296,7 @@ static float CG_CorrelateMaxMinDist( float len, int min, int max ) {
 	if ( min <= 0 ) /* this means that the parameter wants it to always be on */
 		return alpha;
 
-	alpha = /*1.0 -*/ ( len - (float)min ) / ((float)max - (float)min); /* calculate the alpha */
+	alpha = ( len - (float)min ) / ((float)max - (float)min); /* calculate the alpha */
 
 	if (alpha > 1.0 ) /* Clamp it.... again */
 		alpha = 1.0;
@@ -621,75 +605,7 @@ void CG_DrawLensFlare( lensFlare_t *flare )
 		y = ( yCart - (h *0.5) + HALF_SCREEN_HEIGHT );
 		CG_DrawPic( x, y, w, h, cgs.media.flareCore ); //Draw teh main fl4r3 :)
 	} 
-	//CG_Printf("worldCoord = %f, colorAlpha = %f, streakAlpha = %f, streakColor = %f \n", flare->worldCoord[0], color[3], strkColor[3], strkColor[2]);
 }
-
-/*
-==============
-CG_DrawField
-
-Draws large numbers for status bar and powerups
-==============
-*/
-/*
-static void CG_DrawField (int x, int y, int width, int value) 
-{
-	char	num[16], *ptr;
-	int		l;
-	int		frame;
-
-	if ( width < 1 ) 
-	{
-		return;
-	}
-
-	// draw number string
-	if ( width > 5 ) 
-	{
-		width = 5;
-	}
-
-	switch ( width ) 
-	{
-	case 1:
-		value = value > 9 ? 9 : value;
-		value = value < 0 ? 0 : value;
-		break;
-	case 2:
-		value = value > 99 ? 99 : value;
-		value = value < -9 ? -9 : value;
-		break;
-	case 3:
-		value = value > 999 ? 999 : value;
-		value = value < -99 ? -99 : value;
-		break;
-	case 4:
-		value = value > 9999 ? 9999 : value;
-		value = value < -999 ? -999 : value;
-		break;
-	}
-
-	Com_sprintf (num, sizeof(num), "%i", value);
-	l = strlen(num);
-	if (l > width)
-		l = width;
-	x += 2 + CHAR_WIDTH*(width - l);
-
-	ptr = num;
-	while (*ptr && l)
-	{
-		if (*ptr == '-')
-			frame = STAT_MINUS;
-		else
-			frame = *ptr -'0';
-
-		CG_DrawPic( x,y, CHAR_WIDTH, CHAR_HEIGHT, cgs.media.numberShaders[frame] );
-		x += CHAR_WIDTH;
-		ptr++;
-		l--;
-	}
-}
-*/
 
 /*
 ================
@@ -743,9 +659,6 @@ CG_DrawHead
 Used for both the status bar and the scoreboard
 ================
 */
-
-//extern qhandle_t CG_CurrentHeadSkin( centity_t* cent, clientInfo_t* ci );
-
 void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t headAngles ) {
 	clipHandle_t	cm;
 	clientInfo_t	*ci;
@@ -834,13 +747,6 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team ) {
 		CG_Draw3DModel( x, y, w, h, 
 			team == TEAM_RED ? cgs.media.redFlagModel : cgs.media.blueFlagModel, 0, 
 			team == TEAM_RED ? cgs.media.redFlagShader[3] : cgs.media.blueFlagShader[3], origin, angles );
-	} else if ( cg_drawIcons.integer ) {
-		//gitem_t *item = BG_FindItemForPowerup( team == TEAM_RED ? PW_REDFLAG : PW_BORG_ADAPT );
-
-		/*if (item)
-		{
-			CG_DrawPic( x, y, w, h, cg_items[ ITEM_INDEX(item) ].icon );
-		}*/
 	}
 }
 
@@ -1023,8 +929,7 @@ static int CG_DrawHealth(centity_t	*cent)
 		CG_FillRect( x + 47, y, health_barwidth, 7, colorTable[CT_DKBLUE1]); //RPG-X: Top Horizontal bar - CG_FillRect( 61, 420, 70+health_barwidth, 15, colorTable[CT_DKBLUE1]);
 
 		//RPG-X: RedTechie - Some eye candy text
-		UI_DrawProportionalString( x +40-3, y + 23, ingame_text[IGT_SB_HEALTHBARLCARS], UI_TINYFONT|UI_RIGHT, colorTable[CT_BLACK]);//456
-//x + 12
+		UI_DrawProportionalString( x +40-3, y + 23, ingame_text[IGT_SB_HEALTHBARLCARS], UI_TINYFONT|UI_RIGHT, colorTable[CT_BLACK]); 
 		return health_barwidth + 82;
 	}
 }
@@ -1048,14 +953,6 @@ static void CG_DrawStatusBar( void )
 	whiteA[0] = whiteA[1] = whiteA[2] = 1.0f;	whiteA[3] = 0.3f;
 	
 	cent = &cg_entities[cg.snap->ps.clientNum];
-	
-	//RPG-X: RedTechie - HACK HACK HACK!!!! this needs to be called soon to check to shake the players cameras
-	/*info = CG_ConfigString( CS_SERVERINFO );
-	rpg_shakemycamera = atoi( Info_ValueForKey( info, "rpg_servershakeallclients" ) );
-	rpg_shakemycamera_intensity = atof( Info_ValueForKey( info, "rpg_servershakeallclientsintensity" ) );
-	if(rpg_shakemycamera == 1){
-		CG_CameraShake(rpg_shakemycamera_intensity,300);
-	}*/
 
 	if ( cg_drawStatus.integer == 0 ) {
 		return;
@@ -1162,11 +1059,9 @@ static void CG_DrawStatusBar( void )
 						if (z > 64)
 						{
 							CG_DrawStretchPic( 86 - forward[1], 146 - forward[0], 16, 8, 0, 0, 1, 0.5, cgs.media.rd_injured_level );
-							//CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_injured_up);
 						}
 						else if (z < -64)
 						{
-							//CG_DrawPic(86 - forward[1], 146 - forward[0], 7, 7, cgs.media.rd_injured_down);
 							CG_DrawStretchPic( 86 - forward[1], 146 - forward[0], 16, 8, 0, 0.5, 1, 1, cgs.media.rd_injured_level );
 						}							
 						else
@@ -1234,21 +1129,6 @@ static void CG_InterfaceStartup()
 		interface_graphics[IG_HEALTH_ENDCAP].type = SG_GRAPHIC;
 	}
 
-	// Turn on Armor Graphics
-	//RPG-X: - RedTechie how many times do i have to say NO ARMOR IN RP's!
-	/*if ((interface_graphics[IG_ARMOR_START].timer <	cg.time) && (interface_graphics[IG_ARMOR_BEGINCAP].type == SG_OFF))
-	{
-		if (interface_graphics[IG_ARMOR_BEGINCAP].type == SG_OFF)
-		{
-			trap_S_StartLocalSound( cgs.media.interfaceSnd1, CHAN_LOCAL_SOUND );
-		}
-
-		interface_graphics[IG_ARMOR_BEGINCAP].type = SG_GRAPHIC;
-		interface_graphics[IG_ARMOR_BOX1].type = SG_GRAPHIC;
-		interface_graphics[IG_ARMOR_ENDCAP].type = SG_GRAPHIC;
-
-	}*/
-
 	// Turn on Ammo Graphics
 	if (interface_graphics[IG_AMMO_START].timer <	cg.time)
 	{
@@ -1315,55 +1195,6 @@ static void CG_InterfaceStartup()
 */
 
 /*
-================
-CG_DrawAttacker
-
-================
-*/
-/*static float CG_DrawAttacker( float y ) {
-	int			t;
-	float		size;
-	vec3_t		angles;
-	const char	*info;
-	const char	*name;
-	int			clientNum;
-
-	if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
-		return y;
-	}
-
-	if ( !cg.attackerTime ) {
-		return y;
-	}
-
-	clientNum = cg.predictedPlayerState.persistant[PERS_ATTACKER];
-	if ( clientNum < 0 || clientNum >= MAX_CLIENTS || clientNum == cg.snap->ps.clientNum ) {
-		return y;
-	}
-
-	t = cg.time - cg.attackerTime;
-	if ( t > ATTACKER_HEAD_TIME ) {
-		cg.attackerTime = 0;
-		return y;
-	}
-
-	size = ICON_SIZE * 1.25;
-
-	angles[PITCH] = 0;
-	angles[YAW] = 180;
-	angles[ROLL] = 0;
-	CG_DrawHead( 640 - size, y, size, size, clientNum, angles );
-
-	info = CG_ConfigString( CS_PLAYERS + clientNum );
-	name = Info_ValueForKey(  info, "n" );
-	y += size;
-//	CG_DrawBigString( 640 - ( Q_PrintStrlen( name ) * BIGCHAR_WIDTH), y, name, 0.5 );
-	UI_DrawProportionalString( 635, y, name, UI_RIGHT | UI_SMALLFONT, colorTable[CT_LTGOLD1] );
-
-	return y + BIGCHAR_HEIGHT + 2;
-}*/
-
-/*
 ==================
 CG_DrawSnapshot
 ==================
@@ -1373,10 +1204,7 @@ static float CG_DrawSnapshot( float y ) {
 	int			w;
 
 	s = va( "time:%i frametime:%i snap:%i cmd:%i", cg.snap->serverTime, cg.frametime, 
-		cg.latestSnapshotNum, cgs.serverCommandSequence );
-
-	//y = (BIGCHAR_HEIGHT * 2) + 20;
-	
+		cg.latestSnapshotNum, cgs.serverCommandSequence );	
 
 	w = UI_ProportionalStringWidth(s,UI_BIGFONT);
 	
@@ -1565,7 +1393,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 		hcolor[1] = 0;
 		hcolor[2] = 0;
 		hcolor[3] = 0.33;
-	} else { // if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE )
+	} else { 
 		hcolor[0] = 0;
 		hcolor[1] = 0;
 		hcolor[2] = 1;
@@ -1580,28 +1408,13 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 		if ( ci->infoValid && ci->team == cg.snap->ps.persistant[PERS_TEAM]) {
 
 			xx = x + TINYCHAR_WIDTH;
-//Draw class icon if appropriate
-			if ( ci->pClass >= 0/*PC_NOCLASS*/ )
+			//Draw class icon if appropriate
+			if ( ci->pClass >= 0 )
 			{
-				//qhandle_t	icon;
-
-				//Special hack: if it's Borg who has regen going, must be Borg queen
-				/*if ( ci->pClass == PC_BORG && (ci->powerups&(1<<PW_LASER)) )
-				{
-					icon = cgs.media.borgQueenIconShader;
-				}
-				else
-				{
-					icon = cgs.media.pClassShaders[ci->pClass];
-				}
-				CG_DrawPic( xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, icon );*/
-
 				xx += (TINYCHAR_WIDTH * TINYPAD);
 			}
-//draw name
-//			CG_DrawStringExt( xx, y,
-//				ci->name, hcolor, qfalse, qfalse,
-//				TINYCHAR_WIDTH, TINYCHAR_HEIGHT, TEAM_OVERLAY_MAXNAME_WIDTH);
+			//draw name
+
 			hcolor[0] = hcolor[1] = hcolor[2] = hcolor[3] = 1.0;
 			UI_DrawProportionalString( xx, y, ci->name, UI_TINYFONT, hcolor);
 
@@ -1613,12 +1426,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 				if (len > lwidth)
 					len = lwidth;
 
-//				xx = x + TINYCHAR_WIDTH * 2 + TINYCHAR_WIDTH * pwidth + 
-//					((lwidth/2 - len/2) * TINYCHAR_WIDTH);
 				xx = x + TINYCHAR_WIDTH * 2 + TINYCHAR_WIDTH * pwidth;
-//				CG_DrawStringExt( xx, y,
-//					p, hcolor, qfalse, qfalse, TINYCHAR_WIDTH, TINYCHAR_HEIGHT,
-//					TEAM_OVERLAY_MAXLOCATION_WIDTH);
 				UI_DrawProportionalString( xx, y, p, UI_TINYFONT, hcolor);
 
 			}
@@ -1630,9 +1438,6 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 			xx = x + TINYCHAR_WIDTH * 3 + 
 				TINYCHAR_WIDTH * pwidth + TINYCHAR_WIDTH * lwidth;
 
-//			CG_DrawStringExt( xx, y,
-//				st, hcolor, qfalse, qfalse,
-//				TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0 );
 			UI_DrawProportionalString( xx, y, st, UI_TINYFONT, hcolor);
 
 			// draw weapon icon
@@ -1686,9 +1491,6 @@ CG_DrawUpperRight
 static void CG_DrawUpperRight( void ) {
 	float	y;
 
-	//vec3_t origin = {960, -1214, 242 };
-	//vec3_t color = { 0.6, 0.6, 1.0 };
-
 	cgs.widescreen.state = WIDESCREEN_RIGHT;
 
 	y = 0;
@@ -1708,11 +1510,6 @@ static void CG_DrawUpperRight( void ) {
 	} 
 
 	cgs.widescreen.state = WIDESCREEN_NONE;
-
-/*	if ( cg_drawAttacker.integer ) { //RPG-X - TiM: We don't really need this in an RP
-		y = CG_DrawAttacker( y );
-	}*/
-
 }
 
 /*
@@ -1806,7 +1603,7 @@ static float CG_DrawPowerups( float y ) {
 		// Don't draw almost timed out powerups if we have more than 3 and a holdable item
 		if (!(hasHoldable && i<active-2))
 		{
-		item = BG_FindItemForPowerup( sorted[i] );
+			item = BG_FindItemForPowerup( (powerup_t)sorted[i] );
 
 		if (NULL == item)
 		{
@@ -1817,8 +1614,6 @@ static float CG_DrawPowerups( float y ) {
 		y -= ICON_SIZE;
 
 		trap_R_SetColor( colors[color] );
-//		CG_DrawField( x, y, 2, sortedTime[ i ] / 1000 );
-//		CG_DrawNumField (x,y,2,sortedTime[ i ] / 1000,16,32,NUM_FONT_BIG);
 
 		t = ps->powerups[ sorted[i] ];
 		if ( t - cg.time >= POWERUP_BLINKS * POWERUP_BLINK_TIME ) {
@@ -1840,8 +1635,6 @@ static float CG_DrawPowerups( float y ) {
 			size = ICON_SIZE;
 		}
 
-		//CG_DrawPic( 640 - size, y + ICON_SIZE / 2 - size / 2, 
-		//	size, size, trap_R_RegisterShader( item->icon ) );
 		x -= size + 10;
 
 		CG_DrawPic( x, 478 - size, 
@@ -1902,7 +1695,6 @@ static int CG_DrawPickupItem( int y ) {
 			CG_DrawPic( 8, y, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
 			UI_DrawProportionalString( ICON_SIZE + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[ value ].pickup_name, UI_SMALLFONT, fadeColor);
 
-//			CG_DrawBigString( ICON_SIZE + 16, y + (ICON_SIZE/2 - BIGCHAR_HEIGHT/2), bg_itemlist[ value ].pickup_name, fadeColor[0] );
 			trap_R_SetColor( NULL );
 		}
 	}
@@ -2000,10 +1792,6 @@ static void CG_DrawTeamInfo( void ) {
 		hcolor[3] = 1.0;
 
 		for (i = cgs.teamChatPos - 1; i >= cgs.teamLastChatPos; i--) {
-//			CG_DrawStringExt( CHATLOC_X + TINYCHAR_WIDTH, 
-//				CHATLOC_Y - (cgs.teamChatPos - i)*TINYCHAR_HEIGHT, 
-//				cgs.teamChatMsgs[i % chatHeight], hcolor, qfalse, qfalse,
-//				TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 0 );
 			UI_DrawProportionalString( CHATLOC_X + TINYCHAR_WIDTH, 
 				CHATLOC_Y - (cgs.teamChatPos - i)*TINYCHAR_HEIGHT, 
 				cgs.teamChatMsgs[i % chatHeight], UI_TINYFONT, hcolor);
@@ -2164,17 +1952,14 @@ static void CG_DrawDisconnect( void ) {
 	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
 	trap_GetUserCmd( cmdNum, &cmd );
 	if (	cmd.serverTime <= cg.snap->ps.commandTime	||
-			cmd.serverTime > cg.time					/*||	// special check for map_restart
-			cmd.serverTime < cg.snap->ps.introTime*/)			// special check for holointro
-	{	
+			cmd.serverTime > cg.time					
+	   ) {	
 		return;
 	}
 
 	// also add text in center of screen
 	s = ingame_text[IGT_CONNECTIONINTERRUPTED];
-//	w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
 	w = UI_ProportionalStringWidth(s,UI_BIGFONT);
-//	CG_DrawBigString( 320 - w/2, 100, s, 1.0F);
 	// Used to be (Height) 100
 	UI_DrawProportionalString(320 - w/2, 240, s, UI_BIGFONT, colorTable[CT_LTGOLD1]);
 
@@ -2206,7 +1991,7 @@ static void CG_DrawLagometer( void ) {
 	int		color;
 	float	vscale;
 
-	if ( !cg_lagometer.integer /* || cgs.localServer */) {
+	if ( !cg_lagometer.integer ) {
 		CG_DrawDisconnect();
 		return;
 	}
@@ -2379,13 +2164,9 @@ static void CG_DrawCenterString( void ) {
 		}
 		linebuffer[l] = 0;
 
-//		w = cg.centerPrintCharWidth * CG_DrawStrlen( linebuffer );
 		w = UI_ProportionalStringWidth(linebuffer,UI_BIGFONT);
 
 		x = ( SCREEN_WIDTH - w ) / 2;
-
-//		CG_DrawStringExt( x, y, linebuffer, color, qfalse, qtrue,
-//			cg.centerPrintCharWidth, (int)(cg.centerPrintCharWidth * 1.5), 0 );
 
 		UI_DrawProportionalString( x, y, linebuffer, UI_BIGFONT|UI_DROPSHADOW, color);
 
@@ -2403,176 +2184,6 @@ static void CG_DrawCenterString( void ) {
 	trap_R_SetColor( NULL );
 }
 
-
-
-/*
-================================================================================
-
-CROSSHAIR
-
-================================================================================
-*/
-
-/*qboolean CG_WorldCoordToScreenCoordFloat(vec3_t worldCoord, float *x, float *y)
-{
-	float	xcenter, ycenter;
-	vec3_t	local, transformed;
-	vec3_t	vfwd;
-	vec3_t	vright;
-	vec3_t	vup;
-	float xzi;
-	float yzi;
-
-//	xcenter = cg.refdef.width / 2;//gives screen coords adjusted for resolution
-//	ycenter = cg.refdef.height / 2;//gives screen coords adjusted for resolution
-	
-	//NOTE: did it this way because most draw functions expect virtual 640x480 coords
-	//	and adjust them for current resolution
-	xcenter = 640.0f / 2.0f;//gives screen coords in virtual 640x480, to be adjusted when drawn
-	ycenter = 480.0f / 2.0f;//gives screen coords in virtual 640x480, to be adjusted when drawn
-
-	AngleVectors (cg.refdefViewAngles, vfwd, vright, vup);
-
-	VectorSubtract (worldCoord, cg.refdef.vieworg, local);
-
-	transformed[0] = DotProduct(local,vright);
-	transformed[1] = DotProduct(local,vup);
-	transformed[2] = DotProduct(local,vfwd);		
-
-	// Make sure Z is not negative.
-	if(transformed[2] < 0.01f)
-	{
-		return qfalse;
-	}
-
-	xzi = xcenter / transformed[2] * (96.0f/cg.refdef.fov_x);
-	yzi = ycenter / transformed[2] * (102.0f/cg.refdef.fov_y);
-
-	*x = xcenter + xzi * transformed[0];
-	*y = ycenter - yzi * transformed[1];
-
-	return qtrue;
-}*/
-
-/*float cg_crosshairPrevPosX = 0;
-float cg_crosshairPrevPosY = 0;
-#define CRAZY_CROSSHAIR_MAX_ERROR_X	(100.0f*640.0f/480.0f)
-#define CRAZY_CROSSHAIR_MAX_ERROR_Y	(100.0f)
-void CG_LerpCrosshairPos( float *x, float *y )
-{
-	if ( cg_crosshairPrevPosX )
-	{//blend from old pos
-		float maxMove = 100.0f * ((float)cg.frametime/500.0f) * 640.0f/480.0f; //30
-		float xDiff = (*x - cg_crosshairPrevPosX);
-		if ( fabs(xDiff) > CRAZY_CROSSHAIR_MAX_ERROR_X )
-		{
-			maxMove = CRAZY_CROSSHAIR_MAX_ERROR_X;
-		}
-		if ( xDiff > maxMove )
-		{
-			*x = cg_crosshairPrevPosX + maxMove;
-		}
-		else if ( xDiff < -maxMove )
-		{
-			*x = cg_crosshairPrevPosX - maxMove;
-		}
-	}
-	cg_crosshairPrevPosX = *x;
-
-	if ( cg_crosshairPrevPosY )
-	{//blend from old pos
-		float maxMove = 100.0f * ((float)cg.frametime/500.0f);
-		float yDiff = (*y - cg_crosshairPrevPosY);
-		if ( fabs(yDiff) > CRAZY_CROSSHAIR_MAX_ERROR_Y )
-		{
-			maxMove = CRAZY_CROSSHAIR_MAX_ERROR_X;
-		}
-		if ( yDiff > maxMove )
-		{
-			*y = cg_crosshairPrevPosY + maxMove;
-		}
-		else if ( yDiff < -maxMove )
-		{
-			*y = cg_crosshairPrevPosY - maxMove;
-		}
-	}
-	cg_crosshairPrevPosY = *y;
-}*/
-
-/*
-=================
-CG_CalcMuzzlePoint
-**Blatently plagiarised from JKA**
-
-Um, I guess this calculates the approximate vector
-of where your gun is at ingame. :P 
-=================*/
-
-
-//static qboolean	CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle ) {
-//	vec3_t		forward, right;
-//	vec3_t		gunpoint;
-//	centity_t	*cent;
-//	int			anim;
-//
-//	if ( entityNum == cg.snap->ps.clientNum )
-//	{ //I'm not exactly sure why we'd be rendering someone else's crosshair, but hey.
-//		int weapontype = cg.snap->ps.weapon;
-//		vec3_t weaponMuzzle = {13, 6, -6};
-//		centity_t *pEnt = &cg_entities[cg.predictedPlayerState.clientNum];
-//
-//		if (cg.renderingThirdPerson)
-//		{
-//			VectorCopy( pEnt->lerpOrigin, gunpoint ); //lerp
-//			AngleVectors( pEnt->lerpAngles, forward, right, NULL );
-//		}
-//		/*else
-//		{
-//			VectorCopy( cg.refdef.vieworg, gunpoint );
-//			AngleVectors( cg.refdefViewAngles, forward, right, NULL );
-//		}*/
-//
-//		VectorCopy(gunpoint, muzzle);
-//
-//		VectorMA(muzzle, weaponMuzzle[0], forward, muzzle);
-//		VectorMA(muzzle, weaponMuzzle[1], right, muzzle);
-//
-//		if (cg.renderingThirdPerson)
-//		{
-//			muzzle[2] += cg.snap->ps.viewheight + weaponMuzzle[2];
-//		}
-//		/*else
-//		{
-//			muzzle[2] += weaponMuzzle[2];
-//		}*/
-//
-//		return qtrue;
-//	}
-//
-//	cent = &cg_entities[entityNum];
-//	if ( !cent->currentValid ) {
-//		return qfalse;
-//	}
-//
-//	VectorCopy( cent->currentState.pos.trBase, muzzle );
-//
-//	AngleVectors( cent->currentState.apos.trBase, forward, NULL, NULL );
-//	anim = cent->currentState.legsAnim;
-//	if ( anim == BOTH_CROUCH1IDLE || anim == BOTH_CROUCH1WALK ) {
-//		muzzle[2] += CROUCH_VIEWHEIGHT;
-//	} else {
-//		muzzle[2] += DEFAULT_VIEWHEIGHT;
-//	}
-//
-//	VectorMA( muzzle, 14, forward, muzzle );
-//
-//	return qtrue;
-//
-//
-//}
-
-//end dCross
-
 /*
 =================
 CG_DrawCrosshair
@@ -2580,13 +2191,11 @@ CG_DrawCrosshair
 */
 static void CG_DrawCrosshair(void) {
 	float		w, h;
-	//qhandle_t	hShader;
 	float		f;
 	float		x = 0;
 	float		y = 0; //float
 	int			weaponCrosshairNum;
 	
-	//dCross
 	trace_t		trace;
 	vec3_t		start, end;
 	int			ignore;
@@ -2604,7 +2213,7 @@ static void CG_DrawCrosshair(void) {
 		return;
 	}
 
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR /*|| (cg.snap->ps.eFlags&EF_ELIMINATED)*/ ) {
+	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
 		return;
 	}
 
@@ -2625,27 +2234,6 @@ static void CG_DrawCrosshair(void) {
 		return;
 	}
 
-	//TiM: With the new crosshair rendering system, this should be no problem
-	/*if ( cg.snap->ps.weapon == WP_1 ) { //Teh hand has no crosshair
-		return;
-	}*/
-
-//	if ( cg.renderingThirdPerson ) {
-//		return;
-//	}
-
-//We don't need this anymore (RPG-X: J2J)
-/*
-	// set color based on health
-	if ( cg_crosshairHealth.integer ) {
-		vec4_t		hcolor;
-
-		CG_ColorForHealth( hcolor );
-		trap_R_SetColor( hcolor );
-	} else {
-		trap_R_SetColor( NULL );
-//	}*/
-
 	w = h = cg_crosshairSize.value;
 
 	// pulse the size of the crosshair when picking up items
@@ -2660,27 +2248,15 @@ static void CG_DrawCrosshair(void) {
 
 	if( cg_dynamicCrosshair.value == 1 && cg.renderingThirdPerson) {
 
-		//if ( cg.renderingThirdPerson ) {
-			VectorCopy( cg.predictedPlayerState.viewangles, pitchConstraint); //cg.predictedPlayerState.viewangles //cg.refdefViewAngles //vieworg
-		//}
-		/*else
-		{
-			VectorCopy(cg.refdefViewAngles, pitchConstraint);
-		}*/
+		VectorCopy( cg.predictedPlayerState.viewangles, pitchConstraint); //cg.predictedPlayerState.viewangles //cg.refdefViewAngles //vieworg
 
 		AngleVectors( pitchConstraint, d_f, NULL, NULL );
 
-		//CG_CalcMuzzlePoint(cg.snap->ps.clientNum, start);
-		//if ( cg.renderingThirdPerson ) {
-			VectorCopy( cg.predictedPlayerState.origin, start);
-			if ( !(cg.predictedPlayerState.eFlags & EF_FULL_ROTATE) && Q_fabs( cg.predictedPlayerState.viewangles[PITCH] ) > 89.9f )
-				start[2] -= 20;
-			else
-				start[2] += (float)cg.predictedPlayerState.viewheight * cgs.clientinfo[cg.predictedPlayerState.clientNum].height;
-		//}
-	//	else {
-		//	VectorCopy( cg.refdef.vieworg, start);
-	//	}
+		VectorCopy( cg.predictedPlayerState.origin, start);
+		if ( !(cg.predictedPlayerState.eFlags & EF_FULL_ROTATE) && Q_fabs( cg.predictedPlayerState.viewangles[PITCH] ) > 89.9f )
+			start[2] -= 20;
+		else
+			start[2] += (float)cg.predictedPlayerState.viewheight * cgs.clientinfo[cg.predictedPlayerState.clientNum].height;
 
 		VectorMA( start, 6000.0f, d_f, end ); //cg.distanceCull
 
@@ -2701,7 +2277,6 @@ static void CG_DrawCrosshair(void) {
 				return;
 			}
 
-			//CG_LerpCrosshairPos( &x, &y );
 			x -= 320;
 			y -= 240;
 		}
@@ -2712,42 +2287,13 @@ static void CG_DrawCrosshair(void) {
 
 	//end dCross
 
-	//RPG-X: J2J - This picks which crosshair to draw depending on the current weapon.
-	//TiM: Re-optimized so it'll only use one texture slot for the whole lot. :)
-	/*switch(cg.snap->ps.weapon)
-	{
-		default:
-		case WP_5: hShader = cgs.media.crosshair[0]; break;							
-		case WP_6: hShader = cgs.media.crosshair[1]; break;
-		case WP_1: hShader = cgs.media.crosshair[4]; break;								
-		case WP_4: hShader = cgs.media.crosshair[2]; break;		
-		case WP_10: hShader = cgs.media.crosshair[3]; break;							
-		case WP_8: hShader = cgs.media.crosshair[6]; break;
-		case WP_7: hShader = cgs.media.crosshair[5]; break;
-		case WP_9: hShader = cgs.media.crosshair[7]; break;			
-		case WP_13: hShader = cgs.media.crosshair[8]; break;				
-		case WP_12: hShader = cgs.media.crosshair[9]; break;			
-		case WP_14: hShader = cgs.media.crosshair[11]; break;		
-		case WP_11: hShader = cgs.media.crosshair[10]; break;				
-		case WP_2: hShader = cgs.media.crosshair[14]; break;					
-		case WP_3: hShader = cgs.media.crosshair[13]; break;								
-		case WP_NEUTRINO_PROBE: hShader = cgs.media.crosshair[12]; break;
-	}*/
-
 	//If admins scan non-players
 	if ( cg.predictedPlayerState.weapon == WP_2 && cg.predictedPlayerState.eFlags & EF_FIRING ) {
-		if (/*cg.predictedPlayerState.persistant[PERS_CLASS] == PC_ADMIN*/cg_showEntityNums.integer && cgs.clientinfo[cg.snap->ps.clientNum].isAdmin && cg.crosshairClientNum < ENTITYNUM_WORLD ) {
+		if (cg_showEntityNums.integer && cgs.clientinfo[cg.snap->ps.clientNum].isAdmin && cg.crosshairClientNum < ENTITYNUM_WORLD ) {
 			vec4_t ccolor;
-			/*color[0] = colorTable[CT_YELLOW][0];
-			color[1] = colorTable[CT_YELLOW][1];
-			color[2] = colorTable[CT_YELLOW][2];*/
-			/*color[0] = 0.9F;//R
-			color[1] = 0.7F;//G
-			color[2] = 0.0F;//B
-			color[3] = 0.8;*/
-			ccolor[0] = 0.694f;//0.9F;//R
-			ccolor[1] = 0.816f;//0.7F;//G
-			ccolor[2] = 1.0f;//0.0F;//B
+			ccolor[0] = 0.694f;	//0.9F;//R
+			ccolor[1] = 0.816f;	//0.7F;//G
+			ccolor[2] = 1.0f;	//0.0F;//B
 			ccolor[3] = 0.8f;
 
 			//TiM
@@ -2759,20 +2305,7 @@ static void CG_DrawCrosshair(void) {
 										UI_CENTER|UI_SMALLFONT, 
 										ccolor); //170
 
-			//CG_Printf( "x= %i, y = %i, w = %i, h = %i\n", cg.refdef.x, cg.refdef.y, cg.refdef.width, cg.refdef.height );
 		}
-		/*if(cg_entities[cg.crosshairClientNum].currentState.modelindex == HI_SHIELD && cg_entities[cg.crosshairClientNum].currentState.apos.trBase[0] != 0) {
-			vec4_t	ccolor;
-			ccolor[0] = 0.694f;
-			ccolor[1] = 0.816f;
-			ccolor[2] = 1.0f;
-			ccolor[3] = 0.8f;
-			UI_DrawProportionalString(x + 320,
-										y + 285,
-										va("Frequency: %f", cg_entities[cg.crosshairClientNum].currentState.apos.trBase[0]),
-										UI_CENTER|UI_SMALLFONT,
-										ccolor);
-		}*/
 	}
 
 	cgs.widescreen.state = WIDESCREEN_LEFT;
@@ -2786,7 +2319,6 @@ static void CG_DrawCrosshair(void) {
 	//of certain crosshairs ingame :'(
 	//So I'm attempting to fix this by creating a very very subtle offset to scale the scan region inwards a bit.
 	//Addendum: FRAK! Okay... offsetting will not work.  It clips any of the hairs that are in their full boundary. Which looks crap :P
-	//Com_Printf("s1 = %f, t1 = %f, s2 = %f, t2 = %f\n", ((float)cd->s1/128.0f), ((float)cd->t1/128.0f), ((float)cd->s2/128.0f), ((float)cd->t2/128.0f));
 
 	//Magic number! 0.0078125 = 1 pixel in a 128x128 bitmap - Edited out.  1 pixel = WAY TOO MUCH!
 	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (cg.refdef.width - w),	//X
@@ -2834,17 +2366,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 	infoStringCount += cg.frametime;
 	rankCharIndex = raceCharIndex = classCharIndex = ageCharIndex = htCharIndex = wtCharIndex = weapCharIndex = charIndex = healthCharIndex = floor(infoStringCount/33);
 	//TODO: have box scale in from corners of screen?  Or out from center?
-	/*
-	if(infoStringCount < 1000)
-	{
-		timedScale = (float)infoStringCount/100.0f;
-		timedScale = 10.0f - timedScale;
-		if(timedScale < 1.0f)
-		{
-			timedScale = 1.0f;
-		}
-	}
-	*/
+
 	//IDEA:  We COULD actually rotate a wire-mesh version of the crossEnt until it
 	//			matches the crossEnt's angles then flash it and pop up this info...
 	//			but that would be way too much work for something like this.
@@ -2856,25 +2378,15 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 
 	//Draw frame around ent's bbox
 	//FIXME: make global, do once
-	fUpDot = 1.0f - fabs( DotProduct( vfwd_n, worldUp ) );//1.0 if looking up or down, so use mins and maxs more
-	fEastDot = fabs( DotProduct( vfwd_n, worldEast ) );//1.0 if looking east or west, so use mins[1] and maxs[1] more
-	fNorthDot = fabs( DotProduct( vfwd_n, worldNorth ) );//1.0 if looking north or south, so use mins[0] and maxs[0] more
-	uEastDot = fabs( DotProduct( vup_n, worldEast ) );//1.0 if looking up or down, head towards east or west, so use mins[0] and maxs[0] more
-	uNorthDot = fabs( DotProduct( vup_n, worldNorth ) );//1.0 if looking up or down, head towards north or south, so use mins[1] and maxs[1] more
+	fUpDot = 1.0f - fabs( DotProduct( vfwd_n, worldUp ) );	//1.0 if looking up or down, so use mins and maxs more
+	fEastDot = fabs( DotProduct( vfwd_n, worldEast ) );		//1.0 if looking east or west, so use mins[1] and maxs[1] more
+	fNorthDot = fabs( DotProduct( vfwd_n, worldNorth ) );	//1.0 if looking north or south, so use mins[0] and maxs[0] more
+	uEastDot = fabs( DotProduct( vup_n, worldEast ) );		//1.0 if looking up or down, head towards east or west, so use mins[0] and maxs[0] more
+	uNorthDot = fabs( DotProduct( vup_n, worldNorth ) );	//1.0 if looking up or down, head towards north or south, so use mins[1] and maxs[1] more
 
-	/*if ( crossEnt->s.solid == SOLID_BMODEL )
-	{//brush model, no origin, so use the center
-		VectorAdd( crossEnt->absmin, crossEnt->absmax, center );
-		VectorScale( center, 0.5, center );
-		VectorSubtract( crossEnt->absmax, center, maxs );
-		VectorSubtract( crossEnt->absmin, center, mins );
-	}
-	else
-	{*/
-		VectorCopy( origin, center ); //crossEnt->currentOrigin//cent->lerpOrigin
-		VectorCopy( entMaxs, maxs ); //crossEnt->maxs //playerMaxs
-		VectorCopy( entMins, mins ); //crossEnt->mins //playerMins
-	//}
+	VectorCopy( origin, center ); //crossEnt->currentOrigin//cent->lerpOrigin
+	VectorCopy( entMaxs, maxs ); //crossEnt->maxs //playerMaxs
+	VectorCopy( entMins, mins ); //crossEnt->mins //playerMins
 
 	//NOTE: this presumes that mins[0] and maxs[0] are symmetrical and mins[1] and maxs[1] as well
 	topSize = (maxs[2]*fUpDot + maxs[1]*uNorthDot + maxs[0]*uEastDot);//* timedScale
@@ -2992,40 +2504,36 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 		case 4://healthBar
 			if ( charIndex > 0 )
 			{
-				/*
-				//tried to keep original functionality, but it would pop from top to bottom
-				//when you let go of the button and had no way to tell then (during the
-				//fade-out) whether it should be on top or bottom.  So now it is always on top.
-				if ( !scanAll )
+				//try to draw at top as to not obscure the tricorder
+				CG_WorldCoordToScreenCoord( top, &x, &y, qtrue );
+				if ( y > 0.01 )
 				{
-					if ( !CG_WorldCoordToScreenCoord( bottom, &x, &y, qfalse ) )
-					{//Can't draw bottom
-						return;
-					}
-				}
-				else
-				*/
-				{//try to draw at top as to not obscure the tricorder
-					CG_WorldCoordToScreenCoord( top, &x, &y, qtrue );
+					y -= SMALLCHAR_HEIGHT;
 					if ( y > 0.01 )
 					{
-						y -= SMALLCHAR_HEIGHT;
+						if ( charIndex > 0 && name )
+						{
+							if ( y >= SMALLCHAR_HEIGHT )
+							{
+								y -= SMALLCHAR_HEIGHT;
+							}
+							else
+							{
+								y = 0.01;
+							}
+						}
 						if ( y > 0.01 )
 						{
-							if ( charIndex > 0 && name )
+							if ( rankCharIndex > 0 && rank )
 							{
 								if ( y >= SMALLCHAR_HEIGHT )
 								{
 									y -= SMALLCHAR_HEIGHT;
 								}
-								else
-								{
-									y = 0.01;
-								}
 							}
 							if ( y > 0.01 )
 							{
-								if ( rankCharIndex > 0 && rank )
+								if ( ageCharIndex > 0 && age )
 								{
 									if ( y >= SMALLCHAR_HEIGHT )
 									{
@@ -3034,7 +2542,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 								}
 								if ( y > 0.01 )
 								{
-									if ( ageCharIndex > 0 && age )
+									if ( classCharIndex > 0 && pClass )
 									{
 										if ( y >= SMALLCHAR_HEIGHT )
 										{
@@ -3043,7 +2551,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 									}
 									if ( y > 0.01 )
 									{
-										if ( classCharIndex > 0 && pClass )
+										if ( raceCharIndex > 0 && race )
 										{
 											if ( y >= SMALLCHAR_HEIGHT )
 											{
@@ -3052,7 +2560,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 										}
 										if ( y > 0.01 )
 										{
-											if ( raceCharIndex > 0 && race )
+											if ( htCharIndex > 0 && height )
 											{
 												if ( y >= SMALLCHAR_HEIGHT )
 												{
@@ -3061,7 +2569,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 											}
 											if ( y > 0.01 )
 											{
-												if ( htCharIndex > 0 && height )
+												if ( wtCharIndex > 0 && weight )
 												{
 													if ( y >= SMALLCHAR_HEIGHT )
 													{
@@ -3070,24 +2578,14 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 												}
 												if ( y > 0.01 )
 												{
-													if ( wtCharIndex > 0 && weight )
+													if ( weapCharIndex > 0 && weapon )
 													{
 														if ( y >= SMALLCHAR_HEIGHT )
 														{
 															y -= SMALLCHAR_HEIGHT;
 														}
 													}
-													if ( y > 0.01 )
-													{
-														if ( weapCharIndex > 0 && weapon )
-														{
-															if ( y >= SMALLCHAR_HEIGHT )
-															{
-																y -= SMALLCHAR_HEIGHT;
-															}
-														}
-													}	
-												}
+												}	
 											}
 										}
 									}
@@ -3111,16 +2609,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 					continue;
 				}
 
-				//health = ci->health; //health, max_health //ceil( (float)ci->health/(float)100.0f*100.0f );
-				//CG_ColorForGivenHealth( hcolor, health );
-				//hwidth = (float)health*0.5f;
-
-				//y += lineWidth + 2;
-
-				//CG_FillRect( x - hwidth/2, y + lineWidth, hwidth, lineWidth*2, hcolor );
-
-				//y += lineWidth*2;
-
+	
 				Com_sprintf( showHealth, sizeof( showHealth ), "%s: %i", "Health", health );
 
 				if ( healthCharIndex > 0 && showHealth[0] ) {
@@ -3134,7 +2623,6 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 					{
 						trap_S_StartSound( NULL, 0, CHAN_ITEM, cgs.media.tedTextSound );
 					}
-					//Q_strncpyz( showHealth, showHealth, healthCharIndex );
 					w = CG_DrawStrlen( showHealth ) * SMALLCHAR_WIDTH;
 					Q_strncpyz( showHealth, showHealth, healthCharIndex );
 					CG_DrawSmallStringColor( x - w / 2, y + lineWidth, showHealth, color );
@@ -3142,18 +2630,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 				}
 			}
 			break;
-		case 5://infoString (name/description)
-			//Bright yellow
-			//VectorCopy( crossEnt->startRGBA, color );
-			
-			/*if ( !color[0] && !color[1] && !color[2] )
-			{
-				// We really don't want black, so set it to yellow
-				color[0] = 0.9F;//R
-				color[1] = 0.7F;//G
-				color[2] = 0.0F;//B
-			}
-			color[3] = 0.75;*/
+		case 5:
 			if ( charIndex > 0 && name )
 			{
 				int	len = strlen(name);
@@ -3314,15 +2791,11 @@ static void CG_ScanForCrosshairEntity( void ) {
 
 	VectorCopy( cg.predictedPlayerState.origin, start ); //cg.refdef.vieworg
 	start[2] += (float)cg.predictedPlayerState.viewheight * cgs.clientinfo[cg.predictedPlayerState.clientNum].height;
-	//VectorCopy( cg.predictedPlayerState.origin, start);
-	//start[2] += cg.predictedPlayerState.viewheight;
 
 	VectorCopy( cg.predictedPlayerState.viewangles, pitchConstraint );
 	AngleVectors( pitchConstraint, df_f, NULL, NULL );
 
 	VectorMA( start, 8912, df_f, end);
-
-	//VectorMA( start, 8192, cg.refdef.viewaxis[0], end );
 
 	if ( cg.snap->ps.weapon == WP_7 && cg.zoomed ) {
 		CG_Trace( &trace, start, vec3_origin, vec3_origin, end, 
@@ -3337,12 +2810,7 @@ static void CG_ScanForCrosshairEntity( void ) {
 		CG_Trace( &trace, start, vec3_origin, vec3_origin, end, 
 			cg.snap->ps.clientNum, MASK_SHOT ); //CONTENTS_SOLID|CONTENTS_BODY
 
-		if ( cg.predictedPlayerState.weapon == WP_2 && cg.predictedPlayerState.eFlags & EF_FIRING 
-			&& (cg_entities[trace.entityNum].currentState.eType == ET_TRIC_STRING || cg_entities[trace.entityNum].currentState.eType == ET_MOVER_STR) ) 
-		{
-			//Never mind if it's a valid useable ent
-		} //else, return
-		else if ( trace.entityNum >= MAX_CLIENTS && !cgs.clientinfo[cg.snap->ps.clientNum].isAdmin/*cg.predictedPlayerState.persistant[PERS_CLASS] != PC_ADMIN*/ ) {
+		if ( trace.entityNum >= MAX_CLIENTS && !cgs.clientinfo[cg.snap->ps.clientNum].isAdmin/*cg.predictedPlayerState.persistant[PERS_CLASS] != PC_ADMIN*/ ) {
 			return;
 		}
 
@@ -3367,7 +2835,6 @@ static void CG_ScanForCrosshairEntity( void ) {
 	cg.crosshairClientNum = trace.entityNum;
 	cg.crosshairClientTime = cg.time;
 
-	//CG_Printf( "Current ent num: %i\n", cg.crosshairClientNum );
 }
 
 
@@ -3386,7 +2853,6 @@ static void CG_DrawCrosshairNames( void ) {
 	char		name[MAX_QPATH];
 	int			team;
 	centity_t	*cent;
-	//vec4_t		vecColor = { 0.0, 1.0, 0.0, 1.0 };
 	int			x, y;
 	qboolean		tinyFont;
 	int		drawFlags;
@@ -3395,11 +2861,6 @@ static void CG_DrawCrosshairNames( void ) {
 	{
 		return;
 	}
-
-	//if ( cg.renderingThirdPerson )
-	//{
-	//	return;
-	//}
 
 	// scan the known entities to see if the crosshair is sighted on one
 	CG_ScanForCrosshairEntity();
@@ -3430,10 +2891,8 @@ static void CG_DrawCrosshairNames( void ) {
 				char	*race = NULL;
 				char	*age = NULL;
 				char	*pClass = NULL;
-				//vec3_t	size;
 				float	ht = 0;
 				float	wt = 0;
-				//int		health = 0;
 				char	*weap = NULL;
 				char	namestr[128];
 				char	rankstr[128];
@@ -3454,106 +2913,55 @@ static void CG_DrawCrosshairNames( void ) {
 					}
 				}
 
-				irank = score;//Q_log2( score );
+				irank = score;	//Q_log2( score );
 
 				ci = &cgs.clientinfo[cg.crosshairClientNum];
 				//over-ride the color, since we can't get teams in this case
 				//use that good old LCARS yellow
-				color[0] = 0.694f;//0.9F;//R
-				color[1] = 0.816f;//0.7F;//G
-				color[2] = 1.0f;//0.0F;//B
+				color[0] = 0.694f;	//0.9F;//R
+				color[1] = 0.816f;	//0.7F;//G
+				color[2] = 1.0f;	//0.0F;//B
 				color[3] *= 0.5;
 
-				//vec3_t	maxs, mins;
-
-				//VectorCopy( crossEnt->maxs, maxs );
-				//VectorCopy( crossEnt->mins, mins );
-				//if ( crossEnt->client && crossEnt->NPC )
-				//{//only use the standing height of the NPCs because people can't understand the complex dynamics of height in weight in a ceiling-installed anti-gravitic plating environment
-				//	maxs[2] = crossEnt->client->standheight;
-				//}
-				//VectorSubtract(maxs, mins, size);
-				//ht = (maxs[2] - mins[2]) * 3.46875;//magic number
 				ht = ci->height * (float)BASE_HEIGHT;
-				//wt = VectorLength(size)*1.4;//magic number
 				wt = ci->weight * ci->height * (float)BASE_WEIGHT;
-				//if ( crossEnt->client && crossEnt->NPC )
-				//{
-				//if ( strstr( crossEnt->client->renderInfo.legsModelName, "female" ) ||
-					//	strstr( crossEnt->client->renderInfo.legsModelName, "seven" ) )
-					//{//crewfemale, hazardfemale or seven of nine
 				if ( ci->gender == GENDER_FEMALE ) {
-					wt *= (float)FEMALE_OFFSET;//magic number, women are lighter than men
+					wt *= (float)FEMALE_OFFSET;	//magic number, women are lighter than men
 				}
 				
 				if ( ci->race && ci->race[0] ) {
 					race = ci->race;
 					Com_sprintf( racestr, sizeof( racestr ), "%s: %s", "Race", race );
-					//Q_strncpyz( race, racestr, sizeof( racestr) );
 				}
 
 				if ( ci->age && ci->age[0] ) {
 					age = ci->age;
 					Com_sprintf( agestr, sizeof( agestr ), "%s: %s", "Age", age );
-					//Q_strncpyz( race, racestr, sizeof( racestr) );
 				}
 
-				//Com_Printf( "%i\n", ci->pClass );
 				pClass = cgs.classData[ci->pClass].formalName;
-				/*switch ( ci->pClass ) {
-					case PC_ADMIN:
-						pClass = "Admin";
-						break;
-					case PC_SECURITY:
-						pClass = "Security";
-						break;
-					case PC_ALIEN:
-						pClass = "Alien";
-						break;
-					case PC_COMMAND:
-						pClass = "Command";
-						break;
-					case PC_SCIENCE:
-						pClass = "Science";
-						break;
-					case PC_ENGINEER:
-						pClass = "Engineer";
-						break;
-					case PC_ALPHAOMEGA22:
-						pClass = "Marine";
-						break;
-					case PC_N00B:
-						pClass = "n00b";
-						break;
-					case PC_NOCLASS:
-					default:
-						pClass = "Unknown";
-						break;
-				}*/
 
 				if ( pClass ) {
 					Com_sprintf( classstr, sizeof(classstr), "%s: %s", "Class", pClass );
 				}
 
-				if ( cgs.classData[ci->pClass].showRanks/*ci->pClass != PC_ALIEN && ci->pClass != PC_NOCLASS*/ ) {
-					//rank = "Awesome"; //RankForNumber func needed
+				if ( cgs.classData[ci->pClass].showRanks ) {
 					if ( cgs.ranksData[irank].formalName[0] ) {
 						rank = cgs.ranksData[irank].formalName;
 						Com_sprintf( rankstr, sizeof( rankstr ), "%s: %s", "Rank", rank );
 					}
-					//Q_strncpyz( rank, rankstr, sizeof( rankstr ) );
 				}
 					
 				if ( ci->name && ci->name[0] ) {
 					name = ci->name;
 				}
 				else {
-					name = "Data Not Available";//crossEnt->targetname;
+					name = "Data Not Available";	//crossEnt->targetname;
 				}
 					
 				Com_sprintf( namestr, sizeof( namestr), "%s: %s", "Name", name );		
 
-				if ( cent->currentState.weapon != WP_1 /*&& cg_weapons[ cent->currentState.weapon ].item*/ )
+				if ( cent->currentState.weapon != WP_1 )
 				{
 					if ( cg_weapons[ cent->currentState.weapon ].item->pickup_name ) {
 						weap = cg_weapons[ cent->currentState.weapon ].item->pickup_name;
@@ -3563,8 +2971,6 @@ static void CG_DrawCrosshairNames( void ) {
 
 				Com_sprintf( htstr, sizeof(htstr), "%s: %4.2f %s","Height", ht, HEIGHT_UNIT );
 				Com_sprintf( wtstr, sizeof(wtstr), "%s: %4.2f %s","Weight", wt, WEIGHT_UNIT );
-
-				//Com_Printf("Name: %s, Rank: %s, Race: %s, Height: %s, Weight: %s, Weap: %s\n", namestr, rankstr, racestr, htstr, wtstr, weapstr );
 
 				CG_LabelViewEntity( cg.crosshairClientNum, cent->lerpOrigin, playerMins, playerMaxs,
 					name ? namestr : NULL, qfalse, color, 
@@ -3591,15 +2997,14 @@ static void CG_DrawCrosshairNames( void ) {
 
 				eState = &cg_entities[cg.crosshairClientNum].currentState;
 
-				color[0] = 0.694f;//0.9F;//R
-				color[1] = 0.816f;//0.7F;//G
-				color[2] = 1.0f;//0.0F;//B
+				color[0] = 0.694f;	//0.9F;//R
+				color[1] = 0.816f;	//0.7F;//G
+				color[2] = 1.0f;	//0.0F;//B
 				color[3] *= 0.5;
 
 				//TiM: Since dynamic brush ents seem to have no freaking origin in them, let's
 				// calc our own using the bounding box dimensions (At least we have those lol )
 				VectorAverage( eState->origin2, eState->angles2, origin );
-				//origin[2] = eState->origin2[2] - 24;
 
 				//The algorithm needs the max and min dimensions to be symmetrical on either side
 				//of the origin.  This set of random code does that. :)
@@ -3617,7 +3022,7 @@ static void CG_DrawCrosshairNames( void ) {
 
 
 				CG_LabelViewEntity( cg.crosshairClientNum, origin,
-					mins, maxs,	renderString, //cgs.tricStrings[eState->time2],
+					mins, maxs,	renderString,
 					qfalse, color, 
 					qfalse, 0,
 					NULL,
@@ -3724,21 +3129,14 @@ CG_DrawSpectator
 =================
 */
 static void CG_DrawSpectator(void) {
-//	CG_DrawBigString(320 - 9 * 8, 440, ingame_text[IGT_SPECTATOR], 1.0F);
 	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR )
 	{
 		UI_DrawProportionalString(SCREEN_WIDTH/2, SCREEN_HEIGHT - ((BIGCHAR_HEIGHT * 1.50) * 2) , ingame_text[IGT_SPECTATOR], UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
 	}
-	/*else if ( cg.snap->ps.eFlags&EF_ELIMINATED )
-	{
-		UI_DrawProportionalString(SCREEN_WIDTH/2, SCREEN_HEIGHT - ((BIGCHAR_HEIGHT * 1.50) * 2) , ingame_text[IGT_TITLEELIMINATED], UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
-	}*/
 	if ( cgs.gametype == GT_TOURNAMENT ) {
-//		CG_DrawBigString(320 - 15 * 8, 460, ingame_text[IGT_WAITINGTOPLAY], 1.0F);
 		UI_DrawProportionalString(SCREEN_WIDTH/2,  SCREEN_HEIGHT - (BIGCHAR_HEIGHT * 1.5), ingame_text[IGT_WAITINGTOPLAY], UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
 	}
 	if ( cgs.gametype == GT_TEAM || cgs.gametype == GT_CTF ) {
-//		CG_DrawBigString(320 - 25 * 8, 460, ingame_text[IGT_USEDTEAMMENU], 1.0F);
 		UI_DrawProportionalString(SCREEN_WIDTH/2,  SCREEN_HEIGHT - (BIGCHAR_HEIGHT * 1.5), ingame_text[IGT_USEDTEAMMENU], UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
 	}
 }
@@ -3768,7 +3166,6 @@ static void CG_DrawVote(void) {
 	}
 	s = va("%s(%i):%s %s(F1):%i %s(F2):%i", ingame_text[IGT_VOTE],sec, cgs.voteString,ingame_text[IGT_YES], cgs.voteYes,ingame_text[IGT_NO]  ,cgs.voteNo);
 	
-//	CG_DrawSmallStringColor( 0, 58, s, colorTable[CT_YELLOW] );
 	UI_DrawProportionalString( 0,  58, s, UI_SMALLFONT, colorTable[CT_YELLOW]);
 }
 
@@ -3778,12 +3175,6 @@ CG_DrawIntermission
 =================
 */
 static void CG_DrawIntermission( void ) {
-	if (0)// cgs.gametype == GT_SINGLE_PLAYER )
-	{
-		CG_DrawCenterString();
-		return;
-	}
-
 	cg.scoreFadeTime = cg.time;
 	CG_DrawScoreboard();
 }
@@ -3857,29 +3248,6 @@ Don't!!!
 static void CG_DrawAmmoWarning( void ) 
 {
 	return;
-/*
-	const char	*s;
-
-	if ( cg_drawAmmoWarning.integer == 0 ) 
-	{
-		return;
-	}
-
-	if ( !cg.lowAmmoWarning ) 
-	{
-		return;
-	}
-
-	if ( cg.lowAmmoWarning >= 2 ) 
-	{
-		s = ingame_text[IGT_OUTOFAMMO];
-	} else 
-	{
-		s = ingame_text[IGT_LOWAMMO];
-	}
-
-	UI_DrawProportionalString(320, 64, s, UI_SMALLFONT | UI_CENTER, colorTable[CT_LTGOLD1]); */
-
 }
 
 /*
@@ -3902,9 +3270,7 @@ static void CG_DrawWarmup( void ) {
 
 	if ( sec < 0 ) {
 		s = ingame_text[IGT_WAITINGFORPLAYERS];		
-//		w = CG_DrawStrlen( s ) * BIGCHAR_WIDTH;
 		w = UI_ProportionalStringWidth(s,UI_BIGFONT);
-//		CG_DrawBigString(320 - w / 2, 40, s, 1.0F);
 		UI_DrawProportionalString(320 - w / 2, 40, s, UI_BIGFONT, colorTable[CT_LTGOLD1]);
 
 		cg.warmupCount = 0;
@@ -3992,15 +3358,6 @@ static void CG_DrawZoomMask( void )
 	vec4_t		color1;
 	int			x, y;
 
-	/*if (	cg.snap->ps.persistant[PERS_CLASS] == PC_NOCLASS 
-			|| cg.snap->ps.persistant[PERS_CLASS] != PC_SECURITY 
-			&& cg.snap->ps.persistant[PERS_CLASS] != PC_ALPHAOMEGA22 
-			&& cg.snap->ps.persistant[PERS_CLASS] != PC_ADMIN )
-	{//in a class-based game, only the sniper can zoom
-		cg.zoomed = qfalse;
-		cg.zoomLocked = qfalse;
-		return;
-	}*/
 	//TiM: New system. :)  Base zoom on current active weapon. :)
 	if ( !(cg.snap->ps.weapon == WP_6 || cg.snap->ps.weapon == WP_7) ) 
 	{
@@ -4063,8 +3420,6 @@ static void CG_DrawZoomMask( void )
 				amt = ( ( zoomFlashTime % cg.time ) / 500.0f );
 				amt = Com_Clamp( 0.0, 1.0, amt );
 
-				//Com_Printf( S_COLOR_RED "Ratio: %f\n", amt );
-
 				VectorSet( alphaColor, 1, 1, 1 );
 				alphaColor[3] = amt;
 
@@ -4082,43 +3437,6 @@ static void CG_DrawZoomMask( void )
 		else {
 			CG_DrawPic( start_x, start_y, width, height, cgs.media.zoomMaskShader );
 		}
-
-		/* RPG-X - TiM : Since the rifle's view doesn't really account for these elements, toss 'em
-		start_x = 210;
-		start_y = 80;
-
-		CG_DrawPic( 320 + start_x, 241, 35, -170, cgs.media.zoomBarShader);
-		CG_DrawPic( 320 - start_x, 241, -35, -170, cgs.media.zoomBarShader);
-		CG_DrawPic( 320 + start_x, 239, 35, 170, cgs.media.zoomBarShader);
-		CG_DrawPic( 320 - start_x, 239, -35, 170, cgs.media.zoomBarShader);
-
-		// Calculate a percent and clamp it
-		val = 26 - ( cg_fov.value - cg_zoomFov.value ) / ( cg_fov.value - MAX_ZOOM_FOV ) * 26;
-
-		if ( val > 17.0f )
-			val = 17.0f;
-		else if ( val < 0.0f )
-			val = 0.0f;
-	
-		// pink
-		color1[0] = 0.85f;
-		color1[1] = 0.55f;
-		color1[2] = 0.75f;
-		color1[3] = 1.0f;
-
-		CG_DrawPic( 320 + start_x + 12, 245, 10, 108, cgs.media.zoomInsertShader );
-		CG_DrawPic( 320 + start_x + 12, 235, 10, -108, cgs.media.zoomInsertShader );
-		CG_DrawPic( 320 - start_x - 12, 245, -10, 108, cgs.media.zoomInsertShader );
-		CG_DrawPic( 320 - start_x - 12, 235, -10, -108, cgs.media.zoomInsertShader );
-
-		trap_R_SetColor( color1 );
-		i = ((int)val) * 6;
-
-		CG_DrawPic( 320 + start_x + 10, 230 - i, 12, 5, cgs.media.ammoslider );
-		CG_DrawPic( 320 + start_x + 10, 251 + i, 12, -5, cgs.media.ammoslider );
-		CG_DrawPic( 320 - start_x - 10, 230 - i, -12, 5, cgs.media.ammoslider );
-		CG_DrawPic( 320 - start_x - 10, 251 + i, -12, -5, cgs.media.ammoslider );
-		*/
 
 		//yellow
 		if ( cg.snap->ps.weapon == WP_7 ) {
@@ -4148,23 +3466,7 @@ static void CG_DrawZoomMask( void )
 		CG_DrawNumField( x, y, 5, cg_zoomFov.value * 1000 + 9999, 18, 10 ,NUM_FONT_BIG ); //100
 		CG_DrawNumField( x, y+20, 5, cg.refdef.viewaxis[0][0] * 9999 + 20000, 18, 10,NUM_FONT_BIG );
 		CG_DrawNumField( x, y+40, 5, cg.refdef.viewaxis[0][1] * 9999 + 20000, 18, 10,NUM_FONT_BIG );
-		CG_DrawNumField( x, y+60, 5, cg.refdef.viewaxis[0][2] * 9999 + 20000, 18, 10,NUM_FONT_BIG );
-		
-		/*
-		// Is it time to draw the little max zoom arrows?
-		if ( val < 0.2f )
-		{
-			amt = sin( cg.time * 0.03 ) * 0.5 + 0.5;
-			color1[0] = 0.592156f * amt;
-			color1[1] = 0.592156f * amt;
-			color1[2] = 0.850980f * amt;
-			color1[3] = 1.0f * amt;
-
-			trap_R_SetColor( color1 );
-
-			CG_DrawPic( 320 + start_x, 240 - 6, 16, 12, cgs.media.zoomArrowShader );
-			CG_DrawPic( 320 - start_x, 240 - 6, -16, 12, cgs.media.zoomArrowShader );
-		}*/
+		CG_DrawNumField( x, y+60, 5, cg.refdef.viewaxis[0][2] * 9999 + 20000, 18, 10,NUM_FONT_BIG );		
 	}
 	else
 	{
@@ -4190,14 +3492,6 @@ static void CG_DrawZoomMask( void )
 
 //==================================================================================
 
-/*static char *AfterSpace( char *p )
-{
-	while (*p && *p != ' ') {
-		++p;
-	}
-
-	return p;
-}*/
 
 /*
 =====================
@@ -4247,19 +3541,8 @@ static void CG_DrawAdminMsg( void ) {
 	Boxcolor[0] = 0.016;
 	Boxcolor[1] = 0.055;
 	Boxcolor[2] = 0.170;
-	/*
-	CT_VDK_PURPLE
-	(New values are halfed
-	  Boxcolor[0] = 0.031;
-	Boxcolor[1] = 0.110;
-	Boxcolor[2] = 0.341;
-	*/
 	Boxcolor[3] = color[3];
 	
-	/*if ( !color ) {
-		return;
-	}*/
-
 	trap_R_SetColor( color );
 
 	i = 0;
@@ -4288,43 +3571,6 @@ static void CG_DrawAdminMsg( void ) {
 	message[msgRow][msgCol] = '\0';
 	++msgRow;
 
-	/* Sorry but this code really didn't work Phenix ... memory errors.
-	for (msgRow = 0; msgRow < 35; msgRow++)
-	{
-		if (cg.adminMsgMsg[i] == '\0')
-		{
-			break;
-		}
-
-		for (msgCol = 0; msgCol < 45; msgCol++)
-		{
-			if (cg.adminMsgMsg[i] == '\0')
-			{
-				break;
-			}
-
-			if (cg.adminMsgMsg[i] == '\\')
-			{
-				i++;
-				break;
-			}
-
-			if ((msgCol >= 30) && (cg.adminMsgMsg[i] == ' '))
-			{
-				i++;
-				break;
-			}
-			
-			if (msgCol == 44) {
-				message[msgRow][msgCol] = '-';
-			} else {
-				message[msgRow][msgCol] = cg.adminMsgMsg[i];
-				i++;
-			}
-		}
-	}
-	*/
-
 	biggestW = 0;
 	for (i = 0; i < msgRow; i++)
 	{
@@ -4343,7 +3589,6 @@ static void CG_DrawAdminMsg( void ) {
 	{
 		y -= (SMALLCHAR_HEIGHT + 2);
 		
-		//memset(&thisMessage, 0, sizeof(thisMessage));
 		thisMessage = va("%s", message[i]);
 		UI_DrawProportionalString(640 - (biggestW + 20), y, thisMessage, UI_SMALLFONT, color);
 	}
@@ -4398,7 +3643,6 @@ static void CG_Draw2D( void ) {
 	cgs.widescreen.state = WIDESCREEN_NONE;
 
 	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR /*|| (cg.snap->ps.eFlags&EF_ELIMINATED)*/ ) {
-//		CG_DrawSpectator();
 		CG_DrawCrosshair();
 		CG_DrawCrosshairNames();
 	} else {
@@ -4406,7 +3650,6 @@ static void CG_Draw2D( void ) {
 			CG_DrawStatusBar(); //RPG-X: RedTechie - We want health displayed when dead
 			// don't draw any status if dead
 			if ( cg.snap->ps.stats[STAT_HEALTH] > 1 ) { //RPG-X: RedTechie - No weapons at health 1 (you die at health 1 now)
-				//CG_DrawStatusBar();
 				CG_DrawAmmoWarning();
 				
 				cgs.widescreen.state = WIDESCREEN_NONE;
@@ -4513,7 +3756,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	VectorNormalize( vup_n );
 
 	// optionally draw the tournement scoreboard instead
-	if ( (cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR /*|| (cg.snap->ps.eFlags&EF_ELIMINATED)*/)&&
+	if ( (cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR )&&
 		( cg.snap->ps.pm_flags & PMF_SCOREBOARD ) ) {
 		CG_DrawTourneyScoreboard();
 		return;

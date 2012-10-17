@@ -181,10 +181,7 @@ void CG_RankList_cmd( void ) {
 	CG_Printf( S_COLOR_GREEN "Console Name \t - \t Formal Name\n" );
 
 	/* Loop thru each val and print them */
-	for ( i = 0; i < MAX_RANKS; i++ ) {
-		/*if ( strlen( cgs.ranksData[i].consoleName ) < 1 || strlen( cgs.ranksData[i].formalName ) < 1 )
-			return; */
-		
+	for ( i = 0; i < MAX_RANKS; i++ ) {		
 		if ( cgs.ranksData[i].consoleName[0] ) 
 			CG_Printf( "%s \t - \t %s\n", cgs.ranksData[i].consoleName, cgs.ranksData[i].formalName );
 		else
@@ -207,10 +204,7 @@ void CG_ClassList_cmd( void ) {
 	CG_Printf( S_COLOR_GREEN "Formal Name\n" );
 
 	/* Loop thru each val and print them */
-	for ( i = 0; i < MAX_CLASSES; i++ ) {
-		/* if ( strlen( cgs.ranksData[i].consoleName ) < 1 || strlen( cgs.ranksData[i].formalName ) < 1 )
-			return; */
-		
+	for ( i = 0; i < MAX_CLASSES; i++ ) {		
 		if ( cgs.classData[i].formalName[0] ) 
 			CG_Printf( "%s\n", cgs.classData[i].formalName );
 		else
@@ -275,8 +269,6 @@ void CG_Emote_f( void ) {
 	int				i;
 	animation_t		*anims;
 	int				animLength;
-	/* int				animLengthUpper;
-	   int				animLengthLower; */
 	qboolean		emoteFound=qfalse;
 
 	argStr = CG_Argv( 1 );
@@ -301,32 +293,16 @@ void CG_Emote_f( void ) {
 	/* find out emote in the list
 	   value of numEmotes calced in bg_misc.c
 	   or if an int was supplied as an arg, use that */
-	/*if ( !argStr[0] >= '0' && argStr[0] <= '9' ) 
-	{
-		i = atoi( argStr );
+	for ( i = 0; i < bg_numEmotes; i++ ) 
+	{ 
+		emote = &bg_emoteList[i];
 
-		if ( i > 0 || i < bg_numEmotes ) {
-			emote = &bg_emoteList[i];
+		if ( emote && !Q_stricmp( emote->name, argStr ) ) 
+		{
 			emoteFound = qtrue;
-		}
-		else {
-			CG_Printf( S_COLOR_RED "ERROR: An invalid emote number was given.\n" );
-			return;			
+			break;
 		}
 	}
-	else 
-	{*/
-		for ( i = 0; i < bg_numEmotes; i++ ) 
-		{ /* i < sizeof( emoteList ) / sizeof( emoteList[0] ) */
-			emote = &bg_emoteList[i];
-
-			if ( emote && !Q_stricmp( emote->name, argStr ) ) 
-			{
-				emoteFound = qtrue;
-				break;
-			}
-		}
-	/*} */
 
 	if ( !emoteFound ) {
 		CG_Printf( S_COLOR_RED "ERROR: Specified emote not found\n" );
@@ -343,7 +319,6 @@ void CG_Emote_f( void ) {
 
 	/* Anim length for lower model */
 	if ( !( emote->animFlags & EMOTE_LOOP_UPPER ) && !( emote->animFlags & EMOTE_LOOP_LOWER ) ) {
-		/* numFrames * (1000 / fps = frameLerp ) = time length */
 		animLength = anims->numFrames * anims->frameLerp;
 	}
 	else {
@@ -644,7 +619,6 @@ void CG_ThirdPersonRevert_f ( void ) {
 	for (i = 0; i < 5; i++ ){
 		trap_Cvar_VariableStringBuffer ( cVars[i], value, sizeof( value ) );
 		TPSVars[i]->value = atof( value );
-		/* Q_strncpyz( TPSVars[i]->string, value, 256 ); */
 	}
 }
 
@@ -686,32 +660,6 @@ void CG_ToggleThirdPerson_f ( void ) {
 
 	trap_Cvar_Set( "cg_thirdPerson", va( "%i", value ) );
 }
-
-/*TiM - Test the ability to handle binary data streams
-void CG_LoadBinaryData( void )
-{
-	const char *fileRoute = "rpgx.idkey";
-	fileHandle_t		f;
-	int					len;
-	byte				buffer[SECURITY_SIZE];
-	rpgxSecurityFile_t	*c;
-
-	if (!fileRoute)
-		return;
-
-	len = trap_FS_FOpenFile( fileRoute, &f, FS_READ );
-
-	if ( !len )
-		return;
-
-	trap_FS_Read( buffer, len,	f );
-	trap_FS_FCloseFile( f );
-
-	c = (rpgxSecurityFile_t *)((byte *)buffer);
-
-	CG_Printf( "ID: %i, Hash: %i, PID: %i\n", c->ID, c->hash > 0xFFFF ? 1 : 0, c->playerID > 0xFFFF ? 1 : 0);
-	CG_Printf( "%i\n", (unsigned)atoi( sv_securityHash.string ) > 0xFFFF ? 1 : 0 );
-}*/
 
 /*================================================================================*/
 
@@ -772,15 +720,12 @@ static consoleCommand_t	commands[] = {
 	{ "loaddefered",			CG_LoadDeferredPlayers },			/* spelled wrong, but not changing for demo... */
 	{ "+analysis",				CG_ObjectivesDown_f },
 	{ "-analysis",				CG_ObjectivesUp_f },
-	/*{ "+shake",				CG_ShakeCamera_cmd },*/
 	{ "iloverpg-x",				CG_Cough_cmd },
-	/*{ "commandList",			 CG_CmdList_cmd },*/
 	{ "rankList",				CG_RankList_cmd },
 	{ "locationList",			CG_BeamList_cmd },
 	{ "classList",				CG_ClassList_cmd },
 	{ "emote",					CG_Emote_f },
 	{ "locedit",				CG_LocEdit_f },
-	/*{ "fileID",					CG_LoadBinaryData }*/
 };
 
 
@@ -836,7 +781,6 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("say_team");
 	/* START MOD */
 	trap_AddCommand ("say_class");
-	/*trap_AddCommand ("giveTo");*/
 	trap_AddCommand ("forceName");
 	trap_AddCommand ("forceKill");
 	trap_AddCommand ("forceKillRadius");
