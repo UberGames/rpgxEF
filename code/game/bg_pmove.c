@@ -53,34 +53,6 @@ extern vmCvar_t				rpg_altTricorderDelay;
 #define ALT_TRICORDER_DELAY 1000
 #endif
 
-//qboolean BG_BorgTransporting( playerState_t *ps )
-//{
-//	if ( ps->persistant[PERS_CLASS] == PC_BORG && bg_itemlist[ps->stats[STAT_HOLDABLE_ITEM]].giTag == HI_TRANSPORTER && ps->stats[STAT_USEABLE_PLACED] == 2 )
-//	{//A player who has an item and it's set to 2 - meaning flight
-//		return qtrue;
-//	}
-//	return qfalse;
-//}
-
-/*typedef enum {
-	ANIM_CROUCH,
-	ANIM_DOCROUCH,
-	ANIM_UNCROUCH,
-	ANIM_STAND,
-	ANIM_FIRE,
-	ANIM_JUMP,
-	ANIM_JUMPB,
-	ANIM_RUN,
-	ANIM_RUNB,
-	ANIM_WALK,
-	ANIM_WALKB,
-	ANIM_CROUCHWALK,
-	ANIM_CROUCHWALKB,
-	ANIM_SWIM,
-	ANIM_TURN,
-	ANIM_FLY,
-} animList_t;*/
-
 //TiM - Copied from the UI module.
 //My aim here is to adapt the checks code here so the function can be used both for
 //ingame animation, as well as UI animation
@@ -123,11 +95,9 @@ qboolean PM_Holding2HandedWeapon ( void ) {
 qboolean PM_PlayerCrouching ( int legsAnim ) {
 	//switch( pm->ps->legsAnim ) {
 	switch( ( legsAnim & ~ANIM_TOGGLEBIT) ) {
-		//case BOTH_CROUCH1:
 		case BOTH_CROUCH1IDLE:
 		case BOTH_CROUCH1WALK:
 		case BOTH_CROUCH2IDLE:
-		//case BOTH_CROUCH2TOSTAND1:
 			return qtrue;
 	}
 	return qfalse;
@@ -137,7 +107,6 @@ qboolean PM_PlayerCrouching ( int legsAnim ) {
 *	Check if player is idling.
 */
 qboolean PM_PlayerIdling ( int torsoAnim, int legsAnim ) {
-	//switch( pm->ps->legsAnim ) {
 	//TiM : Cool hacky way to make sure both upper and lower anims are the same
 	switch( ( legsAnim & ~ANIM_TOGGLEBIT) ) //+ ( torsoAnim & ~ANIM_TOGGLEBIT)) >> 1
 	{
@@ -286,7 +255,6 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 					break;
 				//2 handed weapon - "light"
 				case WP_6:
-				//case WP_7:
 					if ( ps->pm_flags & ANIM_ALERT && upper )
 						return BOTH_STAND2;
 					else if (upper)
@@ -451,34 +419,9 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 			//Other: "Hypo
 			case WP_12:
 				if (upper)
-					//return TORSO_HYPOSPRAY1;
 					return TORSO_HYPO1;
 				else
 					return BOTH_STAND1;
-			//Other: "Toolkit"
-			/*case WP_14:
-				//Return nothing.  
-				//A bit hacky, but the engine accepts it :P
-				break;*/
-			//Other Tools "everything else"
-			/*case WP_1:
-				switch(rand()%13)
-				{
-					case 0: return TORSO_HANDGESTURE1;
-					case 1: return TORSO_HANDGESTURE2;
-					case 2: return TORSO_HANDGESTURE3;
-					case 3: return TORSO_HANDGESTURE4;
-					case 4: //PM_StartTorsoAnim( TORSO_HANDGESTURE5 ); break;
-					case 5: return TORSO_HANDGESTURE6;
-					case 6: return TORSO_HANDGESTURE7;
-					case 7: return TORSO_HANDGESTURE8;
-					case 8: return TORSO_HANDGESTURE9;
-					case 9: return TORSO_HANDGESTURE10;
-					case 10: return TORSO_HANDGESTURE11;
-					case 11: return TORSO_HANDGESTURE12;
-					case 12: return TORSO_HANDGESTURE13;
-				}
-				break;*/
 			case WP_4:
 				if (upper)
 					return TORSO_COFFEE;
@@ -507,7 +450,6 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 
 			//2 handed weapons
 			switch (weapon) {
-				//case WP_7:
 				case WP_8:
 				case WP_9:
 				case WP_6:
@@ -548,7 +490,6 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 				case WP_4:
 					if (upper)
 						return TORSO_COFFEE;
-					//break;
 				default:
 					if (upper)
 						return BOTH_WALK1;
@@ -568,7 +509,6 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 
 			//2 handed weapons
 			switch (weapon) {
-				//case WP_7:
 				case WP_8:
 				case WP_9:
 				case WP_6:
@@ -612,7 +552,6 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 		case ANIM_WALKB:
 			//2 handed weapons
 			switch (weapon) {
-				//case WP_7:
 				case WP_8:
 				case WP_9:
 				case WP_6:
@@ -717,7 +656,6 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 				case WP_4:
 					if (upper)
 						return TORSO_COFFEE;
-					//break;
 				case WP_5:
 				case WP_10:
 					if ( ps->pm_flags & ANIM_ALERT && upper )
@@ -744,12 +682,6 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 
 			return BOTH_FLOAT1;
 
-			/*if ( ps->velocity[2] >= 0 ) {
-				return BOTH_FLOAT1;
-			}
-			else {
-				return BOTH_FLOAT2;
-			}*/
 		case ANIM_FLY:
 			return BOTH_FLOAT1;
 	}
@@ -783,7 +715,7 @@ void PM_Use( void )
 	playerState_t *ps = pm->ps;
 
 	if ( ps->useTime > 0 )
-		ps->useTime -= 100;//pm->cmd.msec;
+		ps->useTime -= 100;
 
 	if ( ps->useTime > 0 ) {
 		return;
@@ -793,7 +725,6 @@ void PM_Use( void )
 	{
 		pm->useEvent = 0;
 		ps->useTime = 0;
-		//PM_StartTorsoAnim( BOTH_CONSOLE1 );
 		
 		return;
 	}
@@ -849,12 +780,10 @@ static void PM_StartTorsoAnim( int anim, qboolean overrideEmotes ) {
 		return;
 	}
 
-	//if ( ps->torsoTimer > 0 ) {
 	if ( ps->stats[TORSOTIMER] > 0 ) {
 		return;		// a high priority animation is running
 	}
 
-	//ps->torsoAnim
 	ps->stats[TORSOANIM] = ( ( ps->stats[TORSOANIM] & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
 		| anim;
 }
@@ -865,10 +794,6 @@ static void PM_StartTorsoAnim( int anim, qboolean overrideEmotes ) {
 static void PM_StartLegsAnim( int anim ) {
 	playerState_t *ps = pm->ps;
 
-	/*if ( ps->stats[EMOTES] & EMOTE_CLAMP ) {
-		return;
-	}*/
-
 	if ( ps->pm_type >= PM_DEAD && 
 		anim != BOTH_FALLDEATH1INAIR && 
 		anim != BOTH_FALLDEATH1LAND ) 
@@ -876,12 +801,6 @@ static void PM_StartLegsAnim( int anim ) {
 		return;
 	}
 
-	//if ( ps->introTime > 0 ) { //legsTimer
-	/*if ( ps->stats[LEGSTIMER] > 0 ) { //legsTimer
-		return;		// a high priority animation is running
-	}*/
-
-	//ps->legsAnim
 	ps->stats[LEGSANIM] = ( ( ps->stats[LEGSANIM] & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
 		| anim;
 }
@@ -897,7 +816,6 @@ static void PM_ContinueLegsAnim( int anim, qboolean overrideEmote ) {
 		if ( ps->legsTimer>0 && ( ps->stats[LEGSANIM] & ~ANIM_TOGGLEBIT ) != bg_emoteList[ ps->legsTimer ].enumName && ( ps->stats[LEGSANIM] & ~ANIM_TOGGLEBIT ) != BOTH_GET_UP1 ) {
 			int anim2 = PM_GetAnim( ANIM_IDLE, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse );
 			
-			//Com_Printf( "KILL!\n");
 			ps->stats[LEGSANIM] = ( ( ps->stats[LEGSANIM] & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim2;
 		}
 	}
@@ -906,11 +824,10 @@ static void PM_ContinueLegsAnim( int anim, qboolean overrideEmote ) {
 		return;
 	}
 
-	//if ( ( ps->legsAnim & ~ANIM_TOGGLEBIT ) == anim ) {
 	if ( ( ps->stats[LEGSANIM] & ~ANIM_TOGGLEBIT ) == anim ) {
 		return;
 	}
-	//if ( ps->introTime > 0 ) { //legsTimer
+
 	if ( ps->stats[LEGSTIMER] > 0 && !overrideEmote ) { //legsTimer
 		return;		// a high priority animation is running
 	}
@@ -927,12 +844,10 @@ static void PM_ContinueTorsoAnim( int anim, qboolean overrideEmote ) {
 		return;
 	}
 
-	//if ( ( ps->torsoAnim & ~ANIM_TOGGLEBIT ) == anim ) {
 	if ( ( ps->stats[TORSOANIM] & ~ANIM_TOGGLEBIT ) == anim ) {
 		return;
 	}
 
-	//if ( ps->torsoTimer > 0 ) {
 	if ( ps->stats[TORSOTIMER] > 0 ) {
 		return;		// a high priority animation is running
 	}
@@ -966,78 +881,9 @@ static void PM_ForceTorsoAnim( int anim, qboolean overrideEmotes ) {
 		ps->stats[EMOTES] &= ~EMOTE_MASK_UPPER;
 		ps->stats[TORSOTIMER] = 0;
 	}
-	//ps->stats[TORSOTIMER] = 0;
 
 	PM_StartTorsoAnim( anim, overrideEmotes );
 }
-
-/*
-================
-PM_Animate (RPG-X:J2J)
-
-TiM: Bookmark... this shows promise :)
-LATER: Nope... scratch that.
-Although it's good in the fact it assigns
-the anim right, it doesn't take the timers
-into account, meaning this would play for a 
-total of one clock cycle :P
-================
-*/
-/*static void PM_DoEmote( void )
-{
-	if ( pm->ps->stats[EMOTES] & EMOTE_LOWER ) {
-		pm->ps->viewheight = emoteList[pm->ps->legsAnim].viewHeight;
-	}
-}*/
-
-/*static void PM_DoEmote( void )
-{
-	int EmoteType = 0;			//0 = legs, 1 = torso, 2 = both
-	
-	//Bail out if no new emote or invalid.
-	if(CurrentEmote[pm->ps->clientNum] < 0 || CurrentEmote[pm->ps->clientNum] >= MAX_ANIMATIONS)
-		return;
-
-	//Get animation type
-	if(CurrentEmote[pm->ps->clientNum] >= LEGS_WALKBACK1)
-		EmoteType = 0;
-	if(CurrentEmote[pm->ps->clientNum] >= TORSO_DROPWEAP1 && CurrentEmote[pm->ps->clientNum] <= TORSO_CARRY1)
-		EmoteType = 1;
-	if(CurrentEmote[pm->ps->clientNum] >= BOTH_DEATH1 && CurrentEmote[pm->ps->clientNum] <= BOTH_POWERUP1)
-		EmoteType = 2;
-
-//Check for higher priority animations
-	if(EmoteType == 0)
-	{
-		//ToDo: insert checking for high priority anims
-	}
-	else if(EmoteType == 1)
-	{
-		//ToDo: insert checking for high priority anims
-	}
-	else //Implies EmoteType == 2
-	{
-		//ToDo: insert checking for high priority anims
-	}
-
-	//Do the emote (play the anim)
-	if(EmoteType == 0 || EmoteType == 2)
-	{
-		PM_ForceLegsAnim(CurrentEmote[pm->ps->clientNum]); //CurrentEmote[pm->ps->clientNum]
-		//pm->ps->legsAnim = ( ( pm->ps->legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
-		//| CurrentEmote[pm->ps->clientNum];
-	}
-	if(EmoteType == 1 || EmoteType == 2)
-	{
-		PM_ForceTorsoAnim(CurrentEmote[pm->ps->clientNum]);
-		//pm->ps->torsoAnim = ( ( pm->ps->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
-		//| CurrentEmote[pm->ps->clientNum];
-	}
-
-	//Make -1 so it doesnt start the anim again.
-    CurrentEmote[pm->ps->clientNum] = -1;
-}*/
-
 
 /*
 ==================
@@ -1657,7 +1503,6 @@ static void PM_WalkMove( void ) {
 
 	cmd = pm->cmd;
 	scale = PM_CmdScale( &cmd );
-	//scale = 0.4; //TiM
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
@@ -1677,7 +1522,6 @@ static void PM_WalkMove( void ) {
 		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
 	}
 	// when going up or down slopes the wish velocity should Not be zero
-//	wishvel[2] = 0;
 
 	VectorCopy (wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
@@ -1711,15 +1555,9 @@ static void PM_WalkMove( void ) {
 
 	PM_Accelerate (wishdir, wishspeed, accelerate);
 
-	//Com_Printf("velocity = %1.1f %1.1f %1.1f\n", ps->velocity[0], ps->velocity[1], ps->velocity[2]);
-	//Com_Printf("velocity1 = %1.1f\n", VectorLength(ps->velocity));
-
 	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || ps->pm_flags & PMF_TIME_KNOCKBACK ) {
 		ps->velocity[2] -= ps->gravity * pml.frametime;
-	} else {
-		// don't reset the z velocity for slopes
-//		ps->velocity[2] = 0;
-	}
+	} 
 
 	vel = VectorLength(ps->velocity);
 
@@ -1737,9 +1575,6 @@ static void PM_WalkMove( void ) {
 	}
 
 	PM_StepSlideMove( qfalse );
-
-	//Com_Printf("velocity2 = %1.1f\n", VectorLength(ps->velocity));
-
 }
 
 
@@ -1879,21 +1714,8 @@ static void PM_FreezeMove( void )
 		if ( ps->stats[EMOTES] & EMOTE_LOWER && ps->legsTimer > 0 ) {
 			pm->maxs[2] = bg_emoteList[ps->legsTimer].hitBoxHeight;
 			ps->viewheight = bg_emoteList[ps->legsTimer].viewHeight;
-			//Com_Printf( S_COLOR_RED "%f", bg_emoteList[ps->legsTimer].viewHeight );
 		}
 		else {
-			//TiM - essentially flip the bounding box
-			/*if ( ps->powerups[PW_FLIGHT] && Q_fabs( ps->viewangles[PITCH] ) > 89.0f ) {
-				pm->maxs[2] = 92;
-				pm->mins[2] = 32;
-				ps->viewheight = DEFAULT_VIEWHEIGHT;
-			}*/
-			//else {
-			//TiM - Copied above
-				/*pm->maxs[2] = 36;
-				pm->mins[2] = MINS_Z;
-				ps->viewheight = DEFAULT_VIEWHEIGHT;*/
-			//}
 			ps->viewheight = DEFAULT_VIEWHEIGHT;
 		}
 	}
@@ -1911,7 +1733,6 @@ static void PM_FreezeMove( void )
 				temp = -16000;
 			}
 		}
-//		ps->viewangles[i] = SHORT2ANGLE(temp);		// Clear the view angles, but don't set them.
 	}
 
 	VectorCopy (ps->origin, moveto);
@@ -2031,15 +1852,6 @@ static void PM_CrashLand( void ) {
 	float		a, b, c, den;
 	playerState_t *ps = pm->ps;
 
-	// decide which landing animation to use
-	if ( ps->pm_flags & PMF_BACKWARDS_JUMP ) {
-	//	PM_ForceLegsAnim( LEGS_LANDB );
-	} else {
-	//	PM_ForceLegsAnim( LEGS_LAND );
-	}
-
-//	ps->legsTimer = 0; //TIMER_LAND
-
 	// calculate the exact velocity on landing
 	dist = ps->origin[2] - pml.previous_origin[2];
 	vel = pml.previous_velocity[2];
@@ -2086,14 +1898,14 @@ static void PM_CrashLand( void ) {
 	// want to take damage or play a crunch sound
 	if ( !(pml.groundTrace.surfaceFlags & SURF_NODAMAGE) )  {
 		if ( delta > 55 || ps->stats[STAT_HEALTH] <= 1 ) { //60 //TiM a bit hacky, but I want this to play any time we fall when dead
-			PM_AddEvent( /*EV_FALL_FAR*/PM_LandsoundForSurface(2) ); //GSIO01 | 20/05/2009
+			PM_AddEvent( PM_LandsoundForSurface(2) ); //GSIO01 | 20/05/2009
 		} else if ( delta > 35 ) { //40
 			// this is a pain grunt, so don't play it if dead
 			if ( ps->stats[STAT_HEALTH] > 1 ) { //0
-				PM_AddEvent( /*EV_FALL_MEDIUM*/PM_LandsoundForSurface(1) ); //GSIO01 | 20/05/2009
+				PM_AddEvent( PM_LandsoundForSurface(1) ); //GSIO01 | 20/05/2009
 			}
 		} else if ( delta > 5 ) { //7
-			PM_AddEvent( /*EV_FALL_SHORT*/ PM_LandsoundForSurface(0) ); //GSIO01 | 20/05/2009
+			PM_AddEvent( PM_LandsoundForSurface(0) ); //GSIO01 | 20/05/2009
 		} else {
 			PM_AddEvent( PM_FootstepForSurface() );
 		}
@@ -2269,9 +2081,6 @@ static void PM_GroundTrace( void ) {
 
 	ps->groundEntityNum = trace.entityNum;
 
-	// don't reset the z velocity for slopes
-//	pm->ps->velocity[2] = 0;
-
 	PM_AddTouchEnt( trace.entityNum );
 }
 
@@ -2378,25 +2187,13 @@ static void PM_CheckDuck (void)
 		if ( ps->stats[EMOTES] & EMOTE_LOWER && ps->legsTimer > 0 ) {
 			pm->maxs[2] = bg_emoteList[ps->legsTimer].hitBoxHeight;
 			ps->viewheight = bg_emoteList[ps->legsTimer].viewHeight;
-
-			//Com_Printf( S_COLOR_RED "legsTimer = %i, viewHeight = %i\n", ps->legsTimer, ps->viewheight );
 		}
 		else {
-			//TiM - essentially flip the bounding box
-			/*if ( ps->powerups[PW_FLIGHT] && Q_fabs( ps->viewangles[PITCH] ) > 89.0f ) {
-				pm->maxs[2] = 92;
-				pm->mins[2] = 32;
-				ps->viewheight = DEFAULT_VIEWHEIGHT;
-			}*/
-			//else {
-				pm->maxs[2] = 36;
-				pm->mins[2] = MINS_Z;
-				ps->viewheight = DEFAULT_VIEWHEIGHT;
-			//}
+			pm->maxs[2] = 36;
+			pm->mins[2] = MINS_Z;
+			ps->viewheight = DEFAULT_VIEWHEIGHT;
 		}
 	}
-
-	//Com_Printf( "Viewheight is %i\n", ps->viewheight );
 }
 
 
@@ -2419,7 +2216,6 @@ static void PM_Footsteps( void ) {
 	int			old;
 	qboolean	footstep;
 	playerState_t *ps = pm->ps;
-	//qboolean	didFly;
 
 	//
 	// calculate speed and cycle to be used for
@@ -2439,8 +2235,6 @@ static void PM_Footsteps( void ) {
 		(So if they landed on a shuttle model for instance, the fall anim would still loop O_o ) 
 		so they gotta be moving as well to trigger this*/
 
-		//Com_Printf("groundEnt = %i, speed = %f, animState = %i\n",ps->groundEntityNum, pm->xyzspeed, ps->pm_flags);
-
 		if ( ps->groundEntityNum == ENTITYNUM_NONE && pm->xyzspeed && pm->waterlevel < 2 ) {
 
 			ps->pm_flags |= ANIM_DIDFLY;
@@ -2456,7 +2250,6 @@ static void PM_Footsteps( void ) {
 		else {
 			if ( ps->pm_flags & ANIM_DIDFLY ) {
 			//TiM: Save flags.  Use anim nums if possible
-			//if (ps->torsoAnim == BOTH_FALLDEATH1INAIR && ps->legsAnim == BOTH_FALLDEATH1INAIR ) {
 				PM_ContinueLegsAnim( BOTH_FALLDEATH1LAND, qtrue );
 
 
@@ -2489,7 +2282,6 @@ static void PM_Footsteps( void ) {
 			 && ps->stats[EMOTES] & EMOTE_CLAMP_BODY ) {
 			ps->stats[EMOTES] &= ~EMOTE_CLAMP_BODY;
 		}
-		//ps->pm_flags &= ~( ANIM_OFFLADDER );
 	}
 	
 	//If on ladder, but not touching the ground
@@ -2499,40 +2291,17 @@ static void PM_Footsteps( void ) {
 			ps->pm_flags |= ANIM_ONLADDER ;
 			ps->stats[EMOTES] |= EMOTE_CLAMP_BODY;
 		}
-		//ps->pm_flags &= ~( ANIM_OFFLADDER );
 	}
 	
-	//If was going down the ladder, and hit the floor	
-/*	if ( !(ps->pm_flags & (ANIM_ONLADDER) ) && 
-		!(ps->pm_flags & (ANIM_OFFLADDER) ) && 
-		( pm->watertype & CONTENTS_LADDER) && 
-		( ps->groundEntityNum != ENTITYNUM_NONE ) )  
-	{
-		ps->pm_flags |= (ANIM_ONLADDER);
-		ps->pm_flags &= ~(ANIM_OFFLADDER);
-
-		if ( ps->legsAnim == BOTH_LADDER_DWN1 || ps->legsAnim == BOTH_LADDER_IDLE) { //Going DOWN!
-			ps->pm_flags &= ~(ANIM_ONLADDER);
-			ps->pm_flags |= (ANIM_OFFLADDER);
-		}
-	}
-*/
-	//Com_Printf("pm->onLadder = %i, pm->offLadder = %i, vel = %i\n", pm->onLadder, pm->offLadder, ps->velocity[2] );
-
 	//Transition anim to get off ladder
 	if ( ( pm->watertype & CONTENTS_LADDER) && ( ps->groundEntityNum != ENTITYNUM_NONE ) && (ps->pm_flags & ANIM_ONLADDER) ) {//We JUST hit a ladder on the ground
 		PM_ContinueLegsAnim( BOTH_OFFLADDER_BOT1, qtrue );
-		//ps->legsTimer = TIMER_GESTURE;
 
 		if ( ps->weaponstate == WEAPON_READY )
 		{
 			PM_ContinueTorsoAnim( BOTH_OFFLADDER_BOT1, qtrue );
-			//ps->torsoTimer = TIMER_GESTURE;
 		}
-		//pm->offLadder = qtrue;
-		//if ( !(ps->pm_flags & ANIM_UPPER_LOOPING) ) {
 		ps->stats[EMOTES] &= ~EMOTE_CLAMP_BODY;
-		//}
 
 		return;
 	}
@@ -2540,14 +2309,11 @@ static void PM_Footsteps( void ) {
 	//Transition anim to get on ladder
 	if ( ( pm->watertype & CONTENTS_LADDER) && ( ps->groundEntityNum != ENTITYNUM_NONE ) && !(ps->pm_flags & ANIM_ONLADDER) ) {//We JUST hit a ladder on the ground
 		PM_ContinueLegsAnim( BOTH_ONLADDER_BOT1, qtrue );
-		//ps->legsTimer = TIMER_GESTURE;
 
 		if ( ps->weaponstate == WEAPON_READY )
 		{
 			PM_ContinueTorsoAnim( BOTH_ONLADDER_BOT1, qtrue );
-			//ps->torsoTimer = TIMER_GESTURE;
 		}
-		//pm->onLadder = qfalse;
 		
 		return;
 	}
@@ -2569,7 +2335,7 @@ static void PM_Footsteps( void ) {
 					anim = BOTH_LADDER_DWN1;
 				}
 				PM_ContinueLegsAnim( anim, qtrue );
-				//if ( pm->waterlevel >= 2 )	//arms on ladder
+
 				if ( ps->weaponstate == WEAPON_READY )
 				{
 					PM_ContinueTorsoAnim( anim, qtrue );
@@ -2583,12 +2349,10 @@ static void PM_Footsteps( void ) {
 			else
 			{
 				PM_ContinueLegsAnim( BOTH_LADDER_IDLE, qtrue );
-				//ps->legsTimer += 300;
-				//if ( pm->waterlevel >= 2 )	//arms on ladder
+
 				if ( ps->weaponstate == WEAPON_READY )
 				{
 					PM_ContinueTorsoAnim( BOTH_LADDER_IDLE, qtrue );
-					//ps->torsoTimer += 300;
 				}
 			}
 			return;
@@ -2599,25 +2363,19 @@ static void PM_Footsteps( void ) {
 				if ( ps->weaponstate == WEAPON_READY )
 					PM_ContinueTorsoAnim( PM_GetAnim( ANIM_SWIM, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qtrue );
 				PM_ContinueLegsAnim( PM_GetAnim( ANIM_SWIM, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse ), qtrue );
-			} /*else if ( ps->pm_flags & PMF_DUCKED ) {
-				PM_ContinueLegsAnim( BOTH_CROUCH2IDLE ); //BOTH_CROUCH1IDLE
-			}*/
+			} 
 
 			return;
 		}
 	}
 
-	
-	//Com_Printf( "Speed: %f\n", pm->xyspeed );
 
 	// if not trying to move
 	if ( ( !ps->speed || pm->xyspeed < 1.0f || !(pm->cmd.forwardmove || pm->cmd.rightmove) ) 
 		&& pm->waterlevel < 3 
 		&& !ps->powerups[PW_FLIGHT] && !(( ps->powerups[PW_EVOSUIT] ) && ( ps->gravity == 0 ))
-		/*&& !( pm->watertype & MASK_WATER )*/ ) 
+	   ) 
 	{
-		//Com_Printf("Truuue\n" );
-
 		if ( pm->xyspeed > 1.0f && !( ps->pm_flags & PMF_DUCKED ) && !( ps->stats[EMOTES] & EMOTE_LOWER ) ) 
 		{ //TiM: When you want to duck, you will duck. no delays
 			if ( !( pm->cmd.buttons & BUTTON_WALKING ) && !(ps->pm_flags & PMF_DUCKED) ) {
@@ -2634,51 +2392,22 @@ static void PM_Footsteps( void ) {
 			if ( ps->pm_flags & PMF_DUCKED && !(ps->stats[EMOTES] & EMOTE_LOWER ) ) {
 				
 				if ( ps->weaponstate == WEAPON_READY ) {
-					PM_ContinueTorsoAnim( PM_GetAnim( ANIM_CROUCH, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qfalse );
+					PM_ContinueTorsoAnim( PM_GetAnim( ANIM_CROUCH, ps->weapon, (qboolean)( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qfalse );
 				}
-				PM_ContinueLegsAnim( PM_GetAnim( ANIM_CROUCH, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse ), qtrue );
-
-				/*if ( !(ps->pm_flags & ANIM_CROUCHING) ) { //okay, we've obviously JUST crouched...
-					ps->pm_flags |= ANIM_CROUCHING;
-					if ( ps->weaponstate == WEAPON_READY ) {
-						PM_StartTorsoAnim( PM_GetAnim( "docrouch", qtrue ) );
-						ps->torsoTimer += 1200;
-					}
-
-					PM_StartLegsAnim( PM_GetAnim( "docrouch", qfalse ) );
-					ps->legsTimer += 1200;
-				}*/
+				PM_ContinueLegsAnim( PM_GetAnim( ANIM_CROUCH, ps->weapon, (qboolean)( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse ), qtrue );
 
 			} else {
 
 				if ( ps->weaponstate == WEAPON_READY )
-					PM_ContinueTorsoAnim( PM_GetAnim( ANIM_IDLE, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qfalse );
-				PM_ContinueLegsAnim( PM_GetAnim( ANIM_IDLE, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse ), qfalse );
+					PM_ContinueTorsoAnim( PM_GetAnim( ANIM_IDLE, ps->weapon, (qboolean)( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qfalse );
+				PM_ContinueLegsAnim( PM_GetAnim( ANIM_IDLE, ps->weapon, (qboolean)( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse ), qfalse );
 				
-				/*if ( (ps->pm_flags & ANIM_CROUCHING) ) { //okay, we've obviously JUST uncrouched...
-					ps->pm_flags &= ~ANIM_CROUCHING;
-
-					if ( ps->weaponstate == WEAPON_READY ) {
-						PM_StartTorsoAnim( PM_GetAnim( ANIM_UNCROUCH, qtrue ) );
-						ps->torsoTimer = 1100;
-						//Com_Printf("Anim: %i, timer: %i\n", ps->torsoAnim, ps->torsoTimer);
-					}
-
-					PM_StartLegsAnim( PM_GetAnim( ANIM_UNCROUCH, qfalse ) );
-					ps->introTime = 1100; //legsTimer
-				}*/
-
 			}
 		}
 		return;
 	}
 
 	footstep = qfalse;
-
-	//TiM : in case we're part-way thru a transition anim,
-	//reset the anim timer
-	//ps->torsoTimer = 0;
-	//ps->legsTimer = 0;
 	
 	//TiM : Kill this when swimming as it screws up animations
 	//Also... kill when speed is 0.. running on the spot is silly lol
@@ -2755,10 +2484,7 @@ static void PM_Footsteps( void ) {
 		} else if ( pm->waterlevel == 2 ) {
 			// wading / swimming at surface
 			PM_AddEvent( EV_SWIM );
-		} else if ( pm->waterlevel == 3 ) {
-			// no sound when completely underwater
-
-		}
+		} 
 	}
 }
 
@@ -2874,27 +2600,6 @@ PM_TorsoAnimation
 */
 static void PM_TorsoAnimation( void ) 
 {
-	
-	if ( pm->ps->weaponstate == WEAPON_READY )
-	{
-		/*if ( pm->ps->weapon == WP_5 || //RPG-X - TiM: Making the default pose anim better
-		pm->ps->weapon == WP_10 ) 
-		{
-			PM_ContinueTorsoAnim( TORSO_WEAPONIDLE1 );
-		} 
-		else 
-		{
-			PM_ContinueTorsoAnim( TORSO_WEAPONREADY2 );
-		}
-		if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
-			//PM_ContinueTorsoAnim( BOTH_RUN1 );
-		}
-		else {
-			PM_ContinueTorsoAnim( BOTH_WALK1 );
-		}*/
-	}
-	
-	//PM_ContinueTorsoAnim( TORSO_STAND2 );
 	return;
 }
 
@@ -2940,17 +2645,7 @@ static void PM_Weapon( void ) {
 		return;
 	}
 
-	//Check for phaser ammo recharge
-	//RPG-X: Marcin: don't! - 30/12/2008
-	if ( 0 ) //( (ps->rechargeTime <= 0) && ( ps->ammo[WP_5] < PHASER_AMMO_MAX) ) 
-	{
-		ps->rechargeTime = PHASER_RECHARGE_TIME;
-		ps->ammo[WP_5]++;
-	} 
-	else 
-	{
-		ps->rechargeTime -= pml.msec;
-	}
+	ps->rechargeTime -= pml.msec;
 
 	// check for dead player
 	if ( ps->stats[STAT_HEALTH] <= 0 ) {
@@ -2964,37 +2659,27 @@ static void PM_Weapon( void ) {
 		if ( ! ( ps->pm_flags 
 & PMF_USE_ITEM_HELD ) )
 		{
-			// I have commented out this code because, we want the medkit to ALWAYS be used.
-
-//			if ( bg_itemlist[ps->stats[STAT_HOLDABLE_ITEM]].giTag == HI_MEDKIT
-//				&& ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] )
-//			{
-//				// don't use medkit if at max health
-//			}
-//			else
+			int tag = bg_itemlist[ps->stats[STAT_HOLDABLE_ITEM]].giTag;
+			ps->pm_flags |= PMF_USE_ITEM_HELD;
+			PM_AddEvent( EV_USE_ITEM0 + tag );
+			// if we're placing the detpack, don't remove it from our "inventory"
+			if ( (HI_DETPACK == tag) /* || (HI_TRANSPORTER == tag)) */ &&
+					(IT_HOLDABLE == bg_itemlist[ps->stats[STAT_HOLDABLE_ITEM]].giType) )
 			{
-				int tag = bg_itemlist[ps->stats[STAT_HOLDABLE_ITEM]].giTag;
-				ps->pm_flags |= PMF_USE_ITEM_HELD;
-				PM_AddEvent( EV_USE_ITEM0 + tag );
-				// if we're placing the detpack, don't remove it from our "inventory"
-				if ( (HI_DETPACK == tag) /* || (HI_TRANSPORTER == tag)) */ &&
-					 (IT_HOLDABLE == bg_itemlist[ps->stats[STAT_HOLDABLE_ITEM]].giType) )
+				// are we placing it?
+				if (2 == ps->stats[STAT_USEABLE_PLACED])
 				{
-					// are we placing it?
-					if (2 == ps->stats[STAT_USEABLE_PLACED])
-					{
-						// we've placed the first stage of a 2-stage transporter
-					}
-					else if (ps->stats[STAT_USEABLE_PLACED])
-					{
-						// we already placed it, we're activating it.
-						ps->stats[STAT_HOLDABLE_ITEM] = 0;
-					}
+					// we've placed the first stage of a 2-stage transporter
 				}
-				else
+				else if (ps->stats[STAT_USEABLE_PLACED])
 				{
+					// we already placed it, we're activating it.
 					ps->stats[STAT_HOLDABLE_ITEM] = 0;
 				}
+			}
+			else
+			{
+				ps->stats[STAT_HOLDABLE_ITEM] = 0;
 			}
 			return;
 		}
@@ -3032,15 +2717,6 @@ static void PM_Weapon( void ) {
 	if ( ps->weaponstate == WEAPON_RAISING ) 
 	{
 		ps->weaponstate = WEAPON_READY;
-		/*if ( ps->weapon == WP_5 || //RPG-X - TiM: Making the default pose anim better
-		ps->weapon == WP_10 )
-		{
-			PM_StartTorsoAnim( TORSO_WEAPONREADY2 ); 
-		} 
-		else 
-		{
-			PM_StartTorsoAnim( TORSO_WEAPONIDLE1 );
-		}*/
 
 		PM_StartTorsoAnim( PM_GetAnim( ANIM_IDLE, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qfalse );
 
@@ -3061,39 +2737,6 @@ static void PM_Weapon( void ) {
 	{
 		if (pm->cmd.buttons & BUTTON_ALT_ATTACK)
 		{
-			// alt fire
-			// check for out of ammo
-			if ( ps->ammo[ps->weapon] < altAmmoUsage[ps->weapon])
-			{
-				//FIXME: flash a message and sound that indicates not enough ammo
-//				PM_AddEvent( EV_NOAMMO_ALT );
-//				ps->weaponTime += 500;
-//				ps->eFlags &= ~EF_ALT_FIRING;
-//				ps->eFlags &= ~EF_FIRING;
-///				ps->weaponstate = WEAPON_READY;
-
-				/*
-				RPG-X | Phenix | 27/02/2005
-				  if ( ps->weapon == WP_5 ) // phaser out of ammo is special case
-				{
-					ps->ammo[ps->weapon] = 0;
-				}
-				else
-				{
-					PM_AddEvent( EV_NOAMMO_ALT );		// Just try to switch weapons like any other.
-
-	// check out the EV_NOAMMO_ALT event				
-					
-					ps->weaponTime += 500;
-					return;
-				}*/
-			}
-			else
-			{
-				//ps->ammo[ps->weapon] -= altAmmoUsage[ps->weapon];
-				//RPG-X | Phenix | 27/02/2005
-				//altfired = qtrue;
-			}
 			altfired = qtrue;
 		}
 		else
@@ -3105,32 +2748,9 @@ static void PM_Weapon( void ) {
 				{
 					ps->ammo[ps->weapon] = 0;
 				}
-				//else //TiM - No ammo no more... this is lagging us up
-				//{	
-				//	PM_AddEvent( EV_NOAMMO );
-				//	ps->weaponTime += 500;
-				//	return;
-				//}
-			}
-			else
-			{
-				// main fire (always uses 1 ammo)
-				//ps->ammo[ps->weapon]--;
-				//RPG-X | Phenix | 27/02/2005
 			}
 		}
 	}
-
-	// *don't* start the animation if out of ammo
-	/*if ( ps->weapon == WP_5 || //RPG-X - TiM: Making the default pose anim better
-		ps->weapon == WP_10 )  
-	{
-		PM_StartTorsoAnim( TORSO_ATTACK2 );
-	} 
-	else 
-	{
-		PM_StartTorsoAnim( BOTH_ATTACK1 );
-	}*/
 
 	if ( ps->weapon != WP_14 && ps->weapon != WP_4 && ps->weapon != WP_1 ) 
 	{
@@ -3139,24 +2759,14 @@ static void PM_Weapon( void ) {
 			|| ( ps->weapon == WP_6 )
 			|| ( ps->weapon == WP_10 ) 
 			|| ( ps->weapon == WP_7 ) )
-			&& ( ps->pm_flags & PMF_DUCKED /*&& !pm->xyspeed*/ ) ) 
+			&& ( ps->pm_flags & PMF_DUCKED ) ) 
 		{
 			PM_ForceTorsoAnim( PM_GetAnim( ANIM_CROUCH, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qfalse );
-			/*BWEEE*/
-			//PM_ContinueTorsoAnim( PM_GetAnim( ANIM_ATTACK, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qfalse );
 		}
 		else 
 		{
-			/*if ( !PM_HoldingLoopableWeapon() ) {
-				PM_ForceTorsoAnim( PM_GetAnim( ANIM_FIRE, qtrue ), qtrue );
-			}
-			else {*/
-				//PM_ContinueLegsAnim( PM_GetAnim( ANIM_ATTACK, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse ), qfalse );
-				PM_ContinueTorsoAnim( PM_GetAnim( ANIM_ATTACK, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qfalse );
-			//}
+			PM_ContinueTorsoAnim( PM_GetAnim( ANIM_ATTACK, ps->weapon, ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue ), qfalse );
 		}
-		/*else
-			PM_StartTorsoAnim( PM_GetAnim( "fire", qtrue ) );*/
 
 		//Put in this scope, so holding down the trigger on these 'no-anim' weapons won't lock
 		//other animations.
@@ -3214,7 +2824,7 @@ static void PM_Weapon( void ) {
 			break;
 		case WP_12:
 			//RPG-X: RedTechie - Admins get faster alt fire for steam effects
-			if(/*ps->persistant[PERS_CLASS] == PC_ADMIN*/ pm->admin){
+			if( pm->admin){
 				addTime = 80;
 			}else{
 				addTime = 1000;
@@ -3227,7 +2837,7 @@ static void PM_Weapon( void ) {
 			addTime = 0; //1000
 			break;
 		case WP_2: 
-			if(pm->admin /*ps->persistant[PERS_CLASS] == PC_ADMIN*/){
+			if(pm->admin ){
 				addTime = ALT_TRICORDER_DELAY;
 			}else{
 				addTime = 0;
@@ -3239,9 +2849,6 @@ static void PM_Weapon( void ) {
 		case WP_15: 
 			addTime = 0; //1000
 			break;
-/*		case WP_7:
-			addTime = 500; //RPG-X: RedTechie - Use to be 1200
-			break;*/
 		}
 	}
 	else
@@ -3303,9 +2910,6 @@ static void PM_Weapon( void ) {
 		case WP_15: 
 			addTime = 0; //1000
 			break;
-/*		case WP_7:
-			addTime = 500; //RPG-X: RedTechie - Use to be 1200
-			break;*/
 		}
 	}
 
@@ -3326,12 +2930,6 @@ static void PM_Animate( void ) {
 
 	if ( pm->cmd.buttons & BUTTON_GESTURE ) {
 		if (ps->pm_type < PM_DEAD ) {
-		//if ( ps->torsoTimer == 0 ) {
-			//PM_StartTorsoAnim( BOTH_CONSOLE1 );
-			//PM_StartLegsAnim( BOTH_CONSOLE1 );
-			//ps->introTime = ps->torsoTimer = 4000; //TIMER_GESTURE //legsTimer
-			//PM_AddEvent( EV_TAUNT );
-
 			if ( !( ps->eFlags & EF_TALKING ) ) {
 				ps->eFlags |= EF_TALKING;
 			}
@@ -3390,17 +2988,13 @@ static void PM_DropTimers( void ) {
 				newFlags = ( bg_emoteList[ps->legsAnim].animFlags | bg_emoteList[ps->legsAnim].bodyFlags );
 				newFlags &= ~EMOTE_MASK_UPPER;
 				ps->stats[EMOTES] |= newFlags;
-				//Com_Printf( S_COLOR_RED "Set anim to %i\n", ps->legsAnim );
-
 				ps->legsTimer = ps->legsAnim;
-				//ps->torsoTimer	= emoteList[ps->torsoAnim].hitBoxHeight;
 			}
 			else 
 			{
 				ps->legsTimer		= 0;
 				ps->legsAnim		= 0;
 			}
-			//Com_Printf(S_COLOR_RED "Acknowledge Lower change!!\n");
 		}
 	}
 
@@ -3409,10 +3003,6 @@ static void PM_DropTimers( void ) {
 		if ( ps->stats[TORSOTIMER] < 0 ) 
 		{
 			ps->stats[TORSOTIMER] = 0;
-
-			/*if (ps->eFlags & EF_EMOTING ) {
-				ps->eFlags &= ~EF_EMOTING;
-			}*/
 		}
 	}
 	
@@ -3429,9 +3019,7 @@ static void PM_DropTimers( void ) {
 				//TiM - Remove any data about legs here.  it's not necessary and it invalidates any subsequent checks
 				newFlags = ( bg_emoteList[ps->torsoAnim].animFlags | bg_emoteList[ps->torsoAnim].bodyFlags );
 				newFlags &= ~EMOTE_MASK_LOWER;
-				ps->stats[EMOTES] |= newFlags;
-				//ps->stats[EMOTES] |= ( emoteList[ps->torsoAnim].animFlags | emoteList[ps->torsoAnim].bodyFlags );
-				
+				ps->stats[EMOTES] |= newFlags;				
 			}
 			else
 			{
@@ -3440,25 +3028,6 @@ static void PM_DropTimers( void ) {
 			}
 		}
 	}
-
-	// drop animation counter
-/*	if ( ps->introTime > 0 ) { //legsTimer
-		ps->introTime -= pml.msec;
-		if ( ps->introTime < 0 ) {
-			ps->introTime = 0;
-
-			if (ps->eFlags & EF_EMOTING ) {
-				ps->eFlags &= ~EF_EMOTING;
-			}
-		}
-	}
-
-	if ( ps->torsoTimer > 0 ) {
-		ps->torsoTimer -= pml.msec;
-		if ( ps->torsoTimer < 0 ) {
-			ps->torsoTimer = 0;
-		}
-	}*/
 }
 
 /*
@@ -3491,8 +3060,6 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
 	//With a flag here, a change to the client side player rotation code there,
 	//we could actually make it EVA suit users could rotate fully in all directions
 	//when in space. :)
-
-	//Com_Printf( "Before: %f %f %f\n", ps->viewangles[0], ps->viewangles[1], ps->viewangles[2]);
 
 	// circularly clamp the angles with deltas
 	for (i=0 ; i<3 ; i++) {
@@ -3534,10 +3101,6 @@ void PmoveSingle (pmove_t *pmove) {
 	pm->watertype = 0;
 	pm->waterlevel = 0;
 
-	//if(ps->legsTimer > 0 ) {
-	//	Com_Printf("%i, %i\n", ps->legsTimer, ps->torsoTimer);
-	//}
-
 	if ( ps->stats[STAT_HEALTH] <= 0 ) {
 		pm->tracemask &= ~CONTENTS_BODY;	// corpses can fly through bodies
 	}
@@ -3566,17 +3129,10 @@ void PmoveSingle (pmove_t *pmove) {
 		{
 			ps->eFlags &= ~EF_ALT_FIRING;
 		}
-		else // if ( pm->cmd.buttons & BUTTON_ALT_ATTACK ) <-- implied
+		else
 		{
 			ps->eFlags |= EF_ALT_FIRING;
 		} 
-
-		/*if ( ps->weapon == WP_10 )
-		{//tech can't use alt attack
-			pm->cmd.buttons &=~BUTTON_ALT_ATTACK;
-			pm->cmd.buttons |= BUTTON_ATTACK;
-		}*/
-		//TiM - good riddance to bad coding
 
 		// This flag should always get set, even when alt-firing
 		ps->eFlags |= EF_FIRING;
@@ -3626,7 +3182,6 @@ void PmoveSingle (pmove_t *pmove) {
 	if ( (ps->stats[EMOTES] & EMOTE_LOWER &&( ps->stats[EMOTES] & EMOTE_CLAMP_BODY )) || ( ps->stats[EMOTES] & EMOTE_CLAMP_ALL ) ) { //EMOTE_LOWER
 		pmove->cmd.forwardmove = 0;
 		pmove->cmd.rightmove = 0;
-		//pmove->cmd.upmove = Q_fabs( pmove->cmd.upmove );
 	}
 
 	if ( ps->stats[EMOTES] & ( EMOTE_LOWER | EMOTE_UPPER ) ) {
@@ -3644,18 +3199,6 @@ void PmoveSingle (pmove_t *pmove) {
 	if ( ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH ) {
 		pm->cmd.buttons &= ~BUTTON_WALKING;
 	}
-
-	//TiM : Override for looping animation emotes
-	//If player touches move keys, cancel emotes
-	/*if ( pmove->cmd.upmove || pmove->cmd.rightmove || pmove->cmd.forwardmove || ( pmove->cmd.buttons & MASK_KILL_EMOTES ) ) {
-		//if ( ( ps->pm_flags & ANIM_LOWER_LOOPING ) || ( ps->pm_flags & ANIM_UPPER_LOOPING ) ) {
-		if ( ps->stats[EMOTES] & EMOTE_LOWER || ps->stats[EMOTES] & EMOTE_UPPER ) {
-			ps->stats[EMOTES] &= ~EMOTE_MASK_BOTH;
-
-			ps->legsTimer = -1;
-			//ps->torsoTimer = 0;
-		}
-	}*/
 
 	// clear all pmove local vars
 	memset (&pml, 0, sizeof(pml));
