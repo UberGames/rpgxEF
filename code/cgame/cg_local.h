@@ -130,7 +130,6 @@ work.
 
 typedef struct animsList_s {
 	char			animFileRoute[MAX_QPATH];
-
 	animation_t		animations[MAX_ANIMATIONS];
 } animsList_t;
 
@@ -140,8 +139,7 @@ typedef struct animsList_s {
 #define MAX_ANIM_SOUNDS			64
 #define	MAX_RANDOM_ANIMSOUNDS	8
 
-typedef struct animsounds_s 
-{
+typedef struct animsounds_s {
 	int		keyFrame;							//Frame to play sound on
 	int		soundIndex[MAX_RANDOM_ANIMSOUNDS];	//sound file to play - FIXME: should be an index, handle random some other way?
 	int		numRandomAnimSounds;				//string variable min for va("...%d.wav", Q_irand(lowestVa, highestVa))
@@ -150,7 +148,6 @@ typedef struct animsounds_s
 
 typedef struct animsSndList_s {
 	char			animSndFileRoute[MAX_QPATH];
-
 	animsounds_t	upperAnimSounds[MAX_ANIM_SOUNDS];
 	animsounds_t	lowerAnimSounds[MAX_ANIM_SOUNDS];
 } animsSndList_t;
@@ -371,10 +368,7 @@ typedef struct centity_s {
 	int				decloakTime;
 	qboolean		wasCloaked;
 
-	// Unused
 	int				errorTime;		// decay the error from this time
-//	vec3_t			errorOrigin;
-//	vec3_t			errorAngles;
 	
 	qboolean		extrapolated;	// false if origin / angles is an interpolation
 	vec3_t			rawOrigin;
@@ -387,7 +381,6 @@ typedef struct centity_s {
 	vec3_t			lerpAngles;
 
 	int				turboTime;
-	//qboolean		unclampAngles;			//TiM - Unstor player clamp angles
 	qboolean		clampAngles;
 } centity_t;
 
@@ -472,12 +465,6 @@ typedef struct localEntity_s {
 
 	float			frameRate;
 	int				numFrames;
-
-//	float			radius;
-//	float			dradius;
-
-//	float			length;
-//	float			dlength;
 
 	float			alpha;
 	float			dalpha;
@@ -598,8 +585,6 @@ typedef struct {
 	int				ping;
 	int				time;
 	int				scoreFlags;
-//	int				faveTarget;
-//	int				faveTargetKills;	// # of times you killed fave target
 	int				worstEnemy;
 	int				worstEnemyKills;	// # of times worst Enemy Killed you
 	int				faveWeapon;			// your favorite weapon
@@ -690,7 +675,6 @@ typedef struct {
 	qhandle_t		headModel;
 	qhandle_t		headSkin;
 
-	//int			numBoltOns;
 	boltonTags_t	boltonTags[MAX_BOLTONS];
 
 	//TiM - Additional Parameters
@@ -716,13 +700,9 @@ typedef struct {
 	qhandle_t		holsterModel; //RPG-X : TiM
 	//--
 
-	//char			race[256];
-
 	qhandle_t		modelIcon;
 
 	//TiM - Whoa... this thing is pretty huge now thanks to the 50+ anims I added :/
-	//animation_t		animations[MAX_ANIMATIONS];
-	//animation_t		*animations;
 	int				animIndex; //index to the array cell with the anim data we want in it. :)
 	int				animSndIndex; //index to the array cell where the sound data for certain anims is kept.
 
@@ -772,14 +752,11 @@ typedef struct weaponInfo_s {
 	sfxHandle_t		altStopSound;
 	sfxHandle_t		firingSound;
 	sfxHandle_t		altFiringSound;
-//	sfxHandle_t		missileSound;
 	sfxHandle_t		alt_missileSound;
 	sfxHandle_t		mainHitSound;
 	sfxHandle_t		altHitSound;
 
 	qhandle_t		weaponIcon;
-
-//	qhandle_t		ammoModel;
 
 	qhandle_t		missileModel;
 	void			(*missileTrailFunc)( centity_t *, const struct weaponInfo_s *wi );
@@ -1059,7 +1036,6 @@ typedef struct {
 	qhandle_t	charsetPropTiny;
 	qhandle_t	charsetProp;
 	qhandle_t	charsetPropBig;
-//	qhandle_t	charsetPropGlow;
 	qhandle_t	charsetPropB;
 	qhandle_t	whiteShader;
 	qhandle_t	white2Shader;
@@ -1072,7 +1048,6 @@ typedef struct {
 	qhandle_t	teamStatusBar;
 
 	qhandle_t	deferShader;
-	//qhandle_t	eliminatedShader;
 
 //	recently added Trek shaders
 
@@ -1092,11 +1067,6 @@ typedef struct {
 
 	qhandle_t	detpackPlacedIcon;
 
-	//qhandle_t	dnBoltShader;
-
-	//qhandle_t	stasisRingShader;
-	//qhandle_t	stasisAltShader;
-
 	qhandle_t	disruptorBolt;
 	qhandle_t	disruptorStreak;
 		
@@ -1104,14 +1074,6 @@ typedef struct {
 	qhandle_t	orangeRingShader;
 	qhandle_t	quantumExplosionShader;
 	qhandle_t	quantumFlashShader;
-
-	//qhandle_t	scavengerAltShader;
-
-	/*qhandle_t	imodExplosionShader;
-	qhandle_t	IMODShader;
-	qhandle_t	IMOD2Shader;
-	qhandle_t	altIMODShader;
-	qhandle_t	altIMOD2Shader;*/
 
 	qhandle_t	prifleBeam;
 	qhandle_t	prifleImpactShader;
@@ -1121,17 +1083,8 @@ typedef struct {
 	qhandle_t	flashlightModel;
 
 	qhandle_t	disruptorBeam;
-	//qhandle_t	greenBurstShader;
-	//qhandle_t	greenTrailShader;
-	//qhandle_t	tetrionTrail2Shader;
-	//qhandle_t	tetrionFlareShader;
 	qhandle_t	borgFlareShader;
-	//qhandle_t	bulletmarksShader;
 	qhandle_t	borgLightningShaders[4];
-
-	//qhandle_t	bigBoomShader;
-	//qhandle_t	scavExplosionFastShader;
-	//qhandle_t	scavExplosionSlowShader;
 
 	qhandle_t	sunnyFlareShader;
 	qhandle_t	scavMarkShader;
@@ -1142,7 +1095,6 @@ typedef struct {
 	qhandle_t	fire2Shader; //RPG-X | Marcin | 24/12/2008
 	qhandle_t	fire3Shader; //RPG-X | Marcin | 24/12/2008
 	qhandle_t	smokeShader;
-	//qhandle_t	IMODMarkShader;
 	qhandle_t	waterDropShader;
 	qhandle_t	oilDropShader;
 	qhandle_t	greenDropShader;
@@ -1156,10 +1108,8 @@ typedef struct {
 
 	qhandle_t	explosionModel;
 	qhandle_t	nukeModel;
-	//qhandle_t	electricalExplosionFastShader;// These are used to have a bit of variation in the explosions
 	qhandle_t	electricalExplosionSlowShader;
 	qhandle_t	surfaceExplosionShader;
-	//qhandle_t	purpleParticleShader;
 	qhandle_t	blueParticleShader;
 	qhandle_t	ltblueParticleShader;
 
@@ -1177,12 +1127,8 @@ typedef struct {
 	qhandle_t	bolt2Shader;
 	qhandle_t	quantumRingShader;
 
-	//qhandle_t	holoOuchShader;
 	qhandle_t	painBlobShader;
 	qhandle_t	painShieldBlobShader;
-	//qhandle_t	shieldBlobShader;
-	//qhandle_t	halfShieldShader;
-	//qhandle_t	holoDecoyShader;
 
 	qhandle_t	trans1Shader;
 	qhandle_t	trans2Shader;
@@ -1195,19 +1141,12 @@ typedef struct {
 	qhandle_t	rippleShader;
 //	end recently added Trek shaders
 
-	//qhandle_t	teamRedShader;
-	//qhandle_t	teamBlueShader;
-
-	//qhandle_t	chatShader;
 	qhandle_t	connectionShader;
 
-	//qhandle_t	selectShader;
-	//qhandle_t	crosshairShader[NUM_CROSSHAIRS];
 	qhandle_t	laserShader; // LASER
 
 	qhandle_t	lagometerShader;
 	qhandle_t	backTileShader;
-	//qhandle_t	noammoShader;
 
 	qhandle_t	smokePuffRageProShader;
 	qhandle_t	waterBubbleShader;
@@ -1217,41 +1156,16 @@ typedef struct {
 
 	qhandle_t	shadowMarkShader;
 
-	//qhandle_t	botSkillShaders[5];
-
-	//TiM
-	//qhandle_t	pClassShaders[NUM_PLAYER_CLASSES];
-	//qhandle_t	borgIconShader;
-	//qhandle_t	borgQueenIconShader;
-	//qhandle_t	heroSpriteShader;
-	//-TiM
-
-
 	// Zoom
 	qhandle_t	zoomMaskShader;
 	qhandle_t	zoomMask116Shader;
 	qhandle_t	zoomGlow116Shader;
-	/*qhandle_t	zoomBarShader;
-	qhandle_t	zoomInsertShader;
-	qhandle_t	zoomArrowShader;
-	qhandle_t	ammoslider;*/
 
 	// wall mark shaders
 	qhandle_t	wakeMarkShader;
 	qhandle_t	holeMarkShader;
 	qhandle_t	energyMarkShader;	
 
-	// powerup shaders
-	//qhandle_t	quadShader;
-	//qhandle_t	redQuadShader;
-	//qhandle_t	quadWeaponShader;
-	//qhandle_t	invisShader;
-	//qhandle_t	regenShader;
-	//qhandle_t	battleSuitShader;
-	//qhandle_t	battleWeaponShader;
-	//qhandle_t	hastePuffShader;
-	//qhandle_t	flightPuffShader;
-	//qhandle_t	seekerModel;
 	qhandle_t	disruptorShader;
 	qhandle_t	explodeShellShader;
 	qhandle_t	quantumDisruptorShader;
@@ -1270,12 +1184,6 @@ typedef struct {
 	qhandle_t	whiteLaserShader;
 	qhandle_t	borgEyeFlareShader;
 
-	// weapon effect models
-	//qhandle_t	ringFlashModel;
-
-	// weapon effect shaders
-	//qhandle_t	bloodExplosionShader;
-
 	// special effects models
 	qhandle_t	teleportEffectModel;
 	qhandle_t	teleportEffectShader;
@@ -1284,7 +1192,6 @@ typedef struct {
 	qhandle_t	shieldActivateShaderBorg;
 	qhandle_t	shieldActivateShaderYellow;
 	//RPG-Y END
-	//qhandle_t	shieldDamageShaderBlue;
 	qhandle_t	shieldActivateShaderRed;
 	qhandle_t	shieldDamageShaderRed;
 	
@@ -1316,23 +1223,9 @@ typedef struct {
 	qhandle_t	weaponcap1;
 	qhandle_t	weaponcap2;
 
-	// medals shown during gameplay
-	/*qhandle_t	medalImpressive;
-	qhandle_t	medalExcellent;
-	qhandle_t	medalFirstStrike;
-	qhandle_t	medalAce;
-	qhandle_t	medalExpert;
-	qhandle_t	medalMaster;
-	qhandle_t	medalChampion;*/
-
-	// Holodeck doors
-	//qhandle_t	doorbox;
-
 	//RPG-X Mod
-	//qhandle_t	rpgxlogo;
 	qhandle_t	greenParticleShader;
 	qhandle_t	greenParticleStreakShader;
-	//qhandle_t	blueParticleStreakShader;
 
 	qhandle_t	liteRedParticleStreakShader;
 	qhandle_t	liteRedParticleShader;
@@ -1367,20 +1260,14 @@ typedef struct {
 	qhandle_t   stasisDoorModel;
 
 	// sounds
-	//sfxHandle_t	quadSound;
-	//sfxHandle_t	selectSound;
 	sfxHandle_t	useNothingSound;
-	//sfxHandle_t	wearOffSound;
 	sfxHandle_t	footsteps[FOOTSTEP_TOTAL][4];
 	sfxHandle_t	holoOpenSound;
 	sfxHandle_t	teleInSound;
-	//sfxHandle_t	teleOutSound;
 	//RPG-X
 	sfxHandle_t	transportSound;
-	//sfxHandle_t	noAmmoSound;
 	sfxHandle_t	respawnSound;
 	sfxHandle_t talkSound;
-	//sfxHandle_t landSound;
 	sfxHandle_t landSound[LANDSOUND_TOTAL]; //RPG-X | GSIO01 | 20/05/2009
 	sfxHandle_t jumpPadSound;
 
@@ -1388,43 +1275,15 @@ typedef struct {
 	sfxHandle_t fiveMinuteSound;
 	sfxHandle_t suddenDeathSound;
 
-	//sfxHandle_t threeFragSound;
-	//sfxHandle_t twoFragSound;
-	//sfxHandle_t oneFragSound;
-
-	//sfxHandle_t hitSound;
-	//sfxHandle_t shieldHitSound;
-	//sfxHandle_t shieldPierceSound;
-	//sfxHandle_t hitTeamSound;
-
-	//sfxHandle_t rewardImpressiveSound;
-	//sfxHandle_t rewardExcellentSound;
-	//sfxHandle_t rewardDeniedSound;
-	//sfxHandle_t rewardFirstStrikeSound;
-	//sfxHandle_t rewardAceSound;
-	//sfxHandle_t rewardExpertSound;
-	//sfxHandle_t rewardMasterSound;
-	//sfxHandle_t rewardChampionSound;
-
-	//sfxHandle_t takenLeadSound;
-	//sfxHandle_t tiedLeadSound;
-	//sfxHandle_t lostLeadSound;
-
 	sfxHandle_t watrInSound;
 	sfxHandle_t watrOutSound;
 	sfxHandle_t watrUnSound;
 
-	//sfxHandle_t flightSound;
 	sfxHandle_t medkitSound;
 	sfxHandle_t	borgBeamInSound;
 
 	// Interface sounds
 	sfxHandle_t interfaceSnd1;
-
-	// teamplay sounds
-	//sfxHandle_t redLeadsSound;
-	//sfxHandle_t blueLeadsSound;
-	//sfxHandle_t teamsTiedSound;
 
 	// tournament sounds
 	sfxHandle_t	count3Sound;
@@ -1432,19 +1291,6 @@ typedef struct {
 	sfxHandle_t	count1Sound;
 	sfxHandle_t	countFightSound;
 	sfxHandle_t	countPrepareSound;
-
-	// CTF sounds
-	/*sfxHandle_t	ctfStealSound;
-	sfxHandle_t	ctfReturnSound;
-	sfxHandle_t	ctfScoreSound;
-	sfxHandle_t ctfYouStealVoiceSound;
-	sfxHandle_t ctfYouDroppedVoiceSound;
-	sfxHandle_t ctfYouReturnVoiceSound; 
-	sfxHandle_t ctfYouScoreVoiceSound;
-	sfxHandle_t ctfTheyStealVoiceSound; 
-	sfxHandle_t ctfTheyDroppedVoiceSound;
-	sfxHandle_t ctfTheyReturnVoiceSound;
-	sfxHandle_t ctfTheyScoreVoiceSound; */
 
 	//
 	// trek sounds
@@ -1457,12 +1303,7 @@ typedef struct {
 	sfxHandle_t grenadeBounceSound1;
 	sfxHandle_t grenadeBounceSound2;
 	sfxHandle_t grenadeExplodeSound;
-	//sfxHandle_t tetrionRicochetSound1;
-	//sfxHandle_t tetrionRicochetSound2;
-	//sfxHandle_t tetrionRicochetSound3;
 	sfxHandle_t invulnoProtectSound;
-	//sfxHandle_t regenSound;
-	//sfxHandle_t poweruprespawnSound;
 	sfxHandle_t disintegrateSound;
 	sfxHandle_t disintegrate2Sound;
 	sfxHandle_t playerExplodeSound;
@@ -1534,53 +1375,12 @@ typedef struct {
 	//Used 2 API functions to cut down the
 	//shader usage on this thing significantly ^_^
 	qhandle_t	radarShader;
-	/*qhandle_t	rd_up;
-	qhandle_t	rd_down;
-	qhandle_t	rd_level;
-	qhandle_t	rd_red_up;
-	qhandle_t	rd_red_down;
-	qhandle_t	rd_red_level;
-	qhandle_t	rd_blue_up;
-	qhandle_t	rd_blue_down;
-	qhandle_t	rd_blue_level;
-	qhandle_t	rd_white_up;
-	qhandle_t	rd_white_down;
-	qhandle_t	rd_white_level;
-	qhandle_t	rd_teal_up;
-	qhandle_t	rd_teal_down;
-	qhandle_t	rd_teal_level;
-	qhandle_t	rd_black_up;
-	qhandle_t	rd_black_down;
-	qhandle_t	rd_black_level;
-	qhandle_t	rd_injured_up;
-	qhandle_t	rd_injured_down;*/
 	qhandle_t	rd_injured_level;
 
 	qhandle_t	radarMain;
 
-	//RPG-X (J2J) Rank Images for Score Board (Arrays for each class type)
-	//TiM: *shudder* There was a better way!
-	/*qhandle_t  ri_Civ;
-	qhandle_t	ri_Crewman[4];
-	qhandle_t	ri_Cadet1[4];
-	qhandle_t	ri_Cadet2[4];
-	qhandle_t	ri_Cadet3[4];
-	qhandle_t	ri_Cadet4[4];
-	qhandle_t	ri_Ensign[4];
-	qhandle_t	ri_Ltjg[4];
-	qhandle_t	ri_Lt[4];
-	qhandle_t	ri_Ltcmdr[4];
-	qhandle_t	ri_Cmdr[4];
-	qhandle_t	ri_Capt[4];
-	qhandle_t	ri_Cmmdr[4];
-	qhandle_t	ri_Admr2[4];
-	qhandle_t	ri_Admr3[4];
-	qhandle_t	ri_Admr4[4];
-	qhandle_t	ri_Admr5[4];*/
-
 	//RPG-X: J2J - This is for sharky's crosshiar for each weapon.
 	//TiM: hrmmmm..... O_o
-	//qhandle_t	crosshair[15];
 	qhandle_t	crosshairSheet;
 
 	//TiM : LensFlare Parts
@@ -1649,7 +1449,6 @@ typedef struct {
 	// locally derived information from gamestate
 	//
 	qhandle_t		gameModels[MAX_MODELS];
-//	qhandle_t		useableModels[HI_NUM_HOLDABLE];
 	sfxHandle_t		gameSounds[MAX_SOUNDS];
 
 	int				numInlineModels;
@@ -1764,7 +1563,6 @@ extern	vmCvar_t		cg_thirdPersonPitchOffset;
 extern	vmCvar_t		cg_thirdPerson;
 extern	vmCvar_t		cg_stereoSeparation;
 extern	vmCvar_t		cg_lagometer;
-extern	vmCvar_t		cg_drawAttacker;
 extern	vmCvar_t		cg_synchronousClients;
 extern	vmCvar_t		cg_teamChatTime;
 extern	vmCvar_t		cg_teamChatHeight;
@@ -1773,7 +1571,6 @@ extern	vmCvar_t		cg_reportDamage;
 extern	vmCvar_t 		cg_forceModel;
 extern	vmCvar_t 		cg_buildScript;
 extern	vmCvar_t		cg_paused;
-extern	vmCvar_t		cg_blood;
 extern	vmCvar_t		cg_predictItems;
 extern	vmCvar_t		cg_deferPlayers;
 extern	vmCvar_t		cg_disablekillmsgs;
@@ -1811,8 +1608,6 @@ extern vmCvar_t			sv_securityCode;
 extern vmCvar_t			cg_handleWidescreen;
 extern vmCvar_t			ui_handleWidescreen;
 
-//extern vmCvar_t			cg_chatBGColor;
-
 extern vmCvar_t			cg_chatColor;
 
 //RPG-X | GSIO01 | 11/05/2009
@@ -1826,10 +1621,6 @@ extern vmCvar_t			grp_berp;
 extern vmCvar_t			cg_debugLua;
 extern vmCvar_t			cg_logLua;
 #endif
-
-
-
-
 
 qboolean CG_Cvar_ClampInt( const char *name, vmCvar_t *vmCvar, int min, int max );
 
@@ -1917,7 +1708,6 @@ typedef struct
 	int				max;
 	int				color;		// Normal color
 	int				style;		// Style of characters
-//	void			*pointer;		// To an address
 } interfacegraphics_s;
 
 typedef enum 
@@ -1986,8 +1776,6 @@ void CG_DrawObjectiveInformation( void );
 void CG_PlayerShieldHit(int entitynum, vec3_t angles, int amount);
 void CG_Player( centity_t *cent );
 void CG_ResetPlayerEntity( centity_t *cent );
-//void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, qboolean borg );
-//void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, beamData_t *beamData, qboolean borg );
 void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, beamData_t *beamData, int cloakTime, int decloakTime, qboolean borg );
 void CG_NewClientInfo( int clientNum );
 sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName );
@@ -2089,7 +1877,6 @@ void CG_DrawWeaponIcon ( int x, int y, int weapon ); //RPG-X | Phenix | 08/06/20
 
 void CG_OutOfAmmoChange( qboolean altfire );	// should this be in pmove?
 void CG_BounceEffect( centity_t *cent, int weapon, vec3_t origin, vec3_t normal );
-//void CG_BorgEyebeam( centity_t *cent, const refEntity_t *parent );
 
 void CG_PlayShooterSound(centity_t *cent);
 
@@ -2135,7 +1922,6 @@ void CG_Bleed( vec3_t origin, int entityNum );
 void CG_Seeker( centity_t *cent );
 
 //RPG-X: TiM : Smoke Ent
-//void CG_Smoke( vec3_t origin, vec3_t dir, float radius, float speed, qhandle_t shader );
 void CG_Smoke( vec3_t position, vec3_t dir, int killTime, int radius );
 //RPG-X: Marcin: Fire
 void CG_Fire( vec3_t position, vec3_t dir, int killTime, int radius, int fxEnt );
@@ -2251,33 +2037,6 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops );
 
 // cg_players.c
 void updateSkin(int clientNum, char *new_model);
-
-/*
-RPG-X J2J: This struct is used to convientently store the data loaded from TiM's
-           data.cfg file. References what body to use, skins etc..
-
-		   TiM: Haha thanks Jay
-*/
-
-//typedef struct
-//{
-//	char ID[80];
-//	char Name[255];
-//	char BodyModel[255];
-//	char Gender;
-//	qboolean Alien;
-//	qboolean Humanoid;
-//	char DefaultRank[255];
-//	char SoundSet[255];
-////Allowed Classes
-//	qboolean Engineer;
-//	qboolean Science;
-//	qboolean Command;
-//	qboolean Security;
-//	qboolean Medical;
-//
-//}
-//X_ModelCfgData;
 
 //===============================================
 

@@ -127,7 +127,6 @@ vmCvar_t	cg_thirdPersonTargetDamp;
 vmCvar_t	cg_thirdPersonPitchOffset;
 vmCvar_t	cg_stereoSeparation;
 vmCvar_t	cg_lagometer;
-vmCvar_t	cg_drawAttacker;
 vmCvar_t	cg_synchronousClients;
 vmCvar_t 	cg_teamChatTime;
 vmCvar_t 	cg_teamChatHeight;
@@ -136,7 +135,6 @@ vmCvar_t 	cg_reportDamage;
 vmCvar_t 	cg_buildScript;
 vmCvar_t 	cg_forceModel;
 vmCvar_t	cg_paused;
-vmCvar_t	cg_blood;
 
 vmCvar_t	cg_predictItems;
 vmCvar_t	cg_deferPlayers;
@@ -238,7 +236,6 @@ static cvarTable_t	cvarTable[] = {
 	{ &cg_draw3dIcons, "cg_draw3dIcons", "1", CVAR_ARCHIVE  },
 	{ &cg_drawIcons, "cg_drawIcons", "1", CVAR_ARCHIVE  },
 	{ &cg_drawAmmoWarning, "cg_drawAmmoWarning", "1", CVAR_ARCHIVE  },
-	{ &cg_drawAttacker, "cg_drawAttacker", "0", CVAR_ARCHIVE  }, //RPG-X TiM
 	{ &cg_drawCrosshair, "cg_drawCrosshair", "1", CVAR_ARCHIVE },
 	{ &cg_drawCrosshairNames, "cg_drawCrosshairNames", "1", CVAR_ARCHIVE },
 	{ &cg_drawRewards, "cg_drawRewards", "1", CVAR_ARCHIVE },
@@ -302,7 +299,6 @@ static cvarTable_t	cvarTable[] = {
 
 	{ &cg_buildScript, "com_buildScript", "0", 0 },	// force loading of all possible data amd error on failures
 	{ &cg_paused, "cl_paused", "0", CVAR_ROM },
-	{ &cg_blood, "com_blood", "0", CVAR_ARCHIVE },	//no blood in trek
 	//{ &cl_avgPacket, "cl_avgPacket", "0", CVAR_ARCHIVE | CVAR_ROM | CVAR_NORESTART }, //RPG-X | Phenix | 05/02/2006
 	{ &cg_synchronousClients, "g_synchronousClients", "0", 0 },	// communicated by systeminfo
 	{ &ui_playerClass, "ui_playerClass", "noclass", CVAR_ARCHIVE /*| CVAR_ROM | CVAR_USERINFO*/ },
