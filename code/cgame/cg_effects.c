@@ -42,7 +42,6 @@ void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing ) {
 		le->lifeRate = 1.0 / ( le->endTime - le->startTime );
 
 		re = &le->refEntity;
-		//re->shaderTime = cg.time / 1000.0f;
 		re->shaderTime = cg.time * 0.001f;
 
 		re->reType = RT_SPRITE;
@@ -92,7 +91,6 @@ localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 	re = &le->refEntity;
 	re->data.sprite.rotation = Q_random( &seed ) * 360;
 	re->data.sprite.radius = radius;
-	//re->shaderTime = startTime / 1000.0f;
 	re->shaderTime = startTime * 0.001f;
 
 	le->leType = LE_MOVE_SCALE_FADE;
@@ -157,24 +155,12 @@ void CG_SpawnEffect( vec3_t org, refEntity_t *ent_legs, refEntity_t *ent_torso, 
 	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
 	
 	re = &le->refEntity;
-	//RPG-X: RedTechie - Added for better trans effect - dosnt work right now 
-	//ent_legs->shaderTime = cg.time / 1000.0f;
-	//ent_head->shaderTime = cg.time / 1000.0f;
-	//ent_torso->shaderTime = cg.time / 1000.0f;
-	//ent_legs->customShader = cgs.media.teleportEffectShader;
-	//trap_R_AddRefEntityToScene( ent_legs );
-	//ent_head->customShader = cgs.media.teleportEffectShader;
-	//trap_R_AddRefEntityToScene( ent_head );
-	//ent_torso->customShader = cgs.media.teleportEffectShader;
-	//trap_R_AddRefEntityToScene( ent_torso );
 
 	//RPG-X: RedTechie - Playing with transporter crap
-	//re->shaderTime = cg.time / 1000.0f;
 	re->shaderTime = cg.time * 0.001f;
 	re = &le->refEntity;
 
 	re->reType = RT_MODEL;
-	//re->shaderTime = cg.time / 1000.0f;
 	re->shaderTime = cg.time * 0.001f;
 
 	re->customShader = cgs.media.teleportEffectShader;
@@ -187,25 +173,6 @@ void CG_SpawnEffect( vec3_t org, refEntity_t *ent_legs, refEntity_t *ent_torso, 
 
 void CG_QFlashEvent( vec3_t org ) {
 	localEntity_t	*le;
-	/*refEntity_t		*re;
-
-	le = CG_AllocLocalEntity();
-	le->leFlags = LEF_SINE_SCALE;
-	le->leType = LE_PARTICLE;
-	
-	le->startTime = cg.time;
-	le->endTime = cg.time + 600;
-
-	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0f;
-
-	le->data.particle.radius = 30;
-	le->data.particle.dradius = 5;
-
-	re = &le->refEntity;
-	re->customShader = cgs.media.qFlashSprite;
-
-	VectorCopy( org, re->origin );
-	VectorCopy( org, re->oldorigin );*/
 
 	le = FX_AddParticle( org, vec3_origin, qfalse, 110.0f, 109.0f, 
 							1.0f, 1.0f, 0, 0, 
@@ -262,7 +229,6 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 	ex->endTime = ex->startTime + msec;
 
 	// bias the time so all shader effects start correctly
-	//ex->refEntity.shaderTime = ex->startTime / 1000.0f;
 	ex->refEntity.shaderTime = ex->startTime * 0.001f;
 
 	ex->refEntity.hModel = hModel;
@@ -328,7 +294,6 @@ localEntity_t *CG_MakeExplosion2( vec3_t origin, vec3_t dir,
 	ex->endTime = ex->startTime + msec;
 
 	// bias the time so all shader effects start correctly
-	//ex->refEntity.shaderTime = ex->startTime / 1000.0f;
 	ex->refEntity.shaderTime = ex->startTime * 0.001f;
 
 	ex->refEntity.hModel = hModel;
@@ -353,43 +318,6 @@ localEntity_t *CG_MakeExplosion2( vec3_t origin, vec3_t dir,
 
 	return ex;
 }
-
-
-
-
-/*
-=================
-CG_Bleed
-
-This is the spurt of blood when a character gets hit
-=================
-*/
-/*void CG_Bleed( vec3_t origin, int entityNum ) {
-	localEntity_t	*ex;
-
-	if ( !cg_blood.integer ) {
-		return;
-	}
-
-	ex = CG_AllocLocalEntity();
-	ex->leType = LE_EXPLOSION;
-
-	ex->startTime = cg.time;
-	ex->endTime = ex->startTime + 500;
-	
-	VectorCopy ( origin, ex->refEntity.origin);
-	ex->refEntity.reType = RT_SPRITE;
-	ex->refEntity.data.sprite.rotation = rand() % 360;
-	ex->refEntity.data.sprite.radius = 16;
-
-	ex->refEntity.customShader = cgs.media.bloodExplosionShader;
-
-	// don't show player's own blood in view
-	if ( entityNum == cg.snap->ps.clientNum ) {
-		ex->refEntity.renderfx |= RF_THIRD_PERSON;
-	}
-}*/
-
 
 
 /*
@@ -423,77 +351,12 @@ void CG_ExplosionEffects( vec3_t origin, int intensity, int radius)
 	CG_CameraShake( realIntensity, 500, qfalse );
 }
 
-
-/*
-=================
-CG_Seeker
-=================
-*/
-/*void CG_Seeker( centity_t *cent )
-{
-	refEntity_t	re;
-
-	vec3_t	seekerOrg, viewAng;
-	float	angle;
-
-
-	angle = cg.time/100.0f;
-	seekerOrg[0] = cent->lerpOrigin[0] + 18 * cos(angle);
-	seekerOrg[1] = cent->lerpOrigin[1] + 18 * sin(angle);
-	seekerOrg[2] = cent->lerpOrigin[2] + cg.predictedPlayerState.viewheight + 8 + (3*cos(cg.time/150.0f));
-
-	memset( &re, 0, sizeof( re ) );
-
-	re.reType = RT_MODEL;
-	VectorCopy ( seekerOrg, re.origin);
-	re.hModel = cgs.media.seekerModel;
-	re.shaderTime = (cg.time /  1000.0f);
-
-	VectorCopy (cent->lerpAngles , viewAng); // so the seeker faces the same direction the player is
-	viewAng[0] = -90; // but, we don't want the seeker facing up or down, always horizontal
-	AnglesToAxis( viewAng, re.axis );
-	VectorScale(re.axis[0], 0.5, re.axis[0]);
-	VectorScale(re.axis[1], 0.5, re.axis[1]);
-	VectorScale(re.axis[2], 0.5, re.axis[2]);
-	re.nonNormalizedAxes=qtrue;
-
-	trap_R_AddRefEntityToScene( &re );
-
-}*/
-
 /*
 -------------------------
 CG_Smoke
 TiM: Ported from EF SP
 -------------------------
 */
-
-//void CG_Smoke( vec3_t origin, vec3_t dir, float radius, float speed, qhandle_t shader )
-//{
-//	vec3_t	velocity/*, accel*/;
-//	int i;
-
-//	for ( i = 0; i < 3; i++ )
-//	{
-//		velocity[i] = dir[i] + ( 0.2f * crandom());
-//	}
-
-//	VectorScale( velocity, speed, velocity );
-	//VectorScale( velocity, -0.25f, accel );
-	//accel[2] = random() * 12.0f + 6.0f;
-
-//	FX_AddSprite(	origin,
-//					velocity, 
-//					qfalse, //accel
-//					radius + (crandom() * radius * 0.5f ),  
-//					radius + (crandom() * radius), 
-//					0.9f + crandom(), 
-//					0.0f,
-//					16.0f + random() * 45.0f,
-//					0.5f,
-//					2000, 
-//					shader ); //flags
-//}
 
 qboolean SmokeThink( localEntity_t *le )
 {
@@ -520,15 +383,13 @@ qboolean SmokeThink( localEntity_t *le )
 	speed = le->data.spawner.data1 * 2.4;
 
 	VectorScale( velocity, speed, velocity ); //speed
-	//VectorScale( velocity, -0.25f, accel );
-	//accel[2] = random() * 12.0f + 6.0f;
 
 	FX_AddSprite(	origin,
 					velocity, 
 					qfalse, //accel
 					le->data.spawner.data1 + (crandom() * le->data.spawner.data1 * 0.5f ),  
 					le->data.spawner.data1 + (crandom() * le->data.spawner.data1), 
-					0.8 /*+ crandom()*/, 
+					0.8, 
 					0.0,
 					16.0f + random() * 45.0f,
 					0.5f,
@@ -548,8 +409,6 @@ Creates a smoke effect
 
 void CG_Smoke( vec3_t position, vec3_t dir, int killTime, int radius )
 {
-	//CG_Printf( " %f %f %f\n", dir[0], dir[1], dir[2] );
-	// give it a lifetime of 10 seconds because the refresh thinktime in g_fx.c is 10 seconds
 	FX_AddSpawner( position, dir, NULL, NULL, qfalse, 0, 0.15, killTime, SmokeThink, radius ); //
 }
 
@@ -602,8 +461,4 @@ void CG_Fire( vec3_t position, vec3_t direction, int killTime, int radius, int f
 	else
 		FX_AddSpawner( position, direction, NULL, NULL, qfalse, 500, 0, killTime, FireThink, radius );
 }
-
-//localEntity_t *FX_AddSprite(vec3_t origin, vec3_t velocity, qboolean gravity, float scale, float dscale, 
-//							float startalpha, float endalpha, float roll, float elasticity, 
-//							float killTime, qhandle_t shader)
 

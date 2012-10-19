@@ -52,7 +52,6 @@ void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *pare
 	orientation_t	lerped;
 	vec3_t			tempAxis[3];
 
-//AxisClear( entity->axis );
 	// lerp the tag
 	trap_R_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
 		1.0 - parent->backlerp, tagName );
@@ -162,7 +161,6 @@ static void CG_Useable( centity_t *cent ) {
 
 	if (s1->eFlags & EF_ANIM_ALLFAST)
 	{
-		//ent.frame = (cg.time / 100);
 		ent.frame = (cg.time * 0.01);
 		ent.renderfx|=RF_WRAP_FRAMES;
 	}
@@ -176,7 +174,7 @@ static void CG_Useable( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, ent.origin);
 	VectorCopy( cent->lerpOrigin, ent.oldorigin);
 
-	ent.hModel = cg_items[s1->modelindex2].model;//cgs.useableModels[s1->modelindex];
+	ent.hModel = cg_items[s1->modelindex2].model;
 
 	// player model
 	if (s1->number == cg.snap->ps.clientNum) {
@@ -184,20 +182,17 @@ static void CG_Useable( centity_t *cent ) {
 	}
 
 	// convert angles to axis
-//	AnglesToAxis( cent->lerpAngles, ent.axis );
+	// hack to keep dropped detpacks from rotating 
+	vec3_t vecs[3];
+	AngleVectors(s1->angles, vecs[0], vecs[1], vecs[2]);
+	VectorNegate(vecs[1], vecs[1]);
+	if (s1->modelindex == HI_DETPACK) // as stated, HACK for detpack
 	{
-		// hack to keep dropped detpacks from rotating 
-		vec3_t vecs[3];
-		AngleVectors(s1->angles, vecs[0], vecs[1], vecs[2]);
-		VectorNegate(vecs[1], vecs[1]);
-		if (s1->modelindex == HI_DETPACK) // as stated, HACK for detpack
-		{
-			VectorScale(vecs[0], .5, vecs[0]);
-			VectorScale(vecs[1], .5, vecs[1]);
-			VectorScale(vecs[2], .5, vecs[2]);
-		}
-		AxisCopy( vecs, ent.axis );
+		VectorScale(vecs[0], .5, vecs[0]);
+		VectorScale(vecs[1], .5, vecs[1]);
+		VectorScale(vecs[2], .5, vecs[2]);
 	}
+	AxisCopy( vecs, ent.axis );
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene (&ent);
@@ -231,7 +226,6 @@ static void CG_General( centity_t *cent ) {
 	}
 	else if (s1->eFlags & EF_ANIM_ALLFAST)
 	{
-		//ent.frame = (cg.time / 100);
 		ent.frame = (cg.time * 0.01);
 		ent.renderfx|=RF_WRAP_FRAMES;
 	}
@@ -331,8 +325,6 @@ static void CG_Speaker( centity_t *cent ) {
 
 	trap_S_StartSound (NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.eventParm] );
 
-	//	ent->s.frame = ent->wait * 10;
-	//	ent->s.clientNum = ent->random * 10;
 	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
 }
 
@@ -346,8 +338,8 @@ static void CG_Item( centity_t *cent ) {
 	entityState_t		*es;
 	gitem_t				*item;
 	int					msec;
-//	float				scale;
-    // RPG-X: Marcin: Custom angles for each weapon so they lie on the ground correctly. - 06/12/2008
+
+	// RPG-X: Marcin: Custom angles for each weapon so they lie on the ground correctly. - 06/12/2008
     const vec3_t weaponangles[WP_NUM_WEAPONS] = {
         { 0,   0,   0   },  // WP_0
         { 0,   0,   0   },  // WP_1
@@ -404,10 +396,6 @@ static void CG_Item( centity_t *cent ) {
 		return;
 	}
 
-	// items bob up and down continuously
-//	scale = 0.005 + cent->currentState.number * 0.00001;
-//	cent->lerpOrigin[2] += 4 + cos( ( cg.time + 1000 ) *  scale ) * 4;
-
 	memset (&ent, 0, sizeof(ent));
 
 
@@ -419,8 +407,6 @@ static void CG_Item( centity_t *cent ) {
 	} 
 	else if (item->giType != IT_TEAM) // RPG-X | Marcin | 05/12/2008
     {
-		//VectorCopy( cg.autoAngles, cent->lerpAngles );
-        //AxisCopy( cg.autoAxis, ent.axis );
         VectorCopy( weaponangles[item->giTag], cent->lerpAngles );
 		AnglesToAxis( weaponangles[item->giTag], ent.axis);
 	}
@@ -431,7 +417,6 @@ static void CG_Item( centity_t *cent ) {
 
 
 		// ...but they do animate.
-		//frame = (cg.time / 100.0);
 		frame = (cg.time * 0.01);
 		ent.renderfx|=RF_WRAP_FRAMES;
 
@@ -455,14 +440,6 @@ static void CG_Item( centity_t *cent ) {
 			VectorScale( ent.axis[1], 1.6, ent.axis[1] );
 			VectorScale( ent.axis[2], 1.6, ent.axis[2] );
 			ent.nonNormalizedAxes = qtrue;
-		}
-		if (item->giTag == PW_BORG_ADAPT)
-		{ 
-			//ent.customShader = cgs.media.blueFlagShader[3];
-		}
-		else
-		{
-			ent.customShader = cgs.media.redFlagShader[3];
 		}
 	}
 
@@ -506,52 +483,9 @@ static void CG_Item( centity_t *cent ) {
 		ent.customShader = cgs.media.weaponPlaceholderShader;
 	}
 
-    // RPG-X | Marcin | 06/12/2008
-	// increase the size of the weapons when they are presented as items - DON'T!
-	/*if ( item->giType == IT_WEAPON ) {
-		VectorScale( ent.axis[0], 1.5, ent.axis[0] );
-		VectorScale( ent.axis[1], 1.5, ent.axis[1] );
-		VectorScale( ent.axis[2], 1.5, ent.axis[2] );
-		ent.nonNormalizedAxes = qtrue;
-	}*/
-
 	msec = cg.time - cent->miscTime;	// Count from last respawn.
-	/*if (cg.predictedPlayerState.introTime > cg.time)
-	{	// The stuff is "holodecking in".
-		int dtime;
 
-		dtime = cg.predictedPlayerState.introTime - cg.time;
-		if (dtime < TIME_FADE_DUR)
-		{	// "rez" in.
-			float alpha;
-			int a;
-			
-			alpha = 1.0 - ((float)dtime / (float)TIME_FADE_DUR);
-			a = alpha * 255.0;
-			if (a <= 0)
-				a=1;
-			ent.shaderRGBA[3] = a;
-			ent.renderfx |= RF_FORCE_ENT_ALPHA;
-			trap_R_AddRefEntityToScene(&ent);
-			ent.renderfx &= ~RF_FORCE_ENT_ALPHA;
-		
-			// Now draw the static shader over it.
-			// Alpha in over half the time, out over half.
-			alpha = sin(M_PI*alpha);
-			a = alpha * 255.0;
-			if (a <= 0)
-				a=1;
-			ent.customShader = cgs.media.rezOutShader;
-			ent.shaderRGBA[0] =
-			ent.shaderRGBA[1] =
-			ent.shaderRGBA[2] = a;
-			trap_R_AddRefEntityToScene( &ent );
-			ent.shaderRGBA[0] =
-			ent.shaderRGBA[1] =
-			ent.shaderRGBA[2] = 255;
-		}
-	}
-	else*/ if (item->giType != IT_TEAM && msec >= 0 && msec < ITEM_SCALEUP_TIME && !(es->eFlags & EF_ITEMPLACEHOLDER)) 
+	if (item->giType != IT_TEAM && msec >= 0 && msec < ITEM_SCALEUP_TIME && !(es->eFlags & EF_ITEMPLACEHOLDER)) 
 	{	// if just respawned, fade in, but don't do this for flags.
 		float alpha;
 		int a;
@@ -611,7 +545,6 @@ static void CG_Missile( centity_t *cent, qboolean altfire ) {
 	// calculate the axis
 	VectorCopy( s1->angles, cent->lerpAngles);
 
-//	if (cent->currentState.eFlags & EF_ALT_FIRING)
 	if (altfire)
 	{
 		// add trails
@@ -648,11 +581,7 @@ static void CG_Missile( centity_t *cent, qboolean altfire ) {
 	}
 	else
 	{
-		if (cent->thinkFlag)
-		{	// we already grabbed info that was stored on the game side, so use what's already in cent->rawAngles
-			//and cent->rawOrigin
-		}
-		else
+		if (!cent->thinkFlag)
 		{
 			// kef -- get out some info we stored in a very unfortunate manner on the game side
 			VectorCopy(cent->currentState.angles2,cent->rawAngles);
@@ -671,15 +600,6 @@ static void CG_Missile( centity_t *cent, qboolean altfire ) {
 				weapon->missileDlightColor[0], weapon->missileDlightColor[1], weapon->missileDlightColor[2] );
 		}
 
-		// add missile sound
-/*		if ( weapon->missileSound ) {
-			vec3_t	velocity;
-
-			BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity );
-
-			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, weapon->missileSound );
-		}
-*/
 		if (!weapon->missileModel) {	//if ther is no missile then we're done
 			return;
 		}
@@ -717,7 +637,6 @@ static void CG_Missile( centity_t *cent, qboolean altfire ) {
 
 		// spin as it moves
 		if ( s1->pos.trType != TR_STATIONARY && (cent->currentState.weapon != WP_10) ) { //RPG-X-TiM: Stop from spinning O_o  I got dizzy
-			//RotateAroundDirection( ent.axis, cg.time / 4 );
 			RotateAroundDirection( ent.axis, cg.time * 0.25);
 		} else {
 			RotateAroundDirection( ent.axis, s1->time );
@@ -752,7 +671,6 @@ static void CG_Missile( centity_t *cent, qboolean altfire ) {
 		trap_CM_BoxTrace( &trace, beamOrg, beamEnd, NULL, NULL, 0, MASK_SHOT );
 		VectorCopy(trace.endpos, beamEnd);
 		FX_AddLine2( beamOrg, beamEnd, 1.0f, 0.35f + ( crandom() * 0.1 ), 0.0f, 0.35f + ( crandom() * 0.1 ), 0.0f, alpha, alpha, rgb, rgb,1.0f, cgs.media.whiteLaserShader );
-		//FX_AddSprite( beamOrg, NULL, qfalse, 1.0f + (random() * 2.0f), 0.0f, 0.9f, 0.9f, 0.0f, 0.0f, 0.0f, flareShader );
 		FX_AddQuad( beamOrg, ent.axis[0], 1.0f, 1.0f, 2.0f + (crandom() * 1.0f), 0.0f, 0.0f, 1.0f, flareShader );
 		FX_AddQuad( beamEnd, trace.plane.normal, 1.0f, 1.0f, 2.0f + (crandom() * 1.0f), 0.0f, 0.0f, 1.0f, flareShader );
 	}
@@ -891,7 +809,6 @@ void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int
 	BG_EvaluateTrajectory( &cent->currentState.apos, toTime, angles );
 
 	VectorSubtract( origin, oldOrigin, deltaOrigin );
-	//VectorSubtract( angles, oldAngles, deltaAngles );
 
 	VectorAdd( in, deltaOrigin, out );
 
@@ -1101,8 +1018,6 @@ static void CG_LaserSight( centity_t *cent )  {
 	if (cent->currentState.eventParm == 1)
 	{
 		ent.reType = RT_SPRITE;
-		//ent.radius = 2;
-		//ent.rotation = 0;
 		ent.data.sprite.radius = 2;
 		ent.customShader = cgs.media.laserShader;
 		trap_R_AddRefEntityToScene( &ent );
@@ -1160,33 +1075,3 @@ static void CG_Turbolift( centity_t* cent )
 	trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, //cent->lerpOrigin
 			cgs.gameSounds[ cent->currentState.loopSound ] );
 }
-
-/*static void CG_Turbolift( centity_t* cent )
-{
-	if ( cent->currentState.eventParm <= 0 )
-	{
-		cent->deathTime = 0;
-		cent->miscTime = 0;
-		return;
-	}
-
-	//Init sound
-	if ( cent->miscTime == 0 )
-	{
-		cent->miscTime = cg.time + cent->currentState.modelindex2; //set the end of the wait time
-	}
-
-	if ( cg.time < cent->miscTime )
-	{
-		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, //cent->lerpOrigin
-			cgs.gameSounds[ cent->currentState.loopSound ] );
-
-		return;
-	}
-	
-	if ( cent->deathTime == 0 )
-	{
-		trap_S_StartSound (NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.otherEntityNum2] );
-		cent->deathTime = 1;
-	}
-}*/
