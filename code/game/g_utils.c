@@ -509,8 +509,8 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	}
 
 	/* self destruct safe zones */
-	if(selfdestructSafeZones != NULL && selfdestructSafeZones->length > 0) {
-		szIter = list_iterator(selfdestructSafeZones, FRONT);
+	if(level.selfdestructSafeZones != NULL && level.selfdestructSafeZones->length > 0) {
+		szIter = list_iterator(level.selfdestructSafeZones, FRONT);
 		for(sz = (safeZone_t *)list_next(szIter); sz != NULL; sz = (safeZone_t *)list_next(szIter)) {
 			if(!strcmp(sz->name, target)) {
 				sz->active = (qboolean)!sz->active;

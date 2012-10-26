@@ -2044,8 +2044,8 @@ void G_ShutdownGame( int restart ) {
 	}
 
 	// free self destruct safe zones
-	if(selfdestructSafeZones != NULL) {
-		destroy_list(selfdestructSafeZones);
+	if(level.selfdestructSafeZones != NULL) {
+		destroy_list(level.selfdestructSafeZones);
 	}
 
 #ifdef SQL

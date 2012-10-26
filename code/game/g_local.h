@@ -696,6 +696,10 @@ typedef struct {
 
 	int numBrushEnts;					//!< number of entities in the level that use brushmodels
 
+	// selft destruct safezones
+	list_p selfdestructSafeZones;
+	list_p locations;
+
 } level_locals_t;
 
 
@@ -2042,7 +2046,6 @@ struct luaAlertState_s {
 luaAlertState_t *luaAlertState;
 
 // self destruct
-list_p selfdestructSafeZones;
 typedef struct safeZone_s safeZone_t;
 struct safeZone_s {
 	char*		name;
@@ -2050,5 +2053,6 @@ struct safeZone_s {
 	vec3_t		maxs;
 	vec3_t		mins;
 } safeZone_s;
+
 
 #endif //_G_LOCAL_H_
