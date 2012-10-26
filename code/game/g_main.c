@@ -4,7 +4,6 @@
 #include "g_local.h"
 #include "g_groups.h"
 
-//extern qboolean BG_BorgTransporting( playerState_t *ps );
 extern void BG_LoadItemNames(void);
 
 extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[] );
@@ -12,9 +11,7 @@ extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[] );
 qboolean G_LoadMapConfigurations( void );
 
 //RPG-X: RedTechie
-//int shaketimer; //Global shake timer varible //TiM: NOT NECESSARY
 int RPGEntityCount; //Global entity count varible
-//int lastTimedMessage; //The last timed message that was displayed //TiM: Not necessary here
 
 level_locals_t	level;
 extern char	races[256];	//this is evil!
@@ -84,13 +81,11 @@ vmCvar_t	g_debugRight;
 vmCvar_t	g_debugUp;
 vmCvar_t	g_language;
 vmCvar_t	g_holoIntro;
-//vmCvar_t	g_ghostRespawn;
 vmCvar_t	g_intermissionTime;
 vmCvar_t	g_team_group_red;
 vmCvar_t	g_team_group_blue;
 vmCvar_t	g_random_skin_limit;
 vmCvar_t	g_classChangeDebounceTime;
-//vmCvar_t	ui_playerclass;
 
 //RPG-X: - RedTechie More CVAR INFO
 vmCvar_t	rpg_allowvote;
@@ -121,25 +116,7 @@ vmCvar_t	rpg_rifledmg;					//!< Specifies whether the phaser rifle damages playe
 vmCvar_t	rpg_stasisdmg;					//!< Specifies whether the disruptor damages rifles.
 vmCvar_t	rpg_imoddmg;					
 vmCvar_t	rpg_noweapons;					//!< Can be used to disable all weapons.
-//vmCvar_t	rpg_marinepass;
-//vmCvar_t	rpg_securitypass;
-//vmCvar_t	rpg_adminpass;
-//vmCvar_t	rpg_medicalpass;
-//vmCvar_t	rpg_sciencepass;
-//vmCvar_t	rpg_commandpass;
-//vmCvar_t	rpg_engineerpass;
-//vmCvar_t	rpg_alienpass;
-//vmCvar_t	rpg_n00bpass;
-//vmCvar_t	rpg_alienflags;
-//vmCvar_t	rpg_marineflags;
-//vmCvar_t	rpg_securityflags;
-//vmCvar_t	rpg_adminflags;
-//vmCvar_t	rpg_medicalflags;
-//vmCvar_t	rpg_scienceflags;
-//vmCvar_t	rpg_commandflags;
-//vmCvar_t	rpg_engineerflags;
 vmCvar_t	rpg_welcomemessage;					//!< Welcome message displayed when a player joins the server.
-//vmCvar_t	rpg_timedmessage;
 vmCvar_t	rpg_timedmessagetime;				//!< Delay between timed mesagges
 vmCvar_t	rpg_message1;						//!< Timed message
 vmCvar_t	rpg_message2;						//!< Timed message
@@ -160,9 +137,6 @@ vmCvar_t	rpg_invisibletripmines;				//!< Specifies whether invisible tripmines a
 vmCvar_t	rpg_medicsrevive;					//!< Are medics allowed to revive other players
 vmCvar_t	rpg_effectsgun;						//!< Can be used to enable/disable the effects gun
 vmCvar_t	rpg_phaserdisintegrates;			//!< If enabled phasers disintegrate players instead ob incapacitating them.
-//vmCvar_t	rpg_enabledranks;
-//vmCvar_t	rpg_servershakeallclients;//RPG-X: RedTechie - Server only shake cmd used to shake clients view when set
-//vmCvar_t	rpg_servershakeallclientsintensity;//RPG-X: RedTechie - Server only shake cmd used to shake clients view intensity
 //! Kick player for n00bing after this ammount of kills
 vmCvar_t	rpg_kickAfterXkills; //RPG-X | Phenix | 06/04/2005
 vmCvar_t	rpg_rankSet;						//!< Rankset to use
@@ -434,14 +408,11 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_language, "g_language", "", CVAR_ARCHIVE, 0, qfalse  },
 
 	{ &g_holoIntro, "g_holoIntro", "1", CVAR_ARCHIVE, 0, qfalse},
-//	{ &g_ghostRespawn, "g_ghostRespawn", "5", CVAR_ARCHIVE, 0, qfalse},		// How long the player is ghosted, in seconds.
 	{ &g_team_group_red, "g_team_group_red", "", CVAR_LATCH, 0, qfalse  },		// Used to have CVAR_ARCHIVE	
 	{ &g_team_group_blue, "g_team_group_blue", "", CVAR_LATCH, 0, qfalse  },		// Used to have CVAR_ARCHIVE
 	{ &g_random_skin_limit, "g_random_skin_limit", "4", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_classChangeDebounceTime, "g_classChangeDebounceTime", "180", CVAR_ARCHIVE, 0, qfalse },
-		
-//	{ &ui_playerclass, "ui_playerclass", "NOCLASS", CVAR_ARCHIVE, 0, qfalse },
-	
+			
 	//RPG-X: RedTechie - RPG-X CVARS....duh....just for the slow ones
 	{ &rpg_allowvote, "rpg_allowVote", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_chatsallowed, "rpg_chatsAllowed", "10", CVAR_ARCHIVE, 0, qfalse},
@@ -471,26 +442,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_stasisdmg, "rpg_stasisDmg", "1", CVAR_ARCHIVE, 0, qfalse},
 	{ &rpg_imoddmg, "rpg_imodDmg", "1", CVAR_ARCHIVE, 0, qfalse},
 	{ &rpg_noweapons, "rpg_noWeapons", "0", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
-	/*{ &rpg_marinepass, "rpg_marinepass", "marine", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_securitypass, "rpg_securityPass", "security", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_adminpass, "rpg_adminPass", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_medicalpass, "rpg_medicalPass", "medical", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_sciencepass, "rpg_sciencePass", "science", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_commandpass, "rpg_commandPass", "command", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_engineerpass, "rpg_engineerPass", "engineer", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_alienpass, "rpg_alienpass", "alien", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_n00bpass, "rpg_n00bpass", "n00b", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_alienflags, "rpg_alienFlags", "1026", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  }, //16
-	//{ &rpg_marineflags, "rpg_marineflags", "8184", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_marineflags, "rpg_marineFlags", "12398", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  }, //111
-	{ &rpg_securityflags, "rpg_securityFlags", "110", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  }, //15
-	{ &rpg_adminflags, "rpg_adminFlags", "65534", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  }, //24361
-	{ &rpg_medicalflags, "rpg_medicalFlags", "14382", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  }, //231
-	{ &rpg_scienceflags, "rpg_scienceFlags", "46", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  }, //7
-	{ &rpg_commandflags, "rpg_commandFlags", "62", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  }, //6
-	{ &rpg_engineerflags, "rpg_engineerFlags", "49198", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  }, //775*/
 	{ &rpg_welcomemessage, "rpg_welcomeMessage", "Welcome to the RPG-X Mod", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
-//	{ &rpg_timedmessage, "rpg_timedmessage", "Server is in: Character Development Mode", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
 	{ &rpg_timedmessagetime, "rpg_timedMessageTime", "5", CVAR_ARCHIVE, 0, qfalse  }, //TiM : LATCH Not necessary here.
 	{ &rpg_message1, "rpg_message1", "", CVAR_ARCHIVE, 0, qfalse  },
 	{ &rpg_message2, "rpg_message2", "", CVAR_ARCHIVE, 0, qfalse  },
@@ -504,16 +456,12 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_message10, "rpg_message10", "", CVAR_ARCHIVE, 0, qfalse  },
 	{ &rpg_forcekillradius, "rpg_forceKillRadius", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
 	{ &rpg_forcekillradiuswaittime, "rpg_forceKillRadiusWaitTime", "45000", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
-	//{ &rpg_noclipspectating, "rpg_noclipSpectating", "1", CVAR_ARCHIVE, 0, qtrue},		//Not latched (ie doesnt need server restart)
 	{ &rpg_chatarearange, "rpg_chatAreaRange", "200", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},	//Not latched (ie doesnt need server restart)
 	{ &rpg_forcefielddamage, "rpg_forcefieldDamage", "0", CVAR_ARCHIVE, 0, qfalse},
 	{ &rpg_invisibletripmines, "rpg_invisibleTripmines", "1", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qfalse},
 	{ &rpg_medicsrevive, "rpg_medicsRevive", "1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse},
 	{ &rpg_effectsgun, "rpg_effectsGun", "1", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qfalse},
 	{ &rpg_phaserdisintegrates, "rpg_phaserDisintegrates", "1", CVAR_ARCHIVE, 0, qfalse},
-	//{ &rpg_servershakeallclients, "rpg_serverShakeAllClients", "0", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qfalse}, //RPG-X: RedTechie - SHould not be used directly this is to shake allll clients views if set on
-	//{ &rpg_servershakeallclientsintensity, "rpg_serverShakeAllClientsIntensity", "2", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qfalse}, //RPG-X: RedTechie - SHould not be used directly this is to shake allll clients views itensity
-	//{ &rpg_enabledranks, "rpg_enabledRanks", "65535", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},//RPG-X: RedTechie - This use to be CVAR_ROM jason i have no idea why you set it to read only but im setting it back to normal to fix ranks
 	{ &rpg_kickAfterXkills, "rpg_kickAfterNumkills", "2", CVAR_ARCHIVE, 0, qfalse }, //RPG-X | Phenix | 06/04/2005
 	{ &rpg_rankSet, "rpg_rankSet", RANKSET_DEFAULT, CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_LATCH, 0, qfalse },
 
@@ -534,7 +482,6 @@ static cvarTable_t		gameCvarTable[] = {
 
 	//TiM - maybe we can fix it later, but for now, disable it
 	{ &rpg_scannablePanels, "rpg_scannablePanels", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO, 0, qfalse },
-	//{ &rpg_scannableForceField, "rpg_scannableForceField", "1", CVAR_ARCHIVE, 0, qfalse }, //RPG-X | GSIO01 | 13/05/2009
     { &rpg_allowWeaponDrop, "rpg_allowWeaponDrop", "1", CVAR_ARCHIVE, 0, qfalse }, // RPG-X | Marcin | 03/12/2008
     { &rpg_weaponsStay, "rpg_weaponsStay", "0", CVAR_ARCHIVE, 0, qfalse },         // RPG-X | Marcin | 04/12/2008
     { &rpg_rifleSpeed, "rpg_rifleSpeed", "2700", 0, 0, qtrue },        // RPG-X | Marcin | 04/12/2008
@@ -579,7 +526,6 @@ static cvarTable_t		gameCvarTable[] = {
     { &rpg_dropOnDeath, "rpg_dropItemsOnDeath", "1", CVAR_ARCHIVE, 0, qfalse },						// RPG-X | Marcin | 30/12/2008
 	{ &rpg_fraggerSpawnDelay, "rpg_fraggerSpawnDelay", "100", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_borgAdapt, "rpg_borgAdapt", "0", CVAR_ARCHIVE, 0, qfalse },
-	//{ &rpg_flushDroppedOnDisconnect, "rpg_flushDroppedOnDisconnect", "1", CVAR_ARCHIVE, 0, qfalse }
 	{ &rpg_hypoMelee, "rpg_hypoMelee", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_adaptUseSound, "rpg_adaptUseSound", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_adaptCrifleHits, "rpg_adaptCrifleHits", "6", CVAR_ARCHIVE, 0, qfalse },
@@ -657,7 +603,6 @@ This is the only way control passes into the module.
 This MUST be the very first function compiled into the .q3vm file
 ================
 */
-//intptr_t
 intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
 	switch ( command ) {
 	case GAME_INIT:
@@ -689,7 +634,6 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 	case GAME_CONSOLE_COMMAND:
 		//RPG-X : TiM - plagiarised Red's logic from SFEFMOD here lol
 		return ConsoleCommand();
-		//return ConsoleCommand();
 	case BOTAI_START_FRAME:
 		return BotAIStartFrame( arg0 );
 	}
@@ -810,12 +754,6 @@ static qboolean G_LoadClassData( char* fileName )
 		return qfalse;
 	}
 
-	/*if ( fileLen >= 32000 ) {
-		G_Printf( S_COLOR_RED "ERROR: File %s was way too big.\n", fileName );
-		trap_FS_FCloseFile( f );
-		return qfalse;
-	}*/
-
 	buffer = (char *)malloc((fileLen+1) * sizeof(char));
 
 	if(!buffer) {
@@ -871,8 +809,6 @@ static qboolean G_LoadClassData( char* fileName )
 
 					Q_strncpyz( g_classData[classIndex].consoleName, token, sizeof( g_classData[classIndex].consoleName ) );
 					classValid = qtrue;
-					
-					//G_Printf( S_COLOR_RED "%s\n", g_classData[classIndex].consoleName );
 
 					continue;
 				}
@@ -889,8 +825,6 @@ static qboolean G_LoadClassData( char* fileName )
 					Q_strncpyz( g_classData[classIndex].formalName, token, sizeof( g_classData[classIndex].formalName ) );
 					classValid = qtrue;
 					
-					//G_Printf( S_COLOR_RED "%s\n", g_classData[classIndex].consoleName );
-
 					continue;
 				}
 
@@ -1078,7 +1012,6 @@ void G_LoadHolodeckFile(void) {
 	int			file_len;
 	char			*txtPtr, *token;
 	int			numProgs = 0;
-	//int			i;
 
 	info = (char *)malloc(MAX_INFO_STRING * sizeof(char));
 	if(!info) {
@@ -1199,7 +1132,6 @@ srvChangeData_t srvChangeData;
 
 static void G_LoadServerChangeFile(void) {
 	char			fileRoute[MAX_QPATH];
-	//char			mapRoute[MAX_QPATH];
 	fileHandle_t	f;
 	char			*buffer;
 	int				file_len;
@@ -1285,14 +1217,12 @@ static void G_LoadServerChangeFile(void) {
 	}
 
 	free(buffer);
-	//trap_SetConfigstring(CS_SERVERCHANGE, infoString);
 }
 
 mapChangeData_t mapChangeData;
 
 static void G_LoadMapChangeFile(void) {
 	char			fileRoute[MAX_QPATH];
-	//char			mapRoute[MAX_QPATH];
 	fileHandle_t		f;
 	char			*buffer;
 	int			file_len;
@@ -1378,7 +1308,6 @@ static void G_LoadMapChangeFile(void) {
 	}
 
 	free(buffer);
-	//trap_SetConfigstring(CS_SERVERCHANGE, infoString);
 }
 
 static void G_LoadLocationsFile( void )
@@ -1386,14 +1315,14 @@ static void G_LoadLocationsFile( void )
 	char			fileRoute[MAX_QPATH];
 	char			mapRoute[MAX_QPATH];
 	char			*serverInfo;
-	fileHandle_t		f;
+	fileHandle_t	f;
 	char			*buffer;
-	int			file_len;
+	int				file_len;
 	char			*textPtr, *token;
 	vec3_t			origin, angles;
 	gentity_t		*ent;
 	char			*desc;
-	int			rest;
+	int				rest;
 
 	serverInfo = (char *)malloc(MAX_INFO_STRING * sizeof(char));
 	if(!serverInfo) {
@@ -1519,8 +1448,6 @@ static void G_LoadLocationsFile( void )
 				// copy restriction value
 				ent->sound1to2 = rest;
 
-				//G_Printf( S_COLOR_RED "Added string %s to entity %i.\n", ent->message, (int)(ent-g_entities) );
-
 				//initiate it as a location ent
 				SP_target_location( ent );
 
@@ -1593,8 +1520,6 @@ static void G_LoadLocationsFile( void )
 				//copy desc into target as well
 				ent->target = ent->targetname = G_NewString( desc );
 
-				//G_Printf( S_COLOR_RED "Added string %s to entity %i.\n", ent->message, (int)(ent-g_entities) );
-
 				//initiate it as a location ent
 				SP_target_location( ent );
 
@@ -1609,53 +1534,6 @@ static void G_LoadLocationsFile( void )
 
 	free(buffer);
 }
-
-/*void G_initGroupsList(void)
-{
-	char	filename[MAX_QPATH];
-	char	dirlist[4096];
-	int		i;
-	char*	dirptr;
-	char*	race_list;
-	int		numdirs;
-	int		dirlen;
-
-	memset(group_list, 0, sizeof(group_list));
-	group_count = 0;
-
-	// search through each and every skin we can find
-	//BOOKMARK
-	numdirs = trap_FS_GetFileList("models/players_rpgx", "/", dirlist, sizeof(dirlist) );
-	dirptr  = dirlist;
-	for (i=0; i<numdirs; i++,dirptr+=dirlen+1)
-	{
-		dirlen = strlen(dirptr);
-		
-		if (dirlen && dirptr[dirlen-1]=='/')
-		{
-			dirptr[dirlen-1]='\0';
-		}
-
-		if (!strcmp(dirptr,".") || !strcmp(dirptr,".."))
-		{
-			continue;
-		}
-
-		if (group_count == MAX_GROUP_MEMBERS)
-		{
-			G_Printf("Number of possible models larger than group array - limiting to first %d models\n", MAX_GROUP_MEMBERS);
-			break;
-		}
-		// work out racename to 
-		Com_sprintf(filename, sizeof(filename), "models/players_rpgx/%s/groups.cfg", dirptr);
-		race_list = BG_RegisterRace(filename);
-
-		Q_strncpyz( group_list[group_count].name, dirptr , sizeof(group_list[0].name) );
-		Q_strncpyz( group_list[group_count++].text, race_list , sizeof(group_list[0].text) );
-	}
-}*/
-
-
 
 #define MAX_GROUP_FILE_SIZE	5000
 char *G_searchGroupList(const char *name)
@@ -2049,7 +1927,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	
 	levelExiting = qfalse;
 
-/*RPG-X J2J************************************************************************************/
+	/*RPG-X J2J************************************************************************************/
 	G_Printf ("Initializing RPG-X Globals...");
 
 	//TiM : Reset teh recon system on game init.
@@ -2062,9 +1940,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	//WARNING - used hard coded number to shut up compiler, 1023 is MAX_ENTITIES (which apperently cant be increased without substansial exe recoding)
 	//TiM : NB Ents 0 -> 128 are clients only. cyclicng thru all ents here is not needed.
 	for(i = 0; i < MAX_CLIENTS; i++)
-	{
-		//g_entities[i].last_tr116_fire = 0;
-		
+	{	
 		//RPG-X: Redtechie - Make sure score cant be chnaged unless other wise told to
 		if(g_entities[i].client){
 			g_entities[i].client->UpdateScore = qfalse;
@@ -2084,38 +1960,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 		//Transporter
 		memset( &TransDat[i], 0, sizeof( TransDat[i] ) );
 		TransDat[i].LastClick = level.time-5000;				//Make last click current time less 5 seconds.
-		//TransDat[i].Used = qfalse;							//And set both site to site and tricorder to unused.
-		//TransDat[i].pUsed = qfalse;
-		//And Zero the vectors
-		//Huh... why couldn't we use the memset func 
-		//here for most of those =0 statements?
-		/*VectorCopy(vec3_origin, TransDat[i].TransCoord);
-		VectorCopy(vec3_origin, TransDat[i].TransCoordRot);
-		VectorCopy(vec3_origin, TransDat[i].pTransCoord);
-		VectorCopy(vec3_origin, TransDat[i].pTransCoordRot);*/
-		//TransDat[i].beamed = qfalse;
-		//TransDat[i].beamer = -1;
-		//TransDat[i].beamTime = 0;
 
 		//Drag Data
 		DragDat[i].AdminId = -1;
-		//DragDat[i].distance = 0.0f;
 	}
-
-	//Couldn't think of anywhere else for this, so here it goes.
-	//TiM - WTF?  You can't cache multimedia assets like that in the game module. O_o
-	//The server couldn't care less about playing sounds.  No one would hear them >.<
-	//n00bsnd = trap_S_RegisterSound("sound\n00b.mp3");
-
-	//RPG-X: RedTechie - Set Shake cvars back to normal just to stop hacking
-	//trap_SendConsoleCommand( EXEC_APPEND, "set rpg_servershakeallclients 0\n" );
-	//trap_SendConsoleCommand( EXEC_APPEND, "set rpg_servershakeallclientsintensity 2\n" );
-
-	// check for remap file, load and apply if one if found
-	//G_LoadShaderRemaps();
-
-	//Check spawn file - not in this release yet
-	//G_ParseSpawnFile();
 
 	G_Printf( "%i entities loaded.\n", level.num_entities );
 
@@ -2145,14 +1993,14 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 /*************************************************************************************************/
 
-	G_Printf("                       ,.                      \n");	G_Printf("          ..:,        :Xt.       ,:.            \n");
-    G_Printf("         ,=+t:       .IRX=       :++=.         \n");	G_Printf("        .=iVt:.      :RYYI.      .itt+         \n");    
-	G_Printf("       .:tXI=;.      tRtiV;       ,IYY:.       \n");	G_Printf("      .+;ii=;.      ,XVi+Vt.       :tIi+      \n");    
-	G_Printf("     .;ti;;:.       +RI++IY,        ,+tt=.     \n");	G_Printf("    ,++YY;.        ,XXi+++X=         ;IYI=.    \n");    
-	G_Printf("    ;ttY+;.    .,=iVRI++++YX+;.       ;VYt;    \n");	G_Printf("   .;ii+=,   .;IXRRXVi++++iVRXVi:.    ,=iii.   \n");    
-	G_Printf("  .==;ti,  .;YRRVVXYii+++++IVIVRXt,   ,+=tI=   \n");	G_Printf("  .iitY=, .tRRVXXVRV+++ii++YRXVIYXV;   :tYti,  \n");   
-	G_Printf("  .+iii=,,IBVVXYiiXViiiiiiitVtIXViVR=  ,+t+I:  \n");	G_Printf("   =+=I:.tBVXVt=;tRIiiiiiiiiXi:=YXiIX; :+=It;  \n");    
-	G_Printf(" .;;tYt:;RVVV+=:,YRiiiiiiiiiYI,.:IXiVY..+IYi=  \n");	G_Printf(" .ti=t+;tRIXi;, :XViiiiiiiiiIV:  ,YViX=.:titt. \n");
+	G_Printf("                       ,.                      \n");	  G_Printf("          ..:,        :Xt.       ,:.            \n");
+    G_Printf("         ,=+t:       .IRX=       :++=.         \n");	  G_Printf("        .=iVt:.      :RYYI.      .itt+         \n");    
+	G_Printf("       .:tXI=;.      tRtiV;       ,IYY:.       \n");	  G_Printf("      .+;ii=;.      ,XVi+Vt.       :tIi+      \n");    
+	G_Printf("     .;ti;;:.       +RI++IY,        ,+tt=.     \n");	  G_Printf("    ,++YY;.        ,XXi+++X=         ;IYI=.    \n");    
+	G_Printf("    ;ttY+;.    .,=iVRI++++YX+;.       ;VYt;    \n");	  G_Printf("   .;ii+=,   .;IXRRXVi++++iVRXVi:.    ,=iii.   \n");    
+	G_Printf("  .==;ti,  .;YRRVVXYii+++++IVIVRXt,   ,+=tI=   \n");	  G_Printf("  .iitY=, .tRRVXXVRV+++ii++YRXVIYXV;   :tYti,  \n");   
+	G_Printf("  .+iii=,,IBVVXYiiXViiiiiiitVtIXViVR=  ,+t+I:  \n");	  G_Printf("   =+=I:.tBVXVt=;tRIiiiiiiiiXi:=YXiIX; :+=It;  \n");    
+	G_Printf(" .;;tYt:;RVVV+=:,YRiiiiiiiiiYI,.:IXiVY..+IYi=  \n");	  G_Printf(" .ti=t+;tRIXi;, :XViiiiiiiiiIV:  ,YViX=.:titt. \n");
 	G_Printf("  iY++I;YVYY=:  +BIiiiiiiiiiiX=   +XiVi;i++Vi, \n");    G_Printf(" ,+YYYI:VYYY;. .YRiiiiiiiiiiiVt.  ;RIYt:IIVVi: \n");	
 	G_Printf(" ,+tYXi;YVIX;  ;RVtiiiiIXXtiiVI,  iRIVt,=XVit: \n");    G_Printf(" .+iiti++XiXI. iBIiiiiYXIIXtiIV: :XXIV++;i+iI;.\n");
 	G_Printf("  ;Ii=ii:VYtRi,VRtiiiVVi=;IXitX=;VBYXI=i+;iV+;.\n");    G_Printf("  ;tYtVt;;XYIRXBVttiVV+;:.:VYiXVRBVXY+;+IYVt+, \n");	
@@ -2691,15 +2539,6 @@ void BeginIntermission( void ) {
 		client = g_entities + i;
 		if (!client->inuse)
 			continue;
-		// respawn if dead
-		//if ( BG_BorgTransporting( &client->client->ps ) )
-		//{//in borg teleport fly around mode, turn it off
-		//	client->client->ps.stats[STAT_USEABLE_PLACED] = 0;
-		//	client->client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
-		//	client->client->ps.eFlags &= ~EF_NODRAW;
-		//	client->s.eFlags &= ~EF_NODRAW;
-		//	client->flags &= ~FL_NOTARGET;
-		//}
 		if (client->health <= 0) {
 			respawn(client);
 		}
@@ -2882,13 +2721,13 @@ qboolean ScoreIsTied( void ) {
 	}
 	
 	if ( g_gametype.integer >= GT_TEAM ) {
-		return level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE];
+		return (qboolean)(level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE]);
 	}
 
 	a = level.clients[level.sortedClients[0]].ps.persistant[PERS_SCORE];
 	b = level.clients[level.sortedClients[1]].ps.persistant[PERS_SCORE];
 
-	return a == b;
+	return (qboolean)(a == b);
 }
 
 /*
@@ -3067,7 +2906,7 @@ void G_RunFrame( int levelTime ) {
 		// clear events that are too old
 		if ( level.time - ent->eventTime > EVENT_VALID_MSEC ) {
 			if ( es->event ) {
-				es->event = 0;	// &= EV_EVENT_BITS;
+				es->event = 0;
 				if ( ent->client ) {
 					ps->externalEvent = 0;
 					ps->events[0] = 0;
@@ -3144,22 +2983,11 @@ void G_RunFrame( int levelTime ) {
 	// update to team status?
 	CheckTeamStatus();
 
-	// update to health status
-	//CheckHealthInfoMessage();//done from inside CheckTeamStatus now
-
 	// cancel vote if timed out
 	CheckVote();
 
 	// for tracking changes
 	CheckCvars();
-
-	//RPG-X: RedTechie - Count down our shake camera timer
-	//TiM: NOT NECESSARY
-	/*if(rpg_servershakeallclients.integer == 1){
-		if(shaketimer < level.time){
-			trap_SendConsoleCommand( EXEC_APPEND, "set rpg_servershakeallclients 0\n" );
-		}
-	}*/
 
 	//RPG-X: J2J - This will check for drag movements that need to be calculated.
 	DragCheck();
@@ -3177,7 +3005,7 @@ void G_RunFrame( int levelTime ) {
 			client->pressedUse = qfalse;
 		}
 
-		if (g_classData[client->sess.sessionClass].isn00b/*ent->client->sess.sessionClass == PC_N00B*/)
+		if (g_classData[client->sess.sessionClass].isn00b)
 		{
 			if ((client->n00bTime != -1) && (client->n00bTime <= level.time)&&client->origClass[0])
 			{
