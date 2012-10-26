@@ -2654,9 +2654,19 @@ void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 
 void target_selfdestruct_think(gentity_t *ent) {
 	gentity_t*	client;	
-	gentity_t   *healthEnt;	
+	gentity_t   *healthEnt, *savezone=NULL;	
 	double		ETAmin, ETAsec, temp = 0.0f;
 	int			i = 0;
+
+	//this is for calling the savezones to list. It needs to stand here to not screw up the remainder of the think.
+	if (ent->wait == 50) {
+		while ((savezone = G_Find( savezone, FOFS( classname ), "target_safezone" )) != NULL  ){
+			savezone->use(savezone, ent, ent);
+		}
+		ent->wait = 0;
+		ent->nextthink = level.time + 50;
+		return;
+	}
 
 	//now we have 3 destinct stages the entity can think about.
 	//it starts with ent->wait being set to the new remaining time
@@ -2722,6 +2732,11 @@ void target_selfdestruct_think(gentity_t *ent) {
 			ent->wait = 0;
 		}
 
+		if (ent->nextthink == ent->damage){
+			//we need to get the savezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
+			ent->nextthink = ent->nextthink - 50;
+			ent->wait = 50;
+		}
 	} else if (ent->wait == 0) { //bang time ^^
 		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
 		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
@@ -2759,7 +2774,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 		ent->nextthink = -1;
 		ent->wait = ent->splashDamage;
 		//free ent if it was command-spawned
-		if (ent->spawnflags == 1)
+		if (ent->spawnflags & 1)
 			G_FreeEntity(ent);
 
 		return; //And we're done.
@@ -2893,12 +2908,44 @@ void SP_target_selfdestruct(gentity_t *ent) {
 		ent->wait = 0;
 	}
 
+	if (ent->nextthink == ent->damage){
+		//we need to get the savezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
+		ent->nextthink = ent->nextthink - 50;
+		ent->wait = 50;
+	}
+
 	trap_LinkEntity(ent);
 }
 
 /*QUAKED target_safezone (1 0 0) ? STARTON
 This is a safezone for the self destruct sequence.
 */
+
+void target_savezone_use(gentity_t *ent, gentity_t *other, gentity_t *activator){
+	safeZone_t* sz = (safeZone_t *)malloc(sizeof(safeZone_s));
+
+	if(!Q_stricmp(activator->classname, "target_selfdestruct") || !Q_stricmp(activator->classname, "target_shiphealth")){
+		//our ship is about to die so compose the list of savezones
+		VectorCopy(ent->r.maxs, sz->maxs);
+		VectorCopy(ent->r.mins, sz->mins);
+		VectorAdd(ent->s.origin, ent->r.mins, sz->mins);
+		VectorAdd(ent->s.origin, ent->r.maxs, sz->maxs);
+		sz->name = (char *)malloc(strlen(ent->targetname)+1);
+		strcpy(sz->name, ent->targetname);
+		sz->active = (qboolean)(ent->count == 1);
+	
+		list_add(level.selfdestructSafeZones, sz, sizeof(safeZone_s));
+	
+		G_FreeEntity(ent);
+	} else {
+		//a client used this, so let's set this thing to active
+		if(ent->count == 1)
+			ent->count = 0;
+		else
+			ent->count = 1;
+	}
+}
+
 void target_safezone_destructor(void *p) {
 	safeZone_t *sz = (safeZone_t *)p;
 
@@ -2913,7 +2960,6 @@ void target_safezone_destructor(void *p) {
 }
 
 void SP_target_safezone(gentity_t *ent) {
-	safeZone_t* sz = (safeZone_t *)malloc(sizeof(safeZone_s));
 
 	if(!ent->targetname || !ent->targetname[0]) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Safezone without targetname at %s.\n", vtos(ent->s.origin)););
@@ -2928,20 +2974,12 @@ void SP_target_safezone(gentity_t *ent) {
 	if(!ent->luaEntity) {
 		trap_SetBrushModel(ent, ent->model);
 	}
-	VectorCopy(ent->r.maxs, sz->maxs);
-	VectorCopy(ent->r.mins, sz->mins);
-	VectorAdd(ent->s.origin, ent->r.mins, sz->mins);
-	VectorAdd(ent->s.origin, ent->r.maxs, sz->maxs);
+	if(ent->spawnflags & 1)
+		ent->count = 1;
+	ent->use = target_savezone_use;
 	ent->r.contents = CONTENTS_NONE;
 	ent->r.svFlags |= SVF_NOCLIENT;
 	trap_LinkEntity(ent);
-	sz->name = (char *)malloc(strlen(ent->targetname)+1);
-	strcpy(sz->name, ent->targetname);
-	sz->active = (qboolean)(ent->spawnflags & 1);
-
-	list_add(level.selfdestructSafeZones, sz, sizeof(safeZone_s));
-
-	G_FreeEntity(ent);
 }
 
 /*QUAKED target_shiphealth (1 0 0) (-8 -8 -8) (8 8 8)
@@ -3010,10 +3048,30 @@ static int target_shiphealth_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) 
 	return cur2;
 }
 
-void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+void target_shiphealth_die(gentity_t *ent){
+	//we're dying
 	int			i, num;
+	gentity_t *ents[MAX_GENTITIES], *client;
+
+
+	num = target_shiphealth_get_unsafe_players(ents);
+
+	//Loop trough all clients on the server.
+	for(i = 0; i < num; i++) {
+		client = ents[i];
+		G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+	}
+	//let's hear it
+	G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
+	//let's be shakey for a sec... I hope lol ^^
+	trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
+	ent->count = 0;
+	ent->nextthink = -1;
+}
+
+void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	double		NSS, NHS, SD, HD, BT;
-	gentity_t	*alertEnt, *warpEnt, *turboEnt, *transEnt, *client;
+	gentity_t	*alertEnt, *warpEnt, *turboEnt, *transEnt, *savezone=NULL;
 
 	if(ent->damage <= 0){ //failsave
 		return;
@@ -3097,30 +3155,18 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 		ent->splashDamage = -1;
 	}
 
-	//and of course...
+	//let's reset the repair-timer
+	ent->nextthink = level.time + 60000;
+
+	//if we hit 0 use all the savezones and blow in 50 ms 
 	if(ent->count <= 0){
-		gentity_t *ents[MAX_GENTITIES];
 
-
-		num = target_shiphealth_get_unsafe_players(ents);
-
-		//Loop trough all clients on the server.
-		for(i = 0; i < num; i++) {
-			client = ents[i];
-			G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+		while ((savezone = G_Find( savezone, FOFS( classname ), "target_safezone" )) != NULL  ){
+			savezone->use(savezone, ent, ent);
 		}
-		//let's hear it
-		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
-		//let's be shakey for a sec... I hope lol ^^
-		trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
-		ent->count = 0;
+		ent->think = target_shiphealth_die;
+		ent->nextthink = level.time + 50;
 	}
-
-	//let's reset or lift the repair-timer
-	if(ent->count == 0)
-		ent->nextthink = -1;
-	else
-		ent->nextthink = level.time + 60000;
 
 	return;
 }	
