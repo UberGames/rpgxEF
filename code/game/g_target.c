@@ -2602,9 +2602,9 @@ static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]
 	gentity_t *safePlayers[MAX_GENTITIES];
 	qboolean add = qtrue;
 
-	if(selfdestructSafeZones != NULL && selfdestructSafeZones->length > 0) {
+	if(level.selfdestructSafeZones != NULL && level.selfdestructSafeZones->length > 0) {
 		// go through all safe zones and compose a list of sade players
-		iter = list_iterator(selfdestructSafeZones, FRONT);
+		iter = list_iterator(level.selfdestructSafeZones, FRONT);
 		for(sz = (safeZone_t *)list_next(iter); sz != NULL; sz = (safeZone_t *)list_next(iter)) {
 			if(!sz->active) {
 				continue;
@@ -2920,9 +2920,9 @@ void SP_target_safezone(gentity_t *ent) {
 		return;
 	}
 
-	if(selfdestructSafeZones == NULL) {
-		selfdestructSafeZones = create_list();
-		selfdestructSafeZones->destructor = target_safezone_destructor;
+	if(level.selfdestructSafeZones == NULL) {
+		level.selfdestructSafeZones = create_list();
+		level.selfdestructSafeZones->destructor = target_safezone_destructor;
 	}
 
 	if(!ent->luaEntity) {
@@ -2939,7 +2939,7 @@ void SP_target_safezone(gentity_t *ent) {
 	strcpy(sz->name, ent->targetname);
 	sz->active = (qboolean)(ent->spawnflags & 1);
 
-	list_add(selfdestructSafeZones, sz, sizeof(safeZone_s));
+	list_add(level.selfdestructSafeZones, sz, sizeof(safeZone_s));
 
 	G_FreeEntity(ent);
 }
@@ -2971,9 +2971,9 @@ static int target_shiphealth_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) 
 	gentity_t *safePlayers[MAX_GENTITIES];
 	qboolean add = qtrue;
 
-	if(selfdestructSafeZones != NULL && selfdestructSafeZones->length > 0) {
+	if(level.selfdestructSafeZones != NULL && level.selfdestructSafeZones->length > 0) {
 		// go through all safe zones and compose a list of sade players
-		iter = list_iterator(selfdestructSafeZones, FRONT);
+		iter = list_iterator(level.selfdestructSafeZones, FRONT);
 		for(sz = (safeZone_t *)list_next(iter); sz != NULL; sz = (safeZone_t *)list_next(iter)) {
 			if(!sz->active) {
 				continue;
