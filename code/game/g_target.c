@@ -2581,7 +2581,7 @@ void SP_target_shaderremap(gentity_t *ent) {
 /*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8)
 This entity manages the self destruct.
 For now this should only be used via the selfdestruct console command, however it might be usable from within the radiant at a later date.
-Should this thing hit 0 the killing part for everyone outside a target_savezone will be done automatically.
+Should this thing hit 0 the killing part for everyone outside a target_safezone will be done automatically.
 
 Keys:
 wait: total Countdown-Time in secs
@@ -2589,6 +2589,7 @@ count: warning intervall up to 60 secs in secs
 n00bCount: warning intervall within 60 secs in secs
 health: warning intervall within 10 secs in secs
 flags: are audio warnings 1 or 0?
+bluename: target_safezone this thing affects (multi-ship-maps only) will switch it unsafe at T-50ms
 target: Things like fx to fire once the countdown hits 0
 
 damage: leveltime of countdowns end
@@ -2654,14 +2655,17 @@ void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 
 void target_selfdestruct_think(gentity_t *ent) {
 	gentity_t*	client;	
-	gentity_t   *healthEnt, *savezone=NULL;	
+	gentity_t   *healthEnt, *safezone=NULL;	
 	double		ETAmin, ETAsec, temp = 0.0f;
 	int			i = 0;
 
-	//this is for calling the savezones to list. It needs to stand here to not screw up the remainder of the think.
+	//this is for calling the safezones to list. It needs to stand here to not screw up the remainder of the think.
 	if (ent->wait == 50) {
-		while ((savezone = G_Find( savezone, FOFS( classname ), "target_safezone" )) != NULL  ){
-			savezone->use(savezone, ent, ent);
+		while ((safezone = G_Find( safezone, FOFS( classname ), "target_safezone" )) != NULL  ){
+			if(!Q_stricmp(safezone->targetname, ent->bluename))//free shipwide safezone if it exists
+				G_FreeEntity(safezone);
+			else
+				safezone->use(safezone, ent, ent);
 		}
 		ent->wait = 0;
 		ent->nextthink = level.time + 50;
@@ -2733,7 +2737,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 		}
 
 		if (ent->nextthink == ent->damage){
-			//we need to get the savezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
+			//we need to get the safezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
 			ent->nextthink = ent->nextthink - 50;
 			ent->wait = 50;
 		}
@@ -2909,7 +2913,7 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	}
 
 	if (ent->nextthink == ent->damage){
-		//we need to get the savezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
+		//we need to get the safezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
 		ent->nextthink = ent->nextthink - 50;
 		ent->wait = 50;
 	}
@@ -2917,15 +2921,27 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED target_safezone (1 0 0) ? STARTON
-This is a safezone for the self destruct sequence.
+/*QUAKED target_safezone (1 0 0) ? STARTON SHIP
+This is a safezone for when the ship/station is destroyed via shiphelath or selfdestruct.
+It is used like a trigger and requires a targetname or else it will be removed at spawn.
+
+STARTON has this Entity spawned in it's Safe configurartion
+SHIP is used as a failsave for maps with multiple ships/stations
+
+Usage for Escape Pods and similar:
+Fill your escape pod Interior with this trigger and have it targeted by a func_usable/target_relay/target_delay to toggle it between safe and unsafe states.
+
+Usage for multiple ships (and stations) like on rpg_runabout:
+Surround your entire ship with this trigger (or it's seperate elements with one each) and set it to STARTON and SHIP (spawnflags = 3). 
+Have it's targetname match the targetname of it's target_shiphealth-counterpart exactly (case-dependent) to automatically switch this savezone to unsafe should it be about to die.
+In case of a selfdestruct you will need to enter the targetname to automatically switch it to unsafe 50ms prior to the countdowns end.
 */
 
-void target_savezone_use(gentity_t *ent, gentity_t *other, gentity_t *activator){
+void target_safezone_use(gentity_t *ent, gentity_t *other, gentity_t *activator){
 	safeZone_t* sz = (safeZone_t *)malloc(sizeof(safeZone_s));
 
 	if(!Q_stricmp(activator->classname, "target_selfdestruct") || !Q_stricmp(activator->classname, "target_shiphealth")){
-		//our ship is about to die so compose the list of savezones
+		//our ship is about to die so compose the list of safezones
 		VectorCopy(ent->r.maxs, sz->maxs);
 		VectorCopy(ent->r.mins, sz->mins);
 		VectorAdd(ent->s.origin, ent->r.mins, sz->mins);
@@ -2962,7 +2978,8 @@ void target_safezone_destructor(void *p) {
 void SP_target_safezone(gentity_t *ent) {
 
 	if(!ent->targetname || !ent->targetname[0]) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Safezone without targetname at %s.\n", vtos(ent->s.origin)););
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Safezone without targetname at %s, removing entity.\n", vtos(ent->s.origin)););
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -2976,7 +2993,7 @@ void SP_target_safezone(gentity_t *ent) {
 	}
 	if(ent->spawnflags & 1)
 		ent->count = 1;
-	ent->use = target_savezone_use;
+	ent->use = target_safezone_use;
 	ent->r.contents = CONTENTS_NONE;
 	ent->r.svFlags |= SVF_NOCLIENT;
 	trap_LinkEntity(ent);
@@ -2987,9 +3004,10 @@ This Entity manages a ships healt. Ship Health is reduced via administrative/del
 Repairing is based on a % per minute basis for both shields and hull.
 The entity features interconnectivity with other systems such as warpdrive or turbolift with a random yet incresing chance to turn them off whenever hulldamage occurs. This includes Shields.
 Further more the entity will automatically toggle red alert should it be any other and will activate shields if alert is set to any but green.
-If hull health hit's 0 it will kill any client outside an active savezone.
+If hull health hit's 0 it will kill any client outside an active safezone.
 
-Keys:
+Required Keys (If any of them are not given the entity will be removed at spawn):
+targetname: Name of the Ship/Station this entity represents. please use underscores (_) instead of spaces ( ). See target_safezone for additional use of this key.
 health: Total Hull strength
 splashRadius: total shield strenght
 angle: Hull repair in % per minute
@@ -3071,7 +3089,7 @@ void target_shiphealth_die(gentity_t *ent){
 
 void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	double		NSS, NHS, SD, HD, BT;
-	gentity_t	*alertEnt, *warpEnt, *turboEnt, *transEnt, *savezone=NULL;
+	gentity_t	*alertEnt, *warpEnt, *turboEnt, *transEnt, *safezone=NULL;
 
 	if(ent->damage <= 0){ //failsave
 		return;
@@ -3158,11 +3176,14 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	//let's reset the repair-timer
 	ent->nextthink = level.time + 60000;
 
-	//if we hit 0 use all the savezones and blow in 50 ms 
+	//if we hit 0 use all the safezones and blow in 50 ms 
 	if(ent->count <= 0){
 
-		while ((savezone = G_Find( savezone, FOFS( classname ), "target_safezone" )) != NULL  ){
-			savezone->use(savezone, ent, ent);
+		while ((safezone = G_Find( safezone, FOFS( classname ), "target_safezone" )) != NULL  ){
+			if(!Q_stricmp(safezone->targetname, ent->targetname))//free shipwide safezone if it exists
+				G_FreeEntity(safezone);
+			else
+				safezone->use(safezone, ent, ent);
 		}
 		ent->think = target_shiphealth_die;
 		ent->nextthink = level.time + 50;
@@ -3242,6 +3263,12 @@ void target_shiphealth_think(gentity_t *ent) {
 
 
 void SP_target_shiphealth(gentity_t *ent) {
+
+	if(!ent->targetname || !ent->health || !ent->splashRadius || !ent->angle || !ent->speed){
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shiphealth at %s is missing one or more parameters, removing entity.\n", vtos(ent->s.origin)););
+		trap_LinkEntity(ent);
+		return;
+	}
 
 	//we need to put the total health in for the current
 	ent->count = ent->health;

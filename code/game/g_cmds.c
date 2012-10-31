@@ -6279,8 +6279,8 @@ Harry Young | 25/07/2012
 =================
 */
 static void Cmd_selfdestruct_f(gentity_t *ent) {
-	gentity_t	*destructEnt;
-	char		arg[16], arg2[16], arg3[16], arg4[16], arg5[16], arg6[16], arg7[16];
+	gentity_t	*destructEnt, *safezone=NULL;
+	char		arg[16], arg2[16], arg3[16], arg4[16], arg5[16], arg6[16], arg7[16], arg8[16];
 	double		ETAmin, ETAsec;
 	if(!ent || !ent->client)
 		return;
@@ -6321,10 +6321,11 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		destructEnt->health = atoi(arg5);
 		trap_Argv(6, arg6, sizeof(arg6));
 		destructEnt->flags = atoi(arg6);
-		if(trap_Argc() == 7) {
-			trap_Argv(7, arg7, sizeof(arg7));
-			destructEnt->target = G_NewString(arg7);
-		}
+		trap_Argv(7, arg7, sizeof(arg7));
+		destructEnt->bluename = G_NewString(arg7);
+		trap_Argv(8, arg8, sizeof(arg8));
+		destructEnt->target = G_NewString(arg8);
+
 		destructEnt->spawnflags = 1; //tells ent to free once aborted.
 
 		//we need to check a few things here to make sure the entity works properly. Else we free it.
@@ -6333,13 +6334,19 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		} else { //sth's wrong so lets tell them what is.
 			G_PrintfClient(ent, "^1ERROR: The following arguments are missing:");
 			if ( destructEnt->wait == 0 )
-				G_PrintfClient(ent, "^1duration must not be 0."); 
+				G_PrintfClient(ent, "^1-duration must not be 0."); 
 			if ( destructEnt->count == 0 )
-				G_PrintfClient(ent, "^1intervall must not be 0."); 
+				G_PrintfClient(ent, "^1-intervall must not be 0."); 
 			if ( destructEnt->n00bCount == 0 )
-				G_PrintfClient(ent, "^1intervall-60 must not be 0."); 
+				G_PrintfClient(ent, "^1-intervall-60 must not be 0."); 
 			if ( destructEnt->health == 0 )
-				G_PrintfClient(ent, "^1intervall-10 must not be 0."); 
+				G_PrintfClient(ent, "^1-intervall-10 must not be 0."); 
+			while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
+				if(!destructEnt->bluename && safezone->spawnflags & 2){
+					G_PrintfClient(ent, "^1-safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout).");
+					break;
+				}
+			}
 			G_PrintfClient(ent, "^1Removing entity.");
 			G_FreeEntity(destructEnt);
 			return;
@@ -6388,13 +6395,14 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		destructEnt->use(destructEnt, NULL, NULL); // Use-Function will simply manage the abort
 	} else {
 		G_PrintfClient(ent,		"^1ERROR: Invalid or no command-Argument. Arguments are start, remaining and abort");
-		G_PrintfClient(ent,		"^3Usage: selfdestruct start duration intervall intervall-60 intervall-10 audio [target]");
+		G_PrintfClient(ent,		"^3Usage: selfdestruct start duration intervall intervall-60 intervall-10 audio [safezone] [target]");
 		G_PrintfClient(ent,		"duration: total countdown-duration in seconds. Must not be 0.");
 		G_PrintfClient(ent,		"intervall: intervall of audio warnings up to T-60 seconds in seconds. Must not be 0.");
 		G_PrintfClient(ent,		"intervall-60: intervall of audio warnings within T-60 seconds in seconds. Must not be 0.");
 		G_PrintfClient(ent,		"intervall-10: intervall of audio warnings within T-10 seconds in seconds. Must not be 0.");
 		G_PrintfClient(ent,		"audio: set this 0 if you do want a muted countdown, else set this 1.");
-		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0. The entity will automatically shake everyones screen and kill all clienst outside an active target_savezone.");
+		G_PrintfClient(ent,		"safezone: safezone to toggle unsafe at T-50ms. Only for maps with multiple ships (like rpg_runabout). Set NULL to skip.");
+		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0. The entity will automatically shake everyones screen and kill all clienst outside an active target_safezone.");
 		G_PrintfClient(ent,		"^2Hint: Make sure your duration and intervalls are synced up. There is a failsave for the countdown to hit it's mark however there is nothing to make sure that you don't get your warnings at unexpected times...");
 		G_PrintfClient(ent,		"^2Try this for example: selfdestruct start 131 10 10 1 1");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining");
@@ -6412,8 +6420,9 @@ Harry Young | 02/08/2012
 =================
 */
 static void Cmd_shipdamage_f(gentity_t *ent) {
-	gentity_t	*healthEnt;
+	gentity_t	*healthEnt=NULL;
 	char		arg[16];
+	char		target[512];
 
 	#ifndef SQL
 	if ( !IsAdmin( ent ) ) {
@@ -6427,17 +6436,36 @@ static void Cmd_shipdamage_f(gentity_t *ent) {
 	}
 	#endif
 
-	healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
+	if(trap_Argc() == 0){
+		G_PrintfClient(ent,	"Usage: shipdamage damage [target] where damage is the total amount dealt and target is the target_shiphealth to recieve it. It is case-dependent and required on maps with 2 or more of such (like rpg_runabout).\n");
+		G_PrintfClient(ent,	"It will be rendered to shields and hull respectively by the entity. Must be positive. You can not heal with this command.\n");
+		return;
+	}
+	
+	if(trap_Argc() > 1){
+		Q_strncpyz( target, ConcatArgs( 2 ), sizeof( target ) );
+
+		while((healthEnt = G_Find(healthEnt, FOFS(classname), "target_shiphealth")) != NULL){
+			if(!Q_stricmp(healthEnt->targetname, target))//find the right entity if we have a target
+				break;
+		}
+	}
+
+	if(!healthEnt){//specific search did not turn up any results so fall back to the first entity
+		trap_SendServerCommand( ent-g_entities, va("print \"^3 Warning: no healthEnt with targetname '%s' found, falling back to first entity found.\n\"", target ) );
+		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
+		if(G_Find(healthEnt, FOFS(classname), "target_shiphealth")){//abort if we do have more than one healthEnt
+			trap_SendServerCommand( ent-g_entities, va("print \"^1 ERROR: This map has more than one target_shiphealth, therefore a target needs to be specified. Aborting call.\n\"" ) );
+			return;
+		}
+	}
+
 	if(!healthEnt){
 		trap_SendServerCommand( ent-g_entities, "print \"^4This map does not support the shiphealth system.\n\"" );
 		return;
 	}
 	
 	trap_Argv(1, arg, sizeof(arg));
-	if(atoi(arg) == 0){
-		G_PrintfClient(ent,	"Usage: shipdamage [damage] where damage is the total amount dealt. It will be rendered to shields and hull respectively by the entity. Must be positive. You can not heal with this command.\n");
-		return;
-	}
 
 	if(atoi(arg) > 0){
 		if(healthEnt->count > 0){
@@ -6461,16 +6489,16 @@ Harry Young | 02/08/2012
 =================
 */
 static void Cmd_shiphealth_f(gentity_t *ent) {
-	gentity_t	*healthEnt;
+	gentity_t	*healthEnt=NULL;
 	int			THS, CHS, HCI, TSS, CSS, SCI, SI;
 	float		RHS, RSS;
 
-	healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
-
-	if(!healthEnt){
+	if(!G_Find(NULL, FOFS(classname), "target_shiphealth")){
 		trap_SendServerCommand( ent-g_entities, "print \"^3This map does not support the shiphealth system.\n\"" );
 		return;
 	}
+
+	while((healthEnt = G_Find(healthEnt, FOFS(classname), "target_shiphealth")) != NULL){ //do this for every healthEnt you find
 
 	THS = healthEnt->health;
 	CHS = healthEnt->count;
@@ -6495,9 +6523,9 @@ static void Cmd_shiphealth_f(gentity_t *ent) {
 		SCI = 1;
 	
 	if(CHS == 0){
-		trap_SendServerCommand( ent-g_entities, "print \"\n^1 The Ship is destroyed.\n\n\"" );
+		trap_SendServerCommand( ent-g_entities, va("print \"\n^1 %s is destroyed.\n\n\"", healthEnt->targetname ) );
 	} else {
-		trap_SendServerCommand( ent-g_entities, "print \"\n^3 Tactical Master Systems Display\n\"" );
+		trap_SendServerCommand( ent-g_entities, va("print \"\n^3 %s : Tactical Master Systems Display\n\"", healthEnt->targetname ) );
 		switch(SI){
 			case -2:
 				trap_SendServerCommand( ent-g_entities, "print \"^1 Shields are offline\n\"" );
@@ -6515,6 +6543,7 @@ static void Cmd_shiphealth_f(gentity_t *ent) {
 		if(CSS>0)
 			trap_SendServerCommand( ent-g_entities, va("print \"^%i Shield Capactiy at %.0f Percent (%i of %i Points)\n\"", SCI, RSS, CSS, TSS) );
 		trap_SendServerCommand( ent-g_entities, va("print \"^%i Structual Integrity at %.0f Percent (%i of %i Points)\n\n\"", HCI, RHS, CHS, THS) );
+	}
 	}
 	return;
 }
