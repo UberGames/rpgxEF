@@ -3266,7 +3266,7 @@ void SP_target_shiphealth(gentity_t *ent) {
 
 	if(!ent->targetname || !ent->health || !ent->splashRadius || !ent->angle || !ent->speed){
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shiphealth at %s is missing one or more parameters, removing entity.\n", vtos(ent->s.origin)););
-		trap_LinkEntity(ent);
+		G_FreeEntity(ent);
 		return;
 	}
 

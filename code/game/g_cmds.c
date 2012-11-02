@@ -6274,16 +6274,12 @@ static void Cmd_alert_f(gentity_t *ent) {
 
 /*
 =================
-Cmd_selfdestruct_f
-Harry Young | 25/07/2012
+Cmd_safezonelist_f
+Harry Young | 02/11/2012
 =================
 */
-static void Cmd_selfdestruct_f(gentity_t *ent) {
-	gentity_t	*destructEnt, *safezone=NULL;
-	char		arg[16], arg2[16], arg3[16], arg4[16], arg5[16], arg6[16], arg7[16], arg8[16];
-	double		ETAmin, ETAsec;
-	if(!ent || !ent->client)
-		return;
+static void Cmd_safezonelist_f(gentity_t *ent) {
+	gentity_t	*safezone=NULL;
 
 	#ifndef SQL
 	if ( !IsAdmin( ent ) ) {
@@ -6297,8 +6293,66 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 	}
 	#endif
 
-	// Setup command-Execution
+	trap_SendServerCommand( ent-g_entities, va("print \"List of safezones on this map: \n\n\""));
+	while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
+		trap_SendServerCommand( ent-g_entities, va("print \"Name of safezone: %s \n\"", safezone->targetname ));
+		if(safezone->count == 1)
+			trap_SendServerCommand( ent-g_entities, va("print \"Status of safezone: ^2safe \n\""));
+		else
+			trap_SendServerCommand( ent-g_entities, va("print \"Status of safezone: ^1unsafe \n\""));
+		if(safezone->spawnflags & 2)
+			trap_SendServerCommand( ent-g_entities, va("print \"Flagges as ship: yes \n\n\""));
+		else
+			trap_SendServerCommand( ent-g_entities, va("print \"flagges as ship: no \n\n\""));
+	}
+	trap_SendServerCommand( ent-g_entities, va("print \"End of list \n\n\""));
+}
+
+/*
+=================
+Cmd_selfdestruct_f
+Harry Young | 25/07/2012
+=================
+*/
+static void Cmd_selfdestruct_f(gentity_t *ent) {
+	gentity_t	*destructEnt, *safezone=NULL;
+	char		arg[16], arg2[16], arg3[16], arg4[16], arg5[16], arg6[16], arg7[16], arg8[16];
+	double		ETAmin, ETAsec;
+	if(!ent || !ent->client)
+		return;
+
+	//Trapping all potential args here.
 	trap_Argv(1, arg, sizeof(arg));
+	trap_Argv(2, arg2, sizeof(arg2));
+	trap_Argv(3, arg3, sizeof(arg3));
+	trap_Argv(4, arg4, sizeof(arg4));
+	trap_Argv(5, arg5, sizeof(arg5));
+	trap_Argv(6, arg6, sizeof(arg6));
+	trap_Argv(7, arg7, sizeof(arg7));
+	trap_Argv(8, arg8, sizeof(arg8));
+
+	//There is one subcommand that is clear for general use: selfdestruct remaining
+	//If we're going for this skip admincheck
+
+	if( !Q_stricmp(arg, "remaining") && Q_stricmp(arg2, "global") ){
+
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
+		trap_SendServerCommand( ent-g_entities, va("print \"You may use selfdestruct remaining to get the remaining time in an active countdown\n\" ") );
+		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, /*need to fill this*/-1 ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand( ent-g_entities, va("print \"You may use selfdestruct remaining to get the remaining time in an active countdown\n\" ") );
+		return;
+	}
+	#endif
+
+	}
+
+	// Setup command-Execution
 
 	if (!Q_stricmp(arg, "start")) {
 		//Is there sth running alrerady?
@@ -6311,19 +6365,12 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		//There is not so let's set this up.
 		destructEnt = G_Spawn();
 		destructEnt->classname = "target_selfdestruct";
-		trap_Argv(2, arg2, sizeof(arg2));
 		destructEnt->wait = atoi(arg2);
-		trap_Argv(3, arg3, sizeof(arg3));
 		destructEnt->count = atoi(arg3);
-		trap_Argv(4, arg4, sizeof(arg4));
 		destructEnt->n00bCount = atoi(arg4);
-		trap_Argv(5, arg5, sizeof(arg5));
 		destructEnt->health = atoi(arg5);
-		trap_Argv(6, arg6, sizeof(arg6));
 		destructEnt->flags = atoi(arg6);
-		trap_Argv(7, arg7, sizeof(arg7));
 		destructEnt->bluename = G_NewString(arg7);
-		trap_Argv(8, arg8, sizeof(arg8));
 		destructEnt->target = G_NewString(arg8);
 
 		destructEnt->spawnflags = 1; //tells ent to free once aborted.
@@ -6343,7 +6390,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 				G_PrintfClient(ent, "^1-intervall-10 must not be 0."); 
 			while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
 				if(!destructEnt->bluename && safezone->spawnflags & 2){
-					G_PrintfClient(ent, "^1-safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout).");
+					G_PrintfClient(ent, "^1-safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezonesuse the safezonelist command.");
 					break;
 				}
 			}
@@ -6361,6 +6408,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 
 		//we need the remaining time in minutes and seconds from that entity. Just ask them off and have the command do the math.
 		ETAsec = floor(modf((( floor(destructEnt->damage / 1000) - floor(level.time / 1000) ) / 60), &ETAmin)*60); //break it apart, put off the minutes and return the floored secs
+		if (!Q_stricmp(arg2, "global"){ //a relevant OP has requestet a global announcement so let's give it
 		if (ETAmin > 1) { // stating minutes
 			if (ETAsec > 1) // stating seconds
 				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
@@ -6369,7 +6417,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 			if (ETAsec == 0) // stating minutes only
 				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
 		} 
-		if (ETAmin == 1) { // stating minutes
+		if (ETAmin == 1) { // stating minute
 			if (ETAsec > 1) // stating seconds
 				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
 			if (ETAsec == 1) // stating second
@@ -6377,13 +6425,37 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 			if (ETAsec == 0) // stating minutes only
 				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
 		} 
-		if (ETAmin == 0) { // stating minutes
+		if (ETAmin == 0) { // seconds only
 			if (ETAsec > 1) // stating seconds
 				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
 			if (ETAsec == 1) // stating second
 				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
 			if (ETAsec == 0) // savety measure only
 				trap_SendServerCommand( -1, va("servermsg \"Self Destruct executing.\""));
+		} else {
+		if (ETAmin > 1) { // stating minutes
+			if (ETAsec > 1) // stating seconds
+				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
+			if (ETAsec == 1) // stating second
+				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minutes and %.0f second.\"", ETAmin, ETAsec ));
+			if (ETAsec == 0) // stating minutes only
+				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
+		} 
+		if (ETAmin == 1) { // stating minute
+			if (ETAsec > 1) // stating seconds
+				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
+			if (ETAsec == 1) // stating second
+				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minute and %.0f second.\"", ETAmin, ETAsec ));
+			if (ETAsec == 0) // stating minutes only
+				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
+		} 
+		if (ETAmin == 0) { // seconds only
+			if (ETAsec > 1) // stating seconds
+				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
+			if (ETAsec == 1) // stating second
+				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
+			if (ETAsec == 0) // savety measure only
+				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct executing.\""));
 		} 
 	} else if (!Q_stricmp(arg, "abort")) {
 		//Is there sth running alrerady?
@@ -6406,6 +6478,8 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		G_PrintfClient(ent,		"^2Hint: Make sure your duration and intervalls are synced up. There is a failsave for the countdown to hit it's mark however there is nothing to make sure that you don't get your warnings at unexpected times...");
 		G_PrintfClient(ent,		"^2Try this for example: selfdestruct start 131 10 10 1 1");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining");
+		G_PrintfClient(ent,		"This will give out the remaining countdown-time to you only even if the count is muted. It is free to use for any client.");
+		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining global");
 		G_PrintfClient(ent,		"This will give out the remaining countdown-time to all clients even if the count is muted.");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct abort");
 		G_PrintfClient(ent,		"This will abort any self destruct running");
@@ -8036,6 +8110,8 @@ void ClientCommand( int clientNum )
 		Cmd_changeFreq(ent);
 	else if (Q_stricmp(cmd, "alert") == 0)
 		Cmd_alert_f(ent);
+	else if (Q_stricmp(cmd, "safezonelist") == 0)
+		Cmd_safezonelist_f(ent);
 	else if (Q_stricmp(cmd, "selfdestruct") == 0)
 		Cmd_selfdestruct_f(ent);
 	else if (Q_stricmp(cmd, "shipdamage") == 0)

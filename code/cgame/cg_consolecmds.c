@@ -911,6 +911,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand("camtest");
 	trap_AddCommand("camtestend");
 
+	trap_AddCommand("safezonelist");
 	trap_AddCommand("selfdestruct");
 	trap_AddCommand("shipdamage");
 	trap_AddCommand("shiphealth");
