@@ -6293,7 +6293,7 @@ static void Cmd_safezonelist_f(gentity_t *ent) {
 	}
 	#endif
 
-	trap_SendServerCommand( ent-g_entities, va("print \"List of safezones on this map: \n\n\""));
+	trap_SendServerCommand( ent-g_entities, va("print \"\nList of safezones on this map: \n\n\""));
 	while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
 		trap_SendServerCommand( ent-g_entities, va("print \"Name of safezone: %s \n\"", safezone->targetname ));
 		if(safezone->count == 1)
@@ -6303,7 +6303,7 @@ static void Cmd_safezonelist_f(gentity_t *ent) {
 		if(safezone->spawnflags & 2)
 			trap_SendServerCommand( ent-g_entities, va("print \"Flagges as ship: yes \n\n\""));
 		else
-			trap_SendServerCommand( ent-g_entities, va("print \"flagges as ship: no \n\n\""));
+			trap_SendServerCommand( ent-g_entities, va("print \"Flagged as ship: no \n\n\""));
 	}
 	trap_SendServerCommand( ent-g_entities, va("print \"End of list \n\n\""));
 }
