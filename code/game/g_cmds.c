@@ -402,6 +402,10 @@ static void Cmd_Give_f( gentity_t *ent ) {
 					flag = FL_FLY;
 					arrayNum = PW_FLIGHT;					
 				}
+				else if ( !Q_stricmp( item->consoleName, "evasuit" ) ) {
+					flag = FL_FLY;
+					arrayNum = PW_FLIGHT;					
+				}
 
 				targEnt->flags ^= flag;
 				
@@ -2075,7 +2079,7 @@ void Cmd_ForceName_f( gentity_t *ent ) {
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCENAME) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -2166,7 +2170,7 @@ void Cmd_ShakeCamera_f( gentity_t *ent ) {
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SHAKE) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -2253,7 +2257,7 @@ void Cmd_ForceClass_f( gentity_t *ent ) {
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCECLASS) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -3157,7 +3161,7 @@ void Cmd_ForceRank_f( gentity_t *ent)
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCERANK) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -3721,7 +3725,7 @@ static void Cmd_ForceModel_f( gentity_t *ent ) {
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEMODEL) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -3795,7 +3799,7 @@ static void Cmd_PlayMusic_f( gentity_t *ent )
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, 65536) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -3862,7 +3866,7 @@ static void Cmd_PlaySound_f( gentity_t *ent )
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SOUND) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -4488,7 +4492,7 @@ void Cmd_ForcePlayer_f ( gentity_t *ent ) {
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPLAYER) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -5907,7 +5911,7 @@ static void Cmd_lockDoor_f(gentity_t *ent) {
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CLAMP) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -6287,7 +6291,7 @@ static void Cmd_safezonelist_f(gentity_t *ent) {
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, /*need to fill this*/-1 ) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -6343,7 +6347,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, /*need to fill this*/-1 ) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		trap_SendServerCommand( ent-g_entities, va("print \"You may use selfdestruct remaining to get the remaining time in an active countdown\n\" ") );
 		return;
@@ -6408,55 +6412,57 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 
 		//we need the remaining time in minutes and seconds from that entity. Just ask them off and have the command do the math.
 		ETAsec = floor(modf((( floor(destructEnt->damage / 1000) - floor(level.time / 1000) ) / 60), &ETAmin)*60); //break it apart, put off the minutes and return the floored secs
-		if (!Q_stricmp(arg2, "global"){ //a relevant OP has requestet a global announcement so let's give it
-		if (ETAmin > 1) { // stating minutes
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f second.\"", ETAmin, ETAsec ));
-			if (ETAsec == 0) // stating minutes only
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
-		} 
-		if (ETAmin == 1) { // stating minute
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f second.\"", ETAmin, ETAsec ));
-			if (ETAsec == 0) // stating minutes only
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
-		} 
-		if (ETAmin == 0) { // seconds only
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
-			if (ETAsec == 0) // savety measure only
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct executing.\""));
+		if (!Q_stricmp(arg2, "global")){ //a relevant OP has requestet a global announcement so let's give it
+			if (ETAmin > 1) { // stating minutes
+				if (ETAsec > 1) // stating seconds
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
+				if (ETAsec == 1) // stating second
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f second.\"", ETAmin, ETAsec ));
+				if (ETAsec == 0) // stating minutes only
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
+			} 
+			if (ETAmin == 1) { // stating minute
+				if (ETAsec > 1) // stating seconds
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
+				if (ETAsec == 1) // stating second
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f second.\"", ETAmin, ETAsec ));
+				if (ETAsec == 0) // stating minutes only
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
+			} 
+			if (ETAmin == 0) { // seconds only
+				if (ETAsec > 1) // stating seconds
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
+				if (ETAsec == 1) // stating second
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
+				if (ETAsec == 0) // savety measure only
+					trap_SendServerCommand( -1, va("servermsg \"Self Destruct executing.\""));
+			} 
 		} else {
-		if (ETAmin > 1) { // stating minutes
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minutes and %.0f second.\"", ETAmin, ETAsec ));
-			if (ETAsec == 0) // stating minutes only
-				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
-		} 
-		if (ETAmin == 1) { // stating minute
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minute and %.0f second.\"", ETAmin, ETAsec ));
-			if (ETAsec == 0) // stating minutes only
-				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
-		} 
-		if (ETAmin == 0) { // seconds only
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
-			if (ETAsec == 0) // savety measure only
-				trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct executing.\""));
-		} 
+			if (ETAmin > 1) { // stating minutes
+				if (ETAsec > 1) // stating seconds
+					trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
+				if (ETAsec == 1) // stating second
+					trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minutes and %.0f second.\"", ETAmin, ETAsec ));
+				if (ETAsec == 0) // stating minutes only
+					trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
+			} 
+			if (ETAmin == 1) { // stating minute
+				if (ETAsec > 1) // stating seconds
+					trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
+				if (ETAsec == 1) // stating second
+					trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minute and %.0f second.\"", ETAmin, ETAsec ));
+				if (ETAsec == 0) // stating minutes only
+					trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
+			} 
+			if (ETAmin == 0) { // seconds only
+				if (ETAsec > 1) // stating seconds
+					trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
+				if (ETAsec == 1) // stating second
+					trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
+				if (ETAsec == 0) // savety measure only
+					trap_SendServerCommand( ent-g_entities, va("servermsg \"Self Destruct executing.\""));
+			} 
+		}
 	} else if (!Q_stricmp(arg, "abort")) {
 		//Is there sth running alrerady?
 		destructEnt = G_Find(NULL, FOFS(classname), "target_selfdestruct");
@@ -6504,7 +6510,7 @@ static void Cmd_shipdamage_f(gentity_t *ent) {
 		return;
 	}
 	#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, /*need to fill this*/-1 ) ) {
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
 		return;
 	}
@@ -6580,21 +6586,26 @@ static void Cmd_shiphealth_f(gentity_t *ent) {
 	CSS = healthEnt->n00bCount;
 	SI = healthEnt->splashDamage;
 
+	//Restructured the next 2 segments to fix a compiler-warning
 	RHS = ((CHS * pow(THS, -1)) * 100);
-	if(RHS <= 100)
-		HCI = 2;//Hull Color Indicators
-	if(RHS <= 50)
-		HCI = 3;
-	if(RHS <= 25)
+	if(RHS <= 25)//Hull Color Indicators
 		HCI = 1;
+	else if(RHS <= 50)
+		HCI = 3;
+	else if(RHS <= 100)
+		HCI = 2;
+	else
+		HCI = 7;
 
 	RSS = ((CSS * pow(TSS, -1)) * 100);
-	if(RSS <= 100)
-		SCI = 2;//Shield Color Indicators
-	if(RSS <= 50)
-		SCI = 3;
-	if(RSS <= 25)
+	if(RSS <= 25)//Shield Color Indicators
 		SCI = 1;
+	else if(RSS <= 50)
+		SCI = 3;
+	else if(RSS <= 100)
+		SCI = 2;
+	else
+		SCI = 7;
 	
 	if(CHS == 0){
 		trap_SendServerCommand( ent-g_entities, va("print \"\n^1 %s is destroyed.\n\n\"", healthEnt->targetname ) );
@@ -6677,8 +6688,18 @@ Cmd_getBrushEntCount_f
 =================
 */
 static void Cmd_getBrushEntCount_f(gentity_t *ent) {
-	if(!IsAdmin(ent))
+
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
 		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	G_PrintfClient(ent, "Brush Entity Count: %i\n", level.numBrushEnts);
 	if(level.numBrushEnts > (MAX_MODELS - 1))
@@ -6692,8 +6713,17 @@ static void Cmd_getBrushEntCount_f(gentity_t *ent) {
 static void Cmd_listSPs(gentity_t *ent) {
 	int i;
 
-	if(!IsAdmin(ent))
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
 		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	G_Printf("Spawnpoint list: \n");
 	for(i = 0; i < MAX_GENTITIES; i++) {
@@ -6714,8 +6744,17 @@ static void Cmd_getEntInfo_f(gentity_t *ent) {
 	char arg[10];
 	playerState_t *ps;
 
-	if(!IsAdmin(ent))
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
 		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	trap_Argv(1, arg, sizeof(arg));
 
@@ -6750,8 +6789,17 @@ static void Cmd_getOrigin_f(gentity_t *ent) {
 	char arg[10];
 	playerState_t *ps;
 
-	if(!IsAdmin(ent))
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
 		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	trap_Argv(1, arg, sizeof(arg));
 
@@ -6786,8 +6834,17 @@ static void Cmd_getEntByTargetname_f(gentity_t *ent) {
 	char arg[MAX_STRING_TOKENS];
 	gentity_t *t;
 	
-	if(!IsAdmin(ent))
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
 		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	trap_Argv(1, arg, sizeof(arg));
 
@@ -6812,8 +6869,17 @@ static void Cmd_getEntByTarget_f(gentity_t *ent) {
 	int i;
 	gentity_t *entities[MAX_GENTITIES];
 
-	if(!IsAdmin(ent))
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
 		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	trap_Argv(1, arg, sizeof(arg));
 
@@ -6834,8 +6900,17 @@ static void Cmd_getEntByBmodel_f(gentity_t *ent) {
 	char arg[MAX_STRING_TOKENS];
 	gentity_t *entity;
 
-	if(!IsAdmin(ent))
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
 		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	trap_Argv(1, arg, sizeof(arg));
 
@@ -6853,8 +6928,17 @@ static void Cmd_setOrigin(gentity_t *ent) {
 	gentity_t *ent2;
 	char arg[10];
 
-	if(!IsAdmin(ent))
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
 		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	trap_Argv(1, arg, sizeof(arg));
 	i = atoi(arg);
@@ -7548,6 +7632,18 @@ static void Cmd_UiTransporterLoc_f(gentity_t *ent) {
 	gentity_t *trTrigger;
 	char arg[MAX_QPATH];
 
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
+		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_UITRANS ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
+
 	if(trap_Argc() < 2) return;
 
 	trap_Argv(1, arg, sizeof(arg));
@@ -7612,6 +7708,18 @@ static void Cmd_UiTransporterExt_f(gentity_t *ent) {
 	int entNum, srvNum, /*i,*/ delay;
 	gentity_t *trTrigger;
 	char arg[MAX_QPATH];
+
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
+		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_UITRANS ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	if(!rpg_serverchange.integer) {
 		trap_SendServerCommand(ent-g_entities, "print \"Serverchange is disabled.\n\"");	
@@ -7848,7 +7956,17 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 	gentity_t	*entities[MAX_GENTITIES];
 	int			numEntities;
 
-	if(!IsAdmin(ent)) return;
+	#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
+		return;
+	}
+	#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+	#endif
 
 	if(trap_Argc() < 3) return;
 
