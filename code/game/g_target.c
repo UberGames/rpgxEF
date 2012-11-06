@@ -2643,7 +2643,7 @@ static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]
 }
 
 void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(ent->wait > 50){//if we listed the safezones we're committed
+	if(ent->wait > 50 || (ent->spawnflags & 2 && ent->wait > 100)){//if we listed the safezones we're committed
 	//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
 		if(ent->spawnflags & 2)
 			trap_SendServerCommand( -1, va("cp \"Self Destruct sequence aborted.\""));
@@ -2772,19 +2772,6 @@ void target_selfdestructcountdown_think(gentity_t *ent) {
 	double		ETAmin, ETAsec, temp = 0.0f;
 	int			i = 0;
 
-	//this is for calling the safezones to list. It needs to stand here to not screw up the remainder of the think.
-	if (ent->wait == 50) {
-		while ((safezone = G_Find( safezone, FOFS( classname ), "target_safezone" )) != NULL  ){
-			if(!Q_stricmp(safezone->targetname, ent->bluename))//free shipwide safezone if it exists
-				G_FreeEntity(safezone);
-			else
-				safezone->use(safezone, ent, ent);
-		}
-		ent->wait = 0;
-		ent->nextthink = level.time + 50;
-		return;
-	}
-
 	temp = ent->wait - 100;
 	ent->wait = temp;
 
@@ -2792,11 +2779,13 @@ void target_selfdestructcountdown_think(gentity_t *ent) {
 		ETAsec = modf((ent->wait / 60000), &ETAmin)*60;
 		trap_SendServerCommand( -1, va("cp \"^1Self Destruct in %1.0f:%2.1f\"", ETAmin, ETAsec ));
 		ent->nextthink = level.time + 100;
-
-		if (ent->nextthink == ent->damage){
-			//we need to get the safezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
-			ent->nextthink = ent->nextthink - 50;
-			ent->wait = 50;
+		if (ent->wait == 100) {
+			while ((safezone = G_Find( safezone, FOFS( classname ), "target_safezone" )) != NULL  ){
+				if(!Q_stricmp(safezone->targetname, ent->bluename))//free shipwide safezone if it exists
+					G_FreeEntity(safezone);
+				else
+					safezone->use(safezone, ent, ent);
+			}
 		}
 
 	} else if (ent->wait == 0) { //bang time ^^
@@ -2890,19 +2879,19 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	if (ent->wait == 1200000) {
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/20-a1.mp3"));
 	} else if (ent->wait == 900000) {
-		if (ent->flags == 1)
+		if (ent->flags == 1 || ent->spawnflags & 2)
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a1.mp3"));
 		else
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a0.mp3"));
 	} else if (ent->wait == 600000) {
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/10-a1.mp3"));
 	} else if (ent->wait == 300000) {
-		if (ent->flags == 1)
+		if (ent->flags == 1 || ent->spawnflags & 2)
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a1.mp3"));
 		else
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a0.mp3"));
 	} else {
-		if (ent->flags == 1)
+		if (ent->flags == 1 || ent->spawnflags & 2)
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a1.mp3"));
 		else
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a0.mp3"));
