@@ -2578,7 +2578,7 @@ void SP_target_shaderremap(gentity_t *ent) {
 //RPG-X | Harry Young | 15/10/2011 | MOD END
 
 //RPG-X | Harry Young | 25/07/2012 | MOD START
-/*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8)
+/*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8) FREE COUNTDOWN
 This entity manages the self destruct.
 For now this should only be used via the selfdestruct console command, however it might be usable from within the radiant at a later date.
 Should this thing hit 0 the killing part for everyone outside a target_safezone will be done automatically.
@@ -2643,13 +2643,18 @@ static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]
 }
 
 void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	if(ent->wait > 50){//if we listed the safezones we're committed
 	//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
-	trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
-	G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
-	//set wait to -1...
-	ent->wait = -1;
-	//and arrange for a think in a sec
-	ent->nextthink = level.time + 1000;
+		if(ent->spawnflags & 2)
+			trap_SendServerCommand( -1, va("cp \"Self Destruct sequence aborted.\""));
+		else
+			trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
+		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
+		//set wait to -1...
+		ent->wait = -1;
+		//and arrange for a think in a sec
+		ent->nextthink = level.time + 1000;
+	}
 	return;
 }
 
@@ -2692,32 +2697,8 @@ void target_selfdestruct_think(gentity_t *ent) {
 		//The first is the intervall-warning-loop
 		//We're doing this to give a new warning, so let's do that. I'll need to do a language switch here sometime...
 		ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
-		if (ent->flags == 1) {
-			if (ETAmin > 1) { // stating minutes
-				if (ETAsec > 1) // stating seconds
-					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
-				if (ETAsec == 1) // stating second
-					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f second.\"", ETAmin, ETAsec ));
-				if (ETAsec == 0) // stating minutes only
-					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
-			} 
-			if (ETAmin == 1) { // stating minutes
-				if (ETAsec > 1) // stating seconds
-					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
-				if (ETAsec == 1) // stating second
-					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f second.\"", ETAmin, ETAsec ));
-				if (ETAsec == 0) // stating minutes only
-					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
-			} 
-			if (ETAmin == 0) { // stating minutes
-				if (ETAsec > 1) // stating seconds
-					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
-				if (ETAsec == 1) // stating second
-					trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
-				if (ETAsec == 0) // savety measure only
-					trap_SendServerCommand( -1, va("servermsg \"Self Destruct executing.\""));
-			} 
-		}
+		if (ent->flags == 1) 
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
 
 		// with that out of the way let's set the next think
 		if (ent->wait > 60000 ) {
@@ -2744,8 +2725,8 @@ void target_selfdestruct_think(gentity_t *ent) {
 	} else if (ent->wait == 0) { //bang time ^^
 		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
 		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
-		if(healthEnt){
-			healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have one. makes a lot of stuff easier.
+		if(healthEnt && G_Find(healthEnt, FOFS(classname), "target_shiphealth") == NULL ){
+			healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have just one. makes a lot of stuff easier.
 			healthEnt->use(healthEnt, NULL, NULL);
 		}else{
 			int num;
@@ -2765,6 +2746,86 @@ void target_selfdestruct_think(gentity_t *ent) {
 			trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
 			//let's clear the lower right corner
 			trap_SendServerCommand( -1, va("servermsg \" \""));
+		}
+		if(ent->target)
+			G_UseTargets(ent, ent);
+			//we're done here so let's finish up in a sec.	
+			ent->wait = -1;
+			ent->nextthink = level.time + 1000;
+			return;
+	} else if (ent->wait < 0) {
+
+		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
+		ent->nextthink = -1;
+		ent->wait = ent->splashDamage;
+		//free ent if it was command-spawned
+		if (ent->spawnflags & 1)
+			G_FreeEntity(ent);
+
+		return; //And we're done.
+	}
+}
+
+void target_selfdestructcountdown_think(gentity_t *ent) {
+	gentity_t*	client;	
+	gentity_t   *healthEnt, *safezone=NULL;	
+	double		ETAmin, ETAsec, temp = 0.0f;
+	int			i = 0;
+
+	//this is for calling the safezones to list. It needs to stand here to not screw up the remainder of the think.
+	if (ent->wait == 50) {
+		while ((safezone = G_Find( safezone, FOFS( classname ), "target_safezone" )) != NULL  ){
+			if(!Q_stricmp(safezone->targetname, ent->bluename))//free shipwide safezone if it exists
+				G_FreeEntity(safezone);
+			else
+				safezone->use(safezone, ent, ent);
+		}
+		ent->wait = 0;
+		ent->nextthink = level.time + 50;
+		return;
+	}
+
+	temp = ent->wait - 100;
+	ent->wait = temp;
+
+	if (ent->wait > 0){
+		ETAsec = modf((ent->wait / 60000), &ETAmin)*60;
+		trap_SendServerCommand( -1, va("cp \"^1Self Destruct in %1.0f:%2.1f\"", ETAmin, ETAsec ));
+		ent->nextthink = level.time + 100;
+
+		if (ent->nextthink == ent->damage){
+			//we need to get the safezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
+			ent->nextthink = ent->nextthink - 50;
+			ent->wait = 50;
+		}
+
+	} else if (ent->wait == 0) { //bang time ^^
+		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
+		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
+		if(healthEnt && G_Find(healthEnt, FOFS(classname), "target_shiphealth") == NULL ){
+			healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have just one. makes a lot of stuff easier.
+			healthEnt->use(healthEnt, NULL, NULL);
+		}else{
+			int num;
+			gentity_t *ents[MAX_GENTITIES];
+
+
+			num = target_selfdestruct_get_unsafe_players(ents);
+
+			//Loop trough all clients on the server.
+			for(i = 0; i < num; i++) {
+				client = ents[i];
+				G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+			}
+			//let's hear it
+			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
+			//let's be shakey for a sec... I hope lol ^^
+			trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
+			//let's clear the lower right corner or the center... depends
+			if(ent->spawnflags & 2)
+				trap_SendServerCommand( -1, va("cp \" \""));
+			else
+				trap_SendServerCommand( -1, va("servermsg \" \""));
 		}
 		if(ent->target)
 			G_UseTargets(ent, ent);
@@ -2812,59 +2873,16 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	ent->damage = ent->wait + level.time;
 
 	//time's set so let's let everyone know that we're counting. I'll need to do a language switch here sometime...
-	ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
-	if (ent->flags == 1) {
-		if (ETAmin > 1) { // stating minutes
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds.\"", ETAmin, ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f second.\"", ETAmin, ETAsec ));
-			if (ETAsec == 0) // stating minutes only
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes.\"", ETAmin ));
-		} 
-		if (ETAmin == 1) { // stating minutes
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds.\"", ETAmin, ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f second.\"", ETAmin, ETAsec ));
-			if (ETAsec == 0) // stating minutes only
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute.\"", ETAmin ));
-		} 
-		if (ETAmin == 0) { // stating minutes
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f seconds.\"", ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f second.\"", ETAsec ));
-			if (ETAsec == 0) // savety measure only
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct executing.\""));
-		} 
+	if(ent->spawnflags & 2){ // we're extreme
+		ETAsec = modf((ent->wait / 60000), &ETAmin)*60;
+		trap_SendServerCommand( -1, va("cp \"^1Self Destruct in %1.0f:%2.1f\"", ETAmin, ETAsec ));
 	} else {
-		if (ETAmin > 1) { // stating minutes
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f seconds. There will be no further audio warnings.\"", ETAmin, ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes and %.0f second. There will be no further audio warnings.\"", ETAmin, ETAsec ));
-			if (ETAsec == 0) // stating minutes only
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minutes. There will be no further audio warnings.\"", ETAmin ));
-		} 
-		if (ETAmin == 1) { // stating minutes
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f seconds. There will be no further audio warnings.\"", ETAmin, ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute and %.0f second. There will be no further audio warnings.\"", ETAmin, ETAsec ));
-			if (ETAsec == 0) // stating minutes only
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f minute. There will be no further audio warnings.\"", ETAmin ));
-		} 
-		if (ETAmin == 0) { // stating minutes
-			if (ETAsec > 1) // stating seconds
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f seconds. There will be no further audio warnings.\"", ETAsec ));
-			if (ETAsec == 1) // stating second
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct in %.0f second. There will be no further audio warnings.\"", ETAsec ));
-			if (ETAsec == 0) // savety measure only
-				trap_SendServerCommand( -1, va("servermsg \"Self Destruct executing.\""));
-		} 
-	}
-
+		ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
+		if (ent->flags == 1) 
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
+		else 
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f; There will be no further audio warnings.\"", ETAmin, ETAsec ));
+	}	
 	ent->r.svFlags |= SVF_BROADCAST;
 	trap_LinkEntity(ent);
 
@@ -2893,16 +2911,23 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	// Now all that's left is to plan the next think.
 
 	ent->use = target_selfdestruct_use;
-	ent->think = target_selfdestruct_think;
+	if(ent->spawnflags & 2)
+		ent->think = target_selfdestructcountdown_think;
+	else
+		ent->think = target_selfdestruct_think;
 
 	// we have 3 different intervalls so we need to do some if's based on the to-be-updated duration...
-	if (ent->wait > 60000 ) {
-		ent->nextthink = level.time + ent->count;
+	if(ent->spawnflags & 2){
+		ent->nextthink = level.time + 100;
 	} else {
-		if (ent->wait > 10000 ) {
-			ent->nextthink = level.time + ent->n00bCount;
+		if (ent->wait > 60000 ) {
+			ent->nextthink = level.time + ent->count;
 		} else {
-			ent->nextthink = level.time + ent->health;
+			if (ent->wait > 10000 ) {
+				ent->nextthink = level.time + ent->n00bCount;
+			} else {
+				ent->nextthink = level.time + ent->health;
+			}
 		}
 	}
 

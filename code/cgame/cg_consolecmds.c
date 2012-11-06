@@ -913,6 +913,7 @@ void CG_InitConsoleCommands( void ) {
 
 	trap_AddCommand("safezonelist");
 	trap_AddCommand("selfdestruct");
+	trap_AddCommand("selfdestructcountdown");
 	trap_AddCommand("shipdamage");
 	trap_AddCommand("shiphealth");
 }
