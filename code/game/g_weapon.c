@@ -114,7 +114,8 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 	gentity_t   *validEnts[MAX_GENTITIES];
 	int			count = 0;
 	int			i, nearest = -1, nearestd = 512;
-	vec3_t		dVec;
+	vec3_t		dVec, end;
+	vec3_t		mins = { -40, -40, -40 }, maxs = { 40, 40, 40 };
 
 	/* find all vlaid entities in range */
 	count = G_RadiusListOfType("func_breakable", ent->s.origin, 512, NULL, validEnts);
@@ -122,9 +123,11 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 	if(count) {
 		trace_t tr;
 		for(i = 0; i < count; i++) {
+			VectorSubtract(ent->r.currentOrigin, validEnts[i]->s.origin, dVec);
+			VectorMA(validEnts[i]->s.origin, 1024, dVec, end);
 			//G_Printf("Checking entity: %d\n", i);
-			trap_Trace(&tr, ent->s.origin, NULL, NULL, validEnts[i]->s.origin, ent->s.number, MASK_SHOT);
-			if(tr.entityNum != validEnts[i]->s.number && tr.entityNum != ENTITYNUM_WORLD) {
+			trap_Trace(&tr, validEnts[i]->s.origin, mins, maxs, end, validEnts[i]->s.number, MASK_SHOT);
+			if(tr.entityNum != ent->s.number) {
 				continue;
 			}
 			//G_Printf("Nothing is blocking view ...\n");

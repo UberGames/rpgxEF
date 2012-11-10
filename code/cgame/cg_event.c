@@ -1838,6 +1838,10 @@ case EV_SHAKE_SOUND:
 			CG_Borg_Bolt_static( cent );
 		break;
 
+	case EV_DEBUG_TRACE:
+		FX_AddLine(cent->currentState.origin, cent->currentState.origin2, 0.5, 0.5, 0.5, 1.0, 1.0, 1000, cgs.media.laserShader);
+		break;
+
 // Default
 
 	default:

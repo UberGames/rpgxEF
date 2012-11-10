@@ -132,6 +132,12 @@ void trap_SetBrushModel( gentity_t *ent, const char *name ) {
 
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask ) {
 	syscall( G_TRACE, results, start, mins, maxs, end, passEntityNum, contentmask );
+	if(g_developer.integer & 2) { // Debug trace
+		vec3_t s;
+		VectorCopy(start, s);
+		gentity_t* tmp = G_TempEntity(s, EV_DEBUG_TRACE);
+		VectorCopy(end, tmp->s.origin2);
+	}
 }
 
 int trap_PointContents( const vec3_t point, int passEntityNum ) {
@@ -140,11 +146,11 @@ int trap_PointContents( const vec3_t point, int passEntityNum ) {
 
 
 qboolean trap_InPVS( const vec3_t p1, const vec3_t p2 ) {
-	return syscall( G_IN_PVS, p1, p2 );
+	return (qboolean)syscall( G_IN_PVS, p1, p2 );
 }
 
 qboolean trap_InPVSIgnorePortals( const vec3_t p1, const vec3_t p2 ) {
-	return syscall( G_IN_PVS_IGNORE_PORTALS, p1, p2 );
+	return (qboolean)syscall( G_IN_PVS_IGNORE_PORTALS, p1, p2 );
 }
 
 void trap_AdjustAreaPortalState( gentity_t *ent, qboolean open ) {
@@ -152,7 +158,7 @@ void trap_AdjustAreaPortalState( gentity_t *ent, qboolean open ) {
 }
 
 qboolean trap_AreasConnected( int area1, int area2 ) {
-	return syscall( G_AREAS_CONNECTED, area1, area2 );
+	return (qboolean)syscall( G_AREAS_CONNECTED, area1, area2 );
 }
 
 void trap_LinkEntity( gentity_t *ent ) {
@@ -169,7 +175,7 @@ int trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int *list, int max
 }
 
 qboolean trap_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *ent ) {
-	return syscall( G_ENTITY_CONTACT, mins, maxs, ent );
+	return (qboolean)syscall( G_ENTITY_CONTACT, mins, maxs, ent );
 }
 
 int trap_BotAllocateClient( void ) {
@@ -185,7 +191,7 @@ void trap_GetUsercmd( int clientNum, usercmd_t *cmd ) {
 }
 
 qboolean trap_GetEntityToken( char *buffer, int bufferSize ) {
-	return syscall( G_GET_ENTITY_TOKEN, buffer, bufferSize );
+	return (qboolean)syscall( G_GET_ENTITY_TOKEN, buffer, bufferSize );
 }
 
 int trap_DebugPolygonCreate(int color, int numPoints, vec3_t *points) {
