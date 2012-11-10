@@ -3,6 +3,8 @@
 #include "g_lua.h"
 #include "g_spawn.h"
 
+extern qboolean G_CallSpawn(gentity_t *ent);
+
 #ifdef G_LUA
 // entity.MMBRefit()
 // this is just a function called from lua
@@ -18,7 +20,7 @@ static int Entity_MMBRefit(lua_State * L)
 	trap_GetServerinfo( serverInfo, sizeof( serverInfo ) );
 	arg2 = Info_ValueForKey( serverInfo, "mapname" );
 
-	if(	!Q_stricmp( arg2, "_brig" )
+	if(	!Q_stricmp( arg2, "_brig" ) // I stole this directly from g_cmds.c, Cmd_CallVote_f
 		|| !Q_stricmp( arg2, "_holodeck_camelot" ) || !Q_stricmp( arg2, "_holodeck_firingrange" ) || !Q_stricmp( arg2, "_holodeck_garden" ) || !Q_stricmp( arg2, "_holodeck_highnoon" ) || !Q_stricmp( arg2, "_holodeck_minigame" ) || !Q_stricmp( arg2, "_holodeck_proton" ) || !Q_stricmp( arg2, "_holodeck_proton2" ) || !Q_stricmp( arg2, "_holodeck_temple" ) || !Q_stricmp( arg2, "_holodeck_warlord" )
 		|| !Q_stricmp( arg2, "borg1" ) || !Q_stricmp( arg2, "borg2" ) || !Q_stricmp( arg2, "borg3" ) || !Q_stricmp( arg2, "borg4" ) || !Q_stricmp( arg2, "borg5" ) || !Q_stricmp( arg2, "borg6" )
 		|| !Q_stricmp( arg2, "dn1" ) || !Q_stricmp( arg2, "dn2" ) || !Q_stricmp( arg2, "dn3" ) || !Q_stricmp( arg2, "dn4" ) || !Q_stricmp( arg2, "dn5" ) || !Q_stricmp( arg2, "dn6" ) || !Q_stricmp( arg2, "dn8" )
@@ -29,7 +31,7 @@ static int Entity_MMBRefit(lua_State * L)
 		|| !Q_stricmp( arg2, "tour/deck01" ) || !Q_stricmp( arg2, "tour/deck02" ) || !Q_stricmp( arg2, "tour/deck03" ) || !Q_stricmp( arg2, "tour/deck04" ) || !Q_stricmp( arg2, "tour/deck05" ) || !Q_stricmp( arg2, "tour/deck08" ) || !Q_stricmp( arg2, "tour/deck09" ) || !Q_stricmp( arg2, "tour/deck10" ) || !Q_stricmp( arg2, "tour/deck11" ) || !Q_stricmp( arg2, "tour/deck15" )
 		|| !Q_stricmp( arg2, "tutorial" )
 		|| !Q_stricmp( arg2, "voy1" ) || !Q_stricmp( arg2, "voy13" ) || !Q_stricmp( arg2, "voy14" ) || !Q_stricmp( arg2, "voy15" ) || !Q_stricmp( arg2, "voy16" ) || !Q_stricmp( arg2, "voy17" ) || !Q_stricmp( arg2, "voy2" ) || !Q_stricmp( arg2, "voy20" ) || !Q_stricmp( arg2, "voy3" ) || !Q_stricmp( arg2, "voy4" ) || !Q_stricmp( arg2, "voy5" ) || !Q_stricmp( arg2, "voy6" ) || !Q_stricmp( arg2, "voy7" ) || !Q_stricmp( arg2, "voy8" ) || !Q_stricmp( arg2, "voy9" ) )
-		MMB = NULL; //init MBB here to do sth pointless
+		MMB = NULL; //init MMB here to do sth pointless
 	else
 		return 1; //we are not on one of the supported maps
 
@@ -51,6 +53,12 @@ static int Entity_MMBRefit(lua_State * L)
 			MMB->splashDamage = 75;
 			MMB->splashRadius = 75;
 			MMB->s.powerups = 1;//metal
+		}else if( !Q_stricmp( MMB->model, "models/mapobjects/borg/vynclumn.md3" )){ //no description needed ^^
+			MMB->splashDamage = 9999;
+			MMB->splashRadius = 9999;
+			MMB->s.powerups = 1;//metal
+			MMB->spawnflags = 2;
+			G_CallSpawn(MMB);
 		}else continue;//we are not looking for this kind of MMB
 	}
 
@@ -443,8 +451,6 @@ static int Entity_ToString(lua_State * L)
 
 	return 1;
 }
-
-extern qboolean G_CallSpawn(gentity_t *ent);
 
 static void ent_delay(gentity_t *ent) {
 	ent->think = 0;
