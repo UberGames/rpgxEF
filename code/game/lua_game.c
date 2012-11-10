@@ -16,7 +16,7 @@ static int Game_Print(lua_State *L) {
 
 	LUA_DEBUG("Game_Print - start: ");
 
-	for(i = 1; i < n; i++)
+	for(i = 1; i <= n; i++)
 	{
 		const char     *s;
 

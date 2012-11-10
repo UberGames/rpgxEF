@@ -4,6 +4,60 @@
 #include "g_spawn.h"
 
 #ifdef G_LUA
+// entity.MMBRefit()
+// this is just a function called from lua
+// it should be called before any other model work
+// this will loop trough all misc_model_breakables and checks their model-string against those listed here
+// if it finds a match it will apply the associated splashDamage, splashRadius and s.powerups (material of chunks) to the entity
+// this is the only failsafe way i can think of to do these kind of refit
+static int Entity_MMBRefit(lua_State * L)
+{
+	gentity_t		*MMB;
+	char			serverInfo[MAX_TOKEN_CHARS];
+	char			*arg2;
+	trap_GetServerinfo( serverInfo, sizeof( serverInfo ) );
+	arg2 = Info_ValueForKey( serverInfo, "mapname" );
+
+	if(	!Q_stricmp( arg2, "_brig" )
+		|| !Q_stricmp( arg2, "_holodeck_camelot" ) || !Q_stricmp( arg2, "_holodeck_firingrange" ) || !Q_stricmp( arg2, "_holodeck_garden" ) || !Q_stricmp( arg2, "_holodeck_highnoon" ) || !Q_stricmp( arg2, "_holodeck_minigame" ) || !Q_stricmp( arg2, "_holodeck_proton" ) || !Q_stricmp( arg2, "_holodeck_proton2" ) || !Q_stricmp( arg2, "_holodeck_temple" ) || !Q_stricmp( arg2, "_holodeck_warlord" )
+		|| !Q_stricmp( arg2, "borg1" ) || !Q_stricmp( arg2, "borg2" ) || !Q_stricmp( arg2, "borg3" ) || !Q_stricmp( arg2, "borg4" ) || !Q_stricmp( arg2, "borg5" ) || !Q_stricmp( arg2, "borg6" )
+		|| !Q_stricmp( arg2, "dn1" ) || !Q_stricmp( arg2, "dn2" ) || !Q_stricmp( arg2, "dn3" ) || !Q_stricmp( arg2, "dn4" ) || !Q_stricmp( arg2, "dn5" ) || !Q_stricmp( arg2, "dn6" ) || !Q_stricmp( arg2, "dn8" )
+		|| !Q_stricmp( arg2, "forge1" ) || !Q_stricmp( arg2, "forge2" ) || !Q_stricmp( arg2, "forge3" ) || !Q_stricmp( arg2, "forge4" ) || !Q_stricmp( arg2, "forge5" ) || !Q_stricmp( arg2, "forgeboss" )
+		|| !Q_stricmp( arg2, "holodeck" )
+		|| !Q_stricmp( arg2, "scav1" ) || !Q_stricmp( arg2, "scav2" ) || !Q_stricmp( arg2, "scav3" ) || !Q_stricmp( arg2, "scav3b" ) || !Q_stricmp( arg2, "scav4" ) || !Q_stricmp( arg2, "scav5" ) || !Q_stricmp( arg2, "scavboss" )
+		|| !Q_stricmp( arg2, "stasis1" ) || !Q_stricmp( arg2, "stasis2" ) || !Q_stricmp( arg2, "stasis3" )
+		|| !Q_stricmp( arg2, "tour/deck01" ) || !Q_stricmp( arg2, "tour/deck02" ) || !Q_stricmp( arg2, "tour/deck03" ) || !Q_stricmp( arg2, "tour/deck04" ) || !Q_stricmp( arg2, "tour/deck05" ) || !Q_stricmp( arg2, "tour/deck08" ) || !Q_stricmp( arg2, "tour/deck09" ) || !Q_stricmp( arg2, "tour/deck10" ) || !Q_stricmp( arg2, "tour/deck11" ) || !Q_stricmp( arg2, "tour/deck15" )
+		|| !Q_stricmp( arg2, "tutorial" )
+		|| !Q_stricmp( arg2, "voy1" ) || !Q_stricmp( arg2, "voy13" ) || !Q_stricmp( arg2, "voy14" ) || !Q_stricmp( arg2, "voy15" ) || !Q_stricmp( arg2, "voy16" ) || !Q_stricmp( arg2, "voy17" ) || !Q_stricmp( arg2, "voy2" ) || !Q_stricmp( arg2, "voy20" ) || !Q_stricmp( arg2, "voy3" ) || !Q_stricmp( arg2, "voy4" ) || !Q_stricmp( arg2, "voy5" ) || !Q_stricmp( arg2, "voy6" ) || !Q_stricmp( arg2, "voy7" ) || !Q_stricmp( arg2, "voy8" ) || !Q_stricmp( arg2, "voy9" ) )
+		MMB = NULL; //init MBB here to do sth pointless
+	else
+		return 1; //we are not on one of the supported maps
+
+	while((MMB = G_Find(MMB, FOFS(classname), "misc_model_breakable" )) != NULL  ){//loop while you find these
+		//borg maps
+		if( !Q_stricmp( MMB->model, "models/mapobjects/borg/blite.md3" )){ //alcove light
+			MMB->splashDamage = 75;
+			MMB->splashRadius = 75;
+			MMB->s.powerups = 3;//glass and metal, may reduce this to glass only toh
+		}else if( !Q_stricmp( MMB->model, "models/mapobjects/borg/circuit_1.md3" )){ //those things that look like a handle
+			MMB->splashDamage = 75;
+			MMB->splashRadius = 75;
+			MMB->s.powerups = 1;//metal
+		}else if( !Q_stricmp( MMB->model, "models/mapobjects/borg/circuit_2.md3" )){ //the isosceles triangle looking box
+			MMB->splashDamage = 75;
+			MMB->splashRadius = 75;
+			MMB->s.powerups = 1;//metal
+		}else if( !Q_stricmp( MMB->model, "models/mapobjects/borg/circuit_3.md3" )){ //the other triangle looking box
+			MMB->splashDamage = 75;
+			MMB->splashRadius = 75;
+			MMB->s.powerups = 1;//metal
+		}else continue;//we are not looking for this kind of MMB
+	}
+
+	return 1;
+}
+
+
 // entity.GetTarget(entity ent)
 // returns a target entity of ent
 static int Entity_GetTarget(lua_State * L)
@@ -1140,6 +1194,29 @@ static int Entity_SetFalsename(lua_State *L) {
 	return 1;
 }
 
+static int Entity_GetTruename(lua_State *L) {
+	lent_t *lent;
+
+	lent = Lua_GetEntity(L, 1);
+	if(!lent || !lent->e) 
+		lua_pushnil(L);
+	else
+		lua_pushstring(L, lent->e->truename);
+
+	return 1;
+}
+
+static int Entity_SetTruename(lua_State *L) {
+	lent_t	*lent;
+
+	lent = Lua_GetEntity(L, 1);
+	if(!lent || !lent->e)
+		return 1;
+	lent->e->truename = (char *)luaL_checkstring(L, 2);
+
+	return 1;
+}
+
 static int Entity_SetTargetName(lua_State *L) {
 	lent_t	*lent;
 
@@ -1170,6 +1247,29 @@ static int Entity_SetFalsetarget(lua_State *L) {
 	if(!lent || !lent->e)
 		return 1;
 	lent->e->falsetarget = (char *)luaL_checkstring(L, 2);
+
+	return 1;
+}
+
+static int Entity_GetTruetarget(lua_State *L) {
+	lent_t *lent;
+
+	lent = Lua_GetEntity(L, 1);
+	if(!lent || !lent->e) 
+		lua_pushnil(L);
+	else
+		lua_pushstring(L, lent->e->truetarget);
+
+	return 1;
+}
+
+static int Entity_SetTruetarget(lua_State *L) {
+	lent_t	*lent;
+
+	lent = Lua_GetEntity(L, 1);
+	if(!lent || !lent->e)
+		return 1;
+	lent->e->truetarget = (char *)luaL_checkstring(L, 2);
 
 	return 1;
 }
@@ -2710,6 +2810,7 @@ static const luaL_Reg Entity_ctor[] = {
 	{"FindNumber",				Entity_FindNumber},
 	{"FindBModel",				Entity_FindBModel},
 	{"GetTarget",				Entity_GetTarget},
+	{"MMBRefit",				Entity_MMBRefit},
 	{"CallSpawn",				Entity_CallSpawn},
 	{"DelayedCallSpawn",		Entity_DelayedCallSpawn },
 	{"Remove",					Entity_Remove},
@@ -2793,8 +2894,14 @@ static const luaL_Reg Entity_meta[] = {
 	{"GetFalsename",				Entity_GetFalsename}, // args: none; return: string
 	{"SetFalsename",				Entity_SetFalsename}, // args: string; return: nothing
 
+	{"GetTruename",					Entity_GetTruename}, // args: none; return: string
+	{"SetTruename",					Entity_SetTruename}, // args: string; return: nothing
+
 	{"GetFalsetarget",				Entity_GetFalsetarget}, // args: none; return: string
 	{"SetFalsetarget",				Entity_SetFalsetarget}, // args: string; return: nothing
+
+	{"GetTruetarget",				Entity_GetTruetarget}, // args: none; return: string
+	{"SetTruetarget",				Entity_SetTruetarget}, // args: string; return: nothing
 
 	{"GetFlags",					Entity_GetFlags}, // args: none; return: int
 	{"SetFlags",					Entity_SetFlags}, // args: int; return: nothing
