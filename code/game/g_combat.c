@@ -1840,6 +1840,11 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 			max = tr_ent->r.maxs[i];
 		}
 	}
+
+	DEVELOPER(
+		G_Printf("G_Repair: target=%d, goodDist=%d, curDist=%d\n", tr_ent-g_entities, 80+max, distance);
+	);
+
 	if(distance > 80 + max) {
 		return;
 	}
