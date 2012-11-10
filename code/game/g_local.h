@@ -1388,25 +1388,7 @@ extern	vmCvar_t	rpg_rifledmg;
 extern	vmCvar_t	rpg_stasisdmg;
 extern	vmCvar_t	rpg_imoddmg;
 extern	vmCvar_t	rpg_noweapons;
-//extern	vmCvar_t	rpg_marinepass;
-//extern	vmCvar_t	rpg_securitypass;
-//extern	vmCvar_t	rpg_adminpass;
-//extern	vmCvar_t	rpg_medicalpass;
-//extern	vmCvar_t	rpg_sciencepass;
-//extern	vmCvar_t	rpg_commandpass;
-//extern	vmCvar_t	rpg_engineerpass;
-//extern	vmCvar_t	rpg_alienpass;
-//extern	vmCvar_t	rpg_n00bpass;
-//extern	vmCvar_t	rpg_alienflags;
-//extern	vmCvar_t	rpg_marineflags;
-//extern	vmCvar_t	rpg_securityflags;
-//extern	vmCvar_t	rpg_adminflags;
-//extern	vmCvar_t	rpg_medicalflags;
-//extern	vmCvar_t	rpg_scienceflags;
-//extern	vmCvar_t	rpg_commandflags;
-//extern	vmCvar_t	rpg_engineerflags;
 extern	vmCvar_t	rpg_welcomemessage;
-//extern	vmCvar_t	rpg_timedmessage;
 extern	vmCvar_t	rpg_timedmessagetime;
 extern	vmCvar_t	rpg_message1;
 extern	vmCvar_t	rpg_message2;
@@ -1421,14 +1403,12 @@ extern	vmCvar_t	rpg_message10;
 extern	vmCvar_t	rpg_forcekillradius;
 extern	vmCvar_t	rpg_forcekillradiuswaittime;
 
-//extern	vmCvar_t	rpg_noclipspectating;
 extern	vmCvar_t	rpg_chatarearange;
 extern	vmCvar_t	rpg_forcefielddamage;
 extern	vmCvar_t	rpg_invisibletripmines;
 extern	vmCvar_t	rpg_medicsrevive;
 extern	vmCvar_t	rpg_effectsgun;
 extern	vmCvar_t	rpg_phaserdisintegrates;
-//extern	vmCvar_t	rpg_enabledranks;
 extern	vmCvar_t	rpg_servershakeallclients;
 extern	vmCvar_t	rpg_kickAfterXkills; //RPG-X | Phenix | 06/04/2005
 extern	vmCvar_t	rpg_rankSet;
@@ -1441,7 +1421,6 @@ extern	vmCvar_t	rpg_changeRanks;
 extern	vmCvar_t	rpg_classSet;
 
 extern	vmCvar_t	rpg_scannablePanels;
-//extern  vmCvar_t	rpg_scannableForceField; //RPG-X | GSIO01 | 13/05/2009
 
 extern	vmCvar_t	rpg_maxHeight;
 extern	vmCvar_t	rpg_minHeight;
@@ -1546,17 +1525,13 @@ extern vmCvar_t rpg_server6;
 // SP level change
 extern vmCvar_t rpg_allowSPLevelChange;
 
-/* TODO some might be removed */
-extern vmCvar_t sql_dbName;
+// SQL Database
 extern vmCvar_t sql_use;
-extern vmCvar_t sql_server;
-extern vmCvar_t sql_user;
-extern vmCvar_t sql_password;
-extern vmCvar_t sql_port;
-extern vmCvar_t sql_hash;
 
 // developer tools
 extern vmCvar_t	dev_showTriggers;
+
+extern vmCvar_t rpg_spEasterEggs;
 
 
 

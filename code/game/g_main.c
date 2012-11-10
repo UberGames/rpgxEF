@@ -312,14 +312,8 @@ vmCvar_t	rpg_server6;
 //! Allow target_levelchange to change the current level?
 vmCvar_t	rpg_allowSPLevelChange;
 
-/* TODO some might be removed */
-vmCvar_t	sql_dbName;		//!< Name of the SQL Database
+/* SQL Database */
 vmCvar_t	sql_use;		//!< Use SQL? 1 = mysql, 2 = sqlite
-vmCvar_t	sql_server;		//!< SQL server to connect to (only mysql)
-vmCvar_t	sql_user;		//!< SQL user for sql_server (only mysql)
-vmCvar_t	sql_password;	//!< SQL password for sql_server (only mysql)
-vmCvar_t	sql_port;		//!< SQL port to use to connect to sql_server (only mysql)
-vmCvar_t	sql_hash;		//!< Specifies whether passwords should be hashed and what hash to use (only mysql)
 
 // developer tools
 vmCvar_t	dev_showTriggers;
@@ -332,6 +326,8 @@ vmCvar_t        lua_allowedModules;
 #endif
 
 vmCvar_t	g_developer;
+
+vmCvar_t	rpg_spEasterEggs;
 
 
 static cvarTable_t		gameCvarTable[] = {
@@ -552,21 +548,14 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_server5, "rpg_server5", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_server6, "rpg_server6", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_allowSPLevelChange, "rpg_allowSPLevelChange", "1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
+
+	{ &rpg_spEasterEggs, "rpg_spEasterEggs", "0", CVAR_ARCHIVE, 0, qfalse },
 	
-	{ &dev_showTriggers, "dev_showTriggers", "0", CVAR_ARCHIVE, 0, qfalse }
+	{ &dev_showTriggers, "dev_showTriggers", "0", CVAR_ARCHIVE, 0, qfalse },
 	
-	/* TODO some might be removed */
-	,
-	{ &sql_dbName, "sql_dbName", "rpgx", CVAR_ARCHIVE, 0, qfalse },
 	{ &sql_use, "sql_use", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &sql_password, "sql_password", "", CVAR_ARCHIVE, 0, qfalse },
-	{ &sql_port, "sql_port", "3306", CVAR_ARCHIVE, 0, qfalse },
-	{ &sql_server, "sql_server", "", CVAR_ARCHIVE, 0, qfalse },
-	{ &sql_user, "sql_user", "rpgx", CVAR_ARCHIVE, 0, qfalse },
-	{ &sql_hash, "sql_hash", "0", CVAR_ARCHIVE, 0, qfalse }
 
 #ifdef G_LUA
-	,
 	{ &g_debugLua, "g_debugLua", "0", 0, 0, qfalse },
 	{ &lua_allowedModules, "lua_allowedModules", "", 0, 0, qfalse },
 	{ &lua_modules, "lua_modules", "", 0, 0, qfalse },

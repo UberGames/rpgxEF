@@ -7922,66 +7922,6 @@ static void Cmd_SqlUserMod_f(gentity_t *ent) {
 }
 #endif
 
-#ifdef OLDSQL
-/*
-=================
-Cmd_SqlSetup_f
-=================
-*/
-static void Cmd_SqlSetup_f(gentity_t *ent) {
-	int res;
-	int clientNum;
-
-	if(!sql_use.integer || !ent || !ent->client) return;
-
-	if(!IsAdmin(ent)) {
-		return;
-	}
-
-	clientNum = ent->client->ps.clientNum;
-
-	res = trap_SQL_CreateTables(sql_dbName.string);
-
-	switch(res) {
-		case 1:
-			trap_SendServerCommand(clientNum, "print \"Seems to have worked, check server log.\n\"");
-			break;
-		case 0:
-			trap_SendServerCommand(clientNum, "print \"An SQL Error occured, see server log for more information.\n\"");
-			break;
-	}
-}
-
-/*
-=================
-Cmd_SqlUserDel_f
-=================
-*/
-static void Cmd_SqlUserDel_f(gentity_t *ent) {
-	char uName[MAX_TOKEN_CHARS];
-	int res;
-	int clientNum;
-
-	if(!sql_use.integer || !ent || !ent->client) return;
-
-	if(!IsAdmin(ent)) return;
-
-	if(trap_Argc() < 1) return;
-
-	clientNum = ent->client->ps.clientNum;
-
-	trap_Argv(1, uName, sizeof(uName));
-
-	res = trap_SQL_UserDel(sql_dbName.string, uName);
-
-	if(res) {
-		trap_SendServerCommand(clientNum, "print \"Seems to have worked.\n\"");
-	} else {
-		trap_SendServerCommand(clientNum, "print \"An SQL Error occured.\n\"");
-	}
-}
-#endif
-
 /*
 =================
 Cmd_findEntitiesInRadius
