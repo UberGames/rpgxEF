@@ -1172,18 +1172,6 @@ static void Cmd_Class_f( gentity_t *ent ) {
 	clientInitialStatus[ent->s.number].initialized = qfalse;
 	if ( SetClass( ent, s, NULL, qtrue ) )
 	{
-		//if still in warmup, don't debounce class changes
-		if ( g_doWarmup.integer )
-		{
-			if ( level.warmupTime != 0 )
-			{
-				if ( level.warmupTime < 0 || level.time - level.startTime <= level.warmupTime )
-				{
-					return;
-				}
-			}
-		}
-		//if warmuptime is over, don't change classes again for a bit
 		ent->client->classChangeDebounceTime = level.time + (g_classChangeDebounceTime.integer*1000);
 
 		trap_SendServerCommand( ent-g_entities, va ( "pc %s", s ) );
@@ -2293,24 +2281,7 @@ void Cmd_ForceClass_f( gentity_t *ent ) {
 
 	//if this is a manual change, not an assimilation, uninitialize the clInitStatus data
 	clientInitialStatus[target->s.number].initialized = qfalse;
-	if ( SetClass( target, s, NULL, qfalse ) )
-	{
-		//if still in warmup, don't debounce class changes
-		if ( g_doWarmup.integer )
-		{
-			if ( level.warmupTime != 0 )
-			{
-				if ( level.warmupTime < 0 || level.time - level.startTime <= level.warmupTime )
-				{
-					return;
-				}
-			}
-		}
-		//if warmuptime is over, don't change classes again for a bit
-		//RPG-X: RedTechie - Can change class anytime we wish
-		//target->client->classChangeDebounceTime = level.time + (g_classChangeDebounceTime.integer*1000);
-	}
-	else {
+	if ( !SetClass( target, s, NULL, qfalse ) ) {
 		trap_SendServerCommand( ent-g_entities, "print \"ERROR: Was unable to change class\n\" " );
 		return;
 	}

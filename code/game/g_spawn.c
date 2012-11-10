@@ -854,12 +854,6 @@ void SP_worldspawn( void ) {
 	if ( g_restarted.integer ) {
 //		trap_Cvar_Set( "g_restarted", "0" );
 		level.warmupTime = 0;
-	} else if ( g_doWarmup.integer  && (g_gametype.integer != GT_SINGLE_PLAYER)) { // Turn it on
-		//RPG-X: RedTechie - No warm up!
-		level.warmupTime = 0;
-		/*level.warmupTime = -1;
-		trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
-		G_LogPrintf( "Warmup:\n" );*/
 	}
 }
 

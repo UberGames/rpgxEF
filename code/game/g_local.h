@@ -649,8 +649,6 @@ typedef struct {
 
 	int			snd_fry;				//!< sound index for standing in lava
 
-	int			warmupModificationCount;	//!< for detecting if g_warmup is changed
-
 	qboolean	firstStrike;
 
 	// voting state
@@ -1321,10 +1319,6 @@ extern	vmCvar_t	g_restarted;
 extern	vmCvar_t	g_language;
 
 extern	vmCvar_t	g_dmflags;
-extern	vmCvar_t	g_fraglimit;
-extern	vmCvar_t	g_timelimit;
-extern	vmCvar_t	g_timelimitWinningTeam;
-extern	vmCvar_t	g_capturelimit;
 extern	vmCvar_t	g_friendlyFire;
 extern	vmCvar_t	g_password;
 extern	vmCvar_t	g_needpass;
@@ -1341,8 +1335,6 @@ extern	vmCvar_t	g_weaponRespawn;
 extern	vmCvar_t	g_adaptRespawn;
 extern	vmCvar_t	g_synchronousClients;
 extern	vmCvar_t	g_motd;
-extern	vmCvar_t	g_warmup;
-extern	vmCvar_t	g_doWarmup;
 extern	vmCvar_t	g_allowVote;
 extern	vmCvar_t	g_teamAutoJoin;
 extern	vmCvar_t	g_teamForceBalance;
@@ -1353,7 +1345,6 @@ extern	vmCvar_t	g_debugForward;
 extern	vmCvar_t	g_debugRight;
 extern	vmCvar_t	g_debugUp;
 extern	vmCvar_t	g_holoIntro;
-//extern	vmCvar_t	g_ghostRespawn;
 extern	vmCvar_t	g_team_group_red;
 extern	vmCvar_t	g_team_group_blue;
 extern	vmCvar_t	g_random_skin_limit;
@@ -1372,6 +1363,9 @@ extern	vmCvar_t	rpg_rangetricorder;
 extern	vmCvar_t	rpg_rangehypo;
 extern	vmCvar_t	rpg_norpgclasses;
 extern	vmCvar_t	rpg_forceclasscolor;
+/*
+ * TODO: move all those rpg_no... cvars into a single var with flags? Similar to how spawnflags work.
+ */
 extern	vmCvar_t	rpg_nosecurity;
 extern	vmCvar_t	rpg_nomarine;
 extern	vmCvar_t	rpg_nomedical;
@@ -1383,6 +1377,10 @@ extern	vmCvar_t	rpg_nomaker;
 extern	vmCvar_t	rpg_non00b;
 extern	vmCvar_t	rpg_nocloak;
 extern	vmCvar_t	rpg_noflight;
+/*
+ * TODO: move damage switching into a singe var with flags just similar to how spawnflags work?
+ * 1 = phaser, 2 = rifle, ...
+ */
 extern	vmCvar_t	rpg_phaserdmg;
 extern	vmCvar_t	rpg_rifledmg;
 extern	vmCvar_t	rpg_stasisdmg;
@@ -1390,6 +1388,9 @@ extern	vmCvar_t	rpg_imoddmg;
 extern	vmCvar_t	rpg_noweapons;
 extern	vmCvar_t	rpg_welcomemessage;
 extern	vmCvar_t	rpg_timedmessagetime;
+/*
+ * TODO: save cvars by storing timed messages in a list?
+ */
 extern	vmCvar_t	rpg_message1;
 extern	vmCvar_t	rpg_message2;
 extern	vmCvar_t	rpg_message3;
@@ -1422,6 +1423,11 @@ extern	vmCvar_t	rpg_classSet;
 
 extern	vmCvar_t	rpg_scannablePanels;
 
+/* 
+ * TODO put maxs and mins into a single cvar to save cvars?
+ * e.g. rpg_heightLimits
+ * value would be a range. for example: "0.9-1.15"
+ */
 extern	vmCvar_t	rpg_maxHeight;
 extern	vmCvar_t	rpg_minHeight;
 extern	vmCvar_t	rpg_maxWeight;
@@ -1434,7 +1440,6 @@ extern	vmCvar_t	rpg_mapGiveFlags;
 extern  vmCvar_t    rpg_allowWeaponDrop;
 extern  vmCvar_t    rpg_weaponsStay;
 extern	vmCvar_t	rpg_dropOnDeath;
-//extern  vmCvar_t	rpg_flushDroppedOnDisconnect; //RPG-X | GSIO01 | 08/05/2009
 
 // Weapon speeds
 extern  vmCvar_t    rpg_rifleSpeed;      //RPG-X | Marcin | 04/12/2008
@@ -1479,7 +1484,7 @@ extern	vmCvar_t	rpg_minToolkits;	 //RPG-X | Marcin | 30/12/2008
 extern	vmCvar_t	rpg_minHyperSpanners;//RPG-X | Marcin | 30/12/2008
 
 // respawn delay
-extern vmCvar_t	rpg_fraggerSpawnDelay;	 //RPG-X | Marcin | 03/01/2009
+extern  vmCvar_t		rpg_fraggerSpawnDelay;	 //RPG-X | Marcin | 03/01/2009
 
 // borg adaption
 extern vmCvar_t rpg_borgAdapt;				//RPG-X | GSIO01 | 08/05/2009
@@ -1515,6 +1520,10 @@ extern vmCvar_t rpg_adminVoteOverride;
 
 // server change entity
 extern vmCvar_t rpg_serverchange;
+/* 
+ * TODO: move serverchange configuration to external 
+ * config nad store info in a list rather than cvars 
+ */
 extern vmCvar_t rpg_server1;
 extern vmCvar_t rpg_server2;
 extern vmCvar_t rpg_server3;
