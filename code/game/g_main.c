@@ -105,10 +105,18 @@ vmCvar_t	rpg_nomaker;
 vmCvar_t	rpg_non00b;
 vmCvar_t	rpg_nocloak;					//!< Can be used to disable the admin cloaking device.
 vmCvar_t	rpg_noflight;					//!< Can be used to disable the admin flight mode.
-vmCvar_t	rpg_phaserdmg;					//!< Specifies whether the phaser damges players.
-vmCvar_t	rpg_rifledmg;					//!< Specifies whether the phaser rifle damages players.
-vmCvar_t	rpg_stasisdmg;					//!< Specifies whether the disruptor damages rifles.
-vmCvar_t	rpg_imoddmg;					
+
+/*
+ * Which weapons do damage?
+ * Phaser			= 1
+ * Crifle			= 2
+ * TR116			= 4
+ * Grenade Laucher	= 8
+ * Quantum Burst	= 16
+ * Disruptor		= 32
+ * Default value: 63
+ */
+vmCvar_t	rpg_dmgFlags;
 vmCvar_t	rpg_noweapons;					//!< Can be used to disable all weapons.
 vmCvar_t	rpg_welcomemessage;					//!< Welcome message displayed when a player joins the server.
 vmCvar_t	rpg_timedmessagetime;				//!< Delay between timed mesagges
@@ -405,10 +413,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_nomaker, "rpg_noMaker", "0", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
 	{ &rpg_nocloak, "rpg_noCloak", "0", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
 	{ &rpg_noflight, "rpg_noFlight", "0", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_phaserdmg, "rpg_phaserDmg", "1", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_rifledmg, "rpg_rifleDmg", "1", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_stasisdmg, "rpg_stasisDmg", "1", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_imoddmg, "rpg_imodDmg", "1", CVAR_ARCHIVE, 0, qfalse},
+	{ &rpg_dmgFlags, "rpg_dmgFlags", "63", CVAR_ARCHIVE, 0, qfalse},
 	{ &rpg_noweapons, "rpg_noWeapons", "0", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
 	{ &rpg_welcomemessage, "rpg_welcomeMessage", "Welcome to the RPG-X Mod", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
 	{ &rpg_timedmessagetime, "rpg_timedMessageTime", "5", CVAR_ARCHIVE, 0, qfalse  }, //TiM : LATCH Not necessary here.

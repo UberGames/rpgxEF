@@ -244,7 +244,7 @@ static void WP_FirePhaser( gentity_t *ent, qboolean alt_fire )
 		}
 		traceEnt = &g_entities[ trEnts[i] ];
 
-		if ( traceEnt->takedamage && rpg_phaserdmg.integer != 0 ) 
+		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 1) ) 
 		{
 			/*damage = (float)PHASER_DAMAGE*DMG_VAR*s_quadFactor;*/ /* No variance on phaser */
 			damage = (float)PHASER_DAMAGE;
@@ -393,7 +393,7 @@ static void WP_FireCompressionRifle ( gentity_t *ent, qboolean alt_fire )
 
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		if ( traceEnt->takedamage && rpg_phaserdmg.integer != 0 ) 
+		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 2) ) 
 		{
 			damage = (float)PHASER_DAMAGE;
 
@@ -536,7 +536,7 @@ static void WP_FireDisruptor( gentity_t *ent, qboolean alt_fire )
 
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		if ( traceEnt->takedamage && rpg_phaserdmg.integer != 0 ) 
+		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 32) ) 
 		{
 			damage = (float)PHASER_DAMAGE;
 
@@ -718,8 +718,14 @@ static void WP_FireGrenade( gentity_t *ent, qboolean alt_fire )
 				}
 				/* now make the new one */
 				grenade->classname = "tripwire";
-				grenade->splashDamage = GRENADE_SPLASH_DAM*2;
-				grenade->splashRadius = GRENADE_SPLASH_RAD*2;
+				if(rpg_dmgFlags.integer & 8) { 
+					grenade->splashDamage = GRENADE_SPLASH_DAM*2;
+					grenade->splashRadius = GRENADE_SPLASH_RAD*2;
+				} else {
+					grenade->splashDamage = 0;
+					grenade->splashRadius = 0;
+
+				}
 				grenade->s.pos.trType = TR_LINEAR;
 				grenade->nextthink = level.time + 1000; /* How long 'til she blows */
 				grenade->count = 1; 			/* tell it it's a tripwire for when it sticks */
@@ -729,8 +735,13 @@ static void WP_FireGrenade( gentity_t *ent, qboolean alt_fire )
 			else
 			{
 				grenade->classname = "grenade_alt_projectile";
-				grenade->splashDamage = GRENADE_SPLASH_DAM;
-				grenade->splashRadius = GRENADE_SPLASH_RAD;
+				if(rpg_dmgFlags.integer & 8) {
+					grenade->splashDamage = GRENADE_SPLASH_DAM;
+					grenade->splashRadius = GRENADE_SPLASH_RAD;
+				} else {
+					grenade->splashDamage = 0;
+					grenade->splashRadius = 0;
+				}
 				grenade->s.pos.trType = TR_GRAVITY;
 				grenade->nextthink = level.time + GRENADE_ALT_TIME; /* How long 'til she blows */
 			}
@@ -738,7 +749,7 @@ static void WP_FireGrenade( gentity_t *ent, qboolean alt_fire )
 			grenade->s.eFlags |= EF_MISSILE_STICK;
 			VectorScale( dir, 1000, grenade->s.pos.trDelta );
 
-			grenade->damage = GRENADE_ALT_DAMAGE*DMG_VAR;
+			(rpg_dmgFlags.integer & 8) ? grenade->damage = GRENADE_ALT_DAMAGE*DMG_VAR : grenade->damage = 0;
 			grenade->methodOfDeath = MOD_GRENADE_ALT;
 			grenade->splashMethodOfDeath = MOD_GRENADE_ALT_SPLASH;
 			grenade->s.eType = ET_ALT_MISSILE;
@@ -894,9 +905,15 @@ static void WP_FireGrenade( gentity_t *ent, qboolean alt_fire )
 				VectorScale( dir, GRENADE_VELOCITY, grenade->s.pos.trDelta );
 				grenade->s.pos.trType = TR_GRAVITY;
 
-				grenade->damage = GRENADE_DAMAGE*DMG_VAR;
-				grenade->splashDamage = GRENADE_SPLASH_DAM;
-				grenade->splashRadius = GRENADE_SPLASH_RAD;
+				if(rpg_dmgFlags.integer & 8) {
+					grenade->damage = GRENADE_DAMAGE*DMG_VAR;
+					grenade->splashDamage = GRENADE_SPLASH_DAM;
+					grenade->splashRadius = GRENADE_SPLASH_RAD;
+				} else {
+					grenade->damage = 0;
+					grenade->splashDamage = 0;
+					grenade->splashRadius = 0;
+				}
 				grenade->methodOfDeath = MOD_GRENADE;
 				grenade->splashMethodOfDeath = MOD_GRENADE_SPLASH;
 				grenade->s.eType = ET_MISSILE;
@@ -965,7 +982,7 @@ static void WP_FireTR116Bullet( gentity_t *ent, vec3_t start, vec3_t dir ) {
 
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		if ( traceEnt->takedamage ) {
+		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 4)) {
 			G_Damage( traceEnt, ent, ent, dir, tr.endpos, TETRION_DAMAGE, 0, MOD_TETRION_ALT );
 		}
 	}
@@ -1033,9 +1050,15 @@ static void FireQuantumBurst( gentity_t *ent, vec3_t start, vec3_t dir )
 	bolt->r.ownerNum = ent->s.number;
 	bolt->parent = ent;
 
-	bolt->damage = QUANTUM_DAMAGE*DMG_VAR;
-	bolt->splashDamage = QUANTUM_SPLASH_DAM;
-	bolt->splashRadius = QUANTUM_SPLASH_RAD;
+	if(rpg_dmgFlags.integer & 16) {
+		bolt->damage = QUANTUM_DAMAGE*DMG_VAR;
+		bolt->splashDamage = QUANTUM_SPLASH_DAM;
+		bolt->splashRadius = QUANTUM_SPLASH_RAD;
+	} else {
+		bolt->damage = 0;
+		bolt->splashDamage = 0;
+		bolt->splashRadius = 0;
+	}
 
 	bolt->methodOfDeath = MOD_QUANTUM;
 	bolt->splashMethodOfDeath = MOD_QUANTUM_SPLASH;
@@ -1219,9 +1242,15 @@ static void FireQuantumBurstAlt( gentity_t *ent, vec3_t start, vec3_t dir )
 	bolt->parent = ent;
 	bolt->s.eFlags |= EF_ALT_FIRING;
 
-	bolt->damage = QUANTUM_ALT_DAMAGE*DMG_VAR;
-	bolt->splashDamage = QUANTUM_ALT_SPLASH_DAM;
-	bolt->splashRadius = QUANTUM_ALT_SPLASH_RAD;
+	if(rpg_dmgFlags.integer & 16) {
+		bolt->damage = QUANTUM_ALT_DAMAGE*DMG_VAR;
+		bolt->splashDamage = QUANTUM_ALT_SPLASH_DAM;
+		bolt->splashRadius = QUANTUM_ALT_SPLASH_RAD;
+	} else {
+		bolt->damage = 0;
+		bolt->splashDamage = 0;
+		bolt->splashRadius = 0;
+	}
 
 	bolt->methodOfDeath = MOD_QUANTUM_ALT;
 	bolt->splashMethodOfDeath = MOD_QUANTUM_ALT_SPLASH;

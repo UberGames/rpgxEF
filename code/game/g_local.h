@@ -1377,19 +1377,19 @@ extern	vmCvar_t	rpg_non00b;
 extern	vmCvar_t	rpg_nocloak;
 extern	vmCvar_t	rpg_noflight;
 /*
- * TODO: move damage switching into a singe var with flags just similar to how spawnflags work?
- * 1 = phaser, 2 = rifle, ...
+ * Which weapons do damage?
+ * Phaser			= 1
+ * Crifle			= 2
+ * TR116			= 4
+ * Grenade Laucher	= 8
+ * Quantum Burst	= 16
+ * Disruptor		= 32
+ * Default value: 63
  */
-extern	vmCvar_t	rpg_phaserdmg;
-extern	vmCvar_t	rpg_rifledmg;
-extern	vmCvar_t	rpg_stasisdmg;
-extern	vmCvar_t	rpg_imoddmg;
+extern  vmCvar_t	rpg_dmgFlags;
 extern	vmCvar_t	rpg_noweapons;
 extern	vmCvar_t	rpg_welcomemessage;
 extern	vmCvar_t	rpg_timedmessagetime;
-/*
- * TODO: save cvars by storing timed messages in a list?
- */
 extern	vmCvar_t	rpg_forcekillradius;
 extern	vmCvar_t	rpg_forcekillradiuswaittime;
 
