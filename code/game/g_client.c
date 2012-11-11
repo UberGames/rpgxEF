@@ -2405,3 +2405,35 @@ void ClientDisconnect( int clientNum ) {
 	clientInitialStatus[clientNum].initialized = qfalse;
 }
 
+/*
+================
+IsAdmin
+RPG-X | Phenix | 21/11/2004
+================
+*/
+/**
+*	Checks if player is an admin.
+*	\param ent the player
+*
+*	\author Ubergames - Phenix
+*	\date 21/11/2004
+*/
+qboolean IsAdmin( gentity_t *ent)
+{
+	if ( !ent )
+		return qfalse;
+
+	if ( !ent->client )
+		return qfalse;
+
+	if (( g_classData[ent->client->sess.sessionClass].isAdmin ) ||
+		( ent->client->LoggedAsAdmin == qtrue ) ||
+		( ent->client->LoggedAsDeveloper == qtrue )
+		) {
+			return qtrue;
+	} else {
+		return qfalse;
+	}
+}
+
+
