@@ -339,7 +339,7 @@ gentity_t *G_PickTarget (char *targetname)
  */
 void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	gentity_t		*t;
-	list_iter_p		szIter;
+	list_iter_p		szIter = NULL;
 	safeZone_t		*sz;
 	
 	if ( !ent ) {
@@ -517,6 +517,8 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 	}
+
+	destroy_iterator(szIter);
 }
 
 /**

@@ -2411,6 +2411,8 @@ Can be toggled by an usable if the usable has NO_ACTIVATOR spawnflag.
 
 "serverNum"	server to connect to (rpg_server<serverNum> cvar)
 */
+extern srvChangeData_t srvChangeData;
+
 void target_serverchange_think(gentity_t *ent) {
 	if(!ent->touched || !ent->touched->client) return;
 	trap_SendServerCommand(ent->touched->client->ps.clientNum, va("cg_connect \"%s\"\n", ent->targetname2));
@@ -2418,8 +2420,6 @@ void target_serverchange_think(gentity_t *ent) {
 }
 
 void target_serverchange_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	char *server;
-
 	if(!activator || !activator->client) {
 		ent->s.time2 = !ent->s.time2;
 		return;
@@ -2431,33 +2431,12 @@ void target_serverchange_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 	activator->flags ^= FL_LOCKED;
 
 	if(rpg_serverchange.integer && ent->s.time2) {
-		switch(ent->count) {
-		default:
-		case 1:
-			server = rpg_server1.string;
-			break;
-		case 2:
-			server = rpg_server2.string;
-			break;
-		case 3:
-			server = rpg_server3.string;
-			break;
-		case 4:
-			server = rpg_server4.string;
-			break;
-		case 5:
-			server = rpg_server5.string;
-			break;
-		case 6:
-			server = rpg_server6.string;
-			break;
-		}
 		ent->think = target_serverchange_think;
 		ent->nextthink = level.time + 3000;
 		TransDat[ent->client->ps.clientNum].beamTime = level.time + 8000;
 		activator->client->ps.powerups[PW_BEAM_OUT] = level.time + 8000;
 		ent->touched = activator;
-		ent->targetname2 = server;
+		ent->targetname2 = srvChangeData.ip[ent->count];
 	}
 }
 
@@ -2636,9 +2615,7 @@ static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]
 		}
 	}
 
-	if(iter != NULL) {
-		free(iter);
-	}
+	destroy_iterator(iter);
 	return cur2;
 }
 

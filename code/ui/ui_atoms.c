@@ -1318,13 +1318,6 @@ qboolean UI_ConsoleCommand( void ) {
 		return qtrue;
 	}
 
-	/* TODO remove me? */
-	if ( Q_stricmp( cmd, "sqlkey" ) == 0) {
-		/*UI_LoginSetSqlkey((int)UI_Argv(1));*/
-		return qtrue;
-	}
-
-
 	return qfalse;
 }
 

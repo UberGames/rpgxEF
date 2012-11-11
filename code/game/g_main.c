@@ -112,16 +112,6 @@ vmCvar_t	rpg_imoddmg;
 vmCvar_t	rpg_noweapons;					//!< Can be used to disable all weapons.
 vmCvar_t	rpg_welcomemessage;					//!< Welcome message displayed when a player joins the server.
 vmCvar_t	rpg_timedmessagetime;				//!< Delay between timed mesagges
-vmCvar_t	rpg_message1;						//!< Timed message
-vmCvar_t	rpg_message2;						//!< Timed message
-vmCvar_t	rpg_message3;						//!< Timed message
-vmCvar_t	rpg_message4;						//!< Timed message
-vmCvar_t	rpg_message5;						//!< Timed message
-vmCvar_t	rpg_message6;						//!< Timed message
-vmCvar_t	rpg_message7;						//!< Timed message
-vmCvar_t	rpg_message8;						//!< Timed message
-vmCvar_t	rpg_message9;						//!< Timed message
-vmCvar_t	rpg_message10;						//!< Timed message
 vmCvar_t	rpg_forcekillradius;				//!< Specifies whether the forcekillradius command is avaible.
 vmCvar_t	rpg_forcekillradiuswaittime;		//!< forcekillradius delay
 vmCvar_t	rpg_noclipspectating;				//!< Specifies whether spectators uses clipping.
@@ -295,12 +285,6 @@ vmCvar_t	rpg_adminVoteOverride;
 // server change
 //! Enables/disables target_serverchange
 vmCvar_t	rpg_serverchange;
-vmCvar_t	rpg_server1;
-vmCvar_t	rpg_server2;
-vmCvar_t	rpg_server3;
-vmCvar_t	rpg_server4;
-vmCvar_t	rpg_server5;
-vmCvar_t	rpg_server6;
 
 // SP level change
 //! Allow target_levelchange to change the current level?
@@ -428,16 +412,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_noweapons, "rpg_noWeapons", "0", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
 	{ &rpg_welcomemessage, "rpg_welcomeMessage", "Welcome to the RPG-X Mod", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
 	{ &rpg_timedmessagetime, "rpg_timedMessageTime", "5", CVAR_ARCHIVE, 0, qfalse  }, //TiM : LATCH Not necessary here.
-	{ &rpg_message1, "rpg_message1", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_message2, "rpg_message2", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_message3, "rpg_message3", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_message4, "rpg_message4", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_message5, "rpg_message5", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_message6, "rpg_message6", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_message7, "rpg_message7", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_message8, "rpg_message8", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_message9, "rpg_message9", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_message10, "rpg_message10", "", CVAR_ARCHIVE, 0, qfalse  },
 	{ &rpg_forcekillradius, "rpg_forceKillRadius", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
 	{ &rpg_forcekillradiuswaittime, "rpg_forceKillRadiusWaitTime", "45000", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
 	{ &rpg_chatarearange, "rpg_chatAreaRange", "200", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},	//Not latched (ie doesnt need server restart)
@@ -529,12 +503,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_RemodulationDelay, "rpg_RemodulationDelay", "5000", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_adminVoteOverride, "rpg_adminVoteOverride", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_serverchange, "rpg_serverchange", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_server1, "rpg_server1", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_server2, "rpg_server2", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_server3, "rpg_server3", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_server4, "rpg_server4", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_server5, "rpg_server5", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_server6, "rpg_server6", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_allowSPLevelChange, "rpg_allowSPLevelChange", "1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
 
 	{ &rpg_spEasterEggs, "rpg_spEasterEggs", "0", CVAR_ARCHIVE, 0, qfalse },
@@ -978,9 +946,61 @@ static qboolean G_LoadClassData( char* fileName )
 void BG_LanguageFilename(char *baseName,char *baseExtension,char *finalName);
 void SP_target_location (gentity_t *ent);
 
-holoData_t holoData;
+static void G_LoadTimedMessages(void) {
+	fileHandle_t	f;
+	char*			buffer;
+	char*			ptr;
+	char*			message;
+	int				len;
+	int				i, n;
 
-void G_LoadHolodeckFile(void) {
+	len = trap_FS_FOpenFile("timedmessages.cfg", &f, FS_READ);
+	if(!len) return;
+
+	buffer = (char *)malloc(sizeof(char) * (len+1));
+	if(!buffer) {
+		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i byte.\n", (len+1) * sizeof(char) );
+		trap_FS_FCloseFile(f);
+		return;
+	}
+	memset(buffer, 0, len+1);
+
+	level.timedMessages = create_list();
+	if(!level.timedMessages) {
+		trap_FS_FCloseFile(f);
+		free(buffer);
+		return;
+	}
+
+	trap_FS_Read(buffer, len, f);
+	ptr = buffer;
+	for(i = 0; i < 10; i++) {
+		for(n = 0; ptr[n] != ';' && ptr[n] != 0; n++);
+		if(ptr[n] == 0) break;
+		message = (char *)malloc(sizeof(char)*(n+1));
+		if(!message) {
+			G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i byte.\n", (n+1) * sizeof(char) );
+			trap_FS_FCloseFile(f);
+			free(buffer);
+			if(level.timedMessages != NULL) {
+				destroy_list(level.timedMessages);
+			}
+			return;
+		}
+
+		memset(message, 0, sizeof(message));
+		strncpy(message, ptr, n);
+		list_add(level.timedMessages, message, strlen(message));
+
+		ptr += strlen(message)+1;
+	}
+
+	trap_FS_FCloseFile(f);
+	free(buffer);
+}
+
+holoData_t holoData;
+static void G_LoadHolodeckFile(void) {
 	char			fileRoute[MAX_QPATH];
 	char			mapRoute[MAX_QPATH];
 	char			*info;
@@ -1872,6 +1892,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	//GSIO: load holodeck file if avaible
 	G_LoadHolodeckFile();
 
+	//GSIO: load timed message
+	G_LoadTimedMessages();
+
 	// general initialization
 	G_FindTeams();
 
@@ -1989,6 +2012,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	
 }
 
+extern list_iter_p iterTimedMessages; /* list iterator for timed messages */
 /*
 =================
 G_ShutdownGame
@@ -2022,6 +2046,12 @@ void G_ShutdownGame( int restart ) {
 	if(level.selfdestructSafeZones != NULL) {
 		destroy_list(level.selfdestructSafeZones);
 	}
+
+	if(level.timedMessages != NULL) {
+		destroy_list(level.timedMessages);
+	}
+
+	destroy_iterator(iterTimedMessages);
 
 #ifdef SQL
 	G_Sql_Shutdown();

@@ -594,7 +594,6 @@ struct gclient_s {
 	// for sql
 	char		*userName;						//!< username (not player name) in the sql database
 	int			uid;							//!< uiser id of the player in the sql database 
-	byte		sqlkey;							//!< random key used to make transmission of the username and password from the ui at least a bit safer TODO remove me?
 
 	// CCAM
 	vec3_t		origViewAngles;
@@ -697,7 +696,7 @@ typedef struct {
 	// selft destruct safezones
 	list_p selfdestructSafeZones;
 	list_p locations;
-
+	list_p timedMessages;
 } level_locals_t;
 
 
@@ -1391,16 +1390,6 @@ extern	vmCvar_t	rpg_timedmessagetime;
 /*
  * TODO: save cvars by storing timed messages in a list?
  */
-extern	vmCvar_t	rpg_message1;
-extern	vmCvar_t	rpg_message2;
-extern	vmCvar_t	rpg_message3;
-extern	vmCvar_t	rpg_message4;
-extern	vmCvar_t	rpg_message5;
-extern	vmCvar_t	rpg_message6;
-extern	vmCvar_t	rpg_message7;
-extern	vmCvar_t	rpg_message8;
-extern	vmCvar_t	rpg_message9;
-extern	vmCvar_t	rpg_message10;
 extern	vmCvar_t	rpg_forcekillradius;
 extern	vmCvar_t	rpg_forcekillradiuswaittime;
 
@@ -1520,16 +1509,6 @@ extern vmCvar_t rpg_adminVoteOverride;
 
 // server change entity
 extern vmCvar_t rpg_serverchange;
-/* 
- * TODO: move serverchange configuration to external 
- * config nad store info in a list rather than cvars 
- */
-extern vmCvar_t rpg_server1;
-extern vmCvar_t rpg_server2;
-extern vmCvar_t rpg_server3;
-extern vmCvar_t rpg_server4;
-extern vmCvar_t rpg_server5;
-extern vmCvar_t rpg_server6;
 
 // SP level change
 extern vmCvar_t rpg_allowSPLevelChange;

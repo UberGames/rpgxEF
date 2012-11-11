@@ -46,53 +46,95 @@ struct list{
 typedef struct list * list_p;
 
 struct list_iter{
+	list_p	list;
 	lnode_p current;
 	char started;
 };
 
 typedef struct list_iter * list_iter_p;
 
-/* Create a linked_list object. This pointer is created on the heap and must be
-cleared with a call to destroy_list to avoid memory leaks */
+/** 
+ * Create a linked_list object. This pointer is created on the heap and must be
+ * cleared with a call to destroy_list to avoid memory leaks 
+ */
 list_p create_list(void);
 
-/* Create a list_iter object for the linked_list list. The flag init can be
-either FRONT or BACK and indicates whether to start the iterator from the first
-or last item in the list */
+/** 
+ * Create a list_iter object for the linked_list list. The flag init can be
+ * either FRONT or BACK and indicates whether to start the iterator from the first
+ * or last item in the list 
+ */
 list_iter_p list_iterator(list_p list, char init);
 
-/* Add an item with the given value and size to the back of the list.
-The data is copied by value, so the original pointer must be freed if it
-was allocated on the heap. */
+/** 
+ * Add an item with the given value and size to the back of the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap. 
+ */
 void list_add(list_p list, void* data, int size);
 
-/* Gets the data stored in the first item of the list or NULL if the list is empty */
+/**
+ * Gets the data stored in the first item of the list or NULL if the list is empty 
+ */
 void* list_first(list_p list);
-/* Gets the data stored in the last item of the list or NULL if the list is empty */
+/**
+ * Gets the data stored in the last item of the list or NULL if the list is empty 
+ */
 void* list_last(list_p list);
 
-/* Removes the last item in the list (LIFO order) and returns the data stored
-there. The data returned must be freed later in order to remain memory safe. */
+/**
+ * Removes the last item in the list (LIFO order) and returns the data stored
+ * there. The data returned must be freed later in order to remain memory safe. 
+ */
 void* list_pop(list_p list);
-/* Removes the first item in the list (FIFO order) and returns the data stored
-there. The data return must be freed later in order to remain memory safe. */
+/**
+ * Removes the first item in the list (FIFO order) and returns the data stored
+ * there. The data return must be freed later in order to remain memory safe. 
+ */
 void* list_poll(list_p list);
-/* Convenience function for completely destroying an item in the list. If the end
-flag is FRONT, an item will be polled from the front of the list and its data
-freed. If the end flag is set to BACK, an item will be popped off the end of
-the list and the data freed. */
+/**
+ * Convenience function for completely destroying an item in the list. If the end
+ * flag is FRONT, an item will be polled from the front of the list and its data
+ * freed. If the end flag is set to BACK, an item will be popped off the end of
+ * the list and the data freed. 
+ */
 void list_remove(list_p list, char end);
 
-/* Completely free the data associated with the list. */
+/**
+ * Completely free the data associated with the list. 
+ */
 void destroy_list(list_p list);
 
-/* Return the data held by the current item pointed to by the iterator */
+/**
+ * Destroy a list iterator if allocated.
+ */
+void destroy_iterator(list_iter_p iter);
+
+/**
+ * Return the data held by the current item pointed to by the iterator 
+ */
 void* list_current(list_iter_p list);
-/* Advances the iterator to the next item in the list and returns the data
-stored there. */
+/**
+ * Advances the iterator to the next item in the list and returns the data
+ * stored there. 
+ */
 void* list_next(list_iter_p list);
-/* Advances the iterator to the previous item in the list and returns the data
-stored there. */
+/**
+ * Advances the iterator to the previous item in the list and returns the data
+ * stored there. 
+ */
 void* list_prev(list_iter_p list);
+/**
+ * Advances the iterator to the next item in the list and returns the data
+ * stored there. If the end of the list is reached it continues with the first 
+ * element of the list.
+ */
+void* list_cycl_next(list_iter_p list);
+/**
+ * Advances the iterator to the previous item in the list and returns the data
+ * stored there. If the start of the list is reached it continues with the last 
+ * element of the list.
+ */
+void* list_cycl_prev(list_iter_p list);
 
 #endif

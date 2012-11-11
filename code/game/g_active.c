@@ -531,149 +531,28 @@ currently in it....
 ==================
 */
 
-//First off let's store the CVAR data in a local array.
-//This'll let us perform for loop operations on it.
-//Sigh, I wish I knew a quick way to convert variable names
-//to strings.  Then this wouldn't be necessary O_o
-static char *rpg_message[] = { rpg_message1.string,
-							   rpg_message2.string,
-							   rpg_message3.string,
-							   rpg_message4.string,
-							   rpg_message5.string,
-							   rpg_message6.string,
-							   rpg_message7.string,
-							   rpg_message8.string,
-							   rpg_message9.string,
-							   rpg_message10.string };
+list_iter_p iterTimedMessages;
+
 /**
 *	\author Ubergames
 */
 char *TimedMessage( void ){
-	int i = lastTimedMessage;
+	char* message;
 
-	while ( 1 ) { //Okay, start from the number we want, and loop thru all of them
-		if ( i >= 11 ) { //reset loop
-			i = 1;
-		}
-
-		if ( strlen( rpg_message[i-1] ) >= 1 ) { //i-1 coz arrays start @ 0, but we started @ 1
-			lastTimedMessage = i;
-
-			return rpg_message[i-1]; //return the string
-		}
-	
-		if ( i == lastTimedMessage - 1 ) { //okay, we've obviously gone thru the whole loop and come up with nothing. So screw it.
-			return NULL;
-		}
-
-		//TiM: Cheap hack to stop it freezing if string0 is empty.  THe above condition don't work here
-		if ( ((i == 1 && lastTimedMessage == 1) && !strlen( rpg_message[i-1] )) ) {
-			return NULL;
-		}
-
-		i++;
+	if(!level.timedMessages->length) {
+		return "^1RPG-X ERROR: No messages to display";
 	}
 
-	//TiM: Hopefully it'll never reach here, but we have this anyway to shut the compiler up
-	return "^1RPG-X ERROR: No messages to display";
-	
-
-/*
-	switch( Msg ){
-		case 1:
-			if(strlen(rpg_message1.string) >= 1){
-				lastTimedMessage = 1;
-				return rpg_message1.string;
-			}else{
-				return TimedMessage( 2 );
-			}
-			break;
-
-		case 2:
-			if(strlen(rpg_message2.string) >= 1){
-				lastTimedMessage = 2;
-				return rpg_message2.string;
-			}else{
-				return TimedMessage( 3 );
-			}
-			break;
-
-		case 3:
-			if(strlen(rpg_message3.string) >= 1){
-				lastTimedMessage = 3;
-				return rpg_message3.string;
-			}else{
-				return TimedMessage( 4 );
-			}
-			break;
-
-		case 4:
-			if(strlen(rpg_message4.string) >= 1){
-				lastTimedMessage = 4;
-				return rpg_message4.string;
-			}else{
-				return TimedMessage( 5 );
-			}
-			break;
-
-		case 5:
-			if(strlen(rpg_message5.string) >= 1){
-				lastTimedMessage = 5;
-				return rpg_message5.string;
-			}else{
-				return TimedMessage( 6 );
-			}
-			break;
-
-		case 6:
-			if(strlen(rpg_message6.string) >= 1){
-				lastTimedMessage = 6;
-				return rpg_message6.string;
-			}else{
-				return TimedMessage( 7 );
-			}
-			break;
-
-		case 7:
-			if(strlen(rpg_message7.string) >= 1){
-				lastTimedMessage = 7;
-				return rpg_message7.string;
-			}else{
-				return TimedMessage( 8 );
-			}
-			break;
-
-		case 8:
-			if(strlen(rpg_message8.string) >= 1){
-				lastTimedMessage = 8;
-				return rpg_message8.string;
-			}else{
-				return TimedMessage( 9 );
-			}
-			break;
-
-		case 9:
-			if(strlen(rpg_message9.string) >= 1){
-				lastTimedMessage = 9;
-				return rpg_message9.string;
-			}else{
-				return TimedMessage( 10 );
-			}
-			break;
-
-		case 10:
-			if(strlen(rpg_message10.string) >= 1){
-				lastTimedMessage = 0; //Start over again
-				return rpg_message10.string;
-			}else{
-				return TimedMessage( 1 );
-			}
-			break;
-
-		default:
+	if(iterTimedMessages == NULL) {
+		iterTimedMessages = list_iterator(level.timedMessages, FRONT);
+		if(iterTimedMessages == NULL) { // something went wrong
 			return "^1RPG-X ERROR: No messages to display";
-			break;
-	}*/
+		}
+	}
+
+	message = (char *)list_cycl_next(iterTimedMessages);
+
+	return message;
 }
 
 

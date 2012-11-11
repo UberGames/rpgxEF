@@ -42,6 +42,7 @@ list_iter_p list_iterator(list_p list, char init){
 		iter->current = list->last;
 	}
 	else return NULL;
+	iter->list = list;
 	iter->started = 0;
 	return iter;
 }
@@ -84,6 +85,21 @@ void* list_next(list_iter_p iter){
 	return NULL;
 }
 
+void* list_cycl_next(list_iter_p iter){
+	if(!iter->started&&iter->current!=NULL){
+		iter->started=1;
+		return iter->current->data;
+	}
+	if(iter->current!=NULL){
+		iter->current = iter->current->next;
+		if(iter->current == NULL) {
+			iter->current = iter->list->first;
+		}
+		return list_current(iter);
+	}
+	return NULL;
+}
+
 void* list_prev(list_iter_p iter){
 	if(!iter->started&&iter->current!=NULL){
 		iter->started=1;
@@ -91,6 +107,21 @@ void* list_prev(list_iter_p iter){
 	}
 	if(iter->current!=NULL){
 		iter->current = iter->current->prev;
+		return list_current(iter);
+	}
+	return NULL;
+}
+
+void* list_cycl_prev(list_iter_p iter){
+	if(!iter->started&&iter->current!=NULL){
+		iter->started=1;
+		return iter->current->data;
+	}
+	if(iter->current!=NULL){
+		iter->current = iter->current->prev;
+		if(iter->current == NULL) {
+			iter->current = iter->list->last;
+		}
 		return list_current(iter);
 	}
 	return NULL;
@@ -144,4 +175,10 @@ void destroy_list(list_p list){
 		cur = next;
 	}
 	free(list);
+}
+
+void destroy_iterator(list_iter_p iter) {
+	if(iter == NULL) return;
+
+	free(iter);
 }

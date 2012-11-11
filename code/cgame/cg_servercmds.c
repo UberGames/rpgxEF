@@ -900,12 +900,6 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
-	/* TODO remove me? */
-	if(!strcmp(cmd, "sqlkey")) {
-		trap_SendClientCommand(va("sqlkey %s", CG_Argv(1)));
-		return;
-	}
-
 	CG_Printf( "Unknown client game command: %s\n", cmd );
 }
 

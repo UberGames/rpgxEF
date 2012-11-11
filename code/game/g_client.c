@@ -1833,13 +1833,6 @@ void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qbool
 		}
       
     }
-
-	/* TODO remove me? */
-	if(sql_use.integer) {
-		int key = (byte)irandom(4096, 65535);
-		ent->client->sqlkey = (byte)key;
-		trap_SendServerCommand(ent-g_entities, va("sqlkey \"%i\"", key));
-	}
 }
 
 // WEAPONS - PHENIX1

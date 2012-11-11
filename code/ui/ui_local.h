@@ -1859,8 +1859,7 @@ extern void TransDataReceived(const char *data);
 //
 // ui_login.c
 //
-/* TODO remove me ? */
-extern void UI_LoginSetSqlkey(int key);
+/* nothing for now */
 
 //
 // ui_demo2.c
