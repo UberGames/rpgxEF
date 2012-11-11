@@ -64,14 +64,6 @@ qboolean LoadLuaFile(char *path, int num_vm)
 		trap_FS_FCloseFile(f);
 		return qfalse;
 	}
-	/* GSIO01: testing unlimited length for Lua files */
-	/*else if(flen > MAX_FSIZE)
-	{
-		LUA_LOG("Lua: ignoring file %s (too big)\n", path);
-		G_Printf(S_COLOR_YELLOW "Lua: ignoring file %s (too big)\n", path);
-		trap_FS_FCloseFile(f);
-		return qfalse;
-	}*/
 	else
 	{
 		code = (char *)malloc(flen + 1);
@@ -107,13 +99,12 @@ qboolean LoadLuaFile(char *path, int num_vm)
 			return qtrue;
 		}
 	}
-	//return qfalse;
 }
 
 qboolean G_LuaInit()
 {
-	int             i, /*len,*/ num_vm = 0;
-	char            buff[128]; //, *crt;
+	int             i, num_vm = 0;
+	char            buff[128]; 
 
 	int             numdirs;
 	int             numFiles;

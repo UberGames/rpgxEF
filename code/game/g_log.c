@@ -912,78 +912,6 @@ void G_LogWeaponOutput(void)
 #endif //LOGGING_WEAPONS
 }
 
-//
-// kef -- synchronized with ui_local.h
-//
-/*
-typedef enum {
-	AWARD_EFFICIENCY,		// Accuracy
-	AWARD_SHARPSHOOTER,		// Most compression rifle frags
-	AWARD_UNTOUCHABLE,		// Perfect (no deaths)
-	AWARD_LOGISTICS,		// Most pickups
-	AWARD_TACTICIAN,		// Kills with all weapons
-	AWARD_DEMOLITIONIST,	// Most explosive damage kills
-	AWARD_STREAK,			// Ace/Expert/Master/Champion
-	AWARD_TEAM,				// MVP/Defender/Warrior/Carrier/Interceptor/Bravery
-	AWARD_SECTION31,		// All-around god
-	AWARD_MAX
-} awardType_t;
-
-typedef enum
-{
-	TEAM_NONE,				// ha ha! you suck!
-	TEAM_MVP,				// most overall points
-	TEAM_DEFENDER,			// killed the most baddies near your flag
-	TEAM_WARRIOR,			// most frags
-	TEAM_CARRIER,			// infected the most people with plague
-	TEAM_INTERCEPTOR,		// returned your own flag the most
-	TEAM_BRAVERY,			// Red Shirt Award (tm). you died more than anybody. 
-	TEAM_MAX
-} teamAward_e;
-*/
-
-// did this player earn the efficiency award?
-/*qboolean CalculateEfficiency(gentity_t *ent, int *efficiency)
-{
-#ifdef LOGGING_WEAPONS
-	float		fAccuracyRatio = 0, fBestRatio = 0;
-	int			i = 0, nShotsFired = 0, nShotsHit = 0, nBestPlayer = -1, tempEff = 0;
-	gentity_t	*player = NULL;
-
-
-	for (i = 0; i < g_maxclients.integer; i++)
-	{
-		player = g_entities + i;
-		if (!player->inuse)
-			continue;
-		nShotsFired = player->client->ps.persistant[PERS_ACCURACY_SHOTS];
-		nShotsHit = player->client->ps.persistant[PERS_ACCURACY_HITS];
-		fAccuracyRatio = ( ((float)nShotsHit)/((float)nShotsFired) );
-		if (fAccuracyRatio > fBestRatio)
-		{
-			fBestRatio = fAccuracyRatio;
-			nBestPlayer = i;
-		}
-	}
-	if (-1 == nBestPlayer)
-	{
-		// huh?
-		return qfalse;
-	}
-	if (nBestPlayer == ent->s.number)
-	{
-		tempEff = (int)(100*fBestRatio);
-		if (tempEff > 50)
-		{
-			*efficiency = tempEff;
-			return qtrue;
-		}
-		return qfalse;
-	}
-#endif // LOGGING_WEAPONS
-	return qfalse;
-}*/
-
 // did this player earn the sharpshooter award?
 qboolean CalculateSharpshooter(gentity_t *ent, int *frags)
 {
@@ -1247,22 +1175,7 @@ qboolean CalculateDemolitionist(gentity_t *ent, int *kills)
 
 int CalculateStreak(gentity_t *ent)
 {
-	/*if (ent->client->ps.persistant[PERS_STREAK_COUNT] >= STREAK_CHAMPION)
-	{
-		return STREAK_CHAMPION;
-	}
-	if (ent->client->ps.persistant[PERS_STREAK_COUNT] >= STREAK_MASTER)
-	{
-		return STREAK_MASTER;
-	}
-	if (ent->client->ps.persistant[PERS_STREAK_COUNT] >= STREAK_EXPERT)
-	{
-		return STREAK_EXPERT;
-	}
-	if (ent->client->ps.persistant[PERS_STREAK_COUNT] >= STREAK_ACE)
-	{
-		return STREAK_ACE;
-	}*/
+	/* TODO: remove me */
 	return 0;
 }
 
@@ -1301,7 +1214,7 @@ qboolean CalculateTeamMVPByRank(gentity_t *ent)
 	playerState_t *ps = &ent->client->ps;
 	int			i = 0, nBestPlayer = -1, nScore = 0, nHighestScore = 0,
 				team = ps->persistant[PERS_RANK]+1;
-	qboolean	bTied = (team == 3);
+	qboolean	bTied = (qboolean)(team == 3);
 	gentity_t	*player = NULL;
 
 	for (i = 0; i < g_maxclients.integer; i++)
@@ -1341,12 +1254,6 @@ qboolean CalculateTeamDefender(gentity_t *ent)
 				team = ent->client->ps.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
-	/*
-	if (CalculateTeamMVP(ent))
-	{
-		return qfalse;
-	}
-	*/
 	for (i = 0; i < g_maxclients.integer; i++)
 	{
 		nScore = 0;
@@ -1377,12 +1284,6 @@ qboolean CalculateTeamWarrior(gentity_t *ent)
 				team = ent->client->ps.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
-	/*
-	if (CalculateTeamMVP(ent) || CalculateTeamDefender(ent))
-	{
-		return qfalse;
-	}
-	*/
 	for (i = 0; i < g_maxclients.integer; i++)
 	{
 		nScore = 0;
@@ -1413,12 +1314,6 @@ qboolean CalculateTeamCarrier(gentity_t *ent)
 				team = ent->client->ps.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
-	/*
-	if (CalculateTeamMVP(ent) || CalculateTeamDefender(ent) || CalculateTeamWarrior(ent))
-	{
-		return qfalse;
-	}
-	*/
 	for (i = 0; i < g_maxclients.integer; i++)
 	{
 		nScore = 0;
@@ -1449,13 +1344,6 @@ qboolean CalculateTeamInterceptor(gentity_t *ent)
 				team = ent->client->ps.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
-	/*
-	if (CalculateTeamMVP(ent) || CalculateTeamDefender(ent) || CalculateTeamWarrior(ent) ||
-		CalculateTeamCarrier(ent))
-	{
-		return qfalse;
-	}
-	*/
 	for (i = 0; i < g_maxclients.integer; i++)
 	{
 		nScore = 0;
@@ -1487,13 +1375,6 @@ qboolean CalculateTeamRedShirt(gentity_t *ent)
 				team = ent->client->ps.persistant[PERS_TEAM];
 	gentity_t	*player = NULL;
 
-	/*
-	if (CalculateTeamMVP(ent) || CalculateTeamDefender(ent) || CalculateTeamWarrior(ent) ||
-		CalculateTeamCarrier(ent) || CalculateTeamInterceptor(ent))
-	{
-		return qfalse;
-	}
-	*/
 	for (i = 0; i < g_maxclients.integer; i++)
 	{
 		nScore = 0;
@@ -1555,7 +1436,7 @@ int CalculateTeamAward(gentity_t *ent)
 
 qboolean CalculateSection31Award(gentity_t *ent)
 {
-	int			i = 0; //, frags = 0, efficiency = 0;
+	int			i = 0;
 	gentity_t	*player = NULL;
 
 	for (i = 0; i < g_maxclients.integer; i++)
@@ -1563,21 +1444,7 @@ qboolean CalculateSection31Award(gentity_t *ent)
 		player = g_entities + i;
 		if (!player->inuse)
 			continue;
-//
-//	kef -- heh.
-//
-//		if (strcmp("JaxxonPhred", ent->client->pers.netname))
-//		{
-//			continue;
-//		}
-		/*CalculateEfficiency(ent, &efficiency);
-		if (!CalculateSharpshooter(ent, &frags) ||
-			!CalculateUntouchable(ent) ||
-			(CalculateStreak(ent) < STREAK_CHAMPION) ||
-			(efficiency < 75))
-		{
-			continue;
-		}*/
+
 		return qtrue;
 	}
 	return qfalse;
@@ -1587,15 +1454,10 @@ void CalculateAwards(gentity_t *ent, char *msg)
 {
 #ifdef LOGGING_WEAPONS
 	char		buf1[AWARDS_MSG_LENGTH], buf2[AWARDS_MSG_LENGTH];
-	int			awardFlags = 0, /*efficiency = 0,*/ stuffUsed = 0, kills = 0, streak = 0, teamAwards = 0;
+	int			awardFlags = 0, stuffUsed = 0, kills = 0, streak = 0, teamAwards = 0;
 
 	memset(buf1, 0, AWARDS_MSG_LENGTH);
 	memset(buf2, 0, AWARDS_MSG_LENGTH);
-	/*if (CalculateEfficiency(ent, &efficiency))
-	{
-		awardFlags |= (1<<AWARD_EFFICIENCY);
-		Com_sprintf(buf1, AWARDS_MSG_LENGTH, " %d", efficiency);
-	}*/
 	if (CalculateSharpshooter(ent, &kills))
 	{
 		awardFlags |= (1<<AWARD_SHARPSHOOTER);
@@ -1649,7 +1511,6 @@ void CalculateAwards(gentity_t *ent, char *msg)
 		strcpy(buf2, buf1);
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, 0);
 	}
-	//strcpy(buf2, msg);
 	Q_strncpyz(buf2, msg, sizeof(buf2));
 	Com_sprintf( msg, AWARDS_MSG_LENGTH, "%s %d%s", buf2, awardFlags, buf1);
 #endif // LOGGING_WEAPONS

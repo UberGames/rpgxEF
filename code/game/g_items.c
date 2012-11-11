@@ -156,15 +156,6 @@ void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
     Q_strncpyz( empty->owner, who->client->pers.netname, sizeof( empty->owner ) );
 
     ++paddDataNum;
-
-    
-    //Inform admins
-    //for ( i = 0; i < level.maxclients; ++i ) {
-    //    gentity_t *player = &g_entities[i];
-    //    if ( !player->client->noAdminChat && IsAdmin( player ) && player != who ) {
-    //        trap_SendServerCommand( player-g_entities, va("print \"%s" S_COLOR_CYAN" (padd drop) " S_COLOR_WHITE "%s\n\"", who->client->pers.netname, txt ) );
-    //    }
-    //}
 }
 
 /*
@@ -391,42 +382,6 @@ int Pickup_Ammo (gentity_t *ent, gentity_t *other)
 int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
     char *msg;
 
-    // Marcin - ammo is constant
-/*
-	if ( ent->count < 0 ) {
-		quantity = 0; // None for you, sir!
-	} else {
-		if ( ent->count ) {
-			quantity = ent->count;
-		} else {
-			quantity = ent->item->quantity;
-		}
-
-		// dropped items and teamplay weapons always have full ammo
-		if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM ) {
-			// respawning rules
-
-			// New method:  If the player has less than half the minimum, give them the minimum, else add 1/2 the min.
-
-			// drop the quantity if the already have over the minimum
-			if ( other->client->ps.ammo[ ent->item->giTag ] < quantity*0.5 ) {
-				quantity = quantity - other->client->ps.ammo[ ent->item->giTag ];
-			} else {
-				quantity = quantity*0.5;		// only add half the value.
-			}
-
-			// Old method:  If the player has less than the minimum, give them the minimum, else just add 1.
-/\*
-			// drop the quantity if the already have over the minimum
-			if ( other->client->ps.ammo[ ent->item->giTag ] < quantity ) {
-				quantity = quantity - other->client->ps.ammo[ ent->item->giTag ];
-			} else {
-				quantity = 1;		// only add a single shot
-			}
-			*\/
-		}
-	}
-*/
 	// add the weapon
 	other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
 	Add_Ammo( other, ent->item->giTag, 1 );
@@ -572,13 +527,6 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	} else {
 		other->client->pressedUse = qtrue;
 	}
-
-	// If ghosted, then end the ghost-ness in favor of the pickup.
-	//RPG-X: RedTechie - Keep ghost all the time
-	/*if (other->client->ps.powerups[PW_GHOST] >= level.time)
-	{
-		other->client->ps.powerups[PW_GHOST] = 0;	// Unghost the player.  This
-	}*/
 
 	// the same pickup rules are used for client side and server side
 	if ( !BG_CanItemBeGrabbed( &ent->s, &other->client->ps, Max_Weapon(other->client->ps.weapon) )
@@ -751,7 +699,6 @@ gentity_t *LaunchItem( gitem_t *item, gentity_t *who, vec3_t origin, vec3_t velo
 									// cdr
 
     if ( item->giTag == WP_3 ) {
-        //Q_strncpyz(item->paddMsg, txt, sizeof(item->paddMsg));
         Padd_Add(dropped, who, txt);
     }
 
@@ -767,15 +714,6 @@ gentity_t *LaunchItem( gitem_t *item, gentity_t *who, vec3_t origin, vec3_t velo
 		// make the sound call for a dropped flag
 		te = G_TempEntity( dropped->s.pos.trBase, EV_TEAM_SOUND );
 		te->s.eventParm = DROPPED_FLAG_SOUND;
-		/*if (dropped->item->giTag == PW_REDFLAG)
-		{
-			te->s.otherEntityNum = TEAM_RED;
-		}
-		else
-		{
-			te->s.otherEntityNum = TEAM_BLUE;
-		}*/
-
 		te->r.svFlags |= SVF_BROADCAST;
 
 	} else { // auto-remove after 30 seconds
@@ -901,12 +839,6 @@ void FinishSpawningItem( gentity_t *ent ) {
 
 	
 	Com_Printf("print \"giType %i!\n\"", ent->item->giType);
-	//Commeted out because if statement causes sharing vialation
-	/*if ( ent->item->giType == IT_TEAM )
-	{
-		VectorSet( ent->r.mins, -23, -23, 0 );
-		VectorSet( ent->r.maxs, 23, 23, 47 );
-	}*/
 
 	if ( ent->spawnflags & 1 ) {
 		// suspended
@@ -939,26 +871,6 @@ void FinishSpawningItem( gentity_t *ent ) {
 		return;
 	}
 
-	// powerups don't spawn in for a while
-
-	//Commeted out because if statement causes sharing vialation
-	/*	if ( ent->item->giType == IT_POWERUP ) {
-		float	respawn;
-
-#ifdef _DEBUG
-		respawn = 1;		// This makes powerups spawn immediately in debug.
-#else // _DEBUG
-		respawn = 45 + crandom() * 15;
-#endif // _DEBUG
-
-		ent->s.eFlags |= EF_NODRAW;
-		ent->r.contents = 0;
-		ent->nextthink = level.time + respawn * 1000;
-		ent->think = RespawnItem;
-		return;
-	}*/
-
-
 	trap_LinkEntity (ent);
 }
 
@@ -987,7 +899,7 @@ qboolean FinishSpawningDetpack( gentity_t *ent, int itemIndex )
 
 	ent->classname = bg_itemlist[itemIndex].classname;
 	ent->r.contents = CONTENTS_CORPSE;//CONTENTS_TRIGGER;
-	ent->takedamage = 1;
+	ent->takedamage = qtrue;
 	ent->health = 5;
 	ent->touch = 0;
 	ent->die = detpack_shot;
@@ -1034,14 +946,7 @@ qboolean FinishSpawningDecoy( gentity_t *ent, int itemIndex )
 	trace_t		tr;
 	vec3_t		dest;
 
-	// OLD RADIUS SETTINGS
-//	VectorSet( ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS );
-//	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
-//	ent->s.eType = ET_USEABLE;
-//	ent->s.modelindex = bg_itemlist[itemIndex].giTag;	// this'll be used in CG_Useable()
-
 	ent->classname = bg_itemlist[itemIndex].classname;
-//	ent->r.contents = CONTENTS_CORPSE;
 	ent->touch = 0;				// null touch function pointer
 	// useing an item causes it to respawn
 	ent->use = Use_Item;
@@ -1115,11 +1020,7 @@ void ClearRegisteredItems( void ) {
 	RegisterItem( BG_FindItemForWeapon( WP_6 ) );	//this is for the podium at the end, make sure we have the model
 
 	RegisterItem( BG_FindItemForWeapon( WP_1 ) );
-//	RegisterItem( BG_FindItemForWeapon( WP_4 ) );
 	RegisterItem( BG_FindItemForWeapon( WP_10 ) );
-//	RegisterItem( BG_FindItemForWeapon( WP_8 ) );
-//	RegisterItem( BG_FindItemForWeapon( WP_7 ) );
-//	RegisterItem( BG_FindItemForWeapon( WP_9 ) );
 	RegisterItem( BG_FindItemForWeapon( WP_13 ) );
 	RegisterItem( BG_FindItemForWeapon( WP_12 ) );
 	RegisterItem( BG_FindItemForWeapon( WP_14 ) );
@@ -1229,7 +1130,6 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	{
 		return;
 	}
-	//item = G_CheckReplaceItem( ent, item );
 
 	G_SpawnFloat( "random", "0", &ent->random );
 	G_SpawnFloat( "wait", "0", &ent->wait );
