@@ -5,10 +5,7 @@
 #include "g_groups.h"
 
 extern void BG_LoadItemNames(void);
-
 extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[] );
-
-qboolean G_LoadMapConfigurations( void );
 
 //RPG-X: RedTechie
 int RPGEntityCount; //Global entity count varible
@@ -313,219 +310,189 @@ vmCvar_t	rpg_spEasterEggs;
 
 static cvarTable_t		gameCvarTable[] = {
 	// don't override the cheat state set by the system
-	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
-
+	{ &g_cheats,					"sv_cheats",					"",							0,														0, qfalse },
 	// noset vars
-	{ NULL, "gamename", GAMEVERSION , CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
-	{ NULL, "gamedate", __DATE__ , CVAR_ROM, 0, qfalse  },
-	{ &g_restarted, "g_restarted", "0", CVAR_ROM, 0, qfalse  },
-	{ NULL, "sv_mapname", "", CVAR_SERVERINFO | CVAR_ROM, 0, qfalse  },
-
+	{ NULL,							"gamename",						GAMEVERSION ,				CVAR_SERVERINFO | CVAR_ROM,								0, qfalse },
+	{ NULL,							"gamedate",						__DATE__ ,					CVAR_ROM,												0, qfalse },
+	{ &g_restarted,					"g_restarted",					"0",						CVAR_ROM,												0, qfalse },
+	{ NULL,							"sv_mapname",					"",							CVAR_SERVERINFO | CVAR_ROM,								0, qfalse },
 	// latched vars
-	{ &g_gametype, "g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH | CVAR_INIT | CVAR_ROM, 0, qfalse  },
-
-	{ &g_maxclients, "sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_maxGameClients, "g_maxGameClients", "0", CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
-
+	{ &g_gametype,					"g_gametype",					"0",						CVAR_SERVERINFO | CVAR_LATCH | CVAR_INIT | CVAR_ROM,	0, qfalse },
+	{ &g_maxclients,				"sv_maxclients",				"8",						CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE,			0, qfalse },
+	{ &g_maxGameClients,			"g_maxGameClients",				"0",						CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE,			0, qfalse },
 	// change anytime vars
-	{ &g_dmflags, "dmflags", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
-
-	{ &g_synchronousClients, "g_synchronousClients", "0", CVAR_SYSTEMINFO, 0, qfalse  },
-
-	{ &g_friendlyFire, "g_friendlyFire", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
-
-	{ &g_teamAutoJoin, "g_teamAutoJoin", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &g_teamForceBalance, "g_teamForceBalance", "1", CVAR_ARCHIVE, 0, qfalse },
-
-	{ &g_intermissionTime, "g_intermissionTime", "20", CVAR_ARCHIVE, 0, qtrue },
-	{ &g_log, "g_log", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_logSync, "g_logSync", "0", CVAR_ARCHIVE, 0, qfalse  },
-
-	{ &g_password, "g_password", "", CVAR_USERINFO, 0, qfalse  },
-
-	{ &g_banIPs, "g_banIPs", "", CVAR_ARCHIVE, 0, qfalse  },
-	{ &g_filterBan, "g_filterBan", "1", CVAR_ARCHIVE, 0, qfalse  },
-
-	{ &g_banIDs, "g_banIDs", "", CVAR_ARCHIVE, 0, qfalse },
-
-	{ &g_needpass, "g_needpass", "0", CVAR_SERVERINFO | CVAR_ROM, 0, qfalse },
-
-	{ &g_dedicated, "dedicated", "0", 0, 0, qfalse  },
-
-	{ &g_speed, "g_speed", "250", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },				// Quake 3 default was 320.
-	{ &g_gravity, "g_gravity", "800", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
-	{ &g_knockback, "g_knockback", "500", 0, 0, qtrue  },
-	{ &g_dmgmult, "g_dmgmult", "1", 0, 0, qtrue  },
-	{ &g_weaponRespawn, "g_weaponrespawn", "5", 0, 0, qtrue  },		// Quake 3 default (with 1 ammo weapons) was 5.
-	{ &g_adaptRespawn, "g_adaptrespawn", "1", 0, 0, qtrue  },		// Make weapons respawn faster with a lot of players.
-	{ &g_forcerespawn, "g_forcerespawn", "0", 0, 0, qtrue },		// Quake 3 default was 20.  This is more "user friendly".
-	{ &g_inactivity, "g_inactivity", "0", 0, 0, qtrue },
-	{ &g_debugMove, "g_debugMove", "0", 0, 0, qfalse },
-	{ &g_debugDamage, "g_debugDamage", "0", 0, 0, qfalse },
-	{ &g_debugAlloc, "g_debugAlloc", "0", 0, 0, qfalse },
-	{ &g_motd, "g_motd", "", 0, 0, qfalse },
-
-	{ &g_podiumDist, "g_podiumDist", "80", 0, 0, qfalse },
-	{ &g_podiumDrop, "g_podiumDrop", "70", 0, 0, qfalse },
-
-	{ &g_allowVote, "g_allowVote", "1", CVAR_SERVERINFO, 0, qfalse },
-
+	{ &g_dmflags,					"dmflags",						"0",						CVAR_SERVERINFO | CVAR_ARCHIVE,							0, qtrue  },
+	{ &g_synchronousClients,		"g_synchronousClients",			"0",						CVAR_SYSTEMINFO,										0, qfalse },
+	{ &g_friendlyFire,				"g_friendlyFire",				"0",						CVAR_SERVERINFO | CVAR_ARCHIVE,							0, qtrue  },
+	{ &g_teamAutoJoin,				"g_teamAutoJoin",				"0",						CVAR_ARCHIVE,											0, qfalse },
+	{ &g_teamForceBalance,			"g_teamForceBalance",			"1",						CVAR_ARCHIVE,											0, qfalse },
+	{ &g_intermissionTime,			"g_intermissionTime",			"20",						CVAR_ARCHIVE,											0, qtrue  },
+	{ &g_log,						"g_log",						"",							CVAR_ARCHIVE,											0, qfalse },
+	{ &g_logSync,					"g_logSync",					"0",						CVAR_ARCHIVE,											0, qfalse },
+	{ &g_password,					"g_password",					"",							CVAR_USERINFO,											0, qfalse },
+	{ &g_banIPs,					"g_banIPs",						"",							CVAR_ARCHIVE,											0, qfalse },
+	{ &g_filterBan,					"g_filterBan",					"1",						CVAR_ARCHIVE,											0, qfalse },
+	{ &g_banIDs,					"g_banIDs",						"",							CVAR_ARCHIVE,											0, qfalse },
+	{ &g_needpass,					"g_needpass",					"0",						CVAR_SERVERINFO | CVAR_ROM,								0, qfalse },
+	{ &g_dedicated,					"dedicated",					"0",						0,														0, qfalse },
+	{ &g_speed,						"g_speed",						"250",						CVAR_SERVERINFO | CVAR_ARCHIVE,							0, qtrue  }, // Quake 3 default was 320.
+	{ &g_gravity,					"g_gravity",					"800",						CVAR_SERVERINFO | CVAR_ARCHIVE,							0, qtrue  },
+	{ &g_knockback,					"g_knockback",					"500",						0,														0, qtrue  },
+	{ &g_dmgmult,					"g_dmgmult",					"1",						0,														0, qtrue  },
+	{ &g_weaponRespawn,				"g_weaponrespawn",				"5",						0,														0, qtrue  }, // Quake 3 default (with 1 ammo weapons) was 5.
+	{ &g_adaptRespawn,				"g_adaptrespawn",				"1",						0,														0, qtrue  }, // Make weapons respawn faster with a lot of players.
+	{ &g_forcerespawn,				"g_forcerespawn",				"0",						0,														0, qtrue  }, // Quake 3 default was 20.  This is more "user friendly".
+	{ &g_inactivity,				"g_inactivity",					"0",						0,														0, qtrue  },
+	{ &g_debugMove,					"g_debugMove",					"0",						0,														0, qfalse },
+	{ &g_debugDamage,				"g_debugDamage",				"0",						0,														0, qfalse },
+	{ &g_debugAlloc,				"g_debugAlloc",					"0",						0,														0, qfalse },
+	{ &g_motd,						"g_motd",						"",							0,														0, qfalse },
+	{ &g_podiumDist,				"g_podiumDist",					"80",						0,														0, qfalse },
+	{ &g_podiumDrop,				"g_podiumDrop",					"70",						0,														0, qfalse },
+	{ &g_allowVote,					"g_allowVote",					"1",						CVAR_SERVERINFO,										0, qfalse },
 #if 0
-	{ &g_debugForward, "g_debugForward", "0", 0, 0, qfalse },
-	{ &g_debugRight, "g_debugRight", "0", 0, 0, qfalse },
-	{ &g_debugUp, "g_debugUp", "0", 0, 0, qfalse },
+	{ &g_debugForward,				"g_debugForward",				"0",						0,														0, qfalse },
+	{ &g_debugRight,				"g_debugRight",					"0",						0,														0, qfalse },
+	{ &g_debugUp,					"g_debugUp",					"0",						0,														0, qfalse },
 #endif
-
-	{ &g_language, "g_language", "", CVAR_ARCHIVE, 0, qfalse  },
-
-	{ &g_holoIntro, "g_holoIntro", "1", CVAR_ARCHIVE, 0, qfalse},
-	{ &g_team_group_red, "g_team_group_red", "", CVAR_LATCH, 0, qfalse  },		// Used to have CVAR_ARCHIVE	
-	{ &g_team_group_blue, "g_team_group_blue", "", CVAR_LATCH, 0, qfalse  },		// Used to have CVAR_ARCHIVE
-	{ &g_random_skin_limit, "g_random_skin_limit", "4", CVAR_ARCHIVE, 0, qfalse },
-	{ &g_classChangeDebounceTime, "g_classChangeDebounceTime", "180", CVAR_ARCHIVE, 0, qfalse },
-			
+	{ &g_language,					"g_language",					"",							CVAR_ARCHIVE,											0, qfalse },
+	{ &g_holoIntro,					"g_holoIntro",					"1",						CVAR_ARCHIVE,											0, qfalse },
+	{ &g_team_group_red,			"g_team_group_red",				"",							CVAR_LATCH,												0, qfalse }, // Used to have CVAR_ARCHIVE	
+	{ &g_team_group_blue,			"g_team_group_blue",			"",							CVAR_LATCH,												0, qfalse }, // Used to have CVAR_ARCHIVE
+	{ &g_random_skin_limit,			"g_random_skin_limit",			"4",						CVAR_ARCHIVE,											0, qfalse },
+	{ &g_classChangeDebounceTime,	"g_classChangeDebounceTime",	"180",						CVAR_ARCHIVE,											0, qfalse },	
 	//RPG-X: RedTechie - RPG-X CVARS....duh....just for the slow ones
-	{ &rpg_allowvote, "rpg_allowVote", "1", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_chatsallowed, "rpg_chatsAllowed", "10", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_allowsuicide, "rpg_allowSuicide", "1", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_selfdamage, "rpg_selfDamage", "1", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_rpg, "rpg_rpg", "1", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_kickspammers, "rpg_kickSpammers", "0", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_kicksuiciders, "rpg_kickSuiciders", "0", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_allowspmaps, "rpg_allowSPMaps", "0", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_rangetricorder, "rpg_rangeTricorder", "128", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_rangehypo, "rpg_rangeHypo", "32", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_norpgclasses, "rpg_noRPGClasses", "0", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_forceclasscolor, "rpg_forceClassColor", "0", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_restrictions, "rpg_restrictions", "0", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_dmgFlags, "rpg_dmgFlags", "63", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_noweapons, "rpg_noWeapons", "0", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_welcomemessage, "rpg_welcomeMessage", "Welcome to the RPG-X Mod", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse  },
-	{ &rpg_timedmessagetime, "rpg_timedMessageTime", "5", CVAR_ARCHIVE, 0, qfalse  }, //TiM : LATCH Not necessary here.
-	{ &rpg_forcekillradius, "rpg_forceKillRadius", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},
-	{ &rpg_forcekillradiuswaittime, "rpg_forceKillRadiusWaitTime", "45000", CVAR_LATCH | CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_chatarearange, "rpg_chatAreaRange", "200", CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue},	//Not latched (ie doesnt need server restart)
-	{ &rpg_forcefielddamage, "rpg_forcefieldDamage", "0", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_invisibletripmines, "rpg_invisibleTripmines", "1", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qfalse},
-	{ &rpg_medicsrevive, "rpg_medicsRevive", "1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse},
-	{ &rpg_effectsgun, "rpg_effectsGun", "1", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qfalse},
-	{ &rpg_phaserdisintegrates, "rpg_phaserDisintegrates", "1", CVAR_ARCHIVE, 0, qfalse},
-	{ &rpg_kickAfterXkills, "rpg_kickAfterNumkills", "2", CVAR_ARCHIVE, 0, qfalse }, //RPG-X | Phenix | 06/04/2005
-	{ &rpg_rankSet, "rpg_rankSet", RANKSET_DEFAULT, CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_LATCH, 0, qfalse },
-
-	{ &rpg_passMessage, "rpg_passMessage", "", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_renamedPlayers, "rpg_renamedPlayers", "1", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_uniqueNames, "rpg_uniqueNames", "1", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_startingRank, "rpg_startingRank", "", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_maxRank,	"rpg_maxRank", "", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qfalse },
-	{ &rpg_changeRanks, "rpg_changeRanks", "1", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_classSet, "rpg_classSet", "rpgx_default", CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_LATCH, 0, qfalse },
-
-	{ &rpg_maxHeight, "rpg_maxHeight", "1.15", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_minHeight, "rpg_minHeight", "0.90", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_maxWeight, "rpg_maxWeight", "1.10", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_minWeight, "rpg_minWeight", "0.90", CVAR_ARCHIVE, 0, qfalse },
-
-	{ &rpg_mapGiveFlags, "rpg_mapGiveFlags", "0", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
-
+	{ &rpg_allowvote,				"rpg_allowVote",				"1",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_chatsallowed,			"rpg_chatsAllowed",				"10",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_allowsuicide,			"rpg_allowSuicide",				"1",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_selfdamage,				"rpg_selfDamage",				"1",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_rpg,						"rpg_rpg",						"1",						CVAR_LATCH | CVAR_ARCHIVE,								0, qfalse },
+	{ &rpg_kickspammers,			"rpg_kickSpammers",				"0",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_kicksuiciders,			"rpg_kickSuiciders",			"0",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_allowspmaps,				"rpg_allowSPMaps",				"0",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_rangetricorder,			"rpg_rangeTricorder",			"128",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_rangehypo,				"rpg_rangeHypo",				"32",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_norpgclasses,			"rpg_noRPGClasses",				"0",						CVAR_LATCH | CVAR_ARCHIVE,								0, qfalse },
+	{ &rpg_forceclasscolor,			"rpg_forceClassColor",			"0",						CVAR_LATCH | CVAR_ARCHIVE,								0, qfalse },
+	{ &rpg_restrictions,			"rpg_restrictions",				"0",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_dmgFlags,				"rpg_dmgFlags",					"63",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_noweapons,				"rpg_noWeapons",				"0",						CVAR_LATCH | CVAR_ARCHIVE,								0, qfalse },
+	{ &rpg_welcomemessage,			"rpg_welcomeMessage",			"Welcome to the RPG-X Mod", CVAR_LATCH | CVAR_ARCHIVE,								0, qfalse },
+	{ &rpg_timedmessagetime,		"rpg_timedMessageTime",			"5",						CVAR_ARCHIVE,											0, qfalse }, //TiM : LATCH Not necessary here.
+	{ &rpg_forcekillradius,			"rpg_forceKillRadius",			"0",						CVAR_ARCHIVE | CVAR_NORESTART,							0, qtrue  },
+	{ &rpg_forcekillradiuswaittime, "rpg_forceKillRadiusWaitTime",	"45000",					CVAR_LATCH | CVAR_ARCHIVE,								0, qfalse },
+	{ &rpg_chatarearange,			"rpg_chatAreaRange",			"200",						CVAR_ARCHIVE | CVAR_NORESTART,							0, qtrue  },	//Not latched (ie doesnt need server restart)
+	{ &rpg_forcefielddamage,		"rpg_forcefieldDamage",			"0",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_invisibletripmines,		"rpg_invisibleTripmines",		"1",						CVAR_ARCHIVE | CVAR_SERVERINFO,							0, qfalse },
+	{ &rpg_medicsrevive,			"rpg_medicsRevive",				"1",						CVAR_ARCHIVE | CVAR_LATCH,								0, qfalse },
+	{ &rpg_effectsgun,				"rpg_effectsGun",				"1",						CVAR_ARCHIVE | CVAR_SERVERINFO,							0, qfalse },
+	{ &rpg_phaserdisintegrates,		"rpg_phaserDisintegrates",		"1",						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_kickAfterXkills,			"rpg_kickAfterNumkills",		"2",						CVAR_ARCHIVE,											0, qfalse }, //RPG-X | Phenix | 06/04/2005
+	{ &rpg_rankSet,					"rpg_rankSet",					RANKSET_DEFAULT,			CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_LATCH,			0, qfalse },
+	{ &rpg_passMessage, 			"rpg_passMessage", 				"",							CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_renamedPlayers,			"rpg_renamedPlayers", 			"1", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_uniqueNames, 			"rpg_uniqueNames", 				"1", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_startingRank, 			"rpg_startingRank", 			"", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_maxRank,					"rpg_maxRank", 					"", 						CVAR_ARCHIVE | CVAR_SERVERINFO, 						0, qfalse },
+	{ &rpg_changeRanks, 			"rpg_changeRanks", 				"1", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_classSet, 				"rpg_classSet", 				"rpgx_default", 			CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_LATCH,			0, qfalse },
+	{ &rpg_maxHeight, 				"rpg_maxHeight", 				"1.15", 					CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_minHeight, 				"rpg_minHeight",				"0.90", 					CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_maxWeight, 				"rpg_maxWeight", 				"1.10", 					CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_minWeight, 				"rpg_minWeight", 				"0.90",						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_mapGiveFlags,			"rpg_mapGiveFlags",				"0", 						CVAR_ARCHIVE | CVAR_LATCH, 								0, qfalse },
 	//TiM - maybe we can fix it later, but for now, disable it
-	{ &rpg_scannablePanels, "rpg_scannablePanels", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO, 0, qfalse },
-    { &rpg_allowWeaponDrop, "rpg_allowWeaponDrop", "1", CVAR_ARCHIVE, 0, qfalse }, // RPG-X | Marcin | 03/12/2008
-    { &rpg_weaponsStay, "rpg_weaponsStay", "0", CVAR_ARCHIVE, 0, qfalse },         // RPG-X | Marcin | 04/12/2008
-    { &rpg_rifleSpeed, "rpg_rifleSpeed", "2700", 0, 0, qtrue },        // RPG-X | Marcin | 04/12/2008
-    { &rpg_disruptorSpeed, "rpg_disruptorSpeed", "3000", 0, 0, qtrue },// RPG-X | Marcin | 04/12/2008
-    { &rpg_photonSpeed, "rpg_photonSpeed", "1300", 0, 0, qtrue },      // RPG-X | Marcin | 05/12/2008
-    { &rpg_altPhotonSpeed, "rpg_altPhotonSpeed", "650", 0, 0, qtrue }, // RPG-X | Marcin | 06/12/2008
-    { &rpg_rifleDelay, "rpg_rifleDelay", "250", 0, 0, qtrue },         // RPG-X | Marcin | 06/12/2008
-    { &rpg_disruptorDelay, "rpg_disruptorDelay", "700", 0, 0, qtrue }, // RPG-X | Marcin | 06/12/2008
-    { &rpg_photonDelay, "rpg_photonDelay", "1200", 0, 0, qtrue },      // RPG-X | Marcin | 06/12/2008
-    { &rpg_altPhotonDelay, "rpg_altPhotonDelay", "1600", 0, 0, qtrue },// RPG-X | Marcin | 06/12/2008
-	{ &rpg_TR116Delay, "rpg_TR116Delay", "500", 0, 0, qtrue },		   // RPG-X | Marcin | 30/12/2008
-	{ &rpg_motdFile, "rpg_motdFile", "RPG-X_Motd.txt", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },		// RPG-X | Marcin | 23/12/2008
-	{ &rpg_respectPrivacy, "rpg_respectPrivacy", "0", CVAR_ARCHIVE | CVAR_SERVERINFO , 0, qfalse },	// RPG-X | Marcin | 24/12/2008
-	{ &rpg_maxTricorders, "rpg_maxTricorders", "1", CVAR_ARCHIVE, 0, qtrue },						// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxPADDs, "rpg_maxPADDs", "10", CVAR_ARCHIVE, 0, qtrue },								// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxCups, "rpg_maxCups", "2", CVAR_ARCHIVE, 0, qtrue },									// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxPhasers, "rpg_maxPhasers", "1", CVAR_ARCHIVE, 0, qtrue },								// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxRifles, "rpg_maxRifles", "1", CVAR_ARCHIVE, 0, qtrue },								// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxTR116s, "rpg_maxTR116s", "1", CVAR_ARCHIVE, 0, qtrue },								// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxAdminguns, "rpg_maxAdminguns", "1", CVAR_ARCHIVE, 0, qtrue },							// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxPhotonbursts, "rpg_maxPhotonbursts", "1", CVAR_ARCHIVE, 0, qtrue },					// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxDisruptors, "rpg_maxDisruptors", "1", CVAR_ARCHIVE, 0, qtrue },						// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxMedkits, "rpg_maxMedkits", "1", CVAR_ARCHIVE, 0, qtrue },								// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxHyposprays, "rpg_maxHyposprays", "2", CVAR_ARCHIVE, 0, qtrue },						// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxRegenerators, "rpg_maxRegenerators", "1", CVAR_ARCHIVE, 0, qtrue },					// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxToolkits, "rpg_maxToolkits", "1", CVAR_ARCHIVE, 0, qtrue },							// RPG-X | Marcin | 30/12/2008
-	{ &rpg_maxHyperSpanners, "rpg_maxHyperSpanners", "1", CVAR_ARCHIVE, 0, qtrue },					// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minTricorders, "rpg_minTricorders", "1", CVAR_ARCHIVE, 0, qtrue },						// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minPADDs, "rpg_minPADDs", "5", CVAR_ARCHIVE, 0, qtrue },									// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minCups, "rpg_minCups", "1", CVAR_ARCHIVE, 0, qtrue },									// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minPhasers, "rpg_minPhasers", "1", CVAR_ARCHIVE, 0, qtrue },								// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minRifles, "rpg_minRifles", "1", CVAR_ARCHIVE, 0, qtrue },								// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minTR116s, "rpg_minTR116s", "1", CVAR_ARCHIVE, 0, qtrue },								// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minAdminguns, "rpg_minAdminguns", "1", CVAR_ARCHIVE, 0, qtrue },							// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minPhotonbursts, "rpg_minPhotonbursts", "1", CVAR_ARCHIVE, 0, qtrue },					// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minDisruptors, "rpg_minDisruptors", "1", CVAR_ARCHIVE, 0, qtrue },						// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minMedkits, "rpg_minMedkits", "1", CVAR_ARCHIVE, 0, qtrue },								// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minHyposprays, "rpg_minHyposprays", "1", CVAR_ARCHIVE, 0, qtrue },						// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minRegenerators, "rpg_minRegenerators", "1", CVAR_ARCHIVE, 0, qtrue },					// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minToolkits, "rpg_minToolkits", "1", CVAR_ARCHIVE, 0, qtrue },							// RPG-X | Marcin | 30/12/2008
-	{ &rpg_minHyperSpanners, "rpg_minHyperSpanners", "1", CVAR_ARCHIVE, 0, qtrue },					// RPG-X | Marcin | 30/12/2008
-    { &rpg_dropOnDeath, "rpg_dropItemsOnDeath", "1", CVAR_ARCHIVE, 0, qfalse },						// RPG-X | Marcin | 30/12/2008
-	{ &rpg_fraggerSpawnDelay, "rpg_fraggerSpawnDelay", "100", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_borgAdapt, "rpg_borgAdapt", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_hypoMelee, "rpg_hypoMelee", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_adaptUseSound, "rpg_adaptUseSound", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_adaptCrifleHits, "rpg_adaptCrifleHits", "6", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_adaptDisruptorHits, "rpg_adaptDisruptorHits", "6", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_adaptPhaserHits, "rpg_adaptPhaserHits", "6", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_adaptPhotonHits, "rpg_adaptPhotonHits", "6", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_adaptTR116Hits, "rpg_adaptTR116Hits", "6", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_adaptGrenadeLauncherHits, "rpg_adaptGrenadeLauncherHits", "6", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_repairModifier, "rpg_repairModifier", "1", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_forceFieldColor, "rpg_forceFieldColor", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_allowRemodulation, "rpg_allowRemodulation", "1", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_forceFieldFreq, "rpg_forceFieldFreq", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_calcLiftTravelDuration, "rpg_calcLiftTravelDuration", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_liftDurationModifier, "rpg_liftDurationModifier" , "0.5", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_altTricorderDelay, "rpg_altTricorderDelay", "1000", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_borgMoveThroughFields, "rpg_borgMoveThroughFields", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_RemodulationDelay, "rpg_RemodulationDelay", "5000", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_adminVoteOverride, "rpg_adminVoteOverride", "1", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_serverchange, "rpg_serverchange", "0", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_allowSPLevelChange, "rpg_allowSPLevelChange", "1", CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse },
-
-	{ &rpg_spEasterEggs, "rpg_spEasterEggs", "0", CVAR_ARCHIVE, 0, qfalse },
-	
-	{ &dev_showTriggers, "dev_showTriggers", "0", CVAR_ARCHIVE, 0, qfalse },
-	
-	{ &sql_use, "sql_use", "0", CVAR_ARCHIVE, 0, qfalse },
-
+	{ &rpg_scannablePanels, 		"rpg_scannablePanels", 			"1", 						CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO, 			0, qfalse },
+    { &rpg_allowWeaponDrop, 		"rpg_allowWeaponDrop", 			"1", 						CVAR_ARCHIVE, 											0, qfalse }, // RPG-X | Marcin | 03/12/2008
+    { &rpg_weaponsStay, 			"rpg_weaponsStay", 				"0", 						CVAR_ARCHIVE,											0, qfalse },         // RPG-X | Marcin | 04/12/2008
+    { &rpg_rifleSpeed, 				"rpg_rifleSpeed", 				"2700", 					0, 														0, qtrue  },        // RPG-X | Marcin | 04/12/2008
+    { &rpg_disruptorSpeed, 			"rpg_disruptorSpeed", 			"3000", 					0, 														0, qtrue  },// RPG-X | Marcin | 04/12/2008
+    { &rpg_photonSpeed, 			"rpg_photonSpeed", 				"1300", 					0, 														0, qtrue  },      // RPG-X | Marcin | 05/12/2008
+    { &rpg_altPhotonSpeed, 			"rpg_altPhotonSpeed", 			"650", 						0, 														0, qtrue  }, // RPG-X | Marcin | 06/12/2008
+    { &rpg_rifleDelay, 				"rpg_rifleDelay", 				"250", 						0, 														0, qtrue  },         // RPG-X | Marcin | 06/12/2008
+    { &rpg_disruptorDelay, 			"rpg_disruptorDelay", 			"700", 						0, 														0, qtrue  }, // RPG-X | Marcin | 06/12/2008
+    { &rpg_photonDelay, 			"rpg_photonDelay", 				"1200", 					0,														0, qtrue  },      // RPG-X | Marcin | 06/12/2008
+    { &rpg_altPhotonDelay, 			"rpg_altPhotonDelay", 			"1600", 					0, 														0, qtrue  },// RPG-X | Marcin | 06/12/2008
+	{ &rpg_TR116Delay, 				"rpg_TR116Delay", 				"500", 						0, 														0, qtrue  },		   // RPG-X | Marcin | 30/12/2008
+	{ &rpg_motdFile, 				"rpg_motdFile", 				"RPG-X_Motd.txt", 			CVAR_ARCHIVE | CVAR_LATCH, 								0, qfalse },		// RPG-X | Marcin | 23/12/2008
+	{ &rpg_respectPrivacy, 			"rpg_respectPrivacy", 			"0", 						CVAR_ARCHIVE | CVAR_SERVERINFO , 						0, qfalse },	// RPG-X | Marcin | 24/12/2008
+	{ &rpg_maxTricorders, 			"rpg_maxTricorders", 			"1", 						CVAR_ARCHIVE, 											0, qtrue  },						// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxPADDs, 				"rpg_maxPADDs", 				"10", 						CVAR_ARCHIVE,											0, qtrue  },								// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxCups, 				"rpg_maxCups", 					"2", 						CVAR_ARCHIVE, 											0, qtrue  },									// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxPhasers, 				"rpg_maxPhasers", 				"1", 						CVAR_ARCHIVE, 											0, qtrue  },								// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxRifles, 				"rpg_maxRifles", 				"1", 						CVAR_ARCHIVE, 											0, qtrue  },								// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxTR116s, 				"rpg_maxTR116s", 				"1", 						CVAR_ARCHIVE,											0, qtrue  },								// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxAdminguns, 			"rpg_maxAdminguns", 			"1", 						CVAR_ARCHIVE, 											0, qtrue  },							// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxPhotonbursts, 		"rpg_maxPhotonbursts", 			"1", 						CVAR_ARCHIVE, 											0, qtrue  },					// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxDisruptors, 			"rpg_maxDisruptors", 			"1", 						CVAR_ARCHIVE, 											0, qtrue  },						// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxMedkits, 				"rpg_maxMedkits", 				"1", 						CVAR_ARCHIVE,											0, qtrue  },								// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxHyposprays, 			"rpg_maxHyposprays", 			"2", 						CVAR_ARCHIVE,											0, qtrue  },						// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxRegenerators, 		"rpg_maxRegenerators", 			"1", 						CVAR_ARCHIVE,											0, qtrue  },					// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxToolkits, 			"rpg_maxToolkits", 				"1", 						CVAR_ARCHIVE, 											0, qtrue  },							// RPG-X | Marcin | 30/12/2008
+	{ &rpg_maxHyperSpanners, 		"rpg_maxHyperSpanners",			"1", 						CVAR_ARCHIVE, 											0, qtrue  },					// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minTricorders, 			"rpg_minTricorders", 			"1", 						CVAR_ARCHIVE, 											0, qtrue  },						// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minPADDs, 				"rpg_minPADDs", 				"5", 						CVAR_ARCHIVE, 											0, qtrue  },									// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minCups, 				"rpg_minCups", 					"1", 						CVAR_ARCHIVE, 											0, qtrue  },									// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minPhasers, 				"rpg_minPhasers", 				"1", 						CVAR_ARCHIVE, 											0, qtrue  },								// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minRifles, 				"rpg_minRifles", 				"1", 						CVAR_ARCHIVE, 											0, qtrue  },								// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minTR116s, 				"rpg_minTR116s", 				"1", 						CVAR_ARCHIVE, 											0, qtrue  },								// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minAdminguns, 			"rpg_minAdminguns", 			"1", 						CVAR_ARCHIVE, 											0, qtrue  },							// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minPhotonbursts,			"rpg_minPhotonbursts", 			"1", 						CVAR_ARCHIVE, 											0, qtrue  },					// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minDisruptors, 			"rpg_minDisruptors", 			"1",						CVAR_ARCHIVE, 											0, qtrue  },						// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minMedkits, 				"rpg_minMedkits", 				"1", 						CVAR_ARCHIVE, 											0, qtrue  },								// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minHyposprays, 			"rpg_minHyposprays", 			"1", 						CVAR_ARCHIVE, 											0, qtrue  },						// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minRegenerators, 		"rpg_minRegenerators",			"1", 						CVAR_ARCHIVE, 											0, qtrue  },					// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minToolkits, 			"rpg_minToolkits", 				"1", 						CVAR_ARCHIVE, 											0, qtrue  },							// RPG-X | Marcin | 30/12/2008
+	{ &rpg_minHyperSpanners, 		"rpg_minHyperSpanners", 		"1", 						CVAR_ARCHIVE, 											0, qtrue  },					// RPG-X | Marcin | 30/12/2008
+    { &rpg_dropOnDeath, 			"rpg_dropItemsOnDeath", 		"1", 						CVAR_ARCHIVE, 											0, qfalse },						// RPG-X | Marcin | 30/12/2008
+	{ &rpg_fraggerSpawnDelay,		"rpg_fraggerSpawnDelay",		"100", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_borgAdapt, 				"rpg_borgAdapt", 				"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_hypoMelee, 				"rpg_hypoMelee", 				"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_adaptUseSound, 			"rpg_adaptUseSound",			"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_adaptCrifleHits, 		"rpg_adaptCrifleHits", 			"6", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_adaptDisruptorHits,		"rpg_adaptDisruptorHits",		"6", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_adaptPhaserHits,			"rpg_adaptPhaserHits", 			"6", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_adaptPhotonHits,			"rpg_adaptPhotonHits",			"6", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_adaptTR116Hits,			"rpg_adaptTR116Hits", 			"6", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_adaptGrenadeLauncherHits,"rpg_adaptGrenadeLauncherHits", "6", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_repairModifier,			"rpg_repairModifier", 			"1", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_forceFieldColor,			"rpg_forceFieldColor", 			"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_allowRemodulation,		"rpg_allowRemodulation", 		"1", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_forceFieldFreq, 			"rpg_forceFieldFreq", 			"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_calcLiftTravelDuration,  "rpg_calcLiftTravelDuration",	"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_liftDurationModifier,	"rpg_liftDurationModifier" ,	"0.5", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_altTricorderDelay,		"rpg_altTricorderDelay", 		"1000", 					CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_borgMoveThroughFields,	"rpg_borgMoveThroughFields",	"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_RemodulationDelay, 		"rpg_RemodulationDelay",		"5000", 					CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_adminVoteOverride,		"rpg_adminVoteOverride",		"1", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_serverchange,			"rpg_serverchange",				"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_allowSPLevelChange,		"rpg_allowSPLevelChange",		"1", 						CVAR_ARCHIVE | CVAR_LATCH, 								0, qfalse },
+	{ &rpg_spEasterEggs, 			"rpg_spEasterEggs", 			"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &dev_showTriggers, 			"dev_showTriggers", 			"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &sql_use, 					"sql_use", 						"0",			 			CVAR_ARCHIVE, 											0, qfalse },
 #ifdef G_LUA
-	{ &g_debugLua, "g_debugLua", "0", 0, 0, qfalse },
-	{ &lua_allowedModules, "lua_allowedModules", "", 0, 0, qfalse },
-	{ &lua_modules, "lua_modules", "", 0, 0, qfalse },
+	{ &g_debugLua,					"g_debugLua", 					"0", 						0, 														0, qfalse },
+	{ &lua_allowedModules,			"lua_allowedModules", 			"", 						0, 														0, qfalse },
+	{ &lua_modules,					"lua_modules", 					"", 						0, 														0, qfalse },
 #endif
-
-	{ &rpg_rifleDamage, "rpg_rifleDamage", "75", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_rifleAltDamage, "rpg_rifleAltDamage", "16", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_phaserDamage, "rpg_phaserDamage", "55", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_disruptorDamage, "rpg_disruptorDamage", "80", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_grenadeDamage, "rpg_grenadeDamage", "75", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_grenadeAltDamage, "rpg_grenadeAltDamage", "80", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_tr116Damage, "rpg_tr116Damage", "150", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_photonDamage, "rpg_photonDamage", "140", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_photonAltDamage, "rpg_photonAltDamage", "140", CVAR_ARCHIVE, 0, qfalse },
-
-	{ &g_developer, "g_developer", "0", CVAR_ARCHIVE, 0, qfalse }
+	{ &rpg_rifleDamage, 			"rpg_rifleDamage", 				"75", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_rifleAltDamage, 			"rpg_rifleAltDamage", 			"16", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_phaserDamage, 			"rpg_phaserDamage", 			"55", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_disruptorDamage, 		"rpg_disruptorDamage", 			"80", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_grenadeDamage, 			"rpg_grenadeDamage", 			"75", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_grenadeAltDamage,		"rpg_grenadeAltDamage", 		"80", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_tr116Damage, 			"rpg_tr116Damage", 				"150", 						CVAR_ARCHIVE,											0, qfalse },
+	{ &rpg_photonDamage, 			"rpg_photonDamage", 			"140", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_photonAltDamage,			"rpg_photonAltDamage", 			"140", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &g_developer,					"g_developer", 					"0", 						CVAR_ARCHIVE, 											0, qfalse }
 };
 
 static int	gameCvarTableSize = sizeof( gameCvarTable ) / sizeof( gameCvarTable[0] );
 
-void G_InitGame( int levelTime, int randomSeed, int restart );
-void G_RunFrame( int levelTime );
+static void G_InitGame( int levelTime, int randomSeed, int restart );
+static void G_RunFrame( int levelTime );
 void G_ShutdownGame( int restart );
-void CheckExitRules( void );
+static void CheckExitRules( void );
 
 //=============================
 //** begin code
@@ -547,7 +514,7 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 		G_ShutdownGame( arg0 );
 		return 0;
 	case GAME_CLIENT_CONNECT:
-		return (size_t)ClientConnect( arg0, arg1, arg2 );
+		return (size_t)ClientConnect( arg0, (qboolean)arg1, (qboolean)arg2 );
 	case GAME_CLIENT_THINK:
 		ClientThink( arg0 );
 		return 0;
@@ -1576,7 +1543,7 @@ All but the first will have the FL_TEAMSLAVE flag set and teammaster field set
 All but the last will have the teamchain field set to the next one
 ================
 */
-void G_FindTeams( void ) {
+static void G_FindTeams( void ) {
 	gentity_t	*e, *e2;
 	int		i, j;
 	int		c, c2;
@@ -1633,7 +1600,7 @@ void G_FindTeams( void ) {
 G_RegisterCvars
 =================
 */
-void G_RegisterCvars( void ) {
+static void G_RegisterCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
 
@@ -1665,7 +1632,7 @@ void G_RegisterCvars( void ) {
 G_UpdateCvars
 =================
 */
-void G_UpdateCvars( void )
+static void G_UpdateCvars( void )
 {
 	int			i;
 	cvarTable_t	*cv;
@@ -1700,7 +1667,7 @@ void G_UpdateCvars( void )
 extern int altAmmoUsage[];
 extern team_t	borgTeam;
 extern team_t	initialBorgTeam;
-void G_InitModRules( void )
+static void G_InitModRules( void )
 {
 	numKilled = 0;
 }
@@ -1795,7 +1762,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	level.time = levelTime;
 	level.startTime = levelTime;
-	level.restarted = restart;
+	level.restarted = (qboolean)restart;
 
 	//level.message = levelTime - (int)(rpg_timedmessagetime.value * 60000) + 30000;
 	if ( rpg_timedmessagetime.value < 0.2 ) {
@@ -1917,13 +1884,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	/*RPG-X J2J************************************************************************************/
 	G_Printf ("Initializing RPG-X Globals...");
-
-	//TiM : Reset teh recon system on game init.
-	//Leave this out for now to make this data persistant.
-	//Altho, make sure to init the arrays before actually using lol
-	
-	//memset( &g_reconData, 0, sizeof( g_reconData ) );
-	//g_reconNum = 0;
 
 	//WARNING - used hard coded number to shut up compiler, 1023 is MAX_ENTITIES (which apperently cant be increased without substansial exe recoding)
 	//TiM : NB Ents 0 -> 128 are clients only. cyclicng thru all ents here is not needed.
@@ -2088,69 +2048,13 @@ PLAYER COUNTING / SCORE SORTING
 */
 
 /*
-=============
-AddTournamentPlayer
-
-If there are less than two tournament players, put a
-spectator in the game and restart
-=============
-*/
-void AddTournamentPlayer( void ) {
-	int			i;
-	gclient_t	*client;
-	gclient_t	*nextInLine;
-	clientSession_t *sess;
-
-	if ( level.numPlayingClients >= 2 ) {
-		return;
-	}
-
-	// never change during intermission
-	if ( level.intermissiontime ) {
-		return;
-	}
-
-	nextInLine = NULL;
-
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		client = &level.clients[i];
-		if ( client->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-		sess = &client->sess;
-		if ( sess->sessionTeam != TEAM_SPECTATOR ) {
-			continue;
-		}
-		// never select the dedicated follow or scoreboard clients
-		if ( sess->spectatorState == SPECTATOR_SCOREBOARD || 
-			sess->spectatorClient < 0  ) {
-			continue;
-		}
-
-		if ( !nextInLine || sess->spectatorTime < nextInLine->sess.spectatorTime ) {
-			nextInLine = client;
-		}
-	}
-
-	if ( !nextInLine ) {
-		return;
-	}
-
-	level.warmupTime = -1;
-
-	// set them to free-for-all team
-	SetTeam( &g_entities[ nextInLine - level.clients ], "f" );
-}
-
-
-/*
 =======================
 RemoveTournamentLoser
 
 Make the loser a spectator at the back of the line
 =======================
 */
-void RemoveTournamentLoser( void ) {
+static void RemoveTournamentLoser( void ) {
 	int			clientNum;
 
 	if ( level.numPlayingClients != 2 ) {
@@ -2174,7 +2078,7 @@ AdjustTournamentScores
 
 =======================
 */
-void AdjustTournamentScores( void ) {
+static void AdjustTournamentScores( void ) {
 	int			clientNum;
 
 	clientNum = level.sortedClients[0];
@@ -2473,7 +2377,7 @@ void FindIntermissionPoint( void ) {
 ClearFiringFlags
 ==================
 */
-void ClearFiringFlags(void)
+static void ClearFiringFlags(void)
 {
 	int i = 0;
 	gentity_t	*ent = NULL;
@@ -2604,127 +2508,6 @@ void ExitLevel (void) {
 
 }
 
-
-/*
-=================
-CheckIntermissionExit
-
-The level will stay at the intermission for a minimum of 5 seconds
-If all players wish to continue, the level will then exit.
-If one or more players have not acknowledged the continue, the game will
-wait 20 seconds before going on.
-=================
-*/
-void CheckIntermissionExit( void ) {
-	int			ready, notReady;
-	int			i;
-	gclient_t	*cl;
-	int			readyMask;
-
-
-	if ( levelExiting )
-	{//already on our way out, skip the check
-		return;
-	}
-
-	if ( level.time < level.intermissiontime + 5000 )
-	{
-			// bring up the scoreboard after 5 seconds
-	}
-
-
-	// Single player exit does not happen until menu event
-	if ( g_gametype.integer == GT_SINGLE_PLAYER ) {
-		return;
-	}
-
-	// see which players are ready
-	ready = 0;
-	notReady = 0;
-	readyMask = 0;
-	for (i=0 ; i< g_maxclients.integer ; i++) {
-		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-		if ( g_entities[cl->ps.clientNum].r.svFlags & SVF_BOT ) {
-			continue;
-		}
-
-		if ( cl->readyToExit ) {
-			ready++;
-			if ( i < 16 ) {
-				readyMask |= 1 << i;
-			}
-		} else {
-			notReady++;
-		}
-	}
-
-	// copy the readyMask to each player's stats so
-	// it can be displayed on the scoreboard
-	for (i=0 ; i< g_maxclients.integer ; i++) {
-		cl = level.clients + i;
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-		cl->ps.stats[STAT_CLIENTS_READY] = readyMask;
-	}
-
-	// never exit in less than five seconds
-	if ( level.time < level.intermissiontime + 5000 ) {
-		return;
-	}
-
-	// if nobody wants to go, clear timer
-	if ( !ready ) {
-		level.readyToExit = qfalse;
-		return;
-	}
-
-	// if everyone wants to go, go now
-	if ( !notReady ) {
-		ExitLevel();
-		return;
-	}
-
-	// the first person to ready starts the ten second timeout
-	if ( !level.readyToExit ) {
-		level.readyToExit = qtrue;
-		level.exitTime = level.time;
-	}
-
-	// if we have waited g_intermissionTime seconds since at least one player
-	// wanted to exit, go ahead
-	if ( level.time < level.exitTime + (1000 * g_intermissionTime.integer) ) {
-		return;
-	}
-
-	ExitLevel();
-}
-
-/*
-=============
-ScoreIsTied
-=============
-*/
-qboolean ScoreIsTied( void ) {
-	int		a, b;
-
-	if ( level.numPlayingClients < 2 ) {
-		return qfalse;
-	}
-	
-	if ( g_gametype.integer >= GT_TEAM ) {
-		return (qboolean)(level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE]);
-	}
-
-	a = level.clients[level.sortedClients[0]].ps.persistant[PERS_SCORE];
-	b = level.clients[level.sortedClients[1]].ps.persistant[PERS_SCORE];
-
-	return (qboolean)(a == b);
-}
-
 /*
 =================
 CheckExitRules
@@ -2757,7 +2540,7 @@ CheckTournement
 Once a frame, check for changes in tournement player state
 =============
 */
-void CheckTournement( void ) {
+static void CheckTournement( void ) {
 	if ( level.numPlayingClients == 0 ) {
 		return;
 	}
@@ -2779,7 +2562,7 @@ void CheckTournement( void ) {
 CheckVote
 ==================
 */
-void CheckVote( void ) {
+static void CheckVote( void ) {
 	if ( !level.voteTime ) {
 		return;
 	}
@@ -2809,7 +2592,7 @@ void CheckVote( void ) {
 CheckCvars
 ==================
 */
-void CheckCvars( void ) {
+static void CheckCvars( void ) {
 	static int lastMod = -1;
 
 	if ( g_password.modificationCount != lastMod ) {
