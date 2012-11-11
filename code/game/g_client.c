@@ -150,7 +150,7 @@ Find the spot that we DON'T want to use
 /**
 *	Find the spot that we DON'T want to use
 */
-gentity_t *SelectNearestDeathmatchSpawnPoint( vec3_t from ) {
+static gentity_t *SelectNearestDeathmatchSpawnPoint( vec3_t from ) {
 	gentity_t	*spot;
 	vec3_t		delta;
 	float		dist, nearestDist;
@@ -185,7 +185,7 @@ go to a random point that doesn't telefrag
 /**
 *	go to a random point that doesn't telefrag
 */
-gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
+static gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 	gentity_t	*spot;
 	int			count;
 	int			selection;
@@ -262,7 +262,7 @@ use normal spawn selection.
 *	Try to find a spawn point marked 'initial', otherwise
 *	use normal spawn selection.
 */
-gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles ) {
+static gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles ) {
 	gentity_t	*spot;
 
 	spot = NULL;
@@ -289,7 +289,7 @@ SelectSpectatorSpawnPoint
 
 ============
 */
-gentity_t *SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles ) {
+static gentity_t *SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles ) {
 	FindIntermissionPoint();
 
 	VectorCopy( level.intermission_origin, origin );
@@ -369,7 +369,7 @@ just like the existing corpse to leave behind.
 *	A player is respawning, so make an entity that looks
 *	just like the existing corpse to leave behind.
 */
-void CopyToBodyQue( gentity_t *ent ) {
+static void CopyToBodyQue( gentity_t *ent ) {
 	gentity_t		*body;
 	int			contents;
 	entityState_t *eState;
@@ -417,8 +417,6 @@ void CopyToBodyQue( gentity_t *ent ) {
 	case BOTH_DEAD2:
 		eState->torsoAnim = eState->legsAnim = BOTH_DEAD2;
 		break;
-	/*case BOTH_DEATH3:
-	case BOTH_DEAD3:*/
 	default:
 		eState->torsoAnim = eState->legsAnim = BOTH_DEAD1; //DEAD3
 		break;
@@ -508,7 +506,6 @@ void respawn( gentity_t *ent ) {
 		tent = G_TempEntity( ps->origin, EV_BORG_TELEPORT );
 	else
 	{
-		//tent = G_TempEntity( ps->origin, EV_PLAYER_TELEPORT_IN );
 		tent = G_TempEntity( ps->origin, EV_PLAYER_TRANSPORT_IN );
 		ps->powerups[PW_QUAD] = level.time + 4000;
 	}
@@ -542,7 +539,7 @@ team_t TeamCount( int ignoreClientNum, int team ) {
 		}
 	}
 
-	return count;
+	return (team_t)count;
 }
 
 
@@ -571,7 +568,7 @@ team_t PickTeam( int ignoreClientNum ) {
 	if ( level.teamScores[TEAM_BLUE] < level.teamScores[TEAM_RED] ) {
 		return TEAM_BLUE;
 	}
-	return irandom( TEAM_RED, TEAM_BLUE );
+	return (team_t)irandom( TEAM_RED, TEAM_BLUE );
 }
 
 /*
@@ -588,18 +585,11 @@ Player Model system :P
 *	HEAVILY modified for the RPG-X
 *	Player Model system
 */
-void ForceClientSkin(char *model, const char *skin ) {
+static void ForceClientSkin(char *model, const char *skin ) {
 	char *p;
 	char *q;
 
 	//we expect model to equal 'char/model/skin'
-
-	//check for the slash between charName and modelName
-	//if ((p = strchr(model, '/')) != NULL) {
-	//	*p = 0;
-	//}
-
-	//Com_Printf("ForceSkin Called\n");
 
 	p = strchr(model, '/');
 
@@ -623,13 +613,10 @@ void ForceClientSkin(char *model, const char *skin ) {
 		}
 		else 
 		{
-			//len = strlen( p );
-			//Q_strcat(&model[len - strlen( q )], MAX_QPATH, skin); 
 			q++;
 			*q= '\0';
 			Q_strcat(model, MAX_QPATH, skin);
 			
-			//Com_Printf("Debug: %s\n", model);
 		}
 	}
 }
@@ -639,7 +626,7 @@ void ForceClientSkin(char *model, const char *skin ) {
 ClientCheckName
 ============
 */
-/*static*/ void ClientCleanName( const char *in, char *out, int outSize ) {
+void ClientCleanName( const char *in, char *out, int outSize ) {
 	int		len, colorlessLen;
 	char	ch;
 	char	*p;
@@ -729,7 +716,7 @@ Used to decide if in a CTF game where a race is specified for a given team if a 
 *	Compare a list of races with an incoming race name.
 *	Used to decide if in a CTF game where a race is specified for a given team if a skin is actually already legal.
 */
-qboolean legalSkin(const char *race_list, const char *race)
+static qboolean legalSkin(const char *race_list, const char *race)
 {
 	char current_race_name[125];
 	const char *s = race_list;
@@ -773,7 +760,7 @@ given a race name, go find all the skins that use it, and randomly select one
 /**
 *	given a race name, go find all the skins that use it, and randomly select one
 */
-void randomSkin(const char* race, char* model, int current_team, int clientNum)
+static void randomSkin(const char* race, char* model, int current_team, int clientNum)
 {
 	char	**skinsForRace;
 	int		howManySkins = 0;
@@ -909,7 +896,7 @@ Go away and actually get a random new skin based on a group name
 /**
 *	Go away and actually get a random new skin based on a group name	
 */
-qboolean getNewSkin(const char *group, char *model, const char *color, const gclient_t *client, int clientNum)
+static qboolean getNewSkin(const char *group, char *model, const char *color, const gclient_t *client, int clientNum)
 {
 	char	*temp_string;
 
@@ -994,9 +981,6 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
-	//Com_Printf( S_COLOR_RED "%s\n", userinfo );
-	//Com_Printf( S_COLOR_RED "CHANGED!\n" );
-
 	// check for malformed or illegal info strings
 	if ( !Info_Validate(userinfo) ) {
 		strcpy (userinfo, "\\name\\badinfo");
@@ -1070,13 +1054,12 @@ void ClientUserinfoChanged( int clientNum ) {
 		pers->maxHealth = 100;
 	}
 	//if you have a class, ignores handicap and 100 limit, sorry
-	//ClientMaxHealthForClass( client, sess->sessionClass );
 	client->ps.stats[STAT_MAX_HEALTH] = pers->maxHealth;
 
 	Q_strncpyz( model, Info_ValueForKey (userinfo, "model"), sizeof( model ) );
 
 	// team
-	if ( qtrue/*sess->sessionClass != PC_BORG*/ )
+	if ( qtrue ) // WTF? alsways true?
 	{//borg class doesn't need to use team color
 		switch( sess->sessionTeam ) {
 		case TEAM_RED:
@@ -1207,13 +1190,11 @@ void ClientUserinfoChanged( int clientNum ) {
 	height = atof( s );
 	if (height > (float)rpg_maxHeight.value ) 
 	{
-		//height = (float)MAX_HEIGHT;
 		Q_strncpyz( sHeight, rpg_maxHeight.string, sizeof( sHeight ) );
 	}
 	else if (height < (float)rpg_minHeight.value ) 
 	{
 		Q_strncpyz( sHeight, rpg_minHeight.string, sizeof( sHeight ) );
-		//height = (float)MIN_HEIGHT;
 	}
 	else
 	{
@@ -1228,12 +1209,10 @@ void ClientUserinfoChanged( int clientNum ) {
 	weight = atof( s );
 	if (weight > (float)rpg_maxWeight.value ) 
 	{
-		//weight = (float)MAX_WEIGHT;
 		Q_strncpyz( sWeight, rpg_maxWeight.string, sizeof( sWeight ) );
 	}
 	else if (weight < (float)rpg_minWeight.value ) 
 	{
-		//weight = (float)MIN_WEIGHT;
 		Q_strncpyz( sWeight, rpg_minWeight.string, sizeof( sWeight ) );
 	}
 	else
@@ -1268,7 +1247,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
 
-	G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s /*, g_entities[clientNum].client->pers.ip*/ ); // no ip logging here as string might get to long
+	G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s ); // no ip logging here as string might get to long
 }
 
 
@@ -1306,8 +1285,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	char*		newClass;
 	int			i;
 	char		ip[64]; //TiM : Saved the IP data for player recon feature
-
-	//char*		newClass; //TiM
 	
 	trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
 	trap_Cvar_Register( &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO | CVAR_ROM );
@@ -1321,22 +1298,19 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 	Q_strncpyz( ip, value, sizeof(ip) );
 
-	//G_Printf( "Client logged ip: %s, %s\n", value, ipAdress );
-
 	if ( G_FilterPacket( value ) || CheckID( Info_ValueForKey(userinfo, "sv_securityCode" ) ) ) {
 			return "Banned from this server";
-		}
+	}
 
-		// check for a password
-		if ( !isBot )
+	// check for a password
+	if ( !isBot )
+	{
+ 		value = Info_ValueForKey (userinfo, "password");
+		if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) && strcmp( g_password.string, value) != 0)
 		{
- 			value = Info_ValueForKey (userinfo, "password");
-			if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) && strcmp( g_password.string, value) != 0)
-			{
-				return "Invalid password";
-			}
+			return "Invalid password";
 		}
-	//}
+	}
 
 	//TiM: If need be, chack to see if any other players have the current name...
 	//evil impersonators and the likes
@@ -1434,7 +1408,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 					}
 				}
 					
-				//client->ps.persistant[PERS_SCORE] = tmpScore;
 				if ( changeRank ) {
 					ent->client->UpdateScore = qtrue;
 					SetScore( ent, tmpScore );
@@ -1443,7 +1416,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		}
 
 		//========================================================
-		//tmpScore = atoi( correlateRanks( newRank, 1 ) );	
 	}
 	ClientUserinfoChanged( clientNum );
 
@@ -1541,7 +1513,7 @@ void holoTent_think(gentity_t *ent) {
 }
 
 //! Create a temporal entity that sends over the holodata to the client
-void G_SendHoloData(int clientNum) {
+static void G_SendHoloData(int clientNum) {
 	gentity_t *holoTent;
 
 	holoTent = G_Spawn();
@@ -1589,7 +1561,7 @@ void transTent_think(gentity_t *ent) {
 }
 
 //! creates an entity that transmits the server change data to the client 
-void G_SendTransData(int clientNum) {
+static void G_SendTransData(int clientNum) {
 	gentity_t *transTent;
 
 	transTent = G_Spawn();
@@ -1645,12 +1617,6 @@ void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qbool
 	client->pers.enterTime = level.time;
 	client->pers.teamState.state = TEAM_BEGIN;
 
-	//OBSOLETE
-	//RPG-X: TiM: Send a comand to the client telling their machine
-	//to automatically execute the 'class and 'rank' commands
-	//if(!alreadyIn)
-	//	trap_SendServerCommand(ent-g_entities,"cr");
-
 	// save eflags around this, because changing teams will
 	// cause this to happen with a valid entity, and we
 	// want to make sure the teleport bit is set right
@@ -1664,8 +1630,6 @@ void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qbool
 	memset( &client->ps, 0, sizeof( client->ps ) );
 	client->ps.eFlags = flags;
 
-	//G_Printf( "Rank is %i\n", score );
-
 	client->UpdateScore = qtrue;
 	SetScore( ent, score );
 
@@ -1675,9 +1639,6 @@ void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qbool
 	if ( client->sess.sessionTeam != TEAM_SPECTATOR /*&& g_holoIntro.integer==0 */ )
 	{	// Don't use transporter FX for spectators or those watching the holodoors.
 		// send event
-
-		//tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
-		//tent->s.clientNum = ent->s.clientNum;
 
 		ent->client->ps.powerups[PW_QUAD] = level.time + 4000;
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TRANSPORT_IN );
@@ -1741,10 +1702,8 @@ void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qbool
 	//RPG-X | Phenix | 21/11/2004
 	//BOOKMARK FOR INIT
 	if(!alreadyIn) {
-		
 		// RPG-X | Phenix | 06/04/2005
 		ent->client->n00bTime = -1;
-		//ent->client->LoggedAsAdmin = qfalse; RPG-X: Marcin: permanent admin - 03/01/2008
 	}
 
 	ent->client->fraggerTime = -1;
@@ -1924,8 +1883,6 @@ void G_RestoreClientInitialStatus( gentity_t *ent )
 	{//restore the model
 		Info_SetValueForKey( userinfo, "model", clientInitialStatus[ent->s.number].model );
 		trap_SetUserinfo( ent->s.number, userinfo );
-		//FIXME: send this to everyone or let it automatically do it when the map restarts?
-		//trap_SetConfigstring( CS_PLAYERS+ent->s.number, s );
 	}
 }
 
@@ -2048,9 +2005,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	
 	// clear entity values
 	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
-	//if(rpgx_spawn != 1){
-		client->ps.eFlags = flags;
-	//}
+	client->ps.eFlags = flags;
 	client->streakCount = 0;
 	
 	ent->client->ps.pm_type = PM_NORMAL;
@@ -2060,13 +2015,6 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	ent->inuse = qtrue;
 	ent->classname = "player";
 	
-	//RPG-X | Phenix | 13/02/2005
-	/*if (rpgx_spawn != 1) {
-		ent->r.contents = CONTENTS_BODY;
-	} else {
-		ent->r.contents = CONTENTS_CORPSE;
-	}*/
-
 	ent->r.contents = CONTENTS_BODY;
 
 	ent->clipmask = MASK_PLAYERSOLID;
@@ -2083,12 +2031,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	client->ps.clientNum = index;
 
 	// health will count down towards max_health
-	//if(rpgx_spawn != 1){
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] * 1.25;
-	//}
-	//RPG-X: RedTechie - No armor
-	// Start with a small amount of armor as well.
-	//client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_HEALTH] * 0.25;
 
 	pclass_t oClass = client->sess.sessionClass;
 
@@ -2100,8 +2043,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	client->ps.persistant[PERS_CLASS] = client->sess.sessionClass;
 	pClass = client->sess.sessionClass;
 
-	//ClientMaxHealthForClass( client, pClass );
-	if ( pClass != 0/*PC_NOCLASS*/ )
+	if ( pClass != 0 )
 	{//no health boost on spawn for playerclasses
 		ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
 	}
@@ -2111,9 +2053,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	} else { // Marcin: just a hand
 		ClientWeaponsForClass( client, 0 );
 	}
-	//ClientArmorForClass( client, pClass );
 	ClientHoldablesForClass( client, pClass );
-	//ClientPowerupsForClass( ent, pClass );
 	
 	if(rpgx_spawn != 1){
 		G_SetOrigin( ent, spawn_origin );
@@ -2131,7 +2071,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	}
 	
 	if(rpgx_spawn != 1){
-		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR /*|| (ent->client->ps.eFlags&EF_ELIMINATED)*/ ) {
+		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 
 		} else {
 			G_MoveBox( ent );
@@ -2156,8 +2096,6 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	client->latched_buttons = 0;
 
 	// set default animations
-	//client->ps.torsoAnim = BOTH_STAND1; //TORSO_STAND
-	//client->ps.legsAnim = BOTH_STAND1;
 	if (rpgx_spawn != 1 ) {
 		client->ps.stats[TORSOANIM] = BOTH_STAND1;
 		client->ps.stats[LEGSANIM] = BOTH_STAND1;
@@ -2173,18 +2111,10 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 
 		// select the highest weapon number available, after any
 		// spawn given items have fired
-		//if(rpgx_spawn != 1){
 		client->ps.weapon = 1;
-		/*for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
-			if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
-				client->ps.weapon = i;
-				break;
-			}
-		}*/
 
 		//TiM - Always default to the null hand
 		client->ps.weapon = WP_1;
-		//}
 	}
 
 	// run a client frame to drop exactly to the floor,
@@ -2256,11 +2186,6 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 				trap_SendServerCommand( ent-g_entities, va("cp \"%s\"", rpg_welcomemessage.string )  );
 				break;
 			}
-			if ( level.numObjectives > 0 )
-			{//Turn on their objectives
-				//trap_SendServerCommand( ent-g_entities, "+analysis" );
-				//FIXME: turn this off after warm-up period
-			}
 		}
 	}
 
@@ -2315,32 +2240,23 @@ gentity_t *SpawnBeamOutPlayer( gentity_t	*ent ) {
 	
 		body = G_Spawn();
 		body->physicsBounce = 0.0f;//bodys are *not* bouncy
-		//VectorMA(ent->client->ps.origin, detDistance + mins[0], fwd, body->s.origin);
 		VectorCopy( ent->client->ps.origin, body->s.origin );
 		body->r.mins[2] = -24;//keep it off the floor
-		//VectorNegate(fwd, fwd);					// ???  What does this do??
-		//vectoangles(fwd, body->s.angles);
 		VectorCopy( ent->client->ps.viewangles, body->s.angles );
 		body->s.clientNum = ent->client->ps.clientNum;
 
 		//--------------------------- SPECIALIZED body SETUP
-		//body->think = bodyThink;
 		body->count = 12;						// about 1 minute before dissapear
 		body->nextthink = level.time + 4000;	// think after 4 seconds
 		body->parent = ent;
 
 		(body->s).eType = (ent->s).eType;		// set to type PLAYER
 		(body->s).eFlags= (ent->s).eFlags;
-		//(body->s).eFlags |= EF_ITEMPLACEHOLDER;// set the HOLOGRAM FLAG to ON
 
 		body->s.weapon = ent->s.weapon;		// get Player's Wepon Type
-//		body->s.constantLight = 10 + (10 << 8) + (10 << 16) + (9 << 24);
 
-		//body->s.pos.trBase[2] += 24;			// shift up to adjust origin of body
 		body->s.apos = ent->s.apos;			// copy angle of player to body
 
-		//body->s.legsAnim = BOTH_STAND1;			// Just standing TORSO_STAND
-		//body->s.torsoAnim = BOTH_STAND1;
 		//TiM: Set it's anim to whatever anims we're playing right now
 		body->s.legsAnim = ent->client->ps.stats[LEGSANIM];
 		body->s.torsoAnim= ent->client->ps.stats[TORSOANIM];
@@ -2367,8 +2283,6 @@ server system housekeeping.
 void ClientDisconnect( int clientNum ) {
 	gentity_t	*ent;
 	gentity_t	*tent;
-
-//	gentity_t	*beamPlayer;
 	int			i;
 
 	ent = g_entities + clientNum;
@@ -2414,8 +2328,6 @@ void ClientDisconnect( int clientNum ) {
 			Q_strncpyz( g_reconData[i].ipAddress, ent->client->pers.ip, sizeof( g_reconData[i].ipAddress ) );
 			//Player Name
 			Q_strncpyz( g_reconData[i].previousName, ent->client->pers.netname, sizeof( g_reconData[i].previousName ) );
-		
-			//G_Printf( "Logging Data IP: %s, Name: %s\n", ent->client->pers.ip, g_reconData[i].previousName);
 		}
 		else {
 			memset( &g_reconData[g_reconNum], 0, sizeof( g_reconData[g_reconNum] ) );
@@ -2425,8 +2337,6 @@ void ClientDisconnect( int clientNum ) {
 			//Player Name
 			Q_strncpyz( g_reconData[g_reconNum].previousName, ent->client->pers.netname, sizeof( g_reconData[g_reconNum].previousName ) );
 				
-			//G_Printf( "Logging Data IP: %s, Name: %s\n", ent->client->pers.ip, g_reconData[g_reconNum].previousName);
-				
 			g_reconNum++;
 			//cap reconNum just in case.
 			
@@ -2435,17 +2345,6 @@ void ClientDisconnect( int clientNum ) {
 			}
 		}
 	}
-
-
-	/*beamPlayer = SpawnBeamOutPlayer( ent );
-	if ( beamPlayer ) {
-		beamPlayer->nextthink = level.time + 4000;
-		//beamPlayer->client->ps.powerups[PW_BEAM_OUT] = level.time + 4000;
-		beamPlayer->s.powerups |= ( 1 << PW_BEAM_OUT );
-		beamPlayer->think = G_FreeEntity;
-
-		trap_LinkEntity( beamPlayer );
-	}*/
 
 	// send effect if they were completely connected
 	if ( ent->client->pers.connected == CON_CONNECTED
@@ -2460,9 +2359,7 @@ void ClientDisconnect( int clientNum ) {
 
 		// They don't get to take powerups with them!
 		// Especially important for stuff like CTF flags
-		//ent->client->pers.connected = CON_DISCONNECTING; //RPG-X | GSIO01 | 08/05/2009: ensure that weapons aren't dropped when the client disconnects
 		TossClientItems ( ent, qtrue );
-		//ent->client->pers.connected = CON_CONNECTED;
 	}
 
 	G_LogPrintf( "ClientDisconnect: %i (%s)\n", clientNum, g_entities[clientNum].client->pers.ip );

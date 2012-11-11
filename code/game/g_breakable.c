@@ -17,7 +17,6 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 	//RPG-X | GSIO01 | 09/05/2009:
 	if(!(self->spawnflags & 256)) {
 			eState->frame = 0; 
-			//eShared->svFlags &= ~SVF_ANIMATING;
 			self->health = 0;
 	}
 
@@ -43,11 +42,6 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 		}
 		trap_LinkEntity(self);	
 	}
-
-	/*if( self->target )
-	{
-		G_UseTargets(self, attacker);
-	}*/
 
 	if ( eShared->bmodel )
 	{
@@ -77,8 +71,6 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 		VectorSet( dir, 0, 0, 1 );
 		te->s.eventParm = DirToByte( dir );
 		te->s.weapon = WP_8;
-
-		//G_Sound( self, G_SoundIndex("sound/weapons/explosions/cargoexplode.wav") );
 	}
 
 	if ( eShared->bmodel )
@@ -114,7 +106,7 @@ void breakable_pain ( gentity_t *self, gentity_t *attacker, int damage )
 
 	if(self->wait == -1)
 	{
-		self->pain = 0/*NULL*/;
+		self->pain = 0;
 		return;
 	}
 
@@ -145,8 +137,6 @@ void InitBBrush ( gentity_t *ent )
 
 	ent->die = breakable_die;
 	
-	//ent->r.svFlags |= SVF_BBRUSH;
-
 	// if the "model2" key is set, use a seperate model
 	// for drawing, but clip against the brushes
 	if ( ent->model2 ) 
@@ -184,7 +174,6 @@ void InitBBrush ( gentity_t *ent )
 	trap_LinkEntity (ent);
 
 	eState->pos.trType = TR_STATIONARY;
-	//VectorCopy( ent->pos1, eState->pos.trBase );
 }
 
 //RPG-X | GSIO01 | 09/05/2009 SOE
@@ -324,7 +313,6 @@ void SP_func_breakable( gentity_t *self )
 	VectorCopy(self->s.origin, self->pos1);
 	trap_LinkEntity(self);
 	InitBBrush( self );
-	//breakable_spawn_trigger(self);
 
 	level.numBrushEnts++;
 }
@@ -390,7 +378,6 @@ void SP_misc_model_breakable( gentity_t *ent )
 	if ( ent->health ) 
 	{
 		G_SoundIndex("sound/weapons/explosions/cargoexplode.wav");
-		//ent->max_health = ent->health;
 		ent->takedamage = qtrue;
 		ent->pain = breakable_pain;
 		ent->die = breakable_die;
@@ -437,7 +424,7 @@ void SP_misc_model_breakable( gentity_t *ent )
 void ammo_use( gentity_t *self, gentity_t *other, gentity_t *activator);
 
 //!give a player ammo for a weapon 
-int Add_Ammo2 (gentity_t *ent, int weapon, int count)
+static int Add_Ammo2 (gentity_t *ent, int weapon, int count)
 {
 	playerState_t *ps = &ent->client->ps;
 
@@ -698,9 +685,6 @@ void target_repair_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
 	target->clipmask = 0;
 	target->count = 1;
-
-	//if(target->touched->target)
-		//G_UseTargets2(target->touched, target, target->touched->target);
 }
 
 /**
