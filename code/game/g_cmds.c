@@ -8069,9 +8069,9 @@ void ClientCommand( int clientNum )
 	else if (Q_stricmp (cmd, "flashlight") == 0)
 		//Laser_Gen( ent, 2 );
 		Cmd_FlashLight_f( ent );
-	else if (Q_stricmp (cmd, "cloak") == 0 && rpg_nocloak.integer == 0 )
+	else if (Q_stricmp (cmd, "cloak") == 0 && !(rpg_restrictions.integer & 1) )
 		Cmd_Cloak_f( ent );
-	else if (Q_stricmp (cmd, "flight") == 0 && rpg_noflight.integer == 0 )
+	else if (Q_stricmp (cmd, "flight") == 0 && !(rpg_restrictions.integer & 2) )
 		Cmd_Flight_f( ent );
 	else if (Q_stricmp (cmd, "evasuit") == 0)
 		Cmd_EvoSuit_f( ent );

@@ -70,7 +70,7 @@ static int Cvar_String(lua_State *L) {
 }
 
 static int Cvar_rpg_phaserdmg(lua_State *L) {
-	lua_pushnumber(L, rpg_phaserdmg.integer);
+	lua_pushnumber(L, (rpg_dmgFlags.integer & 1));
 
 	return 1;
 }
@@ -79,7 +79,7 @@ static const luaL_Reg lib_cvar[] = {
 	{"Integer", Cvar_Integer},
 	{"Value", Cvar_Value},
 	{"String", Cvar_String},
-	{"rpg_phaserdmg", Cvar_rpg_phaserdmg},
+	{"rpg_phaserdmg", Cvar_rpg_phaserdmg}, // cvar does not exist anymore ... modified function to return the correct information for convinience
 	{NULL, NULL}
 };
 

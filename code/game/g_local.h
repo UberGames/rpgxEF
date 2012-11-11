@@ -1362,20 +1362,13 @@ extern	vmCvar_t	rpg_rangetricorder;
 extern	vmCvar_t	rpg_rangehypo;
 extern	vmCvar_t	rpg_norpgclasses;
 extern	vmCvar_t	rpg_forceclasscolor;
+
 /*
- * TODO: move all those rpg_no... cvars into a single var with flags? Similar to how spawnflags work.
+ * Ristrictions: nocloak = 1, noflight = 2
+ * Default value: 0
  */
-extern	vmCvar_t	rpg_nosecurity;
-extern	vmCvar_t	rpg_nomarine;
-extern	vmCvar_t	rpg_nomedical;
-extern	vmCvar_t	rpg_noscience;
-extern	vmCvar_t	rpg_nocommand;
-extern	vmCvar_t	rpg_noengineer;
-extern	vmCvar_t	rpg_noalien;
-extern	vmCvar_t	rpg_nomaker;
-extern	vmCvar_t	rpg_non00b;
-extern	vmCvar_t	rpg_nocloak;
-extern	vmCvar_t	rpg_noflight;
+extern  vmCvar_t	rpg_restrictions;
+
 /*
  * Which weapons do damage?
  * Phaser			= 1

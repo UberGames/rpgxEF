@@ -321,7 +321,7 @@ static void FirePrifleBullet( gentity_t *ent, vec3_t start, vec3_t dir )
 		bolt->count = 0;
 	}
 
-	if( rpg_rifledmg.integer != 0 ) 
+	if( rpg_dmgFlags.integer & 2) 
 		bolt->damage = CRIFLE_DAMAGE*DMG_VAR;
 	else
 		bolt->damage = 0;
@@ -464,7 +464,7 @@ static void FireDisruptorMissile( gentity_t *ent, vec3_t origin, vec3_t dir, int
 	bolt->s.weapon = WP_10;
 	bolt->r.ownerNum = ent->s.number;
 	bolt->parent = ent;
-	if ( rpg_stasisdmg.integer != 0 )
+	if ( rpg_dmgFlags.integer & 32 )
 	{
 		bolt->damage = STASIS_DAMAGE*DMG_VAR;
 	}
@@ -749,7 +749,7 @@ static void WP_FireGrenade( gentity_t *ent, qboolean alt_fire )
 			grenade->s.eFlags |= EF_MISSILE_STICK;
 			VectorScale( dir, 1000, grenade->s.pos.trDelta );
 
-			(rpg_dmgFlags.integer & 8) ? grenade->damage = GRENADE_ALT_DAMAGE*DMG_VAR : grenade->damage = 0;
+			grenade->damage = (rpg_dmgFlags.integer & 8) ? (GRENADE_ALT_DAMAGE*DMG_VAR) : (grenade->damage = 0);
 			grenade->methodOfDeath = MOD_GRENADE_ALT;
 			grenade->splashMethodOfDeath = MOD_GRENADE_ALT_SPLASH;
 			grenade->s.eType = ET_ALT_MISSILE;
