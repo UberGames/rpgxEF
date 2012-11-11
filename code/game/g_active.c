@@ -5,9 +5,6 @@
 
 extern void SP_misc_ammo_station( gentity_t *ent );
 extern void ammo_station_finish_spawning ( gentity_t *self );
-//extern qboolean BG_BorgTransporting( playerState_t *ps );
-
-static int lastTimedMessage; //TiM - Moved here from g_local.h
 
 /*
 ==============
@@ -19,9 +16,9 @@ TryUse
 /**
 *	Try and use an entity in the world, directly ahead of us
 */
-void TryUse( gentity_t *ent )
+static void TryUse( gentity_t *ent )
 {
-	gentity_t	*target; //, *newent;
+	gentity_t	*target;
 	trace_t		trace;
 	vec3_t		src, dest, vf;
 	clientSession_t *sess;
@@ -57,12 +54,6 @@ void TryUse( gentity_t *ent )
 		{//usable has a team
 			if ( atoi( target->team ) != sess->sessionTeam )
 			{//not on my team
-				//if ( sess->sessionClass != PC_TECH )
-				//{//only a tech can use enemy usables
-				//	//FIXME: Play a failure sound
-				//	return;
-				//}
-
 				//TiM - return
 				return;
 			}
@@ -97,12 +88,6 @@ void TryUse( gentity_t *ent )
 	}
 	else if ( (target && target->s.number == ENTITYNUM_WORLD) || (target->s.pos.trType == TR_STATIONARY && !(trace.surfaceFlags & SURF_NOIMPACT) && !target->takedamage) )
 	{
-		//switch( ent->client->sess.sessionClass )
-		//{
-		//case PC_TECH://tech can place an ammo station
-		//	break;
-		//}
-		//FIXME: play sound
 		return;
 	}
 	//FIXME: Play a failure sound
@@ -110,7 +95,7 @@ void TryUse( gentity_t *ent )
 
 /*
 ===============
-G_DamageFeedback
+P_DamageFeedback
 ===============
 */
 /**
@@ -119,7 +104,7 @@ G_DamageFeedback
 *	damage values to that client for pain blends and kicks, and
 *	global pain sound events for all clients.
 */
-void P_DamageFeedback( gentity_t *player ) {
+static void P_DamageFeedback( gentity_t *player ) {
 	gclient_t	*client;
 	float	count;
 	vec3_t	angles;
@@ -193,8 +178,7 @@ P_WorldEffects
 /**
 *	Check for lava / slime contents and drowning
 */
-void P_WorldEffects( gentity_t *ent ) {
-	//qboolean	envirosuit;
+static void P_WorldEffects( gentity_t *ent ) {
 	int			waterlevel;
 
 	if ( ent->client->noclip ) {
@@ -204,14 +188,12 @@ void P_WorldEffects( gentity_t *ent ) {
 
 	waterlevel = ent->waterlevel;
 
-	//envirosuit = ent->client->ps.powerups[PW_BOLTON] > level.time;
-
 	//
 	// check for drowning
 	//
 	if ( waterlevel == 3 && !(ent->watertype&CONTENTS_LADDER)) {
 		// envirosuit give air, techs can't drown
-		if ( /*envirosuit ||*/ g_classData[ent->client->sess.sessionClass].isMarine/*ent->client->sess.sessionClass == PC_ALPHAOMEGA22*/ ) {
+		if ( g_classData[ent->client->sess.sessionClass].isMarine) {
 			ent->client->airOutTime = level.time + 10000;
 		}
 
@@ -254,19 +236,15 @@ void P_WorldEffects( gentity_t *ent ) {
 		if (ent->health > 0
 			&& ent->pain_debounce_time < level.time	) {
 
-/*			if ( envirosuit ) {
-				G_AddEvent( ent, EV_POWERUP_BATTLESUIT, 0 );
-			} else {*/
-				if (ent->watertype & CONTENTS_LAVA) {
-					G_Damage (ent, NULL, NULL, NULL, NULL,
-						30*waterlevel, 0, MOD_LAVA);
-				}
+			if (ent->watertype & CONTENTS_LAVA) {
+				G_Damage (ent, NULL, NULL, NULL, NULL,
+					30*waterlevel, 0, MOD_LAVA);
+			}
 
-				if (ent->watertype & CONTENTS_SLIME) {
-					G_Damage (ent, NULL, NULL, NULL, NULL,
-						10*waterlevel, 0, MOD_SLIME);
-				}
-			//}
+			if (ent->watertype & CONTENTS_SLIME) {
+				G_Damage (ent, NULL, NULL, NULL, NULL,
+					10*waterlevel, 0, MOD_SLIME);
+			}
 		}
 	}
 }
@@ -278,7 +256,7 @@ void P_WorldEffects( gentity_t *ent ) {
 G_SetClientSound
 ===============
 */
-void G_SetClientSound( gentity_t *ent )
+static void G_SetClientSound( gentity_t *ent )
 {	// 3/28/00 kef -- this is dumb.
 	if (ent->waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)) )
 		ent->s.loopSound = level.snd_fry;
@@ -295,7 +273,7 @@ void G_SetClientSound( gentity_t *ent )
 ClientImpacts
 ==============
 */
-void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
+static void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
 	int		i, j;
 	trace_t	trace;
 	gentity_t	*other;
@@ -334,7 +312,7 @@ G_TouchTriggers
 *	Find all trigger entities that ent's current position touches.
 *	Spectators will only interact with teleporters.
 */
-void	G_TouchTriggers( gentity_t *ent ) {
+void G_TouchTriggers( gentity_t *ent ) {
 	int			i, num;
 	int			touch[MAX_GENTITIES];
 	gentity_t	*hit;
@@ -381,12 +359,8 @@ void	G_TouchTriggers( gentity_t *ent ) {
 		}
 
 		// ignore most entities if a spectator
-		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR /*|| (ps->eFlags&EF_ELIMINATED)*/ )
-		{
-			//RPG-X: J2J - No clip spectating doesnt need to use transporter entities or door triggers!
-//			if( rpg_noclipspectating.integer == 1 )
-//				continue;
-				
+		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
+		{				
 			// this is ugly but adding a new ET_? type will
 			// most likely cause network incompatibilities
 			if ( hit->s.eType != ET_TELEPORT_TRIGGER &&	hit->touch != Touch_DoorTrigger) 
@@ -424,7 +398,7 @@ void	G_TouchTriggers( gentity_t *ent ) {
 SpectatorThink
 =================
 */
-void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
+static void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 	pmove_t	pm;
 	gclient_t	*client;
 
@@ -477,7 +451,7 @@ ClientInactivityTimer
 /**
 *	Returns qfalse if the client is dropped
 */
-qboolean ClientInactivityTimer( gclient_t *client )
+static qboolean ClientInactivityTimer( gclient_t *client )
 {
 	usercmd_t *cmd = &client->pers.cmd;
 
@@ -536,7 +510,7 @@ list_iter_p iterTimedMessages;
 /**
 *	\author Ubergames
 */
-char *TimedMessage( void ){
+static char *TimedMessage( void ){
 	char* message;
 
 	if(!level.timedMessages->length) {
@@ -564,7 +538,7 @@ ClientTimerActions
 /**
 *	Actions that happen once a second
 */
-void ClientTimerActions( gentity_t *ent, int msec ) {
+static void ClientTimerActions( gentity_t *ent, int msec ) {
 	gclient_t	*client;
 	char		*message;
 	float		messageTime;
@@ -572,20 +546,9 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 	client = ent->client;
 	client->timeResidual += msec;
 
-	//RPG-X - RedTechie: Heavily Modifyed Message system (Based off of phenix's old code)
-	/*if ( level.time >= (level.message + (rpg_timedmessagetime.integer * 60000)) ) {
-		level.message = level.time;
-		trap_SendServerCommand( -1, va("cp \"%s\n\"", rpg_timedmessage.string) );
-		//trap_SendServerCommand( -1, va( "print \"%s\n\"", rpg_timedmessage ) );
-	}*/
 	if( rpg_timedmessagetime.value ){
 		//Make sure its not less then one //TiM: Well... we can have under 1, just not toooo far under 1
-		
-		//TiM : Init/reset TimedMessage's value
-		if ( lastTimedMessage <= 0 || lastTimedMessage > 10 ) {
-			lastTimedMessage = 1;
-		}
-
+	
 		if(rpg_timedmessagetime.value < 0.2) { //1
 			messageTime = 0.2;
 		}else{
@@ -598,53 +561,11 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 			//TiM - There.  So with this working in conjunction with that reset
 			//code above, this should be more efficient. :)
 			message = TimedMessage(); //Since we're working with a gloabl scope variable, there's no need for this thing to have parameters:)
-			lastTimedMessage++;
 
-			/*//Decide what timed message to display
-			if( lastTimedMessage && lastTimedMessage != 0 ){
-				//A message has been displayed
-				if(lastTimedMessage == 1){
-					//Display message 2
-					message = TimedMessage( 2 );
-				}else if(lastTimedMessage == 2){
-					//Display message 3
-					message = TimedMessage( 3 );
-				}else if(lastTimedMessage == 3){
-					//Display message 4
-					message = TimedMessage( 4 );
-				}else if(lastTimedMessage == 4){
-					//Display message 5
-					message = TimedMessage( 5 );
-				}else if(lastTimedMessage == 5){
-					//Display message 6
-					message = TimedMessage( 6 );
-				}else if(lastTimedMessage == 6){
-					//Display message 7
-					message = TimedMessage( 7 );
-				}else if(lastTimedMessage == 7){
-					//Display message 8
-					message = TimedMessage( 8 );
-				}else if(lastTimedMessage == 8){
-					//Display message 9
-					message = TimedMessage( 9 );
-				}else if(lastTimedMessage == 9){
-					//Display message 10
-					message = TimedMessage( 10 );
-				}else{
-					//BAD
-					message = "^1RPG-X ERROR: lastTimedMessage not set correctly.";
-				}
-			}else{
-				//A message hasnt been displayed yet
-				message = TimedMessage( 1 );
-			}*/
-			
 			//Alright send the message now
 			if ( message != NULL ) {
 				trap_SendServerCommand( -1, va("cp \"%s\n\"", message) );  //Shows the message on their main screen
 			}
-
-			//trap_SendServerCommand( -1, va("print \"\n \n%s \n\"", message));  //Shows the message in console
 		}
 	}
 
@@ -653,84 +574,15 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 	while ( client->timeResidual >= 1000 ) {
 		client->timeResidual -= 1000;
 
-		// regenerate
-		//TiM - removed so we can use the REGEN powerup elsewhere
-		/*if ( client->ps.powerups[PW_LASER] )
+		if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] )
 		{
-			if ( client->sess.sessionClass != PC_NOCLASS && client->sess.sessionClass != PC_BORG && client->sess.sessionClass != PC_ACTIONHERO )
-			{
-				if ( ent->health < client->ps.stats[STAT_MAX_HEALTH] )
-				{
-					ent->health += 2;
-					G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
-				}
-			}
-			else if ( ent->health < client->ps.stats[STAT_MAX_HEALTH])
-			{
-				ent->health += 15;
-				if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] * 1.1 )
-				{
-					ent->health = client->ps.stats[STAT_MAX_HEALTH] * 1.1;
-				}
-				G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
-			}
-			else if ( ent->health < client->ps.stats[STAT_MAX_HEALTH] * 2)
-			{
-				ent->health += 5;
-				if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] * 2 )
-				{
-					ent->health = client->ps.stats[STAT_MAX_HEALTH] * 2;
-				}
-				G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
-			}
-		}*/
-		/*else if (ent->flags & FL_CLOAK)
-		{
-			//RPG-X: RedTechie - Health dosnt matter 
-			if ( ent->health < 41)
-			{
-				ent->flags ^= FL_CLOAK;
-				ent->client->ps.powerups[PW_INVIS]  = level.time + 1000000000;
-			}
+			ent->health--;
 		}
-		else if (ent->flags & FL_FLY)
-		{
-			//RPG-X: RedTechie - Health dosnt matter 
-			if ( ent->health < 41)
-			{
-				ent->flags ^= FL_FLY;
-				ent->client->ps.powerups[PW_FLIGHT] = level.time + 1000000000;
-			}
-		}*/
-		//else
-		//{
-			// count down health when over max and not cloaked.
-			if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] )
-			{
-				ent->health--;
-			}
-		//}
-
-		// THIS USED TO count down armor when over max, more slowly now (every other second)
-//		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] && ((int)(level.time/1000))&0x01) {
 
 		// NOW IT ONCE AGAIN counts down armor when over max, once per second
 		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH]) {
 			client->ps.stats[STAT_ARMOR]--;
 		}
-
-		// if we've got the seeker powerup, see if we can shoot it at someone
-		//if ( client->ps.powerups[PW_FLASHLIGHT] )
-		//{
-			//vec3_t	seekerPos;
-
-			//TiM - Because I commented out the scav code, I'm going to remove all other ref to it
-			/*if (SeekerAcquiresTarget(ent, seekerPos)) // set the client's enemy to a valid target
-			{
-				FireSeeker( ent, ent->enemy, seekerPos );
-				G_AddEvent( ent, EV_POWERUP_SEEKER_FIRE, 0 ); // draw the thingy
-			}*/
-		//}
 
 		if ( !client->ps.stats[STAT_HOLDABLE_ITEM] )
 		{//holding nothing...
@@ -749,7 +601,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 ClientIntermissionThink
 ====================
 */
-void ClientIntermissionThink( gclient_t *client ) {
+static void ClientIntermissionThink( gclient_t *client ) {
 	client->ps.eFlags &= ~EF_TALK;
 	client->ps.eFlags &= ~EF_FIRING;
 
@@ -761,7 +613,7 @@ void ClientIntermissionThink( gclient_t *client ) {
 	if (g_gametype.integer != GT_SINGLE_PLAYER)
 	{
 		if ( client->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) & ( client->oldbuttons ^ client->buttons ) ) {
-			client->readyToExit ^= 1;
+			client->readyToExit = (qboolean)(!client->readyToExit);
 		}
 	}
 }
@@ -784,7 +636,7 @@ void Cmd_Ready_f (gentity_t *ent)
 	gclient_t *client;
 	client = ent->client;
 
-	client->readyToExit ^= 1;
+	client->readyToExit = qtrue;
 }
 
 
@@ -798,8 +650,8 @@ typedef struct detHit_s
 
 #define MAX_DETHITS		32		// never define this to be 0
 
-detHit_t	detHits[MAX_DETHITS];
-qboolean	bDetInit = qfalse;
+static detHit_t	detHits[MAX_DETHITS];
+static qboolean	bDetInit = qfalse;
 
 extern qboolean FinishSpawningDetpack( gentity_t *ent, int itemIndex );
 //-----------------------------------------------------------------------------DECOY TEMP
@@ -819,7 +671,7 @@ void detpack_shot( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	gentity_t *ent = NULL;
 
 	//so we can't be blown up by things we're blowing up
-	self->takedamage = 0;
+	self->takedamage = qfalse;
 
 	G_TempEntity(self->s.origin, EV_GRENADE_EXPLODE);
 	G_RadiusDamage( self->s.origin, self->parent?self->parent:self, DETPACK_DAMAGE*0.125, DETPACK_RADIUS*0.25,
@@ -841,7 +693,7 @@ void detpack_shot( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 /**
 *	Place the detpack
 */
-qboolean PlaceDetpack(gentity_t *ent)
+static qboolean PlaceDetpack(gentity_t *ent)
 {
 	gentity_t	*detpack = NULL;
 	static gitem_t *detpackItem = NULL;
@@ -859,7 +711,7 @@ qboolean PlaceDetpack(gentity_t *ent)
 	if (!bDetInit)
 	{
 		memset(detHits, 0, MAX_DETHITS*sizeof(detHit_t));
-		bDetInit = 1;
+		bDetInit = qtrue;
 	}
 
 	// can we place this in front of us?
@@ -895,7 +747,7 @@ qboolean PlaceDetpack(gentity_t *ent)
 /**
 *	Was a player hit by a detpack.
 */
-qboolean PlayerHitByDet(gentity_t *det, gentity_t *player)
+static qboolean PlayerHitByDet(gentity_t *det, gentity_t *player)
 {
 	int i = 0;
 
@@ -917,7 +769,7 @@ qboolean PlayerHitByDet(gentity_t *det, gentity_t *player)
 /**
 *	Addes a player to the detpack hits
 */
-void AddPlayerToDetHits(gentity_t *det, gentity_t *player)
+static void AddPlayerToDetHits(gentity_t *det, gentity_t *player)
 {
 	int			i = 0;
 	detHit_t	*lastHit = NULL, *curHit = NULL;
@@ -953,7 +805,7 @@ void AddPlayerToDetHits(gentity_t *det, gentity_t *player)
 /**
 *	Clear the hits for this detpack
 */
-void ClearThisDetpacksHits(gentity_t *det)
+static void ClearThisDetpacksHits(gentity_t *det)
 {
 	int			i = 0;
 
@@ -968,7 +820,7 @@ void ClearThisDetpacksHits(gentity_t *det)
 	}
 }
 
-void DetpackBlammoThink(gentity_t *ent)
+static void DetpackBlammoThink(gentity_t *ent)
 {
 	int i = 0, lifetime = 3000;	// how long (in msec) the shockwave lasts
 	int			knockback = 400;
@@ -1023,14 +875,6 @@ void DetpackBlammoThink(gentity_t *ent)
 					}
 				}
 			}
-			// this was just for testing. looks pretty neat, though.
-/*
-			else
-			{
-				VectorMA(ent->s.origin, curBlastRadius, vTemp, vTemp);
-				G_TempEntity(vTemp, EV_FX_STEAM);
-			}
-*/
 		}
 	}
 
@@ -1063,7 +907,7 @@ void DetonateDetpack(gentity_t *ent)
 			te->r.svFlags |= SVF_BROADCAST;
 
 			//so we can't be blown up by things we're blowing up
-			detpack->takedamage = 0;
+			detpack->takedamage = qfalse;
 
 			G_AddEvent(detpack, EV_DETPACK, 0);
 			G_RadiusDamage( detpack->s.origin, detpack->parent, DETPACK_DAMAGE, DETPACK_RADIUS,
@@ -1132,13 +976,8 @@ void ShieldRemove(gentity_t *self)
 void ShieldThink(gentity_t *self)
 {
 	self->s.eFlags &= ~(EF_ITEMPLACEHOLDER | EF_NODRAW);
-//	self->health -= SHIELD_HEALTH_DEC;
-//	self->nextthink = level.time + 1000;
 	self->nextthink = 0;
-	//if (self->health <= 0)
-	//{
-	//	ShieldRemove(self);
-	//}
+
 	return;
 }
 
@@ -1177,11 +1016,7 @@ void ShieldPain(gentity_t *self, gentity_t *attacker, int damage)
 void ShieldGoSolid(gentity_t *self)
 {
 	trace_t		tr;
-	//gentity_t  *other;
-	//other = G_Spawn();
-	
-	// see if we're valid
-	//self->health--;
+
 	if (self->health <= 0)
 	{
 		ShieldRemove(self);
@@ -1198,17 +1033,12 @@ void ShieldGoSolid(gentity_t *self)
 	else
 	{ // get hard... huh-huh...
 		self->r.contents = CONTENTS_SOLID;
-		self->s.eFlags &= ~(/*EF_NODRAW | */EF_ITEMPLACEHOLDER);
+		self->s.eFlags &= ~(EF_ITEMPLACEHOLDER);
 		self->nextthink = level.time + 1000;
 		self->think = ShieldThink;
 		self->takedamage = qtrue;//RPG-X: - RedTechie use to be qtrue //TiM - made true again. should be okay so long as the health isn't decremented
 		
 		trap_LinkEntity(self);
-
-
-		// Play raising sound...
-		//TiM No more
-		//G_AddEvent(self, EV_GENERAL_SOUND, shieldActivateSound);
 	}
 
 	return;
@@ -1222,7 +1052,7 @@ void ShieldGoNotSolid(gentity_t *self)
 {
 	// make the shield non-solid very briefly
 	self->r.contents = CONTENTS_NONE;
-//	self->s.eFlags |= EF_NODRAW;					//Commenting this should make it look like the player passes through..
+
 	// nextthink needs to have a large enough interval to avoid excess accumulation of Activate messages
 	self->nextthink = level.time + 200;
 	self->think = ShieldGoSolid;
@@ -1246,90 +1076,74 @@ void ShieldTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 	if ( !other || !other->client )
 		return;
 
-/*	if (g_gametype.integer >= GT_TEAM)
-	{ // let teammates through
-		// compare the parent's team to the "other's" team
-		if (( self->parent->client) && (other->client))
-		{
-			if ( self->s.otherEntityNum2 == other->client->sess.sessionTeam || other->client->sess.sessionClass == PC_ALPHAOMEGA22 )
-			{
-				ShieldGoNotSolid(self);
-			}
-		}
+	if (IsAdmin(other) || (rpg_borgAdapt.integer && rpg_borgMoveThroughFields.integer && IsBorg(other))/*other->client->sess.sessionClass == PC_ADMIN*/ )
+	{
+		ShieldGoNotSolid(self);
 	}
-	else*/
-	{//let the person who dropped the shield through
-		if (IsAdmin(other) || (rpg_borgAdapt.integer && rpg_borgMoveThroughFields.integer && IsBorg(other))/*other->client->sess.sessionClass == PC_ADMIN*/ )
+	//RPG-X:J2J Damage for shields 
+	else
+	{
+		if ( (int)(self->s.angles[PITCH]) == 0 )
 		{
-			ShieldGoNotSolid(self);
-		}
-		//RPG-X:J2J Damage for shields 
-		else
-		{
-			if ( (int)(self->s.angles[PITCH]) == 0 )
-			{
-				vec3_t	dir;
+			vec3_t	dir;
 
-				//OPTIMIZE ME: If anyone can figure a quick, non hacky way to get the normal vector
-				//of the side of the forcefield they touch, PLEASE put it here lol. THis way works, but feels very half-assed lol
-				//Get the directional vector
-				VectorSubtract( self->r.currentOrigin, other->r.currentOrigin, dir);
-				VectorNormalize(dir);
-				//depending on angle, negate the perpendicular direction (else they zap back sideways)
-				//and set the other as absolute 
-				if ( self->s.angles[YAW] == 0 ) {
-					dir[1] = 0.0;
-					if ( dir[0] < 0 )
-						dir[0] = -1.0;
-					else
-						dir[0] = 1.0;
-				}
-				else {
-					dir[0] = 0.0;
-					if ( dir[1] < 0 )
-						dir[1] = -1.0;
-					else
-						dir[1] = 1.0;
-				}
-
-				//Invert it otherwise we'd be like, sucked into the field lol
-				VectorScale(dir, -1, dir);
-				//Un-normalize it to represent a scalar quantity
-				VectorScale( dir, 50, dir);
-				//Copy it straight to our velocity (this will mean the player will literally be thrown back)
-				VectorCopy( dir, other->client->ps.velocity );
-				other->client->ps.pm_time = 160;		// hold time
-				other->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-
-				other->flags |= EF_MOVER_STOP;	//Attempt to not let non admins thru.
-				//RPG-X: RedTechie - Added code for zap sound also a cvar to control damage a non admin walks into if cvar is set to 0 disables health from being drained (happens every 1 second)
-				//if ( level.time >= level.message + 1000 ) {
-				//	level.message = level.time;
-				G_AddEvent(self, EV_GENERAL_SOUND, shieldMurderSound);//RPG-X: RedTechie - ZAPtacular! sound to my ears
-				if(rpg_forcefielddamage.integer != 0){
-					if(rpg_forcefielddamage.integer > 999){
-						rpg_forcefielddamage.integer = 999;
-					}
-					other->health -= rpg_forcefielddamage.integer;
-					
-					//RPG-X: RedTechie - Fixed free ent if medic revive on
-					if(rpg_medicsrevive.integer == 1){
-						if(other->health <= 1){
-							other->client->ps.stats[STAT_WEAPONS] = ( 1 << WP_0 );
-							other->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_NONE;
-							other->client->ps.stats[STAT_HEALTH] = other->health = 1;
-							player_die (other, other, other, 1, MOD_FORCEFIELD);
-						}
-					}else{
-						if(other->health <= 1){
-							other->client->ps.stats[STAT_HEALTH] = other->health = 0;
-							player_die (other, other, other, 100000, MOD_FORCEFIELD);
-						}
-					}
-				}
-				//}
+			//OPTIMIZE ME: If anyone can figure a quick, non hacky way to get the normal vector
+			//of the side of the forcefield they touch, PLEASE put it here lol. THis way works, but feels very half-assed lol
+			//Get the directional vector
+			VectorSubtract( self->r.currentOrigin, other->r.currentOrigin, dir);
+			VectorNormalize(dir);
+			//depending on angle, negate the perpendicular direction (else they zap back sideways)
+			//and set the other as absolute 
+			if ( self->s.angles[YAW] == 0 ) {
+				dir[1] = 0.0;
+				if ( dir[0] < 0 )
+					dir[0] = -1.0;
+				else
+					dir[0] = 1.0;
+			}
+			else {
+				dir[0] = 0.0;
+				if ( dir[1] < 0 )
+					dir[1] = -1.0;
+				else
+					dir[1] = 1.0;
 			}
 
+			//Invert it otherwise we'd be like, sucked into the field lol
+			VectorScale(dir, -1, dir);
+			//Un-normalize it to represent a scalar quantity
+			VectorScale( dir, 50, dir);
+			//Copy it straight to our velocity (this will mean the player will literally be thrown back)
+			VectorCopy( dir, other->client->ps.velocity );
+			other->client->ps.pm_time = 160;		// hold time
+			other->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+
+			other->flags |= EF_MOVER_STOP;	//Attempt to not let non admins thru.
+			//RPG-X: RedTechie - Added code for zap sound also a cvar to control damage a non admin walks into if cvar is set to 0 disables health from being drained (happens every 1 second)
+			//if ( level.time >= level.message + 1000 ) {
+			//	level.message = level.time;
+			G_AddEvent(self, EV_GENERAL_SOUND, shieldMurderSound);//RPG-X: RedTechie - ZAPtacular! sound to my ears
+			if(rpg_forcefielddamage.integer != 0){
+				if(rpg_forcefielddamage.integer > 999){
+					rpg_forcefielddamage.integer = 999;
+				}
+				other->health -= rpg_forcefielddamage.integer;
+					
+				//RPG-X: RedTechie - Fixed free ent if medic revive on
+				if(rpg_medicsrevive.integer == 1){
+					if(other->health <= 1){
+						other->client->ps.stats[STAT_WEAPONS] = ( 1 << WP_0 );
+						other->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_NONE;
+						other->client->ps.stats[STAT_HEALTH] = other->health = 1;
+						player_die (other, other, other, 1, MOD_FORCEFIELD);
+					}
+				}else{
+					if(other->health <= 1){
+						other->client->ps.stats[STAT_HEALTH] = other->health = 0;
+						player_die (other, other, other, 100000, MOD_FORCEFIELD);
+					}
+				}
+			}
 
 			//TiM: make it flicker when touched, and then throw bak the person
 			self->s.eFlags		|= EF_ITEMPLACEHOLDER;
@@ -1350,8 +1164,6 @@ void CreateShield(gentity_t *ent)
 	int			height, posWidth, negWidth, halfWidth = 0;
 	qboolean	xaxis;
 	int			paramData = 0;
-	//static int	shieldID;
-	//gentity_t   *emitter;
 
 	// trace upward to find height of shield
 	VectorCopy(ent->r.currentOrigin, end);
@@ -1472,219 +1284,10 @@ void CreateShield(gentity_t *ent)
 	return;
 }
 
-// After a short delay, create the shield by expanding in all directions.
-//void CreateFlatShield(gentity_t *ent)
-//{
-//	trace_t		tr;
-//	vec3_t		mins, maxs, end, posTraceEnd, negTraceEnd, start;
-//	int			height, posWidth, negWidth, halfWidth = 0;
-//	qboolean	xaxis;
-//	int			paramData = 0;
-//	static int	shieldID;
-//
-//	// trace upward to find height of shield
-//	VectorCopy(ent->r.currentOrigin, end);
-//	if ( (int)(ent->s.angles[YAW]) == 0 )
-//	{
-//		if ( ent->timestamp )
-//			end[1] += MAX_SHIELD_HEIGHT;
-//		else
-//			end[1] -= MAX_SHIELD_HEIGHT;
-//	}
-//	else
-//	{
-//		if ( ent->timestamp )
-//			end[0] += MAX_SHIELD_HEIGHT;
-//		else
-//			end[0] -= MAX_SHIELD_HEIGHT;
-//	}
-//	
-//	trap_Trace (&tr, ent->r.currentOrigin, NULL, NULL, end, ent->s.number, MASK_SHOT );
-//	height = (int)(MAX_SHIELD_HEIGHT * tr.fraction);
-//
-//	// use angles to find the proper axis along which to align the shield
-//	if ( (int)(ent->s.angles[YAW]) == 0 ) {
-//		VectorSet(mins, -SHIELD_HALFTHICKNESS, 0, -SHIELD_HALFTHICKNESS);
-//		VectorSet(maxs, SHIELD_HALFTHICKNESS, height, SHIELD_HALFTHICKNESS);
-//	}
-//	else
-//	{
-//		VectorSet(mins, 0, -SHIELD_HALFTHICKNESS, -SHIELD_HALFTHICKNESS);
-//		VectorSet(maxs, height, SHIELD_HALFTHICKNESS, SHIELD_HALFTHICKNESS);
-//	}
-//	VectorCopy(ent->r.currentOrigin, posTraceEnd);
-//	VectorCopy(ent->r.currentOrigin, negTraceEnd);
-//
-//	if ((int)(ent->s.angles[YAW]) == 0) // shield runs along y-axis
-//	{
-//		//posTraceEnd[1]+=MAX_SHIELD_HALFWIDTH;
-//		//negTraceEnd[1]-=MAX_SHIELD_HALFWIDTH;
-//		if ( ent->timestamp )
-//		{
-//			posTraceEnd[0]+=MAX_SHIELD_HALFWIDTH;
-//			negTraceEnd[0]-=MAX_SHIELD_HALFWIDTH;
-//		}
-//		else
-//		{
-//			posTraceEnd[0]-=MAX_SHIELD_HALFWIDTH;
-//			negTraceEnd[0]+=MAX_SHIELD_HALFWIDTH;			
-//		}
-//		xaxis = qfalse;
-//	}
-//	else  // shield runs along x-axis
-//	{
-//		//posTraceEnd[0]+=MAX_SHIELD_HALFWIDTH;
-//		//negTraceEnd[0]-=MAX_SHIELD_HALFWIDTH;
-//		if ( ent->timestamp )
-//		{
-//			posTraceEnd[1]+=MAX_SHIELD_HALFWIDTH;
-//			negTraceEnd[1]-=MAX_SHIELD_HALFWIDTH;
-//		}
-//		else
-//		{
-//			posTraceEnd[1]-=MAX_SHIELD_HALFWIDTH;
-//			negTraceEnd[1]+=MAX_SHIELD_HALFWIDTH;			
-//		}
-//
-//		xaxis = qtrue;
-//	}
-//
-//	// trace horizontally to find extend of shield
-//	// positive trace
-//	VectorCopy(ent->r.currentOrigin, start);
-//	if ( (int)(ent->s.angles[YAW]) == 0 )
-//	{
-//		if ( ent->timestamp )
-//			start[1] += (height>>1);
-//		else
-//			start[1] -= (height>>1);
-//	}
-//	else
-//	{	
-//		if ( ent->timestamp )
-//			start[0] += (height>>1);
-//		else
-//			start[0] -= (height>>1);
-//	}
-//	trap_Trace (&tr, start, 0, 0, posTraceEnd, ent->s.number, MASK_SHOT );
-//	posWidth = MAX_SHIELD_HALFWIDTH * tr.fraction;
-//	// negative trace
-//	trap_Trace (&tr, start, 0, 0, negTraceEnd, ent->s.number, MASK_SHOT );
-//	negWidth = MAX_SHIELD_HALFWIDTH * tr.fraction;
-//
-//	// kef -- monkey with dimensions and place origin in center
-//	halfWidth = (posWidth + negWidth)>>1;
-//	if (xaxis)
-//	{
-//		ent->r.currentOrigin[0] = ent->r.currentOrigin[0] - negWidth + halfWidth;
-//	}
-//	else
-//	{
-//		ent->r.currentOrigin[1] = ent->r.currentOrigin[1] - negWidth + halfWidth;
-//	}
-//	if ( (int)(ent->s.angles[YAW]) == 0 )
-//	{
-//		if ( ent->timestamp )
-//			ent->r.currentOrigin[1] += (height>>1);
-//		else
-//			ent->r.currentOrigin[1] -= (height>>1);
-//	}
-//	else
-//	{
-//		if ( ent->timestamp )
-//			ent->r.currentOrigin[0] += (height>>1);
-//		else
-//			ent->r.currentOrigin[0] -= (height>>1);
-//	}
-//
-//	// set entity's mins and maxs to new values, make it solid, and link it
-//	if (xaxis)
-//	{
-//		VectorSet(ent->r.mins, -halfWidth, -(height>>1), -SHIELD_HALFTHICKNESS);
-//		VectorSet(ent->r.maxs, halfWidth, height, SHIELD_HALFTHICKNESS);
-//	}
-//	else
-//	{
-//		VectorSet(ent->r.mins, -(height>>1), -halfWidth, -SHIELD_HALFTHICKNESS );
-//		VectorSet(ent->r.maxs, height>>1, halfWidth, SHIELD_HALFTHICKNESS );
-//	}
-//	ent->clipmask = MASK_SHOT;
-//
-//	// Information for shield rendering.
-//
-////	vertical - 1 bit
-////	xaxis - 1 bit
-////	height - 0-254 8 bits //10
-////	posWidth - 0-255 8 bits //10
-////  negWidth - 0 - 255 8 bits
-//
-//	paramData = (ent->timestamp << 32 ) | (1 << 31) |(xaxis << 30) | (height << 20) | (posWidth << 10) | (negWidth); //24 16 8
-//	ent->s.time2 = paramData;
-//
-//	if ( ent->s.otherEntityNum2 == TEAM_RED )
-//	{
-//		ent->team = "1";
-//	}
-//	else if ( ent->s.otherEntityNum2 == TEAM_BLUE )
-//	{
-//		ent->team = "2";
-//	}
-//	
-//	//RPG-X: - RedTechie no shield count down
-//	if ( g_pModSpecialties.integer != 0 )
-//	{
-//		//ent->health = ceil(SHIELD_HEALTH*4*g_dmgmult.value);
-//	}
-//	else
-//	{
-//		ent->health = ceil(SHIELD_HEALTH*g_dmgmult.value);
-//	}
-//	
-//	
-//	ent->s.time = ent->health;//???
-//	ent->pain = ShieldPain;
-//	ent->die = ShieldDie;
-//	ent->touch = ShieldTouch;
-//	
-//	ent->r.svFlags |= SVF_SHIELD_BBOX;
-//
-//	// see if we're valid
-//	trap_Trace (&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, ent->s.number, CONTENTS_BODY );
-//
-//	if (tr.startsolid)
-//	{	// Something in the way!
-//		// make the shield non-solid very briefly
-//		ent->r.contents = CONTENTS_NONE;
-//		ent->s.eFlags |= EF_NODRAW;
-//		// nextthink needs to have a large enough interval to avoid excess accumulation of Activate messages
-//		ent->nextthink = level.time + 200;
-//		ent->think = ShieldGoSolid;
-//		ent->takedamage = qfalse;
-//		trap_LinkEntity(ent);
-//	}
-//	else
-//	{	// Get solid.
-//		ent->r.contents = CONTENTS_PLAYERCLIP|CONTENTS_SHOTCLIP;//CONTENTS_SOLID;
-//
-//		ent->nextthink = level.time + 400; //1000
-//		ent->think = ShieldThink;
-//
-//		ent->takedamage = qtrue;//RPG-X: - RedTechie Use to be qtrue //TiM - made true again. should be okay so long as the health isn't decremented
-//		trap_LinkEntity(ent);
-//
-//		ent->s.eFlags |= EF_ITEMPLACEHOLDER;
-//
-//		// Play raising sound...
-//		G_AddEvent(ent, EV_GENERAL_SOUND, shieldActivateSound);
-//	}
-//
-//	return;
-//}
-
 /**
 *	Place a forcefield
 */
-qboolean PlaceShield(gentity_t *playerent)
+static qboolean PlaceShield(gentity_t *playerent)
 {
 	static const gitem_t *shieldItem = NULL;
 	gentity_t	*shield = NULL;
@@ -1756,15 +1359,6 @@ qboolean PlaceShield(gentity_t *playerent)
 			shield->s.eFlags &= ~EF_NODRAW;
 			shield->r.svFlags &= ~SVF_NOCLIENT;
 
-			// add frequency
-			/*if(rpg_scannableForceField.integer) {
-				if(rpg_forceFieldFreq.integer == -1) {
-					shield->s.apos.trBase[0] = -1;
-				} else {
-					shield->s.apos.trBase[0] = rpg_forceFieldFreq.value;
-				}
-			}*/
-
 			trap_LinkEntity (shield);
 
 			// Play placing sound...
@@ -1774,78 +1368,6 @@ qboolean PlaceShield(gentity_t *playerent)
 		}
 	}
 
-	//GARRRGH Screw this! It'll take too long!
-	//TiM - For a horizontal field, aim it at a vertical plane
-	//if ( tr.fraction != 1.0 && tr.plane.normal[2] == 0.0f )
-	//{
-	//	qboolean	positive;
-
-	//	//VectorCopy(tr.endpos, pos);
-	//	// drop to floor
-	//	if ( Q_fabs(tr.plane.normal[0] ) > Q_fabs(tr.plane.normal[1]) )
-	//	{
-	//		//VectorSet( dest, (tr.plane.normal[0]>0 ? pos[0] + 4096 : pos[0] - 4096), pos[1], pos[2] );
-	//		positive = (tr.plane.normal[0]>0);
-	//	}
-	//	else
-	//	{
-	//		//VectorSet( dest, pos[0], (tr.plane.normal[1]>0 ? pos[1] + 4096 : pos[1] - 4096), pos[2] );
-	//		positive = (tr.plane.normal[1]>0);
-	//	}
-
-	//	//trap_Trace( &tr, pos, mins, maxs, dest, playerent->s.number, MASK_SOLID );
-
-	//	if ( !tr.startsolid && !tr.allsolid )
-	//	{
-	//		// got enough room so place the portable shield
-	//		shield = G_Spawn();
-
-	//		// Figure out what direction the shield is facing.
-	//		if (fabs(fwd[0]) > fabs(fwd[1]))
-	//		{	// shield is north/south, facing east.
-	//			shield->s.angles[YAW] = 0;
-	//		}
-	//		else
-	//		{	// shield is along the east/west axis, facing north
-	//			shield->s.angles[YAW] = 90;
-	//		}
-	//		shield->s.angles[PITCH] = 90;
-	//		shield->timestamp = positive;
-
-	//		shield->think = CreateFlatShield;
-	//		shield->nextthink = level.time + 500;	// power up after .5 seconds
-	//		shield->parent = playerent;
-
-	//		// Set team number.
-	//		shield->s.otherEntityNum2 = playerent->client->sess.sessionTeam;
-
-	//		shield->s.eType = ET_USEABLE;
-	//		shield->s.modelindex =  HI_SHIELD;	// this'll be used in CG_Useable() for rendering.
-	//		shield->classname = shieldItem->classname;
-
-	//		shield->r.contents = CONTENTS_TRIGGER;
-
-	//		shield->touch = 0;
-	//		// using an item causes it to respawn
-	//		shield->use = 0; //Use_Item;
-
-	//		// allow to ride movers
-	//		shield->s.groundEntityNum = tr.entityNum;
-
-	//		G_SetOrigin( shield, tr.endpos );
-
-	//		shield->s.eFlags &= ~EF_NODRAW;
-	//		shield->r.svFlags &= ~SVF_NOCLIENT;
-
-	//		trap_LinkEntity (shield);
-
-	//		// Play placing sound...
-	//		G_AddEvent(shield, EV_GENERAL_SOUND, shieldAttachSound);
-
-	//		return qtrue;
-	//	}
-	//}
-	// no room
 	return qfalse;
 }
 
@@ -1894,8 +1416,6 @@ void flushDecoys( gentity_t	*ent ) {
 		foundDecoys[decoyCount++] = decoy->s.clientNum;
 	}
 	
-	//G_Printf("Found %i decoys\n", decoyCount++ ) ;
-
 	//now remove first ones we find until there are only 9 left
 	decoy = NULL;
 	orgCount = decoyCount;
@@ -1994,149 +1514,121 @@ void DecoyUse ( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 */	
 qboolean PlaceDecoy(gentity_t *ent)
 {
-	gentity_t	*decoy = NULL;
-	static gitem_t *decoyItem = NULL;
-	//float		detDistance = 80;	// Distance the object will be placed from player
-	//trace_t		tr;
-	vec3_t		/*fwd, right, up, end,*/ mins = {-16,-16,-24}; //, maxs = {16,16,16};
-	char		userinfo[MAX_INFO_STRING];
-	int			i;
+	gentity_t*		decoy = NULL;
+	static gitem_t*	decoyItem = NULL;
+	vec3_t			mins = {-16,-16,-24};
+	char			userinfo[MAX_INFO_STRING];
+	int				i;
 
 	if (decoyItem == NULL)
 	{
 		decoyItem = BG_FindItemForHoldable(HI_DECOY);
 	}
 
-	// can we place this in front of us?
-	//AngleVectors (ent->client->ps.viewangles, fwd, right, up);
-	//fwd[2] = 0;
-	//VectorMA(ent->client->ps.origin, detDistance, fwd, end);
-	//trap_Trace (&tr, ent->client->ps.origin, mins, maxs, end, ent->s.number, MASK_SHOT );
-	//if ( /*!tr.allsolid && !tr.startsolid && tr.fraction > 0.9*/ qtrue )
-	{
-		//If we just hit our 129th decoy (...holy crap), reset the counter
-		if ( level.decoyIndex >= MAX_CLIENTS ) {
-			level.decoyIndex = 0;
-		}
-		//Now check if there is already a decoy with the same eventParm index.  If there is, terminate it
-		{	
-			gentity_t	*oldDecoy;
+	//If we just hit our 129th decoy (...holy crap), reset the counter
+	if ( level.decoyIndex >= MAX_CLIENTS ) {
+		level.decoyIndex = 0;
+	}
+	//Now check if there is already a decoy with the same eventParm index.  If there is, terminate it
+	{	
+		gentity_t	*oldDecoy;
 
-			for ( i = 0; i<level.num_entities; i++ ) {
-			oldDecoy = &g_entities[i];
+		for ( i = 0; i<level.num_entities; i++ ) {
+		oldDecoy = &g_entities[i];
 
-				if ( !Q_stricmp( oldDecoy->classname, "decoy" ) && oldDecoy->s.eventParm == level.decoyIndex ) {
-					G_FreeEntity( oldDecoy );
-					break;
-				}
+			if ( !Q_stricmp( oldDecoy->classname, "decoy" ) && oldDecoy->s.eventParm == level.decoyIndex ) {
+				G_FreeEntity( oldDecoy );
+				break;
 			}
 		}
-
-		//--------------------------- SPAWN AND PLACE DECOY ON GROUND
-		decoy = G_Spawn();
-
-		G_SpawnItem(decoy, decoyItem);				// Generate it as an item, temporarly
-		decoy->physicsBounce = 0.0f;//decoys are *not* bouncy
-		//VectorMA(ent->client->ps.origin, detDistance + mins[0], fwd, decoy->s.origin);
-		VectorCopy( ent->client->ps.origin, decoy->s.origin );
-		decoy->r.mins[2] = mins[2];//keep it off the floor
-		//VectorNegate(fwd, fwd);					// ???  What does this do??
-		//vectoangles(fwd, decoy->s.angles);
-		VectorCopy( ent->client->ps.viewangles, decoy->s.angles );
-		if ( !FinishSpawningDecoy(decoy, decoyItem - bg_itemlist) )
-		{
-			return qfalse;		// Drop to ground and trap to clients
-		}
-		decoy->s.clientNum = ent->client->ps.clientNum;
-		decoy->s.number = decoy-g_entities;
-
-		//--------------------------- SPECIALIZED DECOY SETUP
-		//decoy->think = DecoyThink;
-		//decoy->count = 12;						// about 1 minute before dissapear
-		//decoy->nextthink = level.time + 4000;	// think after 4 seconds
-		decoy->parent = ent;
-
-		(decoy->s).eType = (ent->s).eType;		// set to type PLAYER
-		(decoy->s).eFlags= (ent->s).eFlags;
-		(decoy->s).eFlags |= EF_ITEMPLACEHOLDER;// set the HOLOGRAM FLAG to ON
-		(decoy->s).powerups = (ent->s).powerups;
-
-		//TiM - attach the rotate flag if we need to
-		if ( (ent->s).powerups & ( 1<<PW_FLIGHT ) || ent->client->ps.gravity == 0 )
-			(decoy->s).eFlags |= EF_FULL_ROTATE;
-
-		decoy->s.eFlags &= ~(EF_FIRING | EF_ALT_FIRING);
-
-		decoy->s.weapon = ent->s.weapon;		// get Player's Wepon Type
-//		decoy->s.constantLight = 10 + (10 << 8) + (10 << 16) + (9 << 24);
-
-		//decoy->s.pos.trBase[2] += 24;			// shift up to adjust origin of body
-		decoy->s.apos = ent->s.apos;			// copy angle of player to decoy
-		decoy->s.pos  = ent->s.pos;
-
-		//decoy->s.legsAnim = BOTH_STAND1;			// Just standing TORSO_STAND
-		//decoy->s.torsoAnim = BOTH_STAND1;
-		//TiM: Set it's anim to whatever anims we're playing right now
-		decoy->s.legsAnim = ent->client->ps.stats[LEGSANIM];
-		decoy->s.torsoAnim= ent->client->ps.stats[TORSOANIM];
-
-		decoy->timestamp = level.time;
-
-		//--------------------------- WEAPON ADJUST
-		//if (decoy->s.weapon==WP_5 /*|| decoy->s.weapon==WP_13*/)
-		//	decoy->s.weapon = WP_1;
-
-		//   The Phaser and Dreadnought (Arc Welder) weapons are rendered on the
-		//   client side differently, and cannot be used by the decoy
-		decoy->classname = "decoy";
-		//flushDecoys( ent );
-
-		//TiM-Set up data for transmission to client
-		decoy->s.eventParm = level.decoyIndex;
-		decoy->r.contents = CONTENTS_SOLID;	//has to start off solid, or CGame won't realise this
-
-		VectorSet( decoy->r.mins, DEFAULT_MINS_0, DEFAULT_MINS_1, DEFAULT_MINS_2 );
-		VectorSet( decoy->r.maxs, DEFAULT_MAXS_0, DEFAULT_MAXS_1, DEFAULT_MAXS_2 );
-
-		decoy->nextthink = level.time + FRAMETIME;
-		decoy->think = Decoy_CheckForSolidity;
-		decoy->use = DecoyUse;
-
-		trap_GetUserinfo( ent->client->ps.clientNum, userinfo, sizeof(userinfo) );
-		{
-			char buffer[MAX_TOKEN_CHARS];
-			char model[64];
-			char height[9];
-			char weight[9];
-			char offset[6];
-			
-			//TiM - ensure that we encapsulate this data better or else it sometimes
-			//becomes null
-			Q_strncpyz( model, Info_ValueForKey( userinfo, "model" ), sizeof( model ) );
-			Q_strncpyz( height, Info_ValueForKey( userinfo, "height" ), sizeof( height ) );
-			Q_strncpyz( weight, Info_ValueForKey( userinfo, "weight" ), sizeof( weight ) );
-			Q_strncpyz( offset, Info_ValueForKey( userinfo, "modelOffset" ), sizeof( offset ) );
-
-			Com_sprintf( buffer, sizeof( buffer ), "model\\%s\\height\\%s\\weight\\%s\\moOf\\%s\\c\\%i", 
-													model,
-													height,
-													weight,
-													offset,
-													ent->client->sess.sessionClass );
-
-			trap_SetConfigstring( CS_DECOYS + level.decoyIndex, buffer );
-
-			//G_Printf( S_COLOR_BLUE "level.decoyIndex: %i\n", level.decoyIndex );
-			//G_Printf( S_COLOR_BLUE "%s\n", buffer );
-		}
-		level.decoyIndex++;
-
-		return qtrue;						// SUCCESS
 	}
-	/*else
+
+	//--------------------------- SPAWN AND PLACE DECOY ON GROUND
+	decoy = G_Spawn();
+
+	G_SpawnItem(decoy, decoyItem);				// Generate it as an item, temporarly
+	decoy->physicsBounce = 0.0f;//decoys are *not* bouncy
+	//VectorMA(ent->client->ps.origin, detDistance + mins[0], fwd, decoy->s.origin);
+	VectorCopy( ent->client->ps.origin, decoy->s.origin );
+	decoy->r.mins[2] = mins[2];//keep it off the floor
+	//VectorNegate(fwd, fwd);					// ???  What does this do??
+	//vectoangles(fwd, decoy->s.angles);
+	VectorCopy( ent->client->ps.viewangles, decoy->s.angles );
+	if ( !FinishSpawningDecoy(decoy, decoyItem - bg_itemlist) )
 	{
-		return qfalse;						// FAILURE: no room
-	}*/
+		return qfalse;		// Drop to ground and trap to clients
+	}
+	decoy->s.clientNum = ent->client->ps.clientNum;
+	decoy->s.number = decoy-g_entities;
+
+	//--------------------------- SPECIALIZED DECOY SETUP
+	decoy->parent = ent;
+
+	(decoy->s).eType = (ent->s).eType;		// set to type PLAYER
+	(decoy->s).eFlags= (ent->s).eFlags;
+	(decoy->s).eFlags |= EF_ITEMPLACEHOLDER;// set the HOLOGRAM FLAG to ON
+	(decoy->s).powerups = (ent->s).powerups;
+
+	//TiM - attach the rotate flag if we need to
+	if ( (ent->s).powerups & ( 1<<PW_FLIGHT ) || ent->client->ps.gravity == 0 )
+		(decoy->s).eFlags |= EF_FULL_ROTATE;
+
+	decoy->s.eFlags &= ~(EF_FIRING | EF_ALT_FIRING);
+
+	decoy->s.weapon = ent->s.weapon;		// get Player's Wepon Type
+
+	decoy->s.apos = ent->s.apos;			// copy angle of player to decoy
+	decoy->s.pos  = ent->s.pos;
+
+	//TiM: Set it's anim to whatever anims we're playing right now
+	decoy->s.legsAnim = ent->client->ps.stats[LEGSANIM];
+	decoy->s.torsoAnim= ent->client->ps.stats[TORSOANIM];
+
+	decoy->timestamp = level.time;
+
+	//--------------------------- WEAPON ADJUST
+	//   The Phaser and Dreadnought (Arc Welder) weapons are rendered on the
+	//   client side differently, and cannot be used by the decoy
+	decoy->classname = "decoy";
+
+	//TiM-Set up data for transmission to client
+	decoy->s.eventParm = level.decoyIndex;
+	decoy->r.contents = CONTENTS_SOLID;	//has to start off solid, or CGame won't realise this
+
+	VectorSet( decoy->r.mins, DEFAULT_MINS_0, DEFAULT_MINS_1, DEFAULT_MINS_2 );
+	VectorSet( decoy->r.maxs, DEFAULT_MAXS_0, DEFAULT_MAXS_1, DEFAULT_MAXS_2 );
+
+	decoy->nextthink = level.time + FRAMETIME;
+	decoy->think = Decoy_CheckForSolidity;
+	decoy->use = DecoyUse;
+
+	trap_GetUserinfo( ent->client->ps.clientNum, userinfo, sizeof(userinfo) );
+	{
+		char buffer[MAX_TOKEN_CHARS];
+		char model[64];
+		char height[9];
+		char weight[9];
+		char offset[6];
+			
+		//TiM - ensure that we encapsulate this data better or else it sometimes
+		//becomes null
+		Q_strncpyz( model, Info_ValueForKey( userinfo, "model" ), sizeof( model ) );
+		Q_strncpyz( height, Info_ValueForKey( userinfo, "height" ), sizeof( height ) );
+		Q_strncpyz( weight, Info_ValueForKey( userinfo, "weight" ), sizeof( weight ) );
+		Q_strncpyz( offset, Info_ValueForKey( userinfo, "modelOffset" ), sizeof( offset ) );
+
+		Com_sprintf( buffer, sizeof( buffer ), "model\\%s\\height\\%s\\weight\\%s\\moOf\\%s\\c\\%i", 
+												model,
+												height,
+												weight,
+												offset,
+												ent->client->sess.sessionClass );
+
+		trap_SetConfigstring( CS_DECOYS + level.decoyIndex, buffer );
+	}
+	level.decoyIndex++;
+
+	return qtrue;						// SUCCESS
 }
 //-------------------------------------------------------------- DECOY ACTIVITIES
 
@@ -2153,12 +1645,11 @@ void G_Rematerialize( gentity_t *ent )
 	ent->s.eFlags &= ~EF_NODRAW;
 	ps->eFlags &= ~EF_NODRAW;
 	TeleportPlayer( ent, ps->origin, ps->viewangles, TP_BORG );
-	//ps->stats[STAT_USEABLE_PLACED] = 0;
 	//take it away
 	ps->stats[STAT_HOLDABLE_ITEM] = 0;
 }
 
-void G_GiveHoldable( gclient_t *client, holdable_t item )
+static void G_GiveHoldable( gclient_t *client, holdable_t item )
 {
 	gitem_t	*holdable = BG_FindItemForHoldable( item );
 
@@ -2175,7 +1666,7 @@ ClientEvents
 *	Events will be passed on to the clients for presentation,
 *	but any server game effects are handled here
 */
-void ClientEvents( gentity_t *ent, int oldEventSequence ) {
+static void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 	int		i;
 	int		event;
 	gclient_t *client;
@@ -2233,82 +1724,35 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			break;
 
 		case EV_USE_ITEM1:		// transporter
-
-			//------------------------------------------------------- DROP FLAGS
-			/*if      ( ps->powerups[PW_REDFLAG] ) {
-				Team_ReturnFlag(TEAM_RED);
-			}*/
-			/*else if ( ps->powerups[PW_BORG_ADAPT] ) {
-				Team_ReturnFlag(TEAM_BLUE);
-			}*/
-			//ps->powerups[PW_BORG_ADAPT] = 0;
-			//ps->powerups[PW_REDFLAG]  = 0;
-			//------------------------------------------------------- DROP FLAGS
-			if ( qfalse/*client->sess.sessionClass == PC_BORG*/ )
+			//TiM: Since we purge the vectors each cycle.  I'll save us some memory by using the vectors themselves as a check.
+			if ( TransDat[ps->clientNum].beamTime == 0 && 
+				VectorCompare( vec3_origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].origin ) &&
+					VectorCompare( vec3_origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles ) )
 			{
-				if ( !ps->stats[STAT_USEABLE_PLACED] )
-				{//go into free-roaming mode
-					gentity_t	*tent;
-					//FIXME: limit this to 10 seconds
-					ent->flags |= FL_NOTARGET;
-					ent->takedamage = qfalse;
-					ent->r.contents = CONTENTS_PLAYERCLIP;
-					ent->s.eFlags |= EF_NODRAW;
-					ps->eFlags |= EF_NODRAW;
-					ps->stats[STAT_USEABLE_PLACED] = 2;
-					client->teleportTime = level.time + 10000;
-					tent = G_TempEntity( ps->origin, EV_BORG_TELEPORT );
-					tent->s.clientNum = ent->s.clientNum;
-				}
-				else
-				{//come out of free-roaming mode, teleport to current position
-					G_Rematerialize( ent );
-				}
+				VectorCopy( ps->origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].origin );
+				VectorCopy( ps->viewangles, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles );
+				trap_SendServerCommand( ent-g_entities, va("chat \"Site to Site Transporter Location Confirmed.\nPress again to Energize.\""));
+				ps->stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable( HI_TRANSPORTER ) - bg_itemlist;
+				ps->stats[STAT_USEABLE_PLACED] = 2; // = 1
+				break;
 			}
-			else// get rid of transporter and go to random spawnpoint
-			{
-				//vec3_t	origin, angles;
-				//gentity_t	*tent;
 
-				//SelectSpawnPoint( ps->origin, origin, angles );
+			if ( TransDat[ps->clientNum].beamTime == 0 && level.time > ps->powerups[PW_QUAD] ) {
+				G_InitTransport( ps->clientNum, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].origin,
+								TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles );
 
-				//if(TransDat[ps->clientNum].pUsed == qfalse)
-				//TiM: Since we purge the vectors each cycle.  I'll save us some memory by using the vectors themselves as a check.
-				if ( TransDat[ps->clientNum].beamTime == 0 && 
-					VectorCompare( vec3_origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].origin ) &&
-					 VectorCompare( vec3_origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles ) )
-				{
-					VectorCopy( ps->origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].origin );
-					VectorCopy( ps->viewangles, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles );
-					//VectorCopy(ps->origin, TransDat[ps->clientNum].pTransCoord);
-					//VectorCopy(ps->viewangles, TransDat[ps->clientNum].pTransCoordRot);
-					//TransDat[ps->clientNum].pUsed = qtrue;
-					trap_SendServerCommand( ent-g_entities, va("chat \"Site to Site Transporter Location Confirmed.\nPress again to Energize.\""));
-					//trap_SendConsoleCommand( EXEC_APPEND, va("echo Site to Site Transporter Location Confirmed.\necho Press again to Energize.") );
-					ps->stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable( HI_TRANSPORTER ) - bg_itemlist;
-					ps->stats[STAT_USEABLE_PLACED] = 2; // = 1
-					break;
-				}
+				memset( &TransDat[ps->clientNum].storedCoord[TPT_PORTABLE], 0, sizeof( TransDat[ps->clientNum].storedCoord[TPT_PORTABLE]) );
+			}
+			else {
+				trap_SendServerCommand( ent-g_entities, va("chat \"Unable to comply. Already within transport cycle.\""));
+			}
 
-				//TeleportPlayer( ent, TransDat[ps->clientNum].pTransCoord, TransDat[ps->clientNum].pTransCoordRot, TP_NORMAL );
-				if ( TransDat[ps->clientNum].beamTime == 0 && level.time > ps->powerups[PW_QUAD] ) {
-					G_InitTransport( ps->clientNum, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].origin,
-									TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles );
-
-					memset( &TransDat[ps->clientNum].storedCoord[TPT_PORTABLE], 0, sizeof( TransDat[ps->clientNum].storedCoord[TPT_PORTABLE]) );
-				}
-				else {
-					trap_SendServerCommand( ent-g_entities, va("chat \"Unable to comply. Already within transport cycle.\""));
-				}
-
-				ps->stats[STAT_USEABLE_PLACED] = 0;
+			ps->stats[STAT_USEABLE_PLACED] = 0;
 				
-				if (g_classData[client->sess.sessionClass].isMarine/* client->sess.sessionClass == PC_ALPHAOMEGA22*/ )
-				{
-					client->teleportTime = level.time + ( 3 * 1000 ); // 15 * 1000
-					ps->stats[STAT_USEABLE_PLACED] = 1; // = 1
-				}
-					
+			if (g_classData[client->sess.sessionClass].isMarine)
+			{
+				client->teleportTime = level.time + ( 3 * 1000 ); // 15 * 1000
+				ps->stats[STAT_USEABLE_PLACED] = 1; // = 1
 			}
 			break;
 
@@ -2344,8 +1788,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			}
 			else
 			{
-				//turn off invincibility since you are going to do massive damage
-				//ps->powerups[PW_GHOST] = 0;//NOTE: this means he can respawn and get a detpack 10 seconds later
 				// ok, we placed it earlier. blow it up.
 				ps->stats[STAT_USEABLE_PLACED] = 0;
 				DetonateDetpack(ent);
@@ -2361,11 +1803,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			else
 			{
 				trap_SendServerCommand( ent-g_entities, "cp \"FORCE FIELD PLACED\"" );
-				//if ( client->sess.sessionClass == PC_ADMIN )
-			//	{
-				//	client->teleportTime = level.time + ( 30 * 1000 );
-				//	ps->stats[STAT_USEABLE_PLACED] = 30;
-				//}
 			}
 			break;
 
@@ -2459,7 +1896,7 @@ void ThrowWeapon( gentity_t *ent, char *txt )
 SendPendingPredictableEvents
 ==============
 */
-void SendPendingPredictableEvents( playerState_t *ps ) {
+static void SendPendingPredictableEvents( playerState_t *ps ) {
 	gentity_t *t;
 	int event, seq;
 	int extEvent;
@@ -2485,7 +1922,7 @@ void SendPendingPredictableEvents( playerState_t *ps ) {
 	}
 }
 
-void ClientCamThink(gentity_t *client) {
+static void ClientCamThink(gentity_t *client) {
 	if(!client->client->cam) return;
 	G_SetOrigin(client, client->client->cam->s.origin);
 	SetClientViewAngle(client, client->client->cam->s.angles);
@@ -2504,7 +1941,7 @@ ClientThink
 *	If "g_synchronousClients 1" is set, this will be called exactly
 *	once for each server frame, which makes for smooth demo recording.
 */
-void ClientThink_real( gentity_t *ent ) {
+static void ClientThink_real( gentity_t *ent ) {
 	gclient_t	*client;
 	pmove_t		pm;
 	int			oldEventSequence;
@@ -2525,11 +1962,9 @@ void ClientThink_real( gentity_t *ent ) {
 	// sanity check the command time to prevent speedup cheating
 	if ( ucmd->serverTime > level.time + 200 ) {
 		ucmd->serverTime = level.time + 200;
-//		G_Printf("serverTime <<<<<\n" );
 	}
 	if ( ucmd->serverTime < level.time - 1000 ) {
 		ucmd->serverTime = level.time - 1000;
-//		G_Printf("serverTime >>>>>\n" );
 	}
 
 	msec = ucmd->serverTime - ps->commandTime;
@@ -2555,20 +1990,8 @@ void ClientThink_real( gentity_t *ent ) {
 		return;
 	}
 
-	// Don't move while under intro sequence.
-	/*if (ps->introTime > level.time)
-	{	// Don't be visible either.
-		ent->s.eFlags |= EF_NODRAW;
-		SetClientViewAngle( ent, ent->s.angles );
-		ucmd->buttons = 0;
-		ucmd->weapon = 0;
-//		ucmd->angles[0] = ucmd->angles[1] = ucmd->angles[2] = 0;
-		ucmd->forwardmove = ucmd->rightmove = ucmd->upmove = 0;
-//		return;
-	}*/
-
 	// spectators don't do much
-	if ( client->sess.sessionTeam == TEAM_SPECTATOR /*|| (ps->eFlags&EF_ELIMINATED) */) {
+	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
 			return;
 		}
@@ -2589,15 +2012,7 @@ void ClientThink_real( gentity_t *ent ) {
 			else
 				ent->r.contents = CONTENTS_CORPSE;
 		}
-		//else {
-		//	ent->r.contents = CONTENTS_NONE;
-		//}
 	}
-
-	// clear the rewards if time
-	/*if ( level.time > client->rewardTime ) {
-		ps->eFlags &= ~EF_AWARD_MASK;
-	}*/
 	
 	//RPG-X: Checked to see if medics revive is on if so do as following
 	if(rpg_medicsrevive.integer == 1){
@@ -2645,26 +2060,9 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 	
 	//RPG-X: Redtechie - n00bie stay.....good boy!
-	if ( g_classData[client->sess.sessionClass].isn00b /*client->sess.sessionClass == PC_N00B*/ ){
+	if ( g_classData[client->sess.sessionClass].isn00b ){
      ps->speed = 0;
 	}
-
-	/*if ( client->sess.sessionClass == PC_HEAVY )
-	{
-		ps->speed *= 0.75;
-	}
-
-	if ( client->sess.sessionClass == PC_BORG )
-	{
-		if ( BG_BorgTransporting( &client->ps ) )
-		{
-			ps->speed *= 1.5;
-		}
-		else if ( !BG_BorgTransporting( &client->ps ) )
-		{
-			ps->speed *= 0.75;
-		}
-	}*/
 
 	//TiM : SP Style Transporter. :)
 	//first check to see if we should be beaming
@@ -2677,12 +2075,10 @@ void ClientThink_real( gentity_t *ent ) {
 			if ( ps->stats[STAT_HEALTH] > 1 ) {
 				ent->r.contents = CONTENTS_NONE;
 			}
-			//ent->r.contents = CONTENTS_CORPSE;
 		}
 		else {
 			if ( ps->stats[STAT_HEALTH] > 1 ) {
 				ent->r.contents = MASK_PLAYERSOLID;
-				//ent->r.contents = CONTENTS_BODY;
 			}
 		}
 
@@ -2751,7 +2147,7 @@ void ClientThink_real( gentity_t *ent ) {
 	pm.trace = trap_Trace;
 	pm.pointcontents = trap_PointContents;
 	pm.debugLevel = g_debugMove.integer;
-	pm.noFootsteps = ( g_dmflags.integer & DF_NO_FOOTSTEPS ) > 0;
+	pm.noFootsteps = (qboolean)(( g_dmflags.integer & DF_NO_FOOTSTEPS ) > 0);
 	pm.pModDisintegration = qfalse;
 
 	//pm.admin = IsAdmin(ent); // we use this way now the old way didn't work for adminlogin
@@ -2791,9 +2187,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// link entity now, after any personal teleporters have been used
 	trap_LinkEntity (ent);
-//	if ( !client->noclip ) {
-		G_TouchTriggers( ent );
-//	}
+	G_TouchTriggers( ent );
 
 	// NOTE: now copy the exact origin over otherwise clients can be snapped into solid
 	VectorCopy( ps->origin, ent->r.currentOrigin );
@@ -2818,27 +2212,11 @@ void ClientThink_real( gentity_t *ent ) {
 	if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
 		// wait for the attack button to be pressed
 		if ( level.time > client->respawnTime ) {
-			// forcerespawn is to prevent users from waiting out powerups
-			//RPG-X: RedTechie - No forcerespawn
-			/*if ( g_forcerespawn.integer > 0 &&
-				( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
-				respawn( ent );
-				return;
-			}*/
-
 			// pressing attack or use is the normal respawn method
 			if ( ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) {
 				respawn( ent );
 				return;
 			}
-
-			//in assimilation and elimination, always force respawn
-			/*if ( level.time - client->respawnTime > 1300 && //NOTE: when killed, client->respawnTime = level.time + 1700, so this is 3000 ms
-				( g_pModAssimilation.integer || g_pModElimination.integer ) )
-			{
-				respawn( ent );
-				return;
-			}*/
 		}
 		return;
 	}
@@ -2848,32 +2226,13 @@ void ClientThink_real( gentity_t *ent ) {
 
 	if ( client->teleportTime > 0 && client->teleportTime < level.time )
 	{
-		//if ( client->sess.sessionClass == PC_BORG )
-		//{
-		//	if ( BG_BorgTransporting( ps ) )
-		//	{
-		//		G_Rematerialize( ent );
-		//	}
-		//	else
-		//	{
-		//		G_GiveHoldable( client, HI_TRANSPORTER );
-		//		ps->stats[STAT_USEABLE_PLACED] = 0;
-		//		client->teleportTime = 0;
-		//	}
-		//}
-		//else if ( client->sess.sessionClass == PC_DEMO )
-		//{
-		//	G_GiveHoldable( client, HI_DETPACK );
-		//	ps->stats[STAT_USEABLE_PLACED] = 0;
-		//	client->teleportTime = 0;
-		//}
-		/*else */if ( g_classData[client->sess.sessionClass].isMarine /*client->sess.sessionClass == PC_ALPHAOMEGA22*/ )
+		if ( g_classData[client->sess.sessionClass].isMarine )
 		{
 			G_GiveHoldable( client, HI_TRANSPORTER );
 			ps->stats[STAT_USEABLE_PLACED] = 0;
 			client->teleportTime = 0;
 		}
-		else if ( g_classData[client->sess.sessionClass].isAdmin /*client->sess.sessionClass == PC_ADMIN*/ )
+		else if ( g_classData[client->sess.sessionClass].isAdmin )
 		{
 			G_GiveHoldable( client, HI_SHIELD );
 			ps->stats[STAT_USEABLE_PLACED] = 0;
@@ -2923,7 +2282,7 @@ SpectatorClientEndFrame
 
 ==================
 */
-void SpectatorClientEndFrame( gentity_t *ent ) {
+static void SpectatorClientEndFrame( gentity_t *ent ) {
 	gclient_t	*cl;
 	clientSession_t *sess = &ent->client->sess;
 	playerState_t *ps = &ent->client->ps;
