@@ -60,7 +60,6 @@ void spark_link( gentity_t *ent )
 		VectorNormalize( dir );
 		vectoangles( dir, ent->r.currentAngles );
 		VectorCopy( ent->r.currentAngles, ent->s.angles2 );
-		//SnapVector( ent->s.angles );
 		VectorShort(ent->s.angles2);
 		VectorCopy( ent->r.currentAngles, ent->s.apos.trBase );
 		SnapVector(ent->s.apos.trBase);
@@ -124,17 +123,10 @@ STARTOFF steam is of at spawn
 void steam_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_STEAM, 0 );
-	if(ent->targetname) //toggleable steam needs to be updated more often
+	if(ent->targetname) { //toggleable steam needs to be updated more often
 		ent->nextthink = level.time + 1000;
-	else
+	} else {
 		ent->nextthink = level.time + 10000.0; // send a refresh message every 10 seconds
-/*	if ( ent->spawnflags & STEAM_BURSTS )
-	{
-		ent->nextthink = level.time + 1000 + random() * 500;
-	}
-	else
-	{
-		ent->nextthink = level.time + 50;
 	}
 
 	// FIXME: This may be a bit weird for steam bursts*/
@@ -209,9 +201,7 @@ void steam_link( gentity_t *ent )
 	VectorSubtract( target->s.origin, ent->s.origin, dir );
 	VectorNormalize(dir);
 	VectorCopy(dir, ent->s.angles2);
-	//vectoangles(dir, ent->s.angles2); //GSIO01: haha funny thing this made steam buggy
 	VectorShort(ent->s.angles2);
-	//SnapVector( ent->s.angles2 );
 	
 	VectorCopy( target->s.origin, ent->s.origin2 );
 	SnapVector(ent->s.origin2);
@@ -235,7 +225,6 @@ void steam_link( gentity_t *ent )
 		ent->nextthink = level.time + 10000;
 
 	// This is used as the toggle switch
-	//ent->count = !(ent->spawnflags & STEAM_STARTOFF);
 	if(ent->targetname) {
 		ent->count = !(ent->spawnflags & STEAM_STARTOFF);
 	}
@@ -280,7 +269,7 @@ void bolt_think( gentity_t *ent )
 
 	G_AddEvent( ent, EV_FX_BOLT, ent->spawnflags );
 	ent->s.time2 = ent->wait;
-	ent->nextthink = level.time + 10000;//(ent->wait + crandom() * ent->wait * 0.25) * 1000;
+	ent->nextthink = level.time + 10000;
 
 	// If a fool gets in the bolt path, zap 'em
 	if ( ent->damage ) 
@@ -590,21 +579,8 @@ void SP_fx_surface_explosion( gentity_t *ent )
 	ent->s.angles2[1] = ent->speed;
 	ent->s.time2 = ent->spawnflags;
 
-	// Precaching sounds
-/*	if ( ent->spawnflags & 2 )
-	{
-		G_SoundIndex( "sound/weapons/explosions/explode2.wav" );
-	}
-	else
-	{
-		G_SoundIndex( "sound/weapons/explosions/cargoexplode.wav" );
-	}
-*/
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 
-	//ent->e_UseFunc = useF_surface_explosion_use;
-
-	//ent->e_ThinkFunc = thinkF_surface_explosion_link;
 	ent->use = surface_explosion_use;
 	ent->think = surface_explosion_link;
 	ent->nextthink = 1000;
@@ -655,7 +631,6 @@ void blow_chunks_link( gentity_t *ent )
 		return;
 	}
 
-	//VectorCopy( target->s.origin, ent->s.origin2 );
 	VectorCopy( target->s.origin, ent->s.angles2 );
 
 	trap_LinkEntity( ent );
@@ -664,8 +639,6 @@ void blow_chunks_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_blow_chunks( gentity_t *ent )
 {
-	//G_SpawnInt( "count", "5", &ent->count );
-	//G_SpawnFloat( "speed", "175", &ent->speed );
 	if(!ent->distance) // check for spawnTEnt
 		G_SpawnFloat( "radius", "65", &ent->distance ); // was:  ent->radius
 	if(!ent->s.powerups) // check for spawnTEnt
@@ -675,7 +648,6 @@ void SP_fx_blow_chunks( gentity_t *ent )
 
 	//TiM: Fill entityState
 	ent->s.time2 = (int)ent->distance; //Hack. :P The client side chunkfunc wants radius to be an int >.< || was: ent->radius
-	//ent->s.angles2[1] = ent->speed;
 
 	ent->use = blow_chunks_use;
 
@@ -730,7 +702,6 @@ void smoke_link( gentity_t *ent )
 	target = G_Find (target, FOFS(targetname), ent->target);
 	if (target)
 	{
-		//VectorCopy( target->s.origin, dir );
 		VectorSubtract( target->s.origin, ent->s.origin, dir );
 		VectorNormalize( dir );
 		vectoangles( dir, ent->s.angles2 );
@@ -743,8 +714,6 @@ void smoke_link( gentity_t *ent )
 		VectorNormalize( dir );
 		vectoangles( dir, ent->s.angles2 );
 		VectorShort(ent->s.angles2);
-		//VectorCopy( ent->s.origin, dir );
-		//dir[2] += 1;	// move up
 	}
 
 	if (ent->targetname)
@@ -764,8 +733,6 @@ void smoke_link( gentity_t *ent )
 		ent->nextthink = -1;
 		ent->count = 0;
 	}
-
-	//VectorCopy( dir, ent->s.origin2 );
 
 	ent->s.time2 = 10000;
 
@@ -800,9 +767,6 @@ NODAMAGE - does no damage
 //------------------------------------------
 void electrical_explosion_use( gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-
-	//self->nextthink = level.time + 100;
-	//trap_LinkEntity( self );
 	G_AddEvent( self, EV_FX_ELECTRICAL_EXPLOSION, 0 );
 
 	if ( self->splashDamage )
@@ -847,9 +811,6 @@ void SP_fx_electrical_explosion( gentity_t *ent )
 		G_SpawnFloat( "radius", "50", &ent->distance ); // was: ent->radius
 		ent->splashRadius = 80;
 	}
-
-	// Precaching sounds
-//	G_SoundIndex( "sound/weapons/explosions/cargoexplode.wav" );
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	ent->s.angles2[0] = ent->distance; // was: ent->radius
@@ -957,7 +918,7 @@ void fx_torpedo_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		G_AddEvent(ent, EV_GENERAL_SOUND, ent->s.time);
 	} else {
 		trap_SendServerCommand(activator-g_entities, "print \"^1Out of Torpedos.\n\"");
-		G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount /*ent->soundLocked*/);
+		G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount);
 		return;
 	}
 	G_AddEvent(ent, EV_FX_TORPEDO, ent->spawnflags);
@@ -969,48 +930,49 @@ void fx_torpedo_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 void fx_torpedo_link(gentity_t *ent) {
 	vec3_t dir;
 	gentity_t *target = NULL;
+
 	target = G_Find(target, FOFS(targetname), ent->target);
 	if(!target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Could not find target %s for fx_torpedo at %s!\n", ent->target, vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
 	}
+
 	VectorSubtract(target->s.origin, ent->s.origin, dir);
 	VectorCopy(target->s.origin, ent->s.origin2);
 	VectorNormalize(dir);
 	VectorCopy(dir, ent->s.angles);
 	trap_LinkEntity(ent);
-	if(ent->wait)
-		ent->wait *= 1000;
-	if(!ent->count)
+
+	ent->wait = ent->wait ? (ent->wait * 1000) : 0;
+	
+	if(!ent->count) {
 		ent->count = -1;
-	else
+	} else {
 		ent->damage = ent->count;
-	if(ent->speed)
-		ent->s.angles2[0] = ent->speed;
-	else
-		ent->s.angles2[0] = 2.5;
+	}
+
+	ent->s.angles2[0] = ent->speed ? ent->speed : 2.5;
+
 	ent->use = fx_torpedo_use;
 	ent->nextthink = -1;
 }
 
 void SP_fx_torpedo(gentity_t *ent) {
 	char	*sound;
+
 	if(!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_torpedo at %s without target\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
 	}
+
 	G_SpawnString("noise", "sound/rpg_runabout/torp.wav", &sound);
-	if(!(ent->spawnflags & 2))
-		ent->s.time = G_SoundIndex(sound);
-	else
-		ent->s.time = G_SoundIndex("NULL");
+	ent->s.time = !(ent->spawnflags & 2) ? G_SoundIndex(sound) : G_SoundIndex("NULL");
+
 	G_SpawnString("soundNoAmmo", "sound/movers/switches/voyneg.mp3", &sound);
-	if(!(ent->spawnflags & 2))
-		ent->n00bCount = G_SoundIndex(sound);
-	else
-		ent->n00bCount = G_SoundIndex("NULL");
+	ent->n00bCount = !(ent->spawnflags & 2) ? G_SoundIndex(sound) : G_SoundIndex("NULL");
+
 	ent->think = fx_torpedo_link;
 	ent->nextthink = level.time + 1000;
 }
@@ -1024,10 +986,11 @@ If you want to use a bunch of fires use fx_fire.
 */
 void particleFire_think(gentity_t *ent) {
 	G_AddEvent(ent, EV_FX_PARTICLEFIRE, ent->count);
-	if (ent->targetname)
-	ent->nextthink = level.time + 1000; 
-	else
-	ent->nextthink = level.time + 10000;
+	if (ent->targetname) {
+		ent->nextthink = level.time + 1000; 
+	} else {
+		ent->nextthink = level.time + 10000;
+	}
 }
 
 void particleFire_use( gentity_t *self, gentity_t *other, gentity_t *activator)
@@ -1090,10 +1053,11 @@ A fire affect based on the adminguns fire effect.
 */
 void fire_think(gentity_t *ent) {
 	G_AddEvent(ent, EV_FX_FIRE, 1);
-	if (ent->targetname)
-	ent->nextthink = level.time + 1000; 
-	else
-	ent->nextthink = level.time + 10000;
+	if (ent->targetname) {
+		ent->nextthink = level.time + 1000; 
+	} else {
+		ent->nextthink = level.time + 10000;
+	}
 }
 
 void fire_use( gentity_t *self, gentity_t *other, gentity_t *activator)
@@ -1799,8 +1763,6 @@ void SP_fx_explosion_trail( gentity_t *ent )
 
 	ent->splashRadius = 160;
 
-	//ent->svFlags |= SVF_BROADCAST;
-
 	trap_LinkEntity( ent );
 }
 
@@ -1903,8 +1865,6 @@ void SP_fx_borg_energy_beam( gentity_t *ent )
 		ent->startRGBA[t] = ent->startRGBA[t] / 255;
 	}
 
-//	ent->svFlags |= SVF_BROADCAST;
-
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 
 	ent->think = borg_energy_beam_link;
@@ -1999,12 +1959,13 @@ void shimmery_thing_link( gentity_t *ent )
 void SP_fx_shimmery_thing( gentity_t *ent )
 {
 	G_SpawnFloat( "radius", "10", &ent->s.angles[1] );
-	if ( !ent->wait )
+	if ( !ent->wait ) {
 		ent->wait = 2000;
-	if ( ent->spawnflags & 4 ) // backwards capability for sp, keep -1 in definitions for unity
-		ent->wait = -1;
+	}
 
-//	ent->svFlags |= SVF_BROADCAST;
+	if ( ent->spawnflags & 4 ) { // backwards capability for sp, keep -1 in definitions for unity
+		ent->wait = -1;
+	}
 
 	ent->think = shimmery_thing_link;
 	ent->nextthink = level.time + 1000;
@@ -2090,8 +2051,6 @@ void borg_bolt_link( gentity_t *ent )
 		VectorCopy( target2->s.origin, ent->s.origin );
 	}
 	}
-
-//	ent->svFlags |= SVF_BROADCAST;// Broadcast to all clients
 
 	if ( ent->targetname )
 	{
