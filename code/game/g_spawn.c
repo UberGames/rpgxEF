@@ -73,7 +73,6 @@ qboolean	G_SpawnString( const char *key, const char *defaultString, char **out )
 
 	if ( !level.spawning ) {
 		*out = (char *)defaultString;
-//		G_Error( "G_SpawnString() called while not spawning" );
 	}
 
 	for ( i = 0 ; i < level.numSpawnVars ; i++ ) {
@@ -140,7 +139,6 @@ void SP_func_timer (gentity_t *self);
 void SP_func_usable (gentity_t *self);
 void SP_func_breakable (gentity_t *self);
 void SP_func_door_rotating (gentity_t *ent);
-//void SP_func_roff_mover (gentity_t *ent);
 void SP_func_brushmodel(gentity_t *ent); // for brushmodel hijacking :D
 void SP_func_lightchange(gentity_t *ent); // "toggling" light
 void SP_func_targetmover(gentity_t *ent);
@@ -212,8 +210,6 @@ void SP_team_CTF_blueplayer( gentity_t *ent );
 
 void SP_team_CTF_redspawn( gentity_t *ent );
 void SP_team_CTF_bluespawn( gentity_t *ent );
-
-//void SP_func_door_rotating( gentity_t *ent );	// VALKYRIE: for rotating doors
 
 // extra Trek stuff
 void SP_fx_spark ( gentity_t *ent );
@@ -311,15 +307,6 @@ spawn_t	spawns[] = {
 	{"NPC_Buster", SP_info_player_start},
 	{"NPC_Goodheart", SP_info_player_start},
 
-/*	{"NPC_Parasite", SP_info_player_start},
-	{"NPC_Headbot", SP_info_player_start},
-	{"NPC_scoutbot", SP_info_player_start},
-	{"NPC_HKbot", SP_info_player_start},
-	{"NPC_Harvester", SP_info_player_start},
-	{"NPC_HunterSeeker", SP_info_player_start},
-	{"NPC_warriorbot", SP_info_player_start},
-	{"NPC_spawner", SP_info_player_start},*/
-
 	{"info_player_deathmatch",		SP_info_player_deathmatch},
 	{"info_player_intermission",	SP_info_player_intermission},
 	{"info_null",					SP_info_null},
@@ -340,7 +327,6 @@ spawn_t	spawns[] = {
 	{"func_usable",					SP_func_usable},
 	{"func_breakable",				SP_func_breakable},
 	{"func_door_rotating",			SP_func_door_rotating},
-	//{"func_roff_mover",				SP_func_roff_mover},
 	{"func_brushmodel",				SP_func_brushmodel}, // Hijack me haha
 	{"func_lightchange",			SP_func_lightchange},
 	{"func_targetmover",			SP_func_targetmover},
@@ -415,8 +401,6 @@ spawn_t	spawns[] = {
 
 	{"team_CTF_redspawn",			SP_team_CTF_redspawn},
 	{"team_CTF_bluespawn",			SP_team_CTF_bluespawn},
-
-	//{"func_door_rotating", SP_func_door_rotating},	// VALKYRIE: for rotating doors
 
 	// extra Trek stuff
 	{"fx_spark",					SP_fx_spark},
@@ -852,7 +836,6 @@ void SP_worldspawn( void ) {
 	// see if we want a warmup time
 	trap_SetConfigstring( CS_WARMUP, "" );
 	if ( g_restarted.integer ) {
-//		trap_Cvar_Set( "g_restarted", "0" );
 		level.warmupTime = 0;
 	}
 }

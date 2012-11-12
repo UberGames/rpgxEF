@@ -6,20 +6,9 @@
 #endif
 
 #include "sqlite3.h"
-//#include "q_shared.h"
 #include "g_sql.h"
 #include "g_local.h"
 #include "md5.h"
-
-//extern vmCvar_t sql_dbName;
-//extern vmCvar_t sql_use;
-//extern vmCvar_t sql_server;
-//extern vmCvar_t sql_user;
-//extern vmCvar_t sql_password;
-//extern vmCvar_t sql_port;
-
-//extern void QDECL G_Printf( const char *fmt, ... );
-//extern void QDECL G_PrintfClient( gentity_t *ent, const char *fmt, ...);
 
 sqlite3	*user_db;
 qboolean sql_ready = qfalse;
@@ -84,8 +73,8 @@ static char *G_Sql_Md5(const char *s) {
 	struct MD5Context md5c;
 
 	MD5Init(&md5c);
-	MD5Update(&md5c, s, strlen(s));
-	MD5Final(sig, &md5c);
+	MD5Update(&md5c, (const unsigned char *)s, strlen(s));
+	MD5Final(&md5c, sig);
 
 	res = (char *)malloc(sizeof(char)*MAX_QPATH);
 	if(!res) {

@@ -22,7 +22,7 @@ G_WriteClientSessionData
 Called on game shutdown
 ================
 */
-void G_WriteClientSessionData( gclient_t *client ) {
+static void G_WriteClientSessionData( gclient_t *client ) {
 	const char	*s;
 	const char	*var;
 
@@ -65,8 +65,8 @@ void G_ReadSessionData( gclient_t *client ) {
 		&client->sess.wins,
 		&client->sess.losses
 		);
-	client->sess.sessionTeam = team;
-	client->sess.spectatorState = spec;
+	client->sess.sessionTeam = (team_t)team;
+	client->sess.spectatorState = (spectatorState_t)spec;
 }
 
 
@@ -94,23 +94,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 			sess->sessionTeam = TEAM_FREE;
 			break;
 		case GT_SINGLE_PLAYER:
-				
 			sess->sessionTeam = TEAM_FREE;
-
-			//RPG-X: RedTechie - Not sure we need this
-			/*if ( g_maxGameClients.integer > 0 && 
-				level.numNonSpectatorClients >= g_maxGameClients.integer ) {
-				sess->sessionTeam = TEAM_SPECTATOR;
-			} else {
-				if ( g_pModElimination.integer && numKilled > 0 )
-				{//game already in progress
-					sess->sessionTeam = TEAM_SPECTATOR;
-				}
-				else
-				{
-					sess->sessionTeam = TEAM_FREE;
-				}
-			}*/
 			break;
 		case GT_TOURNAMENT:
 			// if the game is full, go into a waiting mode
