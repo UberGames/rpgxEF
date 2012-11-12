@@ -412,280 +412,7 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 		CG_DrawClientScore_Big(y, score, color, fade, largeFormat );
 		return;
 	}
-	//TiM : From the looks of this, nothing after this is acctually called O_o
-	//Save graphics then
-
-	// Black background
-	/*if (cgs.gametype < GT_TEAM)
-	{
-		hcolor[0] = 0;
-		hcolor[1] = 0;
-		hcolor[2] = 0;
-		hcolor[3] = fade * 0.7;
-		CG_FillRect( SCOREBOARD_X, y,SB_TOPLINE_LENGTH , SB_NORMAL_HEIGHT, hcolor );
-	}*/
-
-	// Left Side of scoreboard
-	//CG_FillRect( SCOREBOARD_X, y - 16 , 12, 48, colorTable[CT_DKORANGE]);
-
-
-/*
-	picSize = 20;
-	// draw the handicap or bot skill marker (unless player has flag)
-	if ( ci->powerups & ( 1 << PW_REDFLAG ) ) 
-	{
-		CG_DrawFlagModel( SB_BOTICON_X, y, picSize, picSize, TEAM_RED );
-	} 
-	else if ( ci->powerups & ( 1 << PW_BORG_ADAPT ) ) 
-	{
-		CG_DrawFlagModel( SB_BOTICON_X, y, picSize, picSize, TEAM_BLUE );
-	} 
-	else 
-	{
-		if ( ci->botSkill > 0 && ci->botSkill <= 5 ) 
-		{
-			if ( cg_drawIcons.integer ) 
-			{
-				CG_DrawPic( SB_BOTICON_X, y+2, picSize, picSize, cgs.media.botSkillShaders[ ci->botSkill - 1 ] );
-			}
-		} 
-		else if ( ci->handicap < 100 ) 
-		{
-			Com_sprintf( string, sizeof( string ), "%i", ci->handicap );
-			if ( cgs.gametype == GT_TOURNAMENT )
-			{
-//				CG_DrawSmallStringColor( iconx, y - SMALLCHAR_HEIGHT/2, string, color );
-				UI_DrawProportionalString( SB_BOTICON_X+2,  y - SMALLCHAR_HEIGHT/2, string, UI_SMALLFONT, color);
-			}
-			else
-			{
-//				CG_DrawSmallStringColor( iconx, y, string, color );
-				UI_DrawProportionalString( SB_BOTICON_X+2,  y , string, UI_SMALLFONT, color);
-			}
-		}
-
-		// draw the wins / losses
-		if ( cgs.gametype == GT_TOURNAMENT ) {
-			Com_sprintf( string, sizeof( string ), "%i/%i", ci->wins, ci->losses );
-			if( ci->handicap < 100 && !ci->botSkill ) 
-			{
-//				CG_DrawSmallStringColor( iconx, y + SMALLCHAR_HEIGHT/2, string, color );
-				UI_DrawProportionalString( SB_BOTICON_X,  y + SMALLCHAR_HEIGHT/2 , string, UI_SMALLFONT, color);
-			}
-			else 
-			{
-//				CG_DrawSmallStringColor( iconx, y, string, color );
-				UI_DrawProportionalString( SB_BOTICON_X,  y , string, UI_SMALLFONT, color);
-			}
-		}
-	}*/
-
-	// draw the face
-	/*VectorClear( headAngles );
-	headAngles[YAW] = 180;
-	CG_DrawHead( SB_HEAD_X+14, y, picSize, picSize, score->client, headAngles );//Before RPG-X: CG_DrawHead( SB_HEAD_X+14, y, picSize, picSize, score->client, headAngles );
-
-	// highlight your position
-	if ( score->client == cg.snap->ps.clientNum ) 
-	{
-		int		rank;
-
-		localClient = qtrue;
-
-		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR 
-			|| cgs.gametype >= GT_TEAM ) 
-		{
-			rank = -1;
-		} 
-		else 
-		{
-			rank = cg.snap->ps.persistant[PERS_RANK] & ~RANK_TIED_FLAG;
-		}
-		if ( rank == 0 ) 
-		{
-			hcolor[0] = 0;
-			hcolor[1] = 0;
-			hcolor[2] = 0.7;
-		} 
-		else if ( rank == 1 ) 
-		{
-			hcolor[0] = 0.7;
-			hcolor[1] = 0;
-			hcolor[2] = 0;
-		} 
-		else if ( rank == 2 ) 
-		{
-			hcolor[0] = 0.7;
-			hcolor[1] = 0.7;
-			hcolor[2] = 0;
-		} 
-		else 
-		{
-			hcolor[0] = 0.7;
-			hcolor[1] = 0.7;
-			hcolor[2] = 0.7;
-		}
-
-		hcolor[3] = fade * 0.7;
-		CG_FillRect( SB_SCORELINE_X - TINYCHAR_WIDTH, y, 
-		SB_TOPLINE_LENGTH - ((SB_SCORELINE_X - TINYCHAR_WIDTH) - SCOREBOARD_X), BIGCHAR_HEIGHT+1, hcolor );
-	}
-
-	// draw the score line
-	if ( score->ping == -1 ) {
-		Com_sprintf(string, sizeof(string),
-			" connecting    %s", ci->name);
-		UI_DrawProportionalString( SB_SCORELINE_X, y, string, UI_TINYFONT, colorTable[CT_LTGOLD1]);
-	} 
-	else if ( ci->team == TEAM_SPECTATOR ) 
-	{
-		CG_NamePrep(string,ci->name,100,UI_TINYFONT); //100 pixels in the name column
-
-		Com_sprintf(string,sizeof(string),"%s (%s)", string, ingame_text[IGT_SPECTATOR]);
-		UI_DrawProportionalString( SB_NAME_X, y + (TINYCHAR_HEIGHT/2), string, UI_TINYFONT, colorTable[CT_LTGOLD1]);
-
-		// Don't show other stats for Spectators
-//		Com_sprintf(string,sizeof(string),"%5i",score->score);
-//		UI_DrawProportionalString( SB_SCORE_X, y + (TINYCHAR_HEIGHT/2),  string, UI_TINYFONT, colorTable[CT_YELLOW]);
-
-//		Com_sprintf(string,sizeof(string),"%5i",score->time);
-//		UI_DrawProportionalString( SB_TIME_X, y + (TINYCHAR_HEIGHT/2),  string, UI_TINYFONT, colorTable[CT_LTGOLD1]);
-
-//		Com_sprintf(string,sizeof(string),"%5i",score->ping);
-//		UI_DrawProportionalString( SB_PING_X, y + (TINYCHAR_HEIGHT/2),  string, UI_TINYFONT, colorTable[CT_LTGOLD1]);
-
-//		Com_sprintf(string,sizeof(string),"%5i",score->killedCnt);
-//		UI_DrawProportionalString( SB_KILLEDCNT_X, y + (TINYCHAR_HEIGHT/2),  string, UI_TINYFONT, colorTable[CT_RED]);
-	} 
-	else 
-	{*/
-		/*
-		if (score->faveTarget >= 0)
-		{
-			faveTarget = cgs.clientinfo[score->faveTarget].name;
-		}
-		else
-		{
-			faveTarget = ingame_text[IGT_NONE];
-		}
-		*/
-		/*if (score->worstEnemy >= 0)
-		{
-			worstEnemy = cgs.clientinfo[score->worstEnemy].name;
-		}
-		else
-		{
-			worstEnemy = ingame_text[IGT_NONE];
-		}
-
-		if (score->faveWeapon > 0)
-		{
-			faveWeapon = ingame_text[IGT_NONE];
-			// Find weapon
-			for ( item = bg_itemlist + 1 ; item->classname ; item++ ) 
-			{
-				if ( item->giType != IT_WEAPON ) {
-					continue;
-				}
-				if (item->giTag == score->faveWeapon)
-				{
-					faveWeapon = item->pickup_name;
-					break;
-				}
-			}
-		}
-
-//		Com_sprintf(string, sizeof(string),
-//			"%-20s  %5i     %5i     %-20s (%5i)   %-20s  (%5i)",ci->name, score->score, score->time, 
-//			faveTarget, score->faveTargetKills,
-//			worstEnemy, score->worstEnemyKills);
-
-		CG_NamePrep(string,ci->name,100,UI_TINYFONT); //100 pixels in the name column
-
-		//RPG-X: J2J (NOTE TO CODERS)- Heading for score board -DO NOT EDIT- Text for these are in mp_ingametext.dat
-		Com_sprintf(string,sizeof(string),"%5i", score->client);
-		UI_DrawProportionalString( SB_NAME_X-20, y + (TINYCHAR_HEIGHT/2), string, UI_TINYFONT, colorTable[CT_WHITE]);
-		
-		UI_DrawProportionalString( SB_NAME_X, y + (TINYCHAR_HEIGHT/2), string, UI_TINYFONT, colorTable[CT_WHITE]);
-		Com_sprintf(string,sizeof(string),"%5i",score->score);
-		UI_DrawProportionalString( SB_SCORE_X, y + (TINYCHAR_HEIGHT/2),  string, UI_TINYFONT, colorTable[CT_YELLOW]);
-
-		Com_sprintf(string,sizeof(string),"%5i",score->time);
-		UI_DrawProportionalString( SB_TIME_X, y + (TINYCHAR_HEIGHT/2),  string, UI_TINYFONT, colorTable[CT_LTGOLD1]);
-
-		Com_sprintf(string,sizeof(string),"%5i",score->ping);
-		UI_DrawProportionalString( SB_PING_X, y + (TINYCHAR_HEIGHT/2),  string, UI_TINYFONT, colorTable[CT_LTGOLD1]);
-
-		Com_sprintf(string,sizeof(string),"%5i",score->killedCnt);
-		UI_DrawProportionalString( SB_KILLEDCNT_X, y + (TINYCHAR_HEIGHT/2),  string, UI_TINYFONT, colorTable[CT_RED]);
-
-		if (worstEnemy)
-		{
-			Com_sprintf(string2,sizeof(string2)," (%i)",score->worstEnemyKills);
-			length = UI_ProportionalStringWidth(string2,UI_TINYFONT );
-
-			CG_NamePrep(string,worstEnemy,(100-length),UI_TINYFONT); //100 pixels in the worst enemy column
-
-			Com_sprintf(string,sizeof(string),"%s%s",string, string2);
-			UI_DrawProportionalString( SB_WORSTENEMY_X, y + (TINYCHAR_HEIGHT/2),  string, UI_TINYFONT, colorTable[CT_RED]);
-		}
-
-		if (faveWeapon)
-		{
-			UI_DrawProportionalString( SB_FAVEWEAPON_X, y + (TINYCHAR_HEIGHT/2),  faveWeapon, UI_TINYFONT, colorTable[CT_LTGOLD1]);
-		}
-	}
-
-	//CG_DrawSmallString( SB_SCORELINE_X, y, string, fade );
-
-	// add the "ready" marker for intermission exiting, if not a bot, and if a team type game
-	if ( inIntermission )
-	{
-		qhandle_t h = trap_R_RegisterShader("icons/icon_ready_on"),
-			 h2 = trap_R_RegisterShader("icons/icon_ready_off");
-		if ( ci->botSkill > 0 && ci->botSkill <= 5 )
-		{
-			// i'm a bot. i'm always ready.
-			trap_R_SetColor( colorTable[CT_VLTGOLD1]);
-			CG_DrawPic( SB_BOTICON_X+26,y+2, 16,  16,h);
-		}
-		else
-		{
-			if ( cg.snap->ps.stats[ STAT_CLIENTS_READY ] & ( 1 << score->client ) ) 
-			{
-				//trap_R_SetColor( colorTable[CT_VLTGOLD1]);
-				//CG_DrawPic( SB_BOTICON_X+26,y+2, 16,  16,h);
-			}
-			else// if (score->client)
-			{
-				//trap_R_SetColor( colorTable[CT_VLTGOLD1]);
-				//CG_DrawPic( SB_BOTICON_X+26,y+2, 16,  16,h2);
-			}
-		}
-	}*/
 }
-
-/*static int CG_GetTeamCount(team_t team, int maxClients)
-{
-	int		i = 0;
-	int		count = 0;
-	score_t	*score = NULL;
-	clientInfo_t	*ci = NULL;
-
-	for ( i = 0 ; i < cg.numScores && count < maxClients ; i++ )
-	{
-		score = &cg.scores[i];
-		ci = &cgs.clientinfo[ score->client ];
-
-		if ( team!=ci->team || !ci->infoValid )
-		{
-			continue;
-		}
-		count++;
-	}
-
-	return count;
-}*/
 
 /*
 =================
@@ -911,23 +638,14 @@ qboolean CG_DrawScoreboard( void )
 	y += (n2 * lineHeight);
 	maxClients -= n2;
 
-	//LOCAL CLIENT AT BOTTOM OF SCOREBOARD
-	//------------------------------------
-	//
-	// If we didn't draw the local client in the scoreboard (because ranked lower than maxClients)
-	// Look for him and display him at the bottom
-	//
-	// BUT not for 'GT_SINGLE_PLAYER'  (shouldn't happen anyway, right?)
-	//
-	if (cgs.gametype==GT_SINGLE_PLAYER)
-		localClient = qtrue;
+	localClient = qfalse;
 
 	i=0;
 	while (!localClient && i<cg.numScores)
 	{
 		if ( cg.scores[i].client==cg.snap->ps.clientNum )		// it's me!!
 		{
-			CG_DrawClientScore( y, &cg.scores[i], colorYellow, 0.0, lineHeight==SB_NORMAL_HEIGHT );
+			CG_DrawClientScore( y, &cg.scores[i], colorYellow, 0.0, (qboolean)(lineHeight==SB_NORMAL_HEIGHT) );
 			y += lineHeight;									
 			localClient = qtrue;
 		}
@@ -1033,50 +751,24 @@ void CG_DrawTourneyScoreboard( void ) {
 	// print the two scores
 
 	y = 160;
-	if ( cgs.gametype >= GT_TEAM ) {
-		//
-		// teamplay scoreboard
-		//
-//		CG_DrawStringExt( 8, y, ingame_text[IGT_REDTEAM], color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
-		UI_DrawProportionalString( 8, y, ingame_text[IGT_REDTEAM], UI_BIGFONT|UI_DROPSHADOW, color);
-		s = va("%i", cg.teamScores[0] );
-//		CG_DrawStringExt( 632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
-		w = UI_ProportionalStringWidth(s,UI_BIGFONT);
-		UI_DrawProportionalString(632 - w, y, s, UI_BIGFONT|UI_DROPSHADOW, color);
-		
-		y += 64;
-
-//		CG_DrawStringExt( 8, y, ingame_text[IGT_BLUETEAM], color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
-		UI_DrawProportionalString(8, y, ingame_text[IGT_BLUETEAM], UI_BIGFONT|UI_DROPSHADOW, color);
-		s = va("%i", cg.teamScores[1] );
-//		CG_DrawStringExt( 632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
-		w = UI_ProportionalStringWidth(s,UI_BIGFONT);
-		UI_DrawProportionalString(632 - w, y, s, UI_BIGFONT|UI_DROPSHADOW, color);
-	} else {
-		//
-		// free for all scoreboard
-		//
-		for ( i = 0 ; i < MAX_CLIENTS ; i++ ) {
-			ci = &cgs.clientinfo[i];
-			if ( !ci->infoValid ) {
-				continue;
-			}
-			if ( ci->team != TEAM_FREE ) {
-				continue;
-			}
+	for ( i = 0 ; i < MAX_CLIENTS ; i++ ) {
+		ci = &cgs.clientinfo[i];
+		if ( !ci->infoValid ) {
+			continue;
+		}
+		if ( ci->team != TEAM_FREE ) {
+			continue;
+		}
 
 //			CG_DrawStringExt( 8, y, ci->name, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
-			UI_DrawProportionalString( 8, y, ci->name, UI_BIGFONT|UI_DROPSHADOW, color);
-			s = va("%i", ci->score );
+		UI_DrawProportionalString( 8, y, ci->name, UI_BIGFONT|UI_DROPSHADOW, color);
+		s = va("%i", ci->score );
 //			CG_DrawStringExt( 632 - GIANT_WIDTH * strlen(s), y, s, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
-			w = UI_ProportionalStringWidth(s,UI_BIGFONT);
-			UI_DrawProportionalString(632 - w, y, s, UI_BIGFONT|UI_DROPSHADOW, color);
+		w = UI_ProportionalStringWidth(s,UI_BIGFONT);
+		UI_DrawProportionalString(632 - w, y, s, UI_BIGFONT|UI_DROPSHADOW, color);
 
-			y += 64;
-		}
+		y += 64;
 	}
-
-
 }
 
 
@@ -1520,10 +1212,7 @@ AW_Draw
 */
 static qboolean AW_Draw( void )
 {
-	char	buf[64];
 	int		timer;
-	int		y=0, yfrom=0;
-	int		len;
 	vec4_t	white, yellow;	// new colors
 
 	//         RED                GREEN             BLUE               ALPHA
@@ -1557,133 +1246,24 @@ static qboolean AW_Draw( void )
 	//-----------------------------------------------
 	if (postgameMenuInfo.phase < 4)
 	{
-		if (cgs.gametype <= GT_SINGLE_PLAYER )
+		// NON TEAM GAMES
+		//   We want the top three player's names and their ranks below the podium 
+		if ( postgameMenuInfo.numClients > 2 )
 		{
-			// NON TEAM GAMES
-			//   We want the top three player's names and their ranks below the podium 
-			if ( postgameMenuInfo.numClients > 2 )
-			{
-			UI_DrawProportionalString( 510, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[2], UI_CENTER, white );
-			if (postgameMenuInfo.secondPlaceTied)
-				UI_DrawProportionalString( 510, 480 - 38 - PROP_HEIGHT, ingame_text[IGT_2ND], UI_CENTER, yellow );
-			else
-				UI_DrawProportionalString( 510, 480 - 38 - PROP_HEIGHT, ingame_text[IGT_3RD], UI_CENTER, yellow );
-			}
-			if ( postgameMenuInfo.numClients > 1)
-			{
-			UI_DrawProportionalString( 130, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[1], UI_CENTER, white );
-			UI_DrawProportionalString( 130, 480 - 38 - PROP_HEIGHT, ingame_text[IGT_2ND], UI_CENTER, yellow );
-			}
-
-			UI_DrawProportionalString( 320, 480 - 64 - 2 * PROP_HEIGHT, postgameMenuInfo.placeNames[0], UI_CENTER, white );
-			UI_DrawProportionalString( 320, 480 - 38 - 2 * PROP_HEIGHT, ingame_text[IGT_1ST], UI_CENTER, yellow );
+		UI_DrawProportionalString( 510, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[2], UI_CENTER, white );
+		if (postgameMenuInfo.secondPlaceTied)
+			UI_DrawProportionalString( 510, 480 - 38 - PROP_HEIGHT, ingame_text[IGT_2ND], UI_CENTER, yellow );
+		else
+			UI_DrawProportionalString( 510, 480 - 38 - PROP_HEIGHT, ingame_text[IGT_3RD], UI_CENTER, yellow );
 		}
-		else //if (cg.snap->ps.persistant[PERS_TEAM]!=TEAM_SPECTATOR)
+		if ( postgameMenuInfo.numClients > 1)
 		{
-			// TEAM
-			//   We want the winning team character's name, a line explaining "Klingon MVP"
-			UI_DrawProportionalString( 320, 480 - 64 - 2 * PROP_HEIGHT, postgameMenuInfo.nameOfMVP, UI_CENTER, white );
-			UI_DrawProportionalString( 320, 480 - 34 - 2 * PROP_HEIGHT, postgameMenuInfo.winTeamMVPText, UI_CENTER, yellow );
-			Com_sprintf( buf, sizeof(buf), "%s %i", ingame_text[IGT_POINTS], postgameMenuInfo.scoreOfMVP);
-			UI_DrawProportionalString( 320, 480 - 14 - 2 * PROP_HEIGHT, buf, UI_CENTER, yellow );
-
-
-
-			// SPECIAL TEAM STATS BAR ON RIGHT SIDE OF SCREEN
-			//-----------------------------------------------
-			//
-			// THE TOP BAR
-			y=130;
-			if (cgs.gametype == GT_CTF)
-				Com_sprintf( buf, sizeof(buf), "%s", ingame_text[IGT_GAME_CAPTUREFLAG] );
-			else
-				Com_sprintf( buf, sizeof(buf), "%s", ingame_text[IGT_GAME_TEAMHOLOMATCH] );
-			len = UI_ProportionalStringWidth( buf, UI_SMALLFONT );
-
-			trap_R_SetColor( colorTable[CT_DKORANGE] );
-			CG_DrawPic( 640-32, y+20, 16, -32, cgs.media.corner_8_16_b );
-			CG_FillRect(640-80, y+1, 48, 15, colorTable[CT_DKORANGE]);
-			UI_DrawProportionalString( 640-82, y, buf, UI_RIGHT, colorTable[CT_DKORANGE] );
-			trap_R_SetColor( colorTable[CT_DKORANGE] );
-			CG_DrawPic( 640-80-len-5, y+1,  -14, 20, cgs.media.scoreboardEndcap );
-			yfrom = y+20;
-			y+=20;
-
-			Com_sprintf( buf, sizeof(buf), "%s", postgameMenuInfo.winTeamText);
-			UI_DrawProportionalString( 640-34, y, buf, UI_BIGFONT|UI_RIGHT, yellow );
-			y+=35;
-
-			if (cgs.gametype == GT_CTF)
-			{
-				// HOW MANY CAPUTRES???
-				Com_sprintf( buf, sizeof(buf), "%s %i", ingame_text[IGT_CAPTURES], postgameMenuInfo.totalCaptures);
-				UI_DrawProportionalString( 640-34, y, buf, UI_RIGHT, white );
-				y+=20;
-			}
-			
-			// AND THE POINTS???
-			Com_sprintf( buf, sizeof(buf), "%s %i", ingame_text[IGT_POINTS], postgameMenuInfo.totalPoints);
-			UI_DrawProportionalString( 640-34, y, buf, UI_RIGHT, white );
-			y+=30;
-			
-			// THE SIDE BAR
-			CG_FillRect( 640-16-12, yfrom, 8, y-yfrom, colorTable[CT_DKORANGE]);
-
-
-			// THE MIDDLE BARS
-			CG_FillRect( 640-115, y, 95, 20, colorTable[CT_DKORANGE]);
-			y+=3;
-			if (postgameMenuInfo.playerGameRank==2)
-				Com_sprintf( buf, sizeof(buf), "%s", ingame_text[IGT_TEAMS_TIED]);
-			else
-				Com_sprintf( buf, sizeof(buf), "%s", ingame_text[IGT_VICTOR]);
-
-			UI_DrawProportionalString( 640-34, y, buf, UI_RIGHT, colorTable[CT_BLACK] );
-			y+=20;
-
-			y+=30;
-
-			yfrom=y;
-			CG_FillRect( 640-115, y, 95, 20, colorTable[CT_DKORANGE]);
-			y+=3;
-			if (postgameMenuInfo.playerGameRank==2)
-				Com_sprintf( buf, sizeof(buf), "%s", ingame_text[IGT_TEAMS_TIED]);
-			else
-				Com_sprintf( buf, sizeof(buf), "%s", ingame_text[IGT_DEFEATED]);
-
-			UI_DrawProportionalString( 640-34, y, buf, UI_RIGHT, colorTable[CT_BLACK] );
-			y+=25;
-
-			// LOSING TEAM NAME
-			Com_sprintf( buf, sizeof(buf), "%s", postgameMenuInfo.losTeamText);
-			UI_DrawProportionalString( 640-34, y, buf, UI_BIGFONT|UI_RIGHT, yellow );
-			y+=35;
-
-			if (cgs.gametype == GT_CTF)
-			{
-				// HOW MANY CAPUTRES???
-				Com_sprintf( buf, sizeof(buf), "%s %i", ingame_text[IGT_CAPTURES], postgameMenuInfo.losCaptures);
-				UI_DrawProportionalString( 640-34, y, buf, UI_RIGHT, white );
-				y+=20;
-			}
-			
-			// AND THE POINTS???
-			Com_sprintf( buf, sizeof(buf), "%s %i", ingame_text[IGT_POINTS], postgameMenuInfo.losPoints);
-			UI_DrawProportionalString( 640-34, y, buf, UI_RIGHT, white );
-			y+=20;
-			
-			// THE SIDE BAR
-			CG_FillRect( 640-16-12, yfrom, 8, y-yfrom, colorTable[CT_DKORANGE]);
-
-			// THE BOTTOM BAR
-			trap_R_SetColor( colorTable[CT_DKORANGE] );
-			CG_DrawPic( 640-32, y, 16, 32, cgs.media.corner_8_16_b );
-			CG_FillRect(640-100, y+4, 68, 15, colorTable[CT_DKORANGE]);
-			trap_R_SetColor( colorTable[CT_DKORANGE] );
-			CG_DrawPic( 640-100-2, y+4,  -14, 20, cgs.media.scoreboardEndcap );
-			yfrom = y+20;
-			y+=20;
+		UI_DrawProportionalString( 130, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[1], UI_CENTER, white );
+		UI_DrawProportionalString( 130, 480 - 38 - PROP_HEIGHT, ingame_text[IGT_2ND], UI_CENTER, yellow );
 		}
+
+		UI_DrawProportionalString( 320, 480 - 64 - 2 * PROP_HEIGHT, postgameMenuInfo.placeNames[0], UI_CENTER, white );
+		UI_DrawProportionalString( 320, 480 - 38 - 2 * PROP_HEIGHT, ingame_text[IGT_1ST], UI_CENTER, yellow );
 	}
 
 
@@ -1967,11 +1547,8 @@ void AW_SPPostgameMenu_f( void ) {
 	postgameMenuInfo.scoreOfMVP    = atoi( CG_Argv(numNames + postgameMenuInfo.numAwards + 4));
 	postgameMenuInfo.totalCaptures = atoi( CG_Argv(numNames + postgameMenuInfo.numAwards + 5));
 	postgameMenuInfo.totalPoints   = atoi( CG_Argv(numNames + postgameMenuInfo.numAwards + 6));
-	if (cgs.gametype <= GT_SINGLE_PLAYER)
-	{
-		postgameMenuInfo.playerGameRank = atoi( CG_Argv(numNames + postgameMenuInfo.numAwards + 7));
-		playerGameRank = postgameMenuInfo.playerGameRank;
-	}
+	postgameMenuInfo.playerGameRank = atoi( CG_Argv(numNames + postgameMenuInfo.numAwards + 7));
+	playerGameRank = postgameMenuInfo.playerGameRank;
 	postgameMenuInfo.playerTied	   = atoi( CG_Argv(numNames + postgameMenuInfo.numAwards + 8));
 	postgameMenuInfo.losCaptures = atoi( CG_Argv(numNames + postgameMenuInfo.numAwards + 9));
 	postgameMenuInfo.losPoints   = atoi( CG_Argv(numNames + postgameMenuInfo.numAwards + 10));
@@ -2001,58 +1578,46 @@ void AW_SPPostgameMenu_f( void ) {
 	{
 		postgameMenuInfo.commendationsSound = 0;
 	}
-	if (cgs.gametype <= GT_SINGLE_PLAYER)	// for FFA, TOURNAMENT, and SINGLE_PLAYER TOURNAMENT:
-	{
-		if ( playerGameRank != 0 )
-		{	// Someone else wins
-			char	*skin;
+	if ( playerGameRank != 0 )
+	{	// Someone else wins
+		char	*skin;
 
-			skin = cgs.clientinfo[clNum[0]].skinName;
+		skin = cgs.clientinfo[clNum[0]].skinName;
 
-			if( Q_stricmp( skin, "default" ) == 0 ) {
-				skin = cgs.clientinfo[clNum[0]].modelName;
-			}
-			if( Q_stricmp( skin, "red" ) == 0 ) {
-				skin = cgs.clientinfo[clNum[0]].modelName;
-			}
-			if( Q_stricmp( skin, "blue" ) == 0 ) {
-				skin = cgs.clientinfo[clNum[0]].modelName;
-			}
-
-			postgameMenuInfo.winnerSound = trap_S_RegisterSound( va( "sound/voice/computer/misc/%s_wins.wav", skin ) );
-			if (0 == postgameMenuInfo.winnerSound)
-			{
-				postgameMenuInfo.winnerSound = trap_S_RegisterSound( va( "%s", "sound/voice/computer/misc/progcomp.wav" ) );
-			}
-			postgameMenuInfo.winnerDelay = 2500;
-			if (1 == playerGameRank || postgameMenuInfo.playerTied==2)
-			{
-				postgameMenuInfo.youPlacedSound = trap_S_RegisterSound("sound/voice/computer/misc/2nd.wav");
-			}
-			else if (2 == playerGameRank || postgameMenuInfo.playerTied==3)
-			{
-				postgameMenuInfo.youPlacedSound = trap_S_RegisterSound("sound/voice/computer/misc/3rd.wav");
-			}
-			else
-			{
-				postgameMenuInfo.youPlacedSound = trap_S_RegisterSound("sound/voice/computer/misc/notPlace.wav");
-			}
-
-			// You lost, you get to listen to loser music.
-			// This might be a bit of a downer in FFA, since far more often than not you are not the winner...
-			// However, in this case the track is NOT a funeral march with an opera singer bellowing "LOSER, LOSER, LOSER, HA HA".
-			// SOOOOOO for consistency's sake, you will always hear the "loss" track when you don't win.  --Pat
-			trap_S_StartBackgroundTrack( "music/loss", "music/loss" );
+		if( Q_stricmp( skin, "default" ) == 0 ) {
+			skin = cgs.clientinfo[clNum[0]].modelName;
 		}
-		else 
-		{	// You win
-			postgameMenuInfo.winnerSound = trap_S_RegisterSound( "sound/voice/computer/misc/youwin.wav" );
-			postgameMenuInfo.youPlacedSound = 0;
-			postgameMenuInfo.winnerDelay = 500;
-
-			// You won, you get to listen to the winner music.
-			trap_S_StartBackgroundTrack( "music/win", "music/win" );
+		if( Q_stricmp( skin, "red" ) == 0 ) {
+			skin = cgs.clientinfo[clNum[0]].modelName;
 		}
+		if( Q_stricmp( skin, "blue" ) == 0 ) {
+			skin = cgs.clientinfo[clNum[0]].modelName;
+		}
+
+		postgameMenuInfo.winnerSound = trap_S_RegisterSound( va( "sound/voice/computer/misc/%s_wins.wav", skin ) );
+		if (0 == postgameMenuInfo.winnerSound)
+		{
+			postgameMenuInfo.winnerSound = trap_S_RegisterSound( va( "%s", "sound/voice/computer/misc/progcomp.wav" ) );
+		}
+		postgameMenuInfo.winnerDelay = 2500;
+		if (1 == playerGameRank || postgameMenuInfo.playerTied==2)
+		{
+			postgameMenuInfo.youPlacedSound = trap_S_RegisterSound("sound/voice/computer/misc/2nd.wav");
+		}
+		else if (2 == playerGameRank || postgameMenuInfo.playerTied==3)
+		{
+			postgameMenuInfo.youPlacedSound = trap_S_RegisterSound("sound/voice/computer/misc/3rd.wav");
+		}
+		else
+		{
+			postgameMenuInfo.youPlacedSound = trap_S_RegisterSound("sound/voice/computer/misc/notPlace.wav");
+		}
+
+		// You lost, you get to listen to loser music.
+		// This might be a bit of a downer in FFA, since far more often than not you are not the winner...
+		// However, in this case the track is NOT a funeral march with an opera singer bellowing "LOSER, LOSER, LOSER, HA HA".
+		// SOOOOOO for consistency's sake, you will always hear the "loss" track when you don't win.  --Pat
+		trap_S_StartBackgroundTrack( "music/loss", "music/loss" );
 	}
 	else 									// for TEAM, and CAPTURE THE FLAG:
 	{

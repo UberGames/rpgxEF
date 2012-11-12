@@ -609,65 +609,18 @@ static void CG_RegisterSounds( void )
 	cg.loadLCARSStage = 1;	// Loading bar stage 1
 	CG_LoadingString( "sounds" );
 
-	//TiM
-	/*if ( cgs.timelimit || cg_buildScript.integer ) {	// should we always load this?
-		cgs.media.oneMinuteSound = trap_S_RegisterSound( "sound/voice/computer/misc/1_minute.wav" );
-		cgs.media.fiveMinuteSound = trap_S_RegisterSound( "sound/voice/computer/misc/5_minute.wav" );
-		cgs.media.suddenDeathSound = trap_S_RegisterSound( "sound/voice/computer/misc/sudden_death.wav" );
-	}*/
-
-	//TiM
-	/*if ( cgs.fraglimit || cg_buildScript.integer ) {
-		cgs.media.oneFragSound = trap_S_RegisterSound( "sound/voice/computer/misc/1_frag.wav" );
-		cgs.media.twoFragSound = trap_S_RegisterSound( "sound/voice/computer/misc/2_frags.wav" );
-		cgs.media.threeFragSound = trap_S_RegisterSound( "sound/voice/computer/misc/3_frags.wav" );
-	}*/
-
-//	if ( cgs.gametype == GT_TOURNAMENT || cg_buildScript.integer ) {
-//  We always need this since a warmup can be enabled in any game mode
-//TiM	/*cgs.media.count3Sound = trap_S_RegisterSound( "sound/voice/computer/misc/three.wav" );
-		cgs.media.count2Sound = trap_S_RegisterSound( "sound/voice/computer/misc/two.wav" );
-		cgs.media.count1Sound = trap_S_RegisterSound( "sound/voice/computer/misc/one.wav" );
-		cgs.media.countFightSound = trap_S_RegisterSound( "sound/voice/computer/misc/fight.wav" );
-		cgs.media.countPrepareSound = trap_S_RegisterSound( "sound/voice/computer/misc/prepare.wav" );
-//	}
-	//TiM
-/*	if ( cgs.gametype >= GT_TEAM || cg_buildScript.integer ) {
-		cgs.media.redLeadsSound = trap_S_RegisterSound( "sound/voice/computer/misc/redleads.wav" );
-		cgs.media.blueLeadsSound = trap_S_RegisterSound( "sound/voice/computer/misc/blueleads.wav" );
-		cgs.media.teamsTiedSound = trap_S_RegisterSound( "sound/voice/computer/misc/teamstied.wav" );
-		cgs.media.hitTeamSound = trap_S_RegisterSound( "sound/feedback/hit_teammate.wav" );
-	}*/
-
-	//TiM
-	/*if (cgs.gametype == GT_CTF || cg_buildScript.integer)
-	{
-		cgs.media.ctfStealSound = trap_S_RegisterSound("sound/voice/computer/misc/flagtk_blu.wav");
-		cgs.media.ctfReturnSound = trap_S_RegisterSound("sound/voice/computer/misc/flagret_blu.wav");
-		cgs.media.ctfScoreSound = trap_S_RegisterSound("sound/voice/computer/misc/flagcap_blu.wav");
-		cgs.media.ctfYouStealVoiceSound = trap_S_RegisterSound("sound/voice/computer/misc/stolen.wav");
-		cgs.media.ctfYouDroppedVoiceSound = trap_S_RegisterSound("sound/voice/computer/misc/dropped_e.wav");
-		cgs.media.ctfYouReturnVoiceSound = trap_S_RegisterSound("sound/voice/computer/misc/returned.wav");
-		cgs.media.ctfYouScoreVoiceSound = trap_S_RegisterSound("sound/voice/computer/misc/scored.wav");
-		cgs.media.ctfTheyStealVoiceSound = trap_S_RegisterSound("sound/voice/computer/misc/stolen_e.wav");
-		cgs.media.ctfTheyDroppedVoiceSound = trap_S_RegisterSound("sound/voice/computer/misc/dropped.wav");	// Note the flip, because YOU dropped THEIR flag
-		cgs.media.ctfTheyReturnVoiceSound = trap_S_RegisterSound("sound/voice/computer/misc/returned_e.wav");
-		cgs.media.ctfTheyScoreVoiceSound = trap_S_RegisterSound("sound/voice/computer/misc/scored_e.wav");
-	}*/
+	cgs.media.count2Sound = trap_S_RegisterSound( "sound/voice/computer/misc/two.wav" );
+	cgs.media.count1Sound = trap_S_RegisterSound( "sound/voice/computer/misc/one.wav" );
+	cgs.media.countFightSound = trap_S_RegisterSound( "sound/voice/computer/misc/fight.wav" );
+	cgs.media.countPrepareSound = trap_S_RegisterSound( "sound/voice/computer/misc/prepare.wav" );
 
 	cgs.media.interfaceSnd1 = trap_S_RegisterSound( "sound/interface/button4.wav" );
 
-	//cgs.media.selectSound = trap_S_RegisterSound( "sound/silence.wav" );//trap_S_RegisterSound( "sound/weapons/change.wav" );
-	//cgs.media.wearOffSound = trap_S_RegisterSound( "sound/items/wearoff.wav" );
 	cgs.media.useNothingSound = trap_S_RegisterSound( "sound/items/use_nothing.wav" );
 
-	//TiM//cgs.media.holoOpenSound = trap_S_RegisterSound( "sound/movers/doors/holoopen.wav" );
 	cgs.media.teleInSound = trap_S_RegisterSound( "sound/world/transin.wav" );
-	//cgs.media.teleOutSound = trap_S_RegisterSound( "sound/world/transout.wav" );
 	cgs.media.transportSound = trap_S_RegisterSound( "sound/world/transporter.wav" );
 	cgs.media.respawnSound = trap_S_RegisterSound( "sound/items/respawn1.wav" );
-
-	//cgs.media.noAmmoSound = trap_S_RegisterSound( "sound/weapons/noammo.wav" );
 
 	cgs.media.talkSound = trap_S_RegisterSound( "sound/interface/communicator.wav" );
 	
@@ -681,40 +634,15 @@ static void CG_RegisterSounds( void )
 
 	cgs.media.splatSound = trap_S_RegisterSound( "sound/weapons/bodyfall.wav");
 
-	//cgs.media.hitSound = trap_S_RegisterSound( "sound/feedback/hit.wav" );
-	//cgs.media.shieldHitSound = trap_S_RegisterSound( "sound/feedback/shieldHit.wav" );
-	//cgs.media.shieldPierceSound = trap_S_RegisterSound( "sound/feedback/shieldPierce.wav" );
-
-	//TiM
-	/*cgs.media.rewardImpressiveSound		= trap_S_RegisterSound( "sound/voice/computer/misc/impressive.wav" );
-	cgs.media.rewardExcellentSound		= trap_S_RegisterSound( "sound/voice/computer/misc/excellent.wav" );
-	cgs.media.rewardDeniedSound			= trap_S_RegisterSound( "sound/voice/computer/misc/denied.wav" );
-	cgs.media.rewardFirstStrikeSound	= trap_S_RegisterSound( "sound/voice/computer/misc/1ststrike.wav");
-	cgs.media.rewardAceSound			= trap_S_RegisterSound( "sound/voice/computer/misc/ace.wav");
-	cgs.media.rewardExpertSound			= trap_S_RegisterSound( "sound/voice/computer/misc/expert.wav");
-	cgs.media.rewardMasterSound			= trap_S_RegisterSound( "sound/voice/computer/misc/master.wav");
-	cgs.media.rewardChampionSound		= trap_S_RegisterSound( "sound/voice/computer/misc/champion.wav");*/
-
-	//TiM
-	/*cgs.media.takenLeadSound = trap_S_RegisterSound( "sound/voice/computer/misc/takenlead.wav");
-	cgs.media.tiedLeadSound = trap_S_RegisterSound( "sound/voice/computer/misc/tiedlead.wav");
-	cgs.media.lostLeadSound = trap_S_RegisterSound( "sound/voice/computer/misc/lostlead.wav");*/
-
 	cgs.media.watrInSound = trap_S_RegisterSound( "sound/player/watr_in.wav");
 	cgs.media.watrOutSound = trap_S_RegisterSound( "sound/player/watr_out.wav");
 	cgs.media.watrUnSound = trap_S_RegisterSound( "sound/player/watr_un.wav");
 
 	cgs.media.jumpPadSound = trap_S_RegisterSound ("sound/items/damage3.wav" );
 
-	//cgs.media.poweruprespawnSound = trap_S_RegisterSound ("sound/items/poweruprespawn.wav");
 	cgs.media.disintegrateSound = trap_S_RegisterSound( "sound/weapons/prifle/disint.wav" );
 	cgs.media.disintegrate2Sound = trap_S_RegisterSound( "sound/weapons/prifle/disint2.wav" );
 	cgs.media.playerExplodeSound = trap_S_RegisterSound( "sound/weapons/explosions/fireball.wav" );
-
-	//TiM
-	/*cgs.media.holoInitSound = trap_S_RegisterSound("sound/voice/computer/misc/proginit.wav");
-	cgs.media.holoDoorSound = trap_S_RegisterSound("sound/movers/doors/holoopen.wav");
-	cgs.media.holoFadeSound = trap_S_RegisterSound("sound/movers/holodeckdecloak.wav");*/
 
 	cgs.media.phaserEmptySound = trap_S_RegisterSound("sound/weapons/phaser/phaserempty.wav");
 	
@@ -1068,67 +996,6 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.chunkModels[MT_STONE][i] = trap_R_RegisterModel( va( "models/chunks/generic/chunks_%i.md3", i+1 ) );
 	}
 
-	//TiM
-	/*if ( cgs.gametype == GT_CTF || cg_buildScript.integer ) {
-		cgs.media.redFlagModel = trap_R_RegisterModel( "models/flags/flag_red.md3" );//must match bg_misc item and botfiles/items.c
-		cgs.media.blueFlagModel = trap_R_RegisterModel( "models/flags/flag_blue.md3" );//must match bg_misc item and botfiles/items.c
-		cgs.media.redFlagShader[0] = trap_R_RegisterShaderNoMip( "icons/iconf_red1" );
-		cgs.media.redFlagShader[1] = trap_R_RegisterShaderNoMip( "icons/iconf_red2" );
-		cgs.media.redFlagShader[2] = trap_R_RegisterShaderNoMip( "icons/iconf_red3" );
-		cgs.media.blueFlagShader[0] = trap_R_RegisterShaderNoMip( "icons/iconf_blu1" );
-		cgs.media.blueFlagShader[1] = trap_R_RegisterShaderNoMip( "icons/iconf_blu2" );
-		cgs.media.blueFlagShader[2] = trap_R_RegisterShaderNoMip( "icons/iconf_blu3" );
-
-		// this determines the normal shaders / skins used by the ctf flags
-		if (Q_stricmp("", CG_ConfigString( CS_RED_GROUP)))
-		{
-			// try loading the group based flag skin
-			Com_sprintf(temp_skin, sizeof(temp_skin),"models/flags/%s_red", CG_ConfigString( CS_RED_GROUP));
-			cgs.media.redFlagShader[3] = trap_R_RegisterShader3D( temp_skin );
-			// did it load?
-			if (!cgs.media.redFlagShader[3])
-			{
-				//no, go with default skin
-				cgs.media.redFlagShader[3] = trap_R_RegisterShader3D( "models/flags/default_red" );
-			}
-		}
-		else
-		{
-			cgs.media.redFlagShader[3] = trap_R_RegisterShader3D( "models/flags/default_red" );
-		}
-
-		if (Q_stricmp("", CG_ConfigString( CS_BLUE_GROUP)))
-		{
-			// try loading the group based flag skin
-			Com_sprintf(temp_skin, sizeof(temp_skin),"models/flags/%s_blue", CG_ConfigString( CS_BLUE_GROUP));
-			cgs.media.blueFlagShader[3] = trap_R_RegisterShader3D( temp_skin );
-			// did it load?
-			if (!cgs.media.blueFlagShader[3])
-			{
-				//no, go with default skin
-				cgs.media.blueFlagShader[3] = trap_R_RegisterShader3D( "models/flags/default_blue" );
-			}
-		}
-		else
-		{
-			cgs.media.blueFlagShader[3] = trap_R_RegisterShader3D( "models/flags/default_blue" );
-		}
-
-	}*/
-
-	//TiM
-	/*if ( cgs.gametype >= GT_TEAM || cg_buildScript.integer ) {
-		cgs.media.teamRedShader = trap_R_RegisterShader( "sprites/team_red" );
-		cgs.media.teamBlueShader = trap_R_RegisterShader( "sprites/team_blue" );
-		cgs.media.redQuadShader = trap_R_RegisterShader("powerups/blueflag" );
-		cgs.media.teamStatusBar = trap_R_RegisterShader( "gfx/2d/colorbar.tga" );
-	}*/
-
-	//cgs.media.chatShader = trap_R_RegisterShader( "sprites/chat" );
-
-	//cgs.media.bloodExplosionShader = trap_R_RegisterShader( "bloodExplosion" );
-
-	//cgs.media.ringFlashModel = trap_R_RegisterModel("models/weaphits/ring02.md3");
 	cgs.media.teleportEffectModel = trap_R_RegisterModel( "models/misc/telep.md3" );
 	cgs.media.teleportEffectShader = trap_R_RegisterShader( "playerTeleport" );
 

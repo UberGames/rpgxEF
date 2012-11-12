@@ -1624,23 +1624,11 @@ static void CG_LoadClientInfo( clientInfo_t *ci , int clientNum) {
 		{
 			if ( !CG_RegisterClientModelname( ci, cg_defaultChar.string, DEFAULT_MODEL, ci->skinName ) )
 			{
-				// fall back
-				if ( cgs.gametype >= GT_TEAM ) 
+				if ( !CG_RegisterClientModelname( ci, cg_defaultChar.string, DEFAULT_MODEL, DEFAULT_SKIN ) )
 				{
-					// keep skin name
-					if ( !CG_RegisterClientModelname( ci, DEFAULT_CHAR, DEFAULT_MODEL, ci->skinName ) ) {
-						CG_Error( "DEFAULT_CHAR / model /skin ( %s/%s/%s ) failed to register",
-							DEFAULT_CHAR, DEFAULT_MODEL, ci->skinName );
-					}
-				} 
-				else 
-				{
-					if ( !CG_RegisterClientModelname( ci, cg_defaultChar.string, DEFAULT_MODEL, DEFAULT_SKIN ) )
+					if ( !CG_RegisterClientModelname( ci, DEFAULT_CHAR, DEFAULT_MODEL, DEFAULT_SKIN ) ) 
 					{
-						if ( !CG_RegisterClientModelname( ci, DEFAULT_CHAR, DEFAULT_MODEL, DEFAULT_SKIN ) ) 
-						{
-							CG_Error( "DEFAULT_CHAR (%s) failed to register", DEFAULT_CHAR );
-						}
+						CG_Error( "DEFAULT_CHAR (%s) failed to register", DEFAULT_CHAR );
 					}
 				}
 			}
@@ -1819,30 +1807,6 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci, int clientNum ) {
 	int		i;
 	clientInfo_t	*match;
 
-	// if we are in teamplay, only grab a model if the skin is correct
-	if ( cgs.gametype >= GT_TEAM ) {
-		// this is ONLY for optimization - it's exactly the same effect as CG_LoadClientInfo
-		for ( i = 0 ; i < cgs.maxclients ; i++ ) {
-			match = &cgs.clientinfo[ i ];
-			if ( !match->infoValid ) {
-				continue;
-			}
-			if ( Q_stricmp( ci->skinName, match->skinName ) ) {
-				continue;
-			}
-			ci->deferred = qtrue;
-			CG_CopyClientInfoModel( match, ci );
-			return;
-		}
-
-		// load the full model, because we don't ever want to show
-		// an improper team skin.  This will cause a hitch for the first
-		// player, when the second enters.  Combat shouldn't be going on
-		// yet, so it shouldn't matter
-		CG_LoadClientInfo( ci, clientNum );
-		return;
-	}
-
 	// find the first valid clientinfo and grab its stuff
 	for ( i = 0 ; i < cgs.maxclients ; i++ ) {
 		match = &cgs.clientinfo[ i ];
@@ -1964,13 +1928,6 @@ void CG_NewClientInfo( int clientNum ) {
 //		Q_strncpyz( newInfo.modelName, DEFAULT_MODEL, sizeof( newInfo.modelName ) );
 //		Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
 
-		if ( cgs.gametype >= GT_TEAM ) {
-			// keep skin name
-			skin = strchr( v, '/' );
-			if ( model ) {
-				Q_strncpyz( newInfo.skinName, skin + 1, sizeof( newInfo.skinName ) );
-			}
-		}
 	} else {
 		//Q_strncpyz( newInfo.modelName, v, sizeof( newInfo.modelName ) );
 		//Okay! Here we go! We gotta take a string like kulhane/admiral/teal
@@ -2074,8 +2031,7 @@ void CG_NewClientInfo( int clientNum ) {
 			( cg_deferPlayers.integer && !cg_buildScript.integer && !cg.loading && 
 			((clientNum != cg.predictedPlayerState.clientNum) && cg.validPPS) ) ) {
 			// keep whatever they had if it won't violate team skins
-			if ( ci->infoValid && 
-				( cgs.gametype < GT_TEAM || !Q_stricmp( newInfo.skinName, ci->skinName ) ) ) {
+			if ( ci->infoValid || !Q_stricmp( newInfo.skinName, ci->skinName ) ) {
 				CG_CopyClientInfoModel( ci, &newInfo );
 				newInfo.deferred = qtrue;
 			} else {
@@ -3294,114 +3250,6 @@ static void CG_PlayerSprites( centity_t *cent ) {
 		CG_PlayerFloatSprite( cent, cgs.media.connectionShader );
 		return;
 	}
-
-/*
-	if ( cent->currentState.eFlags & EF_TALK )
-	{
-		if ( cgs.clientinfo[cent->currentState.number].pClass == PC_ACTIONHERO )
-		{
-			CG_PlayerFloatSprite( cent, cgs.media.heroSpriteShader );
-		}
-		if ( cgs.clientinfo[cent->currentState.number].pClass == PC_BORG )
-		{
-			if ( (cg_entities[cent->currentState.number].currentState.powerups&(1<<PW_LASER)) )
-			{
-				CG_PlayerFloatSprite( cent, cgs.media.borgQueenIconShader );
-			}
-			else
-			{
-				CG_PlayerFloatSprite( cent, cgs.media.borgIconShader );
-			}
-		}
-		CG_PlayerFloatSprite( cent, cgs.media.chatShader );
-		return;
-	}
-
-	//label the action hero
-	if ( cgs.clientinfo[cent->currentState.number].pClass == PC_ACTIONHERO )
-	{
-		CG_PlayerFloatSprite( cent, cgs.media.heroSpriteShader );
-		return;
-	}
-
-	//Special hack: if it's Borg who has regen going, must be Borg queen
-	if ( cgs.clientinfo[cent->currentState.number].pClass == PC_BORG )
-	{
-		if ( (cg_entities[cent->currentState.number].currentState.powerups&(1<<PW_LASER)) )
-		{
-			CG_PlayerFloatSprite( cent, cgs.media.borgQueenIconShader );
-			return;
-		}
-	}
-
-	//NOTE: Borg *Queen* should have been caught above
-	if ( cgs.clientinfo[cent->currentState.number].pClass == PC_BORG )
-	{
-		CG_PlayerFloatSprite( cent, cgs.media.borgIconShader );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_FIRSTSTRIKE ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalFirstStrike );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_IMPRESSIVE ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_EXCELLENT ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalExcellent );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_ACE ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalAce );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_EXPERT ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalExpert );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_MASTER ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalMaster );
-		return;
-	}
-
-	if ( cent->currentState.eFlags & EF_AWARD_CHAMPION ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalChampion );
-		return;
-	}
-
-	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
-	if ( !(cent->currentState.eFlags & EF_DEAD) && 
-			cg.snap->ps.persistant[PERS_TEAM] == team &&
-			cgs.gametype >= GT_TEAM &&
-			cent->currentState.number != cg.snap->ps.clientNum )	// Don't show a sprite above a player's own head in 3rd person.
-	{
-		if (team==TEAM_RED)
-		{
-			CG_PlayerFloatSprite( cent, cgs.media.teamRedShader );
-		}
-		else if (team==TEAM_BLUE)
-		{
-			CG_PlayerFloatSprite( cent, cgs.media.teamBlueShader );
-		}
-		// else don't show an icon.  There currently are no other team types.
-
-		return;
-	}*/
-
-	//RPG-X: RedTechie - Cloak sprite basiclly other admins will see this only to tell if that player is cloaked and a admin
-	//if(	cent->currentState.powerups & ( 1 << PW_INVIS ) ){
-	//	CG_PlayerFloatSprite( cent, cgs.media.cloakspriteShader );
-	//	return;
-	//}
-return;
-
 }
 
 /*

@@ -1299,190 +1299,6 @@ static float CG_DrawTimer( float y ) {
 #define TINYPAD 1.25
 
 /*
-=================
-CG_DrawTeamOverlay
-=================
-*/
-
-#define TEAM_OVERLAY_MAXNAME_WIDTH	12
-#define TEAM_OVERLAY_MAXLOCATION_WIDTH	16
-
-static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
-	int x, w, h, xx;
-	int i, j, len;
-	const char *p;
-	vec4_t		hcolor;
-	int pwidth, lwidth;
-	int plyrs;
-	char st[16];
-	clientInfo_t *ci;
-	int ret_y;
-
-	if ( !cg_drawTeamOverlay.integer )
-	{
-		return y;
-	}
-
-	if ( cg.snap->ps.persistant[PERS_TEAM] != TEAM_RED && cg.snap->ps.persistant[PERS_TEAM] != TEAM_BLUE )
-	{
-		return y; // Not on any team
-	}
-
-	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
-	{
-		return y;
-	}
-
-	plyrs = 0;
-	w = 0;
-
-	// max player name width
-	pwidth = 0;
-	for (i = 0; i < numSortedTeamPlayers; i++) {
-		ci = cgs.clientinfo + sortedTeamPlayers[i];
-		if ( ci->infoValid && ci->team == cg.snap->ps.persistant[PERS_TEAM]) {
-			plyrs++;
-			len = CG_DrawStrlen(ci->name);
-
-			if (len > pwidth)
-				pwidth = len;
-			if ( ci->pClass >= 0 /*PC_NOCLASS*/ )//if any one of them has a class, then we alloc space for the icon
-				w = 1;
-		}
-	}
-
-	if (!plyrs)
-		return y;
-
-	if (pwidth > TEAM_OVERLAY_MAXNAME_WIDTH)
-		pwidth = TEAM_OVERLAY_MAXNAME_WIDTH;
-
-	// max location name width
-	lwidth = 0;
-	for (i = 1; i < MAX_LOCATIONS; i++) {
-		p = CG_ConfigString(CS_LOCATIONS + i);
-		if (p && *p) {
-			len = CG_DrawStrlen(p);
-			if (len > lwidth)
-				lwidth = len;
-		}
-	}
-
-	if (lwidth > TEAM_OVERLAY_MAXLOCATION_WIDTH)
-		lwidth = TEAM_OVERLAY_MAXLOCATION_WIDTH;
-
-	w += (pwidth + lwidth + 4);
-	w *= (TINYCHAR_WIDTH * TINYPAD);
-
-	if ( right )
-		x = 640 - w;
-	else
-		x = 0;
-
-	h = plyrs * (TINYCHAR_HEIGHT * TINYPAD);
-
-	if ( upper ) {
-		ret_y = y + h;
-	} else {
-		y -= h;
-		ret_y = y;
-	}
-
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED ) {
-		hcolor[0] = 1;
-		hcolor[1] = 0;
-		hcolor[2] = 0;
-		hcolor[3] = 0.33;
-	} else { 
-		hcolor[0] = 0;
-		hcolor[1] = 0;
-		hcolor[2] = 1;
-		hcolor[3] = 0.33;
-	}
-	trap_R_SetColor( hcolor );
-	CG_DrawPic( x, y, w, h, cgs.media.teamStatusBar );
-	trap_R_SetColor( NULL );
-
-	for (i = 0; i < numSortedTeamPlayers; i++) {
-		ci = cgs.clientinfo + sortedTeamPlayers[i];
-		if ( ci->infoValid && ci->team == cg.snap->ps.persistant[PERS_TEAM]) {
-
-			xx = x + TINYCHAR_WIDTH;
-			//Draw class icon if appropriate
-			if ( ci->pClass >= 0 )
-			{
-				xx += (TINYCHAR_WIDTH * TINYPAD);
-			}
-			//draw name
-
-			hcolor[0] = hcolor[1] = hcolor[2] = hcolor[3] = 1.0;
-			UI_DrawProportionalString( xx, y, ci->name, UI_TINYFONT, hcolor);
-
-			if (lwidth) {
-				p = CG_ConfigString(CS_LOCATIONS + ci->location);
-				if (!p || !*p)
-					p = "unknown";
-				len = CG_DrawStrlen(p);
-				if (len > lwidth)
-					len = lwidth;
-
-				xx = x + TINYCHAR_WIDTH * 2 + TINYCHAR_WIDTH * pwidth;
-				UI_DrawProportionalString( xx, y, p, UI_TINYFONT, hcolor);
-
-			}
-
-			CG_GetColorForHealth( ci->health, ci->armor, hcolor );
-
-			Com_sprintf (st, sizeof(st), "%3i %3i", ci->health,	ci->armor);
-
-			xx = x + TINYCHAR_WIDTH * 3 + 
-				TINYCHAR_WIDTH * pwidth + TINYCHAR_WIDTH * lwidth;
-
-			UI_DrawProportionalString( xx, y, st, UI_TINYFONT, hcolor);
-
-			// draw weapon icon
-			xx += (TINYCHAR_WIDTH * TINYPAD) * 3;
-
-			if ( cg_weapons[ci->curWeapon].weaponIcon ) {
-				CG_DrawPic( xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 
-					cg_weapons[ci->curWeapon].weaponIcon );
-			} else {
-				CG_DrawPic( xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 
-					cgs.media.deferShader );
-			}
-
-			// Draw powerup icons
-			if (right) {
-				xx = x;
-			} else {
-				xx = x + w - TINYCHAR_WIDTH;
-			}
-			for (j = 0; j < PW_NUM_POWERUPS; j++) {
-				if (ci->powerups & (1 << j)) {
-					gitem_t	*item = BG_FindItemForPowerup( j );
-
-					if (item)
-					{
-						CG_DrawPic( xx, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 
-							trap_R_RegisterShader( item->icon ) );
-					}
-					if (right) {
-						xx -= (TINYCHAR_WIDTH * TINYPAD);
-					} else {
-						xx += (TINYCHAR_WIDTH * TINYPAD);
-					}
-				}
-			}
-
-			y += (TINYCHAR_HEIGHT * TINYPAD);
-		}
-	}
-
-	return ret_y;
-}
-
-
-/*
 =====================
 CG_DrawUpperRight
 
@@ -1504,10 +1320,6 @@ static void CG_DrawUpperRight( void ) {
 	if ( cg_drawSnapshot.integer ) {
 		y = CG_DrawSnapshot( y );
 	}
-
-	if ( cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 1 ) {
-		y = CG_DrawTeamOverlay( y, qtrue, qtrue );
-	} 
 
 	cgs.widescreen.state = WIDESCREEN_NONE;
 }
@@ -1661,10 +1473,6 @@ static void CG_DrawLowerRight( void ) {
 
 	cgs.widescreen.state = WIDESCREEN_RIGHT;
 
-	if ( cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 2 ) {
-		y = CG_DrawTeamOverlay( y, qtrue, qfalse );
-	} 
-
 	y = CG_DrawScores( y );
 	y = CG_DrawPowerups( y );
 
@@ -1715,11 +1523,6 @@ static void CG_DrawLowerLeft( void ) {
 
 	cgs.widescreen.state = WIDESCREEN_LEFT;
 
-	if ( cgs.gametype >= GT_TEAM && cg_drawTeamOverlay.integer == 3 ) {
-		y = CG_DrawTeamOverlay( y, qfalse, qfalse );
-	} 
-
-
 	y = CG_DrawPickupItem( y );
 
 	cgs.widescreen.state = WIDESCREEN_NONE;
@@ -1728,77 +1531,6 @@ static void CG_DrawLowerLeft( void ) {
 
 
 //===========================================================================================
-
-/*
-=================
-CG_DrawTeamInfo
-=================
-*/
-static void CG_DrawTeamInfo( void ) {
-	int w, h;
-	int i, len;
-	vec4_t		hcolor;
-	int		chatHeight;
-
-#define CHATLOC_Y 420 // bottom end
-#define CHATLOC_X 0
-
-	if (cg_teamChatHeight.integer < TEAMCHAT_HEIGHT)
-		chatHeight = cg_teamChatHeight.integer;
-	else
-		chatHeight = TEAMCHAT_HEIGHT;
-	if (chatHeight <= 0)
-		return; // disabled
-
-	if (cgs.teamLastChatPos != cgs.teamChatPos) {
-		if (cg.time - cgs.teamChatMsgTimes[cgs.teamLastChatPos % chatHeight] > cg_teamChatTime.integer) {
-			cgs.teamLastChatPos++;
-		}
-
-		h = (cgs.teamChatPos - cgs.teamLastChatPos) * TINYCHAR_HEIGHT;
-
-		w = 0;
-
-		for (i = cgs.teamLastChatPos; i < cgs.teamChatPos; i++) {
-			len = CG_DrawStrlen(cgs.teamChatMsgs[i % chatHeight]);
-			if (len > w)
-				w = len;
-		}
-		w *= TINYCHAR_WIDTH;
-		w += TINYCHAR_WIDTH * 2;
-
-		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED ) {
-			hcolor[0] = 1;
-			hcolor[1] = 0;
-			hcolor[2] = 0;
-			hcolor[3] = 0.33;
-		} else if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE ) {
-			hcolor[0] = 0;
-			hcolor[1] = 0;
-			hcolor[2] = 1;
-			hcolor[3] = 0.33;
-		} else {
-			hcolor[0] = 0;
-			hcolor[1] = 1;
-			hcolor[2] = 0;
-			hcolor[3] = 0.33;
-		}
-
-		trap_R_SetColor( hcolor );
-		CG_DrawPic( CHATLOC_X, CHATLOC_Y - h, 640, h, cgs.media.teamStatusBar );
-		trap_R_SetColor( NULL );
-
-		hcolor[0] = hcolor[1] = hcolor[2] = 1.0;
-		hcolor[3] = 1.0;
-
-		for (i = cgs.teamChatPos - 1; i >= cgs.teamLastChatPos; i--) {
-			UI_DrawProportionalString( CHATLOC_X + TINYCHAR_WIDTH, 
-				CHATLOC_Y - (cgs.teamChatPos - i)*TINYCHAR_HEIGHT, 
-				cgs.teamChatMsgs[i % chatHeight], UI_TINYFONT, hcolor);
-
-		}
-	}
-}
 
 /*
 ===================
@@ -2851,7 +2583,6 @@ static vec3_t	playerMaxs = {12, 12, 32}; // {15, 15, 32}
 static void CG_DrawCrosshairNames( void ) {
 	float		*color;
 	char		name[MAX_QPATH];
-	int			team;
 	centity_t	*cent;
 	int			x, y;
 	qboolean		tinyFont;
@@ -3046,30 +2777,9 @@ static void CG_DrawCrosshairNames( void ) {
 	//Now only draw team names + health if specifically wanted
 	Q_strncpyz (name, cgs.clientinfo[ cg.crosshairClientNum ].name, sizeof (name) );
 
-	// Draw in red if red team, blue if blue team
-	if (cgs.gametype >= GT_TEAM) 
-	{
-		Q_CleanStr(name);
-		team = cgs.clientinfo[ cg.crosshairClientNum ].team;
-		if (team==TEAM_RED)
-		{
-			color[0] = colorRed[0];
-			color[1] = colorRed[1];
-			color[2] = colorRed[2];
-		}
-		else
-		{
-			color[0] = colorBlue[0];
-			color[1] = colorBlue[1];
-			color[2] = colorBlue[2];
-		}
-	}
-	else
-	{
-		color[0] = colorTable[CT_YELLOW][0];
-		color[1] = colorTable[CT_YELLOW][1];
-		color[2] = colorTable[CT_YELLOW][2];
-	}
+	color[0] = colorTable[CT_YELLOW][0];
+	color[1] = colorTable[CT_YELLOW][1];
+	color[2] = colorTable[CT_YELLOW][2];
 
 	if ( !cg_dynamicCrosshairNames.integer )
 	{
@@ -3132,12 +2842,6 @@ static void CG_DrawSpectator(void) {
 	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR )
 	{
 		UI_DrawProportionalString(SCREEN_WIDTH/2, SCREEN_HEIGHT - ((BIGCHAR_HEIGHT * 1.50) * 2) , ingame_text[IGT_SPECTATOR], UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
-	}
-	if ( cgs.gametype == GT_TOURNAMENT ) {
-		UI_DrawProportionalString(SCREEN_WIDTH/2,  SCREEN_HEIGHT - (BIGCHAR_HEIGHT * 1.5), ingame_text[IGT_WAITINGTOPLAY], UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
-	}
-	if ( cgs.gametype == GT_TEAM || cgs.gametype == GT_CTF ) {
-		UI_DrawProportionalString(SCREEN_WIDTH/2,  SCREEN_HEIGHT - (BIGCHAR_HEIGHT * 1.5), ingame_text[IGT_USEDTEAMMENU], UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
 	}
 }
 
@@ -3259,8 +2963,6 @@ extern void CG_AddGameModNameToGameName( char *gamename );
 static void CG_DrawWarmup( void ) {
 	int			w;
 	int			sec;
-	int			i;
-	clientInfo_t	*ci1, *ci2;
 	const char	*s;
 
 	sec = cg.warmup;
@@ -3277,46 +2979,17 @@ static void CG_DrawWarmup( void ) {
 		return;
 	}
 
-	if (cgs.gametype == GT_TOURNAMENT) {
-		// find the two active players
-		ci1 = NULL;
-		ci2 = NULL;
-		for ( i = 0 ; i < cgs.maxclients ; i++ ) {
-			if ( cgs.clientinfo[i].infoValid && cgs.clientinfo[i].team == TEAM_FREE ) {
-				if ( !ci1 ) {
-					ci1 = &cgs.clientinfo[i];
-				} else {
-					ci2 = &cgs.clientinfo[i];
-				}
-			}
-		}
+	char	gamename[1024];
 
-		if ( ci1 && ci2 ) {
-			s = va( "%s vs %s", ci1->name, ci2->name );
-			w = UI_ProportionalStringWidth(s,UI_BIGFONT);
-			UI_DrawProportionalString( (SCREEN_WIDTH/2), 20,s, UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
-		}
-	} else {
-		char	gamename[1024];
+	s = ingame_text[IGT_GAME_FREEFORALL];
 
-		if ( cgs.gametype == GT_FFA ) {
-			s = ingame_text[IGT_GAME_FREEFORALL];
-		} else if ( cgs.gametype == GT_TEAM ) {
-			s =ingame_text[IGT_GAME_TEAMHOLOMATCH];
-		} else if ( cgs.gametype == GT_CTF ) {
-			s = ingame_text[IGT_GAME_CAPTUREFLAG];
-		} else {
-			s = "";
-		}
+	Q_strncpyz( gamename, s, sizeof(gamename) );
 
-		Q_strncpyz( gamename, s, sizeof(gamename) );
+	CG_AddGameModNameToGameName( gamename );
 
-		CG_AddGameModNameToGameName( gamename );
+	w = UI_ProportionalStringWidth(s,UI_BIGFONT);
 
-		w = UI_ProportionalStringWidth(s,UI_BIGFONT);
-
-		UI_DrawProportionalString((SCREEN_WIDTH/2) , 20,gamename, UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
-	}
+	UI_DrawProportionalString((SCREEN_WIDTH/2) , 20,gamename, UI_BIGFONT|UI_CENTER, colorTable[CT_LTGOLD1]);
 
 	sec = ( sec - cg.time ) / 1000;
 	if ( sec < 0 ) {
@@ -3667,9 +3340,6 @@ static void CG_Draw2D( void ) {
 				CG_DrawAbridgedObjective();
 
 				cgs.widescreen.state = WIDESCREEN_NONE;
-			}
-			if ( cgs.gametype >= GT_TEAM ) {
-				CG_DrawTeamInfo();
 			}
 		cgs.widescreen.state = WIDESCREEN_NONE;
 	}

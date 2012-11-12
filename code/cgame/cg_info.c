@@ -103,12 +103,7 @@ void CG_LoadingClient( int clientNum ) {
 	Q_strncpyz( personality, Info_ValueForKey( info, "n" ), sizeof(personality) );
 	Q_CleanStr( personality );
 
-	if( cgs.gametype == GT_SINGLE_PLAYER ) {
-		trap_S_RegisterSound( va( "sound/voice/computer/misc/%s.wav", model ) );	//not exactly right since it'll miss subskins, but better than using personality
-	}//precache sound played in g_bot.c, PlayerIntroSound
-
-	CG_LoadingString( personality );
- 	
+	CG_LoadingString( personality ); 	
 }
 
 
@@ -265,65 +260,17 @@ void CG_DrawInformation( void ) {
 		y += PROP_HEIGHT;
 	}
 
-	// game type
-	switch ( cgs.gametype ) 
-	{
-	case GT_FFA:
-		s = ingame_text[IGT_GAME_FREEFORALL];
-		break;
-	case GT_SINGLE_PLAYER:
-		s = ingame_text[IGT_GAME_SINGLEPLAYER];
-		break;
-	case GT_TOURNAMENT:
-		s = ingame_text[IGT_GAME_TOURNAMENT];
-		break;
-	case GT_TEAM:
-		s = ingame_text[IGT_GAME_TEAMHOLOMATCH];
-		break;
-	case GT_CTF:
-		s = ingame_text[IGT_GAME_CAPTUREFLAG];
-		break;
-	default:
-		s = ingame_text[IGT_GAME_UNKNOWN];
-		break;
-	}
+	s = ingame_text[IGT_GAME_FREEFORALL];
 
-	{
-		char	gamename[1024];
+	char	gamename[1024];
 
-		Q_strncpyz( gamename, s, sizeof(gamename) );
+	Q_strncpyz( gamename, s, sizeof(gamename) );
 
-		CG_AddGameModNameToGameName( gamename );
+	CG_AddGameModNameToGameName( gamename );
 
-		UI_DrawProportionalString( x, y, gamename, UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_VLTGOLD1] );
-	}
+	UI_DrawProportionalString( x, y, gamename, UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_VLTGOLD1] );
 
 	y += PROP_HEIGHT;
-		
-/*	value = atoi( Info_ValueForKey( info, "timelimit" ) );
-	if ( value ) {
-		UI_DrawProportionalString( x, y, va( "%s %i",ingame_text[IGT_TIME_LIMIT], value ),
-			UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_VLTGOLD1] );
-		y += PROP_HEIGHT;
-	}
-
-	if (cgs.gametype != GT_CTF) {
-		value = atoi( Info_ValueForKey( info, "fraglimit" ) );
-		if ( value ) {
-			UI_DrawProportionalString( x, y, va( "%s %i", ingame_text[IGT_POINT_LIMIT],value ),
-				UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_VLTGOLD1] );
-			y += PROP_HEIGHT;
-		}
-	}
-
-	if (cgs.gametype == GT_CTF) {
-		value = atoi( Info_ValueForKey( info, "capturelimit" ) );
-		if ( value ) {
-			UI_DrawProportionalString( x, y, va( "%s %i",ingame_text[IGT_CAPTURE_LIMIT], value ),
-				UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_VLTGOLD1] );
-			y += PROP_HEIGHT;
-		}
-	}*/
 
 	cgs.widescreen.state = WIDESCREEN_NONE;
 }

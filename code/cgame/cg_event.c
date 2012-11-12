@@ -250,25 +250,7 @@ static void CG_Obituary( entityState_t *ent ) {
 	if ( attacker == cg.snap->ps.clientNum ) {
 		char	*s;
 
-		if ( cgs.gametype < GT_TEAM ) 
-		{
-			s = va("%s %s", ingame_text[IGT_YOUELIMINATED],targetName);
-			/*s = va("%s %s\n%s %s %i", ingame_text[IGT_YOUELIMINATED],targetName, 
-					CG_PlaceString( cg.snap->ps.persistant[PERS_RANK] + 1 ),ingame_text[IGT_PLACEWITH],
-					cg.snap->ps.persistant[PERS_SCORE] );*/
-		} 
-		else 
-		{
-			//Assimilated message as well
-			if ( mod == MOD_ASSIMILATE )
-			{
-				s = va("%s %s", ingame_text[IGT_YOUASSIMILATED],targetName );
-			}
-			else
-			{
-				s = va("%s %s", ingame_text[IGT_YOUELIMINATED],targetName );
-			}
-		}
+		s = va("%s %s", ingame_text[IGT_YOUELIMINATED],targetName);
 		CG_CenterPrint( s, SCREEN_HEIGHT * 0.25, BIGCHAR_WIDTH );
 		// print the text message as well
 	}
