@@ -1094,7 +1094,7 @@ int G_RadiusList ( vec3_t origin, float radius,	gentity_t *ignore, qboolean take
 	return(ent_count);
 }
 
-int G_RadiusListOfType(char *classname, vec3_t origin, float radius, gentity_t *ignore, gentity_t *ent_list[MAX_GENTITIES]) {
+int G_RadiusListOfTypes(char *classname[], int count, vec3_t origin, float radius, gentity_t *ignore, gentity_t *ent_list[MAX_GENTITIES]) {
 	float		dist;
 	gentity_t	*ent;
 	int			entityList[MAX_GENTITIES];
@@ -1103,6 +1103,7 @@ int G_RadiusListOfType(char *classname, vec3_t origin, float radius, gentity_t *
 	vec3_t		v;
 	int			i, e;
 	int			ent_count = 0;
+	qboolean	valid = qfalse;
 
 	if ( radius < 1 ) 
 	{
@@ -1121,8 +1122,18 @@ int G_RadiusListOfType(char *classname, vec3_t origin, float radius, gentity_t *
 	{
 		ent = &g_entities[entityList[e]];
 
-		if ((ent == ignore) || !(ent->inuse) || strcmp(classname, ent->classname))
+		if ((ent == ignore) || !(ent->inuse))
 			continue;
+
+		for(i = 0; i < count; i++) {
+			if(!strcmp(ent->classname, classname[i])) {
+				valid = qtrue;
+			}
+		}
+
+		if(!valid) {
+			continue;
+		}
 
 		/* find the distance from the edge of the bounding box */
 		for ( i = 0 ; i < 3 ; i++ ) 
@@ -1149,6 +1160,7 @@ int G_RadiusListOfType(char *classname, vec3_t origin, float radius, gentity_t *
 		ent_list[ent_count] = ent;
 		ent_count++;
 
+		valid = qfalse;
 	}
 	/*  we are done, return how many we found */
 	return(ent_count);

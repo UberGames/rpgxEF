@@ -1553,6 +1553,7 @@ qboolean IsBorg(gentity_t *ent) {
 }
 
 extern void InitBBrush(gentity_t *ent);
+extern void SP_misc_model_breakable(gentity_t* self);
 /*
 ============
 G_Repair
@@ -1566,7 +1567,7 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 	float		max = 0;
 
 	// if count isn't 0 the breakable is not damaged and if target is no breakable it does not make sense to go on
-	if(tr_ent->count != 0 || Q_stricmp(tr_ent->classname, "func_breakable")) {
+	if(tr_ent->count != 0 || strstr(tr_ent->classname, "breakable") == NULL) {
 		return; 
 	}
 
@@ -1575,7 +1576,7 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 	}
 
 	// check if player is near the breakable
-	VectorSubtract(tr_ent->s.origin, ent->client->ps.origin, help);
+	VectorSubtract(tr_ent->s.origin, ent->r.currentOrigin, help);
 	distance = VectorLength(help);
 	for(i = 0; i < 3; i++) {
 		if(tr_ent->r.maxs[i] > max) {
@@ -1583,6 +1584,7 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 		}
 	}
 
+	//G_Printf("goodDst=%f, curDst=%f\n", 80 + max, distance);
 	if(distance > 80 + max) {
 		return;
 	}
@@ -1599,29 +1601,34 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 		// still not repaired of let's go on
 		tr_ent->health += rate;
 	} else {
-		// else restore it
-		tr_ent->s.solid = CONTENTS_BODY;
-		trap_SetBrushModel(tr_ent, tr_ent->model);
-		tr_ent->r.svFlags &= ~SVF_NOCLIENT;
-		tr_ent->s.eFlags &= ~EF_NODRAW;
-		InitBBrush(tr_ent);
-		tr_ent->health = tr_ent->damage;
+		if(!strcmp(tr_ent->classname, "func_breakable")) {
+			// else restore it
+			tr_ent->s.solid = CONTENTS_BODY;
+			trap_SetBrushModel(tr_ent, tr_ent->model);
+			tr_ent->r.svFlags &= ~SVF_NOCLIENT;
+			tr_ent->s.eFlags &= ~EF_NODRAW;
+			InitBBrush(tr_ent);
+			tr_ent->health = tr_ent->damage;
 
-		if(tr_ent->health) {
-			tr_ent->takedamage = qtrue;
-		}
+			if(tr_ent->health) {
+				tr_ent->takedamage = qtrue;
+			}
 
-		tr_ent->use = breakable_use;
+			tr_ent->use = breakable_use;
 
-		if(tr_ent->paintarget) {
-			tr_ent->pain = breakable_pain;
-		}
+			if(tr_ent->paintarget) {
+				tr_ent->pain = breakable_pain;
+			}
 
-		tr_ent->clipmask = 0;
-		tr_ent->count = 1;
+			tr_ent->clipmask = 0;
+			tr_ent->count = 1;
 
-		if(tr_ent->target) {
-			G_UseTargets2(tr_ent, tr_ent, tr_ent->target);
+			if(tr_ent->target) {
+				G_UseTargets2(tr_ent, tr_ent, tr_ent->target);
+			}
+		} else if(!strcmp(tr_ent->classname, "misc_model_breakable")) {
+			tr_ent->health = tr_ent->damage;
+			SP_misc_model_breakable(tr_ent);
 		}
 	}
 }

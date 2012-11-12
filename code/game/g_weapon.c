@@ -113,16 +113,19 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 	float		modifier;
 	gentity_t   *validEnts[MAX_GENTITIES];
 	int			count = 0;
-	int			i, nearest = -1, nearestd = 512;
+	int			i, nearest = -1;
+	float		nearestd = 65000;
 	vec3_t		dVec, end;
 	vec3_t		mins = { -40, -40, -40 }, maxs = { 40, 40, 40 };
+	char*		classnames[] = { "func_breakable", "misc_model_breakable" };
 
 	/* find all vlaid entities in range */
-	count = G_RadiusListOfType("func_breakable", ent->s.origin, 512, NULL, validEnts);
+	count = G_RadiusListOfTypes(classnames, 2, ent->r.currentOrigin, 512, NULL, validEnts);
 	//G_Printf("Found %d possible candidates\n", count);
 	if(count) {
 		trace_t tr;
 		for(i = 0; i < count; i++) {
+			// TODO: fix problems with small distance
 			VectorSubtract(ent->r.currentOrigin, validEnts[i]->s.origin, dVec);
 			VectorMA(validEnts[i]->s.origin, 1024, dVec, end);
 			//G_Printf("Checking entity: %d\n", i);
@@ -131,7 +134,7 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 				continue;
 			}
 			//G_Printf("Nothing is blocking view ...\n");
-			VectorSubtract(ent->s.origin, validEnts[i]->s.origin, dVec);
+			VectorSubtract(ent->r.currentOrigin, validEnts[i]->s.origin, dVec);
 			if(VectorLength(dVec) < nearestd) {
 				nearest = validEnts[i]->s.number;
 				nearestd = VectorLength(dVec);

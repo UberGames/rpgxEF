@@ -36,7 +36,7 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 		eState->solid = 0;
 		eShared->contents = 0;
 		self->clipmask = 0;
-		if(self->spawnflags & 256) {
+		if(self->spawnflags & 256 && !strcmp(self->classname, "func_breakable")) {
 			eShared->svFlags |= SVF_NOCLIENT;
 			eState->eFlags |= EF_NODRAW;
 		}
@@ -317,7 +317,7 @@ void SP_func_breakable( gentity_t *self )
 	level.numBrushEnts++;
 }
 
-/*QUAKED misc_model_breakable (1 0 0) (-16 -16 -16) (16 16 16) SOLID AUTOANIMATE DEADSOLID NO_DMODEL INVINCIBLE x x x x
+/*QUAKED misc_model_breakable (1 0 0) (-16 -16 -16) (16 16 16) SOLID AUTOANIMATE DEADSOLID NO_DMODEL INVINCIBLE x x x REPAIRABLE
 SOLID - Movement is blocked by it, if not set, can still be broken by explosions and shots if it has health
 AUTOANIMATE - Will cycle it's anim
 DEADSOLID - Stay solid even when destroyed (in case damage model is rather large).
@@ -366,12 +366,14 @@ void SP_misc_model_breakable( gentity_t *ent )
 
 	if ( ent->spawnflags & 1 )
 	{//Blocks movement
-		eShared->contents = CONTENTS_BODY;//Was CONTENTS_SOLID, but only architecture should be this
+		eShared->contents = CONTENTS_BODY;	//Was CONTENTS_SOLID, but only architecture should be this
 	}
 	else if ( ent->health )
 	{//Can only be shot
 		eShared->contents = CONTENTS_SHOTCLIP;
 	}
+
+	ent->damage = ent->health;
 
 	ent->use = breakable_use;	
 
