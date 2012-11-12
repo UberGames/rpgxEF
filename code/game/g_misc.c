@@ -127,7 +127,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, tpType_t t
 
 	// use temp events at source and destination to prevent the effect
 	// from getting dropped by a second player event
-	if ( sess->sessionTeam != TEAM_SPECTATOR /*&& !(ps->eFlags&EF_ELIMINATED)*/ ) 
+	if ( sess->sessionTeam != TEAM_SPECTATOR ) 
 	{
 		if ( tpType == TP_BORG )
 		{
@@ -140,38 +140,20 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, tpType_t t
 		//we'll add the second half of the client-side effects (ie materialization) here
 		else if( tpType == TP_TRI_TP )
 		{
-			//tent = G_TempEntity( origin, EV_PLAYER_TELEPORT_IN );
-			//tent->s.clientNum = player->s.clientNum;
-
 			// probably isn't necessary, but just in case, end the beam out powerup
 			ps->powerups[PW_BEAM_OUT] = 0;
 			//and add the beam in one
 			ps->powerups[PW_QUAD] = level.time + 4000;
 
 			tent = G_TempEntity( ps->origin, EV_PLAYER_TRANSPORT_IN );
-			tent->s.clientNum = player->s.clientNum;
-
-			//Cheep hack, but toggle bit don't seem to work lol.
-			//Nah we can predict this client side
-			//trap_SendServerCommand( player-g_entities, "cg_flushAngles" );
-			
-		}
-		//////
-		else
-		{
-			//TiM: NO! THIS EFFECT IS TEH SUXXOR!!!
-			/*tent = G_TempEntity( ps->origin, EV_PLAYER_TELEPORT_OUT );
-			tent->s.clientNum = player->s.clientNum;
-
-			tent = G_TempEntity( origin, EV_PLAYER_TELEPORT_IN );
-			tent->s.clientNum = player->s.clientNum;*/
+			tent->s.clientNum = player->s.clientNum;			
 		}
 	}
 
 	// spit the player out
 	//TiM - If in a turbolift and moving, get their velocity, perform the rotation
 	//calc on it, and then reset it to their velocity.
-	if ( /*tpType != TP_BORG && tpType != TP_TRI_TP*/ tpType == TP_TURBO )
+	if ( tpType == TP_TURBO )
 	{
 		vec3_t	dir;
 		vec3_t	velAngles;
@@ -186,12 +168,6 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, tpType_t t
 		AngleVectors( velAngles, dir, NULL, NULL );
 
 		VectorScale( dir, length, ps->velocity);
-
-		//TiM: No more spitting.  That's for Q3 style teleporters.  Not what we want for a slow-paced realism based RP.
-		/*AngleVectors( angles, ps->velocity, NULL, NULL );
-		VectorScale( ps->velocity, 400, ps->velocity );
-		ps->pm_time = 160;		// hold time
-		ps->pm_flags |= PMF_TIME_KNOCKBACK;*/
 	}
 	else {
 		//TiM: Set the velocity to 0.  So if they were moving b4 the transport, they'll be stopped when they come out.
@@ -227,14 +203,11 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, tpType_t t
 	// toggle the teleport bit so the client knows to not lerp
 	ps->eFlags ^= EF_TELEPORT_BIT;
 
-	//Copy Yaw dif over to client for client update
-	//player->s.angles2[0] = angles[YAW] - ps->viewangles[YAW];
-
 	// set angles
 	SetClientViewAngle( player, angles );
 
 	// kill anything at the destination
-	if ( sess->sessionTeam != TEAM_SPECTATOR /*&& !(ps->eFlags&EF_ELIMINATED)*/) {
+	if ( sess->sessionTeam != TEAM_SPECTATOR ) {
 		if ( G_MoveBox (player) )
 			player->r.contents = CONTENTS_NONE;
 	}
@@ -284,7 +257,7 @@ void SP_misc_model( gentity_t *ent ) {
 
 
 //===========================================================
-void setCamera ( gentity_t *ent, int ownernum )
+static void setCamera ( gentity_t *ent, int ownernum )
 {
 	vec3_t		dir;
 	gentity_t	*target = NULL;
@@ -295,11 +268,6 @@ void setCamera ( gentity_t *ent, int ownernum )
 	owner = &g_entities[ownernum];
 
 	 //frame holds the rotate speed
-	//if ( owner->spawnflags & 1 ) {
-	//	ent->s.frame = 25;
-	//} else if ( owner->spawnflags & 2 ) {
-	//	ent->s.frame = 75;
-	//}
 	ent->s.frame = 0; //TiM: 0
 
 	// clientNum holds the rotate offset
@@ -489,9 +457,6 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 		fire_comprifle( ent, ent->s.origin, dir );
 		break;
 	}
-
-	//RPG-X: RedTechie - Sorry causes run time errors in game...
-	//G_AddEvent( ent, EV_FIRE_WEAPON, 0 );
 }
 
 
@@ -505,7 +470,7 @@ void InitShooter( gentity_t *ent, int weapon ) {
 	ent->use = Use_Shooter;
 	ent->s.weapon = weapon;
 
-	RegisterItem( BG_FindItemForWeapon( weapon ) );
+	RegisterItem( BG_FindItemForWeapon( (weapon_t)weapon ) );
 
 	G_SetMovedir( ent->s.angles, ent->movedir );
 
