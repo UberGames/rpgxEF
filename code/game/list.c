@@ -170,7 +170,9 @@ void destroy_list(list_p list){
 	lnode_p next;
 	while(cur!=NULL){
 		next = cur->next;
-		list->destructor(cur->data);
+		if(list->destructor != NULL) { // only destroy data if there is a destructor set
+			list->destructor(cur->data);
+		}
 		free(cur);
 		cur = next;
 	}

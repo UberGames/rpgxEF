@@ -14,7 +14,7 @@ G_BounceMissile
   returns true if a bounce sound should be played
 ================
 */
-qboolean G_BounceMissile( gentity_t *ent, trace_t *trace ) {
+static qboolean G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	vec3_t	velocity;
 	float	dot;
 	int		hitTime;
@@ -46,7 +46,6 @@ void TouchStickyGrenade(gentity_t *ent, gentity_t *other, trace_t *trace)
 {
 	// if the guy that touches this grenade can take damage, he's about to.
 	//RPG-X: RedTechie - Fixed bug when other admins walk threw other admins grenades it kills them
-	//if(other->client->sess.sessionClass != PC_ADMIN){
 	if (IsAdmin( other ) == qfalse) {
 		if (other->takedamage)
 		{
@@ -90,26 +89,6 @@ void tripwireThink ( gentity_t *ent )
 
 	traceEnt = &g_entities[ tr.entityNum ];
 
-
-/*RPG-X: Redtechie - No idea what this code is for but i commented it out if
-something is broke regarding tripmines uncomment
-
-	if ( g_gametype.integer >= GT_TEAM )
-	{
-		if ( traceEnt->client && traceEnt->client->sess.sessionTeam != ent->s.otherEntityNum2 || tr.startsolid )
-		{
-			grenadeSpewShrapnel( ent );
-		}
-	}
-	else
-	{
-		if ( traceEnt->client || tr.startsolid )
-		{
-			grenadeSpewShrapnel( ent );
-		}
-	}
-//}*/
-
 //RPG-X: J2J If statment fixed so that touching a mine won't crash the game.
 	
 	if ( traceEnt->client )
@@ -118,7 +97,6 @@ something is broke regarding tripmines uncomment
 //RPG-X: RedTechie - Admin Class go threw
 //RPG-X: J2J - Mistake made here, was checking if the _owner_ was in admin at the time, not the player tripping the mine, FIXED.
 		
-		//if(traceEnt->client->sess.sessionClass != PC_ADMIN)
 		if (IsAdmin( traceEnt ) == qfalse)
 		{
 				grenadeSpewShrapnel( ent );
@@ -150,7 +128,7 @@ G_MissileStick
 ================
 */
 #define GRENADE_ALT_STICK_TIME		2500
-void G_MissileStick( gentity_t *ent, trace_t *trace )
+static void G_MissileStick( gentity_t *ent, trace_t *trace )
 {
 	vec3_t	org, dir;
 	gentity_t	*other = NULL;
@@ -175,12 +153,6 @@ void G_MissileStick( gentity_t *ent, trace_t *trace )
 	VectorCopy( trace->plane.normal, ent->pos1 );
 
 	VectorClear( ent->s.apos.trDelta );
-	// This will orient the object to face in the direction of the normal
-	/*
-	VectorScale( trace->plane.normal, -1, ent->s.pos.trDelta );
-	ent->s.pos.trTime = level.time;
-	SnapVector( ent->s.pos.trDelta );			// save net bandwidth
-	*/
 
 	ent->s.pos.trTime = level.time;
 	VectorClear( ent->s.pos.trDelta );
@@ -195,8 +167,6 @@ void G_MissileStick( gentity_t *ent, trace_t *trace )
 	{//a tripwire
 		//add draw line flag
 		//RPG-X: Redtechie - hidden grenades
-		//ent->flags = FL_CLOAK;
-		//ent->client->ps.powerups[PW_INVIS] = level.time + 1000000000;
 		VectorCopy( trace->plane.normal, ent->movedir );
 		ent->think = tripwireThink;
 		ent->nextthink = level.time + 300;//delay the activation
@@ -204,17 +174,9 @@ void G_MissileStick( gentity_t *ent, trace_t *trace )
 		VectorSet( ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, 0 );
 		VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
 		ent->r.contents = CONTENTS_CORPSE;//|CONTENTS_TRIGGER;
-		//RPG-X|FIXME-NOT FIXED: RedTechie - Maker can shoot down others cant
-		//if( ent->enemy->client->sess.sessionClass != PC_MAKER )
-		//{
-			ent->takedamage = 0;
-			ent->health = 999;
-		//}
-		//else
-		//{
-		//	ent->takedamage = 1;
-		//	ent->health = 1;
-		//}
+		ent->takedamage = qfalse;
+		ent->health = 999;
+
 		ent->die = tripmine_delayed_explode;
 		ent->touch = TouchStickyGrenade;//?
 	}
@@ -257,8 +219,6 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 
 		if (G_BounceMissile( ent, trace ))
 		{
-			// fixme. shouldn't the normal of the trace be passed to cgame?
-			//G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
 			tent = G_TempEntity( trace->endpos, EV_GRENADE_BOUNCE );
 			tent->s.weapon = ent->s.weapon;
 			VectorCopy(trace->plane.normal, tent->s.angles2);
@@ -309,10 +269,6 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			vec3_t	velocity;
 			int		flags = 0;
 
-			/*if( LogAccuracyHit( other, &g_entities[ent->r.ownerNum] ) ) {
-				g_entities[ent->r.ownerNum].client->ps.persistant[PERS_ACCURACY_HITS]++;
-				hitClient = qtrue;
-			}*/
 			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, velocity );
 			if ( VectorLength( velocity ) == 0 ) {
 				velocity[2] = 1;	// stepped on a grenade
@@ -351,12 +307,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 
 	// splash damage (doesn't apply to person directly hit)
 	if ( ent->splashDamage ) {
-		if( G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, 
-			other, 0, ent->splashMethodOfDeath ) ) {
-			/*if( !hitClient ) {
-				g_entities[ent->r.ownerNum].client->ps.persistant[PERS_ACCURACY_HITS]++;
-			}*/
-		}
+		G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, other, 0, ent->splashMethodOfDeath );
 	}
 
 	trap_LinkEntity( ent );
@@ -388,16 +339,13 @@ void G_ExplodeMissile( gentity_t *ent ) {
 
 	// splash damage
 	if ( ent->splashDamage ) {
-		if( G_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage, ent->splashRadius, NULL
-			, 0, ent->splashMethodOfDeath ) ) {
-			//g_entities[ent->r.ownerNum].client->ps.persistant[PERS_ACCURACY_HITS]++;
-		}
+		G_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage, ent->splashRadius, NULL, 0, ent->splashMethodOfDeath );
 	}
 
 	trap_LinkEntity( ent );
 }
 
-void G_RunStuckMissile( gentity_t *ent )
+static void G_RunStuckMissile( gentity_t *ent )
 {
 	if ( ent->takedamage )
 	{
