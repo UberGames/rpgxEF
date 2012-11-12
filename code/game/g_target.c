@@ -34,8 +34,6 @@ void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 			continue;
 		}
 	}
-
-	//Com_Printf( S_COLOR_RED "Final flags: %u\n", (unsigned int)(ent->s.time) );
 }
 //FIXME: Make the text parsed on load time. saves on resources!!
 void SP_target_give( gentity_t *ent ) 
@@ -52,8 +50,6 @@ void SP_target_give( gentity_t *ent )
 
 	textPtr = items;
 
-	//Com_Printf( S_COLOR_RED "Using the Give! Message is %s\n", textPtr );
-
 	COM_BeginParseSession();
 
 	while ( 1 ) 
@@ -61,8 +57,6 @@ void SP_target_give( gentity_t *ent )
 		token = COM_Parse( &textPtr );
 		if ( !token[0] )
 			break;
-
-		//Com_Printf( S_COLOR_RED "Token: %s\n", token );
 
 		if ( !Q_stricmpn( token, "|", 1 ) )
 			continue;
@@ -82,8 +76,6 @@ void SP_target_give( gentity_t *ent )
 	if ( rpg_mapGiveFlags.integer > 0 )
 		ent->s.time &= rpg_mapGiveFlags.integer;
 
-	//Com_Printf( S_COLOR_RED "Final flags: %u\n", (ent->s.time) );
-
 	ent->use = Use_Target_Give;
 
 	// don't need to send this to clients
@@ -102,12 +94,6 @@ void Use_target_remove_powerups( gentity_t *ent, gentity_t *other, gentity_t *ac
 	if ( !activator || !activator->client ) {
 		return;
 	}
-
-	/*if ( activator->client->ps.powerups[PW_REDFLAG] ) {
-	Team_ReturnFlag(TEAM_RED);
-	} else if ( activator->client->ps.powerups[PW_BORG_ADAPT] ) {
-	Team_ReturnFlag(TEAM_BLUE);
-	}*/
 
 	memset( activator->client->ps.powerups, 0, sizeof( activator->client->ps.powerups ) );
 }
@@ -457,7 +443,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 		VectorCopy( tr.endpos, destPoint );
 
 		//offset the player's bounding box.
-		destPoint[2] -= activator->r.mins[2]; //other->r.mins[2];
+		destPoint[2] -= activator->r.mins[2];
 
 		//add 1 to ensure non-direct collision
 		destPoint[2] += 1;
@@ -623,8 +609,6 @@ in site, closest in distance
 void SP_target_location( gentity_t *self ){
 	self->think = target_location_linkup;
 	self->nextthink = level.time + 200;  // Let them all spawn first
-
-	//G_Printf( S_COLOR_RED "Location loaded! %s\n", self->message );
 
 	G_SetOrigin( self, self->s.origin );
 }
@@ -859,9 +843,6 @@ When fired every clients monitor will shake as if in an explition //TiM: expliti
 
 void target_shake_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
 {
-	//trap_SendConsoleCommand( EXEC_APPEND, va("shake %f %2f HRkq1yF22o06Zng9FZXH5sle\n", self->intensity, self->wait) ); //Start Shaking
-	//Com_Printf( "Intensity: %f, Duration %i ", self->intensity, ( (int)(level.time - level.startTime) + (int)( self->wait*1000 ) ) ) ;
-
 	trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%f %i", self->distance/*was self->intensity*/, ( (int)(level.time - level.startTime) + (int)( self->wait*1000 ) ) ) );
 }
 
@@ -961,7 +942,6 @@ static void target_turbolift_endMove ( gentity_t *ent )
 {
 	gentity_t* lights=NULL;
 	gentity_t* otherLift=NULL;
-	//gentity_t* tent=NULL;
 	float f = 0;
 
 	otherLift = &g_entities[ent->count];
@@ -1347,9 +1327,6 @@ static void target_turbolift_startMove ( gentity_t *ent )
 	}
 
 	if(rpg_calcLiftTravelDuration.integer) {
-		/*time = ent->health - otherLift->health;
-		if(time < 0)
-		time *= -1;*/
 		ent->s.eventParm = time2;
 		time *= rpg_liftDurationModifier.value;
 		time *= 1000;
@@ -1473,7 +1450,6 @@ static void target_turbolift_use( gentity_t *self, gentity_t *other, gentity_t *
 		return;
 	}
 
-	//trap_SendServerCommand( activator-g_entities, va( "lift %i", (int)(self-g_entities) ) );
 	trap_SendServerCommand( activator-g_entities, "lift" );
 }
 
@@ -1533,7 +1509,6 @@ void SP_target_turbolift ( gentity_t *self )
 
 	self->s.loopSound				= G_SoundIndex( loopSound ); //looping sound
 	self->s.otherEntityNum2			= G_SoundIndex( endSound );	//End Phase sound
-	/*self->soundLocked				= G_SoundIndex( idleSound );*/
 	self->n00bCount					= G_SoundIndex( idleSound );
 	self->sound2to1					= G_SoundIndex( startSound );
 	self->soundPos1					= G_SoundIndex( deactSound );
@@ -1802,10 +1777,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				}
-				/*if(!ent->spawnflags) {
-				ent->target = ent->yellowsound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->falsetarget;
 				G_UseTargets(ent, ent);
 				break;
@@ -1815,10 +1786,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				}
-				/*if(!ent->spawnflags) {
-				ent->target = ent->redsound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->paintarget;
 				G_UseTargets(ent, ent);
 				break;
@@ -1828,10 +1795,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				} 
-				/*if(!ent->spawnflags) {
-				ent->target = ent->bluesound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->targetname2;
 				G_UseTargets(ent, ent);
 				break;
@@ -1868,10 +1831,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				}
-				/*if(!ent->spawnflags) {
-				ent->target = ent->greensound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->truetarget;
 				G_UseTargets(ent, ent);
 				break;
@@ -1881,10 +1840,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				}
-				/*if(!ent->spawnflags) {
-				ent->target = ent->redsound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->paintarget;
 				G_UseTargets(ent, ent);
 				break;
@@ -1894,10 +1849,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				}
-				/*if(!ent->spawnflags) {
-				ent->target = ent->bluesound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->targetname2;
 				G_UseTargets(ent, ent);
 				break;
@@ -1934,10 +1885,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				}
-				/*if(!ent->spawnflags) {
-				ent->target = ent->greensound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->truetarget;
 				G_UseTargets(ent, ent);
 				break;
@@ -1947,10 +1894,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				}
-				/*if(!ent->spawnflags) {
-				ent->target = ent->yellowsound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->falsetarget;
 				G_UseTargets(ent, ent);
 				break;
@@ -1960,10 +1903,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				}
-				/*if(!ent->spawnflags) {
-				ent->target = ent->bluesound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->targetname2;
 				G_UseTargets(ent, ent);
 				break;
@@ -2000,10 +1939,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				} 
-				/*if(!ent->spawnflags) {
-				ent->target = ent->greensound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->truetarget;
 				G_UseTargets(ent, ent);
 				break;
@@ -2013,10 +1948,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				} 
-				/*if(!ent->spawnflags) {
-				ent->target = ent->yellowsound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->falsetarget;
 				G_UseTargets(ent, ent);
 				break;
@@ -2026,10 +1957,6 @@ void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					G_UseTargets(ent, ent);
 					ent->health = !ent->health;
 				} 
-				/*if(!ent->spawnflags) {
-				ent->target = ent->redsound;
-				G_UseTargets(ent, ent);
-				}*/
 				ent->target = ent->paintarget;
 				G_UseTargets(ent, ent);
 				break;
@@ -2153,10 +2080,8 @@ void target_alert_parseShaders(gentity_t *ent) {
 }
 
 void SP_target_alert(gentity_t *ent) {
-	//int			errorNum = 0;
-	//qboolean	error = qfalse;
 	char		*temp;
-	//char		*origin = vtos(ent->s.origin);
+
 	G_SpawnString("greenname", "", &temp);
 	ent->swapname = G_NewString(temp);
 	G_SpawnString("yellowname", "", &temp);
@@ -2255,8 +2180,6 @@ void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 			ent->target = ent->yellowsound;
 			G_UseTargets(ent, activator);
 		}
-		/*ent->target = ent->bluename;
-		G_UseTargets(ent, ent);*/
 		for(i = 0; i < MAX_GENTITIES; i++) {
 			if(!&g_entities[i]) continue;
 			if(Q_stricmp(g_entities[i].classname, "func_train") && !Q_stricmp(g_entities[i].swapname, ent->bluename)) {
@@ -2293,8 +2216,6 @@ void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 				} else {
 					target->clipmask = CONTENTS_BODY;
 					trap_SetBrushModel( target, target->model );
-					//VectorCopy( ent->s.origin, ent->s.pos.trBase );
-					//VectorCopy( ent->s.origin, ent->r.currentOrigin );
 					target->r.svFlags &= ~SVF_NOCLIENT;
 					target->s.eFlags &= ~EF_NODRAW;
 					target->clipmask = 0;

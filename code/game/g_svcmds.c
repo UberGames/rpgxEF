@@ -34,10 +34,6 @@ If 0, then only addresses matching the list will be allowed.  This lets you easi
 ==============================================================================
 */
 
-// extern	vmCvar_t	g_banIPs;
-// extern	vmCvar_t	g_filterBan;
-
-
 typedef struct ipFilter_s
 {
 	unsigned	mask;
@@ -163,11 +159,11 @@ qboolean G_FilterPacket (char *from)
 	{
 		if ( (in & ipFilters[i].mask) == ipFilters[i].compare)
 		{
-			return g_filterBan.integer != 0;
+			return (qboolean)(g_filterBan.integer != 0);
 		}
 	}
 
-	return g_filterBan.integer == 0;
+	return (qboolean)(g_filterBan.integer == 0);
 }
 
 /*
@@ -325,9 +321,6 @@ static void AddID( idFilter_t *id )
 		numIDFilters++;
 	}
 
-	//idFilters[i].playerID	=	id->playerID;
-	//idFilters[i].playerName =	id->playerName;
-	//idFilters[i].banReason	=	id->banReason;
 	memcpy( &idFilters[i], id, sizeof( idFilter_t ) );
 
 }
@@ -431,7 +424,6 @@ void Svcmd_BanUser_f( void )
 	
 	//Get player name and clean it of color tags
 	Q_strncpyz( id.playerName, Q_CleanStr(Info_ValueForKey( userInfo, "name" )), sizeof( id.playerName ) );
-	//( Info_ValueForKey( userInfo, "name" ), id.playerName, sizeof( id.playerName ) );
 	
 	//get ban reason
 	trap_Argv( 2, id.banReason, sizeof( id.banReason ) );
@@ -444,8 +436,6 @@ void Svcmd_BanUser_f( void )
 	ip = g_entities[playerNum].client->pers.ip;
 
 	UpdateIDBans();
-
-	//G_Printf( S_COLOR_RED "%s\n", ip );
 
 	//Scooter's filter list
 	if( Q_stricmp( ip, "localhost" )		//localhost
@@ -622,7 +612,6 @@ void	Svcmd_EntityList_f (void) {
 	gentity_t	*check;
 	char		arg[MAX_QPATH*4];
 	int			length = 0;
-	//int			numArgs;
 
 	if(trap_Argc() > 1) {
 		trap_Argv(1, arg, sizeof(arg));
@@ -809,14 +798,8 @@ ConsoleCommand
 */
 qboolean	ConsoleCommand( void ) { //void
 	char	cmd[MAX_TOKEN_CHARS];
-	//gentity_t	*ent;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
-
-	/*if ( Q_stricmp (cmd, "kick2") == 0 ) {
-		Svcmd_Kick2_f();
-		return qtrue;
-	}*/
 
 	#ifdef G_LUA
 	if(Q_stricmp(cmd, "lua_status") == 0)
