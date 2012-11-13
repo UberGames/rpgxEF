@@ -1576,13 +1576,18 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 	}
 
 	// check if player is near the breakable
-	VectorSubtract(tr_ent->s.origin, ent->r.currentOrigin, help);
-	distance = VectorLength(help);
-	for(i = 0; i < 3; i++) {
-		if(tr_ent->r.maxs[i] > max) {
-			max = tr_ent->r.maxs[i];
+	if(tr_ent->spawnflags & 512) {
+		VectorSubtract(tr_ent->s.angles2, ent->r.currentOrigin, help);
+		max = tr_ent->n00bCount;
+	} else {
+		VectorSubtract(tr_ent->s.origin, ent->r.currentOrigin, help);
+		for(i = 0; i < 3; i++) {
+			if(tr_ent->r.maxs[i] > max) {
+				max = tr_ent->r.maxs[i];
+			}
 		}
 	}
+	distance = VectorLength(help);
 
 	//G_Printf("goodDst=%f, curDst=%f\n", 80 + max, distance);
 	if(distance > 80 + max) {
@@ -1591,7 +1596,6 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 
 	// check if the player is facing it
 	AngleVectors(ent->client->ps.viewangles, forward, NULL, NULL);
-	VectorSubtract(tr_ent->s.origin, ent->client->ps.origin, help);
 	if(DotProduct(help, forward) < 0.4) {
 		return;
 	}

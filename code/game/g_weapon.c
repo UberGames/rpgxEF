@@ -116,7 +116,7 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 	int			i, nearest = -1;
 	float		nearestd = 65000;
 	vec3_t		dVec, end;
-	vec3_t		mins = { -40, -40, -40 }, maxs = { 40, 40, 40 };
+	vec3_t		mins = { -40, -40, 0 }, maxs = { 40, 40, 0 };
 	char*		classnames[] = { "func_breakable", "misc_model_breakable" };
 
 	/* find all vlaid entities in range */
@@ -126,15 +126,25 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 		trace_t tr;
 		for(i = 0; i < count; i++) {
 			// TODO: fix problems with small distance
-			VectorSubtract(ent->r.currentOrigin, validEnts[i]->s.origin, dVec);
-			VectorMA(validEnts[i]->s.origin, 1024, dVec, end);
+			if(validEnts[i]->spawnflags & 512) {
+				VectorSubtract(ent->r.currentOrigin, validEnts[i]->s.angles2, dVec);
+				VectorMA(validEnts[i]->s.angles2, 1024, dVec, end);
+				trap_Trace(&tr, validEnts[i]->s.angles2, mins, maxs, end, validEnts[i]->s.number, MASK_SHOT);
+			} else {
+				VectorSubtract(ent->r.currentOrigin, validEnts[i]->s.origin, dVec);
+				VectorMA(validEnts[i]->s.origin, 1024, dVec, end);
+				trap_Trace(&tr, validEnts[i]->s.origin, mins, maxs, end, validEnts[i]->s.number, MASK_SHOT);
+			}
 			//G_Printf("Checking entity: %d\n", i);
-			trap_Trace(&tr, validEnts[i]->s.origin, mins, maxs, end, validEnts[i]->s.number, MASK_SHOT);
 			if(tr.entityNum != ent->s.number) {
 				continue;
 			}
 			//G_Printf("Nothing is blocking view ...\n");
-			VectorSubtract(ent->r.currentOrigin, validEnts[i]->s.origin, dVec);
+			if(validEnts[i]->spawnflags & 512) {
+				VectorSubtract(ent->r.currentOrigin, validEnts[i]->s.angles2, dVec);
+			} else {
+				VectorSubtract(ent->r.currentOrigin, validEnts[i]->s.origin, dVec);
+			}
 			if(VectorLength(dVec) < nearestd) {
 				nearest = validEnts[i]->s.number;
 				nearestd = VectorLength(dVec);

@@ -245,7 +245,7 @@ void breakable_spawn_trigger(gentity_t *ent) {
 
 //RPG-X | GSIO01 | 09/05/2009 EOE
 
-/*QUAKED func_breakable (0 .8 .5) ? x x x x INVINCIBLE x x x REPAIRABLE
+/*QUAKED func_breakable (0 .8 .5) ? x x x x INVINCIBLE x x x REPAIRABLE NOORIGIN
 INVINCIBLE - can only be broken by being used
 REPAIRABLE - con be repaired with hyperspanner
 

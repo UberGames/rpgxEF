@@ -203,6 +203,51 @@ static int Mover_SetAngles(lua_State * L)
 	return 0;
 }
 
+// mover.SetAngles2(entity ent, vector angles) or 
+// mover.SetAngles2(entity ent, float y, float z, float x)
+// Sets the angles of ent to the specified value(s). 
+// Values are sorted Pitch (around Y-Axis), Yaw (around Z-Axis) and 
+// Roll (around X-Axis). These can also be stowed in a vector angles.
+static int Mover_SetAngles2(lua_State * L)
+{
+	vec3_t          newAngles;
+	lent_t			*lent;
+	gentity_t      *ent = NULL;
+	vec_t          *target;
+	int				id = 0;
+
+	if(lua_isnumber(L, 1)) {
+		id = luaL_checkint(L, 1);
+		if(id < 0 || id > MAX_GENTITIES - 1) return 1;
+		ent = &g_entities[id];
+		if(!ent) return 1;
+	} else {
+		lent = Lua_GetEntity(L, 1);
+		if(!lent || !lent->e) return 1;
+		ent = lent->e;
+	}
+
+	if(Lua_IsVector(L, 2))
+	{
+		target = Lua_GetVector(L, 2);
+		VectorCopy(target, newAngles);
+	}
+	else
+	{
+		newAngles[0] = luaL_checkint(L, 2);
+		newAngles[1] = luaL_checkint(L, 3);
+		newAngles[2] = luaL_checkint(L, 4);
+	}
+	LUA_DEBUG("Mover_SetAngles2 - start: ent=%d angles=%s", ent->s.number, vtos(newAngles));
+	if(ent)
+	{
+		VectorCopy(newAngles, ent->s.angles2);
+		trap_LinkEntity(ent);
+		LUA_DEBUG("Mover_SetAngles2 - return: moved");
+	}
+	return 0;
+}
+
 // mover.SetPosition(entity ent, vector pos) or 
 // mover.SetPosition(entity ent, float x, float y, float z)
 // Set the position of ent to the specified value(s). Can also be stowed in a vector pos.
@@ -369,6 +414,7 @@ static const luaL_Reg lib_mover[] = {
 	{"SetOrigin", Mover_SetPosition},
 	{"ToPosition", Mover_ToPosition},
 	{"SetAngles", Mover_SetAngles},
+	{"SetAngles2", Mover_SetAngles2},
 	{"ToAngles", Mover_ToAngles},
 	{NULL, NULL}
 };
