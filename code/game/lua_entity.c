@@ -40,24 +40,32 @@ static int Entity_MMBRefit(lua_State * L)
 		if( !Q_stricmp( MMB->model, "models/mapobjects/borg/blite.md3" )){ //alcove light
 			MMB->splashDamage = 75;
 			MMB->splashRadius = 75;
-			MMB->s.powerups = 3;//glass and metal, may reduce this to glass only toh
+			MMB->s.powerups = 3;//glass and metal, may reduce this to glass only 
+			MMB->spawnflags = 258;
+			G_CallSpawn(MMB);
 		}else if( !Q_stricmp( MMB->model, "models/mapobjects/borg/circuit_1.md3" )){ //those things that look like a handle
 			MMB->splashDamage = 75;
 			MMB->splashRadius = 75;
-			MMB->s.powerups = 1;//metal
+			MMB->s.powerups = 1;//
+			MMB->spawnflags = 263;
+			G_CallSpawn(MMB);
 		}else if( !Q_stricmp( MMB->model, "models/mapobjects/borg/circuit_2.md3" )){ //the isosceles triangle looking box
 			MMB->splashDamage = 75;
 			MMB->splashRadius = 75;
-			MMB->s.powerups = 1;//metal
+			MMB->s.powerups = 1;//
+			MMB->spawnflags = 263;
+			G_CallSpawn(MMB);
 		}else if( !Q_stricmp( MMB->model, "models/mapobjects/borg/circuit_3.md3" )){ //the other triangle looking box
 			MMB->splashDamage = 75;
 			MMB->splashRadius = 75;
 			MMB->s.powerups = 1;//metal
+			MMB->spawnflags = 263;
+			G_CallSpawn(MMB);
 		}else if( !Q_stricmp( MMB->model, "models/mapobjects/borg/vynclumn.md3" )){ //no description needed ^^
 			MMB->splashDamage = 9999;
 			MMB->splashRadius = 9999;
 			MMB->s.powerups = 1;//metal
-			MMB->spawnflags = 2;
+			MMB->spawnflags = 263;
 			G_CallSpawn(MMB);
 		}else continue;//we are not looking for this kind of MMB
 	}
