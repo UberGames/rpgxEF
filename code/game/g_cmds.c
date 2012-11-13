@@ -6313,7 +6313,8 @@ static void Cmd_getOrigin_f(gentity_t *ent) {
 	if( i > MAX_GENTITIES - 1)
 		return;
 
-	G_PrintfClient(ent, "s.origin = %s, r.currentOrigin = %s, pos1 = %s, pos2 = %s\n\"", vtos(g_entities[i].s.origin), vtos(g_entities[i].r.currentOrigin), vtos(g_entities[i].pos1), vtos(g_entities[i].pos2));
+	// TODO add output for trBase
+	G_PrintfClient(ent, "ent->s.origin = %s, ent->r.currentOrigin = %s, ent->pos1 = %s, ent->pos2 = %s\n\"", vtos(g_entities[i].s.origin), vtos(g_entities[i].r.currentOrigin), vtos(g_entities[i].pos1), vtos(g_entities[i].pos2));
 }
 
 /*
