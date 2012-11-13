@@ -991,6 +991,9 @@ void G_Sound( gentity_t *ent, int soundIndex ) {
  * @param origin the new origin
  */
 void G_SetOrigin( gentity_t *ent, vec3_t origin ) {
+	// lets try this to fix setting origins for brush ents without origin brush
+	VectorCopy(origin, ent->pos1); // needs testing
+	
 	VectorCopy( origin, ent->s.pos.trBase );
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->s.pos.trTime = 0;
