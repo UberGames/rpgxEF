@@ -638,7 +638,7 @@ qboolean CG_DrawScoreboard( void )
 	y += (n2 * lineHeight);
 	maxClients -= n2;
 
-	localClient = qfalse;
+	localClient = qtrue;
 
 	i=0;
 	while (!localClient && i<cg.numScores)
