@@ -7127,18 +7127,6 @@ static void Cmd_UiTransporterLoc_f(gentity_t *ent) {
 	gentity_t *trTrigger;
 	char arg[MAX_QPATH];
 
-#ifndef SQL
-	if ( !IsAdmin( ent ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
-		return;
-	}
-#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_UITRANS ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
-		return;
-	}
-#endif
-
 	if(trap_Argc() < 2) return;
 
 	trap_Argv(1, arg, sizeof(arg));
@@ -7166,10 +7154,17 @@ static void Cmd_UiTransporterLoc_f(gentity_t *ent) {
 
 	if(locTarget) {
 		if(locTarget->sound1to2) {
-			if(!IsAdmin(ent)) {
+		#ifndef SQL
+			if ( !IsAdmin( ent ) ) {
 				G_PrintfClient(ent, "Destination is a restricted location.\n");
 				return;
 			}
+		#else
+			if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
+				G_PrintfClient(ent, "Destination is a restricted location.\n");
+				return;
+			}
+		#endif
 		}
 		trTrigger->target_ent = locTarget;
 		trTrigger->count = 0;
@@ -7198,18 +7193,6 @@ static void Cmd_UiTransporterExt_f(gentity_t *ent) {
 	int entNum, srvNum, delay;
 	gentity_t *trTrigger;
 	char arg[MAX_QPATH];
-
-#ifndef SQL
-	if ( !IsAdmin( ent ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
-		return;
-	}
-#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_UITRANS ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
-		return;
-	}
-#endif
 
 	if(!rpg_serverchange.integer) {
 		trap_SendServerCommand(ent-g_entities, "print \"Serverchange is disabled.\n\"");	

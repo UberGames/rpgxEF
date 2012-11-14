@@ -84,7 +84,7 @@ typedef enum {
 	SQLF_MESSAGE			= 16384,
 	SQLF_DEBUG				= 32768, //Debugging Tools
 	SQLF_MUSIC				= 65536,
-	SQLF_UITRANS			= 131072,
+	//unused				= 131072,
 	SQLF_USEENT				= 262144,
 	SQLF_BEAM				= 524288,
 	//unused				= 1048576,
