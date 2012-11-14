@@ -283,6 +283,7 @@ static const luaL_Reg lib_qmath[] = {
 	{"pow", Qmath_Pow},
 	{"rad", Qmath_Rad},
 	{"rand", Qmath_Rand},
+	{"candom", Qmath_Candom},
 	{"random", Qmath_Random},
 	{"irandom", Qmath_Irandom},
 	{"flrandom", Qmath_FLrandom},
