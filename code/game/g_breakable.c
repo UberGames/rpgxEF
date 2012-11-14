@@ -246,19 +246,33 @@ void breakable_spawn_trigger(gentity_t *ent) {
 //RPG-X | GSIO01 | 09/05/2009 EOE
 
 /*QUAKED func_breakable (0 .8 .5) ? x x x x INVINCIBLE x x x REPAIRABLE NOORIGIN
-INVINCIBLE - can only be broken by being used
-REPAIRABLE - con be repaired with hyperspanner
-
+-----DESCRIPTION-----
 When destroyed, fires it's trigger and explodes
+When repaired just fires it's targets so things like forcefields get turned back on
 
-"targetname" entities with matching target will fire it
-"paintarget" target to fire when hit (but not destroyed)
-"wait"		how long minimum to wait between firing paintarget each time hit
-"model2"	.md3 model to also draw
-"target"	all entities with a matching targetname will be used when this is destoryed
-"health"	default is 10
+-----SPAWNFLAGS-----
+1: DO NOT USE! This may come in conflict with shared functions from misc_model_breakable.
+2: DO NOT USE! This may come in conflict with shared functions from misc_model_breakable.
+4: DO NOT USE! This may come in conflict with shared functions from misc_model_breakable.
+8: DO NOT USE! This may come in conflict with shared functions from misc_model_breakable.
+16: INVINCIBLE - can only be broken by being used
+32: DO NOT USE! This may come in conflict with shared functions from misc_model_breakable.
+64: DO NOT USE! This may come in conflict with shared functions from misc_model_breakable.
+128: DO NOT USE! This may come in conflict with shared functions from misc_model_breakable.
+256: REPAIRABLE - can be repaired with hyperspanner, requires an origin brush
+512: NOORIGIN   - used for retrofitting repairability on func_breakables with no origin brush, do not use for new maps
 
-"team" - This cannot take damage from members of this team (2 = blue, 1 = red)
+-----KEYS-----
+"targetname" - entities with matching target will fire it
+"paintarget" - target to fire when hit (but not destroyed)
+"wait" - how long minimum to wait between firing paintarget each time hit
+"model2" - .md3 model to also draw
+"target" - all entities with a matching targetname will be used when this is destoryed
+"health" - default is 10
+
+"luaDie" - Lua-Hook for when the breakable dies
+
+"team" - This cannot take damage from members of this team (2 = blue, 1 = red) 2 will exclude players/clients in RPG-X
 
 Damage: default is none
 "splashDamage" - damage to do (will make it explode on death
@@ -273,9 +287,34 @@ Damage: default is none
  5 - stone
 
 Don't know if these work:  
-"color"		constantLight color
-"light"		constantLight radius
+"color" - constantLight color
+"light" - constantLight radius
 
+q3map2:
+"_clone" _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" see _clone
+"_castShadows" OR "_cs" sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" sets whether the entity receives shadows
+
+-----LUA-----
+Retrofitting repairability using lua:
+Retrofitting repairability is possible, however it is not easy as we likely have to come by the fact taht we do not have an origin brush.
+To start here is the code with no origin brush present: 
+			
+	ent = entity.FindBModel(bmodel);  
+	ent:SetSpawnflags(ent:GetSpawnflags() + 768);  
+	--Do not use entity.CallSpawn(ent); after this point for this entity!
+	mover.SetAngles2(ent, posX, posY, posZ);
+	ent:SetN00bCount(radius);
+
+The bmodel-number can be retrieved ingame as an admin/developer by pointing at the entity and using the /getentinfo command
+posX, Y andf Z are the origin (usually the center of brush) of the entity and need too be retrieved manually from within the radiant
+radius is a spherical distance around origin/angles2 that the hyperspanner will respond to. It should barely cover the entire facing side of the entity.
+
+In the unlikely event that we do have an origin brush this is the code:
+			
+	ent = entity.FindBModel(bmodel);  
+	ent:SetSpawnflags(ent:GetSpawnflags() + 256);  
 */
 /**
 *	Spawnfunction for func_breakable entity.
@@ -317,25 +356,38 @@ void SP_func_breakable( gentity_t *self )
 	level.numBrushEnts++;
 }
 
-/*QUAKED misc_model_breakable (1 0 0) (-16 -16 -16) (16 16 16) SOLID AUTOANIMATE DEADSOLID NO_DMODEL INVINCIBLE x x x REPAIRABLE
-SOLID - Movement is blocked by it, if not set, can still be broken by explosions and shots if it has health
-AUTOANIMATE - Will cycle it's anim
-DEADSOLID - Stay solid even when destroyed (in case damage model is rather large).
-NO_DMODEL - Makes it NOT display a damage model when destroyed, even if one exists
-INVINCIBLE - Can only be broken by being used
+/*QUAKED misc_model_breakable (1 0 0) (-16 -16 -16) (16 16 16) SOLID AUTOANIMATE DEADSOLID NO_DMODEL INVINCIBLE X X X REPAIRABLE X
+-----DESCRIPTION-----
+Destroyable *.md3-model. If it dies it will display it's damge model if one exists and fire it's targets.
+If repaired by either target_repair (not yet implemented) or hyperspanner (not yet fully implemented) it will fire it's targets
 
-"model"		arbitrary .md3 file to display
-"health"	how much health to have - default is zero (not breakable)  If you don't set the SOLID flag, but give it health, it can be shot but will not block NPCs or players from moving
-"targetname" when used, dies and displays damagemodel, if any (if not, removes itself)
-"target" What to use when it dies
-"paintarget" target to fire when hit (but not destroyed)
-"wait"		how long minimum to wait between firing paintarget each time hit
+-----SPAWNFLAGS-----
+1: SOLID - Movement is blocked by it, if not set, can still be broken by explosions and shots if it has health
+2: AUTOANIMATE - Will cycle it's anim
+4: DEADSOLID - Stay solid even when destroyed (in case damage model is rather large).
+8: NO_DMODEL - Makes it NOT display a damage model when destroyed, even if one exists. Needs to be set if none exist.
+16: INVINCIBLE - Can only be broken by being used
+32: X - DO NOT USE! This may come in conflict with shared functions from func_breakable.
+64: X - DO NOT USE! This may come in conflict with shared functions from func_breakable.
+128: X - DO NOT USE! This may come in conflict with shared functions from func_breakable.
+256: REPAIRABLE - can be repaired with hyperspanner
+512: X - DO NOT USE! This may come in conflict with shared functions from func_breakable.
+
+-----KEYS-----
+"model"	- path to the arbitrary .md3 file to display
+"health" - how much health to have - default is zero (not breakable)  If you don't set the SOLID flag, but give it health, it can be shot but will not block NPCs or players from moving
+"targetname" - when used, dies and displays damagemodel, if any (if not, removes itself)
+"target" - What to use when it dies
+"paintarget" - target to fire when hit (but not destroyed)
+"wait" - how long minimum to wait between firing paintarget each time hit
+
+"luaDie" - Lua-Hook for when the breakable dies
 
 Damage: default is none
 "splashDamage" - damage to do (will make it explode on death)
 "splashRadius" - radius for above damage
 
-"team" - This cannot take damage from members of this team (2 = blue, 1 = red)
+"team" - This cannot take damage from members of this team (2 = blue, 1 = red) 2 will exclude players/clients in RPG-X
 
 "material" - sets the chunk type:
  0 - none (default)
@@ -345,11 +397,34 @@ Damage: default is none
  4 - wood
  5 - stone
 
-FIXME/TODO: 
+-----LUA-----
+Finding an MMB for post-spawn manipulation:
+For this purpose we have created a function that will return the first of these that has a matching s.origin.
+You can get the s.origin ingame as an admin/developer by pointing at the MMB ingame and using the /getorigin-command.
+This is how it should look:
+
+	vec = vector.Construct(s.origin[X], s.origin[Y], s.origin[Z]);
+	ent = entity.FindMMB(vec);
+
+Refitting repairablility using lua:
+This is a fairly simple addition, here's the code:
+
+	vec = vector.Construct(s.origin[X], s.origin[Y], s.origin[Z]);
+	MMB = entity.FindMMB(vec);
+	MMB:SetSpawnflags(MMB:
+	GetSpawnflags() + 256);
+	if MMB:GetHealth() == 0 then --we do require health to be present for repairability
+		MMB:SetHealth (1);
+		entity.CallSpawn(MMB);
+	end
+*/
+/*
+FIXME/TODO on misc_model_breakable: 
 set size better?
 multiple damage models?
 don't throw chunks on pain, or throw level 1 chunks only on pains?
 custom explosion effect/sound?
+custom dmodel using model2?
 */
 /**
 *	Spawnfunction for misc_model_breakable entity.
@@ -594,13 +669,20 @@ void ammo_station_finish_spawning ( gentity_t *self )
 }
 //------------------------------------------------------------
 /*QUAKED misc_ammo_station (1 0 0) (-16 -16 -16) (16 16 16) 
+-----DESCRIPTION-----
+Grants ammo to client until depleted.
+This useless in RPG-X unless you'd like to spawn a DN-ammo-console.
 
+-----Spawnflags-----
+none
+
+-----KEYS-----
 "health" - how much health the model has - default 60 (zero makes non-breakable)
 "target" - what to use when it dies
 "paintarget" - target to fire when hit (but not destroyed)
 "count" - the amount of health given when used (default 1000)
 
-"team" - This cannot take damage from members of this team and only members of this team can use it (2 = blue, 1 = red)
+"team" - This cannot take damage from members of this team and only members of this team can use it (2 = blue, 1 = red) 2 will exclude players/clients in RPG-X
 */
 //------------------------------------------------------------
 /**
@@ -652,10 +734,18 @@ void SP_misc_ammo_station( gentity_t *ent )
 
 //RPG-X | GSIO01 | 09/05/2009 SOE
 /*QUAKED target_repair (1 0 0) (-8 -8 -8) (8 8 8)
-Repairs a func_breakable.
+-----DESCRIPTION-----
+Repairs a func_breakable..
 
-"target" breakable to repair (targetname2)
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" breakable to repair (targetname or targetname2)
 */
+
+//We need to think about how to implement MMB's into this. Also maybe write a target_repair_multiple that skims both classes via while-loop --Harry
+
 /**
 *	Use function of target_repair entity.
 *	Repairs it's target entity (stored in ent->lastEnemy)

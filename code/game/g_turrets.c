@@ -691,7 +691,8 @@ Will aim and shoot at enemies
   targetname - Toggles it on/off
   target - What to use when destroyed
 
-  "team" - This cannot take damage from members of this team and will not target members of this team (2 = blue, 1 = red)
+  "team" - This cannot take damage from members of this team and will not target members of this team (2 = blue, 1 = red) 2 will exclude players in RPG-X
+
 */
 
 /**

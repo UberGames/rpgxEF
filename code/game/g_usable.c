@@ -176,27 +176,71 @@ void func_usable_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker,
 }
 
 /*QUAKED func_usable (0 .5 .8) ? STARTOFF AUTOANIM x ALWAYS_ON NOBLOCKCHECK x x x ADMIN_ONLY NO_ACTIVATOR NO_AREAPORTAL DEACTIVATED
-START_OFF - the wall will not be there
-AUTOANIM - If useing an md3, it will animate
-ALWAYS_ON - Doesn't toggle on and off when used, just fires target
-NOBLOCKCHECK - Will NOT turn on while something is inside it unless this is checked
-ADMIN_ONLY - can only be used by admins
-NO_ACTIVATOR - use the ent itself instead the player as activator
-NO_AREAPORTAL - don't affect areaportals
-DEACTIVATED - start deactivated
+-----DESCRIPTION-----
+A bmodel that can be used directly by the player's "activate" button.
+Can be used for visual FX (like alert lights) or as a button.
 
-A bmodel that can be used directly by the player's "activate" button
+-----SPAWNFLAGS-----
+1: START_OFF - the wall will not be there
+2: AUTOANIM - If useing an md3, it will animate
+4: X -Not in Use. Holds ANIM_ONCE for models
+8: ALWAYS_ON - Doesn't toggle on and off when used, just fires target
+16: NOBLOCKCHECK - Will NOT turn on while something is inside it unless this is checked
+32: X - Not in Use.
+64: X - Not in Use.
+128: X - Not in Use.
+256: ADMIN_ONLY - can only be used by admins
+512: NO_ACTIVATOR - use the ent itself instead the player as activator
+1024: NO_AREAPORTAL - don't affect areaportals
+2048: DEACTIVATED - start deactivated
 
-"targetname"	When used, will toggle on and off
-"target"		Will fire this target every time it is toggled OFF
-"model2"		.md3 model to also draw
-"color"			constantLight color
-"light"			constantLight radius
-"wait"			amount of time before the object is usable again (only valid with ALWAYS_ON flag)
-"health"		if it has health, it will be used whenever shot at/killed - if you want it to only be used once this way, set health to 1
-"messageNum"	the number relating to the message string that will display when the player scans this usable with a tricorder
+-----KEYS-----
+"targetname" - When used, will toggle on and off
+"target" - Will fire this target every time it is toggled OFF
+"model2" - .md3 model to also draw
+"color" - constantLight color
+"light" - constantLight radius
+"wait" - amount of time before the object is usable again (only valid with ALWAYS_ON flag)
+"health" - if it has health, it will be used whenever shot at/killed - if you want it to only be used once this way, set health to 1
 
-"team" - This can only be used by this team (2 = blue, 1 = red)
+"luaUse" - lua-function to call from scripts/lua/<mapname>/<mapname>.lua when this entity is used
+
+"message" - message string that will display when the player scans this usable with a tricorder
+"messageNum" - the number relating to the message string in the /maps/<mapname>.usables-file that will display when the player scans this usable with a tricorder
+NOTE: only use one of the above ways on a map at a time
+
+"team" - This can only be used by this team (2 = blue, 1 = red) 2 will exclude players in RPG-X
+
+q3map2:
+"_clone" _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" see _clone
+"_castShadows" OR "_cs" sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" sets whether the entity receives shadows
+
+-----LUA-----
+Sounds for consoles:
+One of the advantages with luaUse-functions is that you can play sounds on the usable you're using this comes in very handy if you'd like to for example play a sound on the turbolift-usable:
+
+	function turbocontrol(ent, other, activator) --set luaUse to turbocontrol for this to trigger
+		if ent.GetCount(entity.Find("info_turbolift")) == 1 then --for a trubolift in particular you need an external information provider as lua can't deal with bit-flags. In this case turbolift would be offline.
+		    sound.PlaySound(ent, "sound/movers/switches/voyneg.mp3", 0);
+		    game.MessagePrint(ent.GetNumber(activator), "=C= Unable to comply: The Turbolift is offline.");
+		else
+			sound.PlaySound(ent, "sound/voice/computer/tour/trblftmenu.mp3", 0);
+		end
+	end
+
+Also if you have a (morer or less) generic console that you want to fire generic console sounds off of you can extend this script for any number of sounds of which one will be picked randomly:
+
+	function consolesounds(ent, other, activator)
+		i = qmath.irandom(1, <insert number of sounds here>);
+		if i == 1 then
+			sound.PlaySound(ent, <inseet soundpath here>, 0);
+		end
+		if i == n then
+			sound.PlaySound(ent, <inseet soundpath here>, 0);
+		end
+	end
 */
 
 /**

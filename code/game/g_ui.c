@@ -10,12 +10,15 @@ extern void InitTrigger(gentity_t *self);
 
 /*
 QUAKED ui_transporter (.5 .5 .5) ? DISABLED
+-----DESCRIPTION-----
 Opens the transporter UI.
 
-DISABLED	Entity is disabled
+-----SPAWNFLAGS-----
+1: DISABLED	- Entity is disabled
 
-"swapname"	enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
-"target"	trigger_transporter to use with this ui_transporter
+-----KEYS-----
+"swapname" - enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
+"target" - trigger_transporter to use with this ui_transporter
 */
 /**
 *	\brief Think function for ui_transporter entity.
@@ -109,12 +112,15 @@ void SP_ui_transporter(gentity_t *ent) {
 
 /*
 QUAKED ui_holodeck (.5 .5 .5) ? DISABLED
-Opens the holodeck UI.
+-----Description-----
+Will open  the holodeck UI once this is implemented. For now this will not spawn.
 
-DISABLED	Entity is disabled
+-----SPAWNFLAGS-----
+1: DISABLED	Entity is disabled
 
-"swapname"	enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
-"target"	trigger_holodeck to use with this ui_holodeck
+-----KEYS-----
+"swapname" - enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
+"target" - trigger_holodeck to use with this ui_holodeck
 */
 void ui_holodeck_think(gentity_t *ent) {
 	if(!ent->activator || ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */

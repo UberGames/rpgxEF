@@ -142,6 +142,34 @@ static int Entity_Find(lua_State * L)
 	return 1;
 }
 
+// entity.FindMMB(vector origin)
+// Returns the misc_model_breakable entity that has a matching MMB->s.origin.
+// Requires vector as input.
+// You can get the s.origin ingame as an admin/developer by pointing at the MMB ingame and using the /getorigin-command.
+static int Entity_FindMMB(lua_State * L)
+{
+	gentity_t		*t = NULL, *MMB = NULL;
+	vec_t			*vec, *origin;
+	
+	vec = Lua_GetVector(L, 2);
+
+	while((MMB = G_Find(MMB, FOFS(classname), "misc_model_breakable")) != NULL){
+		origin = MMB->s.origin;
+		if(vec[0] == origin[0] && vec[1] == origin[1] && vec[2] == origin[2]){
+			t = MMB;
+			break;
+		}else{
+			continue;
+		}
+	}
+	if(!t)
+		lua_pushnil(L);
+	else
+		Lua_PushEntity(L, t);
+
+	return 1;
+}
+
 // entity.Use(entity ent)
 // Uses ent.
 static int Entity_Use(lua_State * L)
@@ -2821,6 +2849,7 @@ static int Entity_SetTeammaster(lua_State *L) {
 static const luaL_Reg Entity_ctor[] = {
 	{"Spawn",					Entity_Spawn},
 	{"Find",					Entity_Find},
+	{"FindMMB",					Entity_FindMMB},
 	{"FindNumber",				Entity_FindNumber},
 	{"FindBModel",				Entity_FindBModel},
 	{"GetTarget",				Entity_GetTarget},

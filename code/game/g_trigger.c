@@ -207,6 +207,7 @@ void trigger_always_think( gentity_t *ent ) {
 
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
 This trigger will always fire.  It is activated by the world.
+Actually this is going to fire once 0.3 secs after spawn...
 */
 /**
  * \brief Spawn function of trigger_multiple.
