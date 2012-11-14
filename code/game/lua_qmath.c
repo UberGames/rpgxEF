@@ -242,6 +242,22 @@ static int Qmath_Crandom(lua_State * L)
 	return 1;
 }
 
+// qmath.irandom(int i, int j)
+// Returns a random integer from the range of integers defined by and including i and j.
+static int Qmath_Irandom(lua_State * L)
+{
+	lua_pushnumber(L, irandom(luaL_checkint(L, 1), luaL_checkint(L, 2)));
+	return 1;
+}
+
+// qmath.flrandom(float i, float j)
+// Returns a random float from the range of floats defined by and including i and j.
+static int Qmath_FLrandom(lua_State * L)
+{
+	lua_pushnumber(L, flrandom(luaL_checknumber(L, 1), luaL_checknumber(L, 2)));
+	return 1;
+}
+
 static const luaL_Reg lib_qmath[] = {
 	{"abs", Qmath_Abs},
 	{"sin", Qmath_Sin},
@@ -268,7 +284,8 @@ static const luaL_Reg lib_qmath[] = {
 	{"rad", Qmath_Rad},
 	{"rand", Qmath_Rand},
 	{"random", Qmath_Random},
-	{"crandom", Qmath_Crandom},
+	{"irandom", Qmath_Irandom},
+	{"flrandom", Qmath_FLrandom},
 	{NULL, NULL}
 };
 
