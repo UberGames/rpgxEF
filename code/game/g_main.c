@@ -1665,8 +1665,6 @@ static void G_UpdateCvars( void )
 }
 
 extern int altAmmoUsage[];
-extern team_t	borgTeam;
-extern team_t	initialBorgTeam;
 static void G_InitModRules( void )
 {
 	numKilled = 0;

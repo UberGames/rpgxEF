@@ -1023,8 +1023,6 @@ void StopFollowing( gentity_t *ent ) {
 	ps->stats[STAT_HEALTH] = ps->stats[STAT_MAX_HEALTH];
 }
 
-extern team_t	borgTeam;
-
 /*
 =================
 Cmd_Team_f

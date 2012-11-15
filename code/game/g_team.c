@@ -3,25 +3,6 @@
 
 #include "g_local.h"
 
-team_t	initialBorgTeam = TEAM_FREE;
-int		borgQueenStartPoint = ENTITYNUM_NONE;
-
-typedef enum _flag_status {
-	FLAG_ATBASE = 0,
-	FLAG_TAKEN,
-	FLAG_DROPPED
-} flagStatus_t;
-
-typedef struct teamgame_s
-{
-	float last_flag_capture;
-	int last_capture_team;
-	flagStatus_t redStatus;
-	flagStatus_t blueStatus;
-} teamgame_t;
-
-teamgame_t teamgame;
-
 const char *TeamName(int team)  {
 	if (team==TEAM_SPECTATOR)
 		return "SPECTATOR";

@@ -26,7 +26,6 @@ static vec3_t	playerMins = {-12, -12, -24}; //RPG-X : TiM - {-15, -15, -24}
 static vec3_t	playerMaxs = {12, 12, 32}; // {15, 15, 32}
 
 clInitStatus_t clientInitialStatus[MAX_CLIENTS];
-team_t	borgTeam = TEAM_FREE;
 
 //TiM: For easier transport setup
 /**
