@@ -674,25 +674,27 @@ void turret_base_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 }
 
 /*QUAKED misc_turret (1 0 0) (-8 -8 -8) (8 8 8) START_OFF
+-----DESCRIPTION-----
 Will aim and shoot at enemies
 
-  START_OFF - Starts off
+-----SPAWNFLAGS-----
+1: START_OFF - Starts off
 
-  random - How far away an enemy can be for it to pick it up (default 512)
-  speed - How fast it turns (degrees per second, default 30)
-  wait	- How fast it shoots (shots per second, default 4, can't be less)
-  dmg	- How much damage each shot does (default 5)
-  health - How much damage it can take before exploding (default 100)
+-----KEYS-----
+random - How far away an enemy can be for it to pick it up (default 512)
+speed - How fast it turns (degrees per second, default 30)
+wait	- How fast it shoots (shots per second, default 4, can't be less)
+dmg	- How much damage each shot does (default 5)
+health - How much damage it can take before exploding (default 100)
   
-  splashDamage - How much damage the explosion does
-  splashRadius - The random of the explosion
-  NOTE: If either of the above two are 0, it will not make an explosion
+splashDamage - How much damage the explosion does
+splashRadius - The random of the explosion
+NOTE: If either of the above two are 0, it will not make an explosion
   
-  targetname - Toggles it on/off
-  target - What to use when destroyed
+targetname - Toggles it on/off
+target - What to use when destroyed
 
-  "team" - This cannot take damage from members of this team and will not target members of this team (2 = blue, 1 = red) 2 will exclude players in RPG-X
-
+"team" - This cannot take damage from members of this team and will not target members of this team (2 = blue, 1 = red) 2 will exclude players in RPG-X
 */
 
 /**
@@ -1044,8 +1046,13 @@ void laser_arm_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 }
 
 /*QUAKED misc_laser_arm (1 0 0) (-8 -8 -8) (8 8 8) 
+-----DESCRIPTION-----
+What it does when used depends on it's "count" (can be set by a lua-script)
 
-What it does when used depends on it's "count" (can be set by a script)
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
 	count:
 		0 (default) - Fire in direction facing
 		1 turn left

@@ -865,9 +865,15 @@ void CheckTeamStatus(void)
 /*-----------------------------------------------------------------*/
 
 /*QUAKED team_CTF_redplayer (1 0 0) (-16 -16 -16) (16 16 32) BORGQUEEN
+-----DESCRIPTION-----
 Only in CTF games.  Red players spawn here at game start.
+This is not used in RPG-X.
 
-BORGQUEEN - The player that is the Borg Queen will spawn here
+-----SPAWNFLAGS-----
+1: BORGQUEEN - The player that is the Borg Queen will spawn here
+
+-----KEYS-----
+none
 */
 void SP_team_CTF_redplayer( gentity_t *ent ) {
 	if ( ent->spawnflags & 1 )
@@ -879,9 +885,15 @@ void SP_team_CTF_redplayer( gentity_t *ent ) {
 
 
 /*QUAKED team_CTF_blueplayer (0 0 1) (-16 -16 -16) (16 16 32) BORGQUEEN
+-----DESCRIPTION-----
 Only in CTF games.  Blue players spawn here at game start.
+This is not used in RPG-X.
 
-BORGQUEEN - The player that is the Borg Queen will spawn here
+-----SPAWNFLAGS-----
+1: BORGQUEEN - The player that is the Borg Queen will spawn here
+
+-----KEYS-----
+none
 */
 void SP_team_CTF_blueplayer( gentity_t *ent ) {
 	if ( ent->spawnflags & 1 )
@@ -897,11 +909,15 @@ void spawnpoint_toggle_active( gentity_t *ent, gentity_t *other, gentity_t *acti
 	ent->spawnflags ^= 1;
 }
 /*QUAKED team_CTF_redspawn (1 0 0) (-16 -16 -24) (16 16 32) STARTOFF
+-----DESCRIPTION-----
 potential spawning position for red team in CTF games, AFTER game start
 Targets will be fired when someone spawns in on them.
+This is not used in RPG-X.
 
+-----SPAWNFLAGS-----
 STARTOFF - won't be considered as a spawn point until used
 
+-----KEYS-----
 targetname - when used, toggles between active and incative spawn point
 */
 void SP_team_CTF_redspawn(gentity_t *ent) {
@@ -912,11 +928,14 @@ void SP_team_CTF_redspawn(gentity_t *ent) {
 }
 
 /*QUAKED team_CTF_bluespawn (0 0 1) (-16 -16 -24) (16 16 32) STARTOFF
+-----DESCRIPTION-----
 potential spawning position for blue team in CTF games, AFTER game start
 Targets will be fired when someone spawns in on them.
 
+-----SPAWNFLAGS-----
 STARTOFF - won't be considered as a spawn point until used
 
+-----KEYS-----
 targetname - when used, toggles between active and incative spawn point
 */
 void SP_team_CTF_bluespawn(gentity_t *ent) {

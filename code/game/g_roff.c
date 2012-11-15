@@ -179,9 +179,17 @@ void G_Roff( gentity_t *ent )
 }
 
 /*QUAKED func_roff_mover (0 .5 .8) ? START_ON LOOP
+-----DESCRIPTION-----
 Loads all of the movement data from an external ROFF file and applies
 it to this entity, creating much more fluid motion.
 
+DISCONTINUED: Use Lua mover instead.
+
+-----SPAWNFLAGS-----
+1: START_ON - will start to move at spawn
+2: LOOP - will loop it's mition
+
+-----KEYS-----
 "model2"	.md3 model to also draw
 "angle"		determines the opening direction
 "target"	once the animation ends, these targetted entities will be triggered

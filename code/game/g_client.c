@@ -49,12 +49,17 @@ void G_InitTransport( int clientNum, vec3_t origin, vec3_t angles ) {
 	tent->s.clientNum = clientNum;
 }
 
-/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) initial
+/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) INITIAL
+-----DESCRIPTION-----
 potential spawning position for deathmatch games.
-The first time a player enters the game, they will be at an 'initial' spot.
-Targets will be fired when someone spawns in on them.
-"nobots" will prevent bots from using this spot.
-"nohumans" will prevent non-bots from using this spot.
+
+-----SPAWNFLAGS-----
+1: INITIAL - Preferred spawn for the first spawn of a clientwhen entering a match.
+
+-----KEYS-----
+"target" - entities with matching targetname will be fired if someone spawns here.
+"nobots" - if 1 will prevent bots from using this spot.
+"nohumans" - if 1 will prevent non-bots from using this spot.
 */
 /**
 *	Spawn function for deathmatch spawnpoint
@@ -74,8 +79,18 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
-equivelant to info_player_deathmatch
+/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32) INITIAL
+-----DESCRIPTION-----
+Merely a fancy name for info_player_deathmatch.
+On spawn will reset classname sppropriately and respawn itself.
+
+-----SPAWNFLAGS-----
+1: INITIAL - Preferred spawn for the first spawn of a clientwhen entering a match.
+
+-----KEYS-----
+"target" - entities with matching targetname will be fired if someone spawns here.
+"nobots" - if 1 will prevent bots from using this spot.
+"nohumans" - if 1 will prevent non-bots from using this spot.
 */
 /**
 *	Spawn function for player start spawnpoint which actually the same as deatchmatch spawnpoint
@@ -86,7 +101,16 @@ void SP_info_player_start(gentity_t *ent) {
 }
 
 /*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
+-----DESCRIPTION-----
+The intermission will be viewed from this point.
+It is also used to spawn spectators.
+Target an info_notnull or similar for the view direction.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
 */
 /**
 *	Spawn function for intermission entity.

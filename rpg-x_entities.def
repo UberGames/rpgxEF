@@ -1,3 +1,21 @@
+//files that hold this stuff in game. Please update them as required:
+//g_breakable.c - func_breakable, misc_model_breakable, misc_ammo_station, target_repair;
+//g_cinamatic.c - cinematic_camera
+//g_client.c - info_player_deathmatch, info_player_start, info_player_intermission
+//g_forcefield2.c - func_forcefield2
+//g_fx.c
+//g_items.c - item_botroam
+//g_misc.c
+//g_mover.c
+//g_roff.c
+//g_spawn.c - worldspawn;
+//g_target.c
+//g_team.c - team_CTF_redplayer, team_CTF_blueplayer, team_CTF_redspawn, team_CTF_bluespawn
+//g_trigger.c - trigger_multiple, trigger_always, trigger_push, target_push, trigger_teleport, trigger_hurt, func_timer, trigger_transporter, trigger_radiation;
+//g_turrets.c - misc_turret, misc_laser_arm;
+//g_ui.c - ui_transporter, ui_holodeck;
+//g_usable.c - func_usable;
+
 /*QUAKED item_***** ( 0 0 0 ) (-16 -16 -16) (16 16 16) suspended
 DO NOT USE THIS CLASS, IT JUST HOLDS GENERAL INFORMATION.
 The suspended flag will allow items to hang in the air, otherwise they are dropped to the next surface.
@@ -277,27 +295,59 @@ none
 */
 
 
-/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) initial
+/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) INITIAL
+-----DESCRIPTION-----
 potential spawning position for deathmatch games.
-The first time a player enters the game, they will be at an 'initial' spot.
-Targets will be fired when someone spawns in on them.
-"nobots" will prevent bots from using this spot.
-"nohumans" will prevent non-bots from using this spot.
+
+-----SPAWNFLAGS-----
+1: INITIAL - Preferred spawn for the first spawn of a clientwhen entering a match.
+
+-----KEYS-----
+"target" - entities with matching targetname will be fired if someone spawns here.
+"nobots" - if 1 will prevent bots from using this spot.
+"nohumans" - if 1 will prevent non-bots from using this spot.
 */
 
 
-/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
-equivelant to info_player_deathmatch
+/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32) INITIAL
+-----DESCRIPTION-----
+Merely a fancy name for info_player_deathmatch.
+On spawn will reset classname sppropriately and respawn itself.
+
+-----SPAWNFLAGS-----
+1: INITIAL - Preferred spawn for the first spawn of a clientwhen entering a match.
+
+-----KEYS-----
+"target" - entities with matching targetname will be fired if someone spawns here.
+"nobots" - if 1 will prevent bots from using this spot.
+"nohumans" - if 1 will prevent non-bots from using this spot.
 */
 
 
 /*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
+-----DESCRIPTION-----
+The intermission will be viewed from this point.
+It is also used to spawn spectators.
+Target an info_notnull or similar for the view direction.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
 */
 
 
 /*QUAKED item_botroam (.5 .3 .7) (-16 -16 -24) (16 16 0)
-Bots in MP will go to these spots when there's nothing else to get- helps them patrol.
+-----DESCRIPTION-----
+Bots in MP will go to these spots when there's nothing else to get - helps them patrol.
+No use in RPG-X.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
 */
 
 
@@ -450,16 +500,23 @@ START_POINT this is the first path_point for the train
 
 
 /*QUAKED worldspawn (0 0 0) ?
-
+-----DESCRIPTION-----
 Every map should have exactly one worldspawn.
-"music"		path to WAV or MP3 files (e.g. "music\intro.mp3 music\loopfile.mp3")
-"gravity"	800 is default gravity
-"message"	Text to print during connection process
+It holds some general information on the map.
 
-fraglimit - overrides server's limit
-capturelimit - overrides server's capturelimit (use with team AddScores)
-timelimit - overrides server's timelimit
-timelimitWinningTeam - "red" or "blue" - this team will win when the timelimit runs out
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"music" - path to WAV or MP3 files (e.g. "music\intro.mp3 music\loopfile.mp3")
+"gravity" - 800 is default gravity
+"message" - Text to print during connection process
+
+Keys irrelevant for RPG-X
+"fraglimit" - overrides server's limit
+"capturelimit" - overrides server's capturelimit (use with team AddScores)
+"timelimit" - overrides server's timelimit
+"timelimitWinningTeam" - "red" or "blue" - this team will win when the timelimit runs out
 
 q3map2:
 "_blocksize" block size for unconditional BSP subdivisions
@@ -480,54 +537,95 @@ q3map2:
 
 
 /*QUAKED target_give (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 Gives all the weapons specified here in the list.
 
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
 "items" - separated by ' | ', specify the items
-EG "WP_PHASER | WP_TOOLKIT" etc
+EG "WP_5 | WP_14" etc
 (Don't forget the spaces!)
 */
 
 
 /*QUAKED target_remove_powerups (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 takes away all the activators powerups.
 Used to drop flight powerups into death puts.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
 */
 
 
 /*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8) SELF
-SELF   use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+-----DESCRIPTION-----
+When used fires it'd target after a delay of 'wait' seconds
 
+-----SPAWNFLAGS-----
+1: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+
+-----KEYS-----
 "wait" seconds to pause before firing targets.
 "random" delay variance, total delay = delay +/- random seconds
 */
 
 
 /*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8) TEAMSCORE
-TEAMSCORE - points are added to activator's team's score, not the individual
+-----DESCRIPTION-----
+The Activator is given 'count' points.
+This is useless in RPG-X
 
-"count" number of points to add, default 1
+-----SPAWNFLAGS-----
+1: TEAMSCORE - points are added to activator's team's score, not the individual
 
-The activator is given this many points.
+-----KEYS-----
+"count" - number of points to add, default 1
 */
 
 
 /*QUAKED target_print (1 0 0) (-8 -8 -8) (8 8 8) redteam blueteam private
+-----DESCRIPTION-----
+This will display the 'message' in the lower right corner for all reciepients.
+By default every client get's the message however this can be limited via spawnflags.
+
+-----SPAWNFLAGS-----
+1: redteam - everyone on the red team gets the message
+2: blueteam - everyone on the blue team gets the message
+4: private - only the activator gets the message
+
+-----KEYS-----
 "message"	text to print
-If "private", only the activator gets the message.  If no checks, all clients get the message.
 */
 
 
-/*QUAKED target_speaker (1 0 0) (-8 -8 -8) (8 8 8) looped-on looped-off global activator
-"noise"		wav file to play
+/*QUAKED target_speaker (1 0 0) (-8 -8 -8) (8 8 8) LOOPED_ON LOOPED_OFF GLOBAL ACTIVATOR 
+-----DESCRIPTION-----
+A sound-file to play.
+By default this will be played once locally. 
+The specifics on how to play are set via spawnflags.
 
-A global sound will play full volume throughout the level.
-Activator sounds will play on the player that activated the target.
-Global and activator sounds can't be combined with looping.
-Normal sounds play each time the target is used.
-Looped sounds will be toggled by use functions.
+Looping Sounds may not be combined with GLOBAL or ACTIVATOR
 Multiple identical looping sounds will just increase volume without any speed cost.
-"wait" : Seconds between auto triggerings, 0 = don't auto trigger
-"random"	wait variance, default is 0
+Using a looping target_speaker will toggle it's sound on or off.
+
+Using a target_speaker designed to play it's sound once will play that sound.
+
+-----SPAWNFLAGS-----
+1: LOOPED_ON - this Speaker will loop it's sound and will be active at spawn.
+2: LOOPED_OFF - this Speaker will loop it's sound and will be inactive at spawn.
+4: GLOBAL - the sound will be played once globally so every client will hear it.
+8: ACTIVATOR - The sound will be played once for the activator only to hear.
+
+-----KEYS-----
+"noise" - file to play
+"wait" - Seconds between auto triggerings, default = 0 = don't auto trigger
+"random" - wait variance, default is 0, delay would be wait +/- random
 */
 
 
@@ -599,83 +697,132 @@ NOTE: the objective with the lowest "count" will be considered the current objec
 
 
 /*QUAKED team_CTF_redplayer (1 0 0) (-16 -16 -16) (16 16 32) BORGQUEEN
+-----DESCRIPTION-----
 Only in CTF games.  Red players spawn here at game start.
+This is not used in RPG-X.
 
-BORGQUEEN - The player that is the Borg Queen will spawn here
+-----SPAWNFLAGS-----
+1: BORGQUEEN - The player that is the Borg Queen will spawn here
+
+-----KEYS-----
+none
 */
 
 
 /*QUAKED team_CTF_blueplayer (0 0 1) (-16 -16 -16) (16 16 32) BORGQUEEN
+-----DESCRIPTION-----
 Only in CTF games.  Blue players spawn here at game start.
+This is not used in RPG-X.
 
-BORGQUEEN - The player that is the Borg Queen will spawn here
+-----SPAWNFLAGS-----
+1: BORGQUEEN - The player that is the Borg Queen will spawn here
+
+-----KEYS-----
+none
 */
 
 
 /*QUAKED team_CTF_redspawn (1 0 0) (-16 -16 -24) (16 16 32) STARTOFF
+-----DESCRIPTION-----
 potential spawning position for red team in CTF games, AFTER game start
 Targets will be fired when someone spawns in on them.
+This is not used in RPG-X.
 
+-----SPAWNFLAGS-----
 STARTOFF - won't be considered as a spawn point until used
 
+-----KEYS-----
 targetname - when used, toggles between active and incative spawn point
 */
 
 
 /*QUAKED team_CTF_bluespawn (0 0 1) (-16 -16 -24) (16 16 32) STARTOFF
+-----DESCRIPTION-----
 potential spawning position for blue team in CTF games, AFTER game start
 Targets will be fired when someone spawns in on them.
 
+-----SPAWNFLAGS-----
 STARTOFF - won't be considered as a spawn point until used
 
+-----KEYS-----
 targetname - when used, toggles between active and incative spawn point
 */
 
 
 /*QUAKED trigger_multiple (.5 .5 .5) ? RED_OK BLUE_OK TEAM_ONLY
-RED_OK - People on the red team can fire this trigger
-BLUE_OK - People on the blue team can fire this trigger
-TEAM_ONLY - Only people on red or blue can fire this trigger (not TEAM_FREE like in straight holomatch or spectators)
-
-"wait" : Seconds between triggerings, 0.5 default, -1 = one time only.
-"random"	wait variance, default is 0
+-----DESCRIPTION-----
 Variable sized repeatable trigger.  Must be targeted at one or more entities.
 so, the basic time between firing is a random time between
 (wait - random) and (wait + random)
+
+-----SPAWNFLAGS-----
+1: RED_OK - People on the red team can fire this trigger
+2: BLUE_OK - People on the blue team can fire this trigger
+4: TEAM_ONLY - Only people on red or blue can fire this trigger (not TEAM_FREE like in straight holomatch or spectators)
+
+-----KEYS-----
+"wait" - Seconds between triggerings, 0.5 default, -1 = one time only.
+"random" - wait variance, default is 0
 */
 
 
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 This trigger will always fire.  It is activated by the world.
+Actually this is going to fire once 0.3 secs after spawn, so it's more a trigger_init.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+target - targets to fire
 */
 
 
 /*QUAKED trigger_push (.5 .5 .5) ?
-Must point at a target_position, which will be the apex of the leap.
-This will be client side predicted, unlike target_push
+-----DESCRIPTION-----
+Jumpfield/Booster Effect predicted on client side. This is activated by touch function.
+
+-----SPAWNFLAGS-----
+None
+
+-----KEYS-----
+target - apex of the leap. Must be a target_position or info_notnull.
 */
 
+/*QUAKED target_push (.5 .5 .5) (-8 -8 -8) (8 8 8) ENERGYNOISE
+-----DESCRIPTION-----
+Pushes the activator in the direction of angle, or towards a target apex.
+This is predicted on the serverside and is triggered by use-function.
+
+-----SPAWNFLAGS-----
+1: ENERGYNOISE - play energy noise instead of windfly
+
+-----KEYS-----
+"speed" - defaults to 1000
+"target" - apex of the leap. Must be a target_position or info_notnull.
+*/
 
 /*QUAKED trigger_teleport (.5 .5 .5) ? SPECTATOR RANDOM VISUAL_FX SUSPENDED DEACTIVATED
+-----DESCRIPTION-----
 Allows client side prediction of teleportation events.
-Must point at a target_position, which will be the teleport destination.
+Must point at a target_position or info_notnull, which will be the teleport destination.
 
---------- spawnflags --------
+-----SPAWNFLAGS-----
+1: SPECTATOR: If set, only spectators can use this teleport.
+ Spectator teleporters are not normally placed in the editor, but are created
+ automatically near doors to allow spectators to move through them.
+2: RANDOM: send player to random info_player_deathmatch spawn point
+4: VISUAL_FX: plays the Star Trek transporter FX and beams the player out slowly
+8: SUSPENDED: player appears with the bounding box aligned to the bottom of the target
+ If this isn't set, the player materializes at the first solid surface under it
+16: DEACTIVATED: Spawns deactivated
 
-If spectator is set, only spectators can use this teleport
-Spectator teleporters are not normally placed in the editor, but are created
-automatically near doors to allow spectators to move through them
-
-  RANDOM -- send player to random info_player_deathmatch spawn point
-  VISUAL_FX -- plays the Star Trek transporter FX and beams the player out slowly
-  SUSPENDED -- player appears with the bounding box aligned to the bottom of the target
-  If this isn't set, the player materializes at the first solid surface under it
-
------------ keys ------------
-
- "swapname" - ACTIVATE/DEACTIVATE (Using entity needs SELF/NOACTIVATOR)
-
- health -- default is original behavior (speed of 400), any other value will be the
+-----KEYS-----
+"swapname" - ACTIVATE/DEACTIVATE (Using entity needs SELF/NOACTIVATOR)
+"wait" - time before trigger deactivates itself automatically
+"soundstart" - sound to play if triggered
+"health" - default is original behavior (speed of 400), any other value will be the
  speed at which the player is spewed forth from the tranpsorter destination. -1
  if you want no speed. The transporter VISUAL_FX flag will only work if the health
  is set to 0 or -1 as it cannot support 'spewing'.
@@ -683,30 +830,38 @@ automatically near doors to allow spectators to move through them
 
 
 /*QUAKED misc_turret (1 0 0) (-8 -8 -8) (8 8 8) START_OFF
+-----DESCRIPTION-----
 Will aim and shoot at enemies
 
-  START_OFF - Starts off
+-----SPAWNFLAGS-----
+1: START_OFF - Starts off
 
-  random - How far away an enemy can be for it to pick it up (default 512)
-  speed - How fast it turns (degrees per second, default 30)
-  wait	- How fast it shoots (shots per second, default 4, can't be less)
-  dmg	- How much damage each shot does (default 5)
-  health - How much damage it can take before exploding (default 100)
+-----KEYS-----
+random - How far away an enemy can be for it to pick it up (default 512)
+speed - How fast it turns (degrees per second, default 30)
+wait	- How fast it shoots (shots per second, default 4, can't be less)
+dmg	- How much damage each shot does (default 5)
+health - How much damage it can take before exploding (default 100)
   
-  splashDamage - How much damage the explosion does
-  splashRadius - The random of the explosion
-  NOTE: If either of the above two are 0, it will not make an explosion
+splashDamage - How much damage the explosion does
+splashRadius - The random of the explosion
+NOTE: If either of the above two are 0, it will not make an explosion
   
-  targetname - Toggles it on/off
-  target - What to use when destroyed
+targetname - Toggles it on/off
+target - What to use when destroyed
 
-  "team" - This cannot take damage from members of this team and will not target members of this team (2 = blue, 1 = red)
+"team" - This cannot take damage from members of this team and will not target members of this team (2 = blue, 1 = red) 2 will exclude players in RPG-X
 */
 
 
 /*QUAKED misc_laser_arm (1 0 0) (-8 -8 -8) (8 8 8) 
+-----DESCRIPTION-----
+What it does when used depends on it's "count" (can be set by a lua-script)
 
-What it does when used depends on it's "count" (can be set by a script)
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
 	count:
 		0 (default) - Fire in direction facing
 		1 turn left
@@ -755,25 +910,54 @@ with cloud layers and other effects.
 
 // RPG-X trigger_*
 
-/*QUAKED trigger_hurt (.5 .5 .5) ? START_OFF TOGGLE SILENT NO_PROTECTION SLOW EVO_PROTECT
+/*QUAKED trigger_hurt (.5 .5 .5) ? START_OFF TOGGLE SILENT NO_PROTECTION SLOW EVO_PROTECT NO_ADMIN
+-----DESCRIPTION-----
 Any entity that touches this will be hurt.
 It does dmg points of damage each server frame
 Targeting the trigger will toggle its on / off state.
 
-SILENT			supresses playing the sound
-TOGGLE			can be toggled
-SLOW			changes the damage rate to once per second
-NO_PROTECTION	*nothing* stops the damage
-EVO_PROTECT		Evosuit protects the client
+-----SPAWNFLAGS-----
+1: START_OFF - trigger will not be doing damage until toggled on
+2: TOGGLE - can be toggled
+4: SILENT - supresses playing the sound
+8: NO_PROTECTION - *nothing* stops the damage
+16: SLOW - changes the damage rate to once per second
+32: EVO_PROTECT - Evosuit protects the client
+64: NO_ADMIN - admins don't get hurt
 
-"dmg"			default 5 (whole numbers only)
-
+-----KEYS-----
+"dmg" - default 5 (whole numbers only)
 */
 
 /*QUAKED trigger_transporter (0.5 0.5 0.5) ?
+-----DESCRIPTION-----
 This is used in combination with ui_transporter.
+Have this be targeted by ui_transporter.
 
-"wait"	time to wait before trigger gets deactivated again(in seconds, default 5)
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"wait"			time to wait before trigger gets deactivated again(in seconds, default 5)
+"soundstart"	transport sound;
+*/
+
+/*QUAKED trigger_radiation (0.5 0.5 0.5) ? START_OFF MAP_WIDE
+-----DESCRIPTION-----
+This can be used in three ways:
+- as radiation volume trigger
+- as mapwide radiation
+
+-----SPAWNFLAGS-----
+1: START_OFF - ent is off at spawn
+2: MAP_WIDE - mapwide radiation
+
+-----KEYS-----
+The damage the radiation does is calculated from these two values:
+"dmg"			damage(default 1)
+"wait"			wait(seconds, default 10)
+
+Forumla is: dps = dmg / wait
 */
 
 // RPG-X target_*
@@ -952,14 +1136,18 @@ q3map2:
 */
 
 /*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
-This should be renamed trigger_timer...
-Repeatedly fires its targets.
+-----DESCRIPTION-----
+Fires its targets every "wait" seconds.
 Can be turned on or off by using.
 
-"wait"			base time between triggering all targets, default is 1
-"random"		wait variance, default is 0
-so, the basic time between firing is a random time between
-(wait - random) and (wait + random)
+-----SPAWNFLAGS-----
+1: START_ON - will be on at spawn and setting up for it's first intervall
+
+-----KEYS-----
+"wait" - base time between triggering all targets, default is 1
+"random" - wait variance, default is 0
+ so, the basic time between firing is a random time between
+ (wait - random) and (wait + random)
 
 q3map2:
 "_clone" _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
@@ -1535,13 +1723,16 @@ If you want to use a bunch of fires use fx_fire.
 */
 
 // RPG-X ui_*
-/*QUAKED ui_transporter (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
+/*QUAKED ui_transporter (.5 .5 .5) ? DISABLED
+-----DESCRIPTION-----
 Opens the transporter UI.
 
-DISABLED	Entity is disabled
+-----SPAWNFLAGS-----
+1: DISABLED	- Entity is disabled at spawn
 
-"swapname"	enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
-"target"	trigger_transporter to use with this ui_transporter
+-----KEYS-----
+"swapname" - enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
+"target" - trigger_transporter to use with this ui_transporter
 */
 
 /*QUAKED target_shaderremap (1 0 0) (-8 -8 -8) (8 8 8)
@@ -1552,13 +1743,16 @@ This Entity only works on RPGXEF
 
 */
 
-/*QUAKED ui_holodeck (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
-Opens the holodeck UI.
+/*QUAKED ui_holodeck (.5 .5 .5) ? DISABLED
+-----Description-----
+Will open  the holodeck UI once this is implemented. For now this will not spawn.
 
-DISABLED	Entity is disabled
+-----SPAWNFLAGS-----
+1: DISABLED	Entity is disabled at spawn
 
-"swapname"	enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
-"target"	trigger_holodeck to use with this ui_holodeck
+-----KEYS-----
+"swapname" - enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
+"target" - trigger_holodeck to use with this ui_holodeck
 */
 
 /*QUAKED fx_cooking_steam (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
@@ -1690,4 +1884,67 @@ falsename: redname for target_alert
 
 /*QUAKED target_safezone (1 0 0) ? STARTON
 This is a safezone for the self destruct sequence.
+*/
+
+/*QUAKED func_roff_mover (0 .5 .8) ? START_ON LOOP
+-----DESCRIPTION-----
+Loads all of the movement data from an external ROFF file and applies
+it to this entity, creating much more fluid motion.
+
+DISCONTINUED: Use Lua mover instead.
+
+-----SPAWNFLAGS-----
+1: START_ON - will start to move at spawn
+2: LOOP - will loop it's mition
+
+-----KEYS-----
+"model2"	.md3 model to also draw
+"angle"		determines the opening direction
+"target"	once the animation ends, these targetted entities will be triggered
+"wait"		from activation, how many seconds to wait before moving
+"endwait"	from the end of the animation, how many seconds to wait b4 firing its targets
+"color"		constantLight color
+"light"		constantLight radius
+"noise"		looping sound file that plays as it animates.
+*/
+
+/*QUAKED cinematic_camera (0 0.5 0) (-4 -4 -4) (4 4 4)
+-----DESCRIPTION-----
+Camera for cinematic. Normally spawn by Lua script.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
+
+-----LUA-----
+To be written later.
+*/
+
+/*QUAKED func_forcefield2 (0 .5 .8) ? STARTOFF AUTOANIM X ALWAYS_ON NOBLOCKCHECK X X X
+-----DESCRIPTION-----
+DO NOT USE! This is basically the original Game forcefield with some tweaks and not much different than a func_usable.
+It just sits here in case you encounter it one day.
+
+A bmodel that can be used directly by the player's "activate" button
+
+-----SPAWNFLAGS-----
+1: START_OFF - the forcefield will not be there
+2: AUTOANIM - If useing an md3, it will animate
+4: X - Unused?
+8: ALWAYS_ON - Doesn't toggle on and off when used, just fires target
+16: NOBLOCKCHECK - Will NOT turn on while something is inside it unless this is checked
+32: X - Unused?
+64: X - Unused?
+128: X - Unused?
+
+-----KEYS-----
+"targetname" - When used, will toggle on and off
+"target" - Will fire this target every time it is toggled OFF
+"model2" - .md3 model to also draw
+"color" - constantLight color
+"light" - constantLight radius
+"wait" - amount of time before the object is usable again (only valid with ALWAYS_ON flag)
+"health" - if it has health, it will be used whenever shot at/killed - if you want it to only be used once this way, set health to 1
 */

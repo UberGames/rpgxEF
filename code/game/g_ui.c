@@ -8,13 +8,12 @@
 
 extern void InitTrigger(gentity_t *self);
 
-/*
-QUAKED ui_transporter (.5 .5 .5) ? DISABLED
+/*QUAKED ui_transporter (.5 .5 .5) ? DISABLED
 -----DESCRIPTION-----
 Opens the transporter UI.
 
 -----SPAWNFLAGS-----
-1: DISABLED	- Entity is disabled
+1: DISABLED	- Entity is disabled at spawn
 
 -----KEYS-----
 "swapname" - enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
@@ -110,13 +109,12 @@ void SP_ui_transporter(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
-/*
-QUAKED ui_holodeck (.5 .5 .5) ? DISABLED
+/*QUAKED ui_holodeck (.5 .5 .5) ? DISABLED
 -----Description-----
 Will open  the holodeck UI once this is implemented. For now this will not spawn.
 
 -----SPAWNFLAGS-----
-1: DISABLED	Entity is disabled
+1: DISABLED	Entity is disabled at spawn
 
 -----KEYS-----
 "swapname" - enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)

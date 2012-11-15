@@ -4,8 +4,9 @@
 
 #include "g_local.h"
 
+/*these look weired... I'd rather replace them with streight numbers.
 #define SF_SPECTATOR	(1<<0)
-#define SF_RANDOM	(1<<1)
+#define SF_RANDOM	(1<<1)*/
 
 /**
  * \brief Inits a trigger entity.
@@ -134,15 +135,19 @@ void Touch_Multi( gentity_t *self, gentity_t *other, trace_t *trace ) {
 }
 
 /*QUAKED trigger_multiple (.5 .5 .5) ? RED_OK BLUE_OK TEAM_ONLY
-RED_OK - People on the red team can fire this trigger
-BLUE_OK - People on the blue team can fire this trigger
-TEAM_ONLY - Only people on red or blue can fire this trigger (not TEAM_FREE like in straight holomatch or spectators)
-
-"wait" : Seconds between triggerings, 0.5 default, -1 = one time only.
-"random"	wait variance, default is 0
+-----DESCRIPTION-----
 Variable sized repeatable trigger.  Must be targeted at one or more entities.
 so, the basic time between firing is a random time between
 (wait - random) and (wait + random)
+
+-----SPAWNFLAGS-----
+1: RED_OK - People on the red team can fire this trigger
+2: BLUE_OK - People on the blue team can fire this trigger
+4: TEAM_ONLY - Only people on red or blue can fire this trigger (not TEAM_FREE like in straight holomatch or spectators)
+
+-----KEYS-----
+"wait" - Seconds between triggerings, 0.5 default, -1 = one time only.
+"random" - wait variance, default is 0
 */
 /**
  * \brief Spawn function of trigger_multiple.
@@ -206,8 +211,15 @@ void trigger_always_think( gentity_t *ent ) {
 }
 
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 This trigger will always fire.  It is activated by the world.
-Actually this is going to fire once 0.3 secs after spawn...
+Actually this is going to fire once 0.3 secs after spawn, so it's more a trigger_init.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - targets to fire
 */
 /**
  * \brief Spawn function of trigger_multiple.
@@ -303,8 +315,14 @@ void AimAtTarget( gentity_t *self ) {
 
 
 /*QUAKED trigger_push (.5 .5 .5) ?
-Must point at a target_position, which will be the apex of the leap.
-This will be client side predicted, unlike target_push
+-----DESCRIPTION-----
+Jumpfield/Booster Effect predicted on client side. This is activated by touch function.
+
+-----SPAWNFLAGS-----
+None
+
+-----KEYS-----
+"target" - apex of the leap. Must be a target_position or info_notnull.
 */
 /**
  * \brief Spawn function of trigger_push.
@@ -364,9 +382,16 @@ void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 }
 
 /*QUAKED target_push (.5 .5 .5) (-8 -8 -8) (8 8 8) ENERGYNOISE
-Pushes the activator in the direction.of angle, or towards a target apex.
-"speed"		defaults to 1000
-if "ENERGYNOISE", play energy noise instead of windfly
+-----DESCRIPTION-----
+Pushes the activator in the direction of angle, or towards a target apex.
+This is predicted on the serverside and is triggered by use-function.
+
+-----SPAWNFLAGS-----
+1: ENERGYNOISE - play energy noise instead of windfly
+
+-----KEYS-----
+"speed" - defaults to 1000
+"target" - apex of the leap. Must be a target_position or info_notnull.
 */
 /**
  * \brief Spawn function of target_push.
@@ -470,7 +495,7 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 	/* Spectators only? */
-	if ( ( self->spawnflags & SF_SPECTATOR ) && 
+	if ( ( self->spawnflags & 1 ) && 
 		other->client->sess.sessionTeam != TEAM_SPECTATOR )
 	{
 		return;
@@ -479,7 +504,7 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 	clientNum = other->client->ps.clientNum;
 
 	/* BOOKMARK J2J */
-	if (self->spawnflags & SF_RANDOM)
+	if (self->spawnflags & 2)
 	{
 		/* find a random spawn point */
 		dest = SelectRandomSpawnPoint();
@@ -586,28 +611,26 @@ void trigger_teleport_use(gentity_t *ent, gentity_t *other, gentity_t *activator
 }
 
 
-/*QUAKED trigger_teleport (.5 .5 .5) ? SPECTATOR RANDOM VISUAL_FX SUSPENDED DEACTIVATED SND_ONCE
+/*QUAKED trigger_teleport (.5 .5 .5) ? SPECTATOR RANDOM VISUAL_FX SUSPENDED DEACTIVATED
+-----DESCRIPTION-----
 Allows client side prediction of teleportation events.
-Must point at a target_position, which will be the teleport destination.
+Must point at a target_position or info_notnull, which will be the teleport destination.
 
---------- spawnflags --------
+-----SPAWNFLAGS-----
+1: SPECTATOR: If set, only spectators can use this teleport.
+ Spectator teleporters are not normally placed in the editor, but are created
+ automatically near doors to allow spectators to move through them.
+2: RANDOM: send player to random info_player_deathmatch spawn point
+4: VISUAL_FX: plays the Star Trek transporter FX and beams the player out slowly
+8: SUSPENDED: player appears with the bounding box aligned to the bottom of the target
+ If this isn't set, the player materializes at the first solid surface under it
+16: DEACTIVATED: Spawns deactivated
 
-If spectator is set, only spectators can use this teleport
-Spectator teleporters are not normally placed in the editor, but are created
-automatically near doors to allow spectators to move through them
-
-  RANDOM -- send player to random info_player_deathmatch spawn point
-  VISUAL_FX -- plays the Star Trek transporter FX and beams the player out slowly
-  SUSPENDED -- player appears with the bounding box aligned to the bottom of the target
-  If this isn't set, the player materializes at the first solid surface under it
-
------------ keys ------------
-
- "swapname"   - ACTIVATE/DEACTIVATE (Using entity needs SELF/NOACTIVATOR)
- "wait"		  - time before trigger deactivates itself automatically
- "soundstart" - sound to play if triggered
-
- health -- default is original behavior (speed of 400), any other value will be the
+-----KEYS-----
+"swapname" - ACTIVATE/DEACTIVATE (Using entity needs SELF/NOACTIVATOR)
+"wait" - time before trigger deactivates itself automatically
+"soundstart" - sound to play if triggered
+"health" - default is original behavior (speed of 400), any other value will be the
  speed at which the player is spewed forth from the tranpsorter destination. -1
  if you want no speed. The transporter VISUAL_FX flag will only work if the health
  is set to 0 or -1 as it cannot support 'spewing'.
@@ -629,7 +652,7 @@ void SP_trigger_teleport( gentity_t *self )
  	 *  unlike other triggers, we need to send this one to the client
 	 *  unless is a spectator trigger
 	 */
-	if ( self->spawnflags & SF_SPECTATOR )
+	if ( self->spawnflags & 1)
 	{
 		self->r.svFlags |= SVF_NOCLIENT;
 	}
@@ -672,19 +695,22 @@ trigger_hurt
 */
 
 /*QUAKED trigger_hurt (.5 .5 .5) ? START_OFF TOGGLE SILENT NO_PROTECTION SLOW EVO_PROTECT NO_ADMIN
+-----DESCRIPTION-----
 Any entity that touches this will be hurt.
 It does dmg points of damage each server frame
 Targeting the trigger will toggle its on / off state.
 
-SILENT			supresses playing the sound
-TOGGLE			can be toggled
-SLOW			changes the damage rate to once per second
-NO_PROTECTION	*nothing* stops the damage
-EVO_PROTECT		Evosuit protects the client
-NO_ADMIN		admins don't get hurt
+-----SPAWNFLAGS-----
+1: START_OFF - trigger will not be doing damage until toggled on
+2: TOGGLE - can be toggled
+4: SILENT - supresses playing the sound
+8: NO_PROTECTION - *nothing* stops the damage
+16: SLOW - changes the damage rate to once per second
+32: EVO_PROTECT - Evosuit protects the client, even if NO_PROTECTION is set
+64: NO_ADMIN - admins don't get hurt, even if NO_PROTECTION is set
 
-"dmg"			default 5 (whole numbers only)
-
+-----KEYS-----
+"dmg" - default 5 (whole numbers only)
 */
 /**
  * \brief Use function of trigger_hurt.
@@ -800,21 +826,25 @@ void SP_trigger_hurt( gentity_t *self ) {
 ==============================================================================
 
 timer
+This should be renamed trigger_timer...
 
 ==============================================================================
 */
 
 
 /*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
-This should be renamed trigger_timer...
-Repeatedly fires its targets.
+-----DESCRIPTION-----
+Fires its targets every "wait" seconds.
 Can be turned on or off by using.
 
-"wait"			base time between triggering all targets, default is 1
-"random"		wait variance, default is 0
-so, the basic time between firing is a random time between
-(wait - random) and (wait + random)
+-----SPAWNFLAGS-----
+1: START_ON - will be on at spawn and setting up for it's first intervall
 
+-----KEYS-----
+"wait" - base time between triggering all targets, default is 1
+"random" - wait variance, default is 0
+ so, the basic time between firing is a random time between
+ (wait - random) and (wait + random)
 */
 /**
  * \brief Think function of func_timer.
@@ -879,8 +909,14 @@ void SP_func_timer( gentity_t *self ) {
 }
 
 /*QUAKED trigger_transporter (0.5 0.5 0.5) ?
+-----DESCRIPTION-----
 This is used in combination with ui_transporter.
+Have this be targeted by ui_transporter.
 
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
 "wait"			time to wait before trigger gets deactivated again(in seconds, default 5)
 "soundstart"	transport sound;
 */
@@ -1024,13 +1060,16 @@ void SP_trigger_transporter(gentity_t *ent) {
 }
 
 /*QUAKED trigger_radiation (0.5 0.5 0.5) ? START_OFF MAP_WIDE
+-----DESCRIPTION-----
 This can be used in three ways:
 - as radiation volume trigger
 - as mapwide radiation
 
-START_OFF	ent is off at spawn
-MAP_WIDE	mapwide radiation
+-----SPAWNFLAGS-----
+1: START_OFF - ent is off at spawn
+2: MAP_WIDE - mapwide radiation
 
+-----KEYS-----
 The damage the radiation does is calculated from these two values:
 "dmg"			damage(default 1)
 "wait"			wait(seconds, default 10)

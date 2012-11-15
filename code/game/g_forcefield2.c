@@ -89,22 +89,31 @@ void func_forcefield2_die(gentity_t *self, gentity_t *inflictor, gentity_t *atta
 	self->use( self, inflictor, attacker );
 }
 
-/*
-QUAKED func_forcefield2 (0 .5 .8) ? STARTOFF AUTOANIM x ALWAYS_ON NOBLOCKCHECK x x x
-START_OFF - the forcefield will not be there
-AUTOANIM - If useing an md3, it will animate
-ALWAYS_ON - Doesn't toggle on and off when used, just fires target
-NOBLOCKCHECK - Will NOT turn on while something is inside it unless this is checked
+/*QUAKED func_forcefield2 (0 .5 .8) ? STARTOFF AUTOANIM X ALWAYS_ON NOBLOCKCHECK X X X
+-----DESCRIPTION-----
+DO NOT USE! This is basically the original Game forcefield with some tweaks and not much different than a func_usable.
+It just sits here in case you encounter it one day.
 
 A bmodel that can be used directly by the player's "activate" button
 
+-----SPAWNFLAGS-----
+1: START_OFF - the forcefield will not be there
+2: AUTOANIM - If useing an md3, it will animate
+4: X - Unused?
+8: ALWAYS_ON - Doesn't toggle on and off when used, just fires target
+16: NOBLOCKCHECK - Will NOT turn on while something is inside it unless this is checked
+32: X - Unused?
+64: X - Unused?
+128: X - Unused?
+
+-----KEYS-----
 "targetname" - When used, will toggle on and off
-"target"	Will fire this target every time it is toggled OFF
-"model2"	.md3 model to also draw
-"color"		constantLight color
-"light"		constantLight radius
-"wait"		amount of time before the object is usable again (only valid with ALWAYS_ON flag)
-"health"	if it has health, it will be used whenever shot at/killed - if you want it to only be used once this way, set health to 1
+"target" - Will fire this target every time it is toggled OFF
+"model2" - .md3 model to also draw
+"color" - constantLight color
+"light" - constantLight radius
+"wait" - amount of time before the object is usable again (only valid with ALWAYS_ON flag)
+"health" - if it has health, it will be used whenever shot at/killed - if you want it to only be used once this way, set health to 1
 */
 
 void SP_func_forcefield2( gentity_t *self ) 

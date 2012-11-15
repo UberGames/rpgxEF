@@ -4,7 +4,17 @@
 extern void InitMover( gentity_t *ent );
 
 /*QUAKED cinematic_camera (0 0.5 0) (-4 -4 -4) (4 4 4)
+-----DESCRIPTION-----
 Camera for cinematic. Normally spawn by Lua script.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
+
+-----LUA-----
+To be written later.
 */
 void SP_cinematic_camera(gentity_t *ent) {
 	trap_LinkEntity(ent);

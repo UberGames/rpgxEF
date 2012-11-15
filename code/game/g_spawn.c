@@ -772,16 +772,39 @@ qboolean G_ParseSpawnVars( void ) {
 
 
 /*QUAKED worldspawn (0 0 0) ?
-
+-----DESCRIPTION-----
 Every map should have exactly one worldspawn.
-"music"		path to WAV or MP3 files (e.g. "music\intro.mp3 music\loopfile.mp3")
-"gravity"	800 is default gravity
-"message"	Text to print during connection process
+It holds some general information on the map.
 
-fraglimit - overrides server's limit
-capturelimit - overrides server's capturelimit (use with team AddScores)
-timelimit - overrides server's timelimit
-timelimitWinningTeam - "red" or "blue" - this team will win when the timelimit runs out
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"music" - path to WAV or MP3 files (e.g. "music\intro.mp3 music\loopfile.mp3")
+"gravity" - 800 is default gravity
+"message" - Text to print during connection process
+
+Keys irrelevant for RPG-X
+"fraglimit" - overrides server's limit
+"capturelimit" - overrides server's capturelimit (use with team AddScores)
+"timelimit" - overrides server's timelimit
+"timelimitWinningTeam" - "red" or "blue" - this team will win when the timelimit runs out
+
+q3map2:
+"_blocksize" block size for unconditional BSP subdivisions
+"_celshader" use the specified cel shader for the world
+"_lightmapscale" set the lightmapscale for the world
+"_ignoreleaks" when set, no leak test is performed
+"_foghull" must be set to a sky shader when _fog is used
+"_fog" if set, the whole map is fogged using the given shader name
+"gridsize" resolution of the light grid
+"_ambient" amount of ambient light
+"_minvertexlight" amount of minimum vertex light
+"_mingridlight" amount of minimum grid light
+"_minlight" amount of minimum light
+"_keepLights" if set, light entities are not stripped from the BSP file when compiling
+"_style42rgbgen" |rgbGen|-like shader definition string for light style 42 (works the same way for all style numbers)
+"_style42alphagen" |alphaGen|-like shader definition string for light style 42 (works the same way for all style numbers)
 */
 void SP_worldspawn( void ) {
 	char	*s;

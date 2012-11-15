@@ -7,8 +7,13 @@
 //==========================================================
 
 /*QUAKED target_give (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 Gives all the weapons specified here in the list.
 
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
 "items" - separated by ' | ', specify the items
 EG "WP_5 | WP_14" etc
 (Don't forget the spaces!)
@@ -87,8 +92,15 @@ void SP_target_give( gentity_t *ent )
 //==========================================================
 
 /*QUAKED target_remove_powerups (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 takes away all the activators powerups.
 Used to drop flight powerups into death puts.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
 */
 void Use_target_remove_powerups( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	if ( !activator || !activator->client ) {
@@ -106,8 +118,13 @@ void SP_target_remove_powerups( gentity_t *ent ) {
 //==========================================================
 
 /*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8) SELF
-SELF   use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+-----DESCRIPTION-----
+When used fires it'd target after a delay of 'wait' seconds
 
+-----SPAWNFLAGS-----
+1: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+
+-----KEYS-----
 "wait" seconds to pause before firing targets.
 "random" delay variance, total delay = delay +/- random seconds
 */
@@ -155,11 +172,15 @@ void SP_target_delay( gentity_t *ent ) {
 //==========================================================
 
 /*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8) TEAMSCORE
-TEAMSCORE - points are added to activator's team's score, not the individual
+-----DESCRIPTION-----
+The Activator is given 'count' points.
+This is useless in RPG-X
 
-"count" number of points to add, default 1
+-----SPAWNFLAGS-----
+1: TEAMSCORE - points are added to activator's team's score, not the individual
 
-The activator is given this many points.
+-----KEYS-----
+"count" - number of points to add, default 1
 */
 void Team_AddScore( int team, int points );
 void Use_Target_Score (gentity_t *ent, gentity_t *other, gentity_t *activator) {
@@ -189,8 +210,17 @@ void SP_target_score( gentity_t *ent ) {
 //==========================================================
 
 /*QUAKED target_print (1 0 0) (-8 -8 -8) (8 8 8) redteam blueteam private
+-----DESCRIPTION-----
+This will display the 'message' in the lower right corner for all reciepients.
+By default every client get's the message however this can be limited via spawnflags.
+
+-----SPAWNFLAGS-----
+1: redteam - everyone on the red team gets the message
+2: blueteam - everyone on the blue team gets the message
+4: private - only the activator gets the message
+
+-----KEYS-----
 "message"	text to print
-If "private", only the activator gets the message.  If no checks, all clients get the message.
 */
 void Use_Target_Print (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if ( activator && activator->client && ( ent->spawnflags & 4 ) ) {
@@ -219,17 +249,28 @@ void SP_target_print( gentity_t *ent ) {
 //==========================================================
 
 
-/*QUAKED target_speaker (1 0 0) (-8 -8 -8) (8 8 8) looped-on looped-off global activator 
-"noise"		wav file to play
+/*QUAKED target_speaker (1 0 0) (-8 -8 -8) (8 8 8) LOOPED_ON LOOPED_OFF GLOBAL ACTIVATOR 
+-----DESCRIPTION-----
+A sound-file to play.
+By default this will be played once locally. 
+The specifics on how to play are set via spawnflags.
 
-A global sound will play full volume throughout the level.
-Activator sounds will play on the player that activated the target.
-Global and activator sounds can't be combined with looping.
-Normal sounds play each time the target is used.
-Looped sounds will be toggled by use functions.
+Looping Sounds may not be combined with GLOBAL or ACTIVATOR
 Multiple identical looping sounds will just increase volume without any speed cost.
-"wait" : Seconds between auto triggerings, 0 = don't auto trigger
-"random"	wait variance, default is 0
+Using a looping target_speaker will toggle it's sound on or off.
+
+Using a target_speaker designed to play it's sound once will play that sound.
+
+-----SPAWNFLAGS-----
+1: LOOPED_ON - this Speaker will loop it's sound and will be active at spawn.
+2: LOOPED_OFF - this Speaker will loop it's sound and will be inactive at spawn.
+4: GLOBAL - the sound will be played once globally so every client will hear it.
+8: ACTIVATOR - The sound will be played once for the activator only to hear.
+
+-----KEYS-----
+"noise" - file to play
+"wait" - Seconds between auto triggerings, default = 0 = don't auto trigger
+"random" - wait variance, default is 0, delay would be wait +/- random
 */
 void Use_Target_Speaker (gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if (ent->spawnflags & 3) {	// looping sound toggles

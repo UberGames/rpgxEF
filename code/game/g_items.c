@@ -217,7 +217,15 @@ void Padd_Remove( gentity_t *key )
 
 
 /*QUAKED item_botroam (.5 .3 .7) (-16 -16 -24) (16 16 0)
-Bots in MP will go to these spots when there's nothing else to get- helps them patrol.
+-----DESCRIPTION-----
+Bots in MP will go to these spots when there's nothing else to get - helps them patrol.
+No use in RPG-X.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
 */
 
 // For more than four players, adjust the respawn times, up to 1/4.
