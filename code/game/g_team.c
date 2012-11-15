@@ -443,57 +443,8 @@ void Team_DroppedFlagThink(gentity_t *ent)
 	// Reset Flag will delete this entity
 }
 
-void Team_AddScore( int team, int points )
-{
-	teamgame.last_flag_capture = level.time;
-	teamgame.last_capture_team = team;
-
-	// Increase the team's score
-	level.teamScores[team] += points;
-}
-
-/* TODO: unused! remove me? */
-int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
-	return 0;
-}
-
-int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
-	gclient_t *cl = other->client;
-
-	// hey, its not our flag, pick it up
-	PrintMsg (NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
-		other->client->pers.netname, TeamName(team));
-	AddScore(other, CTF_FLAG_BONUS);
-
-	//if (team == TEAM_RED)
-		//cl->ps.powerups[PW_REDFLAG] = INT_MAX; // flags never expire
-	//else
-		//cl->ps.powerups[PW_BORG_ADAPT] = INT_MAX; // flags never expire
-
-	cl->pers.teamState.flagsince = level.time;
-
-	Team_SetFlagStatus( team, FLAG_TAKEN );
-	
-	return -1; // Do not respawn this automatically, but do delete it if it was FL_DROPPED
-}
-
 int Pickup_Team( gentity_t *ent, gentity_t *other ) {
-	int team;
-	gclient_t *cl = other->client;
-	
-	// figure out what team this flag is
-	if (strcmp(ent->classname, "team_CTF_redflag") == 0)
-		team = TEAM_RED;
-	else if (strcmp(ent->classname, "team_CTF_blueflag") == 0)
-		team = TEAM_BLUE;
-	else {
-		PrintMsg ( other, "Don't know what team the flag is on.\n");
-		return 0;
-	}
-
-	return ((team == cl->sess.sessionTeam) ?
-		Team_TouchOurFlag : Team_TouchEnemyFlag)
-			(ent, other, team);
+	return 0;
 }
 
 /*

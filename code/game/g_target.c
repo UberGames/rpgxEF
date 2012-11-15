@@ -168,45 +168,6 @@ void SP_target_delay( gentity_t *ent ) {
 	trap_LinkEntity(ent);
 }
 
-
-//==========================================================
-
-/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8) TEAMSCORE
------DESCRIPTION-----
-The Activator is given 'count' points.
-This is useless in RPG-X
-
------SPAWNFLAGS-----
-1: TEAMSCORE - points are added to activator's team's score, not the individual
-
------KEYS-----
-"count" - number of points to add, default 1
-*/
-void Team_AddScore( int team, int points );
-void Use_Target_Score (gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(!activator) return;
-	if ( ent->spawnflags & 1 )
-	{
-		if ( activator->client )
-		{
-			Team_AddScore( activator->client->sess.sessionTeam, ent->count );
-		}
-	}
-	else
-	{
-		AddScore( activator, ent->count );
-	}
-	CalculateRanks( qfalse );
-}
-
-void SP_target_score( gentity_t *ent ) {
-	if ( !ent->count ) {
-		ent->count = 1;
-	}
-	ent->use = Use_Target_Score;
-}
-
-
 //==========================================================
 
 /*QUAKED target_print (1 0 0) (-8 -8 -8) (8 8 8) redteam blueteam private
