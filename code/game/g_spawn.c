@@ -204,12 +204,6 @@ void SP_shooter_plasma( gentity_t *ent );
 void SP_shooter_grenade( gentity_t *ent );
 void SP_shooter_torpedo( gentity_t *ent );
 
-void SP_team_CTF_redplayer( gentity_t *ent );
-void SP_team_CTF_blueplayer( gentity_t *ent );
-
-void SP_team_CTF_redspawn( gentity_t *ent );
-void SP_team_CTF_bluespawn( gentity_t *ent );
-
 // extra Trek stuff
 void SP_fx_spark ( gentity_t *ent );
 void SP_fx_steam ( gentity_t *ent );
@@ -394,11 +388,11 @@ spawn_t	spawns[] = {
 	{"shooter_plasma",				SP_shooter_plasma},
 	{"shooter_torpedo",				SP_shooter_torpedo},
 
-	{"team_CTF_redplayer",			SP_team_CTF_redplayer},
-	{"team_CTF_blueplayer",			SP_team_CTF_blueplayer},
+	{"team_CTF_redplayer",			SP_info_player_deathmatch},
+	{"team_CTF_blueplayer",			SP_info_player_deathmatch},
 
-	{"team_CTF_redspawn",			SP_team_CTF_redspawn},
-	{"team_CTF_bluespawn",			SP_team_CTF_bluespawn},
+	{"team_CTF_redspawn",			SP_info_player_deathmatch},
+	{"team_CTF_bluespawn",			SP_info_player_deathmatch},
 
 	// extra Trek stuff
 	{"fx_spark",					SP_fx_spark},

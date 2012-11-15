@@ -67,6 +67,10 @@ potential spawning position for deathmatch games.
 void SP_info_player_deathmatch( gentity_t *ent ) {
 	int		i;
 
+	if(strcmp(ent->classname, "info_player_deathmatch")) {
+		ent->classname = G_NewString("info_player_deathmatch");
+	}
+
 	G_SpawnInt( "nobots", "0", &i);
 	if ( i ) {
 		ent->flags |= FL_NO_BOTS;
@@ -96,7 +100,7 @@ On spawn will reset classname sppropriately and respawn itself.
 *	Spawn function for player start spawnpoint which actually the same as deatchmatch spawnpoint
 */
 void SP_info_player_start(gentity_t *ent) {
-	ent->classname = "info_player_deathmatch";
+	ent->classname = G_NewString("info_player_deathmatch");
 	SP_info_player_deathmatch( ent );
 }
 
@@ -1947,12 +1951,6 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	if(rpgx_spawn != 1){//RPG-X: RedTechie - Make sure the spawn is regular spawn or spawn at current position (rpgx_spawn = current possition)
 		if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 			spawnPoint = SelectSpectatorSpawnPoint (
-				spawn_origin, spawn_angles);
-		} else if (g_gametype.integer >= GT_TEAM) {
-			spawnPoint = SelectCTFSpawnPoint (
-				ent,
-				client->sess.sessionTeam,
-				client->pers.teamState.state,
 				spawn_origin, spawn_angles);
 		} else {
 			do {

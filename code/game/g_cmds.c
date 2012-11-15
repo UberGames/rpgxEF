@@ -1471,12 +1471,10 @@ static void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chat
 	clientPersistant_t *entPers = &entClient->pers;
 	clientPersistant_t *tarPers = NULL;
 	clientSession_t *entSess = &entClient->sess;
-	clientSession_t *tarSess =NULL;
 
 	if(target && target->client) {
 		tarClient = target->client;
 		tarPers = &tarClient->pers;
-		tarSess =&tarClient->sess;
 	}
 
 	if ( g_gametype.integer < GT_TEAM && mode == SAY_TEAM ) {
@@ -1530,21 +1528,13 @@ static void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chat
 		color = COLOR_WHITE;
 		break;
 	case SAY_TELL:
-		if (target && g_gametype.integer >= GT_TEAM && tarSess &&
-			tarSess->sessionTeam == entSess->sessionTeam && tarPers &&
-			Team_GetLocationMsg(ent, location, sizeof(location)))
-			Com_sprintf (name, sizeof(name), "^7%s ^7from %s%c%c (%s): ", tarPers->netname, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
-		else if(tarPers)
+		if(tarPers)
 			Com_sprintf (name, sizeof(name), "^7%s ^7from %s%c%c: ", tarPers->netname, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		else return;
 		color = COLOR_MAGENTA;
 		break;
 	case SAY_TELL2:
-		if (target && g_gametype.integer >= GT_TEAM && tarSess &&
-			tarSess->sessionTeam == entSess->sessionTeam && tarPers &&
-			Team_GetLocationMsg(ent, location, sizeof(location)))
-			Com_sprintf (name, sizeof(name), "^7%s ^7from %s%c%c (%s): ", tarPers->netname, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
-		else if(tarPers)
+		if(tarPers)
 			Com_sprintf (name, sizeof(name), "^7%s ^7from %s%c%c: ", tarPers->netname, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		else return;
 		color = COLOR_MAGENTA;

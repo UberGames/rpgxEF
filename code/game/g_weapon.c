@@ -1110,7 +1110,7 @@ static qboolean SearchTarget(gentity_t *ent, vec3_t start, vec3_t end)
 	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, MASK_SHOT );
 	traceEnt = &g_entities[ tr.entityNum ];
 
-	if (traceEnt->takedamage && traceEnt->client && !OnSameTeam(traceEnt, &g_entities[ent->r.ownerNum])) 
+	if (traceEnt->takedamage && traceEnt->client) 
 	{
 		ent->target_ent = traceEnt;
 		VectorSubtract(ent->target_ent->r.currentOrigin, ent->r.currentOrigin, fwd);
@@ -1336,10 +1336,6 @@ qboolean LogAccuracyHit( gentity_t *target, gentity_t *attacker ) {
 	}
 
 	if( target->client->ps.stats[STAT_HEALTH] <= 0 ) {
-		return qfalse;
-	}
-
-	if ( OnSameTeam( target, attacker ) ) {
 		return qfalse;
 	}
 
@@ -1670,7 +1666,8 @@ static void WP_SprayVoyagerHypo( gentity_t *ent, qboolean alt_fire )
 
 	tr_ent = &g_entities[tr.entityNum];
 	/* RPG-X: RedTechie - Medics can revive dead people */
-	if( (tr_ent && tr_ent->client) && (tr_ent->health == 1) && (tr_ent->client->ps.pm_type == PM_DEAD)){ 		tr_entPs = &tr_ent->client->ps;
+	if( (tr_ent && tr_ent->client) && (tr_ent->health == 1) && (tr_ent->client->ps.pm_type == PM_DEAD)){ 		
+		tr_entPs = &tr_ent->client->ps;
 		if(rpg_medicsrevive.integer == 1){
 			ClientSpawn(tr_ent, 1, qtrue);
 
@@ -1691,30 +1688,16 @@ static void WP_SprayVoyagerHypo( gentity_t *ent, qboolean alt_fire )
 			/*tr_entPs->stats[STAT_HOLDABLE_ITEM] = HI_NONE;*/
 		}
 	/* RPG-X: RedTechie - Regular functions still work */
-	}else if ( tr_ent && tr_ent->client && tr_ent->health > 0 )
-	{
+	} else if ( tr_ent && tr_ent->client && tr_ent->health > 0 ) {
 		tr_entPs = &tr_ent->client->ps;
-		if ( rpg_rpg.integer > 0 && g_gametype.integer < GT_TEAM )
-		{
+		if(alt_fire && rpg_hypoMelee.integer) { /* alt fire and hypo melee enabled */
+			tr_ent->health = 0;
+			player_die( tr_ent, ent, ent, 100, MOD_KNOCKOUT );
+			G_LogWeaponFire( ent->s.number, WP_12 );
+		} else { /* else just heal */
 			if ( tr_ent->health < tr_entPs->stats[STAT_MAX_HEALTH] )
 			{
-				tr_ent->health = tr_entPs->stats[STAT_MAX_HEALTH]; /*+20*/
-			}
-		}
-		else
-		{
-			if ( !OnSameTeam(tr_ent, ent) || g_gametype.integer < GT_TEAM )
-			{
-				tr_ent->health = 0;
-				player_die( tr_ent, ent, ent, 100, MOD_KNOCKOUT );
-				G_LogWeaponFire( ent->s.number, WP_12 );
-			}
-			else if ( OnSameTeam(tr_ent, ent) )
-			{
-				if ( tr_ent->health < tr_entPs->stats[STAT_MAX_HEALTH] )
-				{
-					tr_ent->health = tr_ent->health + 20;
-				}
+				tr_ent->health = tr_entPs->stats[STAT_MAX_HEALTH];
 			}
 		}
 	}

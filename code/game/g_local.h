@@ -762,8 +762,6 @@ void Padd_Add( gentity_t *key, gentity_t *who, char *txt);
 char *Padd_Get( gentity_t *key, gentity_t *who );
 void Padd_Remove( gentity_t *key );
 
-
-void G_CheckTeamItems( void );
 void G_RunItem( gentity_t *ent );
 void RespawnItem( gentity_t *ent );
 
@@ -1190,13 +1188,6 @@ void Cmd_Ready_f (gentity_t *ent);
 //RPG-X | Marcin | 03/12/2008
 void ThrowWeapon( gentity_t *ent, char *txt );
 gentity_t *DropWeapon( gentity_t *ent, gitem_t *item, float angle, int flags, char *txt );
-
-//
-// g_team.c
-//
-qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
-void Team_CheckDroppedItem( gentity_t *dropped );
-
 
 //
 // g_mem.c

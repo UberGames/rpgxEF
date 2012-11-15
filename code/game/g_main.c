@@ -1855,9 +1855,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// general initialization
 	G_FindTeams();
 
-	// make sure we have flags for CTF, etc
-	G_CheckTeamItems();
-
 	SaveRegisteredItems();
 
 	G_Printf ("-----------------------------------\n");

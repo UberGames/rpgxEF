@@ -22,429 +22,22 @@ typedef struct teamgame_s
 
 teamgame_t teamgame;
 
-void Team_SetFlagStatus( int team, flagStatus_t status );
-
-void Team_InitGame(void)
-{
-	memset(&teamgame, 0, sizeof teamgame);
-	teamgame.redStatus = teamgame.blueStatus = -1; // Invalid to force update
-
-	Team_SetFlagStatus( TEAM_RED, FLAG_ATBASE );
-	Team_SetFlagStatus( TEAM_BLUE, FLAG_ATBASE );
-
-	// set config strings for what the two teams are for use in the cgame that renders the CTF flags
-	trap_SetConfigstring( CS_RED_GROUP, g_team_group_red.string);
-	trap_SetConfigstring( CS_BLUE_GROUP, g_team_group_blue.string);
-
-}
-
-int OtherTeam(int team) {
-	if (team==TEAM_RED)
-		return TEAM_BLUE;
-	else if (team==TEAM_BLUE)
-		return TEAM_RED;
-	return team;
-}
-
 const char *TeamName(int team)  {
-	if (team==TEAM_RED)
-		return "RED";
-	else if (team==TEAM_BLUE)
-		return "BLUE";
-	else if (team==TEAM_SPECTATOR)
+	if (team==TEAM_SPECTATOR)
 		return "SPECTATOR";
 	return "FREE";
 }
 
 const char *OtherTeamName(int team) {
-	if (team==TEAM_RED)
-		return "BLUE";
-	else if (team==TEAM_BLUE)
-		return "RED";
-	else if (team==TEAM_SPECTATOR)
+	if (team==TEAM_SPECTATOR)
 		return "SPECTATOR";
 	return "FREE";
 }
 
 const char *TeamColorString(int team) {
-	if (team==TEAM_RED)
-		return S_COLOR_RED;
-	else if (team==TEAM_BLUE)
-		return S_COLOR_BLUE;
-	else if (team==TEAM_SPECTATOR)
+	if (team==TEAM_SPECTATOR)
 		return S_COLOR_YELLOW;
 	return S_COLOR_WHITE;
-}
-
-// NULL for everyone
-void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) __attribute__ ((format (printf, 2, 3)));
-void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
-	char		msg[1024];
-	va_list		argptr;
-	char		*p;
-	
-	va_start (argptr,fmt);
-	if (vsprintf (msg, fmt, argptr) > sizeof(msg)) {
-		G_Error ( "%s", "PrintMsg overrun" );
-	}
-	va_end (argptr);
-
-	// double quotes are bad
-	while ((p = strchr(msg, '"')) != NULL)
-		*p = '\'';
-
-	trap_SendServerCommand ( ( (ent == NULL) ? -1 : ent-g_entities ), va("print \"%s\"", msg ));
-}
-
-/*
-==============
-OnSameTeam
-==============
-*/
-qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
-	if (( g_gametype.integer == GT_FFA ) || (g_gametype.integer == GT_TOURNAMENT) || (g_gametype.integer == GT_SINGLE_PLAYER))
-	{
-		return qfalse;
-	}
-
-	if ( !ent1->client || !ent2->client ) {
-		if ( !ent1->client && !ent2->client )
-		{
-			if ( ent1->team && ent2->team && atoi( ent1->team ) == atoi( ent2->team ) )
-			{
-				return qtrue;
-			}
-		}
-		else if ( !ent1->client )
-		{
-			if ( ent1->team && atoi( ent1->team ) == ent2->client->sess.sessionTeam )
-			{
-				return qtrue;
-			}
-		}
-		else// if ( !ent2->client )
-		{
-			if ( ent2->team && ent1->client->sess.sessionTeam == atoi( ent2->team ) )
-			{
-				return qtrue;
-			}
-		}
-
-		return qfalse;
-	}
-
-	if ( ent1->client->sess.sessionTeam == ent2->client->sess.sessionTeam ) {
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
-void Team_SetFlagStatus( int team, flagStatus_t status )
-{
-	qboolean modified = qfalse;
-
-	switch (team) {
-	case TEAM_RED :
-		if ( teamgame.redStatus != status ) {
-			teamgame.redStatus = status;
-			modified = qtrue;
-		}
-		break;
-	case TEAM_BLUE :
-		if ( teamgame.blueStatus != status ) {
-			teamgame.blueStatus = status;
-			modified = qtrue;
-		}
-		break;
-	}
-
-	if (modified) {
-		char st[4];
-
-		st[0] = '0' + (int)teamgame.redStatus;
-		st[1] = '0' + (int)teamgame.blueStatus;
-		st[2] = 0;
-
-		trap_SetConfigstring( CS_FLAGSTATUS, st );
-	}
-}
-
-void Team_CheckDroppedItem( gentity_t *dropped )
-{
-	/*if (dropped->item->giTag == PW_REDFLAG)
-		Team_SetFlagStatus( TEAM_RED, FLAG_DROPPED );
-	else if (dropped->item->giTag == PW_BORG_ADAPT)
-		Team_SetFlagStatus( TEAM_BLUE, FLAG_DROPPED );*/
-}
-
-
-/*
-================
-Team_FragBonuses
-
-Calculate the bonuses for flag defense, flag carrier defense, etc.
-Note that bonuses are not cumlative.  You get one, they are in importance
-order.
-================
-*/
-void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker)
-{
-	//int i;
-	//gentity_t *ent;
-	//int flag_pw, enemy_flag_pw;
-	int otherteam;
-	gentity_t *flag, *carrier = NULL;
-	char *c;
-	vec3_t v1, v2;
-	int team;
-
-	// no bonus for fragging yourself
-	if (!targ->client || attacker == NULL || !attacker->client || targ == attacker)
-		return;
-
-	team = targ->client->sess.sessionTeam;
-	otherteam = OtherTeam(targ->client->sess.sessionTeam);
-	if (otherteam < 0)
-		return; // whoever died isn't on a team
-
-	// same team, if the flag at base, check to he has the enemy flag
-	/*if (team == TEAM_RED) {
-		flag_pw = PW_REDFLAG;
-		enemy_flag_pw = PW_REDFLAG;
-	} else {
-		flag_pw = PW_REDFLAG;
-		enemy_flag_pw = PW_REDFLAG;
-	}*/
-
-	// did the attacker frag the flag carrier?
-	/*if (targ->client->ps.powerups[enemy_flag_pw]) {
-		attacker->client->pers.teamState.lastfraggedcarrier = level.time;
-		AddScore(attacker, CTF_FRAG_CARRIER_BONUS);
-		attacker->client->pers.teamState.fragcarrier++;
-		PrintMsg(NULL, "%s" S_COLOR_WHITE " eliminated %s's flag carrier!\n",
-			attacker->client->pers.netname, TeamName(team));
-
-		// the target had the flag, clear the hurt carrier
-		// field on the other team
-		for (i = 0; i < g_maxclients.integer; i++) {
-			ent = g_entities + i;
-			if (ent->inuse && ent->client->sess.sessionTeam == otherteam)
-				ent->client->pers.teamState.lasthurtcarrier = 0;
-		}
-		return;
-	}*/
-
-	if (targ->client->pers.teamState.lasthurtcarrier &&
-		level.time - targ->client->pers.teamState.lasthurtcarrier < CTF_CARRIER_DANGER_PROTECT_TIMEOUT /*&&
-		!attacker->client->ps.powerups[flag_pw]*/) {
-		// attacker is on the same team as the flag carrier and
-		// fragged a guy who hurt our flag carrier
-		AddScore(attacker, CTF_CARRIER_DANGER_PROTECT_BONUS);
-
-		attacker->client->pers.teamState.carrierdefense++;
-		targ->client->pers.teamState.lasthurtcarrier = 0;
-
-		team = attacker->client->sess.sessionTeam;
-		PrintMsg(NULL, "%s" S_COLOR_WHITE " defends %s's flag carrier against an aggressive enemy\n",
-			attacker->client->pers.netname, TeamName(team));
-		return;
-	}
-
-	// flag and flag carrier area defense bonuses
-
-	// we have to find the flag and carrier entities
-
-	// find the flag
-	switch (attacker->client->sess.sessionTeam) {
-	case TEAM_RED:
-		c = "team_CTF_redflag";
-		break;
-	case TEAM_BLUE:
-		c = "team_CTF_blueflag";
-		break;		
-	default:
-		return;
-	}
-
-	flag = NULL;
-	while ((flag = G_Find (flag, FOFS(classname), c)) != NULL) {
-		if (!(flag->flags & FL_DROPPED_ITEM))
-			break;
-	}
-
-	if (!flag)
-		return; // can't find attacker's flag
-
-	// find attacker's team's flag carrier
-	/*for (i = 0; i < g_maxclients.integer; i++) {
-		carrier = g_entities + i;
-		if (carrier->inuse && carrier->client->ps.powerups[flag_pw])
-			break;
-		carrier = NULL;
-	}*/
-
-	// ok we have the attackers flag and a pointer to the carrier
-
-	// check to see if we are defending the base's flag
-	VectorSubtract(targ->r.currentOrigin, flag->r.currentOrigin, v1);
-	VectorSubtract(attacker->r.currentOrigin, flag->r.currentOrigin, v2);
-
-	if ( ( ( VectorLength(v1) < CTF_TARGET_PROTECT_RADIUS &&
-		trap_InPVS(flag->r.currentOrigin, targ->r.currentOrigin ) ) ||
-		( VectorLength(v2) < CTF_TARGET_PROTECT_RADIUS &&
-		trap_InPVS(flag->r.currentOrigin, attacker->r.currentOrigin ) ) ) &&
-		attacker->client->sess.sessionTeam != targ->client->sess.sessionTeam) {
-
-		// we defended the base flag
-		AddScore(attacker, CTF_FLAG_DEFENSE_BONUS);
-		attacker->client->pers.teamState.basedefense++;
-		if (flag->r.svFlags & SVF_NOCLIENT) {
-			PrintMsg(NULL, "%s" S_COLOR_WHITE " defends the %s base.\n",
-				attacker->client->pers.netname, 
-				TeamName(attacker->client->sess.sessionTeam));
-		} else {
-			PrintMsg(NULL, "%s" S_COLOR_WHITE " defends the %s flag.\n",
-				attacker->client->pers.netname, 
-				TeamName(attacker->client->sess.sessionTeam));
-		}
-		return;
-	}
-
-	if (carrier && carrier != attacker) {
-		VectorSubtract(targ->r.currentOrigin, carrier->r.currentOrigin, v1);
-		VectorSubtract(attacker->r.currentOrigin, carrier->r.currentOrigin, v1);
-
-		if ( ( ( VectorLength(v1) < CTF_ATTACKER_PROTECT_RADIUS &&
-			trap_InPVS(carrier->r.currentOrigin, targ->r.currentOrigin ) ) ||
-			( VectorLength(v2) < CTF_ATTACKER_PROTECT_RADIUS &&
-				trap_InPVS(carrier->r.currentOrigin, attacker->r.currentOrigin ) ) ) &&
-			attacker->client->sess.sessionTeam != targ->client->sess.sessionTeam) {
-			AddScore(attacker, CTF_CARRIER_PROTECT_BONUS);
-			attacker->client->pers.teamState.carrierdefense++;
-			PrintMsg(NULL, "%s" S_COLOR_WHITE " defends the %s's flag carrier.\n",
-				attacker->client->pers.netname, 
-				TeamName(attacker->client->sess.sessionTeam));
-			return;
-		}
-	}
-}
-
-/*
-================
-Team_CheckHurtCarrier
-
-Check to see if attacker hurt the flag carrier.  Needed when handing out bonuses for assistance to flag
-carrier defense.
-================
-*/
-void Team_CheckHurtCarrier(gentity_t *targ, gentity_t *attacker)
-{
-	//int flag_pw;
-
-	if (!targ->client || !attacker->client)
-		return;
-
-	/*if (targ->client->sess.sessionTeam == TEAM_RED)
-		flag_pw = PW_REDFLAG;
-	else
-		flag_pw = PW_REDFLAG;*/
-
-	/*if (targ->client->ps.powerups[flag_pw] &&
-		targ->client->sess.sessionTeam != attacker->client->sess.sessionTeam)
-		attacker->client->pers.teamState.lasthurtcarrier = level.time;*/
-}
-
-
-gentity_t *Team_ResetFlag(int team)
-{
-	char *c;
-	gentity_t *ent, *rent = NULL;
-
-	switch (team) {
-	case TEAM_RED:
-		c = "team_CTF_redflag";
-		break;
-	case TEAM_BLUE:
-		c = "team_CTF_blueflag";
-		break;
-	default:
-		return NULL;
-	}
-
-	ent = NULL;
-	while ((ent = G_Find (ent, FOFS(classname), c)) != NULL) {
-		if (ent->flags & FL_DROPPED_ITEM)
-			G_FreeEntity(ent);
-		else {
-			rent = ent;
-			RespawnItem(ent);
-		}
-	}
-
-	Team_SetFlagStatus( team, FLAG_ATBASE );
-
-	return rent;
-}
-
-void Team_ResetFlags(void)
-{
-	Team_ResetFlag(TEAM_RED);
-	Team_ResetFlag(TEAM_BLUE);
-}
-
-void Team_ReturnFlagSound(gentity_t *ent, int team)
-{
-	// play powerup spawn sound to all clients
-	gentity_t	*te;
-
-	if (ent == NULL) {
-		G_Printf ("Warning:  NULL passed to Team_ReturnFlagSound\n");
-		return;
-	}
-
-
-	te = G_TempEntity( ent->s.pos.trBase, EV_TEAM_SOUND );
-	te->s.eventParm = RETURN_FLAG_SOUND;
-	te->s.otherEntityNum = team;
-
-	te->r.svFlags |= SVF_BROADCAST;
-}
-
-void Team_ReturnFlag(int team)
-{
-	Team_ReturnFlagSound(Team_ResetFlag(team), team);
-	PrintMsg(NULL, "The %s flag has returned!\n", TeamName(team));
-}
-
-void Team_FreeEntity(gentity_t *ent)
-{
-	/*if (ent->item->giTag == PW_REDFLAG)
-		Team_ReturnFlag(TEAM_RED);
-	else if (ent->item->giTag == PW_BORG_ADAPT)
-		Team_ReturnFlag(TEAM_BLUE);*/
-}
-
-/*
-==============
-Team_DroppedFlagThink
-
-Automatically set in Launch_Item if the item is one of the flags
-
-Flags are unique in that if they are dropped, the base flag must be respawned when they time out
-==============
-*/
-void Team_DroppedFlagThink(gentity_t *ent)
-{
-	/*if (ent->item->giTag == PW_REDFLAG)
-		Team_ReturnFlagSound(Team_ResetFlag(TEAM_RED), TEAM_RED);
-	else if (ent->item->giTag == PW_BORG_ADAPT)
-		Team_ReturnFlagSound(Team_ResetFlag(TEAM_BLUE), TEAM_BLUE);*/
-	// Reset Flag will delete this entity
-}
-
-int Pickup_Team( gentity_t *ent, gentity_t *other ) {
-	return 0;
 }
 
 /*
@@ -514,94 +107,7 @@ qboolean Team_GetLocationMsg(gentity_t *ent, char *loc, int loclen)
 	return qtrue;
 }
 
-
 /*---------------------------------------------------------------------------*/
-
-/*
-================
-SelectRandomDeathmatchSpawnPoint
-
-go to a random point that doesn't telefrag
-================
-*/
-#define	MAX_TEAM_SPAWN_POINTS	32
-gentity_t *SelectRandomTeamSpawnPoint( gentity_t *ent, int teamstate, team_t team ) {
-	gentity_t	*spot;
-	int			count;
-	int			selection;
-	gentity_t	*spots[MAX_TEAM_SPAWN_POINTS];
-	char		*classname;
-
-	if (teamstate == TEAM_BEGIN) {
-		if (team == TEAM_RED)
-			classname = "team_CTF_redplayer";
-		else if (team == TEAM_BLUE)
-			classname = "team_CTF_blueplayer";
-		else
-			return NULL;
-	} else {
-		if (team == TEAM_RED)
-			classname = "team_CTF_redspawn";
-		else if (team == TEAM_BLUE)
-			classname = "team_CTF_bluespawn";
-		else
-			return NULL;
-	}
-	count = 0;
-
-	spot = NULL;
-
-	while ((spot = G_Find (spot, FOFS(classname), classname)) != NULL) {
-		if ( teamstate != TEAM_BEGIN) {
-			if ( spot->spawnflags & 1 ) {
-				//not an active spawn point
-				continue;
-			}
-		}
-		if ( SpotWouldTelefrag( spot ) ) {
-			continue;
-		}
-		spots[ count ] = spot;
-		if (++count == MAX_TEAM_SPAWN_POINTS)
-			break;
-	}
-
-	if ( !count ) {	// no spots that won't telefrag
-		return G_Find( NULL, FOFS(classname), classname);
-	}
-
-	selection = rand() % count;
-	return spots[ selection ];
-}
-
-
-/*
-===========
-SelectCTFSpawnPoint
-
-============
-*/
-gentity_t *SelectCTFSpawnPoint ( gentity_t *ent, team_t team, int teamstate, vec3_t origin, vec3_t angles ) {
-	gentity_t	*spot;
-
-	spot = SelectRandomTeamSpawnPoint ( ent, teamstate, team );
-
-	if (!spot) {
-		return SelectSpawnPoint( vec3_origin, origin, angles );
-	}
-
-	VectorCopy (spot->s.origin, origin);
-	origin[2] += 9;
-	VectorCopy (spot->s.angles, angles);
-
-	return spot;
-}
-
-/*---------------------------------------------------------------------------*/
-/*static int QDECL SortClients( const void *a, const void *b ) {
-	return *(int *)a - *(int *)b;
-}*/
-
 /*
 ==================
 CheckHealthInfoMessage
@@ -719,12 +225,7 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	int			i, j;
 	gentity_t	*player;
 	int			cnt;
-	//int			h, a;
-
-	//TiM : Send data regardless
-	/*if ( ! ent->client->pers.teamInfo )
-		return;*/
-
+	
 	//don't bother sending during intermission?
 	if ( level.intermissiontime )
 		return;
@@ -739,10 +240,6 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 		}
 	}
 
-	// We have the top eight players, sort them by clientNum
-	//TiM
-	//qsort( clients, cnt, sizeof( clients[0] ), SortClients );
-
 	// send the latest information on all clients
 	string[0] = 0;
 	stringlength = 0;
@@ -750,21 +247,10 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
 		player = g_entities + i;
 //RPG-X | Phenix | 05/03/2005
-		if (player->inuse /*&& player->client->sess.sessionTeam == 
-			ent->client->sess.sessionTeam*/ ) {
-
-			/*h = player->client->ps.stats[STAT_HEALTH];
-			a = player->client->ps.stats[STAT_ARMOR];
-			if (h < 0) h = 0;
-			if (a < 0) a = 0;*/
-
+		if (player->inuse) {
 			//to counter for the fact we could pwn the server doing this, remove all superfluous data
 
-			Com_sprintf (entry, sizeof(entry),
-				" %i %i ", //%i %i %i %i
-//				level.sortedClients[i], player->client->pers.teamState.location, h, a, 
-				i, player->client->pers.teamState.location/*, h, a, 
-				player->client->ps.weapon, player->s.powerups*/);
+			Com_sprintf (entry, sizeof(entry), " %i %i ", i, player->client->pers.teamState.location);
 			j = strlen(entry);
 			if (stringlength + j > sizeof(string))
 				break;
@@ -789,9 +275,7 @@ void CheckTeamStatus(void)
 
 		for (i = 0; i < g_maxclients.integer; i++) {
 			ent = g_entities + i;
-			if (ent->inuse /*&& 
-				(ent->client->sess.sessionTeam == TEAM_RED ||
-				ent->client->sess.sessionTeam == TEAM_BLUE)*/ ) {
+			if (ent->inuse) {
 				loc = Team_GetLocation( ent );
 				if (loc)
 					ent->client->pers.teamState.location = loc->health;
@@ -802,97 +286,12 @@ void CheckTeamStatus(void)
 
 		for (i = 0; i < g_maxclients.integer; i++) {
 			ent = g_entities + i;
-			if (ent->inuse /*&& 
-				(ent->client->sess.sessionTeam == TEAM_RED ||
-				ent->client->sess.sessionTeam == TEAM_BLUE)*/) {
+			if (ent->inuse) {
 				TeamplayInfoMessage( ent );
 			}
 		}
 
 		CheckHealthInfoMessage();
-	}
-}
-
-/*-----------------------------------------------------------------*/
-
-/*QUAKED team_CTF_redplayer (1 0 0) (-16 -16 -16) (16 16 32) BORGQUEEN
------DESCRIPTION-----
-Only in CTF games.  Red players spawn here at game start.
-This is not used in RPG-X.
-
------SPAWNFLAGS-----
-1: BORGQUEEN - The player that is the Borg Queen will spawn here
-
------KEYS-----
-none
-*/
-void SP_team_CTF_redplayer( gentity_t *ent ) {
-	if ( ent->spawnflags & 1 )
-	{
-		initialBorgTeam = TEAM_RED;
-		borgQueenStartPoint = ent->s.number;
-	}
-}
-
-
-/*QUAKED team_CTF_blueplayer (0 0 1) (-16 -16 -16) (16 16 32) BORGQUEEN
------DESCRIPTION-----
-Only in CTF games.  Blue players spawn here at game start.
-This is not used in RPG-X.
-
------SPAWNFLAGS-----
-1: BORGQUEEN - The player that is the Borg Queen will spawn here
-
------KEYS-----
-none
-*/
-void SP_team_CTF_blueplayer( gentity_t *ent ) {
-	if ( ent->spawnflags & 1 )
-	{
-		initialBorgTeam = TEAM_BLUE;
-		borgQueenStartPoint = ent->s.number;
-	}
-}
-
-
-void spawnpoint_toggle_active( gentity_t *ent, gentity_t *other, gentity_t *activator )
-{
-	ent->spawnflags ^= 1;
-}
-/*QUAKED team_CTF_redspawn (1 0 0) (-16 -16 -24) (16 16 32) STARTOFF
------DESCRIPTION-----
-potential spawning position for red team in CTF games, AFTER game start
-Targets will be fired when someone spawns in on them.
-This is not used in RPG-X.
-
------SPAWNFLAGS-----
-STARTOFF - won't be considered as a spawn point until used
-
------KEYS-----
-targetname - when used, toggles between active and incative spawn point
-*/
-void SP_team_CTF_redspawn(gentity_t *ent) {
-	if ( ent->targetname )
-	{
-		ent->use = spawnpoint_toggle_active;
-	}
-}
-
-/*QUAKED team_CTF_bluespawn (0 0 1) (-16 -16 -24) (16 16 32) STARTOFF
------DESCRIPTION-----
-potential spawning position for blue team in CTF games, AFTER game start
-Targets will be fired when someone spawns in on them.
-
------SPAWNFLAGS-----
-STARTOFF - won't be considered as a spawn point until used
-
------KEYS-----
-targetname - when used, toggles between active and incative spawn point
-*/
-void SP_team_CTF_bluespawn(gentity_t *ent) {
-	if ( ent->targetname )
-	{
-		ent->use = spawnpoint_toggle_active;
 	}
 }
 

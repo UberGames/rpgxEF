@@ -601,7 +601,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		////////////////////////////////////////////////////////////////////////
 		if (attacker && attacker->client) 
 		{
-			if ( attacker == self || OnSameTeam (self, attacker ) ) 
+			if ( attacker == self ) 
 			{
 				if ( meansOfDeath != MOD_RESPAWN )
 				{//just changing class
@@ -1079,7 +1079,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	gclient_t	*client;
 	int			take=0;
 	int			knockback;
-	qboolean	bFriend = (targ && attacker) ? OnSameTeam( targ, attacker ) : qfalse;
+	qboolean	bFriend = qfalse;
 
 	if(!targ) return;
 
@@ -1176,7 +1176,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if ( knockback && targ->client ) 
 	{
 		//if it's non-radius damage knockback from a teammate, don't do it if the damage won't be taken
-		if ( (dflags&DAMAGE_ALL_TEAMS) || (dflags&DAMAGE_RADIUS) || g_friendlyFire.integer || !attacker->client || !OnSameTeam (targ, attacker) ) 
+		if ( (dflags&DAMAGE_ALL_TEAMS) || (dflags&DAMAGE_RADIUS) || g_friendlyFire.integer || !attacker->client ) 
 		{
 			vec3_t	kvel;
 			float	mass;
@@ -1215,7 +1215,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// if the attacker was on the same team
 	// check for completely getting out of the damage
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) {
-		if ( !(dflags&DAMAGE_ALL_TEAMS) && mod != MOD_TELEFRAG && mod != MOD_DETPACK && targ != attacker && OnSameTeam (targ, attacker)  ) 
+		if ( !(dflags&DAMAGE_ALL_TEAMS) && mod != MOD_TELEFRAG && mod != MOD_DETPACK && targ != attacker ) 
 		{
 			if ( attacker->client && targ->client )
 			{//this only matters between clients
@@ -1293,9 +1293,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			client->damage_fromWorld = qtrue;
 		}
 	}
-
-	// See if it's the player hurting the emeny flag carrier
-	Team_CheckHurtCarrier(targ, attacker);
 
 	if (targ->client) {
 		// set the last client who damaged the target
