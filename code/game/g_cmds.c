@@ -1548,7 +1548,7 @@ static void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chat
 		color = COLOR_YELLOW;
 		break;
 	case SAY_ADMIN:
-		if (Team_GetLocationMsg(ent, location, sizeof(location)) && tarPers)
+		if (G_Client_GetLocationMsg(ent, location, sizeof(location)) && tarPers)
 			Com_sprintf (name, sizeof(name), "[%s%c%c] [%s] (%s): ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, tarPers->netname, location );
 		else if(tarPers)
 			Com_sprintf (name, sizeof(name), "[%s%c%c ^7To %s^7]: ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, tarPers->netname );

@@ -920,6 +920,9 @@ qboolean SpotWouldTelefrag( gentity_t *spot );
 void ClientWeaponsForClass ( gclient_t *client, pclass_t pclass );
 void ClientHoldablesForClass ( gclient_t *client, pclass_t pclass );
 void G_StoreClientInitialStatus( gentity_t *ent );
+qboolean	G_Client_GetLocationMsg(gentity_t *ent, char *loc, int loclen);
+void		G_Client_CheckClientStatus(void);
+void		G_Client_LocationsMessage( gentity_t *ent );
 
 //
 // g_svcmds.c

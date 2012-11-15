@@ -2753,8 +2753,8 @@ void G_RunFrame( int levelTime ) {
 	// see if it is time to end the level
 	CheckExitRules();
 
-	// update to team status?
-	CheckTeamStatus();
+	// update to client status?
+	G_Client_CheckClientStatus();
 
 	// cancel vote if timed out
 	CheckVote();
