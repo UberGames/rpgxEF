@@ -237,10 +237,10 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			if(other && ((other->classname && !Q_stricmp(other->classname, "holdable_shield")))){
 				if(IsAdmin(ent->parent)){
 					G_FreeEntity(ent);
-					ShieldRemove(other);
+					G_Active_ShieldRemove(other);
 					return;
 				}else{
-					// can't call grenadeSpewShrapnel right here or G_RunMissile will puke
+					// can't call grenadeSpewShrapnel right here or G_Missile_Run will puke
 					ent->think = grenadeSpewShrapnel;
 					// set our next think to right now. our think fn will get called this frame.
 					ent->nextthink = level.time;
@@ -248,7 +248,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 					return;
 				}
 			}else{
-				// can't call grenadeSpewShrapnel right here or G_RunMissile will puke
+				// can't call grenadeSpewShrapnel right here or G_Missile_Run will puke
 				ent->think = grenadeSpewShrapnel;
 				// set our next think to right now. our think fn will get called this frame.
 				ent->nextthink = level.time;
@@ -301,7 +301,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 	// change over to a normal entity right at the point of impact
 	ent->s.eType = ET_GENERAL;
 
-	SnapVectorTowards( trace->endpos, ent->s.pos.trBase );	// save net bandwidth
+	G_Weapon_SnapVectorTowards( trace->endpos, ent->s.pos.trBase );	// save net bandwidth
 
 	G_SetOrigin( ent, trace->endpos );
 
@@ -367,11 +367,11 @@ static void G_RunStuckMissile( gentity_t *ent )
 
 /*
 ================
-G_RunMissile
+G_Missile_Run
 
 ================
 */
-void G_RunMissile( gentity_t *ent ) {
+void G_Missile_Run( gentity_t *ent ) {
 	vec3_t		origin;
 	trace_t		tr;
 

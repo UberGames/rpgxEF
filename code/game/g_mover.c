@@ -359,11 +359,11 @@ static void G_MoverTeam( gentity_t *ent ) {
 
 /*
 ================
-G_RunMover
+G_Mover_Run
 
 ================
 */
-void G_RunMover( gentity_t *ent ) {
+void G_Mover_Run( gentity_t *ent ) {
 	// if not a team captain, don't do anything, because
 	// the captain will handle everything
 	if ( ent->flags & FL_TEAMSLAVE ) {
@@ -703,7 +703,7 @@ void Reached_BinaryMover( gentity_t *ent ) {
 		}
 
 		if ( ent->wait < 0 )
-			ent->use = Use_BinaryMover;
+			ent->use = G_Mover_UseBinaryMover;
 
 		// close areaportals
 		if ( ent->teammaster == ent || !ent->teammaster ) {
@@ -745,7 +745,7 @@ void Reached_BinaryMover( gentity_t *ent ) {
 		}
 
 		if(ent->wait < 0)
-			ent->use = Use_BinaryMover;
+			ent->use = G_Mover_UseBinaryMover;
 
 		// close areaportals
 		if ( ent->teammaster == ent || !ent->teammaster ) {
@@ -777,10 +777,10 @@ void Reached_BinaryMover( gentity_t *ent ) {
 
 /*
 ================
-Use_BinaryMover
+G_Mover_UseBinaryMover
 ================
 */
-void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
+void G_Mover_UseBinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	int		total;
 	int		partial;
 
@@ -825,7 +825,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 
 	// only the master should be used
 	if ( ent->flags & FL_TEAMSLAVE ) {
-		Use_BinaryMover( ent->teammaster, other, activator );
+		G_Mover_UseBinaryMover( ent->teammaster, other, activator );
 		return;
 	}
 
@@ -1017,7 +1017,7 @@ void InitMover( gentity_t *ent ) {
 	}
 
 
-	ent->use = Use_BinaryMover;
+	ent->use = G_Mover_UseBinaryMover;
 	if(Q_stricmp(ent->classname, "func_mover"))
 		ent->reached = Reached_BinaryMover;
 	else
@@ -1126,7 +1126,7 @@ void InitRotator( gentity_t *ent ) {
 	}
 
 
-	ent->use = Use_BinaryMover;
+	ent->use = G_Mover_UseBinaryMover;
 	ent->reached = Reached_BinaryMover;
 
 	ent->moverState = ROTATOR_POS1;
@@ -1184,7 +1184,7 @@ void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 	}
 
 	// reverse direction
-	Use_BinaryMover( ent, ent, other );
+	G_Mover_UseBinaryMover( ent, ent, other );
 }
 
 /*
@@ -1219,10 +1219,10 @@ void DoorTriggerReactivate(gentity_t *ent);
 
 /*
 ================
-Touch_DoorTrigger
+G_Mover_TouchDoorTrigger
 ================
 */
-void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
+void G_Mover_TouchDoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 #if 0
 	vec3_t	vec, doorcenter, movedir;
 	float	dot, dist ;
@@ -1270,7 +1270,7 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	else if ( ent->parent->moverState != MOVER_1TO2 &&
 		ent->parent->moverState != ROTATOR_1TO2 ) 
 	{
-		Use_BinaryMover( ent->parent, ent, other );
+		G_Mover_UseBinaryMover( ent->parent, ent, other );
 	}
 	if(ent->parent->flags & FL_LOCKED) {
 		ent->touch = 0;
@@ -1279,7 +1279,7 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 }
 
 void DoorTriggerReactivate(gentity_t *ent) {
-	ent->touch = Touch_DoorTrigger;
+	ent->touch = G_Mover_TouchDoorTrigger;
 	ent->nextthink = -1;
 }
 
@@ -1348,7 +1348,7 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent ) {
 	VectorCopy (maxs, other->r.maxs);
 	other->parent = ent;
 	other->r.contents = CONTENTS_TRIGGER;
-	other->touch = Touch_DoorTrigger;
+	other->touch = G_Mover_TouchDoorTrigger;
 	// remember the thinnest axis
 	other->count = best;
 	//RPG-X | GSIO01 | 08/05/2009 | SOE = START OF EDIT ... lol
@@ -1620,13 +1620,13 @@ void Touch_PlatCenterTrigger(gentity_t *ent, gentity_t *other, trace_t *trace ) 
 	#endif
 
 	if ( ent->parent->moverState == MOVER_POS1 ) {
-		Use_BinaryMover( ent->parent, ent, other );
+		G_Mover_UseBinaryMover( ent->parent, ent, other );
 	}
 }
 
 void func_plat_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if (ent->parent->moverState == MOVER_POS1 ) {
-		Use_BinaryMover(ent->parent, other, activator);
+		G_Mover_UseBinaryMover(ent->parent, other, activator);
 	}
 }
 
@@ -1770,7 +1770,7 @@ void Touch_Button(gentity_t *ent, gentity_t *other, trace_t *trace ) {
 	#endif
 
 	if ( ent->moverState == MOVER_POS1 ) {
-		Use_BinaryMover( ent, other, other );
+		G_Mover_UseBinaryMover( ent, other, other );
 	}
 }
 
@@ -2446,7 +2446,7 @@ void SP_func_rotating (gentity_t *ent) {
 		ent->distance = 0;
 	}
 
-	//ent->use = func_rotating_use; //RPG-X | GSIO01 --- weren't you aware that InitMover sets the use func to Use_BinaryMover Phenix??
+	//ent->use = func_rotating_use; //RPG-X | GSIO01 --- weren't you aware that InitMover sets the use func to G_Mover_UseBinaryMover Phenix??
 
 	if (!ent->booleanstate)
 	{
@@ -2963,7 +2963,7 @@ ADVANCED MOVER
 */
 
 void Move_AdvancedMover(gentity_t *ent) {
-	Use_BinaryMover(ent, NULL, ent->activator);
+	G_Mover_UseBinaryMover(ent, NULL, ent->activator);
 }
 
 
@@ -3000,7 +3000,7 @@ void Reached_AdvancedMover(gentity_t *ent) {
 
 		if( touched->wait < 0) {
 			ent->nextthink = -1; // wait here until used again
-			ent->use = Use_BinaryMover;
+			ent->use = G_Mover_UseBinaryMover;
 			if(ent->damage) {
 				temp = G_Find(NULL, FOFS(targetname), touched->target);
 				if(!temp) {

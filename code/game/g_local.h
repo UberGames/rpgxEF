@@ -480,7 +480,7 @@ void SetScore( gentity_t *ent, int score );
 /**
 *	\brief client data that stays across multiple respawns,
 *
-*	but is cleared on each level change or team change at ClientBegin()
+*	but is cleared on each level change or team change at G_Client_Begin()
 */
 typedef struct {
 	clientConnected_t	connected;
@@ -502,7 +502,7 @@ typedef struct {
 
 /** \struct gclient_s
 *
-*	this structure is cleared on each ClientSpawn(),
+*	this structure is cleared on each G_Client_Spawn(),
 *	except for 'client->pers' and 'client->sess'
 */
 struct gclient_s {
@@ -727,6 +727,7 @@ void StopFollowing( gentity_t *ent );
 void BroadcastTeamChange( gclient_t *client, int oldTeam );
 qboolean SetTeam( gentity_t *ent, char *s );
 void Cmd_FollowCycle_f( gentity_t *ent, int dir );
+void Cmd_Ready_f (gentity_t *ent);
 
 //
 // g_roff.c
@@ -853,8 +854,7 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate); //RPG-X | GSIO01 |
 //
 // g_missile.c
 //
-void G_RunMissile( gentity_t *ent );
-
+void G_Missile_Run( gentity_t *ent );
 gentity_t *fire_blaster (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_quantum (gentity_t *self, vec3_t start, vec3_t aimdir);
@@ -862,16 +862,15 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_comprifle (gentity_t *self, vec3_t start, vec3_t dir);
-//RPG-X: - RedTechie Added this for curiosity
-void ShieldRemove(gentity_t *self);
+
 
 
 //
 // g_mover.c
 //
-void G_RunMover( gentity_t *ent );
-void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace );
-void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator );
+void G_Mover_Run( gentity_t *ent );
+void G_Mover_TouchDoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace );
+void G_Mover_UseBinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator );
 
 //
 // g_trigger.c
@@ -891,38 +890,105 @@ void target_turbolift_start( gentity_t *ent );
 //
 // g_weapon.c
 //
-qboolean LogAccuracyHit( gentity_t *target, gentity_t *attacker );
-void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint, float projsize);
-void SnapVectorTowards( vec3_t v, vec3_t to );
-//qboolean SeekerAcquiresTarget ( gentity_t *ent, vec3_t pos );
-//void FireSeeker( gentity_t *owner, gentity_t *target, vec3_t origin);
+qboolean	G_Weapon_LogAccuracyHit( gentity_t *target, gentity_t *attacker );
+void		G_Weapon_CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint, float projsize);
+void		G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to );
 
 //
 // g_client.c
 //
-team_t TeamCount( int ignoreClientNum, int team );
-team_t PickTeam( int ignoreClientNum );
-void SetClientViewAngle( gentity_t *ent, vec3_t angle );
-gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
-void respawn (gentity_t *ent);
-void BeginIntermission (void);
-void InitClientPersistant (gclient_t *client);
-void InitClientResp (gclient_t *client);
-void InitBodyQue (void);
-void ClientSpawn( gentity_t *ent, int rpgx_spawn, qboolean fromDeath );
-void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
-void AddScore( gentity_t *ent, int score );
-void CalculateRanks( qboolean fromExit );
-qboolean SpotWouldTelefrag( gentity_t *spot );
-//RPG-X: RedTechie - Class info
-//void ClientMaxHealthForClass ( gclient_t *client, pclass_t pclass );
-//void ClientPowerupsForClass ( gentity_t *ent, pclass_t pclass );
-void ClientWeaponsForClass ( gclient_t *client, pclass_t pclass );
-void ClientHoldablesForClass ( gclient_t *client, pclass_t pclass );
-void G_StoreClientInitialStatus( gentity_t *ent );
+/**
+ * Get number of clients in team.
+ */
+team_t		G_Client_TeamCount( int ignoreClientNum, int team );
+/**
+ * Pick a random team.
+ */
+team_t		G_Client_PickTeam( int ignoreClientNum );
+/**
+ * Set the clients view angle.
+ */
+void		G_Client_SetViewAngle( gentity_t *ent, vec3_t angle );
+/**
+ * Select a spawnpoint.
+ */
+gentity_t*	G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
+/**
+ * Respawn client.
+ */
+void		G_Client_Respawn(gentity_t *ent);
+/**
+ * Begin intermission.
+ */
+void		G_Client_BeginIntermission(void);
+/**
+ * Init the body que.
+ */
+void		G_Client_InitBodyQue(void);
+/**
+ * Spawn client.
+ */
+void		G_Client_Spawn( gentity_t *ent, int rpgx_spawn, qboolean fromDeath );
+/**
+ * Let the client die.
+ */
+void		G_Client_Die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
+/**
+ * Add score for the client.
+ */
+void		G_Client_AddScore( gentity_t *ent, int score );
+/**
+ * Calculate clients ranks.
+ */
+void		G_Client_CalculateRanks( qboolean fromExit );
+/**
+ * Determine whether spot would telefrag.
+ */
+qboolean	G_Client_SpotWouldTelefrag( gentity_t *spot );
+/**
+ * Get weapons for a class.
+ */
+void		G_Client_WeaponsForClass( gclient_t *client, pclass_t pclass );
+/**
+ * Get holdable items for a class.
+ */
+void		G_Client_HoldablesForClass( gclient_t *client, pclass_t pclass );
+/**
+ * Store the clients initial status.
+ */
+void		G_Client_StoreClientInitialStatus( gentity_t *ent );
+/**
+ *	Get location message for a client.
+ */
 qboolean	G_Client_GetLocationMsg(gentity_t *ent, char *loc, int loclen);
+/**
+ * Check client statuses.
+ */
 void		G_Client_CheckClientStatus(void);
+/**
+ * Send client location information.
+ */
 void		G_Client_LocationsMessage( gentity_t *ent );
+/**
+ * Client connect.
+ */
+char* G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot );
+/**
+ * Clients user info changed.
+ */
+void G_Client_UserinfoChanged( int clientNum );
+/**
+ * Disconnect client.
+ */
+void G_Client_Disconnect( int clientNum );
+/**
+ * Initialize client.
+ */
+void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qboolean first );
+/**
+ * Client command.
+ */
+void G_Client_Command( int clientNum );
 
 //
 // g_svcmds.c
@@ -1131,18 +1197,57 @@ typedef enum
 
 #define AWARDS_MSG_LENGTH		256
 
+/**
+ * Print message to log.
+ */
 void QDECL G_LogPrintf( const char *fmt, ... ) __attribute__ ((format (printf, 1, 2)));
+/**
+ * Log weapon pickup.
+ */
 void QDECL G_LogWeaponPickup(int client, int weaponid);
+/**
+ * Log weapon fire.
+ */
 void QDECL G_LogWeaponFire(int client, int weaponid);
+/**
+ * Log weapon damage.
+ */
 void QDECL G_LogWeaponDamage(int client, int mod, int amount);
+/**
+ * Log weapon kill.
+ */
 void QDECL G_LogWeaponKill(int client, int mod);
+/**
+ * Log weapon death.
+ */
 void QDECL G_LogWeaponDeath(int client, int weaponid);
+/**
+ * Log weapon frag.
+ */
 void QDECL G_LogWeaponFrag(int attacker, int deadguy);
+/**
+ * Log weapon powerup.
+ */
 void QDECL G_LogWeaponPowerup(int client, int powerupid);
+/**
+ * Log weapon item.
+ */
 void QDECL G_LogWeaponItem(int client, int itemid);
+/**
+ * Log weapon init.
+ */
 void QDECL G_LogWeaponInit(void);
+/**
+ * Log weapon output.
+ */
 void QDECL G_LogWeaponOutput(void);
+/**
+ * Log exit.
+ */
 void QDECL G_LogExit( const char *string );
+/**
+ * Clear client log.
+ */
 void QDECL G_ClearClientLog(int client);
 
 void CalculateAwards(gentity_t *ent, char *msg);
@@ -1153,17 +1258,7 @@ int GetFavoriteTargetForClient(int nClient);
 int GetWorstEnemyForClient(int nClient);
 int GetFavoriteWeaponForClient(int nClient);
 
-
-
-//
-// g_client.c
-//
-char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot );
-//TiM - changed to allow override of 'clampinfo'
-void ClientUserinfoChanged( int clientNum );
-void ClientDisconnect( int clientNum );
-void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qboolean first );
-void ClientCommand( int clientNum );
+/*----------------------------------------------------------------------------------------*/
 
 //TiM - Delayed Transport Beam
 void G_InitTransport( int clientNum, vec3_t origin, vec3_t angles );
@@ -1183,10 +1278,10 @@ typedef struct
 // g_active.c
 //
 
-void ClientThink( int clientNum );
-void ClientEndFrame( gentity_t *ent );
-void G_RunClient( gentity_t *ent );
-void Cmd_Ready_f (gentity_t *ent);
+void ClientThink( int clientNum ); // TODO move me to g_client.c
+void ClientEndFrame( gentity_t *ent ); // TODO move me to g_client.c
+void G_RunClient( gentity_t *ent ); // TODO move me to g_client.c
+void G_Active_ShieldRemove(gentity_t *self);
 
 //RPG-X | Marcin | 03/12/2008
 void ThrowWeapon( gentity_t *ent, char *txt );

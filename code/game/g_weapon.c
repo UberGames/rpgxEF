@@ -70,7 +70,7 @@ into a wall.
 @param v vector to round
 @param to rounded vector
 */
-void SnapVectorTowards( vec3_t v, vec3_t to ) {
+void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
 	int i;
 
 	for ( i = 0 ; i < 3 ; i++ ) {
@@ -1318,7 +1318,7 @@ static void WP_FireQuantumBurst( gentity_t *ent, qboolean alt_fire )
  * @param target the target entity
  * @param attacker the attacker entity
  */
-qboolean LogAccuracyHit( gentity_t *target, gentity_t *attacker ) {
+qboolean G_Weapon_LogAccuracyHit( gentity_t *target, gentity_t *attacker ) {
 	if( !target->takedamage ) {
 		return qfalse;
 	}
@@ -1394,7 +1394,7 @@ static void CorrectForwardVector(gentity_t *ent, vec3_t fwd, vec3_t muzzlePoint,
 
 /*
 ===============
-CalcMuzzlePoint
+G_Weapon_CalcMuzzlePoint
 
 set muzzle location relative to pivoting eye
 ===============
@@ -1493,7 +1493,7 @@ static float WP_ShotAltSize[WP_NUM_WEAPONS] =
  * @param muzzlePoint the muzzle point
  * @param projsize projsize
  */
-void CalcMuzzlePoint ( gentity_t *ent, vec3_t fwd, vec3_t rt, vec3_t vup, vec3_t muzzlePoint, float projsize) 
+void G_Weapon_CalcMuzzlePoint ( gentity_t *ent, vec3_t fwd, vec3_t rt, vec3_t vup, vec3_t muzzlePoint, float projsize) 
 {
 	int weapontype;
 
@@ -1669,7 +1669,7 @@ static void WP_SprayVoyagerHypo( gentity_t *ent, qboolean alt_fire )
 	if( (tr_ent && tr_ent->client) && (tr_ent->health == 1) && (tr_ent->client->ps.pm_type == PM_DEAD)){ 		
 		tr_entPs = &tr_ent->client->ps;
 		if(rpg_medicsrevive.integer == 1){
-			ClientSpawn(tr_ent, 1, qtrue);
+			G_Client_Spawn(tr_ent, 1, qtrue);
 
 			/* TiM : Hard coded emote.  Makes the player play a 'get up' animation :) */
 			/* G_MoveBox( tr_ent ); */
@@ -1692,7 +1692,7 @@ static void WP_SprayVoyagerHypo( gentity_t *ent, qboolean alt_fire )
 		tr_entPs = &tr_ent->client->ps;
 		if(alt_fire && rpg_hypoMelee.integer) { /* alt fire and hypo melee enabled */
 			tr_ent->health = 0;
-			player_die( tr_ent, ent, ent, 100, MOD_KNOCKOUT );
+			G_Client_Die( tr_ent, ent, ent, 100, MOD_KNOCKOUT );
 			G_LogWeaponFire( ent->s.number, WP_12 );
 		} else { /* else just heal */
 			if ( tr_ent->health < tr_entPs->stats[STAT_MAX_HEALTH] )
@@ -1742,7 +1742,7 @@ void FireWeapon( gentity_t *ent, qboolean alt_fire )
 	{
 		projsize = WP_ShotSize[ent->s.weapon];
 	}
-	CalcMuzzlePoint ( ent, forward, right, up, muzzle, projsize);
+	G_Weapon_CalcMuzzlePoint ( ent, forward, right, up, muzzle, projsize);
 
 	/* fire the specific weapon */
 	switch( ent->s.weapon )

@@ -22,7 +22,7 @@ static void TryUse( gentity_t *ent )
 	trace_t		trace;
 	vec3_t		src, dest, vf;
 	clientSession_t *sess;
-	
+
 	if(!ent || !ent->client) return;
 
 	sess = &ent->client->sess;
@@ -60,10 +60,10 @@ static void TryUse( gentity_t *ent )
 		}
 		//FIXME: play sound?
 		target->use( target, ent, ent );
-		#ifdef G_LUA
+#ifdef G_LUA
 		if(target->luaUse)
 			LuaHook_G_EntityUse(target->luaUse, target-g_entities, ent-g_entities, ent-g_entities);
-		#endif
+#endif
 		return;
 	}
 	else if ( target && target->use && Q_stricmp("misc_ammo_station", target->classname) == 0 )
@@ -80,10 +80,10 @@ static void TryUse( gentity_t *ent )
 			}
 		}
 		target->use( target, ent, ent );
-		#ifdef G_LUA
+#ifdef G_LUA
 		if(target->luaUse)
 			LuaHook_G_EntityUse(target->luaUse, target-g_entities, ent-g_entities, ent-g_entities);
-		#endif
+#endif
 		return;
 	}
 	else if ( (target && target->s.number == ENTITYNUM_WORLD) || (target->s.pos.trType == TR_STATIONARY && !(trace.surfaceFlags & SURF_NOIMPACT) && !target->takedamage) )
@@ -233,19 +233,19 @@ static void P_WorldEffects( gentity_t *ent ) {
 	//
 	if (waterlevel &&
 		(ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)) ) {
-		if (ent->health > 0
-			&& ent->pain_debounce_time < level.time	) {
+			if (ent->health > 0
+				&& ent->pain_debounce_time < level.time	) {
 
-			if (ent->watertype & CONTENTS_LAVA) {
-				G_Damage (ent, NULL, NULL, NULL, NULL,
-					30*waterlevel, 0, MOD_LAVA);
-			}
+					if (ent->watertype & CONTENTS_LAVA) {
+						G_Damage (ent, NULL, NULL, NULL, NULL,
+							30*waterlevel, 0, MOD_LAVA);
+					}
 
-			if (ent->watertype & CONTENTS_SLIME) {
-				G_Damage (ent, NULL, NULL, NULL, NULL,
-					10*waterlevel, 0, MOD_SLIME);
+					if (ent->watertype & CONTENTS_SLIME) {
+						G_Damage (ent, NULL, NULL, NULL, NULL,
+							10*waterlevel, 0, MOD_SLIME);
+					}
 			}
-		}
 	}
 }
 
@@ -344,12 +344,12 @@ void G_TouchTriggers( gentity_t *ent ) {
 	for ( i=0 ; i<num ; i++ ) {
 		hit = &g_entities[touch[i]];
 
-		#ifdef G_LUA
+#ifdef G_LUA
 		if(hit->luaTouch)
 		{
 			LuaHook_G_EntityTouch(hit->luaTouch, hit->s.number, ent->s.number);
 		}
-		#endif
+#endif
 
 		if ( !hit->touch && !ent->touch ) {
 			continue;
@@ -363,7 +363,7 @@ void G_TouchTriggers( gentity_t *ent ) {
 		{				
 			// this is ugly but adding a new ET_? type will
 			// most likely cause network incompatibilities
-			if ( hit->s.eType != ET_TELEPORT_TRIGGER &&	hit->touch != Touch_DoorTrigger) 
+			if ( hit->s.eType != ET_TELEPORT_TRIGGER &&	hit->touch != G_Mover_TouchDoorTrigger) 
 			{
 				continue;
 			}
@@ -463,10 +463,10 @@ static qboolean ClientInactivityTimer( gclient_t *client )
 		client->inactivityWarning = qfalse;
 	}
 	else if (	cmd->forwardmove ||
-				cmd->rightmove ||
-				cmd->upmove ||
-				(cmd->buttons & BUTTON_ATTACK) ||
-				(cmd->buttons & BUTTON_ALT_ATTACK) )
+		cmd->rightmove ||
+		cmd->upmove ||
+		(cmd->buttons & BUTTON_ATTACK) ||
+		(cmd->buttons & BUTTON_ALT_ATTACK) )
 	{
 		client->inactivityTime = level.time + g_inactivity.integer * 1000;
 		client->inactivityWarning = qfalse;
@@ -548,7 +548,7 @@ static void ClientTimerActions( gentity_t *ent, int msec ) {
 
 	if( rpg_timedmessagetime.value ){
 		//Make sure its not less then one //TiM: Well... we can have under 1, just not toooo far under 1
-	
+
 		if(rpg_timedmessagetime.value < 0.2) { //1
 			messageTime = 0.2;
 		}else{
@@ -557,7 +557,7 @@ static void ClientTimerActions( gentity_t *ent, int msec ) {
 
 		if (level.time > (level.message + (messageTime * 60000)) ) {
 			level.message = level.time;
-			
+
 			//TiM - There.  So with this working in conjunction with that reset
 			//code above, this should be more efficient. :)
 			message = TimedMessage(); //Since we're working with a gloabl scope variable, there's no need for this thing to have parameters:)
@@ -616,27 +616,6 @@ static void ClientIntermissionThink( gclient_t *client ) {
 			client->readyToExit = (qboolean)(!client->readyToExit);
 		}
 	}
-}
-
-/*
-====================
-Cmd_Ready_f
-====================
-*/
-/**
-*	This function is called from the ui_sp_postgame.c as a result of clicking on the
-*	"next" button in non GT_TOURNAMENT games.  This replaces the old system of waiting
-*	for the user to click an ATTACK or USE button to signal ready
-*	(see ClientIntermissionThink())
-*
-*	when all clients have signaled ready, the game continues to the next match.
-*/
-void Cmd_Ready_f (gentity_t *ent)
-{
-	gclient_t *client;
-	client = ent->client;
-
-	client->readyToExit = qtrue;
 }
 
 
@@ -954,7 +933,7 @@ static qhandle_t	shieldDeactivateSound=0;
 /**
 *	Remove a forcefield
 */
-void ShieldRemove(gentity_t *self)
+void G_Active_ShieldRemove(gentity_t *self)
 {
 	self->think = G_FreeEntity;
 	self->nextthink = level.time + 300;
@@ -989,7 +968,7 @@ void ShieldDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 	// Play damaging sound...
 	G_AddEvent(self, EV_GENERAL_SOUND, shieldDamageSound);
 
-	ShieldRemove(self);
+	G_Active_ShieldRemove(self);
 }
 
 
@@ -1019,7 +998,7 @@ void ShieldGoSolid(gentity_t *self)
 
 	if (self->health <= 0)
 	{
-		ShieldRemove(self);
+		G_Active_ShieldRemove(self);
 		return;
 	}
 
@@ -1037,7 +1016,7 @@ void ShieldGoSolid(gentity_t *self)
 		self->nextthink = level.time + 1000;
 		self->think = ShieldThink;
 		self->takedamage = qtrue;//RPG-X: - RedTechie use to be qtrue //TiM - made true again. should be okay so long as the health isn't decremented
-		
+
 		trap_LinkEntity(self);
 	}
 
@@ -1128,19 +1107,19 @@ void ShieldTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 					rpg_forcefielddamage.integer = 999;
 				}
 				other->health -= rpg_forcefielddamage.integer;
-					
+
 				//RPG-X: RedTechie - Fixed free ent if medic revive on
 				if(rpg_medicsrevive.integer == 1){
 					if(other->health <= 1){
 						other->client->ps.stats[STAT_WEAPONS] = ( 1 << WP_0 );
 						other->client->ps.stats[STAT_HOLDABLE_ITEM] = HI_NONE;
 						other->client->ps.stats[STAT_HEALTH] = other->health = 1;
-						player_die (other, other, other, 1, MOD_FORCEFIELD);
+						G_Client_Die (other, other, other, 1, MOD_FORCEFIELD);
 					}
 				}else{
 					if(other->health <= 1){
 						other->client->ps.stats[STAT_HEALTH] = other->health = 0;
-						player_die (other, other, other, 100000, MOD_FORCEFIELD);
+						G_Client_Die (other, other, other, 100000, MOD_FORCEFIELD);
 					}
 				}
 			}
@@ -1225,10 +1204,10 @@ void CreateShield(gentity_t *ent)
 	}
 	ent->clipmask = MASK_SHOT;
 
-//	xaxis - 1 bit
-//	height - 0-254 8 bits //10
-//	posWidth - 0-255 8 bits //10
-//  negWidth - 0 - 255 8 bits
+	//	xaxis - 1 bit
+	//	height - 0-254 8 bits //10
+	//	posWidth - 0-255 8 bits //10
+	//  negWidth - 0 - 255 8 bits
 
 	paramData = (xaxis << 30) | ((height&1023) << 20) | ((posWidth&1023) << 10) | (negWidth&1023); //24 16 8
 	ent->s.time2 = paramData;
@@ -1241,14 +1220,14 @@ void CreateShield(gentity_t *ent)
 	{
 		ent->team = "2";
 	}
-	
+
 	ent->health = ceil(SHIELD_HEALTH*g_dmgmult.value);
-	
+
 	ent->s.time = ent->health;//???
 	ent->pain = ShieldPain;
 	ent->die = ShieldDie;
 	ent->touch = ShieldTouch;
-	
+
 	ent->r.svFlags |= SVF_SHIELD_BBOX;
 
 	// see if we're valid
@@ -1409,18 +1388,18 @@ void flushDecoys( gentity_t	*ent ) {
 	while ( (decoy = G_Find( decoy, FOFS(classname), "decoy" )) != NULL )
 	{
 		if ( decoy->parent != ent )
-		//if ( decoy->s.clientNum != ent->client->ps.clientNum )
+			//if ( decoy->s.clientNum != ent->client->ps.clientNum )
 		{
 			continue;
 		}
 		foundDecoys[decoyCount++] = decoy->s.clientNum;
 	}
-	
+
 	//now remove first ones we find until there are only 9 left
 	decoy = NULL;
 	orgCount = decoyCount;
 	lowestTimeStamp = level.time;
-	
+
 	//RPG-X: TiM - Let's limit it to say... 64 decoys per player
 	while ( decoyCount > 64 ) //9
 	{
@@ -1432,7 +1411,7 @@ void flushDecoys( gentity_t	*ent ) {
 				continue;
 			}
 			decoy = &g_entities[foundDecoys[i]];
-		
+
 			if ( decoy && decoy->timestamp < lowestTimeStamp )
 			{
 				removeMe = i;
@@ -1460,7 +1439,7 @@ void flushDecoys( gentity_t	*ent ) {
 		}	
 	}
 }
- 
+
 /**
 *	entities spawn non solid and through this function,
 *	they'll become solid once nothing's detected in their boundaries. :)
@@ -1534,7 +1513,7 @@ qboolean PlaceDecoy(gentity_t *ent)
 		gentity_t	*oldDecoy;
 
 		for ( i = 0; i<level.num_entities; i++ ) {
-		oldDecoy = &g_entities[i];
+			oldDecoy = &g_entities[i];
 
 			if ( !Q_stricmp( oldDecoy->classname, "decoy" ) && oldDecoy->s.eventParm == level.decoyIndex ) {
 				G_FreeEntity( oldDecoy );
@@ -1609,7 +1588,7 @@ qboolean PlaceDecoy(gentity_t *ent)
 		char height[9];
 		char weight[9];
 		char offset[6];
-			
+
 		//TiM - ensure that we encapsulate this data better or else it sometimes
 		//becomes null
 		Q_strncpyz( model, Info_ValueForKey( userinfo, "model" ), sizeof( model ) );
@@ -1618,11 +1597,11 @@ qboolean PlaceDecoy(gentity_t *ent)
 		Q_strncpyz( offset, Info_ValueForKey( userinfo, "modelOffset" ), sizeof( offset ) );
 
 		Com_sprintf( buffer, sizeof( buffer ), "model\\%s\\height\\%s\\weight\\%s\\moOf\\%s\\c\\%i", 
-												model,
-												height,
-												weight,
-												offset,
-												ent->client->sess.sessionClass );
+			model,
+			height,
+			weight,
+			offset,
+			ent->client->sess.sessionClass );
 
 		trap_SetConfigstring( CS_DECOYS + level.decoyIndex, buffer );
 	}
@@ -1727,7 +1706,7 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			//TiM: Since we purge the vectors each cycle.  I'll save us some memory by using the vectors themselves as a check.
 			if ( TransDat[ps->clientNum].beamTime == 0 && 
 				VectorCompare( vec3_origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].origin ) &&
-					VectorCompare( vec3_origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles ) )
+				VectorCompare( vec3_origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles ) )
 			{
 				VectorCopy( ps->origin, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].origin );
 				VectorCopy( ps->viewangles, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles );
@@ -1739,7 +1718,7 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
 			if ( TransDat[ps->clientNum].beamTime == 0 && level.time > ps->powerups[PW_QUAD] ) {
 				G_InitTransport( ps->clientNum, TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].origin,
-								TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles );
+					TransDat[ps->clientNum].storedCoord[TPT_PORTABLE].angles );
 
 				memset( &TransDat[ps->clientNum].storedCoord[TPT_PORTABLE], 0, sizeof( TransDat[ps->clientNum].storedCoord[TPT_PORTABLE]) );
 			}
@@ -1748,7 +1727,7 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			}
 
 			ps->stats[STAT_USEABLE_PLACED] = 0;
-				
+
 			if (g_classData[client->sess.sessionClass].isMarine)
 			{
 				client->teleportTime = level.time + ( 3 * 1000 ); // 15 * 1000
@@ -1853,25 +1832,25 @@ void ThrowWeapon( gentity_t *ent, char *txt )
 	ucmd = &ent->client->pers.cmd;
 	ps = &client->ps;
 
-    if ( rpg_allowWeaponDrop.integer == 0) {
-        return;
-    }
+	if ( rpg_allowWeaponDrop.integer == 0) {
+		return;
+	}
 
 	if ( numTotalDropped >= MAX_DROPPED ) {
 		WARNING(("RPG-X Warning: maximum of dropped items of %i reached.\n", MAX_DROPPED));
 		return;
 	}
 
-    if ( ps->weapon == WP_1 || ( ucmd->buttons & BUTTON_ATTACK )) {
+	if ( ps->weapon == WP_1 || ( ucmd->buttons & BUTTON_ATTACK )) {
 		return;
-    }
+	}
 
 	numTotalDropped++;
 
 	item = BG_FindItemForWeapon( ps->weapon );
 
-    // admins don't lose weapon when thrown
-    if ( IsAdmin( ent ) == qfalse ) {
+	// admins don't lose weapon when thrown
+	if ( IsAdmin( ent ) == qfalse ) {
 		ps->ammo[ ps->weapon ] -= 1;
 		if (ps->ammo[ ps->weapon ] <= 0) {
 			ps->stats[STAT_WEAPONS] &= ~( 1 << ps->weapon );
@@ -1883,10 +1862,10 @@ void ThrowWeapon( gentity_t *ent, char *txt )
 				}
 			}
 		}
-    }
+	}
 
 	drop = DropWeapon( ent, item, 0, FL_DROPPED_ITEM | FL_THROWN_ITEM, txt );
-    drop->parent = ent;
+	drop->parent = ent;
 	drop->count = 1;
 }
 
@@ -1925,7 +1904,7 @@ static void SendPendingPredictableEvents( playerState_t *ps ) {
 static void ClientCamThink(gentity_t *client) {
 	if(!client->client->cam) return;
 	G_SetOrigin(client, client->client->cam->s.origin);
-	SetClientViewAngle(client, client->client->cam->s.angles);
+	G_Client_SetViewAngle(client, client->client->cam->s.angles);
 	trap_LinkEntity(client);
 }
 
@@ -1935,17 +1914,17 @@ ClientThink
 ==============
 */
 /**
-*	This will be called once for each client frame, which will
-*	usually be a couple times for each server frame on fast clients.
+* This will be called once for each client frame, which will
+* usually be a couple times for each server frame on fast clients.
 *
-*	If "g_synchronousClients 1" is set, this will be called exactly
-*	once for each server frame, which makes for smooth demo recording.
+* If "g_synchronousClients 1" is set, this will be called exactly
+* once for each server frame, which makes for smooth demo recording.
 */
 static void ClientThink_real( gentity_t *ent ) {
 	gclient_t	*client;
-	pmove_t		pm;
-	int			oldEventSequence;
-	int			msec;
+	pmove_t	pm;
+	int	oldEventSequence;
+	int	msec;
 	usercmd_t	*ucmd;
 	playerState_t *ps;
 
@@ -2013,7 +1992,7 @@ static void ClientThink_real( gentity_t *ent ) {
 				ent->r.contents = CONTENTS_CORPSE;
 		}
 	}
-	
+
 	//RPG-X: Checked to see if medics revive is on if so do as following
 	if(rpg_medicsrevive.integer == 1){
 		if ( client->noclip ) {
@@ -2032,7 +2011,7 @@ static void ClientThink_real( gentity_t *ent ) {
 			ps->pm_type = PM_NORMAL;
 		}
 	}
-	
+
 	//RPG-X: J2J & Phenix - For the gravity ent
 	if(client->SpecialGrav != qtrue)
 	{
@@ -2053,15 +2032,15 @@ static void ClientThink_real( gentity_t *ent ) {
 	else if ( ps->stats[STAT_HEALTH] <= 20 ) {
 		ps->speed *= 0.55;
 	}
-	
+
 	if (( ps->powerups[PW_EVOSUIT] ) && ( ps->gravity == 0 ))
 	{//Evosuit time.. RPG-X | Phenix | 8/8/2004
 		ps->speed *= 1.3;
 	}
-	
+
 	//RPG-X: Redtechie - n00bie stay.....good boy!
 	if ( g_classData[client->sess.sessionClass].isn00b ){
-     ps->speed = 0;
+		ps->speed = 0;
 	}
 
 	//TiM : SP Style Transporter. :)
@@ -2072,9 +2051,9 @@ static void ClientThink_real( gentity_t *ent ) {
 		//so bullets and other players will pass thru the transportee. :)
 		if ( (level.time > TransDat[ps->clientNum].beamTime - 6000) &&
 			( level.time < TransDat[ps->clientNum].beamTime - 2000 ) ) {
-			if ( ps->stats[STAT_HEALTH] > 1 ) {
-				ent->r.contents = CONTENTS_NONE;
-			}
+				if ( ps->stats[STAT_HEALTH] > 1 ) {
+					ent->r.contents = CONTENTS_NONE;
+				}
 		}
 		else {
 			if ( ps->stats[STAT_HEALTH] > 1 ) {
@@ -2083,13 +2062,13 @@ static void ClientThink_real( gentity_t *ent ) {
 		}
 
 		//If we're half-way thru the cycle, teleport the player now
-		if ( level.time > TransDat[ps->clientNum].beamTime - 4000 && 
-		!TransDat[ps->clientNum].beamed ) {
-			TeleportPlayer( ent, TransDat[ps->clientNum].currentCoord.origin, 
-									TransDat[ps->clientNum].currentCoord.angles, 
-									TP_TRI_TP );
+		if ( level.time > TransDat[ps->clientNum].beamTime - 4000 &&
+			!TransDat[ps->clientNum].beamed ) {
+				TeleportPlayer( ent, TransDat[ps->clientNum].currentCoord.origin,
+					TransDat[ps->clientNum].currentCoord.angles,
+					TP_TRI_TP );
 
-			TransDat[ps->clientNum].beamed = qtrue;
+				TransDat[ps->clientNum].beamed = qtrue;
 		}
 	}
 	else {
@@ -2100,8 +2079,8 @@ static void ClientThink_real( gentity_t *ent ) {
 			ps->powerups[PW_QUAD] = 0;
 			TransDat[ps->clientNum].beamed = qfalse;
 
-			memset( &TransDat[ps->clientNum].currentCoord, 0, 
-					sizeof( TransDat[ps->clientNum].currentCoord.origin ) );
+			memset( &TransDat[ps->clientNum].currentCoord, 0,
+				sizeof( TransDat[ps->clientNum].currentCoord.origin ) );
 
 			if(g_entities[ps->clientNum].flags & FL_CLAMPED) {
 				//reset everything if player was beamed by trigger_transporter
@@ -2111,13 +2090,13 @@ static void ClientThink_real( gentity_t *ent ) {
 	}
 
 	//TiM : Freeze their movement if they're halfway through a transport cycle
-	if ( level.time < TransDat[ps->clientNum].beamTime && 
+	if ( level.time < TransDat[ps->clientNum].beamTime &&
 		level.time > TransDat[ps->clientNum].beamTime - 4000 )
 	{
 		vec3_t	endPoint;
 		trace_t	tr;
 		VectorSet( endPoint, ps->origin[0], ps->origin[1], ps->origin[2] - 48 );
-		//Do a trace down.  If we're near ground, just re-enable gravity.  Else we we get weird animations O_o
+		//Do a trace down. If we're near ground, just re-enable gravity. Else we we get weird animations O_o
 		trap_Trace( &tr, ps->origin, NULL, NULL, endPoint, ps->clientNum, CONTENTS_SOLID );
 
 		if ( tr.fraction == 1.0 ) {
@@ -2126,7 +2105,7 @@ static void ClientThink_real( gentity_t *ent ) {
 		}
 
 		ps->speed = 0;
-		
+
 		ps->velocity[0] = ps->velocity[1] = 0.0;
 	}
 
@@ -2155,7 +2134,7 @@ static void ClientThink_real( gentity_t *ent ) {
 	pm.admin = (qboolean)(g_classData[client->sess.sessionClass].isAdmin || client->LoggedAsAdmin);
 	//pm.admin = g_classData[client->sess.sessionClass].isAdmin;
 	pm.medic = (qboolean)g_classData[client->sess.sessionClass].isMedical;
-	pm.borg	 = (qboolean)g_classData[client->sess.sessionClass].isBorg;
+	pm.borg	= (qboolean)g_classData[client->sess.sessionClass].isBorg;
 
 	// perform a pmove
 	Pmove (&pm);
@@ -2181,7 +2160,7 @@ static void ClientThink_real( gentity_t *ent ) {
 	ClientEvents( ent, oldEventSequence );
 
 	if ( pm.useEvent )
-	{		//TODO: Use
+	{	//TODO: Use
 		TryUse( ent );
 	}
 
@@ -2214,7 +2193,7 @@ static void ClientThink_real( gentity_t *ent ) {
 		if ( level.time > client->respawnTime ) {
 			// pressing attack or use is the normal respawn method
 			if ( ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) {
-				respawn( ent );
+				G_Client_Respawn( ent );
 				return;
 			}
 		}
@@ -2309,7 +2288,7 @@ static void SpectatorClientEndFrame( gentity_t *ent ) {
 				// drop them to free spectators unless they are dedicated camera followers
 				if ( sess->spectatorClient >= 0 ) {
 					sess->spectatorState = SPECTATOR_FREE;
-					ClientBegin( ent->client - level.clients, qfalse, qfalse, qfalse );
+					G_Client_Begin( ent->client - level.clients, qfalse, qfalse, qfalse );
 				}
 			}
 		}
