@@ -143,6 +143,7 @@ void SP_func_brushmodel(gentity_t *ent); // for brushmodel hijacking :D
 void SP_func_lightchange(gentity_t *ent); // "toggling" light
 void SP_func_targetmover(gentity_t *ent);
 void SP_func_stasis_door(gentity_t *ent);
+void SP_func_borg_elevator(gentity_t *ent);
 
 void SP_trigger_always (gentity_t *ent);
 void SP_trigger_multiple (gentity_t *ent);
@@ -324,6 +325,7 @@ spawn_t	spawns[] = {
 	{"func_lightchange",			SP_func_lightchange},
 	{"func_targetmover",			SP_func_targetmover},
 	{"func_stasis_door",			SP_func_stasis_door},
+	{"func_borg_elevator",			SP_func_borg_elevator},
 
 	// Triggers are brush objects that cause an effect when contacted
 	// by a living player, usually involving firing targets.

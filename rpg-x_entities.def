@@ -1,16 +1,16 @@
 //files that hold this stuff in game. Please update them as required:
 //g_breakable.c - func_breakable, misc_model_breakable, misc_ammo_station, target_repair;
-//g_cinamatic.c - cinematic_camera
-//g_client.c - info_player_deathmatch, info_player_start, info_player_intermission
-//g_forcefield2.c - func_forcefield2
+//g_cinamatic.c - cinematic_camera;
+//g_client.c - info_player_deathmatch, info_player_start, info_player_intermission;
+//g_forcefield2.c - func_forcefield2;
 //g_fx.c
-//g_items.c - item_botroam
+//g_items.c - item_botroam;
 //g_misc.c
 //g_mover.c
-//g_roff.c
+//g_roff.c - func_roff_mover;
 //g_spawn.c - worldspawn;
 //g_target.c
-//g_team.c - team_CTF_redplayer, team_CTF_blueplayer, team_CTF_redspawn, team_CTF_bluespawn
+//g_team.c - team_CTF_redplayer, team_CTF_blueplayer, team_CTF_redspawn, team_CTF_bluespawn;
 //g_trigger.c - trigger_multiple, trigger_always, trigger_push, target_push, trigger_teleport, trigger_hurt, func_timer, trigger_transporter, trigger_radiation;
 //g_turrets.c - misc_turret, misc_laser_arm;
 //g_ui.c - ui_transporter, ui_holodeck;
@@ -1577,10 +1577,17 @@ In the unlikely event that we do have an origin brush this is the code:
 // RPG-X fx_*
 
 /*QUAKED fx_spark (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
-Emits sparks at the specified point in the specified direction
+-----DESCRIPTION-----
+Emits sparks at the specified point in the specified direction.
+Can be toggled off by being used.
 
-  "target" - ( optional ) direction to aim the sparks in, otherwise, uses the angles set in the editor.
-  "wait(2000)"	- interval between events (randomly twice as long) 
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn.
+
+-----KEYS-----
+"targetname" - toggles on/off whenever used
+"target" - ( optional ) direction to aim the sparks in, otherwise, uses the angles set in the editor.
+"wait(2000)" - interval between events (randomly twice as long) 
 */
 
 

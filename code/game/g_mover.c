@@ -3399,3 +3399,230 @@ void SP_func_stasis_door( gentity_t *ent )
 
 	trap_LinkEntity (ent);
 }
+
+/*
+-------------------------------------------
+
+func_borg_elevator
+by Ubergames Harry Young
+to get the 2-Part-Elevator on borg2 back into buissness (map will die using lua)
+
+-------------------------------------------
+*/
+
+/*
+Presets
+upper->count current motion indicator
+1 = both moving up
+2 = upper moving up, spawn spark in between, spawn beam-fx
+3 = upper moving down
+4 = spawn spark in between
+5 = both moving down
+
+upper->n00bCount end motion indicator (1)
+*/
+
+/*QUAKED func_borg_elevator (0 .5 .8)
+-----DESCRIPTION-----
+DO NOT USE!
+This entity is hardcoded to get the 2-part elevator on borg2 back to work.
+If this type of entity is found on any other map or the entity is not part of that #specific
+elevator (checked by bmodel-number) it will automatically be turned into a func_static.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
+
+-----LUA-----
+This entity needs to be set up using Lua:
+
+	ent = entity.FindBModel(52)
+	ent:SetClassname("func_borg_elevator");
+	entity.CallSpawn(ent);
+				
+	ent = entity.FindBModel(54)
+	ent:SetClassname("func_borg_elevator");
+	entity.CallSpawn(ent); 
+*/
+
+void borg_elevator_think( gentity_t *upper ) //only the upper can think about this
+{
+	gentity_t	*lower = G_Find(NULL, FOFS(model), "54");
+	vec3_t		destination;
+	int			snd;
+
+	if(upper->n00bCount == 1){ //stop and play stop sound
+		snd = G_SoundIndex("sound/movers/doors/largedoorstop.mp3");
+		G_AddEvent(upper, EV_SCRIPT_SOUND, snd + (0 << 8));
+		BG_EvaluateTrajectory(&upper->s.pos, level.time, upper->r.currentOrigin);
+		VectorCopy(upper->r.currentOrigin, upper->s.pos.trBase);
+		upper->s.pos.trType = TR_STATIONARY;
+		upper->s.pos.trTime = level.time;
+		trap_LinkEntity(upper);
+		if(upper->count == 1 || upper->count == 2) //the lower part has moved so do here as well
+			G_AddEvent(lower, EV_SCRIPT_SOUND, snd + (0 << 8));
+			BG_EvaluateTrajectory(&lower->s.pos, level.time, lower->r.currentOrigin);
+			VectorCopy(lower->r.currentOrigin, lower->s.pos.trBase);
+			lower->s.pos.trType = TR_STATIONARY;
+			lower->s.pos.trTime = level.time;
+			trap_LinkEntity(lower);
+		upper->n00bCount = 0; //play stop-sound
+		upper->nextthink = level.time + 1000; //always pause 1 sec
+		return;
+	}
+
+	//set X and Y-Coorinates, they won't change
+	destination[0] = 786;
+	destination[1] = -1984;
+	snd = G_SoundIndex("sound/movers/doors/largedoorstart.mp3");
+
+	switch(upper->count){
+		case 0: //going from lowest point to sep-point
+			destination[2] = 30;
+			upper->count = 1;
+			upper->n00bCount = 1; //play stop-sound
+			upper->nextthink = level.time + 4000; //motion takes 4 secs
+			BG_EvaluateTrajectory(&upper->s.pos, level.time, upper->s.pos.trBase);
+			upper->s.pos.trDuration = 4000;
+			upper->s.pos.trTime = level.time;
+			VectorCopy(destination, upper->s.pos.trDelta);//I likely got a bug in this line
+			upper->s.pos.trType = TR_LINEAR_STOP;
+			upper->moverState = MOVER_LUA;
+			trap_LinkEntity(upper);
+			G_AddEvent(upper, EV_SCRIPT_SOUND, snd + (0 << 8));
+			BG_EvaluateTrajectory(&lower->s.pos, level.time, lower->s.pos.trBase);
+			lower->s.pos.trDuration = 4000;
+			lower->s.pos.trTime = level.time;
+			VectorCopy(destination, upper->s.pos.trDelta);//I likely got a bug in this line
+			lower->s.pos.trType = TR_LINEAR_STOP;
+			lower->moverState = MOVER_LUA;
+			trap_LinkEntity(lower);
+			G_AddEvent(lower, EV_SCRIPT_SOUND, snd + (0 << 8));
+			break;
+		case 1: //going from sep-point to top
+			destination[2] = 12;
+			upper->count = 2;
+			upper->n00bCount = 1; //play stop-sound
+			upper->nextthink = level.time + 4000; //motion takes 4 secs
+			BG_EvaluateTrajectory(&upper->s.pos, level.time, upper->s.pos.trBase);
+			upper->s.pos.trDuration = 4000;
+			upper->s.pos.trTime = level.time;
+			VectorCopy(destination, upper->s.pos.trDelta);//I likely got a bug in this line
+			upper->s.pos.trType = TR_LINEAR_STOP;
+			upper->moverState = MOVER_LUA;
+			trap_LinkEntity(upper);
+			G_AddEvent(upper, EV_SCRIPT_SOUND, snd + (0 << 8));
+			break;
+			// TODO: spawn beam effect and short-lived spark
+		case 2: //going from top to sep-point
+			destination[2] = -12;
+			upper->count = 4; //skip 3 for now, reserved for spark-spawn
+			upper->n00bCount = 1; //play stop-sound, set 0 once spawn-spark comes
+			upper->nextthink = level.time + 4000; //motion takes 4 secs, reduce correctly once spark is added
+			BG_EvaluateTrajectory(&upper->s.pos, level.time, upper->s.pos.trBase);
+			upper->s.pos.trDuration = 4000;
+			upper->s.pos.trTime = level.time;
+			VectorCopy(destination, upper->s.pos.trDelta);//I likely got a bug in this line
+			upper->s.pos.trType = TR_LINEAR_STOP;
+			upper->moverState = MOVER_LUA;
+			trap_LinkEntity(upper);
+			G_AddEvent(upper, EV_SCRIPT_SOUND, snd + (0 << 8));
+			break;
+		case 3: //spawn spark for closing
+			upper->count = 4; //skip 3 for now, reserved for spark-spawn
+			upper->n00bCount = 1; //play stop-sound, set 0 once spawn-spark comes
+			upper->nextthink = level.time + 0; //effect killtime
+			// TODO: Spark stuff
+			break;
+		case 4: //going from sep-point to lowest point
+			destination[2] = -30;
+			upper->count = 0;
+			upper->n00bCount = 1; //play stop-sound
+			upper->nextthink = level.time + 4000; //motion takes 4 secs
+			BG_EvaluateTrajectory(&upper->s.pos, level.time, upper->s.pos.trBase);
+			upper->s.pos.trDuration = 4000;
+			upper->s.pos.trTime = level.time;
+			VectorCopy(destination, upper->s.pos.trDelta);//I likely got a bug in this line
+			upper->s.pos.trType = TR_LINEAR_STOP;
+			upper->moverState = MOVER_LUA;
+			trap_LinkEntity(upper);
+			G_AddEvent(upper, EV_SCRIPT_SOUND, snd + (0 << 8));
+			BG_EvaluateTrajectory(&lower->s.pos, level.time, lower->s.pos.trBase);
+			lower->s.pos.trDuration = 4000;
+			lower->s.pos.trTime = level.time;
+			VectorCopy(destination, upper->s.pos.trDelta);
+			lower->s.pos.trType = TR_LINEAR_STOP;
+			lower->moverState = MOVER_LUA;
+			trap_LinkEntity(lower);
+			G_AddEvent(lower, EV_SCRIPT_SOUND, snd + (0 << 8));
+			break;
+		default:
+			break;
+	}
+}
+
+void SP_func_borg_elevator( gentity_t *ent ) 
+{
+	gentity_t	*upper, *lower;
+	char		serverInfo[MAX_TOKEN_CHARS];
+	vec3_t		initOrigin;
+
+	trap_GetServerinfo( serverInfo, sizeof( serverInfo ) );
+
+	//let's make sure we're on borg2, if not make ent func_static, call spawn and return.
+	if(Q_stricmp(Info_ValueForKey( serverInfo, "mapname" ), "borg2")){ //this is not borg2
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] func_borg_elevator found but map is not borg2, turning entity into func_static.\n"););
+		ent->classname = "func_static";
+		G_CallSpawn(ent);
+		return;
+	}
+
+	//So we are on borg2. Let's make sure these are only the correct entities.
+	if( Q_stricmp(ent->model, "*52") && Q_stricmp(ent->model, "*54")){// this is not part of the elevator
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] entity is not part of the elevator, turning entity into func_static.\n"););
+		ent->classname = "func_static";
+		G_CallSpawn(ent);
+		return;
+	}
+
+	upper = G_Find(NULL, FOFS(model), "*52");
+	lower = G_Find(NULL, FOFS(model), "*54");
+
+	//setting both entities up as statics
+	//upper
+	trap_SetBrushModel( upper, upper->model );
+	G_SetOrigin(upper, upper->s.origin);
+	G_SetAngles(upper, upper->s.angles);
+	VectorCopy( upper->s.origin, upper->pos1);
+	InitMover( upper );
+	VectorCopy( upper->s.origin, upper->s.pos.trBase );
+	VectorCopy( upper->s.origin, upper->r.currentOrigin );
+	//lower
+	trap_SetBrushModel( lower, lower->model );
+	G_SetOrigin(lower, lower->s.origin);
+	G_SetAngles(lower, lower->s.angles);
+	VectorCopy( lower->s.origin, lower->pos1);
+	InitMover( lower );
+	VectorCopy( lower->s.origin, lower->s.pos.trBase );
+	VectorCopy( lower->s.origin, lower->r.currentOrigin );
+
+	level.numBrushEnts++;
+	level.numBrushEnts++;
+
+	//Let us send the entities to their init-origin (both down)
+	initOrigin[0] = 786;
+	initOrigin[1] = -1984;
+	initOrigin[2] = 104;
+
+	G_SetOrigin(upper, initOrigin);
+	G_SetOrigin(lower, initOrigin);
+
+	//Only one of these entities needs to think/monitoring
+	upper->count = 0;
+	upper->think = borg_elevator_think;
+	upper->nextthink = -1;
+	trap_LinkEntity (upper);
+	trap_LinkEntity (lower);
+}

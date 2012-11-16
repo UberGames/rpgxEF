@@ -5,17 +5,29 @@
 #define SPARK_STARTOFF		1
 
 /*QUAKED fx_spark (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
-Emits sparks at the specified point in the specified direction
+-----DESCRIPTION-----
+Emits sparks at the specified point in the specified direction.
 
-  "target" - ( optional ) direction to aim the sparks in, otherwise, uses the angles set in the editor.
-  "wait(2000)"	- interval between events (randomly twice as long) 
+Can be toggled by being used, but use with caution as updates every second instead of every 10 seconds, 
+which means it sends 10 times the information that an untoggleable steam will send.
+
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn.
+
+-----KEYS-----
+"targetname" - toggles on/off whenever used
+"target" - ( optional ) direction to aim the sparks in, otherwise, uses the angles set in the editor.
+"wait(2000)" - interval between events (randomly twice as long) 
 */
 
 //------------------------------------------
 void spark_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_SPARK, 0 );
-	ent->nextthink = level.time + 10000.0; // send a refresh message every 10 seconds
+	if(ent->targetname) //toggleable effect needs to be updated more often
+		ent->nextthink = level.time + 1000;
+	else
+		ent->nextthink = level.time + 10000.0; // send a refresh message every 10 seconds
 }
 
 //T3h TiM-zor was here
@@ -104,13 +116,16 @@ void SP_fx_spark( gentity_t	*ent )
 
 
 /*QUAKED fx_steam (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF 
-Emits steam at the specified point in the specified direction. will point at a target if one is specified.
+-----DESCRIPTION-----
+Emits steam at the specified point in the specified direction. Will point at a target if one is specified.
 
-Use toggleable steam with caution as updates every second instead of every 10 seconds, 
+Can be toggled but use with caution as updates every second instead of every 10 seconds, 
 which means it sends 10 times the information that an untoggleable steam will send.
 
-STARTOFF steam is of at spawn  
+-----SPAWNFLAGS-----
+1: STARTOFF - steam is of at spawn  
 
+-----KEYS-----
 "targetname" - toggles on/off whenever used
 "damage" - damage to apply when caught in steam vent, default - zero damage (no damage). Don't add this unless you really have to.
 */
@@ -123,11 +138,11 @@ STARTOFF steam is of at spawn
 void steam_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_STEAM, 0 );
-	if(ent->targetname) { //toggleable steam needs to be updated more often
+	if(ent->targetname) //toggleable effect needs to be updated more often
 		ent->nextthink = level.time + 1000;
-	} else {
+	else
 		ent->nextthink = level.time + 10000.0; // send a refresh message every 10 seconds
-	}
+
 
 	// FIXME: This may be a bit weird for steam bursts*/
 	// If a fool gets in the bolt path, zap 'em
@@ -247,14 +262,23 @@ void SP_fx_steam( gentity_t	*ent )
 }
 
 /*QUAKED fx_bolt (0 0 1) (-8 -8 -8) (8 8 8) SPARKS BORG TAPER SMOOTH
+-----DESCRIPTION-----
 Emits blue ( or borg green ) electric bolts from the specified point to the specified point
 
-  SPARKS - create impact sparks, probably best used for time delayed bolts
-  BORG - Make the bolts green
+Can be toggled by being used, but use with caution as updates every second instead of every 10 seconds, 
+which means it sends 10 times the information that an untoggleable steam will send.
 
-  "wait" - seconds between bolts (0 is always on, default is 2.0, -1 for random number between 0 and 5), bolts are always on for 0.2 seconds
-  "damage" - damage per server frame (default 0)
-  "random" - bolt chaos (0.1 = too calm, 0.5 = default, 1.0 or higher = pretty wicked)
+-----SPAWNFLAGS-----
+1: SPARKS - create impact sparks, probably best used for time delayed bolts
+2: BORG - Make the bolts green
+4: TAPER
+8: SMOOTH
+
+-----KEYS-----
+"targetname" - toggles on/off whenever used
+"wait" - seconds between bolts (0 is always on, default is 2.0, -1 for random number between 0 and 5), bolts are always on for 0.2 seconds
+"damage" - damage per server frame (default 0)
+"random" - bolt chaos (0.1 = too calm, 0.5 = default, 1.0 or higher = pretty wicked)
 */
 
 
@@ -269,7 +293,11 @@ void bolt_think( gentity_t *ent )
 
 	G_AddEvent( ent, EV_FX_BOLT, ent->spawnflags );
 	ent->s.time2 = ent->wait;
-	ent->nextthink = level.time + 10000;
+	if(ent->targetname) //toggleable effect needs to be updated more often
+		ent->nextthink = level.time + 1000;
+	else
+		ent->nextthink = level.time + 10000.0; // send a refresh message every 10 seconds
+
 
 	// If a fool gets in the bolt path, zap 'em
 	if ( ent->damage ) 
@@ -382,7 +410,14 @@ void SP_fx_bolt( gentity_t *ent )
 
 //--------------------------------------------------
 /*QUAKED fx_transporter (0 0 1) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 Emits transporter pad effect at the specified point. just rest it flush on top of the pad. 
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
 
 */
 
@@ -406,9 +441,19 @@ void SP_fx_transporter(gentity_t *ent)
 
 
 /*QUAKED fx_drip (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
+Drips of a fluid that fall down from this point.
 
-  "damage" -- type of drips. 0 = water, 1 = oil, 2 = green
-  "random" -- (0...1) degree of drippiness. 0 = one drip, 1 = Niagara Falls
+Can be toggled by being used, but use with caution as updates every second instead of every 10 seconds, 
+which means it sends 10 times the information that an untoggleable steam will send.
+
+-----SPAWNFLAGS-----
+1: STARTOFF - effect is off at spawn
+
+-----KEYS-----
+"targetname" - toggles on/off whenever used
+"damage" - type of drips. 0 = water, 1 = oil, 2 = green
+"random" - (0...1) degree of drippiness. 0 = one drip, 1 = Niagara Falls
 */
 
 //------------------------------------------
@@ -442,11 +487,18 @@ void SP_fx_drip( gentity_t	*ent )
 //***********************************************************************************
 
 /*QUAKED fx_fountain (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
+Fountain-Effect as seen iin the Garden of Scilence holodeck Programm.
+This is just one single strain of the original effect (which had all four strains hardcoded)
 
-  STARTOFF - Effect spawns in an off state
+Use with caution as this refreshes 10 times a second.
 
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect spawns in an off state
+
+-----KEYS-----
 "targetname" - name of entity when used turns this ent on/off
-"target" - link to a notnull entity to position where the end point of this FX is
+"target" - link to an info_notnull entity or similar to position where the end point of this FX is
 */
 
 void fountain_think( gentity_t *ent ) 
@@ -510,16 +562,20 @@ void SP_fx_fountain ( gentity_t *ent ) {
 }
 
 /*QUAKED fx_surface_explosion (0 0 1) (-8 -8 -8) (8 8 8) NO_SMOKE LOUDER NODAMAGE
+-----DESCRIPTION-----
 Creates a triggerable explosion aimed at a specific point.  Always oriented towards viewer.
 
-  LOUDER - Cheap hack to make the explosion sound louder.
-  NODAMAGE - Does no damage
+-----SPAWNFLAGS-----
+1: NO_SMOKE - Does not create smoke after explosion
+2: LOUDER - Cheap hack to make the explosion sound louder.
+4: NODAMAGE - Does no damage
 
-  "target" (optional) If no target is specified, the explosion is oriented up
-  "damage" - Damage per blast, default is 50. Damage falls off based on proximity.
-  "radius" - blast radius (default 20)
-  "speed" - camera shake speed (default 12).  Set to zero to turn camera shakes off
-  "targetname" - triggers explosion when used
+-----KEYS-----
+"target" (optional) If no target is specified, the explosion is oriented up
+"damage" - Damage per blast, default is 50. Damage falls off based on proximity.
+"radius" - blast radius (default 20)
+"speed" - camera shake speed (default 12).  Set to zero to turn camera shakes off
+"targetname" - triggers explosion when used
 */
 
 //------------------------------------------
@@ -528,9 +584,7 @@ void surface_explosion_use( gentity_t *self, gentity_t *other, gentity_t *activa
 
 	G_AddEvent( self, EV_FX_SURFACE_EXPLOSION, 0 );
 	if ( self->splashDamage )
-	{
 		G_RadiusDamage( self->r.currentOrigin, self, self->splashDamage, self->splashRadius, self, DAMAGE_RADIUS|DAMAGE_ALL_TEAMS, MOD_EXPLOSION );
-	}
 }
 
 //------------------------------------------
@@ -563,8 +617,7 @@ void surface_explosion_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_surface_explosion( gentity_t *ent )
 {
-	if ( !(ent->spawnflags&4) )
-	{
+	if ( !(ent->spawnflags&4) ){
 		G_SpawnInt( "damage", "50", &ent->splashDamage );
 		G_SpawnFloat( "radius", "20", &ent->distance ); // was: ent->radius
 		ent->splashRadius = 160;
@@ -589,21 +642,23 @@ void SP_fx_surface_explosion( gentity_t *ent )
 }
 
 /*QUAKED fx_blow_chunks (0 0 1) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 Creates a triggerable chunk spewer that can be aimed at a specific point.
 
-  "target" - (required) Target to spew chunks at
-  "targetname" - triggers chunks when used 
-  "radius" - Average size of a chunk (default 65)
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - (required) Target to spew chunks at
+"targetname" - triggers chunks when used 
+"radius" - Average size of a chunk (default 65)
 
 "material" - default is "metal" - choose from this list:
-	None = 0,
 	Metal = 1
 	Glass = 2
 	Glass Metal = 3
 	Wood = 4
 	Stone = 5
-(there will be more eventually lol.. I hope)
-
 */
 
 //"count" - Number of chunks to spew (default 5)
