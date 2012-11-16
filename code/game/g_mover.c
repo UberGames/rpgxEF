@@ -3,6 +3,7 @@
 
 #include "g_local.h"
 
+extern qboolean G_CallSpawn(gentity_t *ent);
 
 
 /*
@@ -3479,9 +3480,9 @@ void borg_elevator_think( gentity_t *upper ) //only the upper can think about th
 	snd = G_SoundIndex("sound/movers/doors/largedoorstart.mp3");
 
 	switch(upper->count){
-		case 0: //going from lowest point to sep-point
+		case 1: //going from lowest point to sep-point
 			destination[2] = 30;
-			upper->count = 1;
+			upper->count = 2;
 			upper->n00bCount = 1; //play stop-sound
 			upper->nextthink = level.time + 4000; //motion takes 4 secs
 			BG_EvaluateTrajectory(&upper->s.pos, level.time, upper->s.pos.trBase);
@@ -3501,9 +3502,9 @@ void borg_elevator_think( gentity_t *upper ) //only the upper can think about th
 			trap_LinkEntity(lower);
 			G_AddEvent(lower, EV_SCRIPT_SOUND, snd + (0 << 8));
 			break;
-		case 1: //going from sep-point to top
+		case 2: //going from sep-point to top
 			destination[2] = 12;
-			upper->count = 2;
+			upper->count = 3;
 			upper->n00bCount = 1; //play stop-sound
 			upper->nextthink = level.time + 4000; //motion takes 4 secs
 			BG_EvaluateTrajectory(&upper->s.pos, level.time, upper->s.pos.trBase);
@@ -3516,9 +3517,9 @@ void borg_elevator_think( gentity_t *upper ) //only the upper can think about th
 			G_AddEvent(upper, EV_SCRIPT_SOUND, snd + (0 << 8));
 			break;
 			// TODO: spawn beam effect and short-lived spark
-		case 2: //going from top to sep-point
+		case 3: //going from top to sep-point
 			destination[2] = -12;
-			upper->count = 4; //skip 3 for now, reserved for spark-spawn
+			upper->count = 5; //skip 3 for now, reserved for spark-spawn
 			upper->n00bCount = 1; //play stop-sound, set 0 once spawn-spark comes
 			upper->nextthink = level.time + 4000; //motion takes 4 secs, reduce correctly once spark is added
 			BG_EvaluateTrajectory(&upper->s.pos, level.time, upper->s.pos.trBase);
@@ -3530,15 +3531,15 @@ void borg_elevator_think( gentity_t *upper ) //only the upper can think about th
 			trap_LinkEntity(upper);
 			G_AddEvent(upper, EV_SCRIPT_SOUND, snd + (0 << 8));
 			break;
-		case 3: //spawn spark for closing
-			upper->count = 4; //skip 3 for now, reserved for spark-spawn
+		case 4: //spawn spark for closing
+			upper->count = 5; //skip 3 for now, reserved for spark-spawn
 			upper->n00bCount = 1; //play stop-sound, set 0 once spawn-spark comes
 			upper->nextthink = level.time + 0; //effect killtime
 			// TODO: Spark stuff
 			break;
-		case 4: //going from sep-point to lowest point
+		case 5: //going from sep-point to lowest point
 			destination[2] = -30;
-			upper->count = 0;
+			upper->count = 1;
 			upper->n00bCount = 1; //play stop-sound
 			upper->nextthink = level.time + 4000; //motion takes 4 secs
 			BG_EvaluateTrajectory(&upper->s.pos, level.time, upper->s.pos.trBase);
@@ -3620,9 +3621,11 @@ void SP_func_borg_elevator( gentity_t *ent )
 	G_SetOrigin(lower, initOrigin);
 
 	//Only one of these entities needs to think/monitoring
-	upper->count = 0;
+	upper->count = 1;
 	upper->think = borg_elevator_think;
-	upper->nextthink = -1;
+	//upper->nextthink = level.time + 1000; //start moving in a sec
+	upper->nextthink = -1; //think-function is bugged but spawn works so spawn but do not think for now.
+
 	trap_LinkEntity (upper);
 	trap_LinkEntity (lower);
 }
