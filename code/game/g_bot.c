@@ -470,7 +470,7 @@ void G_CheckBotSpawn( void ) {
 		if ( botSpawnQueue[n].spawnTime > level.time ) {
 			continue;
 		}
-		ClientBegin( botSpawnQueue[n].clientNum, qfalse, qtrue, qfalse );
+		G_Client_Begin( botSpawnQueue[n].clientNum, qfalse, qtrue, qfalse );
 		botSpawnQueue[n].spawnTime = 0;
 
 		if( g_gametype.integer == GT_SINGLE_PLAYER ) {
@@ -498,7 +498,7 @@ static void AddBotToSpawnQueue( int clientNum, int delay ) {
 	}
 
 	G_Printf( S_COLOR_YELLOW "Unable to delay spawn\n" );
-	ClientBegin( clientNum, qfalse, qtrue, qfalse );
+	G_Client_Begin( clientNum, qfalse, qtrue, qfalse );
 }
 
 
@@ -632,7 +632,7 @@ static void G_AddBot( const char *name, float skill, const char *team, const cha
 	// initialize the bot settings
 	if( !team || !*team ) {
 		if( g_gametype.integer >= GT_TEAM ) {
-			if( PickTeam(clientNum) == TEAM_RED) {
+			if( G_Client_PickTeam(clientNum) == TEAM_RED) {
 				team = "red";
 			}
 			else {
@@ -666,14 +666,14 @@ static void G_AddBot( const char *name, float skill, const char *team, const cha
 		}
 		else
 		{
-			bot->client->sess.sessionTeam = PickTeam( -1 );
+			bot->client->sess.sessionTeam = G_Client_PickTeam( -1 );
 		}
 	}
 
 	preTeam = bot->client->sess.sessionTeam;
 
 	// have it connect to the game as a normal client
-	if ( ClientConnect( clientNum, qtrue, qtrue ) ) {
+	if ( G_Client_Connect( clientNum, qtrue, qtrue ) ) {
 		return;
 	}
 
@@ -702,11 +702,11 @@ static void G_AddBot( const char *name, float skill, const char *team, const cha
 		bot->client->ps.persistant[ PERS_TEAM ] = bot->client->sess.sessionTeam;
 
 		G_ReadSessionData( bot->client );
-		ClientUserinfoChanged( clientNum );
+		G_Client_UserinfoChanged( clientNum );
 	}
 
 	if( delay == 0 ) {
-		ClientBegin( clientNum, qfalse, qfalse, qfalse );
+		G_Client_Begin( clientNum, qfalse, qfalse, qfalse );
 		return;
 	}
 

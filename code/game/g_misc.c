@@ -96,7 +96,7 @@ void TransportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, int speed
 	ps->eFlags ^= EF_TELEPORT_BIT;
 
 	// set angles
-	SetClientViewAngle( player, angles );
+	G_Client_SetViewAngle( player, angles );
 
 	// kill anything at the destination
 	if ( sess->sessionTeam != TEAM_SPECTATOR /*&& !(ps->eFlags&EF_ELIMINATED)*/) {
@@ -204,7 +204,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, tpType_t t
 	ps->eFlags ^= EF_TELEPORT_BIT;
 
 	// set angles
-	SetClientViewAngle( player, angles );
+	G_Client_SetViewAngle( player, angles );
 
 	// kill anything at the destination
 	if ( sess->sessionTeam != TEAM_SPECTATOR ) {

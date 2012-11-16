@@ -11,12 +11,12 @@ extern void SetClass( gentity_t *ent, char *s, char *teamName, qboolean SaveToCv
 
 /*
 ============
-AddScore
+G_Client_AddScore
 
 Adds score to both the client and his team
 ============
 */
-void AddScore( gentity_t *ent, int score ) {
+void G_Client_AddScore( gentity_t *ent, int score ) {
 	if ( !ent )
 	{
 		return;
@@ -36,7 +36,7 @@ void AddScore( gentity_t *ent, int score ) {
 	{//this isn't capture score
 		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
 	}
-	CalculateRanks( qfalse );
+	G_Client_CalculateRanks( qfalse );
 
 	//RPG-X: RedTechie - Lets enable score updating without this scores will not be updated
 	ent->client->UpdateScore = qfalse;
@@ -64,7 +64,7 @@ void SetScore( gentity_t *ent, int score ) {
 	}
 
 	ent->client->ps.persistant[PERS_SCORE] = score;
-	CalculateRanks( qfalse );
+	G_Client_CalculateRanks( qfalse );
 
 	// TiM: send the current scoring to all clients
 	SendScoreboardMessageToAllClients();
@@ -251,14 +251,14 @@ extern void DetonateDetpack(gentity_t *ent);
 
 /*
 ==================
-player_die
+G_Client_Die
 Heavly Modifyed By: RedTechie
 RPG-X: Marcin: a little bit modified - 30/12/2008
 ==================
 */
 extern char *ClassNameForValue( pclass_t pClass );
 extern qboolean IsAdmin( gentity_t *ent);
-void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ) {
+void G_Client_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ) {
 	//---------------------
 	//RPG-X: RedTechie - Check to see if medics revive people and not respawn if true use my fake death insead :)
 	//---------------------
@@ -479,11 +479,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 		BG_PlayerStateToEntityState( &self->client->ps, &self->s, qtrue );	
 
-		ClientUserinfoChanged( self->s.clientNum );
+		G_Client_UserinfoChanged( self->s.clientNum );
 
 		ClientEndFrame( self );
 
-		G_StoreClientInitialStatus( self );
+		G_Client_StoreClientInitialStatus( self );
 		//---------------------
 		//RPG-X: RedTechie - If it dose equal 0 use regular die
 		//---------------------
@@ -601,17 +601,17 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		////////////////////////////////////////////////////////////////////////
 		if (attacker && attacker->client) 
 		{
-			if ( attacker == self || OnSameTeam (self, attacker ) ) 
+			if ( attacker == self ) 
 			{
 				if ( meansOfDeath != MOD_RESPAWN )
 				{//just changing class
-					AddScore( attacker, -1 );
+					G_Client_AddScore( attacker, -1 );
 				}
 			} 
 			else 
 			{
 				attacker->client->pers.teamState.frags++;
-				AddScore( attacker, 1 );
+				G_Client_AddScore( attacker, 1 );
 
 				// Check to see if the player is on a streak.
 				attacker->client->streakCount++;
@@ -623,7 +623,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		{
 			if ( meansOfDeath != MOD_RESPAWN )
 			{//not just changing class
-				AddScore( self, -1 );
+				G_Client_AddScore( self, -1 );
 			}
 		}
 		////////////////////////////////////////////////////////////////////////
@@ -1079,7 +1079,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	gclient_t	*client;
 	int			take=0;
 	int			knockback;
-	qboolean	bFriend = (targ && attacker) ? OnSameTeam( targ, attacker ) : qfalse;
+	qboolean	bFriend = qfalse;
 
 	if(!targ) return;
 
@@ -1176,7 +1176,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if ( knockback && targ->client ) 
 	{
 		//if it's non-radius damage knockback from a teammate, don't do it if the damage won't be taken
-		if ( (dflags&DAMAGE_ALL_TEAMS) || (dflags&DAMAGE_RADIUS) || g_friendlyFire.integer || !attacker->client || !OnSameTeam (targ, attacker) ) 
+		if ( (dflags&DAMAGE_ALL_TEAMS) || (dflags&DAMAGE_RADIUS) || g_friendlyFire.integer || !attacker->client ) 
 		{
 			vec3_t	kvel;
 			float	mass;
@@ -1215,7 +1215,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	// if the attacker was on the same team
 	// check for completely getting out of the damage
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) {
-		if ( !(dflags&DAMAGE_ALL_TEAMS) && mod != MOD_TELEFRAG && mod != MOD_DETPACK && targ != attacker && OnSameTeam (targ, attacker)  ) 
+		if ( !(dflags&DAMAGE_ALL_TEAMS) && mod != MOD_TELEFRAG && mod != MOD_DETPACK && targ != attacker ) 
 		{
 			if ( attacker->client && targ->client )
 			{//this only matters between clients
@@ -1294,9 +1294,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	// See if it's the player hurting the emeny flag carrier
-	Team_CheckHurtCarrier(targ, attacker);
-
 	if (targ->client) {
 		// set the last client who damaged the target
 		targ->client->lasthurt_client = attacker->s.number;
@@ -1352,7 +1349,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				client->ps.stats[STAT_WEAPONS] = ( 1 << WP_0 ); //?!!!!!
 				client->ps.stats[STAT_HOLDABLE_ITEM] = HI_NONE;
 				targ->health = 1;
-				player_die( targ, inflictor, attacker, take, mod );
+				G_Client_Die( targ, inflictor, attacker, take, mod );
 			}
 		}else{
 			if ( targ->health <= 0 ) {
@@ -1515,7 +1512,7 @@ qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, floa
 			}
 		}
 
-		if( LogAccuracyHit( ent, attacker ) ) {
+		if( G_Weapon_LogAccuracyHit( ent, attacker ) ) {
 			hitClient = qtrue;
 		}
 		VectorSubtract (ent->r.currentOrigin, origin, dir);

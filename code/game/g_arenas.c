@@ -117,7 +117,7 @@ void UpdateTournamentInfo( void ) {
 		}
 		playerClientNum = i;
 
-		CalculateRanks( qfalse );
+		G_Client_CalculateRanks( qfalse );
 		// put info for the top three players into the msg
 		Com_sprintf(msg, AWARDS_MSG_LENGTH, "awards %d", level.numNonSpectatorClients);
 		for( j = 0; j < level.numNonSpectatorClients; j++ )

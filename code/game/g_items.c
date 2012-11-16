@@ -567,7 +567,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		respawn = Pickup_Powerup(ent, other);
 		break;
 	case IT_TEAM:
-		respawn = Pickup_Team(ent, other);
+		respawn = 0; // TODO remove?
 		break;
 	case IT_HOLDABLE:
 		respawn = Pickup_Holdable(ent, other);
@@ -710,24 +710,8 @@ gentity_t *LaunchItem( gitem_t *item, gentity_t *who, vec3_t origin, vec3_t velo
         Padd_Add(dropped, who, txt);
     }
 
-	if (item->giType == IT_TEAM) { // Special case for CTF flags
-		gentity_t	*te;
-
-		VectorSet (dropped->r.mins, -23, -23, -15);
-		VectorSet (dropped->r.maxs, 23, 23, 31);
-		dropped->think = Team_DroppedFlagThink;
-		dropped->nextthink = level.time + 30000;
-		Team_CheckDroppedItem( dropped );
-
-		// make the sound call for a dropped flag
-		te = G_TempEntity( dropped->s.pos.trBase, EV_TEAM_SOUND );
-		te->s.eventParm = DROPPED_FLAG_SOUND;
-		te->r.svFlags |= SVF_BROADCAST;
-
-	} else { // auto-remove after 30 seconds
-		dropped->think = G_FreeEntity;
-		dropped->nextthink = level.time + 6000000; //30000; // RPG-X: Marcin: increased - 03/12/2008
-	}
+	dropped->think = G_FreeEntity;
+	dropped->nextthink = level.time + 6000000; //30000; // RPG-X: Marcin: increased - 03/12/2008
 
 	dropped->flags = flags; // FL_DROPPED_ITEM; // RPG-X: Marcin: for ThrowWeapon - 03/12/2008
 
@@ -992,31 +976,6 @@ qboolean FinishSpawningDecoy( gentity_t *ent, int itemIndex )
 qboolean	itemRegistered[MAX_ITEMS];
 
 /*
-==================
-G_CheckTeamItems
-==================
-*/
-void G_CheckTeamItems( void ) {
-
-	// Set up team stuff
-	Team_InitGame();
-
-	if ( g_gametype.integer == GT_CTF ) {
-		gitem_t	*item;
-
-		// make sure we actually have two flags...
-		item = BG_FindItem( "team_CTF_redflag" );
-		if ( !item || !itemRegistered[ item - bg_itemlist ] ) {
-			G_Printf( "^1WARNING: No team_CTF_redflag in map" );
-		}
-		item = BG_FindItem( "team_CTF_blueflag" );
-		if ( !item || !itemRegistered[ item - bg_itemlist ] ) {
-			G_Printf( "^1WARNING: No team_CTF_blueflag in map" );
-		}
-	}
-}
-
-/*
 ==============
 ClearRegisteredItems
 ==============
@@ -1248,11 +1207,7 @@ void G_RunItem( gentity_t *ent ) {
 	// if it is in a nodrop volume, remove it
 	contents = trap_PointContents( ent->r.currentOrigin, -1 );
 	if ( contents & CONTENTS_NODROP ) {
-		if (ent->item && ent->item->giType == IT_TEAM) {
-			Team_FreeEntity(ent);
-		} else {
-			G_FreeEntity( ent );
-		}
+		G_FreeEntity( ent );
 		return;
 	}
 

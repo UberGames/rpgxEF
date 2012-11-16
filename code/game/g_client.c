@@ -18,7 +18,7 @@ extern pclass_t ValueNameForClass ( /*gentity_t *ent,*/ char* s );
 extern qboolean levelExiting;
 // g_client.c -- client functions that don't happen every frame
 
-void G_StoreClientInitialStatus( gentity_t *ent );
+void G_Client_StoreClientInitialStatus( gentity_t *ent );
 
 //! players mins
 static vec3_t	playerMins = {-12, -12, -24}; //RPG-X : TiM - {-15, -15, -24}
@@ -26,7 +26,6 @@ static vec3_t	playerMins = {-12, -12, -24}; //RPG-X : TiM - {-15, -15, -24}
 static vec3_t	playerMaxs = {12, 12, 32}; // {15, 15, 32}
 
 clInitStatus_t clientInitialStatus[MAX_CLIENTS];
-team_t	borgTeam = TEAM_FREE;
 
 //TiM: For easier transport setup
 /**
@@ -67,6 +66,10 @@ potential spawning position for deathmatch games.
 void SP_info_player_deathmatch( gentity_t *ent ) {
 	int		i;
 
+	if(strcmp(ent->classname, "info_player_deathmatch")) {
+		ent->classname = G_NewString("info_player_deathmatch");
+	}
+
 	G_SpawnInt( "nobots", "0", &i);
 	if ( i ) {
 		ent->flags |= FL_NO_BOTS;
@@ -96,7 +99,7 @@ On spawn will reset classname sppropriately and respawn itself.
 *	Spawn function for player start spawnpoint which actually the same as deatchmatch spawnpoint
 */
 void SP_info_player_start(gentity_t *ent) {
-	ent->classname = "info_player_deathmatch";
+	ent->classname = G_NewString("info_player_deathmatch");
 	SP_info_player_deathmatch( ent );
 }
 
@@ -124,21 +127,21 @@ void SP_info_player_intermission( gentity_t *ent ) {
 /*
 =======================================================================
 
-  SelectSpawnPoint
+  G_Client_SelectSpawnPoint
 
 =======================================================================
 */
 
 /*
 ================
-SpotWouldTelefrag
+G_Client_SpotWouldTelefrag
 
 ================
 */
 /**
 *	Check if beaming to a point will result in a teleporter frag.
 */
-qboolean SpotWouldTelefrag( gentity_t *spot ) {
+qboolean G_Client_SpotWouldTelefrag( gentity_t *spot ) {
 	int			i, num;
 	int			touch[MAX_GENTITIES];
 	gentity_t	*hit;
@@ -219,7 +222,7 @@ static gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 	spot = NULL;
 
 	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
-		if ( SpotWouldTelefrag( spot ) ) {
+		if ( G_Client_SpotWouldTelefrag( spot ) ) {
 			continue;
 		}
 		spots[ count ] = spot;
@@ -237,7 +240,7 @@ static gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 
 /*
 ===========
-SelectSpawnPoint
+G_Client_SelectSpawnPoint
 
 Chooses a player start, deathmatch start, etc
 ============
@@ -245,7 +248,7 @@ Chooses a player start, deathmatch start, etc
 /**
 *	Chooses a player start, deathmatch start, etc
 */
-gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) {
+gentity_t *G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) {
 	gentity_t	*spot;
 	gentity_t	*nearestSpot;
 
@@ -296,8 +299,8 @@ static gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles ) {
 		}
 	}
 
-	if ( !spot || SpotWouldTelefrag( spot ) ) {
-		return SelectSpawnPoint( vec3_origin, origin, angles );
+	if ( !spot || G_Client_SpotWouldTelefrag( spot ) ) {
+		return G_Client_SelectSpawnPoint( vec3_origin, origin, angles );
 	}
 
 	VectorCopy (spot->s.origin, origin);
@@ -335,10 +338,10 @@ static int	bodyFadeSound=0;
 
 /*
 ===============
-InitBodyQue
+G_Client_InitBodyQue
 ===============
 */
-void InitBodyQue (void) {
+void G_Client_InitBodyQue (void) {
 	int		i;
 	gentity_t	*ent;
 
@@ -490,11 +493,11 @@ static void CopyToBodyQue( gentity_t *ent ) {
 
 /*
 ==================
-SetClientViewAngle
+G_Client_SetViewAngle
 
 ==================
 */
-void SetClientViewAngle( gentity_t *ent, vec3_t angle ) {
+void G_Client_SetViewAngle( gentity_t *ent, vec3_t angle ) {
 	int			i;
 
 	// set the delta angle
@@ -510,18 +513,18 @@ void SetClientViewAngle( gentity_t *ent, vec3_t angle ) {
 
 /*
 ================
-respawn
+G_Client_Respawn
 ================
 */
 extern char *ClassNameForValue( pclass_t pClass );
-void respawn( gentity_t *ent ) {
+void G_Client_Respawn( gentity_t *ent ) {
 	qboolean	borg = qfalse;
 	gentity_t	*tent;
 	playerState_t *ps;
 
 	CopyToBodyQue (ent);
 
-	ClientSpawn(ent, 0, qfalse);//RPG-X: RedTechie - Modifyed
+	G_Client_Spawn(ent, 0, qfalse);//RPG-X: RedTechie - Modifyed
 
 	ps = &ent->client->ps;
 
@@ -539,7 +542,7 @@ void respawn( gentity_t *ent ) {
 
 /*
 ================
-TeamCount
+G_Client_TeamCount
 
 Returns number of players on a team
 ================
@@ -547,7 +550,7 @@ Returns number of players on a team
 /**
 *	Returns number of players on a team
 */
-team_t TeamCount( int ignoreClientNum, int team ) {
+team_t G_Client_TeamCount( int ignoreClientNum, int team ) {
 	int		i;
 	int		count = 0;
 
@@ -569,15 +572,15 @@ team_t TeamCount( int ignoreClientNum, int team ) {
 
 /*
 ================
-PickTeam
+G_Client_PickTeam
 
 ================
 */
-team_t PickTeam( int ignoreClientNum ) {
+team_t G_Client_PickTeam( int ignoreClientNum ) {
 	int		counts[TEAM_NUM_TEAMS];
 
-	counts[TEAM_BLUE] = TeamCount( ignoreClientNum, TEAM_BLUE );
-	counts[TEAM_RED] = TeamCount( ignoreClientNum, TEAM_RED );
+	counts[TEAM_BLUE] = G_Client_TeamCount( ignoreClientNum, TEAM_BLUE );
+	counts[TEAM_RED] = G_Client_TeamCount( ignoreClientNum, TEAM_RED );
 
 	if ( counts[TEAM_BLUE] > counts[TEAM_RED] ) {
 		return TEAM_RED;
@@ -962,17 +965,17 @@ void SetCSTeam( team_t team, char *teamname )
 }
 /*
 ===========
-ClientUserInfoChanged
+G_Client_UserinfoChanged
 ============
 */
 /**
-*	Called from ClientConnect when the player first connects and
+*	Called from G_Client_Connect when the player first connects and
 *	directly by the server system when the player updates a userinfo variable.
 *
 *	The game can override any of the settings and call trap_SetUserinfo
 *	if desired.
 */
-void ClientUserinfoChanged( int clientNum ) {
+void G_Client_UserinfoChanged( int clientNum ) {
 	gentity_t *ent;
 	int		i;
 	char	*s;
@@ -1277,7 +1280,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 /*
 ===========
-ClientConnect
+G_Client_Connect
 ============
 */
 /**
@@ -1290,13 +1293,13 @@ ClientConnect
 *	a string with the reason for denial.
 *	
 *	Otherwise, the client will be sent the current gamestate
-*	and will eventually get to ClientBegin.
+*	and will eventually get to G_Client_Begin.
 *
 *	firstTime will be qtrue the very first time a client connects
 *	to the server machine, but qfalse on map changes and tournement
 *	restarts.
 */
-char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
+char *G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	char		*value;
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
@@ -1441,7 +1444,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 		//========================================================
 	}
-	ClientUserinfoChanged( clientNum );
+	G_Client_UserinfoChanged( clientNum );
 
 	//RPG-X: Save the ip for later - has to be down here, since it gets flushed in the above function
 	Q_strncpyz( ent->client->pers.ip, ip, sizeof( ent->client->pers.ip ) );
@@ -1488,7 +1491,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	}
 
 	// count current clients and rank for scoreboard
-	//CalculateRanks( qfalse );
+	//G_Client_CalculateRanks( qfalse );
 
 	//RPG-X: J2J - Reset Variables
 	DragDat[clientNum].AdminId = -1;
@@ -1599,7 +1602,7 @@ static void G_SendTransData(int clientNum) {
 
 /*
 ===========
-ClientBegin
+G_Client_Begin
 ============
 */
 /**
@@ -1607,7 +1610,7 @@ ClientBegin
 *	to be placed into the level.  This will happen every level load,
 *	and on transition between teams, but doesn't happen on respawns
 */
-void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qboolean first ) {
+void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qboolean first ) {
 	gentity_t	*ent;
 	gclient_t	*client;
 	gentity_t	*tent;
@@ -1658,7 +1661,7 @@ void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qbool
 	SetScore( ent, score );
 
 	// locate ent at a spawn point
-	ClientSpawn( ent, 0, qfalse );//RPG-X: RedTechie - Modifyed
+	G_Client_Spawn( ent, 0, qfalse );//RPG-X: RedTechie - Modifyed
 
 	if ( client->sess.sessionTeam != TEAM_SPECTATOR /*&& g_holoIntro.integer==0 */ )
 	{	// Don't use transporter FX for spectators or those watching the holodoors.
@@ -1671,7 +1674,7 @@ void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qbool
 	G_LogPrintf( "ClientBegin: %i (%s)\n", clientNum, g_entities[clientNum].client->pers.ip );
 
 	// count current clients and rank for scoreboard
-	CalculateRanks( qfalse );
+	G_Client_CalculateRanks( qfalse );
 	
 	//TiM - This appears to be a flaw in Raven's design
 	//When a client connects, or if they enter admin or medics class
@@ -1819,7 +1822,7 @@ void ClientBegin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qbool
 }
 
 // WEAPONS - PHENIX1
-void ClientWeaponsForClass ( gclient_t *client, pclass_t pclass )
+void G_Client_WeaponsForClass ( gclient_t *client, pclass_t pclass )
 {
 	int		i;
 	int		Bits;
@@ -1842,7 +1845,7 @@ void ClientWeaponsForClass ( gclient_t *client, pclass_t pclass )
 	}
 }
 
-void ClientHoldablesForClass ( gclient_t *client, pclass_t pclass )
+void G_Client_HoldablesForClass ( gclient_t *client, pclass_t pclass )
 {
 	if ( g_classData[pclass].isMarine )
 		client->ps.stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable( HI_TRANSPORTER ) - bg_itemlist;
@@ -1851,7 +1854,7 @@ void ClientHoldablesForClass ( gclient_t *client, pclass_t pclass )
 		client->ps.stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable( HI_SHIELD ) - bg_itemlist;
 }
 
-void G_StoreClientInitialStatus( gentity_t *ent )
+void G_Client_StoreClientInitialStatus( gentity_t *ent )
 {
 	char	userinfo[MAX_INFO_STRING];
 
@@ -1912,17 +1915,17 @@ void G_RestoreClientInitialStatus( gentity_t *ent )
 
 /*
 ===========
-ClientSpawn
+G_Client_Spawn
 
 Called every time a client is placed fresh in the world:
-after the first ClientBegin, and after each respawn
+after the first G_Client_Begin, and after each respawn
 Initializes all non-persistant parts of playerState
 ------------------------------------
 Modifyed By: RedTechie
 And also by Marcin - 30/12/2008
 ============
 */
-void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
+void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	int		index=0;
 	vec3_t	spawn_origin, spawn_angles;
 	gclient_t	*client=NULL;
@@ -1948,12 +1951,6 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 		if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 			spawnPoint = SelectSpectatorSpawnPoint (
 				spawn_origin, spawn_angles);
-		} else if (g_gametype.integer >= GT_TEAM) {
-			spawnPoint = SelectCTFSpawnPoint (
-				ent,
-				client->sess.sessionTeam,
-				client->pers.teamState.state,
-				spawn_origin, spawn_angles);
 		} else {
 			do {
 				// the first spawn should be at a good looking spot
@@ -1962,7 +1959,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 					spawnPoint = SelectInitialSpawnPoint( spawn_origin, spawn_angles );
 				} else {
 					// don't spawn near existing origin if possible
-					spawnPoint = SelectSpawnPoint (
+					spawnPoint = G_Client_SelectSpawnPoint (
 						client->ps.origin,
 						spawn_origin, spawn_angles);
 				}
@@ -2042,7 +2039,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	ent->r.contents = CONTENTS_BODY;
 
 	ent->clipmask = MASK_PLAYERSOLID;
-	ent->die = player_die;
+	ent->die = G_Client_Die;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags = 0;
@@ -2061,7 +2058,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 
 	if ( oClass != client->sess.sessionClass )
 	{//need to send the class change
-		ClientUserinfoChanged( client->ps.clientNum );
+		G_Client_UserinfoChanged( client->ps.clientNum );
 	}
 
 	client->ps.persistant[PERS_CLASS] = client->sess.sessionClass;
@@ -2073,11 +2070,11 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	}
 		
 	if ( !fromDeath || !rpg_dropOnDeath.integer || !rpg_allowWeaponDrop.integer ) {
-		ClientWeaponsForClass( client, pClass );
+		G_Client_WeaponsForClass( client, pClass );
 	} else { // Marcin: just a hand
-		ClientWeaponsForClass( client, 0 );
+		G_Client_WeaponsForClass( client, 0 );
 	}
-	ClientHoldablesForClass( client, pClass );
+	G_Client_HoldablesForClass( client, pClass );
 	
 	if(rpgx_spawn != 1){
 		G_SetOrigin( ent, spawn_origin );
@@ -2091,7 +2088,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 
 	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
 	if(rpgx_spawn != 1){
-		SetClientViewAngle( ent, spawn_angles );
+		G_Client_SetViewAngle( ent, spawn_angles );
 	}
 	
 	if(rpgx_spawn != 1){
@@ -2254,7 +2251,7 @@ void ClientSpawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	//store intial client values
 	//FIXME: when purposely change teams, this gets confused?
 
-	G_StoreClientInitialStatus( ent );
+	G_Client_StoreClientInitialStatus( ent );
 
 	//RPG-X: Marcin: stuff was here previously - 22/12/2008
 }
@@ -2294,7 +2291,7 @@ gentity_t *SpawnBeamOutPlayer( gentity_t	*ent ) {
 
 /*
 ===========
-ClientDisconnect
+G_Client_Disconnect
 
 Called when a player drops from the server.
 Will not be called between levels.
@@ -2304,7 +2301,7 @@ call trap_DropClient(), which will call this and do
 server system housekeeping.
 ============
 */
-void ClientDisconnect( int clientNum ) {
+void G_Client_Disconnect( int clientNum ) {
 	gentity_t	*ent;
 	gentity_t	*tent;
 	int			i;
@@ -2392,7 +2389,7 @@ void ClientDisconnect( int clientNum ) {
 	if ( g_gametype.integer == GT_TOURNAMENT && !level.intermissiontime
 		&& !level.warmupTime && level.sortedClients[1] == clientNum ) {
 		level.clients[ level.sortedClients[0] ].sess.wins++;
-		ClientUserinfoChanged( level.sortedClients[0] );
+		G_Client_UserinfoChanged( level.sortedClients[0] );
 	}
 
 	if ( g_gametype.integer == GT_TOURNAMENT && ent->client->sess.sessionTeam == TEAM_FREE && level.intermissiontime )
@@ -2416,7 +2413,7 @@ void ClientDisconnect( int clientNum ) {
 
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "");
 
-	CalculateRanks( qfalse );
+	G_Client_CalculateRanks( qfalse );
 
 	if ( ent->r.svFlags & SVF_BOT ) {
 		BotAIShutdownClient( clientNum );
@@ -2459,5 +2456,254 @@ qboolean IsAdmin( gentity_t *ent)
 		return qfalse;
 	}
 }
+
+/*
+===========
+G_Client_GetLocation
+
+Report a location for the player. Uses placed nearby target_location entities
+============
+*/
+gentity_t *G_Client_GetLocation(gentity_t *ent)
+{
+	gentity_t		*eloc, *best;
+	float			bestlen, len;
+	vec3_t			origin;
+
+	best = NULL;
+	bestlen = 3*8192.0*8192.0;
+
+	VectorCopy( ent->r.currentOrigin, origin );
+
+	for (eloc = level.locationHead; eloc; eloc = eloc->nextTrain) {
+		len = ( origin[0] - eloc->r.currentOrigin[0] ) * ( origin[0] - eloc->r.currentOrigin[0] )
+			+ ( origin[1] - eloc->r.currentOrigin[1] ) * ( origin[1] - eloc->r.currentOrigin[1] )
+			+ ( origin[2] - eloc->r.currentOrigin[2] ) * ( origin[2] - eloc->r.currentOrigin[2] );
+
+		if ( len > bestlen ) {
+			continue;
+		}
+
+		if ( !trap_InPVS( origin, eloc->r.currentOrigin ) ) {
+			continue;
+		}
+
+		bestlen = len;
+		best = eloc;
+	}
+
+	return best;
+}
+
+/*
+===========
+G_Client_GetLocationMsg
+
+Report a location for the player. Uses placed nearby target_location entities
+============
+*/
+qboolean G_Client_GetLocationMsg(gentity_t *ent, char *loc, int loclen)
+{
+	gentity_t *best;
+
+	best = G_Client_GetLocation( ent );
+	
+	if (!best)
+		return qfalse;
+
+	if (best->count) {
+		if (best->count < 0)
+			best->count = 0;
+		if (best->count > 7)
+			best->count = 7;
+		Com_sprintf(loc, loclen, "%c%c%s" S_COLOR_WHITE, Q_COLOR_ESCAPE, best->count + '0', best->message );
+	} else
+		Com_sprintf(loc, loclen, "%s", best->message);
+
+	return qtrue;
+}
+
+/*
+==================
+G_Client_CheckHealthInfoMessage
+
+Sends Health Changes to proper clients
+
+Format:
+	clientNum health
+
+==================
+*/
+void G_Client_CheckHealthInfoMessage( void ) 
+{
+	char		entry[1024];
+	char		string[1400];
+	int			stringlength;
+	int			i, j, t;
+	gentity_t	*player, *ent;
+	int			sendToCnt, cnt, sentCnt;
+	int			h;
+	int			clients[MAX_CLIENTS];
+	int			sendToClients[MAX_CLIENTS];
+
+	//only send this to medics or spectators or adminz
+	for (i = 0, sendToCnt = 0; i < g_maxclients.integer; i++) 
+	{
+
+		if ( level.clients[i].pers.connected == CON_CONNECTED && level.clients[i].ps.stats[STAT_HEALTH] > 0 &&//make sure they've actually spawned in already
+			(level.clients[i].sess.sessionTeam == TEAM_SPECTATOR || g_classData[level.clients[i].sess.sessionClass].isMedical || g_classData[level.clients[i].sess.sessionClass].isAdmin ) )
+		{
+			sendToClients[sendToCnt++] = i;
+		}
+	}
+
+	if ( !sendToCnt )
+	{//no-one to send to
+		return;
+	}
+
+	//only send those clients whose health has changed this cycle
+	//NB: there's a prob with client 0 in here....
+	for (i = 0, cnt = 0; i < g_maxclients.integer; i++) 
+	{
+		player = g_entities + i;
+		if ( player->inuse && player->old_health != player->health && ( player->health > 0 || player->old_health > 0 )) 
+		{
+			clients[cnt++] = i;
+			player->old_health = player->health;
+		}
+	}
+
+	if ( !cnt )
+	{//no-one relevant changed health
+		return;
+	}
+
+	for ( t = 0; t < sendToCnt; t++ )
+	{
+		ent = g_entities + sendToClients[t];
+		sentCnt = 0;
+
+		// send the latest information on all clients
+		string[0] = 0;
+		stringlength = 0;
+
+		for (i = 0; i < cnt; i++) 
+		{
+			player = g_entities + clients[i];
+
+			if ( ent == player )
+			{//don't send the ent his own health
+				continue;
+			}
+
+			//send this one
+			sentCnt++;
+
+			h = player->health;
+			if (h < 0) h = 0;
+
+			Com_sprintf (entry, sizeof(entry), " %i %i", clients[i], h);
+			j = strlen(entry);
+			if (stringlength + j > sizeof(string))
+				break;
+			strcpy (string + stringlength, entry);
+			stringlength += j;
+		}
+
+		if ( sentCnt )
+		{
+			trap_SendServerCommand( sendToClients[t], va("hinfo %i%s", sentCnt, string) );
+		}
+	}
+}
+
+//TiM - Modified to work with RPG-X
+void G_Client_CheckClientStatus(void)
+{
+	int i;
+	gentity_t *loc, *ent;
+
+	if (level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME) {
+
+		level.lastTeamLocationTime = level.time;
+
+		for (i = 0; i < g_maxclients.integer; i++) {
+			ent = g_entities + i;
+			if (ent->inuse) {
+				loc = G_Client_GetLocation( ent );
+				if (loc)
+					ent->client->pers.teamState.location = loc->health;
+				else
+					ent->client->pers.teamState.location = 0;
+			}
+		}
+
+		for (i = 0; i < g_maxclients.integer; i++) {
+			ent = g_entities + i;
+			if (ent->inuse) {
+				G_Client_LocationsMessage( ent );
+			}
+		}
+
+		G_Client_CheckHealthInfoMessage();
+	}
+}
+
+/*
+==================
+G_Client_LocationsMessage
+
+Format:
+	clientNum location health armor weapon powerups
+
+==================
+*/
+void G_Client_LocationsMessage( gentity_t *ent ) {
+	char		entry[1024];
+	char		string[1400];
+	int			stringlength;
+	int			i, j;
+	gentity_t	*player;
+	int			cnt;
+	
+	//don't bother sending during intermission?
+	if ( level.intermissiontime )
+		return;
+
+	// figure out what client should be on the display
+	// we are limited to 8, but we want to use the top eight players
+	// but in client order (so they don't keep changing position on the overlay)
+	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
+		player = g_entities + level.sortedClients[i];
+		if (player->inuse && player->client->sess.sessionTeam == 
+			ent->client->sess.sessionTeam ) {
+		}
+	}
+
+	// send the latest information on all clients
+	string[0] = 0;
+	stringlength = 0;
+
+	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
+		player = g_entities + i;
+		//RPG-X | Phenix | 05/03/2005
+		if (player->inuse) {
+			//to counter for the fact we could pwn the server doing this, remove all superfluous data
+
+			Com_sprintf (entry, sizeof(entry), " %i %i ", i, player->client->pers.teamState.location);
+			j = strlen(entry);
+			if (stringlength + j > sizeof(string))
+				break;
+			strcpy (string + stringlength, entry);
+			stringlength += j;
+			cnt++;
+		}
+	}
+
+	trap_SendServerCommand( ent-g_entities, va("tinfo %i%s", cnt, string) );
+}
+
+
 
 
