@@ -3450,7 +3450,7 @@ This entity needs to be set up using Lua:
 
 void borg_elevator_think( gentity_t *upper ) //only the upper can think about this
 {
-	gentity_t	*lower = G_Find(NULL, FOFS(model), "54");
+	gentity_t	*lower = G_Find(NULL, FOFS(model), "*54");
 	vec3_t		destination;
 	int			snd;
 
@@ -3623,8 +3623,8 @@ void SP_func_borg_elevator( gentity_t *ent )
 	//Only one of these entities needs to think/monitoring
 	upper->count = 1;
 	upper->think = borg_elevator_think;
-	//upper->nextthink = level.time + 1000; //start moving in a sec
-	upper->nextthink = -1; //think-function is bugged but spawn works so spawn but do not think for now.
+	upper->nextthink = level.time + 1000; //start moving in a sec
+	//upper->nextthink = -1; //think-function is bugged but spawn works so spawn but do not think for now.
 
 	trap_LinkEntity (upper);
 	trap_LinkEntity (lower);

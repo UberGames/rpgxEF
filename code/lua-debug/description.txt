@@ -1,0 +1,2 @@
+This folder is for lua-scripts.
+Only use for debugging-stuff.
