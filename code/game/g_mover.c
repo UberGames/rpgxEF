@@ -3623,8 +3623,8 @@ void SP_func_borg_elevator( gentity_t *ent )
 	//Only one of these entities needs to think/monitoring
 	upper->count = 1;
 	upper->think = borg_elevator_think;
-	upper->nextthink = level.time + 1000; //start moving in a sec
-	//upper->nextthink = -1; //think-function is bugged but spawn works so spawn but do not think for now.
+	//upper->nextthink = level.time + 1000; //start moving in a sec
+	upper->nextthink = -1; //think-function is bugged but spawn works so spawn but do not think for now.
 
 	trap_LinkEntity (upper);
 	trap_LinkEntity (lower);
