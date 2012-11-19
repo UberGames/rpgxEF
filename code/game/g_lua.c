@@ -172,7 +172,24 @@ qboolean G_LuaResume(lvm_t *vm, lua_State *T, char *func, int nargs) {
 		G_Printf(S_COLOR_YELLOW "Lua: traceback error ( %s )\n", vm->filename);
 		vm->error++;
 		return qfalse;
-	} 
+	}
+
+	if(vm->L != T) { // this is a thread
+		int n = lua_gettop(vm->L);
+		int i;
+		lua_State *p;
+
+		for(i = 0; i <= n; i++) {
+			if(lua_isthread(vm->L, i)) {
+				p = lua_tothread(vm->L, i);
+
+				if(p == T) {
+					lua_remove(vm->L, i);
+					G_LuaCollectGarbage();
+				}
+			}
+		}
+	}
 	return qtrue;
 }
 
@@ -264,22 +281,22 @@ qboolean G_LuaStartVM(lvm_t * vm)
 	if(lua_istable(vm->L, -1))
 	{
 		lua_pushstring(vm->L, va("%s%s%s%s?.lua;%s%s%s%slualib%slua%s?.lua",
-								 homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP,
-								 homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, LUA_DIRSEP, LUA_DIRSEP));
+			homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP,
+			homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, LUA_DIRSEP, LUA_DIRSEP));
 		lua_setfield(vm->L, -2, "path");
 		lua_pushstring(vm->L, va("%s%s%s%s?.%s;%s%s%s%slualib%sclibs%s?.%s",
-								 homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, EXTENSION,
-								 homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, LUA_DIRSEP, LUA_DIRSEP, EXTENSION));
+			homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, EXTENSION,
+			homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, LUA_DIRSEP, LUA_DIRSEP, EXTENSION));
 		lua_setfield(vm->L, -2, "cpath");
 	}
 	lua_pop(vm->L, 1);
 
 	Lua_RegisterGlobal(vm->L, "LUA_PATH", va("%s%s%s%s?.lua;%s%s%s%slualib%slua%s?.lua",
-											 homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP,
-											 homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, LUA_DIRSEP, LUA_DIRSEP));
+		homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP,
+		homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, LUA_DIRSEP, LUA_DIRSEP));
 	Lua_RegisterGlobal(vm->L, "LUA_CPATH", va("%s%s%s%s?.%s;%s%s%s%slualib%sclibs%s?.%s",
-											  homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, EXTENSION,
-											  homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, LUA_DIRSEP, LUA_DIRSEP, EXTENSION));
+		homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, EXTENSION,
+		homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, LUA_DIRSEP, LUA_DIRSEP, EXTENSION));
 	Lua_RegisterGlobal(vm->L, "LUA_DIRSEP", LUA_DIRSEP);
 
 	lua_newtable(vm->L);
@@ -588,6 +605,7 @@ qboolean LuaHook_G_EntityThink(char *function, int entnum)
 					continue;
 				}
 			} else {
+				t = vm->L;
 				if(!G_LuaGetFunctionT(t, function))
 					continue;
 				ent = &g_entities[entnum];
@@ -1069,6 +1087,51 @@ qboolean LuaHook_G_EntitySpawn(char *function, int entnum)
 		}
 	}
 	return qfalse;
+}
+
+void G_LuaNumThreads(void) {
+	lvm_t* vm = lVM[0];
+
+	if(vm) {
+		lua_State *p;
+		int n = lua_gettop(vm->L);
+		int i, cnt = 0;
+
+		for(i = 0; i <= n; i++) {
+			if(lua_isthread(vm->L, i)) {
+				cnt++;
+				p = lua_tothread(vm->L, i);
+				if(lua_status(p) == LUA_YIELD) {
+					G_Printf("lua thread %d is YIELDED\n", i);
+				} else if(lua_status(vm->L) == 0) {
+					G_Printf("lua thread %d is RUNNING\n", i);
+				}
+			}
+		}
+		G_Printf("Total lua thread count: %d\n", cnt);
+	}
+}
+
+void G_LuaCollectGarbage(void) {
+	lvm_t *vm;
+	lua_State *p;
+	int i, n, m;
+
+	for(i = 0; i < NUM_VMS; i++) {
+		vm = lVM[i];
+
+		if(vm) {
+			n = lua_gettop(vm->L);
+
+			for(m = n; m > 0; m--) {
+				if(lua_isthread(vm->L, m)) {
+					p = lua_tothread(vm->L, m);
+					lua_gc(p, LUA_GCCOLLECT, 0);
+				}
+			}
+			lua_gc(vm->L, LUA_GCCOLLECT, 0);
+		}
+	}
 }
 
 #endif

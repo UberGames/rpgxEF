@@ -688,9 +688,17 @@ int Q_isalpha( int c );
 int		Q_stricmp (const char *s1, const char *s2);
 int		Q_strncmp (const char *s1, const char *s2, int n);
 int		Q_stricmpn (const char *s1, const char *s2, int n);
-char	*Q_strlwr( char *s1 );
-char	*Q_strupr( char *s1 );
-char	*Q_strrchr( const char* string, int c );
+char*	Q_strlwr( char *s1 );
+char*	Q_strupr( char *s1 );
+char*	Q_strrchr( const char* string, int c );
+/**
+ * Goes through a given str searching for one of the given tokens.
+ * If it finds one it returns a new string containing everything 
+ * from str until the found token (Note: remember to free the result
+ * if no longer needed). Returns NULL if no token is found. Make sure
+ * to adjust str for the next call yourself as this function won't do that.
+ */
+char*	Q_strtok(char* str, const char *tok, int size);
 
 // buffer size safe library replacements
 void	Q_strncpyz( char *dest, const char *src, int destsize );

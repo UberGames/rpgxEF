@@ -738,6 +738,35 @@ char* Q_strrchr( const char* string, int c )
 	return sp;
 }
 
+char* Q_strtok(char* str, const char *tok, int size) {
+	char *ptr;
+	char *result;
+	int i, l;
+	
+	if(str == NULL || tok == NULL) {
+		return NULL;
+	}
+
+	ptr = (char *)str;
+
+	for(i = 0; i < strlen(str); i++) {
+		for(l = 0; l < size; l++) {
+			if(ptr[i] == tok[l]) {
+				result = (char *)malloc(sizeof(char)+(i+1));
+				if(result == NULL) {
+					return NULL;
+				}
+				strncpy(result, str, i);
+				result[i] = '\0';
+
+				return result;
+			}
+		}
+	}
+
+	return NULL;
+}
+
 /*
 =============
 Q_strncpyz

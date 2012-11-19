@@ -906,10 +906,11 @@ void SP_target_location (gentity_t *ent);
 static void G_LoadTimedMessages(void) {
 	fileHandle_t	f;
 	char*			buffer;
-	char*			ptr;
-	char*			message;
+	char*			textPtr;
+	char*			token;
 	int				len;
-	int				i, n;
+	int				i;
+	timedMessage_t	*msg;
 
 	len = trap_FS_FOpenFile("timedmessages.cfg", &f, FS_READ);
 	if(!len) return;
@@ -930,26 +931,49 @@ static void G_LoadTimedMessages(void) {
 	}
 
 	trap_FS_Read(buffer, len, f);
-	ptr = buffer;
+
+	textPtr = buffer;
+	COM_BeginParseSession();
+	token = COM_Parse(&textPtr);
+	if(token[0] != '{') {
+		G_Printf("G_LoadTimedMessages -  timedmessages.cfg not beginning with '{'\n");
+		trap_FS_FCloseFile(f);
+		free(buffer);
+		return;
+	}
+
 	for(i = 0; i < 10; i++) {
-		for(n = 0; ptr[n] != ';' && ptr[n] != 0; n++);
-		if(ptr[n] == 0) break;
-		message = (char *)malloc(sizeof(char)*(n+1));
-		if(!message) {
-			G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i byte.\n", (n+1) * sizeof(char) );
-			trap_FS_FCloseFile(f);
-			free(buffer);
-			if(level.timedMessages != NULL) {
-				destroy_list(level.timedMessages);
-			}
-			return;
+		token = COM_Parse(&textPtr);
+
+		if(!token[0]) {
+			break;
 		}
 
-		memset(message, 0, sizeof(message));
-		strncpy(message, ptr, n);
-		list_add(level.timedMessages, message, strlen(message));
+		if(!strcmp(token, "message")) {
+			if(COM_ParseString(&textPtr, &token)) {
+				G_Printf("G_LoadTimedMessages -  invalid value '%s'\n", token);
+				SkipRestOfLine(&textPtr);
+				continue;
+			}
 
-		ptr += strlen(message)+1;
+			msg = (timedMessage_t *)malloc(sizeof(timedMessage_s));
+			if(msg == NULL) {
+				G_Printf("G_LoadTimedMessages -  was unable to allocate timed message storage\n");
+				continue;
+			}
+
+			msg->message = strdup(token);
+			G_Printf("------------------------------------------------>'%s'\n", token);
+			list_add(level.timedMessages, msg, sizeof(timedMessage_s));
+		} else {
+			G_Printf("G_LoadTimedMessages -  invalid token '%s'\n", token);
+			SkipRestOfLine(&textPtr);
+			continue;
+		}
+
+		if(token[0] == '}') {
+			break;
+		}
 	}
 
 	trap_FS_FCloseFile(f);

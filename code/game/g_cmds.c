@@ -7439,7 +7439,8 @@ static void Cmd_Camtest_f(gentity_t *ent) {
 }
 
 void Cmd_CamtestEnd_f(gentity_t *ent) {
-	Cinematic_DeactivateCameraMode(ent);
+	//Cinematic_DeactivateCameraMode(ent);
+	G_LuaNumThreads();
 }
 // END CCAM
 

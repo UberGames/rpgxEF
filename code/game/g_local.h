@@ -1368,6 +1368,8 @@ qboolean	LuaHook_G_EntityTrigger(char *function, int entnum, int othernum);
 qboolean	LuaHook_G_EntitySpawn(char *function, int entnum);
 qboolean	LuaHook_G_EntityReached(char *function, int entnum);
 qboolean	LuaHook_G_EntityReachedAngular(char *function, int entnum);
+void		G_LuaNumThreads(void);
+void		G_LuaCollectGarbage(void);
 
 void		G_LuaStatus(gentity_t * ent);
 qboolean	G_LuaInit(void);
@@ -2099,5 +2101,10 @@ struct safeZone_s {
 	vec3_t		mins;
 } safeZone_s;
 
+// timed messages
+typedef struct timedMessage_s timedMessage_t;
+struct timedMessage_s {
+	char* message;
+} timedMessage_s;
 
 #endif //_G_LOCAL_H_
