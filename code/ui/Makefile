@@ -152,6 +152,7 @@ ui_credits.o : ui_credits.c; $(DO_CC)
 ui_admin.o : ui_admin.c; $(DO_CC)
 ui_emotes.o : ui_emotes.c; $(DO_CC)
 ui_motd.o : ui_motd.c; $(DO_CC)
+ui_msd.o : ui_msd.c; $(DO_CC)
 ui_transporter.o : ui_transporter.c; $(DO_CC)
 ui_turbolift.o : ui_turbolift.c; $(DO_CC)
 

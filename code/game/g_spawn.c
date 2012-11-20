@@ -244,6 +244,7 @@ void SP_path_point(gentity_t *ent);
 
 // ui entities
 void SP_ui_transporter(gentity_t *ent);
+void SP_ui_msd(gentity_t *ent);
 void SP_ui_holodeck(gentity_t *ent);
 
 // cinematic entities
@@ -427,6 +428,7 @@ spawn_t	spawns[] = {
 
 	// ui entities
 	{"ui_transporter",				SP_ui_transporter},
+	{"ui_msd",						SP_ui_msd},
 	{"ui_holodeck",					SP_ui_holodeck},
 	
 	{"ref_tag",						SP_info_notnull},

@@ -880,6 +880,11 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
+	if(!strcmp(cmd, "ui_msd")) {
+		trap_SendConsoleCommand(va("ui_msd %s %s %s %s %s %s %s %s %s", CG_Argv(1), CG_Argv(2), CG_Argv(3), CG_Argv(4), CG_Argv(5), CG_Argv(6), CG_Argv(7), CG_Argv(8), CG_Argv(9)));
+		return;
+	}
+
 	if(!strcmp(cmd, "ui_transporter")) {
 		trap_SendConsoleCommand(va("ui_transporter %s", CG_Argv(1)));
 		return;

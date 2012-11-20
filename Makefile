@@ -2367,6 +2367,7 @@ Q3UIOBJ_ = \
   $(B)/$(BASEGAME)/ui/ui_turbolift.o \
   $(B)/$(BASEGAME)/ui/ui_transporter.o \
   $(B)/$(BASEGAME)/ui/ui_motd.o \
+  $(B)/$(BASEGAME)/ui/ui_msd.o \
   $(B)/$(BASEGAME)/ui/ui_admin.o \
   $(B)/$(BASEGAME)/ui/ui_fonts.o \
   $(B)/$(BASEGAME)/ui/ui_emotes.o \

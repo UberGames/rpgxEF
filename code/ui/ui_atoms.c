@@ -1298,8 +1298,8 @@ qboolean UI_ConsoleCommand( void ) {
 		return qtrue;
 	}
 
-	if ( Q_stricmp( cmd, "ui_transporter" ) == 0 ) {
-		UI_TransporterMenu( atoi(UI_Argv( 1 )) );
+	if ( Q_stricmp( cmd, "ui_msd" ) == 0 ) {
+		UI_msdMenu( atoi(UI_Argv( 1 )), atoi(UI_Argv( 2 )), atoi(UI_Argv( 3 )), atoi(UI_Argv( 4 )), atoi(UI_Argv( 5 )), atoi(UI_Argv( 6 )), atoi(UI_Argv( 7 )), atoi(UI_Argv( 8 )), atoi(UI_Argv( 9 )) );
 		return qtrue;
 	}
 
