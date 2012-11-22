@@ -214,6 +214,7 @@ static creditsInfo_t	creditsInfo[MAX_MENUS] =
 			{ NAME_SIMMO,			TITLE_LCARS },
 			{ NAME_TIM,				TITLE_AD2D },
 			{ NAME_SCOOTER,			TITLE_AD2D },
+			{ "Alexander Richardson", "Master System Display's" },
 			{ NAME_KURO,			TITLE_RANKS },
 		}
 	},

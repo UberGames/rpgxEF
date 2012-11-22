@@ -2931,7 +2931,64 @@ greensound: Things to fire every time damage occurs (like FX)
 falsetarget: truename/swapCoreState for target_warp
 bluename: swapname for target_turbolift
 bluesound: swapname for ui_transporter
-falsename: redname for target_alert
+falsename: falsename/redname for target_alert
+
+"model" - path to a shader with a MSD-Display (ship) to show. Default will be the Daedalus Class
+
+We're sponsoring a varayity, which were created by Alexander Richardson.
+The shaders for these are stowed in scripts/msd.shader in the pakX.pk3
+For personalized MSD's see segment below.
+
+Ship-Classname || Online Source || Shader-Name 
+Constellation Class || http://lcarsgfx.wordpress.com/2012/09/12/constellation-sisyphus/ ||
+Danube Runabout || http://lcarsgfx.wordpress.com/2012/06/30/the-blue-danube/ ||
+Nova Class || http://lcarsgfx.wordpress.com/2012/06/13/can-you-tell-what-it-is-yet-2/ ||
+Galaxy Class || http://lcarsgfx.wordpress.com/2012/06/10/galaxy-class-redux-an-update/ ||
+Daedalus Class || http://lcarsgfx.wordpress.com/2011/12/10/daedalus-father-of-icarus/ ||
+Nebula Class || http://lcarsgfx.wordpress.com/2011/12/08/entering-the-nebula-part-2/ ||
+Intrepid Class || http://lcarsgfx.wordpress.com/2011/05/16/an-intrepid-undertaking/ ||
+USCM (Alien) || http://lcarsgfx.wordpress.com/2010/08/10/in-space-no-one-can-hear-you-scream/ || Image yet to come
+Olympic Class || http://lcarsgfx.wordpress.com/2010/09/11/the-olympic-class/ ||
+Steamrunner Class || http://lcarsgfx.wordpress.com/2010/08/15/full-steam-ahead/ || Image yet to come
+Oberth Class || http://lcarsgfx.wordpress.com/2010/08/12/im-a-doctor-not-a-science-vessel/ ||
+Soverign Class || http://lcarsgfx.wordpress.com/2010/03/01/sovereign-of-the-stars/ ||
+Excelsior Class (Retro Design) || http://lcarsgfx.wordpress.com/2010/01/01/retro-excelsior/ ||
+Excelsior Class || http://lcarsgfx.wordpress.com/2009/12/28/excelsior-class/ ||
+Springfield Class || http://lcarsgfx.wordpress.com/2009/12/25/not-the-springfield-from-the-simpsons/ ||
+Defiant Class (8 Decks) || http://lcarsgfx.wordpress.com/2009/12/10/scaling-the-defiant/ ||
+Defiant Class (4 Decks) || http://lcarsgfx.wordpress.com/2009/12/06/the-face-of-defiance/ ||
+Miranda Class || http://lcarsgfx.wordpress.com/2009/12/05/miranda/ ||
+Centaur Class || http://lcarsgfx.wordpress.com/2009/12/05/centaur-comes-galloping/ || 
+Constitution Class || http://lcarsgfx.wordpress.com/2009/11/28/its-a-constitution/ ||
+Ambassador Class || http://lcarsgfx.wordpress.com/2009/11/27/having-the-ambassador-round-for-dinner/ ||
+Cern Class || http://lcarsgfx.wordpress.com/2009/11/23/cern-class-by-john-eaves/ ||
+Akira Class || http://lcarsgfx.wordpress.com/2009/11/21/akira-ra-ra-ra/ ||
+Norway Class || http://lcarsgfx.wordpress.com/2009/11/21/norway-or-no-way/ ||
+New Orleans Class || http://lcarsgfx.wordpress.com/2009/11/16/the-new-orleans/ ||
+Cheyenne Class || http://lcarsgfx.wordpress.com/2009/11/16/cheyenne-class-msd/ ||
+Sabre Class || http://lcarsgfx.wordpress.com/2009/11/07/sabre-rattling/ ||
+
+-----Personalized MSD's-----
+Alexander is doing personalized variations og his MSD's in terms of Ship-Names and Registry-Numbers
+(as long as they do not have suffix-letters). If you'd like one you may contact him via E-Mail and request such a modification.
+In that request please also ask hom for a resulution of 2000px across (long side) as the game requires
+images to be displayed as MSD's to be roughly 2:1 and 2000 px is near the upper limit of what the game can handle.
+Also please ask him to give you the image as an *.jpg-file.
+
+Once you have the file put it in a subfolder (e.g. gfx) in either baseEF or RPG-X2.
+After that create a scripts/msd_shipname_registry.shader file (registry is optional, 
+however it is useful in avoiding collitions with ships of similar names)
+In that file add the following short script: 
+
+menu/msd/shipname_registry //this will be the path to your shader to add in the radiant
+{
+	{
+		map gfx/msd/shipname_registry.jpg //this will be the image you will use
+		blendFunc add //this will remove the black background. I might find a better solution...
+	}
+}
+
+For distribution put both files (including their relative paths) in a *.pk3 file.
 */
 static int target_shiphealth_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) {
 	int i, n, num, cur = 0, cur2 = 0;
