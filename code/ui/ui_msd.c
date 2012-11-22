@@ -1,5 +1,5 @@
 /**********************************************************************
-	UI_TRANSPORTER.C
+	UI_msd.C
 
 	User interface trigger from within game
 **********************************************************************/
@@ -69,6 +69,9 @@ qhandle_t					loading2;
 qhandle_t					loading3;
 qhandle_t					loading4;
 qhandle_t					loading5;
+qhandle_t					redalert;
+qhandle_t					yellowalert;
+qhandle_t					bluealert;
 
 /*
 =================
@@ -100,56 +103,37 @@ static void M_msdMenu_Graphics (void)
 	UI_DrawHandlePic( 20,  24,  64,  32, corner_ul_24_60);		// Upper corner
 
 	// Lower corners
-	if(s_msd.alertstate == 2)
-		trap_R_SetColor( colorTable[CT_RED]);
-	else if(s_msd.alertstate == 1)
-		trap_R_SetColor( colorTable[CT_YELLOW]);
-	else if(s_msd.alertstate == 3)
-		trap_R_SetColor( colorTable[CT_BLUE] );
-	else 
-		trap_R_SetColor( colorTable[CT_DKPURPLE3]); //colorTable[CT_VDKPURPLE2]
+	//colorTable[CT_VDKPURPLE2]
+	trap_R_SetColor( colorTable[CT_DKPURPLE3]);
 	UI_DrawHandlePic( 20, 440,  64,  16, corner_ll_12_60);		// 
 
 	xTurboStart = 604;
-	length = UI_ProportionalStringWidth( menu_normal_text[MNT_TRANSPORTER],UI_BIGFONT);
+	length = UI_ProportionalStringWidth( "MASTER SYSTEMS DISPLAY",UI_BIGFONT);
 	length += 4;
 
 	// Upper half
 	trap_R_SetColor( colorTable[CT_DKPURPLE1]); //DKGOLD1
 	UI_DrawHandlePic( 79,  24, xTurboStart - (79 + length),  PROP_BIG_HEIGHT, uis.whiteShader);	// Top left line
 	UI_DrawHandlePic( 20,  60,  60,  40, uis.whiteShader);		// 
-	if(s_msd.alertstate == 2)
-		trap_R_SetColor( colorTable[CT_RED]);
-	else if(s_msd.alertstate == 1)
-		trap_R_SetColor( colorTable[CT_YELLOW]);
-	else if(s_msd.alertstate == 3)
-		trap_R_SetColor( colorTable[CT_BLUE] );
-	else 
-		trap_R_SetColor( colorTable[CT_DKPURPLE3]);
+	trap_R_SetColor( colorTable[CT_DKPURPLE3]);
 	UI_DrawHandlePic( 20, 106,  60,  11, uis.whiteShader);		// 
-	trap_R_SetColor( colorTable[CT_DKPURPLE1]);  //DKGOLD1
-	UI_DrawHandlePic( 20, 123,  60, 250, uis.whiteShader);		//  Left hand column
+	if(s_msd.alertstate == 2){
+		UI_DrawHandlePic( 20, 123,  60, 250, redalert);			//  Alert Fade Red
+	}else if(s_msd.alertstate == 1){
+		UI_DrawHandlePic( 20, 123,  60, 250, yellowalert);		//  Alert Fade Yellow
+	}else if(s_msd.alertstate == 3){
+		UI_DrawHandlePic( 20, 123,  60, 250, bluealert);		//  Alert Fade Blue
+	}else{ 
+		trap_R_SetColor( colorTable[CT_DKPURPLE1]);  //DKGOLD1
+		UI_DrawHandlePic( 20, 123,  60, 250, uis.whiteShader);		//  Left hand column
+	}
 
 	// Lower half
-	if(s_msd.alertstate == 2)
-		trap_R_SetColor( colorTable[CT_RED] );
-	else if(s_msd.alertstate == 1)
-		trap_R_SetColor( colorTable[CT_YELLOW] );
-	else if(s_msd.alertstate == 3)
-		trap_R_SetColor( colorTable[CT_BLUE] );
-	else 
-		trap_R_SetColor( colorTable[CT_DKPURPLE3] ); //colorTable[CT_VDKPURPLE2]
+	trap_R_SetColor( colorTable[CT_DKPURPLE3] ); //colorTable[CT_VDKPURPLE2]
 	UI_DrawHandlePic( 20, 380,  60,  70, uis.whiteShader);		// Left Column
 
 	// Bottom line
-	if(s_msd.alertstate == 2)
-		trap_R_SetColor( colorTable[CT_RED] );
-	else if(s_msd.alertstate == 1)
-		trap_R_SetColor( colorTable[CT_YELLOW] );
-	else if(s_msd.alertstate == 3)
-		trap_R_SetColor( colorTable[CT_BLUE] );
-	else 
-		trap_R_SetColor( colorTable[CT_DKPURPLE3] ); //colorTable[CT_VDKPURPLE2]
+	trap_R_SetColor( colorTable[CT_DKPURPLE3] ); //colorTable[CT_VDKPURPLE2]
 	UI_DrawHandlePic( 69, 443, 287,   12, uis.whiteShader);		// 
 	trap_R_SetColor( colorTable[CT_DKPURPLE1]); //colorTable[CT_DKGOLD1]
 	UI_DrawHandlePic(364, 443, 260,   12, uis.whiteShader);		// Bottom line
@@ -222,6 +206,9 @@ void UI_msdMenu_Cache (void)
 	loading3 = trap_R_RegisterShaderNoMip("menu/new/nav_lb.tga");
 	loading4 = trap_R_RegisterShaderNoMip("menu/new/nav_db.tga");
 	loading5 = trap_R_RegisterShaderNoMip("menu/new/nab_o.tga");
+	redalert = trap_R_RegisterShaderNoMip("menu/alert/red");
+	yellowalert = trap_R_RegisterShaderNoMip("menu/alert/yellow");
+	bluealert = trap_R_RegisterShaderNoMip("menu/alert/blue");
 }
 
 /*
@@ -280,7 +267,6 @@ UI_msdMenu
 */
 void UI_msdMenu(int maxhull, int currhull, int maxshield, int currshield, int shieldstate, int warpstate, int turbostate, int transstate, int alertstate)
 {
-
 	memset( &s_msd, 0, sizeof( s_msd ) );
 
 	s_msd.maxhull = maxhull;

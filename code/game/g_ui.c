@@ -148,7 +148,7 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		currshield = target->n00bCount;
 		shieldstate = target->splashDamage;
 		if(target->falsetarget){
-			while((temp = G_Find(temp, FOFS(targetname), target->falsetarget)) != NULL){
+			while((temp = G_Find(temp, FOFS(truename), target->falsetarget)) != NULL){
 				if(!Q_stricmp(temp->classname, "target_warp")) break;
 			}
 			if(temp){
@@ -162,7 +162,7 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 			}
 		}
 		if(target->bluename){
-			while((temp = G_Find(temp, FOFS(targetname), target->bluename)) != NULL){
+			while((temp = G_Find(temp, FOFS(swapname), target->bluename)) != NULL){
 				if(!Q_stricmp(temp->classname, "target_turbolift")) break;
 			}
 			if(temp){
@@ -174,7 +174,7 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 			}
 		}
 		if(target->bluesound){
-			while((temp = G_Find(temp, FOFS(targetname), target->bluesound)) != NULL){
+			while((temp = G_Find(temp, FOFS(swapname), target->bluesound)) != NULL){
 				if(!Q_stricmp(temp->classname, "ui_transporter")) break;
 			}
 			if(temp){
@@ -186,7 +186,7 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 			}
 		}
 		if(target->falsename){
-			while((temp = G_Find(temp, FOFS(targetname), target->falsename)) != NULL){
+			while((temp = G_Find(temp, FOFS(falsename), target->falsename)) != NULL){
 				if(!Q_stricmp(temp->classname, "target_alert")) break;
 			}
 			if(temp){
@@ -195,6 +195,7 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 			}
 		}
 		trap_SendServerCommand(activator-g_entities, va("ui_msd %i %i %i %i %i %i %i %i %i", maxhull, currhull, maxshield, currshield, shieldstate, warpstate, turbostate, transstate, alertstate));
+		//Debugging G_Printf(S_COLOR_YELLOW "ui_msd G %i %i %i %i %i %i %i %i %i\n", maxhull, currhull, maxshield, currshield, shieldstate, warpstate, turbostate, transstate, alertstate);
 	}
 }
 
