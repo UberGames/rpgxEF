@@ -2936,10 +2936,12 @@ falsename: falsename/redname for target_alert
 "model" - path to a shader with a MSD-Display (ship) to show. Default will be the Daedalus Class
 
 We're sponsoring a varayity, which were created by Alexander Richardson.
-The shaders for these are stowed in scripts/msd.shader in the pakX.pk3
+The shaders for these are stowed in scripts/msd.shader in the pakX.pk3.
+It contains two versions: One for Texturing in Level design (like a display) and opne for the UI.
+To retrieve such an image simply look for the MSD-Folder in your radiants texture browser
 For personalized MSD's see segment below.
 
-Ship-Classname || Online Source || Shader-Name 
+Ship-Classname || Online Source || Shader-Name (for <type> insert gfx for UI-Shader and textures for texture shader)
 Constellation Class || http://lcarsgfx.wordpress.com/2012/09/12/constellation-sisyphus/ ||
 Danube Runabout || http://lcarsgfx.wordpress.com/2012/06/30/the-blue-danube/ ||
 Nova Class || http://lcarsgfx.wordpress.com/2012/06/13/can-you-tell-what-it-is-yet-2/ ||
@@ -2980,13 +2982,31 @@ After that create a scripts/msd_shipname_registry.shader file (registry is optio
 however it is useful in avoiding collitions with ships of similar names)
 In that file add the following short script: 
 
-menu/msd/shipname_registry //this will be the path to your shader to add in the radiant
+gfx/msd/akira //this will be the path to the image for the UI
 {
 	{
-		map gfx/msd/shipname_registry.jpg //this will be the image you will use
+		map textures/msd/akira.jpg //this will be the image you will use
 		blendFunc add //this will remove the black background. I might find a better solution...
 	}
 }
+
+textures/msd/akira //this will be the image you will use for texturing
+{
+	surfaceparm nolightmap
+	surfaceparm nomarks
+	{
+		map textures/msd/akira.jpg //this will be the image you will use
+	}
+	{
+		map textures/engineering/glass1.tga //this segment creates the glass effect to make it look like a display
+		blendfunc gl_one gl_one_minus_src_color
+		rgbGen identity
+		tcMod scale 3 3
+		tcGen environment
+	}
+}
+
+
 
 For distribution put both files (including their relative paths) in a *.pk3 file.
 */
@@ -3250,6 +3270,10 @@ void SP_target_shiphealth(gentity_t *ent) {
 		ent->splashDamage = 0;
 	else
 		ent->splashDamage = 1;
+
+	//let's make sure we have something to return as model
+	if(!ent->model)
+		ent->model = "gfx/msd/daedalus";
 
 	ent->think = target_shiphealth_think;
 	ent->use = target_shiphealth_use;

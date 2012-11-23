@@ -135,6 +135,7 @@ Opens a Master Systems Display. It will display data grabbed from a target_shiph
 void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	gentity_t *target, *temp = NULL;
 	int maxhull, currhull, maxshield, currshield, shieldstate, warpstate= -2, turbostate= -2, transstate= -2, alertstate= -2;
+	const char *model;
 
 	if(!Q_stricmp(ent->swapname, activator->target)) {
 		ent->flags ^= FL_LOCKED;
@@ -194,7 +195,8 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 			temp = NULL;
 			}
 		}
-		trap_SendServerCommand(activator-g_entities, va("ui_msd %i %i %i %i %i %i %i %i %i", maxhull, currhull, maxshield, currshield, shieldstate, warpstate, turbostate, transstate, alertstate));
+		model = target->model;
+		trap_SendServerCommand(activator-g_entities, va("ui_msd %i %i %i %i %i %i %i %i %i %s", maxhull, currhull, maxshield, currshield, shieldstate, warpstate, turbostate, transstate, alertstate, model));
 		//Debugging G_Printf(S_COLOR_YELLOW "ui_msd G %i %i %i %i %i %i %i %i %i\n", maxhull, currhull, maxshield, currshield, shieldstate, warpstate, turbostate, transstate, alertstate);
 	}
 }

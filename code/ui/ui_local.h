@@ -1853,7 +1853,7 @@ extern void UI_AdminMenu_Cache( void );
 //
 // ui_msd.c
 //
-extern void UI_msdMenu(int maxhull, int currhull, int maxshield, int currshield, int shieldstate, int warpstate, int turbostate, int transstate, int alertstate);
+extern void UI_msdMenu(int maxhull, int currhull, int maxshield, int currshield, int shieldstate, int warpstate, int turbostate, int transstate, int alertstate, char *model);
 
 //
 // ui_transporter.c

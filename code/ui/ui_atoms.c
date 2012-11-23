@@ -1299,7 +1299,7 @@ qboolean UI_ConsoleCommand( void ) {
 	}
 
 	if ( Q_stricmp( cmd, "ui_msd" ) == 0 ) {
-		static char	ui_msd1[MAX_STRING_CHARS], ui_msd2[MAX_STRING_CHARS], ui_msd3[MAX_STRING_CHARS], ui_msd4[MAX_STRING_CHARS], ui_msd5[MAX_STRING_CHARS], ui_msd6[MAX_STRING_CHARS], ui_msd7[MAX_STRING_CHARS], ui_msd8[MAX_STRING_CHARS], ui_msd9[MAX_STRING_CHARS];
+		static char	ui_msd1[MAX_STRING_CHARS], ui_msd2[MAX_STRING_CHARS], ui_msd3[MAX_STRING_CHARS], ui_msd4[MAX_STRING_CHARS], ui_msd5[MAX_STRING_CHARS], ui_msd6[MAX_STRING_CHARS], ui_msd7[MAX_STRING_CHARS], ui_msd8[MAX_STRING_CHARS], ui_msd9[MAX_STRING_CHARS], ui_msd10[MAX_STRING_CHARS];
 		trap_Argv( 1, ui_msd1, sizeof( ui_msd1 ) );
 		trap_Argv( 2, ui_msd2, sizeof( ui_msd2 ) );
 		trap_Argv( 3, ui_msd3, sizeof( ui_msd3 ) );
@@ -1309,7 +1309,8 @@ qboolean UI_ConsoleCommand( void ) {
 		trap_Argv( 7, ui_msd7, sizeof( ui_msd7 ) );
 		trap_Argv( 8, ui_msd8, sizeof( ui_msd8 ) );
 		trap_Argv( 9, ui_msd9, sizeof( ui_msd9 ) );
-		UI_msdMenu( atoi(ui_msd1), atoi(ui_msd2), atoi(ui_msd3), atoi(ui_msd4), atoi(ui_msd5), atoi(ui_msd6), atoi(ui_msd7), atoi(ui_msd8), atoi(ui_msd9));
+		trap_Argv( 10, ui_msd10, sizeof( ui_msd10 ) );
+		UI_msdMenu( atoi(ui_msd1), atoi(ui_msd2), atoi(ui_msd3), atoi(ui_msd4), atoi(ui_msd5), atoi(ui_msd6), atoi(ui_msd7), atoi(ui_msd8), atoi(ui_msd9), ui_msd10);
 		return qtrue;
 	}
 	
