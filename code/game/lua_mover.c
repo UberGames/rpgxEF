@@ -69,6 +69,14 @@ extern void Reached_Train(gentity_t *ent);
 extern void Think_SetupTrainTargets(gentity_t *ent);
 extern void SetMoverState(gentity_t *ent, moverState_t moverState, int time);
 
+/* This is an example for a parseable comment that describes a lua function. */
+/*
+ * \function mover.AsTrain(entity mover, entity target, float speed)
+ * \param entity mover entity to move.
+ * \param entity target path_corner entity to move to.
+ * \param float speed Speed to move with to the first path_corner.
+ * \desc Moves an entity like a func_train entity. Targets have to be path_corner entities.
+ */
 // mover.AsTrain(entity mover, entity target, float speed)
 // Moves an entity like a func_train entity. Targets have to be path_corner entities.
 // * ent the entity to move
