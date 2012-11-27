@@ -497,6 +497,8 @@ void SP_misc_model_breakable( gentity_t *ent )
 //
 //   AMMO plugin functions
 //
+//	Remove this? No purpose in RPG-X other than displaying something fixed...
+//
 // --------------------------------------------------------------------
 void ammo_use( gentity_t *self, gentity_t *other, gentity_t *activator);
 

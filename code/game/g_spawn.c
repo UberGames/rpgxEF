@@ -118,7 +118,6 @@ typedef struct {
 	void	(*spawn)(gentity_t *ent);
 } spawn_t;
 
-void SP_info_player_start (gentity_t *ent);
 void SP_info_player_deathmatch (gentity_t *ent);
 void SP_info_player_intermission (gentity_t *ent);
 void SP_info_firstplace(gentity_t *ent);
@@ -190,7 +189,6 @@ void SP_info_notnull (gentity_t *self);
 void SP_info_camp (gentity_t *self);
 void SP_path_corner (gentity_t *self);
 
-void SP_misc_teleporter_dest (gentity_t *self);
 void SP_misc_model(gentity_t *ent);
 void SP_misc_model_breakable(gentity_t *ent);
 void SP_misc_portal_camera(gentity_t *ent);
@@ -254,52 +252,52 @@ void SP_cinematic_camera(gentity_t *ent);
 spawn_t	spawns[] = {
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes
-	{"info_player_start", SP_info_player_start},
+	{"info_player_start", SP_info_player_deathmatch},
 
-	{"NPC_BioHulk", SP_info_player_start},
-	{"NPC_starfleet", SP_info_player_start},
-	{"NPC_starfleet_random", SP_info_player_start},
-	{"NPC_Tuvok", SP_info_player_start},
-	{"NPC_Kim", SP_info_player_start},
-	{"NPC_Doctor", SP_info_player_start},
-	{"NPC_Paris", SP_info_player_start},
-	{"NPC_Torres", SP_info_player_start},
-	{"NPC_Janeway", SP_info_player_start},
-	{"NPC_Seven", SP_info_player_start},
-	{"NPC_Chakotay", SP_info_player_start},
-	{"NPC_Neelix", SP_info_player_start},
-	{"NPC_Vorik", SP_info_player_start},
-	{"NPC_Foster", SP_info_player_start},
-	{"NPC_Munro", SP_info_player_start},
-	{"NPC_MunroScav", SP_info_player_start},
-	{"NPC_Telsia", SP_info_player_start},
-	{"NPC_Biessman", SP_info_player_start},
-	{"NPC_Chang", SP_info_player_start},
-	{"NPC_Chell", SP_info_player_start},
-	{"NPC_Jurot", SP_info_player_start},
-	{"NPC_borg", SP_info_player_start},
-	{"NPC_klingon", SP_info_player_start},
-	{"NPC_Malon", SP_info_player_start},
-	{"NPC_Hirogen", SP_info_player_start},
-	{"NPC_Hirogen_Alpha", SP_info_player_start},
-	{"NPC_Imperial", SP_info_player_start},
-	{"NPC_Imperial_Blue", SP_info_player_start},
-	{"NPC_Imperial_Gold", SP_info_player_start},
-	{"NPC_Imperial_Raider", SP_info_player_start},
-	{"NPC_Stasis", SP_info_player_start},
-	{"NPC_Species8472", SP_info_player_start},
-	{"NPC_Reaver", SP_info_player_start},
-	{"NPC_ReaverGuard", SP_info_player_start},
-	{"NPC_Avatar", SP_info_player_start},
-	{"NPC_Vohrsoth", SP_info_player_start},
-	{"NPC_Desperado", SP_info_player_start},
-	{"NPC_Paladin", SP_info_player_start},
-	{"NPC_ChaoticaGuard", SP_info_player_start},
-	{"NPC_Chaotica", SP_info_player_start},
-	{"NPC_CaptainProton", SP_info_player_start},
-	{"NPC_SatansRobot", SP_info_player_start},
-	{"NPC_Buster", SP_info_player_start},
-	{"NPC_Goodheart", SP_info_player_start},
+	{"NPC_BioHulk", SP_info_player_deathmatch},
+	{"NPC_starfleet", SP_info_player_deathmatch},
+	{"NPC_starfleet_random", SP_info_player_deathmatch},
+	{"NPC_Tuvok", SP_info_player_deathmatch},
+	{"NPC_Kim", SP_info_player_deathmatch},
+	{"NPC_Doctor", SP_info_player_deathmatch},
+	{"NPC_Paris", SP_info_player_deathmatch},
+	{"NPC_Torres", SP_info_player_deathmatch},
+	{"NPC_Janeway", SP_info_player_deathmatch},
+	{"NPC_Seven", SP_info_player_deathmatch},
+	{"NPC_Chakotay", SP_info_player_deathmatch},
+	{"NPC_Neelix", SP_info_player_deathmatch},
+	{"NPC_Vorik", SP_info_player_deathmatch},
+	{"NPC_Foster", SP_info_player_deathmatch},
+	{"NPC_Munro", SP_info_player_deathmatch},
+	{"NPC_MunroScav", SP_info_player_deathmatch},
+	{"NPC_Telsia", SP_info_player_deathmatch},
+	{"NPC_Biessman", SP_info_player_deathmatch},
+	{"NPC_Chang", SP_info_player_deathmatch},
+	{"NPC_Chell", SP_info_player_deathmatch},
+	{"NPC_Jurot", SP_info_player_deathmatch},
+	{"NPC_borg", SP_info_player_deathmatch},
+	{"NPC_klingon", SP_info_player_deathmatch},
+	{"NPC_Malon", SP_info_player_deathmatch},
+	{"NPC_Hirogen", SP_info_player_deathmatch},
+	{"NPC_Hirogen_Alpha", SP_info_player_deathmatch},
+	{"NPC_Imperial", SP_info_player_deathmatch},
+	{"NPC_Imperial_Blue", SP_info_player_deathmatch},
+	{"NPC_Imperial_Gold", SP_info_player_deathmatch},
+	{"NPC_Imperial_Raider", SP_info_player_deathmatch},
+	{"NPC_Stasis", SP_info_player_deathmatch},
+	{"NPC_Species8472", SP_info_player_deathmatch},
+	{"NPC_Reaver", SP_info_player_deathmatch},
+	{"NPC_ReaverGuard", SP_info_player_deathmatch},
+	{"NPC_Avatar", SP_info_player_deathmatch},
+	{"NPC_Vohrsoth", SP_info_player_deathmatch},
+	{"NPC_Desperado", SP_info_player_deathmatch},
+	{"NPC_Paladin", SP_info_player_deathmatch},
+	{"NPC_ChaoticaGuard", SP_info_player_deathmatch},
+	{"NPC_Chaotica", SP_info_player_deathmatch},
+	{"NPC_CaptainProton", SP_info_player_deathmatch},
+	{"NPC_SatansRobot", SP_info_player_deathmatch},
+	{"NPC_Buster", SP_info_player_deathmatch},
+	{"NPC_Goodheart", SP_info_player_deathmatch},
 
 	{"info_player_deathmatch",		SP_info_player_deathmatch},
 	{"info_player_intermission",	SP_info_player_intermission},
@@ -375,7 +373,7 @@ spawn_t	spawns[] = {
 	{"light",						SP_light},
 	{"path_corner",					SP_path_corner},
 
-	{"misc_teleporter_dest",		SP_misc_teleporter_dest},
+	{"misc_teleporter_dest",		SP_info_notnull},
 	{"misc_model",					SP_misc_model},
 	{"misc_model_breakable",		SP_misc_model_breakable},
 	{"misc_portal_surface",			SP_misc_portal_surface},

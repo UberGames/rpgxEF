@@ -1,218 +1,19 @@
 //files that hold this stuff in game. Please update them as required:
-//g_breakable.c - func_breakable, misc_model_breakable, misc_ammo_station, target_repair;
-//g_cinamatic.c - cinematic_camera;
-//g_client.c - info_player_deathmatch, info_player_start, info_player_intermission;
-//g_forcefield2.c - func_forcefield2;
+//g_breakable.c - func_breakable, misc_model_breakable, misc_ammo_station*, target_repair;
+//g_cinamatic.c - cinematic_camera**;
+//g_client.c - info_player_deathmatch[info_player_start, team_CTF_redplayer, team_CTF_blueplayer, team_CTF_redspawn, team_CTF_bluespawn], info_player_intermission;
 //g_fx.c
-//g_items.c - item_botroam;
 //g_misc.c
 //g_mover.c
-//g_roff.c - func_roff_mover;
 //g_spawn.c - worldspawn;
 //g_target.c
-//g_team.c - team_CTF_redplayer, team_CTF_blueplayer, team_CTF_redspawn, team_CTF_bluespawn;
 //g_trigger.c - trigger_multiple, trigger_always, trigger_push, target_push, trigger_teleport, trigger_hurt, func_timer, trigger_transporter, trigger_radiation;
 //g_turrets.c - misc_turret, misc_laser_arm;
-//g_ui.c - ui_transporter, ui_holodeck;
+//g_ui.c - ui_transporter, ui_msd, ui_holodeck;
 //g_usable.c - func_usable;
 
-/*QUAKED item_***** ( 0 0 0 ) (-16 -16 -16) (16 16 16) suspended
-DO NOT USE THIS CLASS, IT JUST HOLDS GENERAL INFORMATION.
-The suspended flag will allow items to hang in the air, otherwise they are dropped to the next surface.
-
-If an item is the target of another entity, it will not spawn in until fired.
-
-An item fires all of its targets when it is picked up.  If the toucher can't carry it, the targets won't be fired.
-
-"notfree" if set to 1, don't spawn in free for all games
-"notteam" if set to 1, don't spawn in team games
-"notsingle" if set to 1, don't spawn in single player games
-"wait"	override the default wait before respawning.  -1 = never respawn automatically, which can be used with targeted spawning.
-"random" random number of plus or minus seconds varied from the respawn time
-"count" override quantity or duration on most items.
-*/
-
-
-/*QUAKED weapon_phaser (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_compressionrifle (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_null_hand (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-/*QUAKED weapon_tricorder (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-/*QUAKED weapon_padd (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-/*QUAKED weapon_coffee (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_disruptor (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-/*QUAKED weapon_medkit (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_voyager_hypo (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_grenadelauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_tr116 (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_quantumburst (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_dermal_regen (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-/*QUAKED weapon_toolkit (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-/*QUAKED weapon_hyperspanner (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED ammo_compressionrifle (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-32 ammo for the compression rifle
-*/
-
-
-/*QUAKED ammo_imod (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-15 ammo for the I-MOD
-*/
-
-
-/*QUAKED ammo_scavenger (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-30 ammo for the scavenger rifle
-*/
-
-
-/*QUAKED ammo_stasis (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-15 ammo for the stasis weapon
-*/
-
-
-/*QUAKED ammo_grenades (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-10 ammo for the grenade launcher
-*/
-
-
-/*QUAKED ammo_tetriondisruptor (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-40 ammo for the tetrYon disruptor
-*/
-
-
-/*QUAKED ammo_quantumburst (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-6 ammo for the quantum burst weapon
-*/
-
-
-/*QUAKED ammo_dreadnought (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-40 ammo for the dreadnought/arc welder
-*/
-
-
-/*QUAKED item_armor_shard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-5 points of shields
-*/
-
-
-/*QUAKED item_armor_combat (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-50 points of shields
-*/
-
-
-/*QUAKED item_armor_body (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-100 points of shields
-*/
-
-
-/*QUAKED item_hypo_small (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-5 points of health, max of 200
-*/
-
-
-/*QUAKED item_hypo (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-25 points of health, max of 100
-*/
-
-
-/*QUAKED holdable_transporter (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-pick it up and it stays in your inventory until used, at which time you drop it in front of you and it still
-kind of resides in your inventory. when you use it _again_ it activates and anyone can walk through the transporter.
-*/
-
-
-/*QUAKED holdable_medkit (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-pick it up and it stays in your inventory until used, at which time it sets your health to 100
-*/
-
-/*QUAKED item_haste (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-for 30 seconds you run at %150 of your normal speed and your firing delays are 3/4 as long
-*/
-
-
-/*QUAKED item_invis (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-20 seconds of invisibility
-*/
-
-
-/*QUAKED item_flight (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-30 seconds of flight
-*/
-
-
-/*QUAKED team_CTF_redflag (1 0 0) (-24 -24 -16) (24 24 32)
-Only in CTF games
-*/
-
-
-/*QUAKED team_CTF_blueflag (0 0 1) (-24 -24 -16) (24 24 32)
-Only in CTF games
-*/
-
-
-/*QUAKED holdable_detpack (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-BLAMMO!
-*/
-
-
-/*QUAKED holdable_shield (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-About 25 seconds or 250 hit points of a portashield.
-*/
-
-
-/*QUAKED Holographic_decoy (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-About 1 minute of a holographic decoy.
-*/
-
-
-/*QUAKED weapon_voyager_hypo (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_borg_assimilator (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
-
-/*QUAKED weapon_borg_weapon (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-
+// *might be removed
+// **Description needs to be worked on
 
 /*QUAKED misc_model_breakable (1 0 0) (-16 -16 -16) (16 16 16) SOLID AUTOANIMATE DEADSOLID NO_DMODEL INVINCIBLE X X X REPAIRABLE X
 -----DESCRIPTION-----
@@ -300,7 +101,7 @@ none
 potential spawning position for deathmatch games.
 
 -----SPAWNFLAGS-----
-1: INITIAL - Preferred spawn for the first spawn of a clientwhen entering a match.
+1: INITIAL - Preferred spawn for the first spawn of a client when entering a match.
 
 -----KEYS-----
 "target" - entities with matching targetname will be fired if someone spawns here.
@@ -312,10 +113,10 @@ potential spawning position for deathmatch games.
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32) INITIAL
 -----DESCRIPTION-----
 Merely a fancy name for info_player_deathmatch.
-On spawn will reset classname sppropriately and respawn itself.
+On spawn will reset classname appropriately and respawn itself.
 
 -----SPAWNFLAGS-----
-1: INITIAL - Preferred spawn for the first spawn of a clientwhen entering a match.
+1: INITIAL - Preferred spawn for the first spawn of a client when entering a match.
 
 -----KEYS-----
 "target" - entities with matching targetname will be fired if someone spawns here.
@@ -352,84 +153,139 @@ none
 
 
 /*QUAKED info_camp (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
+-----DESCRIPTION-----
+Used as a positional target for calculations in the compiler/utilities (spotlights, etc), but removed during gameplay.
+
+-----SAPWNFLAGS-----
+none
+
+-----KEYS-----
+"targetname" - have whatever is required point at this.
 */
 
 
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
+-----DESCRIPTION-----
+Used as a positional target for calculations in the compiler/utilities (spotlights, etc), but removed during gameplay.
+
+-----SAPWNFLAGS-----
+none
+
+-----KEYS-----
+"targetname" - have whatever is required point at this.
 */
 
 
 /*QUAKED info_notnull (0 0.5 0) (-4 -4 -4) (4 4 4)
+-----DESCRIPTION-----
 Used as a positional target for in-game calculation, like jumppad targets.
 target_position does the same thing
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"targetname" - have whatever is required point at this.
 */
 
 
-/*QUAKED lightJunior (0 1 0) (-8 -8 -8) (8 8 8) linear noIncidence x x x normalized_color force_distance_attenuation 
-Non-displayed light. This type of light only affects the light grid (Entity lighting only no world lighting).
-'Linear' checkbox gives linear falloff instead of inverse square
-'noIncidence' checkbox makes lighting smoother
-Lights pointed at a target will be spotlights.
-"light" overrides the default 300 intensity.
-"radius" overrides the default 64 unit radius of a spotlight at the target point.
-"_color" light color
+/*QUAKED lightJunior (0 1 0) (-8 -8 -8) (8 8 8) LINEAR NO_INCIDENCE X X X NORMALIZED_COLOR FORCE_DISTANCE_ATTENUATION 
+-----DESCRIPTION-----
+Light source for the compiler. Will be removed ingame.
+This type of light only affects the light grid (Entity lighting only no world lighting).
+
+-----SPAWNFLAGS-----
+1: LINEAR - checkbox gives linear falloff instead of inverse square
+2: NO_INCIDENCE - checkbox makes lighting smoother
+4: X - Unknown. Usage not recomended.
+8: X - Unknown. Usage not recomended.
+16: X - Unknown. Usage not recomended.
 
 q3map2:
-'normalized_color' light color gets normalized by the compiler
-'force_distance_attenuation' distance attenuation is enforced
-"_style" light style number
-"fade" Fade factor of light attenuation of linear lights. (Linear lights vanish at light/(fade * 8000).
-"_anglescale" scales angle attenuation
-"scale" intensity multiplier
-"_samples" number of samples to use to get soft shadows from a light
-"_deviance" position deviance of the samples of a regular light
-"_filterradius" filter radius for this light
-"_sun" if 1, this light is an infinite sun light
+32: NORMALIZED_COLOR - light color gets normalized by the compiler
+64: FORCE_DISTANCE_ATTENUATION - distance attenuation is enforced
+
+-----KEYS-----
+"light" - overrides the default 300 intensity.
+"radius" - overrides the default 64 unit radius of a spotlight at the target point.
+"_color" - light color
+
+q3map2:
+"_style" - light style number
+"fade" - Fade factor of light attenuation of linear lights. (Linear lights vanish at light/(fade * 8000).
+"_anglescale" - scales angle attenuation
+"scale" - intensity multiplier
+"_samples" - number of samples to use to get soft shadows from a light
+"_deviance" - position deviance of the samples of a regular light
+"_filterradius" - filter radius for this light
+"_sun" - if 1, this light is an infinite sun light
 */
 
 
-/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear noIncidence x x noGrid normalized_color force_distance_attenuation 
-Non-displayed light.
-'Linear' checkbox gives linear falloff instead of inverse square
-'noIncidence' checkbox makes lighting smoother
-Lights pointed at a target will be spotlights.
-"light" overrides the default 300 intensity.
-"radius" overrides the default 64 unit radius of a spotlight at the target point.
-"_color" light color
+/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) LINEAR NO_INCIDENCE X X NO_GRID NORMALIZED_COLOR FORCE_DISTANCE_ATTENUATION 
+-----DESCRIPTION-----
+Light source for the compiler. Will be removed ingame.
+Lights pointed at a target (info_null) will be spotlights.
+
+-----SPAWNFLAGS-----
+1: LINEAR - checkbox gives linear falloff instead of inverse square
+2: NO_INCIDENCE - checkbox makes lighting smoother
+4: X - Unknown. Usage not recomended.
+8: X - Unknown. Usage not recomended.
 
 q3map2:
-'normalized_color' light color gets normalized by the compiler
-'force_distance_attenuation' distance attenuation is enforced
-'noGrid' light does not affect the grid
-"_style" light style number
-"fade" Fade factor of light attenuation of linear lights. (Linear lights vanish at light/(fade * 8000).
-"_anglescale" scales angle attenuation
-"scale" intensity multiplier
-"_samples" number of samples to use to get soft shadows from a light
-"_deviance" position deviance of the samples of a regular light
-"_filterradius" filter radius for this light
-"_sun" if 1, this light is an infinite sun light
-"_flareshader" shader for a flare surface generated by this light
-"_flare" when set, this light is a flare without a specified shader
+16: NO_GRID - light does not affect the grid
+32: NORMALIZED_COLOR - light color gets normalized by the compiler
+64: FORCE_DISTANCE_ATTENUATION - distance attenuation is enforced
+
+-----KEYS-----
+"light" - overrides the default 300 intensity.
+"radius" - overrides the default 64 unit radius of a spotlight at the target point.
+"_color" - light color
+
+q3map2:
+"_style" - light style number
+"fade" - Fade factor of light attenuation of linear lights. (Linear lights vanish at light/(fade * 8000).
+"_anglescale" - scales angle attenuation
+"scale" - intensity multiplier
+"_samples" - number of samples to use to get soft shadows from a light
+"_deviance" - position deviance of the samples of a regular light
+"_filterradius" - filter radius for this light
+"_sun" - if 1, this light is an infinite sun light
+"_flareshader" - shader for a flare surface generated by this light
+"_flare" - when set, this light is a flare without a specified shader
 */
 
 
 /*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
-Point teleporters at these.
-Now that we don't have teleport destination pads, this is just
-an info_notnull
+-----DESCRIPTION-----
+Merely a fancy name for info_notnull.
+was originally used for teleporters but became redundant.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"targetname" - have whatever is required point at this.
 */
 
 
 /*QUAKED misc_model (1 0 0) (-16 -16 -16) (16 16 16) CAST_SHADOWS CLIP_MODEL FORCE_META 
-"model"		arbitrary .md3 file to display
+-----DESCRIPTION-----
+Will just spawn and display it's model.
+Can be hooked up with a brushmodel-entity to move relative to.
+
+-----SPAWNFLAGS-----
+q3map2:
+1: CAST_SHADOWS - Model will cast shadows.
+2: CLIP_MODEL - Model will be clipped so noone can pass trough.
+4: FORCE_META - will enforce a meta-compile for .bsp-build even if the compiler wasn't told to do so.
+
+-----KEYS-----
+"model" - arbitrary .md3 file to display
+"target" - brushmodel-entity to attach to 
 
 q3map2:
-'CAST_SHADOWS' model is used in light compile stage for shadow calculation
-'CLIP_MODEL' enable collision for this model
-'FORCE_META' model is included in meta stage of bsp
 "_castShadows" OR "_cs" sets whether the entity casts shadows
 "_receiveShadows" OR "_rs" sets whether the entity receives shadows
 "modelscale" scaling factor for the model to include
@@ -441,21 +297,42 @@ q3map2:
 
 
 /*QUAKED misc_portal_surface (0 0 1) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 The portal surface nearest this entity will show a view from the targeted misc_portal_camera, or a mirror view if untargeted.
 This must be within 64 world units of the surface!
 
-targetname - When used, cycles to the next misc_portal_camera it's targeted
-wait - makes it auto-cycle between all cameras it's pointed at at intevervals of specified number of seconds.
+-----SPAWNFLAGS-----
+none
 
-  cameras will be cycled through in the order they were created on the map.
+-----KEYS-----
+"target" - misc_portal_camera's to target
+"targetname" - When used, cycles to the next misc_portal_camera it's targeted
+"wait" - makes it auto-cycle between all cameras it's pointed at at intevervals of specified number of seconds. Default = -1 = don't autocycle
+	cameras will be cycled through in the order they were created on the map.
+	if this and the first camera are -1 there will be no autocycle.
+	if this is -1 but the first camera is positive the wait will be adapted as a faulsafe measure should one of the later cameras lack an individual wait.
+"swapname" - will pause/unpause the autocycle. The next cycle will happen aufer "wait" seconds, so wait is required for this.
+	requires SELF/NO_ACRIVATOR
+
+-----USAGE-----
+Autocycle or manual Cycle usually only makes sence for a survaliance-station or security.
+For a viewscreen or a communications channel make the brush having the portal-texture a func_usable and treat is as described on that entity for VFX-Entities.
 */
 
+/*QUAKED misc_portal_camera (0 0 1) (-8 -8 -8) (8 8 8) SLOWROTATE FASTROTATE
+-----DESCRIPTION-----
+The target for a misc_portal_surface.
+You can set either angles or target another entity (NOT an info_null or similar) to determine the direction of view.
 
-/*QUAKED misc_portal_camera (0 0 1) (-8 -8 -8) (8 8 8) slowrotate fastrotate
-The target for a misc_portal_surface.  You can set either angles or target another entity (NOT an info_null) to determine the direction of view.
-"roll" an angle modifier to orient the camera around the target vector;
+-----SPAWNFLAGS-----
+1: SLOWROTATE - slowly rotates around it's axis of view
+2: FASTROTATE - quickly rotates around it's axis of view
+
+-----KEYS-----
+"targetname" - have misc_portal_surface target this
+"roll" - an angle modifier to orient the camera around the target vector. Default is 0.
+"wait" - delay for autocycle misc_portal_surface. Will overwrite theirs. Default is -1 = use surface-value.
 */
-
 
 /*QUAKED shooter_rocket (1 0 0) (-16 -16 -16) (16 16 16)
 Fires at either the target or the current direction.
@@ -565,7 +442,7 @@ none
 
 /*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8) SELF
 -----DESCRIPTION-----
-When used fires it'd target after a delay of 'wait' seconds
+When used fires it's target after a delay of 'wait' seconds
 
 -----SPAWNFLAGS-----
 1: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
@@ -696,56 +573,59 @@ NOTE: the objective with the lowest "count" will be considered the current objec
 */
 
 
-/*QUAKED team_CTF_redplayer (1 0 0) (-16 -16 -16) (16 16 32) BORGQUEEN
+/*QUAKED team_CTF_redplayer (1 0 0) (-16 -16 -16) (16 16 32) INITIAL
 -----DESCRIPTION-----
-Only in CTF games.  Red players spawn here at game start.
-This is not used in RPG-X.
+Merely a fancy name for info_player_deathmatch.
 
 -----SPAWNFLAGS-----
-1: BORGQUEEN - The player that is the Borg Queen will spawn here
+1: INITIAL - Preferred spawn for the first spawn of a client when entering a match.
 
 -----KEYS-----
-none
+"target" - entities with matching targetname will be fired if someone spawns here.
+"nobots" - if 1 will prevent bots from using this spot.
+"nohumans" - if 1 will prevent non-bots from using this spot.
 */
 
 
-/*QUAKED team_CTF_blueplayer (0 0 1) (-16 -16 -16) (16 16 32) BORGQUEEN
+/*QUAKED team_CTF_blueplayer (0 0 1) (-16 -16 -16) (16 16 32) INITIAL
 -----DESCRIPTION-----
-Only in CTF games.  Blue players spawn here at game start.
-This is not used in RPG-X.
+Merely a fancy name for info_player_deathmatch.
 
 -----SPAWNFLAGS-----
-1: BORGQUEEN - The player that is the Borg Queen will spawn here
+1: INITIAL - Preferred spawn for the first spawn of a client when entering a match.
 
 -----KEYS-----
-none
+"target" - entities with matching targetname will be fired if someone spawns here.
+"nobots" - if 1 will prevent bots from using this spot.
+"nohumans" - if 1 will prevent non-bots from using this spot.
 */
 
 
-/*QUAKED team_CTF_redspawn (1 0 0) (-16 -16 -24) (16 16 32) STARTOFF
+/*QUAKED team_CTF_redspawn (1 0 0) (-16 -16 -24) (16 16 32) INITIAL
 -----DESCRIPTION-----
-potential spawning position for red team in CTF games, AFTER game start
-Targets will be fired when someone spawns in on them.
-This is not used in RPG-X.
+Merely a fancy name for info_player_deathmatch.
 
 -----SPAWNFLAGS-----
-STARTOFF - won't be considered as a spawn point until used
+1: INITIAL - Preferred spawn for the first spawn of a client when entering a match.
 
 -----KEYS-----
-targetname - when used, toggles between active and incative spawn point
+"target" - entities with matching targetname will be fired if someone spawns here.
+"nobots" - if 1 will prevent bots from using this spot.
+"nohumans" - if 1 will prevent non-bots from using this spot.
 */
 
 
-/*QUAKED team_CTF_bluespawn (0 0 1) (-16 -16 -24) (16 16 32) STARTOFF
+/*QUAKED team_CTF_bluespawn (0 0 1) (-16 -16 -24) (16 16 32) INITIAL
 -----DESCRIPTION-----
-potential spawning position for blue team in CTF games, AFTER game start
-Targets will be fired when someone spawns in on them.
+Merely a fancy name for info_player_deathmatch.
 
 -----SPAWNFLAGS-----
-STARTOFF - won't be considered as a spawn point until used
+1: INITIAL - Preferred spawn for the first spawn of a client when entering a match.
 
 -----KEYS-----
-targetname - when used, toggles between active and incative spawn point
+"target" - entities with matching targetname will be fired if someone spawns here.
+"nobots" - if 1 will prevent bots from using this spot.
+"nohumans" - if 1 will prevent non-bots from using this spot.
 */
 
 
@@ -1372,6 +1252,22 @@ q3map2:
 "_castShadows" OR "_cs" sets whether the entity casts shadows
 "_receiveShadows" OR "_rs" sets whether the entity receives shadows
 
+-----USAGE-----
+As stated in the description there are 2 ways to use this kind of entity: As a trigger/activator or as Visual effect.
+It is possible to do both, however giving an entity only one of the functions usually gives the mapper less of a headace.
+Instead use the usable as VFx only and forward any command trough a target_relay.
+
+For trigger-usables you need the following keys:
+"target" - what stuff to fire
+"wait" - how long to wait before fire again
+"spawnflags" - ALWAYS_ON (8) is required. You may also be interested in ADMIN_ONLY (256) NO_ACTIATOR (512) and DEACTIVATED (2048)
+"message" or "messageNum" - display a string if scanned by a tricorder
+
+For VFX-usables these keys might be interesting:
+"targetname" - turns visible/invisible when fired
+"team" - set 2 as this will disallow clients from accidently using this
+"spawnflags" - Interesting here are START_OFF (1), NOBLOCKCHECK (16) and NO_AREAPORTAL (1024)
+
 -----LUA-----
 Sounds for consoles:
 One of the advantages with luaUse-functions is that you can play sounds on the usable you're using this comes in very handy if you'd like to for example play a sound on the turbolift-usable:
@@ -1390,10 +1286,10 @@ Also if you have a (morer or less) generic console that you want to fire generic
 	function consolesounds(ent, other, activator)
 		i = qmath.irandom(1, <insert number of sounds here>);
 		if i == 1 then
-			sound.PlaySound(ent, <inseet soundpath here>, 0);
+			sound.PlaySound(ent, <insert soundpath here>, 0);
 		end
 		if i == n then
-			sound.PlaySound(ent, <inseet soundpath here>, 0);
+			sound.PlaySound(ent, <insert soundpath here>, 0);
 		end
 	end
 */
@@ -1742,6 +1638,18 @@ Opens the transporter UI.
 "target" - trigger_transporter to use with this ui_transporter
 */
 
+/*QUAKED ui_msd (.5 .5 .5) ? DISABLED
+-----DESCRIPTION-----
+Opens a Master Systems Display. It will display data grabbed from a target_shiphealth.
+
+-----SPAWNFLAGS-----
+1: DISABLED	- Entity is disabled at spawn
+
+-----KEYS-----
+"swapname" - enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
+"target" - target_shiphealth to draw info from
+*/
+
 /*QUAKED target_shaderremap (1 0 0) (-8 -8 -8) (8 8 8)
 This will remap the shader "falsename" with shader "truename" and vice versa.
 It will save you some vfx-usables.
@@ -1893,28 +1801,6 @@ falsename: redname for target_alert
 This is a safezone for the self destruct sequence.
 */
 
-/*QUAKED func_roff_mover (0 .5 .8) ? START_ON LOOP
------DESCRIPTION-----
-Loads all of the movement data from an external ROFF file and applies
-it to this entity, creating much more fluid motion.
-
-DISCONTINUED: Use Lua mover instead.
-
------SPAWNFLAGS-----
-1: START_ON - will start to move at spawn
-2: LOOP - will loop it's mition
-
------KEYS-----
-"model2"	.md3 model to also draw
-"angle"		determines the opening direction
-"target"	once the animation ends, these targetted entities will be triggered
-"wait"		from activation, how many seconds to wait before moving
-"endwait"	from the end of the animation, how many seconds to wait b4 firing its targets
-"color"		constantLight color
-"light"		constantLight radius
-"noise"		looping sound file that plays as it animates.
-*/
-
 /*QUAKED cinematic_camera (0 0.5 0) (-4 -4 -4) (4 4 4)
 -----DESCRIPTION-----
 Camera for cinematic. Normally spawn by Lua script.
@@ -1927,31 +1813,4 @@ none
 
 -----LUA-----
 To be written later.
-*/
-
-/*QUAKED func_forcefield2 (0 .5 .8) ? STARTOFF AUTOANIM X ALWAYS_ON NOBLOCKCHECK X X X
------DESCRIPTION-----
-DO NOT USE! This is basically the original Game forcefield with some tweaks and not much different than a func_usable.
-It just sits here in case you encounter it one day.
-
-A bmodel that can be used directly by the player's "activate" button
-
------SPAWNFLAGS-----
-1: START_OFF - the forcefield will not be there
-2: AUTOANIM - If useing an md3, it will animate
-4: X - Unused?
-8: ALWAYS_ON - Doesn't toggle on and off when used, just fires target
-16: NOBLOCKCHECK - Will NOT turn on while something is inside it unless this is checked
-32: X - Unused?
-64: X - Unused?
-128: X - Unused?
-
------KEYS-----
-"targetname" - When used, will toggle on and off
-"target" - Will fire this target every time it is toggled OFF
-"model2" - .md3 model to also draw
-"color" - constantLight color
-"light" - constantLight radius
-"wait" - amount of time before the object is usable again (only valid with ALWAYS_ON flag)
-"health" - if it has health, it will be used whenever shot at/killed - if you want it to only be used once this way, set health to 1
 */

@@ -53,7 +53,7 @@ void G_InitTransport( int clientNum, vec3_t origin, vec3_t angles ) {
 potential spawning position for deathmatch games.
 
 -----SPAWNFLAGS-----
-1: INITIAL - Preferred spawn for the first spawn of a clientwhen entering a match.
+1: INITIAL - Preferred spawn for the first spawn of a client when entering a match.
 
 -----KEYS-----
 "target" - entities with matching targetname will be fired if someone spawns here.
@@ -80,27 +80,6 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 	}
 
 	trap_LinkEntity(ent);
-}
-
-/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32) INITIAL
------DESCRIPTION-----
-Merely a fancy name for info_player_deathmatch.
-On spawn will reset classname sppropriately and respawn itself.
-
------SPAWNFLAGS-----
-1: INITIAL - Preferred spawn for the first spawn of a clientwhen entering a match.
-
------KEYS-----
-"target" - entities with matching targetname will be fired if someone spawns here.
-"nobots" - if 1 will prevent bots from using this spot.
-"nohumans" - if 1 will prevent non-bots from using this spot.
-*/
-/**
-*	Spawn function for player start spawnpoint which actually the same as deatchmatch spawnpoint
-*/
-void SP_info_player_start(gentity_t *ent) {
-	ent->classname = G_NewString("info_player_deathmatch");
-	SP_info_player_deathmatch( ent );
 }
 
 /*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)

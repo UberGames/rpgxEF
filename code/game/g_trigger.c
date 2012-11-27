@@ -137,8 +137,6 @@ void Touch_Multi( gentity_t *self, gentity_t *other, trace_t *trace ) {
 /*QUAKED trigger_multiple (.5 .5 .5) ? RED_OK BLUE_OK TEAM_ONLY
 -----DESCRIPTION-----
 Variable sized repeatable trigger.  Must be targeted at one or more entities.
-so, the basic time between firing is a random time between
-(wait - random) and (wait + random)
 
 -----SPAWNFLAGS-----
 1: RED_OK - People on the red team can fire this trigger
@@ -148,6 +146,8 @@ so, the basic time between firing is a random time between
 -----KEYS-----
 "wait" - Seconds between triggerings, 0.5 default, -1 = one time only.
 "random" - wait variance, default is 0
+so, the basic time between firing is a random time between
+(wait - random) and (wait + random)
 */
 /**
  * \brief Spawn function of trigger_multiple.
@@ -1071,7 +1071,7 @@ This can be used in three ways:
 
 -----KEYS-----
 The damage the radiation does is calculated from these two values:
-"dmg"			damage(default 1)
+"damage"			damage(default 1)
 "wait"			wait(seconds, default 10)
 
 Forumla is: dps = dmg / wait

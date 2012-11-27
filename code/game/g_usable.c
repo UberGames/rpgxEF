@@ -217,6 +217,22 @@ q3map2:
 "_castShadows" OR "_cs" sets whether the entity casts shadows
 "_receiveShadows" OR "_rs" sets whether the entity receives shadows
 
+-----USAGE-----
+As stated in the description there are 2 ways to use this kind of entity: As a trigger/activator or as Visual effect.
+It is possible to do both, however giving an entity only one of the functions usually gives the mapper less of a headace.
+Instead use the usable as VFx only and forward any command trough a target_relay.
+
+For trigger-usables you need the following keys:
+"target" - what stuff to fire
+"wait" - how long to wait before fire again
+"spawnflags" - ALWAYS_ON (8) is required. You may also be interested in ADMIN_ONLY (256) NO_ACTIATOR (512) and DEACTIVATED (2048)
+"message" or "messageNum" - display a string if scanned by a tricorder
+
+For VFX-usables these keys might be interesting:
+"targetname" - turns visible/invisible when fired
+"team" - set 2 as this will disallow clients from accidently using this
+"spawnflags" - Interesting here are START_OFF (1), NOBLOCKCHECK (16) and NO_AREAPORTAL (1024)
+
 -----LUA-----
 Sounds for consoles:
 One of the advantages with luaUse-functions is that you can play sounds on the usable you're using this comes in very handy if you'd like to for example play a sound on the turbolift-usable:
@@ -235,10 +251,10 @@ Also if you have a (morer or less) generic console that you want to fire generic
 	function consolesounds(ent, other, activator)
 		i = qmath.irandom(1, <insert number of sounds here>);
 		if i == 1 then
-			sound.PlaySound(ent, <inseet soundpath here>, 0);
+			sound.PlaySound(ent, <insert soundpath here>, 0);
 		end
 		if i == n then
-			sound.PlaySound(ent, <inseet soundpath here>, 0);
+			sound.PlaySound(ent, <insert soundpath here>, 0);
 		end
 	end
 */
