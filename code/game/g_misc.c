@@ -74,6 +74,16 @@ none
 -----KEYS-----
 "targetname" - have whatever is required point at this.
 */
+/*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
+-----DESCRIPTION-----
+Merely a fancy name for info_notnull.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"targetname" - have whatever is required point at this.
+*/
 void SP_info_notnull( gentity_t *self ){
 	if(!Q_stricmp(self->classname, "ref_tag") && !rpg_allowspmaps.integer)
 		G_FreeEntity(self);

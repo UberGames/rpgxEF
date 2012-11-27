@@ -1,12 +1,12 @@
-//files that hold this stuff in game. Please update them as required:
+//files that hold this stuff in gamecode. Please update them as required:
 //g_breakable.c - func_breakable, misc_model_breakable, misc_ammo_station*, target_repair;
 //g_cinamatic.c - cinematic_camera**;
 //g_client.c - info_player_deathmatch[info_player_start, team_CTF_redplayer, team_CTF_blueplayer, team_CTF_redspawn, team_CTF_bluespawn], info_player_intermission;
-//g_fx.c
-//g_misc.c - func_group, info_camp, info_null, info_notnull[misc_teleporter_dest], light, misc_model, misc_portal_surface, misc_portal_camera, shooter_rocker, shooter_plasma, shooter_grenade, shooter_torpedo;
+//g_fx.c - fx_spark, fx_steam, fx_bolt, fx_transporter, fx_drip, fx_fountain, fx_surface_explosion, fx_blow_chunks, fx_smoke, fx_electrical_explosion, fx_phaser, fx_torpedo, fx_particle_fire, fx_fire, fx_cooking_steam, fx_elecfire, fx_forge_bolt***, fx_plasma***, fx_energy_stream***, fx_transporter_stream***, fx_explosion_trail***, fx_borg_energy_beam***, fx_shimmery_thing, fx_borg_bolt***;
+//g_misc.c - func_group, info_camp, info_null, info_notnull[misc_teleporter_dest, target_position], light, misc_model, misc_portal_surface, misc_portal_camera, shooter_rocker, shooter_plasma, shooter_grenade, shooter_torpedo;
 //g_mover.c - func_door, func_plat, func_button, path_corner, func_train, func_static, func_forcefield, func_rotating, func_door_rotating, func_bobbing, func_pendulum, func_brushmodel, func_lightchange, func_targetmover, path_point, func_mover, func_stasis_door;
 //g_spawn.c - worldspawn;
-//g_target.c
+//g_target.c - target_give, target_remove_powerups*, target_delay, target_print, target_speaker, target_laser, target_teleporter, target_relay, target_kill, target_location, target_counter, target_objective*, target_boolean, target_gravity, target_shake, target_evosuit, target_turbolift, target_doorlock, target_alert, target_warp, target_deactivate, target_serverchange, target_levelchange, target_holodeck***, target_shaderremap, target_selfdestruct, target_safezone, target_shiphealth;
 //g_trigger.c - trigger_multiple, trigger_always, trigger_push, target_push, trigger_teleport, trigger_hurt, func_timer, trigger_transporter, trigger_radiation;
 //g_turrets.c - misc_turret, misc_laser_arm;
 //g_ui.c - ui_transporter, ui_msd, ui_holodeck;
@@ -14,6 +14,7 @@
 
 // *might be removed
 // **Description needs to be worked on
+// ***Entity is currently disabled (usually denied from spawning or freed at spawn)
 
 /*QUAKED misc_model_breakable (1 0 0) (-16 -16 -16) (16 16 16) SOLID AUTOANIMATE DEADSOLID NO_DMODEL INVINCIBLE X X X REPAIRABLE X
 -----DESCRIPTION-----
@@ -269,6 +270,17 @@ none
 "targetname" - have whatever is required point at this.
 */
 
+/*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
+-----DESCRIPTION-----
+Merely a fancy name for info_notnull.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"targetname" - have whatever is required point at this.
+*/
+
 
 /*QUAKED misc_model (1 0 0) (-16 -16 -16) (16 16 16) CAST_SHADOWS CLIP_MODEL FORCE_META 
 -----DESCRIPTION-----
@@ -477,27 +489,17 @@ none
 
 /*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8) SELF
 -----DESCRIPTION-----
-When used fires it's target after a delay of 'wait' seconds
+When used fires it'd target after a delay of 'wait' seconds
 
 -----SPAWNFLAGS-----
-1: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+1: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are not called by their targetname (e.g. swapname))
 
 -----KEYS-----
-"wait" seconds to pause before firing targets.
-"random" delay variance, total delay = delay +/- random seconds
-*/
+"wait" - seconds to pause before firing targets.
+"random" - delay variance, total delay = delay +/- random seconds
 
-
-/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8) TEAMSCORE
------DESCRIPTION-----
-The Activator is given 'count' points.
-This is useless in RPG-X
-
------SPAWNFLAGS-----
-1: TEAMSCORE - points are added to activator's team's score, not the individual
-
------KEYS-----
-"count" - number of points to add, default 1
+"luaUse" - lua function to call at the beginning of the delay
+luaThink - lua function to call at end of delay
 */
 
 
@@ -514,7 +516,6 @@ By default every client get's the message however this can be limited via spawnf
 -----KEYS-----
 "message"	text to print
 */
-
 
 /*QUAKED target_speaker (1 0 0) (-8 -8 -8) (8 8 8) LOOPED_ON LOOPED_OFF GLOBAL ACTIVATOR 
 -----DESCRIPTION-----
@@ -540,71 +541,133 @@ Using a target_speaker designed to play it's sound once will play that sound.
 "random" - wait variance, default is 0, delay would be wait +/- random
 */
 
-
 /*QUAKED target_laser (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
+-----DESCRIPTION-----
 When triggered, fires a laser.  You can either set a target or a direction.
+
+-----SPAWNFLAGS-----
+1: START_ON - will be on at spawn
+
+-----KEYS-----
+"targetname" - when used will toggle on/off
+"target" - point to fire laser at
 */
 
-
 /*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8) VISUAL_FX SUSPENDED DEACTIVATED
+-----DESCRIPTION-----
 The activator will be instantly teleported away.
-VISUAL_FX - Instead of instant teleportation with no FX, entity will play the Star Trek style
-transporter effect and teleport over the course of an 8 second cycle.
-SUSPENDED - Unless this is checked, the player will materialise on top of the first solid
-surface underneath the entity
 
+-----SPAWNFLAGS-----
+1: VISUAL_FX - Instead of instant teleportation with no FX, entity will play the Star Trek style
+	transporter effect and teleport over the course of an 8 second cycle.
+	
+	NB-If using the transporter VISUAL_FX, place the target entity so it's right on top of
+	the surface you want the player to appear on.  It's been hardcoded to take this offset into
+	account only when the VISUAL_FX flag is on
+	
+2: SUSPENDED - Unless this is checked, the player will materialise on top of the first solid surface underneath the entity
+4: DEACTIVATED - Teleporter will be deactiavted at spawn
+
+-----KEYS-----
 "targetname" - Any entities targeting this will activate it when used.
-"target"     - Name of one or more notnull entities that the player teleport to.
-"swapname"	 - Activate/Deactivate (Using entity needs SELF/NOACTIVATOR)
-
-NB-If using the transporter VISUAL_FX, place the target entity so it's right on top of
-the surface you want the player to appear on.  It's been hardcoded to take this offset into
-account only when the VISUAL_FX flag is on.
+"target" - Name of one or more info_notnull entities that the player teleport to.
+"swapname" - Activate/Deactivate (Using entity needs SELF/NOACTIVATOR)
 */
 
 
 /*QUAKED target_relay (.5 .5 .5) (-8 -8 -8) (8 8 8) RED_ONLY BLUE_ONLY RANDOM SELF
+-----DESCRIPTION-----
 This doesn't perform any actions except fire its targets.
-The activator can be forced to be from a certain team.
-if RANDOM is checked, only one of the targets will be fired, not all of them
+It is also a nice function-caller via luaUse.
 
-SELF	use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+-----SPAWNFLAGS-----
+1: RED_ONLY - Only members from the red team can use this
+2: BLUE_ONLY - Only members from the blue team can use this
+4: RANDOM - only one of the entities with matching targetname will be fired, not all of them
+8: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are not called by their targetname (e.g. swapname))
+
+-----KEYS-----
+"targetname" - calling this will fire the entity
+"target" - targetname of entities to fire
+"luaUse" - lua function to call on use
 */
 
 
 /*QUAKED target_kill (.5 .5 .5) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 Kills the activator.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"targetanme" - the activator calling this will be telefragged if client
 */
-
-
-/*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for in-game calculation, like jumppad targets.
-*/
-
 
 /*QUAKED target_location (0 0.5 0) (-8 -8 -8) (8 8 8)
-Set "message" to the name of this location.
-Set "count" to 0-7 for color.
-0:white 1:red 2:green 3:yellow 4:blue 5:cyan 6:magenta 7:white
+-----DESCRIPTION-----
+Location to display in the player-list (usually Tab)
+Closest target_location in sight used for the location, if nonein sight, closest in distance
 
-Closest target_location in sight used for the location, if none
-in site, closest in distance
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"message" - location name to display. Can be colorized using '^X' where X is one of the following numbers
+	0:white 1:red 2:green 3:yellow 4:blue 5:cyan 6:magenta 7:white
+
+-----LocEdit-----
+target_locations can also be spawned by a <mapname>.locations-file.
+While creating this was hard work for many years, a new command makes it quite easy: LocEdit
+
+There are a few basic commands:
+/locedit start <type>
+	This will open the file. 
+	For type set 1 if you'd like to restrict a location so only admins can autorise transportation there.
+	Else set 0.
+
+For Type = 0: /locedit add "<location-name>"
+For Type = 1: /locedit add <protected> "<location-name>"
+	this will add a new location to the list.
+	It will grab your current position as well as your yaw-angle (around the Z-Axis) and dump them to the file with the parameters.
+	If you set protected 1 only admins can authorise transportation there.
+	location-name can be colorized as stated above. You need to put it in "".
+
+/locedit nl
+	this will simply add an empty line. If you have to manually edit the file at a later date this will help you get oriented.
+
+/locedit stop
+	this will close the file.
 */
 
 
-/*QUAKED target_counter (1.0 0 0) (-4 -4 -4) (4 4 4) x x x x x x x x
+/*QUAKED target_counter (1.0 0 0) (-4 -4 -4) (4 4 4)
+-----DESCRIPTION-----
 Acts as an intermediary for an action that takes multiple inputs.
+After the counter has been triggered "count" times it will fire all of it's targets and remove itself.
 
-After the counter has been triggered "count" times (default 2), it will fire all of it's targets and remove itself.
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"count" - number of usages required before targets are fired. Default is 2
+"targetname" - Will reduce count by one.
+"target" will be fired once count hit's 0
 */
 
 
 /*QUAKED target_objective (1.0 0 0) (-4 -4 -4) (4 4 4)
+-----DESCRIPTION-----
 When used, the objective in the <mapname>.efo with this objective's "count" will be marked as completed
-
-count - number of objective (as listed in the maps' <mapname>.efo)
-
 NOTE: the objective with the lowest "count" will be considered the current objective
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"count" - number of objective (as listed in the maps' <mapname>.efo)
+"targetname" - when fired marks objective as complete
+
 */
 
 
@@ -878,39 +941,60 @@ Forumla is: dps = dmg / wait
 // RPG-X target_*
 
 /*QUAKED target_boolean (.5 .5 .5) (-8 -8 -8) (8 8 8) START_TRUE SWAP_FIRE SELF
+-----DESCRIPTION-----
 Acts as an if statement. When fired normaly if true it fires one target, if false it fires another.
-START_TRUE		the boolean starts true.
-SWAP_FIRE		when the swap command is issued it will also fire the new target.
-SELF   			use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
 
-"targetname"	this when fired will fire the target according to which state the boolean is in
-"swapname"		this when fired will swap the boolean from one state to the opposite
-"truename"		this when fired will swap the boolean's state to true
-"falsename"		this when fired will sawp the boolean's state to false
-"truetarget"	this will be fired if the boolean is true then the targetname is recieved
-"falsetarget"	this will be fired if the boolean is false then the targetname is recieved
+-----SPAWNFLAGS-----
+1: START_TRUE - the boolean starts true.
+2: SWAP_FIRE - when the swap command is issued it will also fire the new target.
+4: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are not called by their targetanme)
+
+-----KEYS-----
+"targetname" - this when fired will fire the target according to which state the boolean is in
+"swapname" - this when fired will swap the boolean from one state to the opposite
+"truename" - this when fired will swap the boolean's state to true
+"falsename" - this when fired will sawp the boolean's state to false
+"truetarget" - this will be fired if the boolean is true then the targetname is recieved
+"falsetarget" - this will be fired if the boolean is false then the targetname is recieved
 */
 
 /*QUAKED target_gravity (.5 .5 .5) (-8 -8 -8) (8 8 8) PLAYER_ONLY MAP_GRAV
+-----DESCRIPTION-----
 This changes the servers gravity to the ammount set.
-PLAYER_ONLY		If select this will only change the gravity for teh actiator. TiM: an actiator eh?
-MAP_GRAV		Will reset player to the current global gravity.
 
-"gravity"	gravity value (default = g_gravity default = 800)
+-----SPAWNFLAGS-----
+1: PLAYER_ONLY - If select this will only change the gravity for teh actiator. TiM: an actiator eh?
+2: MAP_GRAV - Will reset player to the current global gravity.
+
+-----KEYS-----
+"gravity" - gravity value (default = g_gravity default = 800)
 */
 
 /*QUAKED target_shake (.5 .5 .5) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 When fired every clients monitor will shake as if in an explosion
 
-"wait"	Time that the shaking lasts for in seconds
-"intensity"	Strength of shake
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"wait" - Time that the shaking lasts for in seconds
+"intensity" - Strength of shake
 */
 
 /*QUAKED target_evosuit (.5 .5 .5) (-8 -8 -8) (8 8 8)
-Used to put an evosuit on or off for each player
+-----DESCRIPTION-----
+Grants activating clent the EVA-Suit-Flag with all sideeffects associated.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"targetanme" - entity needs to be used
 */
 
 /*QUAKED target_turbolift (.5 .5 .5) ? x x x x x x x x OFFLINE
+-----DESCRIPTION-----
 Turbolifts are delayed teleporters that send players between
 each other, maintaining their view and position so the transition is seamless.
 If you target this entity with a func_usable, upon activating that useable,
@@ -922,61 +1006,87 @@ up and one for the down driection in order to use this set targetname2 of those 
 If you target any doors with this entity, they will shut and lock for this sequence.
 For the angles, the entity's angle must be aimed at the main set of doors to the lift area.
 
-OFFLINE				Turbolift is offline at start
+-----SPAWNFLAGS-----
+1 - 128: X - Unknown, do not use.
+256: OFFLINE - Turbolift is offline at start
 
-"deck"				- which deck number this is (You can have multiple lifts of the same deck. Entity fails spawn if not specified)
-"deckName"			- name of the main features on this deck (Appears in the deck menu, defaults to 'Unknown')
-"wait"				- number of seconds to wait until teleporting the players (1000 = 1 second, default 3000)
-"soundLoop"			- looping sound that plays in the wait period (Defaults to EF SP's sound. '*' for none)
-"soundEnd"			- sound that plays as the wait period ends. (Defaults to EF SP's sound. '*' for none)
-"soundStart			- sound that plays when the lift starts moving
-"soundStartLength"	- how long the start sound is in seconds
-"waitEnd"			- how long to wait from the lift stopping to the doors opening (default 1000 )
-"swapname"			- toggles turbolift on/off
-"targetShaderName"	- lights off shader
-"falsename"			- lights up
-"truename"			- lights down
-*/
+-----KEYS-----
+"deck" - which deck number this is (You can have multiple lifts of the same deck. Entity fails spawn if not specified)
+"deckName" - name of the main features on this deck (Appears in the deck menu, defaults to 'Unknown')
+	use either this or a <mapname>.turbolift-file to store the strings, not both simultainously
+"wait" - number of seconds to wait until teleporting the players (1000 = 1 second, default 3000)
+"soundLoop" - looping sound that plays in the wait period (Defaults to EF SP's sound. '*' for none)
+"soundEnd" - sound that plays as the wait period ends. (Defaults to EF SP's sound. '*' for none)
+"soundStart - sound that plays when the lift starts moving
+"soundStartLength" - how long the start sound is in seconds
+"soundDeactivate" - sound to play if player tries to use an deactivated turbolift
+"waitEnd" - how long to wait from the lift stopping to the doors opening (default 1000 )
+"swapname" - toggles turbolift on/off
+"targetShaderName" - lights off shader
+"falsename" - lights up
+"truename" - lights down
 
-/*QUAKED target_alert (1 0 0) (-8 -8 -8) (8 8 8) SOUND_TOGGLE SOUND_OFF
-This entity acts like 3-Alert-Conditions scripts.
+-----LUA-----
+Retrofit:
+Turbolifts are a good thing to retrofit, however they have 2 requirements:
+- a Transporter based turbolift (seamless transportation, does not work wit func_train)
+- at least 1 usable at any turbolift location
+If those are fuffilled you can use the following code at level init to set up the turbolift.
+(this is from enterprise-e-v2 and uses the outdated SetKeyValue-Command. Use Set<key> instead)
 
-Any of the func_usables that are used as buttons must have the NO_ACTIVATOR spawnflag.
+		game.Print("--Deck 1 ...");
+			game.Print("---redirecting usables ...");
+				ent = entity.FindBModel(90);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(86);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(87);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(167);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(88);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(89);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+			game.Print("---renaming doors ...");
+				ent = entity.FindBModel(7);
+				ent:SetKeyValue("targetname", "tld1doors");
+				ent = entity.FindBModel(8);
+				ent:SetKeyValue("targetname", "tld1doors");
+			game.Print("---Adding turbolift ...");
+				ent = entity.Spawn();
+				ent.SetupTrigger(ent, 144, 100, 98);
+				ent:SetKeyValue("classname", "target_turbolift");
+				ent:SetKeyValue("targetname", "tld1");
+				ent:SetKeyValue("target", "tld1doors");
+				ent:SetKeyValue("health", "1");
+				ent:SetKeyValue("wait", 3000);
+				entity.CallSpawn(ent);
+				mover.SetPosition(ent, -2976, 8028, 887);
+				mover.SetAngles(ent, 0, 270, 0);
 
-SOUND_TOGGLE		if set the alert sound can be toggled on/off by using the alerts trigger again.
-SOUND_OFF			if SOUND_TOGGLE is set, the alert will be silent at beginning
+Turbolift descriptions have to be added in via <mapname>.turbolift-file.
 
-"greenname"			the trigger for green alert should target this				
-"yellowname"		the trigger for yellow alert should target this				
-"redname"			the trigger for red alert should target this				
-"bluename"			the trigger for blue alert should target this				
-"greentarget"		anything that should be toggled when activating green alert	
-"yellowtarget"		anything that should be toggled when activating yellow alert
-"redtarget"			anything that should be toggled when activating red alert	
-"bluetarget"		anything that should be toggled when activating blue alert	
-"greensnd"			targetname of target_speaker with sound for green alert		
-"yellowsnd"			targetname of target_speaker with sound for yellow alert		
-"redsnd"			targetname of target_speaker with sound for red alert			
-"bluesnd"			targetname of target_speaker with sound for blue alert
-
-----------shader remapping----------
-"greenshader"		shadername of condition green
-"yellowshader"		shadername of condition yellow
-"redshader"			shadername of condition red
-"blueshader"		shadername of condition blue
-
-You can remap multiple shaders by separating them with \n.
-Example: "greenshader"	"textures/alert/green1\ntextures/alert/green2"
+You may also add in a sound to the usable opening the UI. This is described in func_usable.
 */
 
 /*QUAKED target_doorlock (1 0 0) (-8 -8 -8) (8 8 8) PRIVATE
+-----DESCRIPTION-----
 Locks/Unlocks a door.
 
-PRIVATE		if set, lockMsg/unlockMsg are only printed for activator
+-----SPAWNFLAGS-----
+1: PRIVATE - if set, lockMsg/unlockMsg are only printed for activator
 
-"target"    breakable to repair (either it's targetname or it's targetname2)
-"lockMsg"   message printed if door gets locked
-"unlockMsg" message printed if door gets unlocked
+-----KEYS-----
+"target" - breakable to repair (either it's targetname or it's targetname2)
+"lockMsg" - message printed if door gets locked
+"unlockMsg" - message printed if door gets unlocked
 */
 
 /*QUAKED target_repair (1 0 0) (-8 -8 -8) (8 8 8)
@@ -991,47 +1101,67 @@ none
 */
 
 /*QUAKED target_warp (1 0 0) (-8 -8 -8) (8 8 8) START_ON START_EJECTED START_WARP SELF
+-----DESCRIPTION-----
 An entity that manages warp and warpcore.
 
 Any func_usable using this must have NO_ACTIVATOR flag.
 Any target_relay, target_delay, or target_boolean using this must have SELF flag.
 
-START_ON - If set, warpcore is on at start
-START_EJECTED - If set, core is ejected at start
-START_WARP - ship is on warp at start
+-----SPAWNFLAGS-----
+1: START_ON - If set, warpcore is on at start
+2: START_EJECTED - If set, core is ejected at start
+4: START_WARP - ship is on warp at start
+8: SELF - use this for any entity that is called by sth. other than it's targetname (e.g. swapmname)
 
-"swapWarp"		 targetname to toggle warp
-"swapCoreState"	 targetname to toggle core on/off state
-"swapCoreEject"	 targetname to toggle core ejected state
-"warpTarget"	 target to fire when going to warp
-"core"			 target core(func_train)
-"coreSwap"		 target for visibility swap
-"wait"			 time before warp can be toggled again after retrieving the core(seconds)
-"greensnd"		 target_speaker with warp in sound
-"yellowsnd"		 target_speaker with warp out sound
-"redsnd"		 target_speaker with core off sound
-"bluesnd"		 target_speaker with core on sound
+-----KEYS-----
+"swapWarp" - targetname to toggle warp
+"swapCoreState" - targetname to toggle core on/off state
+"swapCoreEject" - targetname to toggle core ejected state
+"warpTarget" - target to fire when going to warp
+"core" - target core(func_train)
+"coreSwap" - target for visibility swap (need SELF-flag for this)
+"wait" - time before warp can be toggled again after retrieving the core(seconds)
+"greensnd" - target_speaker with warp in sound
+"yellowsnd" - target_speaker with warp out sound
+"redsnd" - target_speaker with core off sound
+"bluesnd" - target_speaker with core on sound
+"soundDeactivate" - sound to play if going to warp but core is deactivated/ejected
 */
 
 /*QUAKED target_deactivate (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 This entity can be used to de/activate all func_usables with "target" as targetname2.
 
-"target"	func_usable to de/activate(targetname2).
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - func_usable to de/activate(targetname2).
 */
 
 /*QUAKED target_serverchange (1 0 0) (-8 -8 -8) (8 8 8) START_ON
+-----DESCRIPTION-----
 This will make any client inside it connect to a different server.
-
 Can be toggled by an usable if the usable has NO_ACTIVATOR spawnflag.
 
-"serverNum"	server to connect to (rpg_server<serverNum> cvar)
+-----SPAWNFLAGS-----
+1: START_ON - will allow transfer form spawn on.
+
+-----KEYS-----
+"serverNum" - server to connect to (rpg_server<serverNum> cvar)
 */
 
 
 /*QUAKED target_levelchange (1 0 0) (-8 -8 -8) (8 8 8) 
+-----DESCRIPTION-----
 This will change the map if rpg_allowSPLevelChange is set to 1.
 
-"target" map to load (for example: borg2)
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - map to load (for example: borg2)
+"wait" - time to wait before levelchange (whole numbers only, -1 for instant levelchange, 0 for default = 5)
 */
 
 
@@ -1603,7 +1733,9 @@ In the unlikely event that we do have an origin brush this is the code:
 /*QUAKED fx_spark (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
 -----DESCRIPTION-----
 Emits sparks at the specified point in the specified direction.
-Can be toggled off by being used.
+
+Can be toggled by being used, but use with caution as updates every second instead of every 10 seconds, 
+which means it sends 10 times the information that an untoggleable steam will send.
 
 -----SPAWNFLAGS-----
 1: STARTOFF - Effect will be off at spawn.
@@ -1611,146 +1743,216 @@ Can be toggled off by being used.
 -----KEYS-----
 "targetname" - toggles on/off whenever used
 "target" - ( optional ) direction to aim the sparks in, otherwise, uses the angles set in the editor.
-"wait(2000)" - interval between events (randomly twice as long) 
+"wait" - interval between events, default 2000 ms (randomly twice as long) 
 */
 
 
 /*QUAKED fx_steam (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF 
-Emits steam at the specified point in the specified direction. will point at a target if one is specified.
+-----DESCRIPTION-----
+Emits steam at the specified point in the specified direction. Will point at a target if one is specified.
 
-Use toggleable steam with caution as updates every second instead of every 10 seconds, 
+Can be toggled but use with caution as updates every second instead of every 10 seconds, 
 which means it sends 10 times the information that an untoggleable steam will send.
 
-STARTOFF steam is of at spawn  
+-----SPAWNFLAGS-----
+1: STARTOFF - steam is of at spawn  
 
+-----KEYS-----
 "targetname" - toggles on/off whenever used
 "damage" - damage to apply when caught in steam vent, default - zero damage (no damage). Don't add this unless you really have to.
 */
 
 
 /*QUAKED fx_bolt (0 0 1) (-8 -8 -8) (8 8 8) SPARKS BORG TAPER SMOOTH
+-----DESCRIPTION-----
 Emits blue ( or borg green ) electric bolts from the specified point to the specified point
 
-  SPARKS - create impact sparks, probably best used for time delayed bolts
-  BORG - Make the bolts green
+Can be toggled by being used, but use with caution as updates every second instead of every 10 seconds, 
+which means it sends 10 times the information that an untoggleable steam will send.
 
-  "wait" - seconds between bolts (0 is always on, default is 2.0, -1 for random number between 0 and 5), bolts are always on for 0.2 seconds
-  "damage" - damage per server frame (default 0)
-  "random" - bolt chaos (0.1 = too calm, 0.5 = default, 1.0 or higher = pretty wicked)
+-----SPAWNFLAGS-----
+1: SPARKS - create impact sparks, probably best used for time delayed bolts
+2: BORG - Make the bolts green
+4: TAPER
+8: SMOOTH
+
+-----KEYS-----
+"targetname" - toggles on/off whenever used
+"wait" - seconds between bolts (0 is always on, default is 2.0, -1 for random number between 0 and 5), bolts are always on for 0.2 seconds
+"damage" - damage per server frame (default 0)
+"random" - bolt chaos (0.1 = too calm, 0.5 = default, 1.0 or higher = pretty wicked)
 */
 
-
 /*QUAKED fx_transporter (0 0 1) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 Emits transporter pad effect at the specified point. just rest it flush on top of the pad. 
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
 
 */
 
 
 /*QUAKED fx_drip (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
+Drips of a fluid that fall down from this point.
 
-  "damage" -- type of drips. 0 = water, 1 = oil, 2 = green
-  "random" -- (0...1) degree of drippiness. 0 = one drip, 1 = Niagara Falls
+Can be toggled by being used, but use with caution as updates every second instead of every 10 seconds, 
+which means it sends 10 times the information that an untoggleable steam will send.
+
+-----SPAWNFLAGS-----
+1: STARTOFF - effect is off at spawn
+
+-----KEYS-----
+"targetname" - toggles on/off whenever used
+"damage" - type of drips. 0 = water, 1 = oil, 2 = green
+"random" - (0...1) degree of drippiness. 0 = one drip, 1 = Niagara Falls
 */
 
 
 /*QUAKED fx_fountain (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
+Fountain-Effect as seen iin the Garden of Scilence holodeck Programm.
+This is just one single strain of the original effect (which had all four strains hardcoded)
 
-  STARTOFF - Effect spawns in an off state
+Use with caution as this refreshes 10 times a second.
 
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect spawns in an off state
+
+-----KEYS-----
 "targetname" - name of entity when used turns this ent on/off
-"target" - link to a notnull entity to position where the end point of this FX is
+"target" - link to an info_notnull entity or similar to position where the end point of this FX is
 */
 
 
 /*QUAKED fx_surface_explosion (0 0 1) (-8 -8 -8) (8 8 8) NO_SMOKE LOUDER NODAMAGE
+-----DESCRIPTION-----
 Creates a triggerable explosion aimed at a specific point.  Always oriented towards viewer.
 
-  LOUDER - Cheap hack to make the explosion sound louder.
-  NODAMAGE - Does no damage
+-----SPAWNFLAGS-----
+1: NO_SMOKE - Does not create smoke after explosion
+2: LOUDER - Cheap hack to make the explosion sound louder.
+4: NODAMAGE - Does no damage
 
-  "target" (optional) If no target is specified, the explosion is oriented up
-  "damage" - Damage per blast, default is 50. Damage falls off based on proximity.
-  "radius" - blast radius (default 20)
-  "speed" - camera shake speed (default 12).  Set to zero to turn camera shakes off
-  "targetname" - triggers explosion when used
+-----KEYS-----
+"target" (optional) If no target is specified, the explosion is oriented up
+"damage" - Damage per blast, default is 50. Damage falls off based on proximity.
+"radius" - blast radius (default 20)
+"speed" - camera shake speed (default 12).  Set to zero to turn camera shakes off
+"targetname" - triggers explosion when used
 */
 
 
 /*QUAKED fx_blow_chunks (0 0 1) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 Creates a triggerable chunk spewer that can be aimed at a specific point.
 
-  "target" - (required) Target to spew chunks at
-  "targetname" - triggers chunks when used 
-  "radius" - Average size of a chunk (default 65)
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - (required) Target to spew chunks at
+"targetname" - triggers chunks when used 
+"radius" - Average size of a chunk (default 65)
 
 "material" - default is "metal" - choose from this list:
-	None = 0,
 	Metal = 1
 	Glass = 2
 	Glass Metal = 3
 	Wood = 4
 	Stone = 5
-(there will be more eventually lol.. I hope)
-
 */
 
 /*QUAKED fx_smoke (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
 Emits cloud of thick black smoke from specified point.
 
-  "target" (option) If no target is specified, the smoke drifts up
-  "targetname" - fires only when used
-  "radius" - size of the smoke puffs (default 16.0)
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn
 
+-----KEYS-----
+"target" - optional, if no target is specified, the smoke drifts up
+"targetname" - fires only when used
+"radius" - size of the smoke puffs (default 16.0)
 */
 
 
 /*QUAKED fx_electrical_explosion (0 0 1) (-8 -8 -8) (8 8 8) x x NODAMAGE
+-----DESCRIPTION-----
 Creates a triggerable explosion aimed at a specific point
-NODAMAGE - does no damage
 
-  "target" (optional) If no target is specified, the explosion is oriented up
-  "damage" - Damage per blast, default is 20. Damage falls off based on proximity.
-  "radius" - blast radius (default 50)
-  "targetname" - explodes each time it's used
+-----SPAWNFLAGS-----
+1: NODAMAGE - does no damage
 
+-----KEYS-----
+"target" - optional, if no target is specified, the explosion is oriented up
+"damage" - Damage per blast, default is 20. Damage falls off based on proximity.
+"radius" - blast radius (default 50)
+"targetname" - explodes each time it's used
 */
 
-/*QUAKED fx_phaser (0 0 1) (-8 -8 -8) (8 8 8) SILENT DISRUPTOR
-A phaser effect.
+/*QUAKED fx_phaser (0 0 1) (-8 -8 -8) (8 8 8) NO_SOUND DISRUPTOR
+-----DESCRIPTION-----
+A phaser effect for use as a ship's weapon.
 
-"target"	endpoint
-"wait"		how long the phaser fires
-"scale"		adjust the effects scale, default: 20
-"customSnd" use a custom sound
-"delay"		delay the effect, but not the sound. Can be used to adjust the timing between effect and customSnd
-"impact"	set to 1 if you want an impact to be drawn
+-----SPAWNFLAGS-----
+1: NO_SOUND - will not play it's sound
+2: DISRUPTOR - will display a green disruptor beam
+
+-----KEYS-----
+"target" - endpoint
+"wait" - how long the phaser fires
+"scale" - adjust the effects scale, default: 20
+"customSnd" - use a custom sound
+"delay" - delay the effect, but not the sound. Can be used to adjust the timing between effect and customSnd
+"impact" - set to 1 if you want an impact to be drawn
 */
 
-/*QUAKED fx_torpedo (0 0 1) (-8 -8 -8) (8 8 8) QUANTUM
-A torpedo effect.
+/*QUAKED fx_torpedo (0 0 1) (-8 -8 -8) (8 8 8) QUANTUM NO_SOUND
+-----DESCRIPTION-----
+A torpedo effect for use as a ship's weapon.
 
-QUANTUM		  set this flag if you whant an quantum fx instead of an photon fx
+-----SPAWNFLAGS-----
+1: QUANTUM - set this flag if you whant an quantum fx instead of an photon fx
+2: NO_SOUND - Will not play it's sound
 
-"target"      used for the calculation of the direction
-"wait"		  time in seconds till fx can be used again
-"noise"		  sound to play
-"soundNoAmmo" sound to play if ammo is depleted
-"count"		  ammount of torpedos that can be fired (defaults to -1 = infinite)
-"speed"		  a speed modifier (default: 2.5)
+-----KEYS-----
+"target" - used for the calculation of the direction
+"wait" - time in seconds till fx can be used again
+"noise" - sound to play
+"soundNoAmmo" - sound to play if ammo is depleted
+"count" - ammount of torpedos that can be fired (defaults to -1 = infinite)
+"speed" - a speed modifier (default: 2.5)
 */
 
-/*QUAKED fx_fire (0 0 1) (-8 -8 -8) (8 8 8) 
+/*QUAKED fx_fire (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
 A fire affect based on the adminguns fire effect.
 
-"size"	 how big the fire shoud be (default: 64)
-"angles" fires angles (default: 0 0 0 = UP)
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn
+
+-----KEYS-----
+"targetname" - toggles effect on/off whenver used, requires 10x more thinks
+"size" - how big the fire shoud be (default: 64)
+"angles" - fires angles (default: 0 0 0 = UP)
 */
 
-/*QUAKED fx_particle_fire (0 0 1) (-8 -8 -8) (8 8 8) 
+/*QUAKED fx_particle_fire (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
 A particle based fire effect. Use this sparingly as it is an fps killer.
 If you want to use a bunch of fires use fx_fire.
 
-"size"	how big the fire shoud be (default: 10)
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn
+
+-----KEYS-----
+"targetname" - toggles effect on/off whenver used, requires 10x more thinks
+"size" - how big the fire shoud be (default: 10)
 */
 
 // RPG-X ui_*
@@ -1779,11 +1981,19 @@ Opens a Master Systems Display. It will display data grabbed from a target_shiph
 */
 
 /*QUAKED target_shaderremap (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 This will remap the shader "falsename" with shader "truename" and vice versa.
 It will save you some vfx-usables.
 
 This Entity only works on RPGXEF
 
+-----SPAWNFLAGS-----
+none
+
+------KEYS-----
+"targetname" - when used will toggle the shaders
+"falsename" - shader taht is ingame at spawn
+"truename" - shader that will replace it
 */
 
 /*QUAKED ui_holodeck (.5 .5 .5) ? DISABLED
@@ -1799,120 +2009,173 @@ Will open  the holodeck UI once this is implemented. For now this will not spawn
 */
 
 /*QUAKED fx_cooking_steam (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
 Emits slowly moving steam puffs that rise up from the specified point
 
-  "targetname" - toggles effect on/off whenver used
-  "distance" - smoke puff size ( default 3.0 )
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn
+
+-----KEYS-----
+"targetname" - toggles effect on/off whenver used
+"distance" - smoke puff size ( default 3.0 )
 */
 
-/*QUAKED fx_elecfire (0 0 1) (-8 -8 -8) (8 8 8)
+/*QUAKED fx_elecfire (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
 Emits sparks at the specified point in the specified direction
 Spawns smoke puffs.
+
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn
+
+-----KEYS-----
+"targetname" - toggles effect on/off whenver used
 */
 
 /*QUAKED fx_forge_bolt (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF DELAYED SPARKS PULSE TAPER SMOOTH
+-----DESCRIPTION-----
+CURRENTLY DISABLED
 Emits freaky orange bolts, sending pulses down the length of the beam if desired
 
-  STARTOFF - effect is initially off
-  DELAYED - bolts are time delayed, otherwise effect continuously fires
-  SPARKS - create impact sparks, probably best used for time delayed bolts
-  PULSE - sends a pulse down the length of the beam.
-  TAPER - Bolt will taper on one end
-  SMOOTH - Bolt texture stretches across whole length, makes short bolts look much better.
+-----SPAWNFLAGS-----
+1: STARTOFF - effect is initially off
+2: DELAYED - bolts are time delayed, otherwise effect continuously fires
+4: SPARKS - create impact sparks, probably best used for time delayed bolts
+8: PULSE - sends a pulse down the length of the beam.
+16: TAPER - Bolt will taper on one end
+32: SMOOTH - Bolt texture stretches across whole length, makes short bolts look much better.
 
-  "wait" - seconds between bolts, only valid when DELAYED is checked (default 2)
-  "damage" - damage per server frame (default 0)
-  "targetname" - toggles effect on/off each time it's used
-  "random" - bolt chaos (0.1 = too calm, 0.4 = default, 1.0 or higher = pretty wicked)
-  "radius" - radius of the bolt (3.0 = default) 
+-----KEYS-----
+"wait" - seconds between bolts, only valid when DELAYED is checked (default 2)
+"damage" - damage per server frame (default 0)
+"targetname" - toggles effect on/off each time it's used
+"random" - bolt chaos (0.1 = too calm, 0.4 = default, 1.0 or higher = pretty wicked)
+"radius" - radius of the bolt (3.0 = default) 
 */
 
-/*QUAKED fx_plasma (0 0 1) (-8 -8 -8) (8 8 8) START_OFF
+/*QUAKED fx_plasma (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
+CURRENTLY DISABLED
 Emits plasma jet directed from the specified point to the specified point. Jet size scales based on length.  
 
-  "target" (required)
-  "targetname" - fires only when used
-  "startRGBA" - starting cone color, Red Green Blue Alpha 
-	(default  100 180 255 255) Light-Blue
-  "finalRGBA" - final cone color, Red Green Blue Alpha 
-	(default  0 0 180 0) Blue
-  "damage" - damage PER FRAME, default zero
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn
 
+-----KEYS-----
+"target" - (required) Direction of jet
+"targetname" - fires only when used
+"startRGBA" - starting cone color, Red Green Blue Alpha 
+	(default  100 180 255 255) Light-Blue
+"finalRGBA" - final cone color, Red Green Blue Alpha 
+	(default  0 0 180 0) Blue
+"damage" - damage PER FRAME, default zero
 */
 
 /*QUAKED fx_energy_stream (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
+CURRENTLY DISABLED
 Creates streaming particles that travel between two points--for Stasis level. ONLY orients vertically.
-	
- "damage" - amount of damage to player when standing in the stream (default 0)
- "target" (required) End point for particle stream.
- "targetname" - toggle effect on/off each time used.
+
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn
+
+-----KEYS-----
+"damage" - amount of damage to player when standing in the stream (default 0)
+"target" - (required) End point for particle stream.
+"targetname" - toggle effect on/off each time used.
 */
 
 /*QUAKED fx_transporter_stream (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+-----DESCRIPTION-----
+CURRENTLY DISABLED
 Creates streaming particles that travel between two points--for forge level.
-	
-"target" (required) End point for particle stream.
-"targetname" - fires only when used
 
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect will be off at spawn
+
+-----KEYS-----
+"target" - (required) End point for particle stream.
+"targetname" - fires only when used
 */
 
-/*QUAKED fx_explosion_trail (0 0 1) (-8 -8 -8) (8 8 8)
+//*QUAKED fx_explosion_trail (0 0 1) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
+CURRENTLY DISABLED
 Creates a triggerable explosion aimed at a specific point.  Always oriented towards viewer.
 
-  "target" (required) - end point for the explosion
-  "damage" - Damage per blast, default is 150. Damage falls off based on proximity.
-  "radius" - blast radius/explosion size (default 80)
-  "targetname" - triggers explosion when used
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - (required) end point for the explosion
+"damage" - Damage per blast, default is 150. Damage falls off based on proximity.
+"radius" - blast radius/explosion size (default 80)
+"targetname" - triggers explosion when used
 */
 
 /*QUAKED fx_borg_energy_beam (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF CONE
+-----DESCRIPTION-----
+CURRENTLY DISABLED
 A borg tracing beam that either carves out a cone or swings like a pendulum, sweeping across an area. 
-	
-STARTOFF - The trace beam will start when used.
-CONE - Beam traces a cone, default trace shape is a pendulum, sweeping across an area.
 
+-----SPAWNFLAGS-----
+1: STARTOFF - The trace beam will start when used.
+2: CONE - Beam traces a cone, default trace shape is a pendulum, sweeping across an area.
+
+-----KEYS-----
 "radius" - Radius of the area to trace (default 30)
 "speed" - How fast the tracer beam moves (default 100)
 "startRGBA" - Effect color specified in RED GREEN BLUE ALPHA (default 0 255 0 128)
-"target" (required) End point for trace beam, should be placed at the very center of the trace area.
+"target" - (required) End point for trace beam, should be placed at the very center of the trace area.
 "targetname" - fires only when used
-
 */
 
-/*QUAKED fx_shimmery_thing (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF TAPER NO_AUTO_SHUTOFF
-Creates a shimmering cone or cylinder of colored light that stretches between two points.  Looks like a teleporter type thing.  Will also autoshut off
+/*QUAKED fx_shimmery_thing (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF TAPER 
+-----DESCRIPTION-----
+Creates a shimmering cone or cylinder of colored light that stretches between two points.  Looks like a teleporter type thing. 
 
-  STARTOFF - Effect turns on when used.
-  TAPER - Cylinder tapers toward the top, creating a conical effect
-  NO_AUTO_SHUTOFF - Tells the effect that it should never try to shut itself off.
+-----SPAWNFLAGS-----
+1: STARTOFF - Effect turns on when used.
+2: TAPER - Cylinder tapers toward the top, creating a conical effect
 
-  "radius" - radius of the cylinder or of the base of the cone. (default 10)
-  "target" (required) End point for stream.
-  "targetname" - fires only when used
-  "delay" - how long to stay on before turning itself off ( default 2000 - 2 seconds )
-
+-----KEYS-----
+"radius" - radius of the cylinder or of the base of the cone. (default 10)
+"target" - (required) End point for stream.
+"targetname" - fires only when used
+"wait" - how long in ms to stay on before turning itself off ( default 2 seconds (2000 ms), -1 to disable auto shut off )
 */
 
-/*QUAKED fx_borg_bolt (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
+/*QUAKED fx_borg_bolt (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF NO_PROXIMITY_FX
+-----DESCRIPTION-----
+CURRENTLY DISABLED
 Emits yellow electric bolts from the specified point to the specified point.
 Emits showers of sparks if the endpoints are sufficiently close.
+Has an Ugly FT-Think, so don't use unless needed
 
-  STARTOFF - effect is initially off
+-----SPAWNFLAGS-----
+STARTOFF - effect is initially off
+NO_PROXIMITY_FX - Will deactivate proximity-fx associated with this. Check it if you don't use movers as else the entity thinks EVERY frame (like on borg2)
 
-  "target" (required) end point of the beam.  Can be a func_train, info_notnull, etc.
-  "target2" (optional) starting point of the beam if the start point is moving,
-			otherwise, the start point is the origin of the fx_borg_bolt entity.
-  "targetname" - toggles effect on/off each time it's used
+-----KEYS-----
+"target" - (required) end point of the beam. Can be a func_train, info_notnull, etc.
+"message" - moves start point of the beam to this ent's origin. Only useful if the beam connects 2 movers.
+"targetname" - toggles effect on/off each time it's used
 */
 
 /*QUAKED target_shiphealth (1 0 0) (-8 -8 -8) (8 8 8)
-This Entity manages a ships healt. Ship Health is reduced via administrative/delegable console command "/shipdamage [damage]"
+-----DESCRIPTION-----
+This Entity manages a ships health. Ship Health is reduced via administrative/delegable console command "/shipdamage [damage]"
 Repairing is based on a % per minute basis for both shields and hull.
 The entity features interconnectivity with other systems such as warpdrive or turbolift with a random yet incresing chance to turn them off whenever hulldamage occurs. This includes Shields.
 Further more the entity will automatically toggle red alert should it be any other and will activate shields if alert is set to any but green.
-If hull health hit's 0 it will kill any client outside an active savezone.
+If hull health hit's 0 it will kill any client outside an active safezone.
 
-Keys:
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+Required Keys (If any of them are not given the entity will be removed at spawn):
+targetname: Name of the Ship/Station this entity represents. See target_safezone for additional use of this key.
 health: Total Hull strength
 splashRadius: total shield strenght
 angle: Hull repair in % per minute
@@ -1922,11 +2185,105 @@ greensound: Things to fire every time damage occurs (like FX)
 falsetarget: truename/swapCoreState for target_warp
 bluename: swapname for target_turbolift
 bluesound: swapname for ui_transporter
-falsename: redname for target_alert
+falsename: falsename/redname for target_alert
+
+"model" - path to a shader with a MSD-Display (ship) to show. Default will be the Daedalus Class
+
+We're sponsoring a varayity, which were created by Alexander Richardson.
+The shaders for these are stowed in scripts/msd.shader in the pakX.pk3.
+It contains two versions: One for Texturing in Level design (like a display) and opne for the UI.
+To retrieve such an image simply look for the MSD-Folder in your radiants texture browser
+For personalized MSD's see segment below.
+
+Ship-Classname || Online Source || Shader-Name (for <type> insert gfx for UI-Shader and textures for texture shader)
+Constellation Class || http://lcarsgfx.wordpress.com/2012/09/12/constellation-sisyphus/ || <type>/msd/constellation
+Danube Runabout || http://lcarsgfx.wordpress.com/2012/06/30/the-blue-danube/ || <type>/msd/runabout
+Nova Class || http://lcarsgfx.wordpress.com/2012/06/13/can-you-tell-what-it-is-yet-2/ || <type>/msd/nova
+Galaxy Class || http://lcarsgfx.wordpress.com/2012/06/10/galaxy-class-redux-an-update/ || <type>/msd/galaxy
+Daedalus Class || http://lcarsgfx.wordpress.com/2011/12/10/daedalus-father-of-icarus/ || <type>/msd/daedalus
+Nebula Class || http://lcarsgfx.wordpress.com/2011/12/08/entering-the-nebula-part-2/ || <type>/msd/nebula
+Intrepid Class || http://lcarsgfx.wordpress.com/2011/05/16/an-intrepid-undertaking/ || <type>/msd/intrepid
+USCM (Alien) || http://lcarsgfx.wordpress.com/2010/08/10/in-space-no-one-can-hear-you-scream/ || Image yet to come
+Olympic Class || http://lcarsgfx.wordpress.com/2010/09/11/the-olympic-class/ || <type>/msd/olympic
+Steamrunner Class || http://lcarsgfx.wordpress.com/2010/08/15/full-steam-ahead/ || Image yet to come
+Oberth Class || http://lcarsgfx.wordpress.com/2010/08/12/im-a-doctor-not-a-science-vessel/ || <type>/msd/oberth
+Soverign Class || http://lcarsgfx.wordpress.com/2010/03/01/sovereign-of-the-stars/ || <type>/msd/soverign
+Excelsior Class (Retro Design) || http://lcarsgfx.wordpress.com/2010/01/01/retro-excelsior/ || <type>/msd/excelsior-retro
+Excelsior Class || http://lcarsgfx.wordpress.com/2009/12/28/excelsior-class/ || <type>/msd/excelsior
+Springfield Class || http://lcarsgfx.wordpress.com/2009/12/25/not-the-springfield-from-the-simpsons/ || <type>/msd/springfield
+Defiant Class (8 Decks) || http://lcarsgfx.wordpress.com/2009/12/10/scaling-the-defiant/ || <type>/msd/defiant8
+Defiant Class (4 Decks) || http://lcarsgfx.wordpress.com/2009/12/06/the-face-of-defiance/ || <type>/msd/defiant4
+Miranda Class || http://lcarsgfx.wordpress.com/2009/12/05/miranda/ || <type>/msd/miranda
+Centaur Class || http://lcarsgfx.wordpress.com/2009/12/05/centaur-comes-galloping/ ||  <type>/msd/centaur
+Constitution Class || http://lcarsgfx.wordpress.com/2009/11/28/its-a-constitution/ || <type>/msd/constitution
+Ambassador Class || http://lcarsgfx.wordpress.com/2009/11/27/having-the-ambassador-round-for-dinner/ || <type>/msd/ambassador
+Cern Class || http://lcarsgfx.wordpress.com/2009/11/23/cern-class-by-john-eaves/ || <type>/msd/cern
+Akira Class || http://lcarsgfx.wordpress.com/2009/11/21/akira-ra-ra-ra/ || <type>/msd/akira
+Norway Class || http://lcarsgfx.wordpress.com/2009/11/21/norway-or-no-way/ || <type>/msd/norway
+New Orleans Class || http://lcarsgfx.wordpress.com/2009/11/16/the-new-orleans/ || <type>/msd/neworleans
+Cheyenne Class || http://lcarsgfx.wordpress.com/2009/11/16/cheyenne-class-msd/ || <type>/msd/cheyenne
+Sabre Class || http://lcarsgfx.wordpress.com/2009/11/07/sabre-rattling/ || <type>/msd/sabre
+
+-----Personalized MSD's-----
+Alexander is doing personalized variations og his MSD's in terms of Ship-Names and Registry-Numbers
+(as long as they do not have suffix-letters). If you'd like one you may contact him via E-Mail and request such a modification.
+In that request please also ask hom for a resulution of 2000px across (long side) as the game requires
+images to be displayed as MSD's to be roughly 2:1 and 2000 px is near the upper limit of what the game can handle.
+Also please ask him to give you the image as an *.jpg-file.
+
+Once you have the file put it in a subfolder (e.g. gfx) in either baseEF or RPG-X2.
+After that create a scripts/msd_shipname_registry.shader file (registry is optional, 
+however it is useful in avoiding collitions with ships of similar names)
+In that file add the following short script: 
+
+gfx/msd/akira //this will be the path to the image for the UI
+{
+	{
+		map textures/msd/akira.jpg //this will be the image you will use
+		blendFunc add //this will remove the black background. I might find a better solution...
+	}
+}
+
+textures/msd/akira //this will be the image you will use for texturing
+{
+	surfaceparm nolightmap
+	surfaceparm nomarks
+	{
+		map textures/msd/akira.jpg //this will be the image you will use
+	}
+	{
+		map textures/engineering/glass1.tga //this segment creates the glass effect to make it look like a display
+		blendfunc gl_one gl_one_minus_src_color
+		rgbGen identity
+		tcMod scale 3 3
+		tcGen environment
+	}
+}
+
+For distribution put both files (including their relative paths) in a *.pk3 file.
 */
 
-/*QUAKED target_safezone (1 0 0) ? STARTON
-This is a safezone for the self destruct sequence.
+/*QUAKED target_safezone (1 0 0) ? SPAWN_SAFE SHIP
+-----DESCRIPTION-----
+This is a safezone for when the ship/station is destroyed via shiphelath or selfdestruct.
+It is used like a trigger and requires a targetname or else it will be removed at spawn.
+
+-----SPAWNFLAGS-----
+1: SPAWN_SAFE - Entity is spawned in it's Safe configurartion
+2: SHIP - iwill mark this safezone as a ship safezone
+
+-----KEYS-----
+"targetname" - when used will toggle safe/unsafe
+
+-----USAGE-----
+Usage for Escape Pods and similar:
+Fill your escape pod Interior with this trigger and have it targeted by a func_usable/target_relay/target_delay to toggle it between safe and unsafe states.
+
+Usage for multiple ships (and stations) like on rpg_runabout:
+Surround your entire ship with this trigger (or it's seperate elements with one each) and set it to STARTON and SHIP (spawnflags = 3). 
+Have it's targetname match the targetname of it's target_shiphealth-counterpart exactly (case-dependent) to automatically switch this safezone to unsafe should it be about to die.
+In case of a selfdestruct you will need to enter the targetname to automatically switch it to unsafe 50ms prior to the countdowns end.
+To get the correct one use the /safezonelist-command 
 */
 
 /*QUAKED cinematic_camera (0 0.5 0) (-4 -4 -4) (4 4 4)
@@ -1954,4 +2311,74 @@ A bmodel that just sits there and opens when a player gets close to it.
 "targetname" - will open the door
 "swapname" - will lock the door (SELF/NO_ACTIVATOR needed)
 "wait" - time to wait before closing, -1 for manual trigger, default is 5 seconds
+*/
+
+/*QUAKED target_alert (1 0 0) (-8 -8 -8) (8 8 8) SOUND_TOGGLE SOUND_OFF
+-----DESCRIPTION-----
+This entity acts like 3-Alert-Conditions scripts.
+
+Any of the func_usables that are used as buttons must have the NO_ACTIVATOR spawnflag.
+
+-----SPAWNFLAGS-----
+1: SOUND_TOGGLE - if set the alert sound can be toggled on/off by using the alerts trigger again.
+2: SOUND_OFF - if SOUND_TOGGLE is set, the alert will be silent at beginning
+
+-----KEYS-----
+"greenname" - the trigger for green alert should target this				
+"yellowname" - the trigger for yellow alert should target this				
+"redname" - the trigger for red alert should target this				
+"bluename" - the trigger for blue alert should target this				
+"greentarget" - anything that should be toggled when activating green alert	
+"yellowtarget" - anything that should be toggled when activating yellow alert
+"redtarget" - anything that should be toggled when activating red alert	
+"bluetarget" - anything that should be toggled when activating blue alert	
+"greensnd" - targetname of target_speaker with sound for green alert		
+"yellowsnd" - targetname of target_speaker with sound for yellow alert		
+"redsnd" - targetname of target_speaker with sound for red alert			
+"bluesnd" - targetname of target_speaker with sound for blue alert
+
+shader remapping:
+"greenshader" - shadername of condition green
+"yellowshader" - shadername of condition yellow
+"redshader" - shadername of condition red
+"blueshader" - shadername of condition blue
+
+You can remap multiple shaders by separating them with \n.
+Example: "greenshader"	"textures/alert/green1\ntextures/alert/green2"
+*/
+
+/*QUAKED target_holodeck (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
+CURRENTLY DISABLED
+target for ui_holodeck
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
+*/
+
+/*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8) FREE COUNTDOWN
+-----DESCRIPTION-----
+DO NOT USE! This just sits here purely for documantation.
+This entity manages the self destruct.
+For now this should only be used via the selfdestruct console command, however it might be usable from within the radiant at a later date.
+Should this thing hit 0 the killing part for everyone outside a target_safezone will be done automatically.
+
+-----SPAWNFLAGS-----
+1: FREE - Entity will free once the countdown has ended one way or another
+2: COUNTDOWN - will think every .1 secs to display a running countdown.
+
+-----KEYS-----
+"wait" -  total Countdown-Time in secs
+"count" - warning intervall up to 60 secs in secs
+"n00bCount" - warning intervall within 60 secs in secs
+"health" - warning intervall within 10 secs in secs
+"flags" - are audio warnings 1 or 0?
+"bluename" - target_safezone this thing affects (multi-ship-maps only) will switch it unsafe at T-50ms
+"target" - Things like fx to fire once the countdown hits 0
+
+"damage" - leveltime of countdowns end
+"spawnflags" - 1 tells ent to free once aborted
 */

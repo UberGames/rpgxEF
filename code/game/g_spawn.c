@@ -161,7 +161,6 @@ void SP_target_character (gentity_t *ent);
 void SP_target_teleporter( gentity_t *ent );
 void SP_target_relay (gentity_t *ent);
 void SP_target_kill (gentity_t *ent);
-void SP_target_position (gentity_t *ent);
 void SP_target_location (gentity_t *ent);
 void SP_target_push (gentity_t *ent);
 void SP_target_counter (gentity_t *self);
@@ -302,7 +301,7 @@ spawn_t	spawns[] = {
 	{"info_player_deathmatch",		SP_info_player_deathmatch},
 	{"info_player_intermission",	SP_info_player_intermission},
 	{"info_null",					SP_info_null},
-	{"info_notnull",				SP_info_notnull},		// use target_position instead
+	{"info_notnull",				SP_info_notnull},		
 	{"info_camp",					SP_info_camp},
 
 	{"func_plat",					SP_func_plat},
@@ -348,7 +347,7 @@ spawn_t	spawns[] = {
 	{"target_teleporter",			SP_target_teleporter},
 	{"target_relay",				SP_target_relay},
 	{"target_kill",					SP_target_kill},
-	{"target_position",				SP_target_position},
+	{"target_position",				SP_info_notnull},
 	{"target_location",				SP_target_location},
 	{"target_push",					SP_target_push},
 	{"target_counter",				SP_target_counter},

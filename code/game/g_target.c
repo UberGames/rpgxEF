@@ -102,6 +102,8 @@ none
 -----KEYS-----
 none
 */
+
+//hmmm... maybe remove this, not sure.
 void Use_target_remove_powerups( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	if ( !activator || !activator->client ) {
 		return;
@@ -122,11 +124,14 @@ void SP_target_remove_powerups( gentity_t *ent ) {
 When used fires it'd target after a delay of 'wait' seconds
 
 -----SPAWNFLAGS-----
-1: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+1: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are not called by their targetname (e.g. swapname))
 
 -----KEYS-----
-"wait" seconds to pause before firing targets.
-"random" delay variance, total delay = delay +/- random seconds
+"wait" - seconds to pause before firing targets.
+"random" - delay variance, total delay = delay +/- random seconds
+
+"luaUse" - lua function to call at the beginning of the delay
+luaThink - lua function to call at end of delay
 */
 void Think_Target_Delay( gentity_t *ent ) {
 #ifdef G_LUA
@@ -309,7 +314,15 @@ void SP_target_speaker( gentity_t *ent ) {
 //==========================================================
 
 /*QUAKED target_laser (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
+-----DESCRIPTION-----
 When triggered, fires a laser.  You can either set a target or a direction.
+
+-----SPAWNFLAGS-----
+1: START_ON - will be on at spawn
+
+-----KEYS-----
+"targetname" - when used will toggle on/off
+"target" - point to fire laser at
 */
 void target_laser_think (gentity_t *self) {
 	vec3_t	end;
@@ -462,19 +475,24 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 }
 
 /*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8) VISUAL_FX SUSPENDED DEACTIVATED
+-----DESCRIPTION-----
 The activator will be instantly teleported away.
-VISUAL_FX - Instead of instant teleportation with no FX, entity will play the Star Trek style
-transporter effect and teleport over the course of an 8 second cycle.
-SUSPENDED - Unless this is checked, the player will materialise on top of the first solid
-surface underneath the entity
 
+-----SPAWNFLAGS-----
+1: VISUAL_FX - Instead of instant teleportation with no FX, entity will play the Star Trek style
+	transporter effect and teleport over the course of an 8 second cycle.
+	
+	NB-If using the transporter VISUAL_FX, place the target entity so it's right on top of
+	the surface you want the player to appear on.  It's been hardcoded to take this offset into
+	account only when the VISUAL_FX flag is on
+	
+2: SUSPENDED - Unless this is checked, the player will materialise on top of the first solid surface underneath the entity
+4: DEACTIVATED - Teleporter will be deactiavted at spawn
+
+-----KEYS-----
 "targetname" - Any entities targeting this will activate it when used.
-"target"     - Name of one or more notnull entities that the player teleport to.
-"swapname"	 - Activate/Deactivate (Using entity needs SELF/NOACTIVATOR)
-
-NB-If using the transporter VISUAL_FX, place the target entity so it's right on top of
-the surface you want the player to appear on.  It's been hardcoded to take this offset into
-account only when the VISUAL_FX flag is on.
+"target" - Name of one or more info_notnull entities that the player teleport to.
+"swapname" - Activate/Deactivate (Using entity needs SELF/NOACTIVATOR)
 */
 void SP_target_teleporter( gentity_t *self ) {
 	if (!self->targetname) {
@@ -490,11 +508,20 @@ void SP_target_teleporter( gentity_t *self ) {
 //==========================================================
 
 /*QUAKED target_relay (.5 .5 .5) (-8 -8 -8) (8 8 8) RED_ONLY BLUE_ONLY RANDOM SELF
+-----DESCRIPTION-----
 This doesn't perform any actions except fire its targets.
-The activator can be forced to be from a certain team.
-if RANDOM is checked, only one of the targets will be fired, not all of them
+It is also a nice function-caller via luaUse.
 
-SELF	use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
+-----SPAWNFLAGS-----
+1: RED_ONLY - Only members from the red team can use this
+2: BLUE_ONLY - Only members from the blue team can use this
+4: RANDOM - only one of the entities with matching targetname will be fired, not all of them
+8: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are not called by their targetname (e.g. swapname))
+
+-----KEYS-----
+"targetname" - calling this will fire the entity
+"target" - targetname of entities to fire
+"luaUse" - lua function to call on use
 */
 
 void target_relay_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
@@ -545,7 +572,14 @@ void SP_target_relay (gentity_t *self) {
 //==========================================================
 
 /*QUAKED target_kill (.5 .5 .5) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 Kills the activator.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"targetanme" - the activator calling this will be telefragged if client
 */
 void target_kill_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	if(activator)
@@ -558,13 +592,6 @@ void SP_target_kill( gentity_t *self ) {
 	// don't need to send this to clients
 	self->r.svFlags &= SVF_NOCLIENT;
 	trap_LinkEntity(self);
-}
-
-/*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for in-game calculation, like jumppad targets.
-*/
-void SP_target_position( gentity_t *self ){
-	G_SetOrigin( self, self->s.origin );
 }
 
 static void target_location_linkup(gentity_t *ent)
@@ -594,19 +621,43 @@ static void target_location_linkup(gentity_t *ent)
 				level.locationHead = ent;
 			}
 	}
-
-
-
 	// All linked together now
 }
 
 /*QUAKED target_location (0 0.5 0) (-8 -8 -8) (8 8 8)
-Set "message" to the name of this location.
-Set "count" to 0-7 for color.
-0:white 1:red 2:green 3:yellow 4:blue 5:cyan 6:magenta 7:white
+-----DESCRIPTION-----
+Location to display in the player-list (usually Tab)
+Closest target_location in sight used for the location, if nonein sight, closest in distance
 
-Closest target_location in sight used for the location, if none
-in site, closest in distance
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"message" - location name to display. Can be colorized using '^X' where X is one of the following numbers
+	0:white 1:red 2:green 3:yellow 4:blue 5:cyan 6:magenta 7:white
+
+-----LocEdit-----
+target_locations can also be spawned by a <mapname>.locations-file.
+While creating this was hard work for many years, a new command makes it quite easy: LocEdit
+
+There are a few basic commands:
+/locedit start <type>
+	This will open the file. 
+	For type set 1 if you'd like to restrict a location so only admins can autorise transportation there.
+	Else set 0.
+
+For Type = 0: /locedit add "<location-name>"
+For Type = 1: /locedit add <protected> "<location-name>"
+	this will add a new location to the list.
+	It will grab your current position as well as your yaw-angle (around the Z-Axis) and dump them to the file with the parameters.
+	If you set protected 1 only admins can authorise transportation there.
+	location-name can be colorized as stated above. You need to put it in "".
+
+/locedit nl
+	this will simply add an empty line. If you have to manually edit the file at a later date this will help you get oriented.
+
+/locedit stop
+	this will close the file.
 */
 void SP_target_location( gentity_t *self ){
 	self->think = target_location_linkup;
@@ -615,10 +666,18 @@ void SP_target_location( gentity_t *self ){
 	G_SetOrigin( self, self->s.origin );
 }
 
-/*QUAKED target_counter (1.0 0 0) (-4 -4 -4) (4 4 4) x x x x x x x x
+/*QUAKED target_counter (1.0 0 0) (-4 -4 -4) (4 4 4)
+-----DESCRIPTION-----
 Acts as an intermediary for an action that takes multiple inputs.
+After the counter has been triggered "count" times it will fire all of it's targets and remove itself.
 
-After the counter has been triggered "count" times (default 2), it will fire all of it's targets and remove itself.
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"count" - number of usages required before targets are fired. Default is 2
+"targetname" - Will reduce count by one.
+"target" will be fired once count hit's 0
 */
 
 void target_counter_use( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -658,13 +717,20 @@ void SP_target_counter (gentity_t *self)
 }
 
 /*QUAKED target_objective (1.0 0 0) (-4 -4 -4) (4 4 4)
+-----DESCRIPTION-----
 When used, the objective in the <mapname>.efo with this objective's "count" will be marked as completed
-
-count - number of objective (as listed in the maps' <mapname>.efo)
-
 NOTE: the objective with the lowest "count" will be considered the current objective
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"count" - number of objective (as listed in the maps' <mapname>.efo)
+"targetname" - when fired marks objective as complete
+
 */
 
+// Remove this?
 void target_objective_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	gentity_t *tent;
@@ -700,17 +766,21 @@ Phenix
 ================*/
 
 /*QUAKED target_boolean (.5 .5 .5) (-8 -8 -8) (8 8 8) START_TRUE SWAP_FIRE SELF
+-----DESCRIPTION-----
 Acts as an if statement. When fired normaly if true it fires one target, if false it fires another.
-START_TRUE		the boolean starts true.
-SWAP_FIRE		when the swap command is issued it will also fire the new target.
-SELF   			use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are target_boolean, targer_alert, and target_warp)
 
-"targetname"	this when fired will fire the target according to which state the boolean is in
-"swapname"		this when fired will swap the boolean from one state to the opposite
-"truename"		this when fired will swap the boolean's state to true
-"falsename"		this when fired will sawp the boolean's state to false
-"truetarget"	this will be fired if the boolean is true then the targetname is recieved
-"falsetarget"	this will be fired if the boolean is false then the targetname is recieved
+-----SPAWNFLAGS-----
+1: START_TRUE - the boolean starts true.
+2: SWAP_FIRE - when the swap command is issued it will also fire the new target.
+4: SELF - use the entity as activator instead of it's own activator when using it's targets (use this flag for targets that are not called by their targetanme)
+
+-----KEYS-----
+"targetname" - this when fired will fire the target according to which state the boolean is in
+"swapname" - this when fired will swap the boolean from one state to the opposite
+"truename" - this when fired will swap the boolean's state to true
+"falsename" - this when fired will sawp the boolean's state to false
+"truetarget" - this will be fired if the boolean is true then the targetname is recieved
+"falsetarget" - this will be fired if the boolean is false then the targetname is recieved
 */
 
 void target_boolean_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
@@ -793,11 +863,15 @@ void SP_target_boolean (gentity_t *self) {
 }
 
 /*QUAKED target_gravity (.5 .5 .5) (-8 -8 -8) (8 8 8) PLAYER_ONLY MAP_GRAV
+-----DESCRIPTION-----
 This changes the servers gravity to the ammount set.
-PLAYER_ONLY		If select this will only change the gravity for teh actiator. TiM: an actiator eh?
-MAP_GRAV		Will reset player to the current global gravity.
 
-"gravity"	gravity value (default = g_gravity default = 800)
+-----SPAWNFLAGS-----
+1: PLAYER_ONLY - If select this will only change the gravity for teh actiator. TiM: an actiator eh?
+2: MAP_GRAV - Will reset player to the current global gravity.
+
+-----KEYS-----
+"gravity" - gravity value (default = g_gravity default = 800)
 */
 
 void target_gravity_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
@@ -837,11 +911,18 @@ void SP_target_gravity (gentity_t *self) {
 }
 
 /*QUAKED target_shake (.5 .5 .5) (-8 -8 -8) (8 8 8)
-When fired every clients monitor will shake as if in an explition //TiM: explition eh?
+-----DESCRIPTION-----
+When fired every clients monitor will shake as if in an explosion
 
-"wait"	Time that the shaking lasts for in seconds
-"intensity"	Strength of shake
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"wait" - Time that the shaking lasts for in seconds
+"intensity" - Strength of shake
 */
+
+//move this to FX and do a redirect in spawn?
 
 void target_shake_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
 {
@@ -858,7 +939,14 @@ void SP_target_shake (gentity_t *self) {
 }
 
 /*QUAKED target_evosuit (.5 .5 .5) (-8 -8 -8) (8 8 8)
-Used to put an evosuit on or off for each player
+-----DESCRIPTION-----
+Grants activating clent the EVA-Suit-Flag with all sideeffects associated.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"targetanme" - entity needs to be used
 */
 
 void target_evosuit_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
@@ -1459,6 +1547,7 @@ extern void BG_LanguageFilename(char *baseName,char *baseExtension,char *finalNa
 
 /*
 QUAKED target_turbolift (.5 .5 .5) ? x x x x x x x x OFFLINE
+-----DESCRIPTION-----
 Turbolifts are delayed teleporters that send players between
 each other, maintaining their view and position so the transition is seamless.
 If you target this entity with a func_usable, upon activating that useable,
@@ -1470,21 +1559,74 @@ up and one for the down driection in order to use this set targetname2 of those 
 If you target any doors with this entity, they will shut and lock for this sequence.
 For the angles, the entity's angle must be aimed at the main set of doors to the lift area.
 
-OFFLINE				Turbolift is offline at start
+-----SPAWNFLAGS-----
+1 - 128: X - Unknown, do not use.
+256: OFFLINE - Turbolift is offline at start
 
-"deck"				- which deck number this is (You can have multiple lifts of the same deck. Entity fails spawn if not specified)
-"deckName"			- name of the main features on this deck (Appears in the deck menu, defaults to 'Unknown')
-"wait"				- number of seconds to wait until teleporting the players (1000 = 1 second, default 3000)
-"soundLoop"			- looping sound that plays in the wait period (Defaults to EF SP's sound. '*' for none)
-"soundEnd"			- sound that plays as the wait period ends. (Defaults to EF SP's sound. '*' for none)
-"soundStart			- sound that plays when the lift starts moving
-"soundStartLength"	- how long the start sound is in seconds
-"soundDeactivate"	- sound to play if player tries to use an deactivated turbolift
-"waitEnd"			- how long to wait from the lift stopping to the doors opening (default 1000 )
-"swapname"			- toggles turbolift on/off
-"targetShaderName"	- lights off shader
-"falsename"			- lights up
-"truename"			- lights down
+-----KEYS-----
+"deck" - which deck number this is (You can have multiple lifts of the same deck. Entity fails spawn if not specified)
+"deckName" - name of the main features on this deck (Appears in the deck menu, defaults to 'Unknown')
+	use either this or a <mapname>.turbolift-file to store the strings, not both simultainously
+"wait" - number of seconds to wait until teleporting the players (1000 = 1 second, default 3000)
+"soundLoop" - looping sound that plays in the wait period (Defaults to EF SP's sound. '*' for none)
+"soundEnd" - sound that plays as the wait period ends. (Defaults to EF SP's sound. '*' for none)
+"soundStart - sound that plays when the lift starts moving
+"soundStartLength" - how long the start sound is in seconds
+"soundDeactivate" - sound to play if player tries to use an deactivated turbolift
+"waitEnd" - how long to wait from the lift stopping to the doors opening (default 1000 )
+"swapname" - toggles turbolift on/off
+"targetShaderName" - lights off shader
+"falsename" - lights up
+"truename" - lights down
+
+-----LUA-----
+Retrofit:
+Turbolifts are a good thing to retrofit, however they have 2 requirements:
+- a Transporter based turbolift (seamless transportation, does not work wit func_train)
+- at least 1 usable at any turbolift location
+If those are fuffilled you can use the following code at level init to set up the turbolift.
+(this is from enterprise-e-v2 and uses the outdated SetKeyValue-Command. Use Set<key> instead)
+
+		game.Print("--Deck 1 ...");
+			game.Print("---redirecting usables ...");
+				ent = entity.FindBModel(90);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(86);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(87);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(167);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(88);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+				ent = entity.FindBModel(89);
+				ent:SetKeyValue("target", "tld1");
+				ent:SetKeyValue("luaUse", "turbosound");
+			game.Print("---renaming doors ...");
+				ent = entity.FindBModel(7);
+				ent:SetKeyValue("targetname", "tld1doors");
+				ent = entity.FindBModel(8);
+				ent:SetKeyValue("targetname", "tld1doors");
+			game.Print("---Adding turbolift ...");
+				ent = entity.Spawn();
+				ent.SetupTrigger(ent, 144, 100, 98);
+				ent:SetKeyValue("classname", "target_turbolift");
+				ent:SetKeyValue("targetname", "tld1");
+				ent:SetKeyValue("target", "tld1doors");
+				ent:SetKeyValue("health", "1");
+				ent:SetKeyValue("wait", 3000);
+				entity.CallSpawn(ent);
+				mover.SetPosition(ent, -2976, 8028, 887);
+				mover.SetAngles(ent, 0, 270, 0);
+
+Turbolift descriptions have to be added in via <mapname>.turbolift-file.
+
+You may also add in a sound to the usable opening the UI. This is described in func_usable.
 */
 
 void SP_target_turbolift ( gentity_t *self )
@@ -1617,13 +1759,16 @@ END MODIFICATION
 
 //RPG-X | GSIO01 | 08/05/2009
 /*QUAKED target_doorlock (1 0 0) (-8 -8 -8) (8 8 8) PRIVATE
+-----DESCRIPTION-----
 Locks/Unlocks a door.
 
-PRIVATE		if set, lockMsg/unlockMsg are only printed for activator
+-----SPAWNFLAGS-----
+1: PRIVATE - if set, lockMsg/unlockMsg are only printed for activator
 
-"target"    breakable to repair (either it's targetname or it's targetname2)
-"lockMsg"   message printed if door gets locked
-"unlockMsg" message printed if door gets unlocked
+-----KEYS-----
+"target" - breakable to repair (either it's targetname or it's targetname2)
+"lockMsg" - message printed if door gets locked
+"unlockMsg" - message printed if door gets unlocked
 */
 void target_doorLock_use(gentity_t *ent, gentity_t *other, gentity_t* activator) {
 	gentity_t	*target = NULL;
@@ -1675,31 +1820,34 @@ void SP_target_doorLock(gentity_t *ent) {
 
 //RPG-X | GSIO01 | 11/05/2009 | MOD START
 /*QUAKED target_alert (1 0 0) (-8 -8 -8) (8 8 8) SOUND_TOGGLE SOUND_OFF
+-----DESCRIPTION-----
 This entity acts like 3-Alert-Conditions scripts.
 
 Any of the func_usables that are used as buttons must have the NO_ACTIVATOR spawnflag.
 
-SOUND_TOGGLE		if set the alert sound can be toggled on/off by using the alerts trigger again.
-SOUND_OFF			if SOUND_TOGGLE is set, the alert will be silent at beginning
+-----SPAWNFLAGS-----
+1: SOUND_TOGGLE - if set the alert sound can be toggled on/off by using the alerts trigger again.
+2: SOUND_OFF - if SOUND_TOGGLE is set, the alert will be silent at beginning
 
-"greenname"			the trigger for green alert should target this				
-"yellowname"		the trigger for yellow alert should target this				
-"redname"			the trigger for red alert should target this				
-"bluename"			the trigger for blue alert should target this				
-"greentarget"		anything that should be toggled when activating green alert	
-"yellowtarget"		anything that should be toggled when activating yellow alert
-"redtarget"			anything that should be toggled when activating red alert	
-"bluetarget"		anything that should be toggled when activating blue alert	
-"greensnd"			targetname of target_speaker with sound for green alert		
-"yellowsnd"			targetname of target_speaker with sound for yellow alert		
-"redsnd"			targetname of target_speaker with sound for red alert			
-"bluesnd"			targetname of target_speaker with sound for blue alert
+-----KEYS-----
+"greenname" - the trigger for green alert should target this				
+"yellowname" - the trigger for yellow alert should target this				
+"redname" - the trigger for red alert should target this				
+"bluename" - the trigger for blue alert should target this				
+"greentarget" - anything that should be toggled when activating green alert	
+"yellowtarget" - anything that should be toggled when activating yellow alert
+"redtarget" - anything that should be toggled when activating red alert	
+"bluetarget" - anything that should be toggled when activating blue alert	
+"greensnd" - targetname of target_speaker with sound for green alert		
+"yellowsnd" - targetname of target_speaker with sound for yellow alert		
+"redsnd" - targetname of target_speaker with sound for red alert			
+"bluesnd" - targetname of target_speaker with sound for blue alert
 
-----------shader remapping----------
-"greenshader"		shadername of condition green
-"yellowshader"		shadername of condition yellow
-"redshader"			shadername of condition red
-"blueshader"		shadername of condition blue
+shader remapping:
+"greenshader" - shadername of condition green
+"yellowshader" - shadername of condition yellow
+"redshader" - shadername of condition red
+"blueshader" - shadername of condition blue
 
 You can remap multiple shaders by separating them with \n.
 Example: "greenshader"	"textures/alert/green1\ntextures/alert/green2"
@@ -2135,26 +2283,31 @@ void SP_target_alert(gentity_t *ent) {
 
 //RPG-X | GSIO01 | 19/05/2009 | MOD START
 /*QUAKED target_warp (1 0 0) (-8 -8 -8) (8 8 8) START_ON START_EJECTED START_WARP SELF
+-----DESCRIPTION-----
 An entity that manages warp and warpcore.
 
 Any func_usable using this must have NO_ACTIVATOR flag.
 Any target_relay, target_delay, or target_boolean using this must have SELF flag.
 
-START_ON - If set, warpcore is on at start
-START_EJECTED - If set, core is ejected at start
-START_WARP - ship is on warp at start
+-----SPAWNFLAGS-----
+1: START_ON - If set, warpcore is on at start
+2: START_EJECTED - If set, core is ejected at start
+4: START_WARP - ship is on warp at start
+8: SELF - use this for any entity that is called by sth. other than it's targetname (e.g. swapmname)
 
-"swapWarp"		 targetname to toggle warp
-"swapCoreState"	 targetname to toggle core on/off state
-"swapCoreEject"	 targetname to toggle core ejected state
-"warpTarget"	 target to fire when going to warp
-"core"			 target core(func_train)
-"coreSwap"		 target for visibility swap
-"wait"			 time before warp can be toggled again after retrieving the core(seconds)
-"greensnd"		 target_speaker with warp in sound
-"yellowsnd"		 target_speaker with warp out sound
-"redsnd"		 target_speaker with core off sound
-"bluesnd"		 target_speaker with core on sound
+-----KEYS-----
+"swapWarp" - targetname to toggle warp
+"swapCoreState" - targetname to toggle core on/off state
+"swapCoreEject" - targetname to toggle core ejected state
+"warpTarget" - target to fire when going to warp
+"core" - target core(func_train)
+"coreSwap" - target for visibility swap (need SELF-flag for this)
+"wait" - time before warp can be toggled again after retrieving the core(seconds)
+"greensnd" - target_speaker with warp in sound
+"yellowsnd" - target_speaker with warp out sound
+"redsnd" - target_speaker with core off sound
+"bluesnd" - target_speaker with core on sound
+"soundDeactivate" - sound to play if going to warp but core is deactivated/ejected
 */
 void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t* activator);
 
@@ -2300,10 +2453,14 @@ void SP_target_warp(gentity_t *ent) {
 
 //RPG-X | GSIO01 | 19/05/2009 | MOD END
 /*QUAKED target_deactivate (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 This entity can be used to de/activate all func_usables with "target" as targetname2.
 
-"target"	func_usable to de/activate(targetname2).
-"soundDeactivate" sound to play if going to warp but core is deactivated/ejected
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - func_usable to de/activate(targetname2).
 */
 void target_deactivate_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	gentity_t *target = NULL;
@@ -2328,11 +2485,15 @@ void SP_target_deactivate(gentity_t *ent) {
 }
 
 /*QUAKED target_serverchange (1 0 0) (-8 -8 -8) (8 8 8) START_ON
+-----DESCRIPTION-----
 This will make any client inside it connect to a different server.
-
 Can be toggled by an usable if the usable has NO_ACTIVATOR spawnflag.
 
-"serverNum"	server to connect to (rpg_server<serverNum> cvar)
+-----SPAWNFLAGS-----
+1: START_ON - will allow transfer form spawn on.
+
+-----KEYS-----
+"serverNum" - server to connect to (rpg_server<serverNum> cvar)
 */
 extern srvChangeData_t srvChangeData;
 
@@ -2377,10 +2538,15 @@ void SP_target_serverchange(gentity_t *ent) {
 }
 
 /*QUAKED target_levelchange (1 0 0) (-8 -8 -8) (8 8 8) 
+-----DESCRIPTION-----
 This will change the map if rpg_allowSPLevelChange is set to 1.
 
-"target" map to load (for example: borg2)
-"wait" time to wait before levelchange (whole numbers only, -1 for intermediate levelchange, 0 for default = 5)
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - map to load (for example: borg2)
+"wait" - time to wait before levelchange (whole numbers only, -1 for instant levelchange, 0 for default = 5)
 */
 void target_levelchange_think(gentity_t *ent) {
 	if(ent->count > 0) {
@@ -2421,7 +2587,15 @@ void SP_target_levelchange(gentity_t *ent) {
 }
 
 /*QUAKED target_holodeck (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
+CURRENTLY DISABLED
+target for ui_holodeck
 
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+none
 */
 
 void SP_target_holodeck(gentity_t *ent) {
@@ -2435,11 +2609,19 @@ void SP_target_holodeck(gentity_t *ent) {
 
 //RPG-X | Harry Young | 15/10/2011 | MOD START
 /*QUAKED target_shaderremap (1 0 0) (-8 -8 -8) (8 8 8)
+-----DESCRIPTION-----
 This will remap the shader "falsename" with shader "truename" and vice versa.
 It will save you some vfx-usables.
 
 This Entity only works on RPGXEF
 
+-----SPAWNFLAGS-----
+none
+
+------KEYS-----
+"targetname" - when used will toggle the shaders
+"falsename" - shader taht is ingame at spawn
+"truename" - shader that will replace it
 */
 void target_shaderremap_think(gentity_t *ent) {
 	float f = 0;
@@ -2481,21 +2663,27 @@ void SP_target_shaderremap(gentity_t *ent) {
 
 //RPG-X | Harry Young | 25/07/2012 | MOD START
 /*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8) FREE COUNTDOWN
+-----DESCRIPTION-----
+DO NOT USE! This just sits here purely for documantation.
 This entity manages the self destruct.
 For now this should only be used via the selfdestruct console command, however it might be usable from within the radiant at a later date.
 Should this thing hit 0 the killing part for everyone outside a target_safezone will be done automatically.
 
-Keys:
-wait: total Countdown-Time in secs
-count: warning intervall up to 60 secs in secs
-n00bCount: warning intervall within 60 secs in secs
-health: warning intervall within 10 secs in secs
-flags: are audio warnings 1 or 0?
-bluename: target_safezone this thing affects (multi-ship-maps only) will switch it unsafe at T-50ms
-target: Things like fx to fire once the countdown hits 0
+-----SPAWNFLAGS-----
+1: FREE - Entity will free once the countdown has ended one way or another
+2: COUNTDOWN - will think every .1 secs to display a running countdown.
 
-damage: leveltime of countdowns end
-spawnflags: 1 tells ent to free once aborted
+-----KEYS-----
+"wait" -  total Countdown-Time in secs
+"count" - warning intervall up to 60 secs in secs
+"n00bCount" - warning intervall within 60 secs in secs
+"health" - warning intervall within 10 secs in secs
+"flags" - are audio warnings 1 or 0?
+"bluename" - target_safezone this thing affects (multi-ship-maps only) will switch it unsafe at T-50ms
+"target" - Things like fx to fire once the countdown hits 0
+
+"damage" - leveltime of countdowns end
+"spawnflags" - 1 tells ent to free once aborted
 */
 static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) {
 	int i, n, num, cur = 0, cur2 = 0;
@@ -2738,7 +2926,13 @@ void target_selfdestructcountdown_think(gentity_t *ent) {
 void SP_target_selfdestruct(gentity_t *ent) {
 	double		ETAmin, ETAsec;
 	float		temp;
-	//I'd like a failsave-check here at some point...
+
+	if(level.time < 1000){ //failsafe in case someone spawned this in the radiant
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_selfdestruct spawned by level. Removing entity."););
+		G_FreeEntity(ent);
+		return;
+	}
+	//There is also a failsafe for lua spawning in lua_entity.c ->callspawn
 
 	//There's a little bit of math to do here so let's do that.
 	//convert all times from secs to millisecs if that hasn't been done in an earlier pass.
@@ -2835,20 +3029,27 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED target_safezone (1 0 0) ? STARTON SHIP
+/*QUAKED target_safezone (1 0 0) ? SPAWN_SAFE SHIP
+-----DESCRIPTION-----
 This is a safezone for when the ship/station is destroyed via shiphelath or selfdestruct.
 It is used like a trigger and requires a targetname or else it will be removed at spawn.
 
-STARTON has this Entity spawned in it's Safe configurartion
-SHIP is used as a failsave for maps with multiple ships/stations
+-----SPAWNFLAGS-----
+1: SPAWN_SAFE - Entity is spawned in it's Safe configurartion
+2: SHIP - iwill mark this safezone as a ship safezone
 
+-----KEYS-----
+"targetname" - when used will toggle safe/unsafe
+
+-----USAGE-----
 Usage for Escape Pods and similar:
 Fill your escape pod Interior with this trigger and have it targeted by a func_usable/target_relay/target_delay to toggle it between safe and unsafe states.
 
 Usage for multiple ships (and stations) like on rpg_runabout:
 Surround your entire ship with this trigger (or it's seperate elements with one each) and set it to STARTON and SHIP (spawnflags = 3). 
-Have it's targetname match the targetname of it's target_shiphealth-counterpart exactly (case-dependent) to automatically switch this savezone to unsafe should it be about to die.
+Have it's targetname match the targetname of it's target_shiphealth-counterpart exactly (case-dependent) to automatically switch this safezone to unsafe should it be about to die.
 In case of a selfdestruct you will need to enter the targetname to automatically switch it to unsafe 50ms prior to the countdowns end.
+To get the correct one use the /safezonelist-command 
 */
 
 void target_safezone_use(gentity_t *ent, gentity_t *other, gentity_t *activator){
@@ -2914,14 +3115,19 @@ void SP_target_safezone(gentity_t *ent) {
 }
 
 /*QUAKED target_shiphealth (1 0 0) (-8 -8 -8) (8 8 8)
-This Entity manages a ships healt. Ship Health is reduced via administrative/delegable console command "/shipdamage [damage]"
+-----DESCRIPTION-----
+This Entity manages a ships health. Ship Health is reduced via administrative/delegable console command "/shipdamage [damage]"
 Repairing is based on a % per minute basis for both shields and hull.
 The entity features interconnectivity with other systems such as warpdrive or turbolift with a random yet incresing chance to turn them off whenever hulldamage occurs. This includes Shields.
 Further more the entity will automatically toggle red alert should it be any other and will activate shields if alert is set to any but green.
 If hull health hit's 0 it will kill any client outside an active safezone.
 
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
 Required Keys (If any of them are not given the entity will be removed at spawn):
-targetname: Name of the Ship/Station this entity represents. please use underscores (_) instead of spaces ( ). See target_safezone for additional use of this key.
+targetname: Name of the Ship/Station this entity represents. See target_safezone for additional use of this key.
 health: Total Hull strength
 splashRadius: total shield strenght
 angle: Hull repair in % per minute
@@ -2942,33 +3148,33 @@ To retrieve such an image simply look for the MSD-Folder in your radiants textur
 For personalized MSD's see segment below.
 
 Ship-Classname || Online Source || Shader-Name (for <type> insert gfx for UI-Shader and textures for texture shader)
-Constellation Class || http://lcarsgfx.wordpress.com/2012/09/12/constellation-sisyphus/ ||
-Danube Runabout || http://lcarsgfx.wordpress.com/2012/06/30/the-blue-danube/ ||
-Nova Class || http://lcarsgfx.wordpress.com/2012/06/13/can-you-tell-what-it-is-yet-2/ ||
-Galaxy Class || http://lcarsgfx.wordpress.com/2012/06/10/galaxy-class-redux-an-update/ ||
-Daedalus Class || http://lcarsgfx.wordpress.com/2011/12/10/daedalus-father-of-icarus/ ||
-Nebula Class || http://lcarsgfx.wordpress.com/2011/12/08/entering-the-nebula-part-2/ ||
-Intrepid Class || http://lcarsgfx.wordpress.com/2011/05/16/an-intrepid-undertaking/ ||
+Constellation Class || http://lcarsgfx.wordpress.com/2012/09/12/constellation-sisyphus/ || <type>/msd/constellation
+Danube Runabout || http://lcarsgfx.wordpress.com/2012/06/30/the-blue-danube/ || <type>/msd/runabout
+Nova Class || http://lcarsgfx.wordpress.com/2012/06/13/can-you-tell-what-it-is-yet-2/ || <type>/msd/nova
+Galaxy Class || http://lcarsgfx.wordpress.com/2012/06/10/galaxy-class-redux-an-update/ || <type>/msd/galaxy
+Daedalus Class || http://lcarsgfx.wordpress.com/2011/12/10/daedalus-father-of-icarus/ || <type>/msd/daedalus
+Nebula Class || http://lcarsgfx.wordpress.com/2011/12/08/entering-the-nebula-part-2/ || <type>/msd/nebula
+Intrepid Class || http://lcarsgfx.wordpress.com/2011/05/16/an-intrepid-undertaking/ || <type>/msd/intrepid
 USCM (Alien) || http://lcarsgfx.wordpress.com/2010/08/10/in-space-no-one-can-hear-you-scream/ || Image yet to come
-Olympic Class || http://lcarsgfx.wordpress.com/2010/09/11/the-olympic-class/ ||
+Olympic Class || http://lcarsgfx.wordpress.com/2010/09/11/the-olympic-class/ || <type>/msd/olympic
 Steamrunner Class || http://lcarsgfx.wordpress.com/2010/08/15/full-steam-ahead/ || Image yet to come
-Oberth Class || http://lcarsgfx.wordpress.com/2010/08/12/im-a-doctor-not-a-science-vessel/ ||
-Soverign Class || http://lcarsgfx.wordpress.com/2010/03/01/sovereign-of-the-stars/ ||
-Excelsior Class (Retro Design) || http://lcarsgfx.wordpress.com/2010/01/01/retro-excelsior/ ||
-Excelsior Class || http://lcarsgfx.wordpress.com/2009/12/28/excelsior-class/ ||
-Springfield Class || http://lcarsgfx.wordpress.com/2009/12/25/not-the-springfield-from-the-simpsons/ ||
-Defiant Class (8 Decks) || http://lcarsgfx.wordpress.com/2009/12/10/scaling-the-defiant/ ||
-Defiant Class (4 Decks) || http://lcarsgfx.wordpress.com/2009/12/06/the-face-of-defiance/ ||
-Miranda Class || http://lcarsgfx.wordpress.com/2009/12/05/miranda/ ||
-Centaur Class || http://lcarsgfx.wordpress.com/2009/12/05/centaur-comes-galloping/ || 
-Constitution Class || http://lcarsgfx.wordpress.com/2009/11/28/its-a-constitution/ ||
-Ambassador Class || http://lcarsgfx.wordpress.com/2009/11/27/having-the-ambassador-round-for-dinner/ ||
-Cern Class || http://lcarsgfx.wordpress.com/2009/11/23/cern-class-by-john-eaves/ ||
-Akira Class || http://lcarsgfx.wordpress.com/2009/11/21/akira-ra-ra-ra/ ||
-Norway Class || http://lcarsgfx.wordpress.com/2009/11/21/norway-or-no-way/ ||
-New Orleans Class || http://lcarsgfx.wordpress.com/2009/11/16/the-new-orleans/ ||
-Cheyenne Class || http://lcarsgfx.wordpress.com/2009/11/16/cheyenne-class-msd/ ||
-Sabre Class || http://lcarsgfx.wordpress.com/2009/11/07/sabre-rattling/ ||
+Oberth Class || http://lcarsgfx.wordpress.com/2010/08/12/im-a-doctor-not-a-science-vessel/ || <type>/msd/oberth
+Soverign Class || http://lcarsgfx.wordpress.com/2010/03/01/sovereign-of-the-stars/ || <type>/msd/soverign
+Excelsior Class (Retro Design) || http://lcarsgfx.wordpress.com/2010/01/01/retro-excelsior/ || <type>/msd/excelsior-retro
+Excelsior Class || http://lcarsgfx.wordpress.com/2009/12/28/excelsior-class/ || <type>/msd/excelsior
+Springfield Class || http://lcarsgfx.wordpress.com/2009/12/25/not-the-springfield-from-the-simpsons/ || <type>/msd/springfield
+Defiant Class (8 Decks) || http://lcarsgfx.wordpress.com/2009/12/10/scaling-the-defiant/ || <type>/msd/defiant8
+Defiant Class (4 Decks) || http://lcarsgfx.wordpress.com/2009/12/06/the-face-of-defiance/ || <type>/msd/defiant4
+Miranda Class || http://lcarsgfx.wordpress.com/2009/12/05/miranda/ || <type>/msd/miranda
+Centaur Class || http://lcarsgfx.wordpress.com/2009/12/05/centaur-comes-galloping/ ||  <type>/msd/centaur
+Constitution Class || http://lcarsgfx.wordpress.com/2009/11/28/its-a-constitution/ || <type>/msd/constitution
+Ambassador Class || http://lcarsgfx.wordpress.com/2009/11/27/having-the-ambassador-round-for-dinner/ || <type>/msd/ambassador
+Cern Class || http://lcarsgfx.wordpress.com/2009/11/23/cern-class-by-john-eaves/ || <type>/msd/cern
+Akira Class || http://lcarsgfx.wordpress.com/2009/11/21/akira-ra-ra-ra/ || <type>/msd/akira
+Norway Class || http://lcarsgfx.wordpress.com/2009/11/21/norway-or-no-way/ || <type>/msd/norway
+New Orleans Class || http://lcarsgfx.wordpress.com/2009/11/16/the-new-orleans/ || <type>/msd/neworleans
+Cheyenne Class || http://lcarsgfx.wordpress.com/2009/11/16/cheyenne-class-msd/ || <type>/msd/cheyenne
+Sabre Class || http://lcarsgfx.wordpress.com/2009/11/07/sabre-rattling/ || <type>/msd/sabre
 
 -----Personalized MSD's-----
 Alexander is doing personalized variations og his MSD's in terms of Ship-Names and Registry-Numbers
@@ -3005,8 +3211,6 @@ textures/msd/akira //this will be the image you will use for texturing
 		tcGen environment
 	}
 }
-
-
 
 For distribution put both files (including their relative paths) in a *.pk3 file.
 */

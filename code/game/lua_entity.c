@@ -505,6 +505,9 @@ static int Entity_DelayedCallSpawn(lua_State *L) {
 	if(!lent || !lent->e)
 		return 1;
 
+	if(!Q_stricmp(lent->e->classname, "target_selfdestruct"))
+		return 1; //we will not selfdestruct this way
+
 	delay = luaL_checkint(L, 2);
 
 	if(!delay)
@@ -529,6 +532,9 @@ static int Entity_CallSpawn(lua_State *L) {
 
 	if(lent)
 		e = lent->e;
+
+	if(!Q_stricmp(lent->e->classname, "target_selfdestruct"))
+		return 1; //we will not selfdestruct this way
 
 	if(e) {
 		LUA_DEBUG("Entity_CallSpawn - G_CallSpawn");
