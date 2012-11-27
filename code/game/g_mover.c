@@ -1458,31 +1458,47 @@ void DoorGetMessage(gentity_t *ent) {
 }
 
 
-/*QUAKED func_door (0 .5 .8) ? START_OPEN x CRUSHER	TREK_DOOR FACE OVERRIDE LOCKED ADMIN_ONLY CORRIDOR 
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
-x
-CRUSHER		door will crush
-TREK_DOOR	if set this door will have a reduced auto trigger volume
-FACE		if set, this door requires you to be facing it before the trigger will fire
-OVERRIDE	if set, targetted doors won't wait until they're clear before closing
-LOCKED		if set, door is locked at spawn
-ADMIN_ONLY  if set, door only opens for admins
-CORRIDOR	if set, door will have en even more reduced auto trigger volume
+/*QUAKED func_door (0 .5 .8) ? START_OPEN X CRUSHER	TREK_DOOR FACE OVERRIDE LOCKED ADMIN_ONLY CORRIDOR 
+-----DESCRIPTION-----
+A door that moves between its two positions. Can only translate around one axis at a time.
+Can be teamed with multiple doors to trigger simultaniously.
 
-"model2"	  .md3 model to also draw
-"angle"		  determines the opening direction
-"targetname"  if set, no touch field will be spawned and a remote button or trigger field activates the door.
-"targetname2" for target_doorlock
-"speed"		  movement speed (100 default)
-"wait"		  wait before returning (3 default, -1 = never return)
-"lip"		  lip remaining at end of move (8 default)
-"dmg"		  damage to inflict when blocked (2 default)
-"color"		  constantLight color
-"light"		  constantLight radius
-"health"	  if set, the door must be shot open
-"soundstart"  sound to play at start of moving
-"soundstop"   sound to play at stop of moving
-"soundlocked" sound to play when locked
+-----SPAWNFLAGS-----
+1: START_OPEN : the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
+2: X : Unknown, do not use.
+4: CRUSHER : door will be stuck on it's open position
+8: TREK_DOOR : if set this door will have a reduced auto trigger volume
+16: FACE : if set, this door requires you to be facing it before the trigger will fire
+32: OVERRIDE : if set, targetted doors won't wait until they're clear before closing
+64: LOCKED : if set, door is locked at spawn
+128: ADMIN_ONLY : if set, door only opens for admins
+256: CORRIDOR : if set, door will have en even more reduced auto trigger volume
+
+-----KEYS-----
+"model2" - .md3 model to also draw
+"angle" - determines the opening direction
+"speed" - movement speed (100 default)
+"lip" - lip remaining at end of move (8 default)
+"dmg" - damage to inflict when blocked (2 default)
+"color" - constantLight color
+"light" - constantLight radius
+"health" - if set, the door must be shot open
+"soundstart" - sound to play at start of moving
+"soundstop" - sound to play at stop of moving
+"soundlocked" - sound to play when locked
+"team" - all doors that have the same team will move simultaniously
+
+Ther following keys are only required on one in a team of doors (master door)
+"targetname" - if set, no touch field will be spawned and a remote button or trigger field activates the door.
+"targetname2" - for target_doorlock.
+"wait" - wait before returning (3 default, -1 = never return)
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
+*/
 */
 void SP_func_door (gentity_t *ent) {
 	vec3_t	abs_movedir;
@@ -1677,18 +1693,29 @@ void SpawnPlatTrigger( gentity_t *ent ) {
 
 
 /*QUAKED func_plat (0 .5 .8) NO_TOUCH
+-----DESCRIPTION-----
+Binary mover...I don't know much more until I have tested it...
 Plats are always drawn in the extended position so they will light correctly.
+
+-----SPAWNFLAGS-----
 NO_TOUCH - instead of staying up as long as someone touches it, it will wait "wait" seconds and return
 
-"targetname" if targeted will only move when used
-"lip"		default 8, protrusion above rest position
-"height"	total height of movement, defaults to model height
-"speed"		overrides default 200.
-"dmg"		overrides default 2
-"model2"	.md3 model to also draw
-"color"		constantLight color
-"light"		constantLight radius
-"wait"		how many seconds to wait before returning
+-----KEYS-----
+"targetname" - if targeted will only move when used
+"lip" - default 8, protrusion above rest position
+"height" - total height of movement, defaults to model height
+"speed" - overrides default 200.
+"dmg" - overrides default 2
+"model2" - .md3 model to also draw
+"color" - constantLight color
+"light" - constantLight radius
+"wait" - how many seconds to wait before returning
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_plat (gentity_t *ent) {
 	float		lip, height;
@@ -1777,17 +1804,28 @@ void Touch_Button(gentity_t *ent, gentity_t *other, trace_t *trace ) {
 
 
 /*QUAKED func_button (0 .5 .8) ?
+-----DESCRIPTION-----
 When a button is touched, it moves some distance in the direction of it's angle, triggers all of it's targets, waits some time, then returns to it's original position where it can be triggered again.
 
-"model2"	.md3 model to also draw
-"angle"		determines the opening direction
-"target"	all entities with a matching targetname will be used
-"speed"		override the default 40 speed
-"wait"		override the default 1 second wait (-1 = never return)
-"lip"		override the default 4 pixel lip remaining at end of move
-"health"	if set, the button must be killed instead of touched
-"color"		constantLight color
-"light"		constantLight radius
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"model2" - .md3 model to also draw
+"angle" - determines the opening direction
+"target" - all entities with a matching targetname will be used
+"speed" - override the default 40 speed
+"wait" - override the default 1 second wait (-1 = never return)
+"lip" - override the default 4 pixel lip remaining at end of move
+"health" - if set, the button must be killed instead of touched
+"color" - constantLight color
+"light" - constantLight radius
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_button( gentity_t *ent ) {
 	vec3_t		abs_movedir;
@@ -1990,10 +2028,16 @@ void Think_SetupTrainTargets( gentity_t *ent ) {
 
 
 /*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8)
-Train path corners.
-Target: next path corner and other targets to fire
-"speed" speed to move to the next corner
-"wait" seconds to wait before behining move to next corner
+-----DESCRIPTION-----
+func_train path corners.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - next path corner and other targets to fire
+"speed" - speed to move to the next corner
+"wait" - seconds to wait before behining move to next corner
 */
 void SP_path_corner( gentity_t *self ) {
 	if ( !self->targetname ) {
@@ -2007,17 +2051,33 @@ void SP_path_corner( gentity_t *self ) {
 
 
 /*QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS START_INVISIBLE
+-----DESCRIPTION-----
 A train is a mover that moves between path_corner target points.
+Can be turned invisible.
 Trains MUST HAVE AN ORIGIN BRUSH.
 The train spawns at the first target it is pointing at.
-"model2"	.md3 model to also draw
-"speed"		default 100
-"dmg"		default	2
-"noise"		looping sound to play when the train is in motion
-"target"	next path corner
-"color"		constantLight color
-"light"		constantLight radius
-"swapname"  targetname for visiblility change
+
+-----SPAWNFLAGS-----
+1: START_ON - the train will begin to move after spawn
+2: TOGGLE - the train can be toggled
+4: BLOCK_STOPS - the train will stop if blocked
+8: START_INVISIBLE - the train will be invisible at spawn
+
+-----KEYS-----
+"model2" - .md3 model to also draw
+"speed" - default 100
+"dmg" - default 2
+"noise" - looping sound to play when the train is in motion
+"target" - next path corner
+"color" - constantLight color
+"light" - constantLight radius
+"swapname" - targetname for visiblility change
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_train (gentity_t *self) {
 	VectorClear (self->s.angles);
@@ -2073,10 +2133,24 @@ STATIC
 
 
 /*QUAKED func_static (0 .5 .8) ?
-A bmodel that just sits there, doing nothing.  Can be used for conditional walls and models.
-"model2"	.md3 model to also draw
-"color"		constantLight color
-"light"		constantLight radius
+-----DESCRIPTION-----
+A bmodel that just sits there, doing nothing.
+Can be used for conditional walls and models.
+If it has an origin-Brush it can be moved using Lua.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"model2" - .md3 model to also draw
+"color" - constantLight color
+"light" - constantLight radius
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_static( gentity_t *ent ) {
 	trap_SetBrushModel( ent, ent->model );
@@ -2292,30 +2366,43 @@ static void forcefield_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 
 #define SF_USEABLE			(1<<0)
 
-/*QUAKED func_forcefield (0 .5 .8) ? STARTOFF DONTTOGGLE ADMINS AUTOANIM x x x x NO_BORG
+/*QUAKED func_forcefield (0 .5 .8) ? STARTOFF DONTTOGGLE ADMINS AUTOANIM X X X X NO_BORG
+-----DESCRIPTION-----
 A brush that remains invisible until it is contacted by a player, where it temporarily
-becomes visible
+becomes visible.
 
-STARTOFF - Spawns in an off state, and must be used to be activated
-DONTTOGGLE	 - This entity cannot be used to be switched on and off (ie always on)
-ADMINS	 - Players in admin classes can move through the field
-AUTOANIM - If a model is spawned with it, it will animate at 10FPS repeatedly
-NO_BORG	 - If set, borg can't move through
+-----SPAWNFLAGS-----
+1: STARTOFF - Spawns in an off state, and must be used to be activated
+2: DONTTOGGLE - This entity cannot be used to be switched on and off (ie always on)
+4: ADMINS - Players in admin classes can move through the field
+8: AUTOANIM - If a model is spawned with it, it will animate at 10FPS repeatedly
+16: X - Unknown, do not use
+32: X - Unknown, do not use
+64: X - Unknown, do not use
+128: X - Unknown, do not use
+256: NO_BORG - If set, borg can't move through
 
-"flareWait"			How long the forcefield remains visible after the player contacts it (milliseconds)(default 150)
-"activateWait"		How long the forcefield remains visible after activation/deactivation(default 500)
-"damageWait"		How long the forecefield remains visible after it has been shot (default 400)
-"kickback"			How far the player gets pushed back when they touch the forcefield (default 50)
-"damage"			Damage sustained when the player touches the field (default 0 )
-"target"			Will fire this target every time it is toggled
-"model2"			.md3 model to also draw
-"color"				constantLight color
-"light"				constantLight radius
-"activateSnd"		sound file to play when the field is activated
-"damageSnd"			sound to play when the field is shot
-"touchSnd"			sound to play if the field is contacted by a player.
-"deactivateSnd"		sound to play when the field is turned off
-"hittarget"			target to fire when hit
+-----KEYS-----
+"flareWait" - How long the forcefield remains visible after the player contacts it (milliseconds)(default 150)
+"activateWait" - How long the forcefield remains visible after activation/deactivation(default 500)
+"damageWait" - How long the forecefield remains visible after it has been shot (default 400)
+"kickback" - How far the player gets pushed back when they touch the forcefield (default 50)
+"damage" - Damage sustained when the player touches the field (default 0 )
+"target" - Will fire this target every time it is toggled
+"model2" - .md3 model to also draw
+"color" - constantLight color
+"light" - constantLight radius
+"activateSnd" - sound file to play when the field is activated
+"damageSnd" - sound to play when the field is shot
+"touchSnd" - sound to play if the field is contacted by a player.
+"deactivateSnd" - sound to play when the field is turned off
+"hittarget" - target to fire when hit
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_forcefield( gentity_t *ent )
 {
@@ -2395,11 +2482,22 @@ ROTATING
 */
 
 
-/*QUAKED func_rotating (0 .5 .8) ? START_ON x X_AXIS Y_AXIS x INVISIBLE IGNORE
-You need to have an origin brush as part of this entity.  The center of that brush will be
+/*QUAKED func_rotating (0 .5 .8) ? START_ON X X_AXIS Y_AXIS x INVISIBLE NO_TOGGLE
+-----DESCRIPTION-----
+You need to have an origin brush as part of this entity. The center of that brush will be
 the point around which it is rotated. It will rotate around the Z axis by default.  You can
 check either the X_AXIS or Y_AXIS box to change that.
 
+-----SPAWNFLAGS-----
+1: START_ON - entity will move at spawn
+2: X - Unknown, do not use
+4: X-AXIS - rotate around the X-Axis
+8: Y-AXIS - rotate around the Y-Axis
+16: X - Unknown, do not use
+32: INVISIBLE - will be invisible at spawn
+64: NO_TOGGLE - will not be toggable
+
+-----KEYS-----
 "model2"	.md3 model to also draw
 "speed"		determines how fast it moves; default value is 100.
 "dmg"		damage to inflict when blocked (2 default)
@@ -2408,6 +2506,12 @@ check either the X_AXIS or Y_AXIS box to change that.
 "swapname"  visibility swap (activator needs NO_ACTIVATOR/SELF)
 
 "pos1"		Angles to end up at in addition to current angles- pitch yaw and roll.  Eg: 0 90 45 
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 
 //RPG-X Use Function
@@ -2544,27 +2648,41 @@ void SP_func_rotating (gentity_t *ent) {
 
 
 /*QUAKED func_door_rotating (0 .5 .8) ? START_OPEN CRUSHER REVERSE X_AXIS Y_AXIS LOCKED ADMIN_ONLY CORRIDOR
-This is the rotating door... just as the name suggests it's a door that rotates
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse.
-REVERSE		if you want the door to open in the other direction, use this switch.
-TOGGLE		wait in both the start and end states for a trigger event.
-X_AXIS		open on the X-axis instead of the Z-axis
-Y_AXIS		open on the Y-axis instead of the Z-axis
+-----DESCRIPTION-----
+This is the rotating door... just as the name suggests it's a door that rotates around it's origin Brush.
+The Axis to rotate around is determined by spawnflag.
+
+-----SPAWNFLAGS-----
+1: START_OPEN - the door to moves to its destination when spawned, and operate in reverse.
+2: CRUSHER - The door will stick in it's end position
+4: REVERSE - if you want the door to open in the other direction, use this switch.
+8: X_AXIS - rotate around the X-axis instead of the Z-axis
+16: Y_AXIS - rotate around the Y-axis instead of the Z-axis
+32: LOCKED - Door is locked at spawn
+64: ADMIN_ONLY - only admins can use this door
+128: CORRIDOR - will have a reduced autotrigger volume.
   
 You need to have an origin brush as part of this entity.  The center of that brush will be
 the point around which it is rotated. It will rotate around the Z axis by default.  You can
 check either the X_AXIS or Y_AXIS box to change that.
 
-"model2"	  .md3 model to also draw
-"distance"	  how many degrees the door will open
-"speed"	 	  how fast the door will open (degrees/second)
-"color"		  constantLight color
-"light"		  constantLight radius
-"targetname"  door can only open/close when used by anonther entity
-"targetname2" for target_doorlock
-"soundstart"  sound played when start moving
-"soundstop"	  sound played when stop moving
-"soundlocked" sound played when locked
+"model2" - .md3 model to also draw
+"distance" - how many degrees the door will open
+"speed" - how fast the door will open (degrees/second)
+"wait" - time to wait before returning, default = 2, -1 = move on toggle
+"color" - constantLight color
+"light" - constantLight radius
+"targetname" - door can only open/close when used by anonther entity
+"targetname2" - for target_doorlock
+"soundstart" - sound played when start moving
+"soundstop" - sound played when stop moving
+"soundlocked" - sound played when locked
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 
 void SP_func_door_rotating ( gentity_t *ent ) {
@@ -2674,14 +2792,28 @@ BOBBING
 
 
 /*QUAKED func_bobbing (0 .5 .8) ? X_AXIS Y_AXIS
+-----DESCRIPTION-----
+Don't now what this looks like.
 Normally bobs on the Z axis
-"model2"	.md3 model to also draw
-"height"	amplitude of bob (32 default)
-"speed"		seconds to complete a bob cycle (4 default)
-"phase"		the 0.0 to 1.0 offset in the cycle to start at
-"dmg"		damage to inflict when blocked (2 default)
-"color"		constantLight color
-"light"		constantLight radius
+
+-----SPAWNFLAGS-----
+1: X-AXIS - bobs on the X-Axis
+2: Y-AXIS - bobs on the Y-Axis
+
+-----KEYS-----
+"model2" - .md3 model to also draw
+"height" - amplitude of bob (32 default)
+"speed" - seconds to complete a bob cycle (4 default)
+"phase" - the 0.0 to 1.0 offset in the cycle to start at
+"dmg" - damage to inflict when blocked (2 default)
+"color" - constantLight color
+"light" - constantLight radius
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_bobbing (gentity_t *ent) {
 	float		height;
@@ -2729,15 +2861,27 @@ PENDULUM
 
 
 /*QUAKED func_pendulum (0 .5 .8) ?
+-----DESCRIPTION-----
 You need to have an origin brush as part of this entity.
 Pendulums always swing north / south on unrotated models.  Add an angles field to the model to allow rotation in other directions.
 Pendulum frequency is a physical constant based on the length of the beam and gravity.
-"model2"	.md3 model to also draw
-"speed"		the number of degrees each way the pendulum swings, (30 default)
-"phase"		the 0.0 to 1.0 offset in the cycle to start at
-"dmg"		damage to inflict when blocked (2 default)
-"color"		constantLight color
-"light"		constantLight radius
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"model2" - .md3 model to also draw
+"speed" - the number of degrees each way the pendulum swings, (30 default)
+"phase" - the 0.0 to 1.0 offset in the cycle to start at
+"dmg" - damage to inflict when blocked (2 default)
+"color" - constantLight color
+"light" - constantLight radius
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_pendulum(gentity_t *ent) {
 	float		freq;
@@ -2785,9 +2929,22 @@ LIGHTING CHANGE --- sort of :D
 */
 
 /*QUAKED func_brushmodel (0 .5 .8) ?
+-----DESCRIPTION-----
 A brushmodel. 
 For use with func_lightchange.
 Must have an origin brush.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"targetname" - have this be the target of a func_lightchange
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_brushmodel(gentity_t *ent) {
 	trap_SetBrushModel(ent, ent->model);
@@ -2799,9 +2956,22 @@ void SP_func_brushmodel(gentity_t *ent) {
 }
 
 /*QUAKED func_lightchange (0 .5 .8) ?
+-----DESCRIPTION-----
 Can be used for "toggling" light on/off.
 Must target a func_brushmodel.
 Must have an origin brush.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - func_brushmodel to swap positions with
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void func_lightchange_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	char *oldModel;
@@ -2867,12 +3037,23 @@ TARGET MOVER
 */
 
 /*QUAKED func_targetmover (0 .5 .8) ? START_OPEN
-This work similar to an func_door but will move between the entities origin and an target origin.
+-----DESCRIPTION-----
+This work similar to an func_door but will move between the entities origin (requires origin brush) and an target origin.
 Added for enhanced SP level support, that's why it is a quite basic entity.
 
-"target" info_notnull, where to move
-"wait"	 time beforce returning, -1 = toggle
-"speed"  speed to move with (default: 200)
+-----SPAWNFLAGS-----
+1: START_OPEN - will spawn at target position
+
+-----KEYS-----
+"target" - info_notnull, where to move
+"wait" - time beforce returning, -1 = toggle
+"speed" - speed to move with (default: 200)
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void func_targetmover_link(gentity_t *ent) {
 	gentity_t *target;
@@ -3113,12 +3294,17 @@ void Reached_AdvancedMover(gentity_t *ent) {
 }
 
 /*QUAKED path_point (.5 .3 0) (-8 8 8) (8 8 8) START_POINT
-START_POINT this is the first path_point for the train
+-----DESCRIPTION-----
+Target position for the discontinued func_mover
 
-"target" next path_point
-"wait"	 time beforce moving on, -1 wait until used
-"damage" used to tell the func_mover it should fire it's targets here
-"angles" to rotate to
+-----SPAWNFLAGS-----
+1: START_POINT - this is the first path_point for the train
+
+-----KEYS-----
+"target" - next path_point
+"wait" - time beforce moving on, -1 wait until used
+"damage" - used to tell the func_mover it should fire it's targets here
+"angles" - to rotate to
 */
 void SP_path_point(gentity_t *ent) {
 	// check if angles are set
@@ -3129,10 +3315,23 @@ void SP_path_point(gentity_t *ent) {
 }
 
 /*QUAKED func_mover (0 .5 .8) ?
+-----DESCRIPTION-----
+Discontinued enhanced mover requiring an origin brush.
+Use Lua for this now.
 
-"target" path_point to start at
-"speed"  speed to move with (default: 10)
-"aspeed" angular speed to rotate with (default: 10)
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - path_point to start at
+"speed" - speed to move with (default: 10)
+"aspeed" - angular speed to rotate with (default: 10)
+
+q3map2:
+"_clone" - _clonename of entity to clone brushes from. Note: this entity still needs at least one brush which gets replaced.
+"_clonename" - see _clone
+"_castShadows" OR "_cs" - sets whether the entity casts shadows
+"_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 
 void SP_func_mover(gentity_t *ent) {
@@ -3356,14 +3555,16 @@ void spawn_trigger_stasis_door( gentity_t *ent ) {
 
 //-------------------------------------------
 /*QUAKED func_stasis_door (0 .5 .8) START_LOCKED
+-----DESCRIPTION-----
 A bmodel that just sits there and opens when a player gets close to it.
 
-START_LOCKED:	door is locked at spawn
+-----SPAWNFLAGS-----
+1: START_LOCKED - door is locked at spawn
 
-"targetname"	will open the door
-"swapname"		will lock the door (SELF/NO_ACTIVATOR needed)
-"wait"			time to wait before closing, -1 for manual trigger, default is 5 seconds
-
+-----KEYS-----
+"targetname" - will open the door
+"swapname" - will lock the door (SELF/NO_ACTIVATOR needed)
+"wait" - time to wait before closing, -1 for manual trigger, default is 5 seconds
 */
 void SP_func_stasis_door( gentity_t *ent ) 
 {

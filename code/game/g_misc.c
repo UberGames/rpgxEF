@@ -615,32 +615,60 @@ void InitShooter( gentity_t *ent, int weapon ) {
 }
 
 /*QUAKED shooter_rocket (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" the number of degrees of deviance from the taget. (1.0 default)
+-----DESCRIPTION-----
+When used fires a rocket at either the target or the current direction.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - direction to fire to
+"random" - the number of degrees of deviance from the taget. (1.0 default)
 */
 void SP_shooter_rocket( gentity_t *ent ) {
 	InitShooter( ent, WP_10 );
 }
 
 /*QUAKED shooter_plasma (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
+-----DESCRIPTION-----
+When used fires a plasma-burst at either the target or the current direction.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - direction to fire to
+"random" - the number of degrees of deviance from the taget. (1.0 default)
 */
 void SP_shooter_plasma( gentity_t *ent ) {
 	InitShooter( ent, WP_6 ); //TiM : WP_4
 }
 
 /*QUAKED shooter_grenade (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
+-----DESCRIPTION-----
+When used fires a grenade at either the target or the current direction.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - direction to fire to
+"random" - the number of degrees of deviance from the taget. (1.0 default)
 */
 void SP_shooter_grenade( gentity_t *ent ) {
 	InitShooter( ent, WP_8);
 }
 
 /*QUAKED shooter_torpedo (1 0 0) (-16 -16 -16) (16 16 16)
-Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
+-----DESCRIPTION-----
+When used fires a torpedo at either the target or the current direction.
+
+-----SPAWNFLAGS-----
+none
+
+-----KEYS-----
+"target" - direction to fire to
+"random" - the number of degrees of deviance from the taget. (1.0 default)
 */
 void SP_shooter_torpedo( gentity_t *ent ) {
 	InitShooter( ent, WP_9 );
