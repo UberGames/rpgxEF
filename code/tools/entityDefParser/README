@@ -1,0 +1,28 @@
+Entity Definitions Parser
+
+Required tools:
+	Linux:
+		* flex
+	Windows:
+		* mingw
+
+Building:
+	Linux:
+		flex quake.l
+		gcc lex.yy.c -o entityDefParser -lfl
+	Mac:
+		flex quake.l
+		gcc lex.yy.c -o entityDefParser -lfl
+	Windows:
+		flex quake.l
+		gcc lex.yy.c -o entityDefParser /lib/libfl.a
+
+Usage:
+	./entityDefParser <code file> <output file>
+
+Example:
+	./entityDefParser game/g_mover.c hm_entities.def
+	./entityDefParser game/g_fx.c
+	
+	Will produce a def file including all entity definitions from
+	g_mover.c and g_fx.c.

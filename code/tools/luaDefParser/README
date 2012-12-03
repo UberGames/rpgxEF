@@ -1,0 +1,24 @@
+Lua Definitions Parser (WIP)
+
+Required tools:
+	Linux:
+		* flex
+	Windows:
+		* mingw
+
+Building:
+	Linux:
+		flex quake.l
+		gcc lex.yy.c -o luaDefParser -lfl
+	Mac:
+		flex quake.l
+		gcc lex.yy.c -o luaDefParser -lfl
+	Windows:
+		flex quake.l
+		gcc lex.yy.c -o luaDefParser /lib/libfl.a
+
+Usage:
+	./luaDefParser <code file> <output file>
+
+Example:
+	./luaDefParser game/lua_game.c module_game.lyx
