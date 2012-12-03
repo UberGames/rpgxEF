@@ -227,12 +227,12 @@ static void M_msdMenu_Graphics (void)
 		UI_DrawHandlePic( 196, 381,  88,  43, uis.whiteShader);	
 		UI_DrawProportionalString(197, 382, "Warp Drive is", UI_TINYFONT, colorTable[CT_MDGREY]);
 		UI_DrawProportionalString(197, 397, "offline", UI_TINYFONT, colorTable[CT_MDGREY]);
-	} else if(s_msd.warpstate == -1){
+	} else if(s_msd.warpstate == 2){
 		trap_R_SetColor( colorTable[CT_RED] ); //colorTable[CT_VDKPURPLE2]
 		UI_DrawHandlePic( 196, 381,  88,  43, uis.whiteShader);	
 		UI_DrawProportionalString(197, 382, "Warp Core is", UI_TINYFONT, colorTable[CT_MDGREY]);
 		UI_DrawProportionalString(197, 397, "ejected", UI_TINYFONT, colorTable[CT_MDGREY]);
-	} else {//-2, no info available
+	} else if(s_msd.warpstate == -2){//-2, no info available
 		trap_R_SetColor( colorTable[CT_YELLOW] ); //colorTable[CT_VDKPURPLE2]
 		UI_DrawHandlePic( 196, 381,  88,  43, uis.whiteShader);	
 		UI_DrawProportionalString(197, 382, "Warp-Core-ODN-", UI_TINYFONT, colorTable[CT_MDGREY]);
@@ -242,17 +242,17 @@ static void M_msdMenu_Graphics (void)
 	//Turbolift
 	trap_R_SetColor( colorTable[CT_WHITE] ); //colorTable[CT_VDKPURPLE2]
 	UI_DrawHandlePic( 290, 380,  90,  45, uis.whiteShader);	
-	if(s_msd.warpstate == 1){
+	if(s_msd.turbostate == 1){
 		trap_R_SetColor( colorTable[CT_GREEN] ); //colorTable[CT_VDKPURPLE2]
 		UI_DrawHandlePic( 291, 381,  88,  43, uis.whiteShader);	
 		UI_DrawProportionalString(292, 382, "Turbolifts are", UI_TINYFONT, colorTable[CT_MDGREY]);
 		UI_DrawProportionalString(292, 397, "online", UI_TINYFONT, colorTable[CT_MDGREY]);
-	} else if(s_msd.warpstate == 0){
+	} else if(s_msd.turbostate == 0){
 		trap_R_SetColor( colorTable[CT_RED] ); //colorTable[CT_VDKPURPLE2]
 		UI_DrawHandlePic( 291, 381,  88,  43, uis.whiteShader);	
 		UI_DrawProportionalString(292, 382, "Turbolifts are", UI_TINYFONT, colorTable[CT_MDGREY]);
 		UI_DrawProportionalString(292, 397, "offline", UI_TINYFONT, colorTable[CT_MDGREY]);
-	} else {//-2, no info available
+	} else if(s_msd.turbostate == -2){//-2, no info available
 		trap_R_SetColor( colorTable[CT_YELLOW] ); //colorTable[CT_VDKPURPLE2]
 		UI_DrawHandlePic( 291, 381,  88,  43, uis.whiteShader);	
 		UI_DrawProportionalString(292, 382, "Turbolift-ODN-", UI_TINYFONT, colorTable[CT_MDGREY]);
@@ -262,17 +262,17 @@ static void M_msdMenu_Graphics (void)
 	//Transporter
 	trap_R_SetColor( colorTable[CT_WHITE] ); //colorTable[CT_VDKPURPLE2]
 	UI_DrawHandlePic( 385, 380,  90,  45, uis.whiteShader);
-	if(s_msd.warpstate == 1){
+	if(s_msd.transstate == 1){
 		trap_R_SetColor( colorTable[CT_GREEN] ); //colorTable[CT_VDKPURPLE2]
 		UI_DrawHandlePic( 386, 381,  88,  43, uis.whiteShader);
 		UI_DrawProportionalString(387, 382, "Transporters are", UI_TINYFONT, colorTable[CT_MDGREY]);
 		UI_DrawProportionalString(387, 397, "online", UI_TINYFONT, colorTable[CT_MDGREY]);
-	} else if(s_msd.warpstate == 0){
+	} else if(s_msd.transstate == 0){
 		trap_R_SetColor( colorTable[CT_RED] ); //colorTable[CT_VDKPURPLE2]
 		UI_DrawHandlePic( 386, 381,  88,  43, uis.whiteShader);
 		UI_DrawProportionalString(387, 382, "Transporters are", UI_TINYFONT, colorTable[CT_MDGREY]);
 		UI_DrawProportionalString(387, 397, "offline", UI_TINYFONT, colorTable[CT_MDGREY]);
-	} else {//-2, no info available
+	} else if(s_msd.transstate == -2){//-2, no info available
 		trap_R_SetColor( colorTable[CT_YELLOW] ); //colorTable[CT_VDKPURPLE2]
 		UI_DrawHandlePic( 386, 381,  88,  43, uis.whiteShader);
 		UI_DrawProportionalString(386, 382, "Transporter-ODN-", UI_TINYFONT, colorTable[CT_MDGREY]);

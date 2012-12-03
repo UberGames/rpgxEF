@@ -1499,7 +1499,6 @@ q3map2:
 "_castShadows" OR "_cs" - sets whether the entity casts shadows
 "_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
-*/
 void SP_func_door (gentity_t *ent) {
 	vec3_t	abs_movedir;
 	float	distance;

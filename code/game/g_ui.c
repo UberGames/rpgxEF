@@ -153,11 +153,11 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 				if(!Q_stricmp(temp->classname, "target_warp")) break;
 			}
 			if(temp){
-				if(temp->sound1to2)//warp active
+				if(temp->sound2to1)//core ejected, we don't really care if it is online
+					warpstate = 2;
+				if(!temp->sound2to1 && temp->sound1to2)//not ejected and not deactivated -> core active
 					warpstate = 1;
-				else if(temp->sound2to1)//warp ejected
-					warpstate = -1;
-				else//not online && not ejected -->offline
+				if(!temp->sound2to1 && !temp->sound1to2)//not ejected and deactivated -> core inactive
 					warpstate = 0;
 			temp = NULL;
 			}
