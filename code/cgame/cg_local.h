@@ -1493,6 +1493,13 @@ typedef struct {
 	char				scannableStrings[MAX_SCANNABLES][36];
 
 	qboolean			scannablePanels;
+
+	// selfdestruct	
+	int					selfdestructTime;
+
+	// shiphealth	
+	int					relativeHullStrength;
+	int					relativeShieldStrength;
 } cgs_t;
 
 //==============================================================================

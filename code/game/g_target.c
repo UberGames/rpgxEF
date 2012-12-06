@@ -2740,6 +2740,7 @@ void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
 		//set wait to -1...
 		ent->wait = -1;
+		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, -1 );
 		//and arrange for a think in a sec
 		ent->nextthink = level.time + 1000;
 	}
@@ -2845,6 +2846,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 
 		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
 		ent->nextthink = -1;
+		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, -1 );
 		ent->wait = ent->splashDamage;
 		//free ent if it was command-spawned
 		if (ent->spawnflags & 1)
@@ -2914,6 +2916,7 @@ void target_selfdestructcountdown_think(gentity_t *ent) {
 
 		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
 		ent->nextthink = -1;
+		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, -1 );
 		ent->wait = ent->splashDamage;
 		//free ent if it was command-spawned
 		if (ent->spawnflags & 1)
@@ -2948,6 +2951,9 @@ void SP_target_selfdestruct(gentity_t *ent) {
 		ent->health = temp;
 		ent->splashRadius = 1;
 	}
+
+	trap_Printf(va("ent->wait pretransfer is %f", ent->wait));
+	G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, ent->wait );
 
 	//we'll need to back up the total for a possible reset.
 	ent->splashDamage = ent->wait;

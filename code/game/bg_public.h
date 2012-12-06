@@ -799,7 +799,11 @@ typedef enum {
 	EV_STASIS_DOOR_OPENING,
 	EV_STASIS_DOOR_CLOSING,
 
-	EV_DEBUG_TRACE
+	EV_DEBUG_TRACE,
+
+	EV_SELFDESTRUCT_SETTER,
+	EV_HULLHEALTH_SETTER,
+	EV_SHIELDHEALTH_SETTER
 } entity_event_t;
 
 //RPG-X: J2J - Moved animation enum list so that the string list can see it, Note special case for cg_players.c.

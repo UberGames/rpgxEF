@@ -1164,3 +1164,30 @@ void SP_trigger_radiation(gentity_t *ent) {
 		level.numBrushEnts++;
 }
 
+/*QUAKED trigger_airlock (0.5 0.5 0.5) ?
+-----DESCRIPTION-----
+This is an entity that manages airlocks.
+It can be used for Maintenance-Locks (Space Walks) internal Airlocks (for example to a quarantene zone)
+or... as a way to abandon ship the hard way ^^ In that last case even an EVA-Suit won't protect you.
+
+It is controlled by User Interface.
+
+The Entity automatically features door management in a cycle, a check for an EVA-Suit (trigger_hurt)
+and a push to get overboard (trigger_push).
+
+It is hardcoded to expect func_doors for entrance on either side and a func_forcefiled for ejecting
+(the forcefield is best placed within the outer door).
+
+For Setup please set both sets of doors to wait = -1 and have the inner (if you select spawnflag no. 1
+the outer) door spawn in it's open state.
+
+-----SPAWNFLAGS-----
+1: START_OUTSIDE - assumes that the outside door is open and set's itself up approopriately to cycle in at first use
+2: NO_VENT - Will not check for push-target and forcefield that are required to vent the airlock.
+4: QUARTANTENE_LOCK - airlock will be considered as an internal airlock to a quarantene zone or similar.
+	this will not kill and will not check for ejection-stuff, so NO_VENT is included in this spawnflag.
+
+-----KEYS-----
+"wait"			time to wait before trigger gets deactivated again(in seconds, default 5)
+"soundstart"	transport sound;
+*/

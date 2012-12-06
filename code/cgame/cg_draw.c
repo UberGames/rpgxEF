@@ -1830,6 +1830,38 @@ CENTER PRINTING
 ===============================================================================
 */
 
+/*
+=================
+CG_DrawSelfdestructTimer
+=================
+*/
+static float CG_DrawSelfdestructTimer( void ) {
+	char		*s;
+	int			w;
+	int			mins, tens, seconds, remainder;
+	int			msec;
+
+	msec = cgs.selfdestructTime - cg.time;
+	//msec = 0;
+
+	if (msec < 1)
+		return 0;
+
+	mins = msec / 60000;
+	tens = (msec - (mins * 60000)) / 10000;
+	seconds = (msec - (mins * 60000) - (tens * 10000)) / 1000;
+	remainder = msec - (mins * 60000) - (tens * 10000) - (seconds * 1000);
+
+	s = va( "%i:%i%i.%i", mins, tens, seconds, remainder );
+
+	w = UI_ProportionalStringWidth("SELF-DESTRTUCT IN",UI_SMALLFONT);
+	UI_DrawProportionalString(320 - (w / 2), 10, "SELF-DESTRTUCT IN", UI_SMALLFONT, colorTable[CT_RED]);
+
+	w = UI_ProportionalStringWidth(s,UI_SMALLFONT);
+	UI_DrawProportionalString(320 - (w / 2), 30, s, UI_SMALLFONT, colorTable[CT_RED]);
+		
+	return 0;
+}
 
 /*
 ==============
@@ -3359,6 +3391,8 @@ static void CG_Draw2D( void ) {
 	CG_DrawLowerRight();
 
 	CG_DrawLowerLeft();
+
+	CG_DrawSelfdestructTimer();
 
 	//RPG-X | Phenix | 08/06/2005
 	cgs.widescreen.state = WIDESCREEN_CENTER;

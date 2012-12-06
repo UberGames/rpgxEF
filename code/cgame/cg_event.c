@@ -1824,6 +1824,37 @@ case EV_SHAKE_SOUND:
 		FX_AddLine(cent->currentState.origin, cent->currentState.origin2, 0.5, 0.5, 0.5, 1.0, 1.0, 1000, cgs.media.laserShader);
 		break;
 
+// selfdestruct and shiphealth setter
+
+	case EV_SELFDESTRUCT_SETTER:
+		DEBUGNAME("EV_SELFDESTRUCT_SETTER");
+		trap_Print(va("cgs.selfdestructTime preset is %i", cgs.selfdestructTime));
+		if(cent->currentState.eventParm == -1)
+			cgs.selfdestructTime = -1;
+		else
+			cgs.selfdestructTime = cent->currentState.eventParm + cg.time;
+		trap_Print(va("cgs.selfdestructTime postset is %i", cgs.selfdestructTime));
+
+		break;
+
+	case EV_HULLHEALTH_SETTER:
+		DEBUGNAME("EV_HULLHEALTH_SETTER");
+		if(cent->currentState.eventParm == -1)
+			cgs.relativeHullStrength = -1;
+		else
+			cgs.relativeHullStrength = cent->currentState.eventParm;
+
+		break;
+
+	case EV_SHIELDHEALTH_SETTER:
+		DEBUGNAME("EV_SHIELDHEALTH_SETTER");
+		if(cent->currentState.eventParm == -1)
+			cgs.relativeShieldStrength = -1;
+		else
+			cgs.relativeShieldStrength = cent->currentState.eventParm;
+
+		break;
+
 // Default
 
 	default:
