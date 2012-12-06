@@ -2742,7 +2742,6 @@ void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 void target_selfdestruct_think(gentity_t *ent) {
 	gentity_t*	client;	
 	gentity_t   *healthEnt, *safezone=NULL;	
-	double		ETAmin, ETAsec, temp = 0.0f;
 	int			i = 0;
 
 	//this is for calling the safezones to list. It needs to stand here to not screw up the remainder of the think.
@@ -2760,7 +2759,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 
 	if (ent->wait > 0){
 		//Send a sznc/signal to all clients
-		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, ( ent->damage - level.time );
+		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, ( ent->damage - level.time ));
 		ent->nextthink = level.time + 10000; 
 
 		//fail horribly if we overshoot bang-time
