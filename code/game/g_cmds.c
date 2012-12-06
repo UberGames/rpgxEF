@@ -5909,85 +5909,6 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 
 /*
 =================
-Cmd_selfdestructcountdown_f
-Harry Young | 06/11/2012
-like selfdestruct but forced to think every .1 sec
-does output via quiet cp
-don't ask me what I was thinking ^^
-=================
-*/
-static void Cmd_selfdestructcountdown_f(gentity_t *ent) {
-	gentity_t	*destructEnt, *safezone=NULL;
-	char		arg[16], arg2[16], arg3[16];
-	if(!ent || !ent->client)
-		return;
-
-	//Trapping all potential args here.
-	trap_Argv(1, arg, sizeof(arg));
-	trap_Argv(2, arg2, sizeof(arg2));
-	trap_Argv(3, arg3, sizeof(arg3));
-
-#ifndef SQL
-	if ( !IsAdmin( ent ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
-		return;
-	}
-#else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
-		return;
-	}
-#endif
-
-	if(trap_Argc() < 1) {
-		G_PrintfClient(ent,		"^3Usage: selfdestructcountdown duration [safezone] [target]");
-		G_PrintfClient(ent,		"^1WARNING: This makes the entity think every 0.1 seconds and forces a lot off traffic. You may want to use selfdestruct start.");
-		G_PrintfClient(ent,		"duration: total countdown-duration in seconds. Must not be 0.");
-		G_PrintfClient(ent,		"safezone: safezone to toggle unsafe at T-50ms. Only for maps with multiple ships (like rpg_runabout). Set NULL to skip.");
-		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0. The entity will automatically shake everyones screen and kill all clienst outside an active target_safezone.");
-		G_PrintfClient(ent,		"To abort call selfdestruct abort");
-		return;
-	}
-
-	// Setup command-Execution
-
-	//Is there sth running alrerady?
-	destructEnt = G_Find(NULL, FOFS(classname), "target_selfdestruct");
-	if(destructEnt) {
-		G_PrintfClient(ent, "^1ERROR: There's already a self destruct in progress, aborting setup.");
-		return;
-	}
-
-	//There is not so let's set this up.
-	destructEnt = G_Spawn();
-	destructEnt->classname = "target_selfdestruct";
-	destructEnt->wait = atoi(arg);
-	destructEnt->bluename = G_NewString(arg2);
-	destructEnt->target = G_NewString(arg3);
-
-	destructEnt->spawnflags = 3; //tells ent to free once aborted and think extreme.
-
-	//we need to check a few things here to make sure the entity works properly. Else we free it.
-	if ( destructEnt->wait > 0 || destructEnt->count > 0 || destructEnt->n00bCount > 0 || destructEnt->health > 0 ){ 
-		G_CallSpawn(destructEnt); //Spawn-Function will also manage init, so we need to call that.
-	} else { //sth's wrong so lets tell them what is.
-		G_PrintfClient(ent, "^1ERROR: The following arguments are missing:");
-		if ( destructEnt->wait == 0 )
-			G_PrintfClient(ent, "^1-duration must not be 0."); 
-		while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
-			if(!destructEnt->bluename && safezone->spawnflags & 2){
-				G_PrintfClient(ent, "^1-safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezonesuse the safezonelist command.");
-				break;
-			}
-		}
-		G_PrintfClient(ent, "^1Removing entity.");
-		G_FreeEntity(destructEnt);
-		return;
-	}
-}
-
-/*
-=================
 Cmd_shipdamage_f
 Harry Young | 02/08/2012
 =================
@@ -7644,8 +7565,6 @@ void G_Client_Command( int clientNum )
 		Cmd_safezonelist_f(ent);
 	else if (Q_stricmp(cmd, "selfdestruct") == 0)
 		Cmd_selfdestruct_f(ent);
-	else if (Q_stricmp(cmd, "selfdestructcountdown") == 0)
-		Cmd_selfdestructcountdown_f(ent);
 	else if (Q_stricmp(cmd, "shipdamage") == 0)
 		Cmd_shipdamage_f(ent);
 	else if (Q_stricmp(cmd, "shiphealth") == 0)

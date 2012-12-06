@@ -2662,7 +2662,7 @@ void SP_target_shaderremap(gentity_t *ent) {
 //RPG-X | Harry Young | 15/10/2011 | MOD END
 
 //RPG-X | Harry Young | 25/07/2012 | MOD START
-/*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8) FREE COUNTDOWN
+/*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8) 
 -----DESCRIPTION-----
 DO NOT USE! This just sits here purely for documantation.
 This entity manages the self destruct.
@@ -2670,20 +2670,15 @@ For now this should only be used via the selfdestruct console command, however i
 Should this thing hit 0 the killing part for everyone outside a target_safezone will be done automatically.
 
 -----SPAWNFLAGS-----
-1: FREE - Entity will free once the countdown has ended one way or another
-2: COUNTDOWN - will think every .1 secs to display a running countdown.
+none
 
 -----KEYS-----
 "wait" -  total Countdown-Time in secs
-"count" - warning intervall up to 60 secs in secs
-"n00bCount" - warning intervall within 60 secs in secs
-"health" - warning intervall within 10 secs in secs
 "flags" - are audio warnings 1 or 0?
 "bluename" - target_safezone this thing affects (multi-ship-maps only) will switch it unsafe at T-50ms
 "target" - Things like fx to fire once the countdown hits 0
 
 "damage" - leveltime of countdowns end
-"spawnflags" - 1 tells ent to free once aborted
 */
 static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) {
 	int i, n, num, cur = 0, cur2 = 0;
@@ -2733,10 +2728,7 @@ static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]
 void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if(ent->wait > 50 || (ent->spawnflags & 2 && ent->wait > 100)){//if we listed the safezones we're committed
 	//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
-		if(ent->spawnflags & 2)
-			trap_SendServerCommand( -1, va("cp \"Self Destruct sequence aborted.\""));
-		else
-			trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
+		trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
 		//set wait to -1...
 		ent->wait = -1;
@@ -2766,41 +2758,12 @@ void target_selfdestruct_think(gentity_t *ent) {
 		return;
 	}
 
-	//now we have 3 destinct stages the entity can think about.
-	//it starts with ent->wait being set to the new remaining time
-
-	if (ent->wait > 60000 ) {
-		temp = ent->wait - ent->count;
-	} else {
-		if (ent->wait > 10000 ) {
-			temp = ent->wait - ent->n00bCount;
-		} else if (ent->wait == 0) { //overshot goal...
-			ent->wait = 0; //continue won't work here and I'm not sure about return and break so I'll just do sth pointless...
-		} else {
-			temp = ent->wait - ent->health;
-		}
-	}
-	ent->wait = temp;
-
 	if (ent->wait > 0){
-		//The first is the intervall-warning-loop
-		//We're doing this to give a new warning, so let's do that. I'll need to do a language switch here sometime...
-		ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
-		if (ent->flags == 1) 
-			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
+		//Send a sznc/signal to all clients
+		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, ( ent->damage - level.time );
+		ent->nextthink = level.time + 10000; 
 
-		// with that out of the way let's set the next think
-		if (ent->wait > 60000 ) {
-			ent->nextthink = level.time + ent->count;
-		} else {
-			if (ent->wait > 10000 ) {
-				ent->nextthink = level.time + ent->n00bCount;
-			} else {
-				ent->nextthink = level.time + ent->health;
-			}
-		}
-
-		//fail horribly if an intervall overshoots bang-time
+		//fail horribly if we overshoot bang-time
 		if (ent->nextthink > ent->damage){
 			ent->nextthink = ent->damage;
 			ent->wait = 0;
@@ -2811,6 +2774,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 			ent->nextthink = ent->nextthink - 50;
 			ent->wait = 50;
 		}
+		return;
 	} else if (ent->wait == 0) { //bang time ^^
 		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
 		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
@@ -2838,89 +2802,16 @@ void target_selfdestruct_think(gentity_t *ent) {
 		}
 		if(ent->target)
 			G_UseTargets(ent, ent);
-			//we're done here so let's finish up in a sec.	
-			ent->wait = -1;
-			ent->nextthink = level.time + 1000;
-			return;
+		//we're done here so let's finish up in a sec.	
+		ent->wait = -1;
+		ent->nextthink = level.time + 1000;
+		return;
 	} else if (ent->wait < 0) {
 
 		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
 		ent->nextthink = -1;
 		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, -1 );
-		ent->wait = ent->splashDamage;
-		//free ent if it was command-spawned
-		if (ent->spawnflags & 1)
-			G_FreeEntity(ent);
-
-		return; //And we're done.
-	}
-}
-
-void target_selfdestructcountdown_think(gentity_t *ent) {
-	gentity_t*	client;	
-	gentity_t   *healthEnt, *safezone=NULL;	
-	double		ETAmin, ETAsec, temp = 0.0f;
-	int			i = 0;
-
-	temp = ent->wait - 100;
-	ent->wait = temp;
-
-	if (ent->wait > 0){
-		ETAsec = modf((ent->wait / 60000), &ETAmin)*60;
-		trap_SendServerCommand( -1, va("cp \"^1Self Destruct in %1.0f:%2.1f\"", ETAmin, ETAsec ));
-		ent->nextthink = level.time + 100;
-		if (ent->wait == 100) {
-			while ((safezone = G_Find( safezone, FOFS( classname ), "target_safezone" )) != NULL  ){
-				if(!Q_stricmp(safezone->targetname, ent->bluename))//free shipwide safezone if it exists
-					G_FreeEntity(safezone);
-				else
-					safezone->use(safezone, ent, ent);
-			}
-		}
-
-	} else if (ent->wait == 0) { //bang time ^^
-		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
-		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
-		if(healthEnt && G_Find(healthEnt, FOFS(classname), "target_shiphealth") == NULL ){
-			healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have just one. makes a lot of stuff easier.
-			healthEnt->use(healthEnt, NULL, NULL);
-		}else{
-			int num;
-			gentity_t *ents[MAX_GENTITIES];
-
-
-			num = target_selfdestruct_get_unsafe_players(ents);
-
-			//Loop trough all clients on the server.
-			for(i = 0; i < num; i++) {
-				client = ents[i];
-				G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
-			}
-			//let's hear it
-			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
-			//let's be shakey for a sec... I hope lol ^^
-			trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
-			//let's clear the lower right corner or the center... depends
-			if(ent->spawnflags & 2)
-				trap_SendServerCommand( -1, va("cp \" \""));
-			else
-				trap_SendServerCommand( -1, va("servermsg \" \""));
-		}
-		if(ent->target)
-			G_UseTargets(ent, ent);
-			//we're done here so let's finish up in a sec.	
-			ent->wait = -1;
-			ent->nextthink = level.time + 1000;
-			return;
-	} else if (ent->wait < 0) {
-
-		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
-		ent->nextthink = -1;
-		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, -1 );
-		ent->wait = ent->splashDamage;
-		//free ent if it was command-spawned
-		if (ent->spawnflags & 1)
-			G_FreeEntity(ent);
+		G_FreeEntity(ent);
 
 		return; //And we're done.
 	}
@@ -2952,10 +2843,10 @@ void SP_target_selfdestruct(gentity_t *ent) {
 		ent->splashRadius = 1;
 	}
 
-	trap_Printf(va("ent->wait pretransfer is %f", ent->wait));
-	G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, ent->wait );
+	if(ent->flags == 1)
+		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, ent->wait );
 
-	//we'll need to back up the total for a possible reset.
+	//we' may need the total for something so back it up...
 	ent->splashDamage = ent->wait;
 
 	//let's find out when this thing will hit hard
@@ -3000,25 +2891,12 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	// Now all that's left is to plan the next think.
 
 	ent->use = target_selfdestruct_use;
-	if(ent->spawnflags & 2)
-		ent->think = target_selfdestructcountdown_think;
-	else
-		ent->think = target_selfdestruct_think;
+	ent->think = target_selfdestruct_think;
 
-	// we have 3 different intervalls so we need to do some if's based on the to-be-updated duration...
-	if(ent->spawnflags & 2){
-		ent->nextthink = level.time + 100;
-	} else {
-		if (ent->wait > 60000 ) {
-			ent->nextthink = level.time + ent->count;
-		} else {
-			if (ent->wait > 10000 ) {
-				ent->nextthink = level.time + ent->n00bCount;
-			} else {
-				ent->nextthink = level.time + ent->health;
-			}
-		}
-	}
+	if(ent->flags == 1)
+		ent->nextthink = level.time + 10000; // let's hardcode this, will send refresher signals in case new clients connect.
+	else
+		ent->nextthink = ent->damage;
 
 	//fail horribly if an intervall overshoots bang-time
 	if (ent->nextthink > ent->damage){

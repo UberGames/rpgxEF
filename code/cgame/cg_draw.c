@@ -1841,10 +1841,11 @@ static float CG_DrawSelfdestructTimer( void ) {
 	int			mins, tens, seconds, remainder;
 	int			msec;
 
+	cgs.selfdestructTime = 3654321;
 	msec = cgs.selfdestructTime - cg.time;
 	//msec = 0;
 
-	if (msec < 1)
+	if (msec < 0)
 		return 0;
 
 	mins = msec / 60000;
