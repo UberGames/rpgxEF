@@ -5780,7 +5780,7 @@ Harry Young | 25/07/2012
 */
 static void Cmd_selfdestruct_f(gentity_t *ent) {
 	gentity_t	*destructEnt, *safezone=NULL;
-	char		arg[16], arg2[16], arg3[16], arg4[16], arg5[16], arg6[16], arg7[16], arg8[16];
+	char		arg[16], arg2[16], arg6[16], arg7[16], arg8[16];
 	double		ETAmin, ETAsec;
 	if(!ent || !ent->client)
 		return;
@@ -5788,12 +5788,9 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 	//Trapping all potential args here.
 	trap_Argv(1, arg, sizeof(arg));
 	trap_Argv(2, arg2, sizeof(arg2));
-	trap_Argv(3, arg3, sizeof(arg3));
-	trap_Argv(4, arg4, sizeof(arg4));
-	trap_Argv(5, arg5, sizeof(arg5));
-	trap_Argv(6, arg6, sizeof(arg6));
-	trap_Argv(7, arg7, sizeof(arg7));
-	trap_Argv(8, arg8, sizeof(arg8));
+	trap_Argv(3, arg6, sizeof(arg6));
+	trap_Argv(4, arg7, sizeof(arg7));
+	trap_Argv(5, arg8, sizeof(arg8));
 
 	//There is one subcommand that is clear for general use: selfdestruct remaining
 	//If we're going for this skip admincheck
@@ -5830,9 +5827,6 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		destructEnt = G_Spawn();
 		destructEnt->classname = "target_selfdestruct";
 		destructEnt->wait = atoi(arg2);
-		destructEnt->count = atoi(arg3);
-		destructEnt->n00bCount = atoi(arg4);
-		destructEnt->health = atoi(arg5);
 		destructEnt->flags = atoi(arg6);
 		destructEnt->bluename = G_NewString(arg7);
 		destructEnt->target = G_NewString(arg8);
@@ -5840,27 +5834,21 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		destructEnt->spawnflags = 1; //tells ent to free once aborted.
 
 		//we need to check a few things here to make sure the entity works properly. Else we free it.
-		if ( destructEnt->wait > 0 || destructEnt->count > 0 || destructEnt->n00bCount > 0 || destructEnt->health > 0 ){ 
-			G_CallSpawn(destructEnt); //Spawn-Function will also manage init, so we need to call that.
-		} else { //sth's wrong so lets tell them what is.
-			G_PrintfClient(ent, "^1ERROR: The following arguments are missing:");
-			if ( destructEnt->wait == 0 )
-				G_PrintfClient(ent, "^1-duration must not be 0."); 
-			if ( destructEnt->count == 0 )
-				G_PrintfClient(ent, "^1-intervall must not be 0."); 
-			if ( destructEnt->n00bCount == 0 )
-				G_PrintfClient(ent, "^1-intervall-60 must not be 0."); 
-			if ( destructEnt->health == 0 )
-				G_PrintfClient(ent, "^1-intervall-10 must not be 0."); 
-			while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
-				if(!destructEnt->bluename && safezone->spawnflags & 2){
-					G_PrintfClient(ent, "^1-safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezonesuse the safezonelist command.");
-					break;
-				}
+		if ( destructEnt->wait <= 0 ){ 
+			G_PrintfClient(ent, "^1ERROR: duration must not be 0. Removing entity."); 
+				
+		while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
+			if(!destructEnt->bluename && safezone->spawnflags & 2){
+				G_PrintfClient(ent, "^1ERROR: safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezonesuse the safezonelist command. Removing entity.");
+				destructEnt->wait = 0; //we'll use this next to free the ent
+				break;
 			}
-			G_PrintfClient(ent, "^1Removing entity.");
+		}
+		if(destructEnt->wait <= 0)
 			G_FreeEntity(destructEnt);
-			return;
+		else
+			G_CallSpawn(destructEnt);
+		return;
 		}
 	} else if (!Q_stricmp(arg, "remaining")) {
 		//Is there sth running alrerady?
@@ -5869,6 +5857,9 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 			G_PrintfClient(ent, "^1ERROR: There's no self destruct in progress, aborting call.");
 			return;
 		}
+
+		if(destructEnt->flags == 1)
+			return; //we simply don't need this while there is a visible countdown. 
 
 		//we need the remaining time in minutes and seconds from that entity. Just ask them off and have the command do the math.
 		ETAsec = floor(modf((( floor(destructEnt->damage / 1000) - floor(level.time / 1000) ) / 60), &ETAmin)*60); //break it apart, put off the minutes and return the floored secs
@@ -5885,22 +5876,18 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		}
 		destructEnt->use(destructEnt, NULL, NULL); // Use-Function will simply manage the abort
 	} else {
+		//maybe hook up a setup UI here later.
 		G_PrintfClient(ent,		"^1ERROR: Invalid or no command-Argument. Arguments are start, remaining and abort");
-		G_PrintfClient(ent,		"^3Usage: selfdestruct start duration intervall intervall-60 intervall-10 audio [safezone] [target]");
+		G_PrintfClient(ent,		"^3Usage: selfdestruct start duration audio [safezone] [target]");
 		G_PrintfClient(ent,		"duration: total countdown-duration in seconds. Must not be 0.");
-		G_PrintfClient(ent,		"intervall: intervall of audio warnings up to T-60 seconds in seconds. Must not be 0.");
-		G_PrintfClient(ent,		"intervall-60: intervall of audio warnings within T-60 seconds in seconds. Must not be 0.");
-		G_PrintfClient(ent,		"intervall-10: intervall of audio warnings within T-10 seconds in seconds. Must not be 0.");
 		G_PrintfClient(ent,		"audio: set this 0 if you do want a muted countdown, else set this 1.");
 		G_PrintfClient(ent,		"safezone: safezone to toggle unsafe at T-50ms. Only for maps with multiple ships (like rpg_runabout). Set NULL to skip.");
 		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0. The entity will automatically shake everyones screen and kill all clienst outside an active target_safezone.");
 		G_PrintfClient(ent,		"^2Hint: Make sure your duration and intervalls are synced up. There is a failsave for the countdown to hit it's mark however there is nothing to make sure that you don't get your warnings at unexpected times...");
-		G_PrintfClient(ent,		"^2Try this for example: selfdestruct start 131 10 10 1 1");
-		G_PrintfClient(ent,		"\nFor a fluid countdown (each sec displayed) try extremeselfdestruct");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining");
 		G_PrintfClient(ent,		"This will give out the remaining countdown-time to you only even if the count is muted. It is free to use for any client.");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining global");
-		G_PrintfClient(ent,		"This will give out the remaining countdown-time to all clients even if the count is muted.");
+		G_PrintfClient(ent,		"This will give out the remaining countdown-time to all clients even if the count is muted. Calling this is restricted to admins");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct abort");
 		G_PrintfClient(ent,		"This will abort any self destruct running");
 		return;
@@ -6055,7 +6042,6 @@ GSIO01 | 12/05/2009
 */
 static void Cmd_admin_centerprint_f(gentity_t *ent) {
 	char *arg;
-	gentity_t	*destructEnt;
 
 	if ( trap_Argc () < 1 ) {
 		return;
@@ -6077,13 +6063,6 @@ static void Cmd_admin_centerprint_f(gentity_t *ent) {
 
 	if ( !ent || !ent->client ) {
 		return;		// not fully in game yet
-	}
-
-	destructEnt = G_Find(NULL, FOFS(classname), "target_selfdestruct");
-	if( destructEnt || destructEnt->spawnflags & 2){ //if we have a selfdestruct that occupies the Center disallow
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You can not centerprint while a selfdestruct occupies that slot.\n\" ") );
-		return;
-	}
 
 	arg = ConcatArgs( 1 );
 
