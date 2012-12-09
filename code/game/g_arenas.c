@@ -24,7 +24,7 @@ UpdateTournamentInfo
 
 void UpdateTournamentInfo( void ) {
 	int			i = 0, j = 0, k = 0;
-	gentity_t	*player = NULL, *ent = NULL;
+	gentity_t	*player = NULL;
 	int			playerClientNum;
 	int			n;
 	char		msg[AWARDS_MSG_LENGTH], msg2[AWARDS_MSG_LENGTH];
@@ -37,7 +37,7 @@ void UpdateTournamentInfo( void ) {
 	gclient_t	*cl = NULL;
 	gclient_t	*cl2= NULL;
 	int			secondPlaceTied=0;
-	
+
 	memset(msg, 0, AWARDS_MSG_LENGTH);
 	memset(msg2, 0, AWARDS_MSG_LENGTH);
 
@@ -48,26 +48,13 @@ void UpdateTournamentInfo( void ) {
 	cl2= &level.clients[level.sortedClients[2]];
 	if (cl->ps.persistant[PERS_SCORE] == cl2->ps.persistant[PERS_SCORE])
 		secondPlaceTied=1;
-	
+
 	winningTeam = level.clients[0].ps.persistant[PERS_RANK]+1;
 	if ( winningTeam != TEAM_BLUE && winningTeam != TEAM_RED )
 	{//tie or not a team game
 		winningTeam = 0;
 	}
 
-	// In team game, we want to represent the highest scored client from the WINNING team.
-	for (i = 0; i < level.maxclients; i++)
-	{
-		ent = &g_entities[i];
-		if (ent && ent->client &&
-			(ent->client->sess.sessionTeam != TEAM_SPECTATOR) && 
-			CalculateTeamMVPByRank(ent))
-		{
-			// found the winning team's MVP
-			mvpNum = i;
-			break;
-		}
-	}
 	if (mvpNum < 0)
 	{//ah, crap no MVP, pick the first player on the winning team
 		for (i = 0; i < level.maxclients; i++ )
@@ -136,10 +123,6 @@ void UpdateTournamentInfo( void ) {
 		{
 			strcpy(msg2, msg);
 			Com_sprintf( msg, sizeof(msg), "%s 0", msg2);
-		}
-		else
-		{
-			CalculateAwards(player, msg);
 		}
 
 		// now supply...
@@ -276,8 +259,8 @@ static void CelebrateStart( gentity_t *player )
 	player->nextthink = level.time + TIMER_GESTURE;
 	player->think = CelebrateStop;*/
 
-//	We don't want the taunt sound effect because it interfears with the computer voice giving awards
-//	FIXME: just get timing right?
+	//	We don't want the taunt sound effect because it interfears with the computer voice giving awards
+	//	FIXME: just get timing right?
 	//FIXME: why does this get lost now?
 	BG_AddPredictableEventToPlayerstate( EV_TAUNT, 0, &player->client->ps );
 }
@@ -386,8 +369,6 @@ SpawnModelsOnVictoryPads
 void SpawnModelsOnVictoryPads( void ) {
 	gentity_t	*player;
 	gentity_t	*podium;
-	int i = 0;
-	gentity_t	*ent = &g_entities[0];
 
 	podium1 = NULL;
 	podium2 = NULL;
@@ -396,27 +377,9 @@ void SpawnModelsOnVictoryPads( void ) {
 	podium = SpawnPodium();
 
 
-	// SPAWN PLAYER ON TOP MOST PODIUM
-	if (g_gametype.integer > GT_SINGLE_PLAYER)
-	{
-		// In team game, we want to represent the highest scored client from the WINNING team.
-		for (i = 0; i < level.maxclients; i++)
-		{
-			ent = &g_entities[i];
-			if (ent->client && CalculateTeamMVPByRank(ent))
-			{
-				// found the winning team's MVP
-				break;
-			}
-		}
-		player = SpawnModelOnVictoryPad( podium, offsetFirst, ent,
-					level.clients[ level.sortedClients[0] ].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG );
-	}
-	else
-	{
-		player = SpawnModelOnVictoryPad( podium, offsetFirst, &g_entities[level.sortedClients[0]],
-				level.clients[ level.sortedClients[0] ].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG );
-	}
+	player = SpawnModelOnVictoryPad( podium, offsetFirst, &g_entities[level.sortedClients[0]],
+		level.clients[ level.sortedClients[0] ].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG );
+
 	if ( player ) {
 		player->nextthink = level.time + 2000;
 		player->think = CelebrateStart;
@@ -429,7 +392,7 @@ void SpawnModelsOnVictoryPads( void ) {
 	{
 		if ( level.numNonSpectatorClients > 1 ) {
 			player = SpawnModelOnVictoryPad( podium, offsetSecond, &g_entities[level.sortedClients[1]],
-					level.clients[ level.sortedClients[1] ].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG );
+				level.clients[ level.sortedClients[1] ].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG );
 			if ( player ) {
 				podium2 = player;
 			}

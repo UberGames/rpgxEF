@@ -53,13 +53,14 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		} else {
 			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 		}
+		// TODO ajust me some things here might not be needed anymore
 		Com_sprintf (entry, sizeof(entry),
 			" %i %i %i %i %i %i %i %i %i %i %i", level.sortedClients[i],
 			cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime)/60000,
 			scoreFlags, g_entities[level.sortedClients[i]].s.powerups,
-			GetWorstEnemyForClient(level.sortedClients[i]),
-			GetMaxDeathsForClient(level.sortedClients[i]),
-			GetFavoriteWeaponForClient(level.sortedClients[i]),
+			0,
+			0,
+			0,
 			cl->ps.persistant[PERS_KILLED],
 			((g_entities[cl->ps.clientNum].r.svFlags&SVF_ELIMINATED)!=0) );
 		j = strlen(entry);
@@ -721,7 +722,7 @@ qboolean SetTeam( gentity_t *ent, char *s ) {
 	if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
-		client->noclip = 1;
+		client->noclip = (qboolean)1;
 	} else if ( g_gametype.integer >= GT_TEAM ) {
 		// if running a team game, assign player to one of the teams
 		specState = SPECTATOR_NOT;

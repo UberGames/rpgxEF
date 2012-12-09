@@ -1250,14 +1250,6 @@ void QDECL G_LogExit( const char *string );
  */
 void QDECL G_ClearClientLog(int client);
 
-void CalculateAwards(gentity_t *ent, char *msg);
-qboolean CalculateTeamMVPByRank(gentity_t *ent);
-int GetMaxDeathsForClient(int nClient);
-int GetMaxKillsForClient(int nClient);
-int GetFavoriteTargetForClient(int nClient);
-int GetWorstEnemyForClient(int nClient);
-int GetFavoriteWeaponForClient(int nClient);
-
 /*----------------------------------------------------------------------------------------*/
 
 //TiM - Delayed Transport Beam
