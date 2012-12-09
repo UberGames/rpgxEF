@@ -884,13 +884,14 @@ void SP_fx_electrical_explosion( gentity_t *ent )
 	trap_LinkEntity( ent );
 }
 
-/*QUAKED fx_phaser (0 0 1) (-8 -8 -8) (8 8 8) NO_SOUND DISRUPTOR
+/*QUAKED fx_phaser (0 0 1) (-8 -8 -8) (8 8 8) NO_SOUND DISRUPTOR LOCKED
 -----DESCRIPTION-----
 A phaser effect for use as a ship's weapon.
 
 -----SPAWNFLAGS-----
 1: NO_SOUND - will not play it's sound
 2: DISRUPTOR - will display a green disruptor beam
+4: LOCKED - will be locked at spawn
 
 -----KEYS-----
 "target" - endpoint
@@ -903,8 +904,9 @@ A phaser effect for use as a ship's weapon.
 #define PHASER_FX_UNLINKED 999
 
 void phaser_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(ent->count == PHASER_FX_UNLINKED)
-		return;
+	if(ent->count == PHASER_FX_UNLINKED) return;
+	if(ent->flags & FL_LOCKED) return;
+
 	if(ent->spawnflags & 2)
 	{ 
 		G_AddEvent(ent, EV_FX_DISRUPTOR, 0);
@@ -919,11 +921,13 @@ void phaser_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 void phaser_link(gentity_t *ent) {
 	gentity_t *target = NULL;
 	target = G_Find(target, FOFS(targetname), ent->target);
+
 	if(!target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Enity-Error] Could not find target %s for fx_phaser at %s!\n", ent->target, vtos(ent->r.currentOrigin)););
 		G_FreeEntity(ent);
 		return;
 	}
+
 	VectorCopy(target->s.origin, ent->s.origin2);
 	SnapVector(ent->s.origin2);
 	ent->use = phaser_use;
@@ -936,23 +940,34 @@ void SP_fx_phaser(gentity_t *ent) {
 	char	*sound;
 	int		impact;
 	ent->count = PHASER_FX_UNLINKED;
+
 	if(!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_phaser at %s without target!\n", vtos(ent->r.currentOrigin)););
 		return;
 	}
+
 	G_SpawnFloat("scale", "20", &scale);
 	ent->s.angles[0] = scale;
 	G_SpawnFloat("delay", "1", &scale);
 	ent->s.angles[1] = scale * 1000;
 	G_SpawnString("customSnd", "sound/pos_b/phaser.wav", &sound);
-	if(!(ent->spawnflags & 1))
+	
+	if(!(ent->spawnflags & 1)) {
 		ent->s.time = G_SoundIndex(sound);
-	else
+	} else {
 		ent->s.time = G_SoundIndex("NULL");
-	if(ent->wait)
+	}
+
+	if(ent->wait) {
 		ent->s.time2 = ent->wait * 1000;
-	else
+	} else {
 		ent->s.time2 = 3000;
+	}
+
+	if(ent->spawnflags & 4) {
+		ent->flags |= FL_LOCKED;
+	}
+
 	G_SpawnInt("impact", "0", & impact);
 	ent->s.angles[2] = impact;
 	ent->think = phaser_link;
@@ -960,13 +975,14 @@ void SP_fx_phaser(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED fx_torpedo (0 0 1) (-8 -8 -8) (8 8 8) QUANTUM NO_SOUND
+/*QUAKED fx_torpedo (0 0 1) (-8 -8 -8) (8 8 8) QUANTUM NO_SOUND LOCKED
 -----DESCRIPTION-----
 A torpedo effect for use as a ship's weapon.
 
 -----SPAWNFLAGS-----
 1: QUANTUM - set this flag if you whant an quantum fx instead of an photon fx
 2: NO_SOUND - Will not play it's sound
+4: LOCKED - will be locked at spawn
 
 -----KEYS-----
 "target" - used for the calculation of the direction
@@ -984,6 +1000,8 @@ void fx_torpedo_think(gentity_t *ent) {
 }
 
 void fx_torpedo_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+	if(ent->flags & FL_LOCKED) return;
+	
 	if(ent->count > 0) {
 		ent->count--;
 		trap_SendServerCommand(activator-g_entities, va("print \"Torpedos: %i of %i left.\n\"", ent->count, ent->damage));
@@ -993,6 +1011,7 @@ void fx_torpedo_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount);
 		return;
 	}
+
 	G_AddEvent(ent, EV_FX_TORPEDO, ent->spawnflags);
 	ent->use = 0;
 	ent->think = fx_torpedo_think;
@@ -1022,6 +1041,10 @@ void fx_torpedo_link(gentity_t *ent) {
 		ent->count = -1;
 	} else {
 		ent->damage = ent->count;
+	}
+
+	if(ent->spawnflags & 4) {
+		ent->flags |= FL_LOCKED;
 	}
 
 	ent->s.angles2[0] = ent->speed ? ent->speed : 2.5;
