@@ -605,25 +605,36 @@ void QDECL G_Error( const char *fmt, ... ) {
 }
 
 stringID_table_t WeaponTable[] = {
-
 	{ ENUM2STRING(WP_2) },
 	{ ENUM2STRING(WP_3) },
 	{ ENUM2STRING(WP_4) },				
-
 	{ ENUM2STRING(WP_5) },				
 	{ ENUM2STRING(WP_6) },	
 	{ ENUM2STRING(WP_7) },
-
 	{ ENUM2STRING(WP_8) },
 	{ ENUM2STRING(WP_9) },		
 	{ ENUM2STRING(WP_10) },			
-
 	{ ENUM2STRING(WP_11) },				
 	{ ENUM2STRING(WP_12) },		
 	{ ENUM2STRING(WP_13) },		
-	
 	{ ENUM2STRING(WP_14) },				
 	{ ENUM2STRING(WP_15) },
+
+	{ "WP_TRICORDER",			WP_2  },
+	{ "WP_PADD",				WP_3  },
+	{ "WP_COFFEE",				WP_4  },
+	{ "WP_PHASER",				WP_5  },
+	{ "WP_COMPRESSION_RIFLE",	WP_6  },
+	{ "WP_TR116",				WP_7  },
+	{ "WP_GRENADE_LAUNCHER",	WP_8  },
+	{ "WP_QUANTUM_BURST",		WP_9  },
+	{ "WP_DISRUPTOR",			WP_10 },
+	{ "WP_MEDKIT",				WP_11 },
+	{ "WP_VOYAGER_HYPO",		WP_12 },
+	{ "WP_DERMAL_REGEN",		WP_13 },
+	{ "WP_TOOLKIT",				WP_14 },
+	{ "WP_HYPERSPANNER",		WP_15 },
+	
 	{ NULL, -1 }
 };
 
