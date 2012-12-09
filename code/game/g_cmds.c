@@ -6063,6 +6063,7 @@ static void Cmd_admin_centerprint_f(gentity_t *ent) {
 
 	if ( !ent || !ent->client ) {
 		return;		// not fully in game yet
+	}
 
 	arg = ConcatArgs( 1 );
 

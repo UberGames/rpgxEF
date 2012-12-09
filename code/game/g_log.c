@@ -1173,12 +1173,6 @@ qboolean CalculateDemolitionist(gentity_t *ent, int *kills)
 	return qfalse;
 }
 
-int CalculateStreak(gentity_t *ent)
-{
-	/* TODO: remove me */
-	return 0;
-}
-
 qboolean CalculateTeamMVP(gentity_t *ent)
 {
 	int			i = 0, nBestPlayer = -1, nScore = 0, nHighestScore = 0,
@@ -1487,13 +1481,6 @@ void CalculateAwards(gentity_t *ent, char *msg)
 		awardFlags |= (1<<AWARD_DEMOLITIONIST);
 		strcpy(buf2, buf1);
 		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, kills);
-	}
-	streak = CalculateStreak(ent);
-	if (streak)
-	{
-		awardFlags |= (1<<AWARD_STREAK);
-		strcpy(buf2, buf1);
-		Com_sprintf(buf1, AWARDS_MSG_LENGTH, "%s %d", buf2, streak);
 	}
 	if (g_gametype.integer >= GT_TEAM)
 	{
