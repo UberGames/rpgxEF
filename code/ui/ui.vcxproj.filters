@@ -146,6 +146,12 @@
     <ClCompile Include="ui_video.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui_msd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_sql.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\bg_public.h">
