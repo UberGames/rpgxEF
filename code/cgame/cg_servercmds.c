@@ -109,12 +109,12 @@ void CG_ParseServerinfo( void ) {
 	char	*mapname;
 
 	info = CG_ConfigString( CS_SERVERINFO );
-	cgs.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
-	cgs.pModAssimilation = atoi( Info_ValueForKey( info, "g_pModAssimilation" ) );
-	cgs.pModDisintegration = atoi( Info_ValueForKey( info, "g_pModDisintegration" ) );
-	cgs.pModActionHero = atoi( Info_ValueForKey( info, "g_pModActionHero" ) );
-	cgs.pModSpecialties = atoi( Info_ValueForKey( info, "g_pModSpecialties" ) );
-	cgs.pModElimination = atoi( Info_ValueForKey( info, "g_pModElimination" ) );
+	cgs.gametype = (gametype_t)atoi( Info_ValueForKey( info, "g_gametype" ) );
+	cgs.pModAssimilation = (qboolean)atoi( Info_ValueForKey( info, "g_pModAssimilation" ) );
+	cgs.pModDisintegration = (qboolean)atoi( Info_ValueForKey( info, "g_pModDisintegration" ) );
+	cgs.pModActionHero = (qboolean)atoi( Info_ValueForKey( info, "g_pModActionHero" ) );
+	cgs.pModSpecialties = (qboolean)atoi( Info_ValueForKey( info, "g_pModSpecialties" ) );
+	cgs.pModElimination = (qboolean)atoi( Info_ValueForKey( info, "g_pModElimination" ) );
 	cgs.dmflags = atoi( Info_ValueForKey( info, "dmflags" ) );
 	cgs.teamflags = atoi( Info_ValueForKey( info, "teamflags" ) );
 	cgs.fraglimit = atoi( Info_ValueForKey( info, "fraglimit" ) );
