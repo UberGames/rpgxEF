@@ -1540,7 +1540,7 @@ static void target_turbolift_use( gentity_t *self, gentity_t *other, gentity_t *
 		return;
 	}
 
-	trap_SendServerCommand( activator-g_entities, "lift" );
+	trap_SendServerCommand( activator-g_entities, va("lift %d", self->health) );
 }
 
 extern void BG_LanguageFilename(char *baseName,char *baseExtension,char *finalName);
