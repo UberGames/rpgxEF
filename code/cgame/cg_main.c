@@ -20,8 +20,6 @@ qboolean CG_LoadUsablesStrings( void );
 
 extern void FX_InitSinTable(void);
 
-//extern lensReflec_s lensReflec[10];
-
 int cg_liftEnts[MAX_CLIENTS];
 int	cg_numAnims;
 int cg_numSndAnims;
@@ -49,7 +47,7 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 	case CG_CONSOLE_COMMAND:
 		return CG_ConsoleCommand();
 	case CG_DRAW_ACTIVE_FRAME:
-		CG_DrawActiveFrame( arg0, arg1, arg2 );
+		CG_DrawActiveFrame( arg0, (stereoFrame_t)arg1, (qboolean)arg2 );
 		return 0;
 	case CG_CROSSHAIR_PLAYER:
 		return CG_CrosshairPlayer();
@@ -118,7 +116,6 @@ vmCvar_t	cg_zoomFov;
 vmCvar_t	cg_thirdPerson;
 vmCvar_t	cg_thirdPersonRange;
 vmCvar_t	cg_thirdPersonAngle;
-//RPG-X: TiM - Cool JKA CVARs
 vmCvar_t	cg_thirdPersonVertOffset;
 vmCvar_t	cg_thirdPersonHorzOffset;
 vmCvar_t	cg_thirdPersonAlpha;
@@ -199,15 +196,6 @@ vmCvar_t			cg_debugLua;
 vmCvar_t			cg_logLua;
 #endif
 
-
-//RPG-X | Phenix | 05/02/2006
-//Ban System (and it's backup cvars)
-//vmCvar_t	cg_playerID;
-//vmCvar_t	s_mhz; //Part A + 562
-//vmCvar_t	cg_fow; //Part B + 333
-//vmCvar_t	cl_avgPacket; //Part C + 99
-//vmCvar_t	cg_rewardsSize;//Part D + 120
-
 typedef struct {
 	vmCvar_t	*vmCvar;
 	char		*cvarName;
@@ -217,15 +205,12 @@ typedef struct {
 
 static cvarTable_t	cvarTable[] = {
 	{ &cg_ignore, "cg_ignore", "0", 0 },	// used for debugging
-	//{ &s_mhz, "s_mhz", "0", CVAR_ARCHIVE | CVAR_ROM | CVAR_NORESTART }, //RPG-X | Phenix | 05/02/2006
 	{ &cg_autoswitch, "cg_autoswitch", "1", CVAR_ARCHIVE },
 	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
 	{ &cg_zoomFov, "cg_zoomfov", "22.5", CVAR_ARCHIVE },
 	{ &cg_fov, "cg_fov", "80", CVAR_ARCHIVE },
-	//{ &cg_fow, "cg_fow", "0", CVAR_ARCHIVE | CVAR_ROM | CVAR_NORESTART }, //RPG-X | Phenix | 05/02/2006
 	{ &cg_viewsize, "cg_viewsize", "100", CVAR_ARCHIVE },
 	{ &cg_stereoSeparation, "cg_stereoSeparation", "0.4", CVAR_ARCHIVE  },
-	//{ &s_mhz, "s_mhz", "0", CVAR_ARCHIVE | CVAR_ROM | CVAR_NORESTART }, //RPG-X | Phenix | 05/02/2006
 	{ &cg_shadows, "cg_shadows", "1", CVAR_ARCHIVE  },
 	{ &cg_gibs, "cg_gibs", "0", CVAR_ARCHIVE  },	//no gibs in trek
 	{ &cg_draw2D, "cg_draw2D", "1", CVAR_ARCHIVE  },
@@ -239,7 +224,6 @@ static cvarTable_t	cvarTable[] = {
 	{ &cg_drawCrosshair, "cg_drawCrosshair", "1", CVAR_ARCHIVE },
 	{ &cg_drawCrosshairNames, "cg_drawCrosshairNames", "1", CVAR_ARCHIVE },
 	{ &cg_drawRewards, "cg_drawRewards", "1", CVAR_ARCHIVE },
-	//{ &cg_rewardsSize, "cg_rewardsSize", "0", CVAR_ARCHIVE | CVAR_ROM | CVAR_NORESTART }, //RPG-X | Phenix | 05/02/2006
 	{ &cg_crosshairSize, "cg_crosshairSize", "24", CVAR_ARCHIVE },
 	{ &cg_crosshairHealth, "cg_crosshairHealth", "1", CVAR_ARCHIVE },
 	{ &cg_crosshairX, "cg_crosshairX", "0", CVAR_ARCHIVE },
@@ -299,10 +283,8 @@ static cvarTable_t	cvarTable[] = {
 
 	{ &cg_buildScript, "com_buildScript", "0", 0 },	// force loading of all possible data amd error on failures
 	{ &cg_paused, "cl_paused", "0", CVAR_ROM },
-	//{ &cl_avgPacket, "cl_avgPacket", "0", CVAR_ARCHIVE | CVAR_ROM | CVAR_NORESTART }, //RPG-X | Phenix | 05/02/2006
 	{ &cg_synchronousClients, "g_synchronousClients", "0", 0 },	// communicated by systeminfo
 	{ &ui_playerClass, "ui_playerClass", "noclass", CVAR_ARCHIVE /*| CVAR_ROM | CVAR_USERINFO*/ },
-	//{ &ui_playerclass, "ui_playerclass", "0", 0 },	// player class
 	{ &ui_playerRank, "ui_playerRank", "crewman", CVAR_ARCHIVE /*| CVAR_ROM | CVAR_USERINFO*/ },
 
 	{ &cg_disablekillmsgs, "cg_disablekillmsgs", "0", CVAR_ARCHIVE },
@@ -337,12 +319,6 @@ static cvarTable_t	cvarTable[] = {
 	//RPG-X | GSIO01 | 11/05/2009
 	{ &rpg_forceFieldSet, "rpg_forceFieldSet", "1", CVAR_ARCHIVE | CVAR_LATCH },
 
-	//{ &cg_chatBGColor, "cg_chatBGColor", "", CVAR_ARCHIVE }
-
-	//{ &cg_defaultModel, "cg_defaultModel", DEFAULT_PLAYER, CVAR_ARCHIVE },
-
-	//{ &cg_playerID, "cg_playerID", "0", CVAR_ARCHIVE | CVAR_ROM | CVAR_NORESTART }
-
 	// grp cvars
 	{ &grp_berp, "grp_berp", "0", CVAR_ARCHIVE | CVAR_LATCH },
 
@@ -354,7 +330,55 @@ static cvarTable_t	cvarTable[] = {
 
 };
 
-static int	cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );
+#define CVAR_TABLE_SIZE sizeof( cvarTable ) / sizeof( cvarTable[0] )
+
+/*
+=======================
+CG_PrecacheRemapShaders
+=======================
+*/
+void CG_PrecacheRemapShaders(void) {
+	char filepath[MAX_QPATH];
+	fileHandle_t f;
+	int len;
+	char* data;
+	char* ptr;
+	char* token;
+
+	COM_StripExtension(cgs.mapname, filepath);
+	sprintf(filepath, "maps/%s.precache", filepath);
+
+	len = trap_FS_FOpenFile(filepath, &f, FS_READ);
+
+	if(!len) {
+		CG_Printf("No precache file ...\n");
+		return;
+	}
+
+	data = (char *)malloc(sizeof(char)*(len+1));
+	if(!data) {
+		trap_FS_FCloseFile(f);
+		CG_Printf(S_COLOR_RED "Error - could not allocate %d byte of memory.\n", sizeof(char)*(len+1));
+		return;
+	}
+
+	trap_FS_Read(data, len, f);
+	trap_FS_FCloseFile(f);
+
+	CG_Printf("Precaching texture files ...");
+	COM_BeginParseSession();
+
+	ptr = data;
+	token = COM_Parse(&ptr);
+	while(token != NULL) {
+		CG_Printf("\t%s\n", token);
+		trap_R_RegisterShader(token);
+
+		token = COM_Parse(&ptr);
+	}
+
+	free(data);
+}
 
 /*
 =================
@@ -366,14 +390,14 @@ void CG_RegisterCvars( void ) {
 	cvarTable_t	*cv;
 	char		var[MAX_TOKEN_CHARS];
 
-	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
+	for ( i = 0, cv = cvarTable ; i < CVAR_TABLE_SIZE ; i++, cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 			cv->defaultString, cv->cvarFlags );
 	}
 
 	// see if we are also running the server on this machine
 	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
-	cgs.localServer = atoi( var );
+	cgs.localServer = (qboolean)atoi( var );
 }
 
 
@@ -386,7 +410,7 @@ void CG_UpdateCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
 
-	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ )
+	for ( i = 0, cv = cvarTable ; i < CVAR_TABLE_SIZE ; i++, cv++ )
 	{
 		trap_Cvar_Update( cv->vmCvar );
 	}
@@ -446,42 +470,6 @@ void QDECL CG_Printf( const char *msg, ... ) {
 			msgPtr++;
 		}
 	}
-
-	//CVAR background
-	/*if ( cg_chatBGColor.string[0] )
-	{
-		char	*bgColor;
-		char	*rimColor;
-		int		rgb[3];
-		int		i;
-
-		Q_strlwr( cg_chatBGColor.string );
-
-		bgColor = cg_chatBGColor.string;
-
-		if ( *bgColor == '#' )
-		{
-			bgColor[7]='\0';
-			bgColor++;
-
-			for ( i=0; i < 3; i++ )
-			{
-				if ( *bgColor >= 'a' && *bgColor <='f' )
-					rgb[i] = 16 * ( 10 + (int)(*bgColor - 'a'));
-				else
-					rgb[i] = 16 * atoi(bgColor[0]);
-
-				bgColor++;
-
-				if ( *bgColor >= 'a' && *bgColor <='f' )
-					rgb[i] += ( 10 + (int)(*bgColor - 'a'));
-				else
-					rgb[i] += atoi(bgColor[0]);
-			}
-
-
-		}
-	}*/
 
 	trap_Print( text );
 }
@@ -613,51 +601,34 @@ static void CG_RegisterSounds( void )
 	cgs.media.count1Sound = trap_S_RegisterSound( "sound/voice/computer/misc/one.wav" );
 	cgs.media.countFightSound = trap_S_RegisterSound( "sound/voice/computer/misc/fight.wav" );
 	cgs.media.countPrepareSound = trap_S_RegisterSound( "sound/voice/computer/misc/prepare.wav" );
-
 	cgs.media.interfaceSnd1 = trap_S_RegisterSound( "sound/interface/button4.wav" );
-
 	cgs.media.useNothingSound = trap_S_RegisterSound( "sound/items/use_nothing.wav" );
-
 	cgs.media.teleInSound = trap_S_RegisterSound( "sound/world/transin.wav" );
 	cgs.media.transportSound = trap_S_RegisterSound( "sound/world/transporter.wav" );
 	cgs.media.respawnSound = trap_S_RegisterSound( "sound/items/respawn1.wav" );
-
 	cgs.media.talkSound = trap_S_RegisterSound( "sound/interface/communicator.wav" );
-	
-	//cgs.media.landSound = trap_S_RegisterSound( "sound/player/land1.wav");
-	//RPG-X | GSIO01 | 20/05/2009:
 	cgs.media.landSound[LANDSOUND_NORMAL] = trap_S_RegisterSound("sound/player/land1.wav");
 	cgs.media.landSound[LANDSOUND_GRASS]  = trap_S_RegisterSound("sound/player/footsteps/grass_jump.wav");
 	cgs.media.landSound[LANDSOUND_GRAVEL] = trap_S_RegisterSound("sound/player/footsteps/gravel_jump.wav");
 	cgs.media.landSound[LANDSOUND_SNOW]	  = trap_S_RegisterSound("sound/player/footsteps/snow_jump.wav");
 	cgs.media.landSound[LANDSOUND_WOOD]	  = trap_S_RegisterSound("sound/player/footsteps/wood_jump.wav");
-
 	cgs.media.splatSound = trap_S_RegisterSound( "sound/weapons/bodyfall.wav");
-
 	cgs.media.watrInSound = trap_S_RegisterSound( "sound/player/watr_in.wav");
 	cgs.media.watrOutSound = trap_S_RegisterSound( "sound/player/watr_out.wav");
 	cgs.media.watrUnSound = trap_S_RegisterSound( "sound/player/watr_un.wav");
-
 	cgs.media.jumpPadSound = trap_S_RegisterSound ("sound/items/damage3.wav" );
-
 	cgs.media.disintegrateSound = trap_S_RegisterSound( "sound/weapons/prifle/disint.wav" );
 	cgs.media.disintegrate2Sound = trap_S_RegisterSound( "sound/weapons/prifle/disint2.wav" );
 	cgs.media.playerExplodeSound = trap_S_RegisterSound( "sound/weapons/explosions/fireball.wav" );
-
 	cgs.media.phaserEmptySound = trap_S_RegisterSound("sound/weapons/phaser/phaserempty.wav");
-	
-	//RPG-X: RedTechie - Load sound for shake cmd
 	cgs.media.ShakeSound = trap_S_RegisterSound("sound/shake.wav");
-
 	cgs.media.tedTextSound = trap_S_RegisterSound( "sound/interface/tedtext.wav" );
 
-	//RPG-X | Phenix | 13/02/2005
 	for (i=0 ; i<N00bSoundCount ; i++) {
 		Com_sprintf (name, sizeof(name), "sound/n00bs/insult%i.wav", i+1);
 		cgs.media.N00bSound[i] = trap_S_RegisterSound (name);
 	}
 
-	//RPG-X | Phenix | 08/06/2005
 	cgs.media.AdminMsgSound = trap_S_RegisterSound("sound/interface/button2.wav");
 
 	for (i=0 ; i<4 ; i++) {
@@ -685,7 +656,6 @@ static void CG_RegisterSounds( void )
 		Com_sprintf (name, sizeof(name), "sound/player/footsteps/clank%i.wav", i+1);
 		cgs.media.footsteps[FOOTSTEP_METAL][i] = trap_S_RegisterSound (name);
 
-		//RPG-X | GSIO01 | 20.05.2009 | START MOD
 		Com_sprintf (name, sizeof(name), "sound/player/footsteps/wood%i.wav", i+1);
 		cgs.media.footsteps[FOOTSTEP_WOOD][i] = trap_S_RegisterSound(name);
 
@@ -697,7 +667,6 @@ static void CG_RegisterSounds( void )
 
 		Com_sprintf (name, sizeof(name), "sound/player/footsteps/snow%i.wav", i+1);
 		cgs.media.footsteps[FOOTSTEP_SNOW][i] = trap_S_RegisterSound(name);
-		//RPG-X | GSIO01 | 20.05.2009 | END MOD
 	}
 
 	cg.loadLCARSStage = 2;	// Loading bar stage 2
@@ -723,31 +692,22 @@ static void CG_RegisterSounds( void )
 		cgs.gameSounds[i] = trap_S_RegisterSound( soundName );
 	}
 
-	// FIXME: only needed with item
-	//cgs.media.flightSound			= trap_S_RegisterSound( "sound/items/flight.wav" );
 	cgs.media.medkitSound			= trap_S_RegisterSound ("sound/items/use_medkit.wav");
-	//cgs.media.quadSound				= trap_S_RegisterSound("sound/items/damage3.wav");
 	cgs.media.grenadeExplodeSound	= trap_S_RegisterSound(SOUND_DIR "glauncher/explode.wav");//detpack
-
 	cgs.media.metalChunkSound	= trap_S_RegisterSound( "sound/weapons/explosions/metalexplode.wav" );
 	cgs.media.glassChunkSound	= trap_S_RegisterSound( "sound/weapons/explosions/glassbreak1.wav" );
 	cgs.media.woodChunkSound	= trap_S_RegisterSound( "sound/weapons/explosions/metalexplode.wav" );
 	cgs.media.stoneChunkSound	= trap_S_RegisterSound( "sound/weapons/explosions/metalexplode.wav" );
 	
-
-//	cgs.media.sfx_rockexp = trap_S_RegisterSound ("sound/weapons/rocket/rocklx1a.wav");
-
 	// trek sounds	
 
 	//TiM : Q flash
 	cgs.media.qFlash = trap_S_RegisterSound( "sound/world/q_flash.wav" );
-
 	cgs.media.envSparkSound1 = trap_S_RegisterSound ("sound/ambience/spark1.wav");
 	cgs.media.envSparkSound2 = trap_S_RegisterSound ("sound/ambience/spark2.wav");
 	cgs.media.envSparkSound3 = trap_S_RegisterSound ("sound/ambience/spark3.wav");
 	cgs.media.defaultPickupSound = trap_S_RegisterSound ("sound/items/n_health.wav");
 	cgs.media.invulnoProtectSound = trap_S_RegisterSound("sound/items/protect3.wav");
-	//cgs.media.regenSound = trap_S_RegisterSound("sound/items/regen.wav");
 	cgs.media.waterDropSound1 = trap_S_RegisterSound("sound/ambience/waterdrop1.wav");
 	cgs.media.waterDropSound2 = trap_S_RegisterSound("sound/ambience/waterdrop2.wav");
 	cgs.media.waterDropSound3 = trap_S_RegisterSound("sound/ambience/waterdrop3.wav");
@@ -760,7 +720,6 @@ static void CG_RegisterSounds( void )
 	cgs.media.zoomEnd116	= trap_S_RegisterSound( "sound/weapons/tr116/powerdown.wav" );
 	cgs.media.tr116Chirp	= trap_S_RegisterSound( "sound/weapons/tr116/chirp.wav" );
 	cgs.media.tr116Whir		= trap_S_RegisterSound( "sound/weapons/tr116/whir.wav" );
-
 	cgs.media.surfaceExpSound[0]	= trap_S_RegisterSound("sound/weapons/explosions/explode8.wav");
 	cgs.media.surfaceExpSound[1]	= trap_S_RegisterSound("sound/weapons/explosions/explode9.wav");
 	cgs.media.surfaceExpSound[2]	= trap_S_RegisterSound("sound/weapons/explosions/explode14.wav");
@@ -769,72 +728,6 @@ static void CG_RegisterSounds( void )
 	cgs.media.electricExpSound[2]	= trap_S_RegisterSound("sound/weapons/explosions/explode15.wav");
 	cgs.media.bigSurfExpSound		= trap_S_RegisterSound("sound/weapons/explosions/explode12.wav");
 }
-
-
-//===================================================================================
-
-/*static void PrecacheAwardsAssets()
-{
-	// kef -- precaching bot victory sounds (e.g. Desperado_wins.wav) in PlayerModel_BuildList()
-	// TiM -- commenting out every asset RPG-X won't use.  Honestly, this'll speed up load time A LOT
-
-	trap_R_RegisterShaderNoMip("menu/medals/medal_efficiency");			
-	trap_R_RegisterShaderNoMip("menu/medals/medal_sharpshooter");		
-	trap_R_RegisterShaderNoMip("menu/medals/medal_untouchable");		
-	trap_R_RegisterShaderNoMip("menu/medals/medal_logistics");			
-	trap_R_RegisterShaderNoMip("menu/medals/medal_tactician");			
-	trap_R_RegisterShaderNoMip("menu/medals/medal_demolitionist");		
-	trap_R_RegisterShaderNoMip("menu/medals/medal_ace");				
-	trap_R_RegisterShaderNoMip("menu/medals/medal_teammvp");			
-	trap_R_RegisterShaderNoMip("menu/medals/medal_section31");			
-
-	trap_S_RegisterSound("sound/voice/computer/misc/effic.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/sharp.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/untouch.wav");		
-	trap_S_RegisterSound("sound/voice/computer/misc/log.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/tact.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/demo.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/ace.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/sec31.wav");
-
-	trap_R_RegisterShaderNoMip("menu/medals/medal_teammvp");		
-	trap_R_RegisterShaderNoMip("menu/medals/medal_teamdefender");	
-	trap_R_RegisterShaderNoMip("menu/medals/medal_teamwarrior");	
-	trap_R_RegisterShaderNoMip("menu/medals/medal_teamcarrier");	
-	trap_R_RegisterShaderNoMip("menu/medals/medal_teaminterceptor");	
-	trap_R_RegisterShaderNoMip("menu/medals/medal_teambravery");		
-
-	trap_S_RegisterSound("sound/voice/computer/misc/mvp.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/defender.wav");		
-	trap_S_RegisterSound("sound/voice/computer/misc/warrior.wav");		
-	trap_S_RegisterSound("sound/voice/computer/misc/carrier.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/intercept.wav");				
-	trap_S_RegisterSound("sound/voice/computer/misc/bravery.wav");	
-
-	trap_R_RegisterShaderNoMip("menu/medals/medal_ace");			
-	trap_R_RegisterShaderNoMip("menu/medals/medal_expert");			
-	trap_R_RegisterShaderNoMip("menu/medals/medal_master");			
-	trap_R_RegisterShaderNoMip("menu/medals/medal_champion");				
-
-	trap_S_RegisterSound("sound/voice/computer/misc/ace.wav");				
-	trap_S_RegisterSound("sound/voice/computer/misc/expert.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/master.wav");			
-	trap_S_RegisterSound("sound/voice/computer/misc/champion.wav");
-
-	trap_S_RegisterSound("sound/voice/computer/misc/commendations.wav");
-	trap_S_RegisterSound("sound/voice/computer/misc/progcomp.wav");
-	trap_S_RegisterSound("sound/voice/computer/misc/2nd.wav");
-	trap_S_RegisterSound("sound/voice/computer/misc/3rd.wav");
-	trap_S_RegisterSound("sound/voice/computer/misc/notPlace.wav");
-	trap_S_RegisterSound( "sound/voice/computer/misc/youwin.wav" );
-	trap_S_RegisterSound( "sound/voice/computer/misc/blueteam_wins.wav" );
-	trap_S_RegisterSound( "sound/voice/computer/misc/redteam_wins.wav" );
-	trap_S_RegisterSound( "sound/voice/computer/misc/teamstied.wav" );
-	trap_S_RegisterSound( "sound/voice/computer/misc/yourteam_wins.wav" );
-
-	trap_R_RegisterShader("icons/icon_ready_on");
-	trap_R_RegisterShader("icons/icon_ready_off");
-}*/
 
 /*
 =================
@@ -846,7 +739,7 @@ This function may execute for a couple of minutes with a slow disk.
 static void CG_RegisterGraphics( void ) {
 	int			i;
 	char		items[MAX_ITEMS+1];
-	//char		temp_skin[100];
+
 	static char		*sb_nums[11] = {
 		"gfx/2d/numbers/zero",
 		"gfx/2d/numbers/one",
@@ -894,98 +787,26 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.smallnumberShaders[i] = trap_R_RegisterShaderNoMip( sb_t_nums[i] );
 	}
 
-	/*cgs.media.botSkillShaders[0] = trap_R_RegisterShaderNoMip( "menu/art/skill1.tga" );
-	cgs.media.botSkillShaders[1] = trap_R_RegisterShaderNoMip( "menu/art/skill2.tga" );
-	cgs.media.botSkillShaders[2] = trap_R_RegisterShaderNoMip( "menu/art/skill3.tga" );
-	cgs.media.botSkillShaders[3] = trap_R_RegisterShaderNoMip( "menu/art/skill4.tga" );
-	cgs.media.botSkillShaders[4] = trap_R_RegisterShaderNoMip( "menu/art/skill5.tga" );*/
-
-	//cgs.media.pClassShaders[PC_NOCLASS] = trap_R_RegisterShaderNoMip( "menu/art/pc_noclass.tga" );//PC_NOCLASS,//default
-
-	//cgs.media.pClassShaders[PC_SECURITY] = trap_R_RegisterShaderNoMip( "menu/art/pc_security.tga" );//PC_NOCLASS,//default
-	//cgs.media.pClassShaders[PC_COMMAND] = trap_R_RegisterShaderNoMip( "menu/art/pc_command.tga" );//PC_NOCLASS,//default
-	//cgs.media.pClassShaders[PC_ENGINEER] = trap_R_RegisterShaderNoMip( "menu/art/pc_engineer.tga" );//PC_NOCLASS,//default
-	//cgs.media.pClassShaders[PC_ALIEN] = trap_R_RegisterShaderNoMip( "menu/art/pc_alien.tga" );//PC_NOCLASS,//default
-	//cgs.media.pClassShaders[PC_SCIENCE] = trap_R_RegisterShaderNoMip( "menu/art/pc_science.tga" );//PC_NOCLASS,//default
-	//cgs.media.pClassShaders[PC_MEDICAL] = trap_R_RegisterShaderNoMip( "menu/art/pc_medical.tga" );//PC_NOCLASS,//default
-	//cgs.media.pClassShaders[PC_ALPHAOMEGA22] = trap_R_RegisterShaderNoMip( "menu/art/pc_security.tga" );//PC_NOCLASS,//default
-	//cgs.media.pClassShaders[PC_ADMIN] = trap_R_RegisterShaderNoMip( "menu/art/pc_security.tga" );//PC_NOCLASS,//default
-
-	//TiM
-	/*if ( cgs.pModSpecialties || cg_buildScript.integer )
-	{
-		cgs.media.pClassShaders[PC_INFILTRATOR] = trap_R_RegisterShaderNoMip( "menu/art/pc_infiltrator.tga" );//PC_INFILTRATOR,//fast, low attack
-		cgs.media.pClassShaders[PC_SNIPER] = trap_R_RegisterShaderNoMip( "menu/art/pc_sniper.tga" );//PC_SNIPER,//sneaky, snipe only
-		cgs.media.pClassShaders[PC_HEAVY] = trap_R_RegisterShaderNoMip( "menu/art/pc_heavy.tga" );//PC_HEAVY,//slow, heavy attack
-		cgs.media.pClassShaders[PC_DEMO] = trap_R_RegisterShaderNoMip( "menu/art/pc_demo.tga" );//PC_DEMO,//go boom
-		cgs.media.pClassShaders[PC_MEDIC] = trap_R_RegisterShaderNoMip( "menu/art/pc_medic.tga" );//PC_MEDIC,//heal
-		cgs.media.pClassShaders[PC_TECH] = trap_R_RegisterShaderNoMip( "menu/art/pc_tech.tga" );//PC_TECH,//operate
-	}*/
-
-	//TiM
-	/*if ( cgs.pModActionHero || cg_buildScript.integer )
-	{
-		cgs.media.pClassShaders[PC_ACTIONHERO] = trap_R_RegisterShaderNoMip( "menu/art/pc_hero.tga" );//PC_ACTIONHERO,//has everything
-		cgs.media.heroSpriteShader = trap_R_RegisterShader( "sprites/class_hero" );
-	}*/
-
-	//TiM
-	/*if ( cgs.pModAssimilation || cg_buildScript.integer )
-	{//borg beam
-		cgs.media.whiteLaserShader		= trap_R_RegisterShader( "gfx/effects/whitelaser" );
-		cgs.media.borgEyeFlareShader	= trap_R_RegisterShader( "gfx/misc/borgeyeflare" );
-		cgs.media.pClassShaders[PC_BORG] = trap_R_RegisterShaderNoMip( "menu/art/pc_borg.tga" );//PC_BORG,//special weapons, slower, adapting shields
-		cgs.media.borgIconShader = trap_R_RegisterShaderNoMip( "icons/icon_borg.tga" );
-		cgs.media.borgQueenIconShader = trap_R_RegisterShaderNoMip( "icons/icon_borgqueen.tga" );
-	}*/
-
 	//TiM : For the ST style long beam effectszor
 	cgs.media.transportShader		= trap_R_RegisterShader( "powerups/beamEffect" );
 	//GSIO01: shaders for additional transport fx
 	cgs.media.transportKlingon		= trap_R_RegisterShader( "gfx/effects/tKlingon" );
 	cgs.media.transportRomulan		= trap_R_RegisterShader( "gfx/effects/tRom" );
 	cgs.media.transportCardassian	= trap_R_RegisterShader( "gfx/effects/tCardi" );
-
-	cgs.media.deferShader = trap_R_RegisterShaderNoMip( "gfx/2d/defer.tga" );
-	//No more elimination - TiM
-	//cgs.media.eliminatedShader = trap_R_RegisterShaderNoMip( "gfx/2d/eliminated.tga" );
-
+	cgs.media.deferShader			= trap_R_RegisterShaderNoMip( "gfx/2d/defer.tga" );
 	cgs.media.smokePuffRageProShader = trap_R_RegisterShader( "smokePuffRagePro" );
 	cgs.media.lagometerShader = trap_R_RegisterShader("lagometer" );
 	cgs.media.connectionShader = trap_R_RegisterShader( "disconnected" );
-
 	cgs.media.waterBubbleShader = trap_R_RegisterShader( "waterBubble" );
-
-	//cgs.media.selectShader = trap_R_RegisterShader( "gfx/2d/select" );
-
-	/*for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) {
-		cgs.media.crosshairShader[i] = trap_R_RegisterShaderNoMip( va("gfx/2d/crosshair%c", 'a'+i) );
-	}*/
 
 	//LASER
 	cgs.media.laserShader = trap_R_RegisterShader( "sprites/laser" );
 
 	cgs.media.backTileShader = trap_R_RegisterShader( "gfx/2d/backtile" );
-	//cgs.media.noammoShader = trap_R_RegisterShader( "icons/noammo" );
-
-	// powerup shaders
-	/*cgs.media.quadShader				= trap_R_RegisterShader("powerups/quad" );
-	cgs.media.quadWeaponShader			= trap_R_RegisterShader("powerups/quadWeapon" );
-	cgs.media.battleSuitShader			= trap_R_RegisterShader("powerups/battleSuit" );
-	cgs.media.battleWeaponShader		= trap_R_RegisterShader("powerups/battleWeapon" );
-	cgs.media.invisShader				= trap_R_RegisterShader("powerups/invisibility" );
-	cgs.media.regenShader				= trap_R_RegisterShader("powerups/regen" );
-	cgs.media.hastePuffShader			= trap_R_RegisterShader("hasteSmokePuff" );
-	cgs.media.flightPuffShader			= trap_R_RegisterShader("flightSmokePuff" );
-	cgs.media.borgFullBodyShieldShader	= trap_R_RegisterShader( "gfx/effects/borgfullbodyshield" );
-	cgs.media.borgFlareShader			= trap_R_RegisterShader( "gfx/misc/borgflare" );*/
 	cgs.media.disruptorShader			= trap_R_RegisterShader( "powerups/disrupt");
 	cgs.media.explodeShellShader		= trap_R_RegisterShader( "powerups/explode");
 	cgs.media.quantumDisruptorShader	= trap_R_RegisterShader( "powerups/quantum_disruptor_hm");
 	cgs.media.borgFullBodyShieldShader	= trap_R_RegisterShader( "gfx/effects/borgfullbodyshield2" );
-
-	//cgs.media.seekerModel = trap_R_RegisterModel("models/powerups/trek/flyer.md3" );
-	//cgs.media.holoDoorModel = trap_R_RegisterModel("models/mapobjects/podium/hm_room.md3" );
 
 	// Used in any explosion-oriented death.
 	for (i = 0; i < NUM_CHUNKS; i++)
@@ -998,8 +819,6 @@ static void CG_RegisterGraphics( void ) {
 
 	cgs.media.teleportEffectModel = trap_R_RegisterModel( "models/misc/telep.md3" );
 	cgs.media.teleportEffectShader = trap_R_RegisterShader( "playerTeleport" );
-
-	//cgs.media.doorbox = trap_R_RegisterModel( "models/mapobjects/podium/hm_room.md3");
 
 	//RPG-X TiM : the bolton assets
 	cgs.media.phaserHolster	=	trap_R_RegisterModel( "models/boltOns/phaser_holster.md3");
@@ -1038,24 +857,10 @@ static void CG_RegisterGraphics( void ) {
 			break;
 	}
 	//RPG-X END
-	//cgs.media.shieldDamageShaderBlue = trap_R_RegisterShader( "gfx/misc/blue_dmgshield" );
-	
-	
-	
-	//cgs.media.shieldActivateShaderRed = trap_R_RegisterShader( "gfx/misc/red_portashield" );
-	//cgs.media.shieldDamageShaderRed = trap_R_RegisterShader( "gfx/misc/red_dmgshield" );
 
 	cgs.media.weaponPlaceholderShader	= trap_R_RegisterShader("powerups/placeholder" );
 	cgs.media.rezOutShader				= trap_R_RegisterShader("powerups/rezout");
 	cgs.media.electricBodyShader		= trap_R_RegisterShader("gfx/misc/electric");
-
-	/*cgs.media.medalImpressive = trap_R_RegisterShaderNoMip( "medal_impressive" );
-	cgs.media.medalExcellent = trap_R_RegisterShaderNoMip( "medal_excellent" );
-	cgs.media.medalFirstStrike = trap_R_RegisterShaderNoMip( "medal_firststrike" );
-	cgs.media.medalAce = trap_R_RegisterShaderNoMip( "medal_ace" );
-	cgs.media.medalExpert = trap_R_RegisterShaderNoMip( "medal_expert" );
-	cgs.media.medalMaster = trap_R_RegisterShaderNoMip( "medal_master" );
-	cgs.media.medalChampion = trap_R_RegisterShaderNoMip( "medal_champion" );*/
 	
 	//RPG-X: RedTechie - Scoreboard Endcaps
 	cgs.media.scoreboardtopleft = trap_R_RegisterShaderNoMip( "menu/common/rpgx_sb_topleft");
@@ -1066,11 +871,6 @@ static void CG_RegisterGraphics( void ) {
 	//RPG-X: RedTechie - Healthbar Curves
 	cgs.media.healthendcap = trap_R_RegisterShaderNoMip("gfx/interface/rpgx_healthbar_endcap");
 	cgs.media.healthbigcurve = trap_R_RegisterShaderNoMip("gfx/interface/rpgx_healthbar_leftcorner");
-	//TiM: New Healthbar Graphics
-	//cgs.media.healthSineWave = trap_R_RegisterShaderNoMip( "menu/healthbar/sinewave" );
-
-	//RPG-X: RedTechie - Cloak Sprite
-	//cgs.media.cloakspriteShader = trap_R_RegisterShader("sprites/cloak");
 
 	cgs.media.scoreboardEndcap = trap_R_RegisterShaderNoMip( "menu/common/halfround_r_24");
 	cgs.media.corner_12_24 = trap_R_RegisterShaderNoMip( "menu/common/corner_ll_24_12");
@@ -1109,26 +909,6 @@ static void CG_RegisterGraphics( void ) {
 	//It's possible to use one set of textures, and use Alpha channels to vary
 	//the color thru the code... wouldn't that be better?
 	cgs.media.radarShader = trap_R_RegisterShader( "gfx/radar/radar" );
-	/*cgs.media.rd_up = trap_R_RegisterShader( "gfx/radar/rd_up" );
-	cgs.media.rd_down = trap_R_RegisterShader( "gfx/radar/rd_down" );
-	cgs.media.rd_level = trap_R_RegisterShader( "gfx/radar/rd_level" );
-	cgs.media.rd_red_up = trap_R_RegisterShader( "gfx/radar/rd_red_up" );
-	cgs.media.rd_red_down = trap_R_RegisterShader( "gfx/radar/rd_red_down" );
-	cgs.media.rd_red_level = trap_R_RegisterShader( "gfx/radar/rd_red_level" );
-	cgs.media.rd_blue_up = trap_R_RegisterShader( "gfx/radar/rd_blue_up" );
-	cgs.media.rd_blue_down = trap_R_RegisterShader( "gfx/radar/rd_blue_down" );
-	cgs.media.rd_blue_level = trap_R_RegisterShader( "gfx/radar/rd_blue_level" );
-	cgs.media.rd_white_up = trap_R_RegisterShader( "gfx/radar/rd_white_up" );
-	cgs.media.rd_white_down = trap_R_RegisterShader( "gfx/radar/rd_white_down" );
-	cgs.media.rd_white_level = trap_R_RegisterShader( "gfx/radar/rd_white_level" );
-	cgs.media.rd_teal_up = trap_R_RegisterShader( "gfx/radar/rd_teal_up" );
-	cgs.media.rd_teal_down = trap_R_RegisterShader( "gfx/radar/rd_teal_down" );
-	cgs.media.rd_teal_level = trap_R_RegisterShader( "gfx/radar/rd_teal_level" );
-	cgs.media.rd_black_up = trap_R_RegisterShader( "gfx/radar/rd_black_up" );
-	cgs.media.rd_black_down = trap_R_RegisterShader( "gfx/radar/rd_black_down" );
-	cgs.media.rd_black_level = trap_R_RegisterShader( "gfx/radar/rd_black_level" );
-	cgs.media.rd_injured_up = trap_R_RegisterShader( "gfx/radar/injured_up" );
-	cgs.media.rd_injured_down = trap_R_RegisterShader( "gfx/radar/injured_down" );*/
 	cgs.media.rd_injured_level = trap_R_RegisterShader( "gfx/radar/injured_level" );
 
 	cgs.media.radarMain = trap_R_RegisterShaderNoMip( "gfx/radar/radar_icon" );
@@ -1174,24 +954,6 @@ static void CG_RegisterGraphics( void ) {
 		}
 	}
 
-	//TiM: Do the same for all tricorder string names
-	/*or ( i = 1; i < MAX_TRIC_STRINGS; i++ ) {
-		const char		*strName;
-
-		strName = CG_ConfigString( CS_TRIC_STRINGS+i );
-		if ( !strName[0] ) {
-			break;
-		}
-		
-		//Com_Printf( S_COLOR_RED "USABLE MESSAGE IN CG: %s\n", strName );
-
-		//Com_sprintf( cgs.tricStrings[i], MAX_TOKEN_CHARS, "%s", strName );
-
-		//cgs.tricStrings[i] = (char *)strName;
-		//Com_Printf( S_COLOR_RED "%s\n", cgs.tricStrings[i] );
-		Q_strncpyz( cgs.tricStrings[i], strName, MAX_TOKEN_CHARS );
-	}*/
-
 	cg.loadLCARSStage = 7;	// Loading bar stage 7
 	CG_LoadingString( "Interface" );
 
@@ -1221,10 +983,8 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.fireShader				= trap_R_RegisterShader( "gfx/misc/rpgflames" );
 	cgs.media.smokeShader				= trap_R_RegisterShader( "gfx/misc/smoke" );
 	cgs.media.explosionModel				= trap_R_RegisterModel ( "models/weaphits/explosion.md3" );
-	//cgs.media.electricalExplosionFastShader = trap_R_RegisterShader( "electricalExplosionFast" );
 	cgs.media.electricalExplosionSlowShader	= trap_R_RegisterShader( "electricalExplosionSlow" );
 	cgs.media.surfaceExplosionShader		= trap_R_RegisterShader( "surfaceExplosion" );
-	//cgs.media.purpleParticleShader		= trap_R_RegisterShader( "gfx/misc/purpleparticle" );
 	cgs.media.blueParticleShader		= trap_R_RegisterShader( "gfx/misc/blueparticle" );
 	cgs.media.ltblueParticleShader		= trap_R_RegisterShader( "gfx/misc/ltblueparticle" );
 	cgs.media.yellowParticleShader		= trap_R_RegisterShader( "gfx/misc/yellowparticle" );
@@ -1235,15 +995,10 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.redRing2Shader			= trap_R_RegisterShader( "gfx/misc/red_ring2" );
 	cgs.media.nukeModel					= trap_R_RegisterModel ( "models/weaphits/nuke.md3" );
 	cgs.media.bigShockShader			= trap_R_RegisterShader( "gfx/misc/bigshock" );
-	//cgs.media.IMODMarkShader			= trap_R_RegisterShader( "gfx/damage/burnmark2" );
 	cgs.media.plasmaShader				= trap_R_RegisterShader( "gfx/misc/plasmanew" );
 	cgs.media.bolt2Shader				= trap_R_RegisterShader( "gfx/effects/electrica" );
-	//cgs.media.holoOuchShader			= trap_R_RegisterShader( "powerups/holoOuch" );
 	cgs.media.painBlobShader			= trap_R_RegisterShader( "gfx/misc/painblob" );
 	cgs.media.painShieldBlobShader		= trap_R_RegisterShader( "gfx/misc/painshieldblob" );
-	//cgs.media.shieldBlobShader			= trap_R_RegisterShader( "gfx/misc/shieldblob" );
-	//cgs.media.halfShieldShader			= trap_R_RegisterShader( "halfShieldShell" );
-	//cgs.media.holoDecoyShader			= trap_R_RegisterShader( "powerups/holodecoy" );
 	cgs.media.trans1Shader				= trap_R_RegisterShader( "gfx/misc/trans1" );
 	cgs.media.trans2Shader				= trap_R_RegisterShader( "gfx/misc/trans2" );
 	//TiM
@@ -1256,8 +1011,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.probeDecal				= trap_R_RegisterShader( "gfx/effects/beam_decal" );
 
 	cgs.media.regenDecal				= trap_R_RegisterShader( "gfx/effects/regen_decal" );
-
-	//cgs.media.blueParticleStreakShader	= trap_R_RegisterShader( "gfx/misc/blueparticle_anamorphic" );
 
 	//RPG-X | GSIO01 | 11/05/2009:
 	cgs.media.quantumGlow				= trap_R_RegisterShader( "gfx/fx/quantum_glow" );
@@ -1282,11 +1035,6 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.zoomMaskShader			= trap_R_RegisterShader( "gfx/misc/zoom_mask2" );
 	cgs.media.zoomMask116Shader			= trap_R_RegisterShader( "gfx/misc/zoom_mask_tr116");
 	cgs.media.zoomGlow116Shader			= trap_R_RegisterShader( "gfx/misc/zoom_tr116_flash" );
-	/*cgs.media.zoomBarShader				= trap_R_RegisterShader( "gfx/2d/zoom_ctrl" );
-	cgs.media.zoomArrowShader			= trap_R_RegisterShader( "gfx/2d/arrow" );
-	cgs.media.ammoslider				= trap_R_RegisterShaderNoMip( "gfx/interface/ammobar" );
-	cgs.media.zoomInsertShader			= trap_R_RegisterShaderNoMip( "gfx/misc/zoom_insert" );*/
-
 
 	cgs.media.testDetpackShader3		= trap_R_RegisterShader( "gfx/misc/detpack3" );
 	cgs.media.testDetpackRingShader1	= trap_R_RegisterShader( "gfx/misc/detpackring1" );
@@ -1296,113 +1044,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.testDetpackRingShader5	= trap_R_RegisterShader( "gfx/misc/detpackring5" );
 	cgs.media.testDetpackRingShader6	= trap_R_RegisterShader( "gfx/misc/detpackring6" );
 
-	//RPG-X (J2J) Rank Images for Score Board
-	//TiM: WHHHHHHHHHHYYYYYYYYYYYYYYYYYYYYYYYYYYYYY!!!!!!!!!!?!?!?!
-	//Seriously... too many shader slots... T_T
-	/*********************************************************/
-
-	//Civillian / N/A
-	/*cgs.media.ri_Civ = trap_R_RegisterShader("icons/rankinsignias/Civ-Blank");
-
-	//Red (Command)
-	cgs.media.ri_Crewman[0] = trap_R_RegisterShader("icons/rankinsignias/R-S1-Blank");
-	cgs.media.ri_Cadet1[0] = trap_R_RegisterShader("icons/rankinsignias/R-AC1");
-	cgs.media.ri_Cadet2[0] = trap_R_RegisterShader("icons/rankinsignias/R-AC2");
-	cgs.media.ri_Cadet3[0] = trap_R_RegisterShader("icons/rankinsignias/R-AC3");
-	cgs.media.ri_Cadet4[0] = trap_R_RegisterShader("icons/rankinsignias/R-AC4");
-	cgs.media.ri_Ensign[0] = trap_R_RegisterShader("icons/rankinsignias/R-0");
-	cgs.media.ri_Ltjg[0] = trap_R_RegisterShader("icons/rankinsignias/R-01");
-	cgs.media.ri_Lt[0] = trap_R_RegisterShader("icons/rankinsignias/R-00");
-	cgs.media.ri_Ltcmdr[0] = trap_R_RegisterShader("icons/rankinsignias/R-001");
-	cgs.media.ri_Cmdr[0] = trap_R_RegisterShader("icons/rankinsignias/R-000");
-	cgs.media.ri_Capt[0] = trap_R_RegisterShader("icons/rankinsignias/R-0000");
-	cgs.media.ri_Cmmdr[0] = trap_R_RegisterShader("icons/rankinsignias/R-A0");
-	cgs.media.ri_Admr2[0] = trap_R_RegisterShader("icons/rankinsignias/R-A00");
-	cgs.media.ri_Admr3[0] = trap_R_RegisterShader("icons/rankinsignias/R-A000");
-	cgs.media.ri_Admr4[0] = trap_R_RegisterShader("icons/rankinsignias/R-A0000");
-	cgs.media.ri_Admr5[0] = trap_R_RegisterShader("icons/rankinsignias/R-A00000");
-
-	//Gold (Engineering / Security)
-	cgs.media.ri_Crewman[1] = trap_R_RegisterShader("icons/rankinsignias/Y-S1-Blank");
-	cgs.media.ri_Cadet1[1] = trap_R_RegisterShader("icons/rankinsignias/Y-AC1");
-	cgs.media.ri_Cadet2[1] = trap_R_RegisterShader("icons/rankinsignias/Y-AC2");
-	cgs.media.ri_Cadet3[1] = trap_R_RegisterShader("icons/rankinsignias/Y-AC3");
-	cgs.media.ri_Cadet4[1] = trap_R_RegisterShader("icons/rankinsignias/Y-AC4");
-	cgs.media.ri_Ensign[1] = trap_R_RegisterShader("icons/rankinsignias/Y-0");
-	cgs.media.ri_Ltjg[1] = trap_R_RegisterShader("icons/rankinsignias/Y-01");
-	cgs.media.ri_Lt[1] = trap_R_RegisterShader("icons/rankinsignias/Y-00");
-	cgs.media.ri_Ltcmdr[1] = trap_R_RegisterShader("icons/rankinsignias/Y-001");
-	cgs.media.ri_Cmdr[1] = trap_R_RegisterShader("icons/rankinsignias/Y-000");
-	cgs.media.ri_Capt[1] = trap_R_RegisterShader("icons/rankinsignias/Y-0000");
-	cgs.media.ri_Cmmdr[1] = trap_R_RegisterShader("icons/rankinsignias/Y-A0");
-	cgs.media.ri_Admr2[1] = trap_R_RegisterShader("icons/rankinsignias/Y-A00");
-	cgs.media.ri_Admr3[1] = trap_R_RegisterShader("icons/rankinsignias/Y-A000");
-	cgs.media.ri_Admr4[1] = trap_R_RegisterShader("icons/rankinsignias/Y-A0000");
-	cgs.media.ri_Admr5[1] = trap_R_RegisterShader("icons/rankinsignias/Y-A00000");
-
-	//Teal (Science / Medical)
-	cgs.media.ri_Crewman[2] = trap_R_RegisterShader("icons/rankinsignias/T-S1-Blank");
-	cgs.media.ri_Cadet1[2] = trap_R_RegisterShader("icons/rankinsignias/T-AC1");
-	cgs.media.ri_Cadet2[2] = trap_R_RegisterShader("icons/rankinsignias/T-AC2");
-	cgs.media.ri_Cadet3[2] = trap_R_RegisterShader("icons/rankinsignias/T-AC3");
-	cgs.media.ri_Cadet4[2] = trap_R_RegisterShader("icons/rankinsignias/T-AC4");
-	cgs.media.ri_Ensign[2] = trap_R_RegisterShader("icons/rankinsignias/T-0");
-	cgs.media.ri_Ltjg[2] = trap_R_RegisterShader("icons/rankinsignias/T-01");
-	cgs.media.ri_Lt[2] = trap_R_RegisterShader("icons/rankinsignias/T-00");
-	cgs.media.ri_Ltcmdr[2] = trap_R_RegisterShader("icons/rankinsignias/T-001");
-	cgs.media.ri_Cmdr[2] = trap_R_RegisterShader("icons/rankinsignias/T-000");
-	cgs.media.ri_Capt[2] = trap_R_RegisterShader("icons/rankinsignias/T-0000");
-	cgs.media.ri_Cmmdr[2] = trap_R_RegisterShader("icons/rankinsignias/T-A0");
-	cgs.media.ri_Admr2[2] = trap_R_RegisterShader("icons/rankinsignias/T-A00");
-	cgs.media.ri_Admr3[2] = trap_R_RegisterShader("icons/rankinsignias/T-A000");
-	cgs.media.ri_Admr4[2] = trap_R_RegisterShader("icons/rankinsignias/T-A0000");
-	cgs.media.ri_Admr5[2] = trap_R_RegisterShader("icons/rankinsignias/T-A00000");
-
-	//Marine Class
-	cgs.media.ri_Crewman[3] = trap_R_RegisterShader("icons/rankinsignias/G-S1-Blank");
-	cgs.media.ri_Cadet1[3] = trap_R_RegisterShader("icons/rankinsignias/G-AC1");
-	cgs.media.ri_Cadet2[3] = trap_R_RegisterShader("icons/rankinsignias/G-AC2");
-	cgs.media.ri_Cadet3[3] = trap_R_RegisterShader("icons/rankinsignias/G-AC3");
-	cgs.media.ri_Cadet4[3] = trap_R_RegisterShader("icons/rankinsignias/G-AC4");
-	cgs.media.ri_Ensign[3] = trap_R_RegisterShader("icons/rankinsignias/G-2Lt");
-	cgs.media.ri_Ltjg[3] = trap_R_RegisterShader("icons/rankinsignias/G-1Lt");
-	cgs.media.ri_Lt[3] = trap_R_RegisterShader("icons/rankinsignias/G-MCapt");
-	cgs.media.ri_Ltcmdr[3] = trap_R_RegisterShader("icons/rankinsignias/G-Maj");
-	cgs.media.ri_Cmdr[3] = trap_R_RegisterShader("icons/rankinsignias/G-LtCol");
-	cgs.media.ri_Capt[3] = trap_R_RegisterShader("icons/rankinsignias/G-Col");
-	cgs.media.ri_Cmmdr[3] = trap_R_RegisterShader("icons/rankinsignias/G-GX");
-	cgs.media.ri_Admr2[3] = trap_R_RegisterShader("icons/rankinsignias/G-GXX");
-	cgs.media.ri_Admr3[3] = trap_R_RegisterShader("icons/rankinsignias/G-GXXX");
-	cgs.media.ri_Admr4[3] = trap_R_RegisterShader("icons/rankinsignias/G-GXXXX");
-	cgs.media.ri_Admr5[3] = trap_R_RegisterShader("icons/rankinsignias/G-GXXXXX");*/
-
-	/***************************************************************************/
-
-	//RPG-X: J2J - CrossHairs
-/*	for(i = 0; i < 15; i++)
-	{
-		cgs.media.crosshair[i] = trap_R_RegisterShader(va("icons/CrossHairs/ch%i",i+1));
-	}*/
-
 	cgs.media.crosshairSheet = trap_R_RegisterShaderNoMip( "gfx/2d/rpgx_crosshairs" );
-
-	/*
-	01 Phaser
-	02 PRifle
-	03 Scav 
-	04 alien
-	05 imod
-	06 tr116
-	07 granede
-	08 photon
-	09 dermal
-	10 hypo
-	11 medkit
-	12 engkit
-	13 engtool
-	14 padd
-	15 tricorder
-	*/
 
 	/***************************************************************************/
 	//PH34R T3H L3NZFL4R3!!!!
@@ -1411,13 +1053,7 @@ static void CG_RegisterGraphics( void ) {
 	if ( cg_dynamiclensflares.integer ) {
 		cgs.media.flareCore = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_core");
 		cgs.media.flareStreak = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_streak");
-		cgs.media.flareHaze = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_haze");
-
-		/*cgs.media.flareChroma = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_chromadisc");
-		cgs.media.flareRadial = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_radial");
-		cgs.media.flareStraight = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_straight");
-		cgs.media.flareInverseRad = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_inverseradial");*/
-	
+		cgs.media.flareHaze = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_haze");	
 
 		for ( i=0; i<10; i++ ) {
 			lensReflec[i].graphic = trap_R_RegisterShaderNoMip( lensReflec[i].file );
@@ -1426,14 +1062,8 @@ static void CG_RegisterGraphics( void ) {
 
 	//TiM - for Prifle improved FX
 	cgs.media.orangeStarShader = trap_R_RegisterShaderNoMip( "gfx/misc/orangestar" );
-
 	cgs.media.qFlashSprite = trap_R_RegisterShaderNoMip( "gfx/effects/qflash" );
 
-	//TiM: Save asset space
-	/*if (cg_buildScript.integer)
-	{
-		PrecacheAwardsAssets();
-	}*/
 }
 
 /*
@@ -1576,7 +1206,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence ) {
 	cgs.media.charsetPropTiny = trap_R_RegisterShaderNoMip("gfx/2d/chars_tiny");
 	cgs.media.charsetProp		= trap_R_RegisterShaderNoMip("gfx/2d/chars_medium");
 	cgs.media.charsetPropBig	= trap_R_RegisterShaderNoMip("gfx/2d/chars_big");
-//	cgs.media.charsetPropGlow	= trap_R_RegisterShaderNoMip( "menu/art/font1_prop_glo.tga" );
 	cgs.media.charsetPropB		= trap_R_RegisterShaderNoMip( "gfx/2d/chars_medium.tga" );
 
 	CG_RegisterCvars();
@@ -1659,6 +1288,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence ) {
 		CG_RegisterWeapon(i);
 	}
 
+	/* Precache shaders for shader remapping */
+	CG_PrecacheRemapShaders();
+
 	// To get the interface timing started
 	cg.interfaceStartupTime = 0;
 	cg.interfaceStartupDone = 0;
@@ -1684,10 +1316,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence ) {
 	if ( cgs.scannablePanels )
 		CG_LoadUsablesStrings();
 
-	//TiM Finally, init class data received from Server
-	//TiM2 - Separated this out so class data has to be locally accessed now
-	//CG_ParseClassData();
-
 	/* shader remapping */
 	CG_ShaderStateChanged();
 
@@ -1703,9 +1331,7 @@ Called before every level change or subsystem restart
 =================
 */
 void CG_Shutdown( void ) {
-	// some mods may need to do cleanup work here,
-	// like closing files or archiving session data
-	//trap_Cvar_Set ("rpg_playIntro", "0");
+
 }
 
 
@@ -1992,7 +1618,6 @@ qboolean CG_LoadClasses( void )
 					for ( i = 0; i < 3; i++ ) 
 					{
 						cgs.classData[numClasses].radarColor[i] = (int)Com_Clamp( 0, 255, (int)temp[i] );
-						//G_Printf( S_COLOR_RED "g_classData[numClasses].color[%i] = %i\n", i, g_classData[numClasses].color[i] );
 					}
 
 					continue;
