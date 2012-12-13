@@ -1578,6 +1578,7 @@ For the angles, the entity's angle must be aimed at the main set of doors to the
 "targetShaderName" - lights off shader
 "falsename" - lights up
 "truename" - lights down
+"override" - if set to 1 overrides rpg_calcLiftTravelDuration
 
 -----LUA-----
 Retrofit:
@@ -1675,6 +1676,11 @@ void SP_target_turbolift ( gentity_t *self )
 	self->count = 0; //target/targetted lift
 	G_SpawnFloat( "wait", "3000", &self->wait );
 	G_SpawnInt( "waitEnd", "1000", &self->sound1to2 );
+
+	G_SpawnInt("override", "0", &i);
+	if(i) {
+		level.overrideCalcLiftTravelDuration = i;
+	}
 
 	if(!self->tmpEntity)
 		trap_SetBrushModel( self, self->model );

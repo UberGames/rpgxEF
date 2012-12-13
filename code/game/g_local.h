@@ -697,6 +697,9 @@ typedef struct {
 	list_p selfdestructSafeZones;
 	list_p locations;
 	list_p timedMessages;
+
+	// override rpg_calcLiftTravelDuration
+	int overrideCalcLiftTravelDuration;
 } level_locals_t;
 
 

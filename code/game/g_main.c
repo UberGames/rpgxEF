@@ -459,7 +459,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_forceFieldColor,			"rpg_forceFieldColor", 			"0", 						CVAR_ARCHIVE, 											0, qfalse },
 	{ &rpg_allowRemodulation,		"rpg_allowRemodulation", 		"1", 						CVAR_ARCHIVE, 											0, qfalse },
 	{ &rpg_forceFieldFreq, 			"rpg_forceFieldFreq", 			"0", 						CVAR_ARCHIVE, 											0, qfalse },
-	{ &rpg_calcLiftTravelDuration,  "rpg_calcLiftTravelDuration",	"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &rpg_calcLiftTravelDuration,  "rpg_calcLiftTravelDuration",	"1", 						CVAR_ARCHIVE, 											0, qfalse },
 	{ &rpg_liftDurationModifier,	"rpg_liftDurationModifier" ,	"0.5", 						CVAR_ARCHIVE, 											0, qfalse },
 	{ &rpg_altTricorderDelay,		"rpg_altTricorderDelay", 		"1000", 					CVAR_ARCHIVE, 											0, qfalse },
 	{ &rpg_borgMoveThroughFields,	"rpg_borgMoveThroughFields",	"0", 						CVAR_ARCHIVE, 											0, qfalse },
@@ -1744,6 +1744,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	G_Printf ("------- Game Initialization -------\n");
 	G_Printf ("gamename: %s\n", GAMEVERSION);
 	G_Printf ("gamedate: %s\n", __DATE__);
+
+	level.overrideCalcLiftTravelDuration = 0;
 
 	init_tonextint(qtrue);
 	srand( randomSeed );
