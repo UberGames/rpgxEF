@@ -350,7 +350,7 @@ void CG_PrecacheRemapShaders(void) {
 
 	len = trap_FS_FOpenFile(filepath, &f, FS_READ);
 
-	if(!len) {
+	if(!f) {
 		CG_Printf("No precache file ...\n");
 		return;
 	}
@@ -371,7 +371,8 @@ void CG_PrecacheRemapShaders(void) {
 	ptr = data;
 	token = COM_Parse(&ptr);
 	while(token != NULL) {
-		CG_Printf("\t%s\n", token);
+		if(!token[0]) break;
+
 		trap_R_RegisterShader(token);
 
 		token = COM_Parse(&ptr);

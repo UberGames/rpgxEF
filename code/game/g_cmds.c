@@ -7346,6 +7346,72 @@ void Cmd_CamtestEnd_f(gentity_t *ent) {
 }
 // END CCAM
 
+extern target_alert_Shaders_s alertShaders;
+void Cmd_GeneratePrecacheFile(gentity_t *ent) {
+	int i;
+	char info[MAX_INFO_STRING];
+	char file[MAX_QPATH];
+	fileHandle_t f;
+
+	trap_GetServerinfo(info, MAX_INFO_STRING);
+	Com_sprintf(file, MAX_QPATH, "maps/%s.precache", Info_ValueForKey(info, "mapname"));
+	trap_FS_FOpenFile(file, &f, FS_APPEND);
+	if(!f) {
+		G_Printf(S_COLOR_RED "[Error] - Could not create/open 'maps/%s.precache'\n", file);
+		return;
+	}
+
+	G_Printf("Generating precache file '%s' ...\n", file);
+
+	for(i = 0; i < alertShaders.numShaders; i++) {
+		G_Printf("\t%s\n", alertShaders.greenShaders[i]);
+		G_Printf("\t%s\n", alertShaders.blueShaders[i]);
+		G_Printf("\t%s\n", alertShaders.redShaders[i]);
+		G_Printf("\t%s\n", alertShaders.yellowShaders[i]);
+
+		trap_FS_Write("\"", 1, f);
+		trap_FS_Write(alertShaders.greenShaders[i], strlen(alertShaders.greenShaders[i]), f);
+		trap_FS_Write("\"\n\"", 3, f);
+		trap_FS_Write(alertShaders.blueShaders[i], strlen(alertShaders.blueShaders[i]), f);
+		trap_FS_Write("\"\n\"", 3, f);
+		trap_FS_Write(alertShaders.redShaders[i], strlen(alertShaders.redShaders[i]), f);
+		trap_FS_Write("\"\n\"", 3, f);
+		trap_FS_Write(alertShaders.yellowShaders[i], strlen(alertShaders.yellowShaders[i]), f);
+		trap_FS_Write("\"\n", 2, f);
+	}
+
+	for(i = 0; i < MAX_GENTITIES; i++) {
+		if(!g_entities[i].inuse) continue;
+
+		if(g_entities[i].classname != NULL && !strcmp(g_entities[i].classname, "target_turbolift")) {
+			if(g_entities[i].falsename != NULL && g_entities[i].falsename[0] != 0) {
+				G_Printf("\t%s\n", g_entities[i].falsename);
+				trap_FS_Write("\"", 1, f);
+				trap_FS_Write(g_entities[i].falsename, strlen(g_entities[i].falsename), f);
+				trap_FS_Write("\"\n", 2, f);
+			}
+			if(g_entities[i].truename != NULL && g_entities[i].truename[0] != 0) {
+				G_Printf("\t%s\n", g_entities[i].truename);
+				trap_FS_Write("\"", 1, f);
+				trap_FS_Write(g_entities[i].truename, strlen(g_entities[i].truename), f);
+				trap_FS_Write("\"\n", 2, f);
+			}
+			continue;
+		}
+
+		if(g_entities[i].targetShaderNewName != NULL && g_entities[i].targetShaderNewName[0] != 0) {
+			G_Printf("\t%s\n", g_entities[i].targetShaderNewName);
+			trap_FS_Write("\"", 1, f);
+			trap_FS_Write(g_entities[i].targetShaderNewName, strlen(g_entities[i].targetShaderNewName), f);
+			trap_FS_Write("\"\n", 2, f);
+		}
+	}
+
+	G_Printf("Done.\n");
+
+	trap_FS_FCloseFile(f);
+}
+
 /*
 =================
 G_Client_Command
@@ -7606,6 +7672,9 @@ void G_Client_Command( int clientNum )
 	else if (Q_stricmp(cmd, "camtestend") == 0)
 		Cmd_CamtestEnd_f(ent);
 	// END CCAM
+	else if (Q_stricmp (cmd, "generatePrecacheFile") == 0) {
+		Cmd_GeneratePrecacheFile(ent);
+	}
 	else if (Q_strncmp (cmd, "\n", 1) == 0 || Q_strncmp (cmd, " ", 1) == 0 || Q_strncmp (cmd, "\0", 1) == 0) // sorry
 		(void)(0);
 	else

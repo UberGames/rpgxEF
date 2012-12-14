@@ -1133,7 +1133,7 @@ static void target_turbolift_endMove ( gentity_t *ent )
 	}
 
 	// check for shader remaps
-	if(rpg_calcLiftTravelDuration.integer) {
+	if(rpg_calcLiftTravelDuration.integer || level.overrideCalcLiftTravelDuration) {
 		if((ent->truename && otherLift->truename) || (ent->falsename && otherLift->falsename)) {
 			f = level.time * 0.001;
 			AddRemap(ent->targetShaderName, ent->targetShaderName, f);
@@ -1403,7 +1403,7 @@ static void target_turbolift_startMove ( gentity_t *ent )
 	}
 
 	// check for shader remaps
-	if(rpg_calcLiftTravelDuration.integer) {
+	if(rpg_calcLiftTravelDuration.integer || level.overrideCalcLiftTravelDuration) {
 		if(time2 < 0 && ent->truename && otherLift->truename) {
 			f = level.time * 0.001;
 			AddRemap(ent->targetShaderName, ent->truename, f);
@@ -1858,15 +1858,8 @@ shader remapping:
 You can remap multiple shaders by separating them with \n.
 Example: "greenshader"	"textures/alert/green1\ntextures/alert/green2"
 */
-typedef struct {
-	char	*greenShaders[10];
-	char	*redShaders[10];
-	char	*yellowShaders[10];
-	char	*blueShaders[10];
-	int		numShaders;
-} target_alert_Shaders_s;
 
-static target_alert_Shaders_s alertShaders;
+target_alert_Shaders_s alertShaders;
 
 void target_alert_remapShaders(int target_condition) {
 	float f = 0;

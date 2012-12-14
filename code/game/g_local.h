@@ -2102,4 +2102,13 @@ struct timedMessage_s {
 	char* message;
 } timedMessage_s;
 
+/* alert shaders */
+typedef struct {
+	char	*greenShaders[10];
+	char	*redShaders[10];
+	char	*yellowShaders[10];
+	char	*blueShaders[10];
+	int		numShaders;
+} target_alert_Shaders_s;
+
 #endif //_G_LOCAL_H_
