@@ -974,16 +974,15 @@ static void G_LoadTimedMessages(void) {
 			}
 
 			msg->message = strdup(token);
-			G_Printf("------------------------------------------------>'%s'\n", token);
 			list_add(level.timedMessages, msg, sizeof(timedMessage_s));
 		} else {
+			if(token[0] == '}') {
+				break;
+			}
+
 			G_Printf("G_LoadTimedMessages -  invalid token '%s'\n", token);
 			SkipRestOfLine(&textPtr);
 			continue;
-		}
-
-		if(token[0] == '}') {
-			break;
 		}
 	}
 

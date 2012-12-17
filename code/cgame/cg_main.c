@@ -344,9 +344,10 @@ void CG_PrecacheRemapShaders(void) {
 	char* data;
 	char* ptr;
 	char* token;
+	qhandle_t shader;
 
 	COM_StripExtension(cgs.mapname, filepath);
-	sprintf(filepath, "maps/%s.precache", filepath);
+	Com_sprintf(filepath, MAX_QPATH, "%s.precache", filepath); 
 
 	len = trap_FS_FOpenFile(filepath, &f, FS_READ);
 
@@ -365,6 +366,7 @@ void CG_PrecacheRemapShaders(void) {
 	trap_FS_Read(data, len, f);
 	trap_FS_FCloseFile(f);
 
+	//CG_Printf("Precaching texture files ...");
 	CG_Printf("Precaching texture files ...");
 	COM_BeginParseSession();
 
@@ -373,7 +375,14 @@ void CG_PrecacheRemapShaders(void) {
 	while(token != NULL) {
 		if(!token[0]) break;
 
-		trap_R_RegisterShader(token);
+		CG_Printf("\t%s ... ", token);
+
+		shader = trap_R_RegisterShader(token);
+		if(!shader) {
+			CG_Printf(S_COLOR_RED "FAIL\n");
+		} else {
+			CG_Printf("OK\n");
+		}
 
 		token = COM_Parse(&ptr);
 	}
@@ -1287,10 +1296,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence ) {
 	//missing models when someone get killed and weapons are dropped
 	for(i = 0; i < WP_NUM_WEAPONS; i++) {
 		CG_RegisterWeapon(i);
-	}
-
-	/* Precache shaders for shader remapping */
-	CG_PrecacheRemapShaders();
+	}	
 
 	// To get the interface timing started
 	cg.interfaceStartupTime = 0;
@@ -1322,6 +1328,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence ) {
 
 	if(grp_berp.integer)
 		CG_Printf(S_COLOR_YELLOW "GSIO01 and Ubergames greet Brave Explorers.\n");
+
+	CG_PrecacheRemapShaders();
 }
 
 /*

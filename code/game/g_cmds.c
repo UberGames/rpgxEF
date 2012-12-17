@@ -4088,14 +4088,14 @@ static void Cmd_BeamToPlayer_f( gentity_t	*ent ) {
 	int			startPoint;
 	int			totalCount;
 	int			offsetRA[8][2] = {	{  1,  0 }, //offsets for each beam test location
-									{  1, -1 },
-									{  0, -1 },
-									{ -1, -1 },
-									{ -1,  0 },
-									{ -1,  1 }, 
-									{  0,  1 }, 
-									{  1,  1 } 
-								 };
+	{  1, -1 },
+	{  0, -1 },
+	{ -1, -1 },
+	{ -1,  0 },
+	{ -1,  1 }, 
+	{  0,  1 }, 
+	{  1,  1 } 
+	};
 	int			viewAngleHeading[8] = { 180, 135, 90, 45, 0, -45, -90, -135 };
 	qboolean    everyone = qfalse;
 
@@ -5837,19 +5837,19 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		//we need to check a few things here to make sure the entity works properly. Else we free it.
 		if ( destructEnt->wait <= 0 ){ 
 			G_PrintfClient(ent, "^1ERROR: duration must not be 0. Removing entity."); 
-				
-		while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
-			if(!destructEnt->bluename && safezone->spawnflags & 2){
-				G_PrintfClient(ent, "^1ERROR: safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezonesuse the safezonelist command. Removing entity.");
-				destructEnt->wait = 0; //we'll use this next to free the ent
-				break;
+
+			while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
+				if(!destructEnt->bluename && safezone->spawnflags & 2){
+					G_PrintfClient(ent, "^1ERROR: safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezonesuse the safezonelist command. Removing entity.");
+					destructEnt->wait = 0; //we'll use this next to free the ent
+					break;
+				}
 			}
-		}
-		if(destructEnt->wait <= 0)
-			G_FreeEntity(destructEnt);
-		else
-			G_CallSpawn(destructEnt);
-		return;
+			if(destructEnt->wait <= 0)
+				G_FreeEntity(destructEnt);
+			else
+				G_CallSpawn(destructEnt);
+			return;
 		}
 	} else if (!Q_stricmp(arg, "remaining")) {
 		//Is there sth running alrerady?
@@ -7064,17 +7064,17 @@ static void Cmd_UiTransporterLoc_f(gentity_t *ent) {
 
 	if(locTarget) {
 		if(locTarget->sound1to2) {
-		#ifndef SQL
+#ifndef SQL
 			if ( !IsAdmin( ent ) ) {
 				G_PrintfClient(ent, "Destination is a restricted location.\n");
 				return;
 			}
-		#else
+#else
 			if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
 				G_PrintfClient(ent, "Destination is a restricted location.\n");
 				return;
 			}
-		#endif
+#endif
 		}
 		trTrigger->target_ent = locTarget;
 		trTrigger->count = 0;
@@ -7351,6 +7351,7 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 	int i;
 	char info[MAX_INFO_STRING];
 	char file[MAX_QPATH];
+	qboolean first = qtrue;
 	fileHandle_t f;
 
 	trap_GetServerinfo(info, MAX_INFO_STRING);
@@ -7369,7 +7370,12 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 		G_Printf("\t%s\n", alertShaders.redShaders[i]);
 		G_Printf("\t%s\n", alertShaders.yellowShaders[i]);
 
-		trap_FS_Write("\"", 1, f);
+		if(first) {
+			trap_FS_Write("\"", 1, f);
+			first = qfalse;
+		} else {
+			trap_FS_Write("\n\"", 2, f);
+		}
 		trap_FS_Write(alertShaders.greenShaders[i], strlen(alertShaders.greenShaders[i]), f);
 		trap_FS_Write("\"\n\"", 3, f);
 		trap_FS_Write(alertShaders.blueShaders[i], strlen(alertShaders.blueShaders[i]), f);
@@ -7377,7 +7383,7 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 		trap_FS_Write(alertShaders.redShaders[i], strlen(alertShaders.redShaders[i]), f);
 		trap_FS_Write("\"\n\"", 3, f);
 		trap_FS_Write(alertShaders.yellowShaders[i], strlen(alertShaders.yellowShaders[i]), f);
-		trap_FS_Write("\"\n", 2, f);
+		trap_FS_Write("\"", 2, f);
 	}
 
 	for(i = 0; i < MAX_GENTITIES; i++) {
@@ -7386,24 +7392,45 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 		if(g_entities[i].classname != NULL && !strcmp(g_entities[i].classname, "target_turbolift")) {
 			if(g_entities[i].falsename != NULL && g_entities[i].falsename[0] != 0) {
 				G_Printf("\t%s\n", g_entities[i].falsename);
+
+				if(first) {
+					first = qfalse;
+				} else {
+					trap_FS_Write("\n", 1, f);
+				}
+
 				trap_FS_Write("\"", 1, f);
 				trap_FS_Write(g_entities[i].falsename, strlen(g_entities[i].falsename), f);
-				trap_FS_Write("\"\n", 2, f);
+				trap_FS_Write("\"", 1, f);
 			}
 			if(g_entities[i].truename != NULL && g_entities[i].truename[0] != 0) {
 				G_Printf("\t%s\n", g_entities[i].truename);
+
+				if(first) {
+					first = qfalse;
+				} else {
+					trap_FS_Write("\n", 1, f);
+				}
+
 				trap_FS_Write("\"", 1, f);
 				trap_FS_Write(g_entities[i].truename, strlen(g_entities[i].truename), f);
-				trap_FS_Write("\"\n", 2, f);
+				trap_FS_Write("\"", 1, f);
 			}
 			continue;
 		}
 
 		if(g_entities[i].targetShaderNewName != NULL && g_entities[i].targetShaderNewName[0] != 0) {
 			G_Printf("\t%s\n", g_entities[i].targetShaderNewName);
+
+			if(first) {
+				first = qfalse;
+			} else {
+				trap_FS_Write("\n", 1, f);
+			}
+
 			trap_FS_Write("\"", 1, f);
 			trap_FS_Write(g_entities[i].targetShaderNewName, strlen(g_entities[i].targetShaderNewName), f);
-			trap_FS_Write("\"\n", 2, f);
+			trap_FS_Write("\"", 1, f);
 		}
 	}
 
