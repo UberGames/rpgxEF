@@ -374,6 +374,7 @@ void CG_PrecacheRemapShaders(void) {
 	token = COM_Parse(&ptr);
 	while(token != NULL) {
 		if(!token[0]) break;
+		if(!strcmp(token, "END")) break;
 
 		CG_Printf("\t%s ... ", token);
 

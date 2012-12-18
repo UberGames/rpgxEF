@@ -7346,13 +7346,50 @@ void Cmd_CamtestEnd_f(gentity_t *ent) {
 }
 // END CCAM
 
+typedef struct rShader_s {
+	char *s;
+} rShader_s;
+void addShaderToList(list_p list, char *shader) {
+	rShader_s* s = (rShader_s *)malloc(sizeof(rShader_s));
+	rShader_s* t;
+	list_iter_p i;
+
+	if(s == NULL) return;
+	if(shader[0] == 0) return;
+	if(list == NULL) return;
+
+	s->s = strdup(shader);
+	if(s->s == NULL) {
+		free(s);
+		return;
+	}
+
+	i = list_iterator(list, FRONT);
+	if(i == NULL) {
+		free(s->s);
+		free(s);
+		return;
+	}
+
+	for(t = (rShader_s *)list_next(i); t != NULL; t = (rShader_s *)list_next(i)) {
+		if(!strcmp(shader, t->s)) {
+			return;
+		}
+	}
+
+	list_add(list, s, sizeof(rShader_s));
+}
+
 extern target_alert_Shaders_s alertShaders;
 void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 	int i;
 	char info[MAX_INFO_STRING];
 	char file[MAX_QPATH];
+	list_p shaders;
+	list_iter_p iter;
 	qboolean first = qtrue;
 	fileHandle_t f;
+	rShader_s* s;
 
 	trap_GetServerinfo(info, MAX_INFO_STRING);
 	Com_sprintf(file, MAX_QPATH, "maps/%s.precache", Info_ValueForKey(info, "mapname"));
@@ -7362,28 +7399,20 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 		return;
 	}
 
+	shaders = create_list();
+	if(!shaders) {
+		G_Printf(S_COLOR_RED "[Error] - Could not create shader list.\n");
+		trap_FS_FCloseFile(f);
+		return;
+	}
+
 	G_Printf("Generating precache file '%s' ...\n", file);
 
 	for(i = 0; i < alertShaders.numShaders; i++) {
-		G_Printf("\t%s\n", alertShaders.greenShaders[i]);
-		G_Printf("\t%s\n", alertShaders.blueShaders[i]);
-		G_Printf("\t%s\n", alertShaders.redShaders[i]);
-		G_Printf("\t%s\n", alertShaders.yellowShaders[i]);
-
-		if(first) {
-			trap_FS_Write("\"", 1, f);
-			first = qfalse;
-		} else {
-			trap_FS_Write("\n\"", 2, f);
-		}
-		trap_FS_Write(alertShaders.greenShaders[i], strlen(alertShaders.greenShaders[i]), f);
-		trap_FS_Write("\"\n\"", 3, f);
-		trap_FS_Write(alertShaders.blueShaders[i], strlen(alertShaders.blueShaders[i]), f);
-		trap_FS_Write("\"\n\"", 3, f);
-		trap_FS_Write(alertShaders.redShaders[i], strlen(alertShaders.redShaders[i]), f);
-		trap_FS_Write("\"\n\"", 3, f);
-		trap_FS_Write(alertShaders.yellowShaders[i], strlen(alertShaders.yellowShaders[i]), f);
-		trap_FS_Write("\"", 2, f);
+		addShaderToList(shaders, alertShaders.blueShaders[i]);
+		addShaderToList(shaders, alertShaders.greenShaders[i]);
+		addShaderToList(shaders, alertShaders.redShaders[i]);
+		addShaderToList(shaders, alertShaders.yellowShaders[i]);
 	}
 
 	for(i = 0; i < MAX_GENTITIES; i++) {
@@ -7391,51 +7420,46 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 
 		if(g_entities[i].classname != NULL && !strcmp(g_entities[i].classname, "target_turbolift")) {
 			if(g_entities[i].falsename != NULL && g_entities[i].falsename[0] != 0) {
-				G_Printf("\t%s\n", g_entities[i].falsename);
-
-				if(first) {
-					first = qfalse;
-				} else {
-					trap_FS_Write("\n", 1, f);
-				}
-
-				trap_FS_Write("\"", 1, f);
-				trap_FS_Write(g_entities[i].falsename, strlen(g_entities[i].falsename), f);
-				trap_FS_Write("\"", 1, f);
+				addShaderToList(shaders, g_entities[i].falsename);
 			}
 			if(g_entities[i].truename != NULL && g_entities[i].truename[0] != 0) {
-				G_Printf("\t%s\n", g_entities[i].truename);
-
-				if(first) {
-					first = qfalse;
-				} else {
-					trap_FS_Write("\n", 1, f);
-				}
-
-				trap_FS_Write("\"", 1, f);
-				trap_FS_Write(g_entities[i].truename, strlen(g_entities[i].truename), f);
-				trap_FS_Write("\"", 1, f);
+				addShaderToList(shaders, g_entities[i].truename);
 			}
 			continue;
 		}
 
 		if(g_entities[i].targetShaderNewName != NULL && g_entities[i].targetShaderNewName[0] != 0) {
-			G_Printf("\t%s\n", g_entities[i].targetShaderNewName);
-
-			if(first) {
-				first = qfalse;
-			} else {
-				trap_FS_Write("\n", 1, f);
-			}
-
-			trap_FS_Write("\"", 1, f);
-			trap_FS_Write(g_entities[i].targetShaderNewName, strlen(g_entities[i].targetShaderNewName), f);
-			trap_FS_Write("\"", 1, f);
+			addShaderToList(shaders, g_entities[i].targetShaderNewName);
 		}
 	}
 
+	iter = list_iterator(shaders, FRONT);
+	if(iter == NULL) {
+		trap_FS_FCloseFile(f);
+		destroy_list(shaders);
+		return;
+	}
+
+	for(s = (rShader_s *)list_next(iter); s != NULL; s = (rShader_s *)list_next(iter)) {
+		G_Printf("\t%s\n", s->s);
+		if(first) {
+			trap_FS_Write("\"", 1, f);
+			trap_FS_Write(s->s, strlen(s->s), f);
+			trap_FS_Write("\"", 1, f);
+			first = qfalse;
+		} else {
+			trap_FS_Write("\n\"", 2, f);
+			trap_FS_Write(s->s, strlen(s->s), f);
+			trap_FS_Write("\"", 1, f);
+		}
+	}
+	trap_FS_Write("\n\"END\"", 6, f);
+
 	G_Printf("Done.\n");
 
+	if(shaders != NULL) {
+		destroy_list(shaders);
+	}
 	trap_FS_FCloseFile(f);
 }
 
