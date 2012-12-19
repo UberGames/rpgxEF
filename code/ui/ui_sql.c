@@ -8,6 +8,8 @@
 
 typedef struct {
 	menuframework_s menu;
+	menubitmap_s quitmenu;
+	menubitmap_s login;
 
 	char *username;
 	char *password;
@@ -84,12 +86,25 @@ void UI_sqlMenu_Cache (void)
 
 /*
 ===============
+sqlMenu_Draw
+===============
+*/
+static void sqlMenu_Draw(void)
+{
+	// Draw graphics particular to Main Menu
+	M_sqlMenu_Graphics();
+	
+	Menu_Draw( &s_sql.menu );
+}
+
+/*
+===============
 msdMenu_Init
 ===============
 */
 void sqlMenu_Init(void)
 {
-	/*s_sql.menu.nitems				= 0;
+	s_sql.menu.nitems				= 0;
 	s_sql.menu.draw					= sqlMenu_Draw;
 	s_sql.menu.key					= sqlMenu_Key;
 	s_sql.menu.wrapAround			= qtrue;
@@ -97,6 +112,8 @@ void sqlMenu_Init(void)
 	s_sql.menu.descY				= MENU_DESC_Y;
 	s_sql.menu.titleX				= MENU_TITLE_X;
 	s_sql.menu.titleY				= MENU_TITLE_Y;
+	s_sql.menu.fullscreen			= qfalse;
+	s_sql.menu.nobackground			= qtrue;
 
 	s_sql.quitmenu.generic.type		= MTYPE_BITMAP;
 	s_sql.quitmenu.generic.flags	= QMF_HIGHLIGHT_IF_FOCUS;
@@ -111,10 +128,52 @@ void sqlMenu_Init(void)
 	s_sql.quitmenu.color2			= CT_LTPURPLE1;
 	s_sql.quitmenu.textX			= MENU_BUTTON_TEXT_X;
 	s_sql.quitmenu.textY			= 12;
-	s_sql.quitmenu.textEnum			= MBT_RETURNMENU;
+	s_sql.quitmenu.textEnum			= MBT_QUIT;
 	s_sql.quitmenu.textcolor		= CT_BLACK;
 	s_sql.quitmenu.textcolor2		= CT_WHITE;
 	s_sql.quitmenu.textStyle		= UI_TINYFONT;
 
-	Menu_AddItem( &s_sql.menu, &s_sql.quitmenu );*/
+	s_sql.login.generic.type		= MTYPE_BITMAP;
+	s_sql.login.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
+	s_sql.login.generic.x			= 350;
+	s_sql.login.generic.y			= 380;
+	s_sql.login.generic.name		= GRAPHIC_BUTTONRIGHT;
+	s_sql.login.generic.id			= ID_LOGIN;
+	s_sql.login.generic.callback	= M_sql_Event;
+	s_sql.login.width				= MENU_BUTTON_MED_WIDTH-20;
+	s_sql.login.height				= PROP_BIG_HEIGHT;
+	s_sql.login.color				= CT_DKPURPLE1;
+	s_sql.login.color2				= CT_LTPURPLE1;
+	s_sql.login.textX				= MENU_BUTTON_TEXT_X;
+	s_sql.login.textY				= 12;
+	s_sql.login.textEnum			= MBT_ACCEPT;
+	s_sql.login.textcolor			= CT_BLACK;
+	s_sql.login.textcolor2			= CT_WHITE;
+	s_sql.login.textStyle			= UI_TINYFONT;
+
+	Menu_AddItem( &s_sql.menu, &s_sql.quitmenu );
+	Menu_AddItem( &s_sql.menu, &s_sql.login );
+}
+
+/*
+===============
+UI_sqlMenu
+===============
+*/
+void UI_sqlMenu(void) {
+	memset( &s_sql, 0, sizeof( s_sql ) );
+
+	uis.menusp = 0;
+
+	ingameFlag = qtrue;	// true when in game menu is in use
+
+	Mouse_Show();
+
+	UI_sqlMenu_Cache();
+
+	sqlMenu_Init(); 
+
+	UI_PushMenu( &s_sql.menu );
+
+	Menu_AdjustCursor( &s_sql.menu, 1 );	
 }
