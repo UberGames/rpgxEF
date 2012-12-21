@@ -5793,26 +5793,18 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 	trap_Argv(4, arg7, sizeof(arg7));
 	trap_Argv(5, arg8, sizeof(arg8));
 
-	//There is one subcommand that is clear for general use: selfdestruct remaining
-	//If we're going for this skip admincheck
-
-	if( !Q_stricmp(arg, "remaining") && Q_stricmp(arg2, "global") ){
-
 #ifndef SQL
 		if ( !IsAdmin( ent ) ) {
 			trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
-			trap_SendServerCommand( ent-g_entities, va("print \"You may use selfdestruct remaining to get the remaining time in an active countdown\n\" ") );
 			return;
 		}
 #else
 		if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
 			trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
-			trap_SendServerCommand( ent-g_entities, va("print \"You may use selfdestruct remaining to get the remaining time in an active countdown\n\" ") );
 			return;
 		}
 #endif
 
-	}
 
 	// Setup command-Execution
 
@@ -5864,10 +5856,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 
 		//we need the remaining time in minutes and seconds from that entity. Just ask them off and have the command do the math.
 		ETAsec = floor(modf((( floor(destructEnt->damage / 1000) - floor(level.time / 1000) ) / 60), &ETAmin)*60); //break it apart, put off the minutes and return the floored secs
-		if (!Q_stricmp(arg2, "global")) //a relevant OP has requestet a global announcement so let's give it
-			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
-		else 
-			trap_SendServerCommand( ent-g_entities, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
+		trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
 	} else if (!Q_stricmp(arg, "abort")) {
 		//Is there sth running alrerady?
 		destructEnt = G_Find(NULL, FOFS(classname), "target_selfdestruct");
@@ -5881,14 +5870,13 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		G_PrintfClient(ent,		"^1ERROR: Invalid or no command-Argument. Arguments are start, remaining and abort");
 		G_PrintfClient(ent,		"^3Usage: selfdestruct start duration audio [safezone] [target]");
 		G_PrintfClient(ent,		"duration: total countdown-duration in seconds. Must not be 0.");
-		G_PrintfClient(ent,		"audio: set this 0 if you do want a muted countdown, else set this 1.");
+		G_PrintfClient(ent,		"audio: set this 0 if you do not want to display the countdown-clock in the top center of your screen, else set this 1.");
 		G_PrintfClient(ent,		"safezone: safezone to toggle unsafe at T-50ms. Only for maps with multiple ships (like rpg_runabout). Set NULL to skip.");
-		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0. The entity will automatically shake everyones screen and kill all clienst outside an active target_safezone.");
-		G_PrintfClient(ent,		"^2Hint: Make sure your duration and intervalls are synced up. There is a failsave for the countdown to hit it's mark however there is nothing to make sure that you don't get your warnings at unexpected times...");
+		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0. The entity will automatically shake everyones screen and kill all clients outside an active target_safezone.");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining");
-		G_PrintfClient(ent,		"This will give out the remaining countdown-time to you only even if the count is muted. It is free to use for any client.");
+		G_PrintfClient(ent,		"This will give out the remaining countdown-time to the activating client if the count is muted. It is free to use for all client.");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining global");
-		G_PrintfClient(ent,		"This will give out the remaining countdown-time to all clients even if the count is muted. Calling this is restricted to admins");
+		G_PrintfClient(ent,		"This will give out the remaining countdown-time to all clients if the count is muted. Calling this is restricted to admins");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct abort");
 		G_PrintfClient(ent,		"This will abort any self destruct running");
 		return;

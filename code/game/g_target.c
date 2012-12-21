@@ -2851,16 +2851,11 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	ent->damage = ent->wait + level.time;
 
 	//time's set so let's let everyone know that we're counting. I'll need to do a language switch here sometime...
-	if(ent->spawnflags & 2){ // we're extreme
-		ETAsec = modf((ent->wait / 60000), &ETAmin)*60;
-		trap_SendServerCommand( -1, va("cp \"^1Self Destruct in %1.0f:%2.1f\"", ETAmin, ETAsec ));
-	} else {
-		ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
-		if (ent->flags == 1) 
-			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
-		else 
-			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f; There will be no further audio warnings.\"", ETAmin, ETAsec ));
-	}	
+	ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
+	if (ent->flags == 1) 
+		trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
+	else 
+		trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f; There will be no further audio warnings.\"", ETAmin, ETAsec ));	
 	ent->r.svFlags |= SVF_BROADCAST;
 	trap_LinkEntity(ent);
 
@@ -2868,19 +2863,19 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	if (ent->wait == 1200000) {
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/20-a1.mp3"));
 	} else if (ent->wait == 900000) {
-		if (ent->flags == 1 || ent->spawnflags & 2)
+		if (ent->flags == 1 )
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a1.mp3"));
 		else
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a0.mp3"));
 	} else if (ent->wait == 600000) {
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/10-a1.mp3"));
 	} else if (ent->wait == 300000) {
-		if (ent->flags == 1 || ent->spawnflags & 2)
+		if (ent->flags == 1 )
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a1.mp3"));
 		else
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a0.mp3"));
 	} else {
-		if (ent->flags == 1 || ent->spawnflags & 2)
+		if (ent->flags == 1 )
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a1.mp3"));
 		else
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a0.mp3"));
