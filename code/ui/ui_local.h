@@ -1981,6 +1981,11 @@ extern void UI_VideoData2Menu_Cache(void);
 extern void UI_VideoDriverMenu_Cache(void);
 
 //
+// ui_sql.c
+//
+extern void UI_sqlMenu(void);
+
+//
 // ui_players.c
 //
 

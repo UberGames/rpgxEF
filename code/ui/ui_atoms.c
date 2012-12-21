@@ -1334,6 +1334,11 @@ qboolean UI_ConsoleCommand( void ) {
 		return qtrue;
 	}
 
+	if ( Q_stricmp( cmd, "ui_sqlmenu") == 0) {
+		UI_sqlMenu();
+		return qtrue;
+	}
+
 	return qfalse;
 }
 

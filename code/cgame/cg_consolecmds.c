@@ -661,6 +661,10 @@ void CG_ToggleThirdPerson_f ( void ) {
 	trap_Cvar_Set( "cg_thirdPerson", va( "%i", value ) );
 }
 
+void CG_SqlMenu_f(void) {
+	trap_SendConsoleCommand("ui_sqlmenu");
+}
+
 /*================================================================================*/
 
 typedef struct {
@@ -726,6 +730,7 @@ static consoleCommand_t	commands[] = {
 	{ "classList",				CG_ClassList_cmd },
 	{ "emote",					CG_Emote_f },
 	{ "locedit",				CG_LocEdit_f },
+	{ "sqlmenu",				CG_SqlMenu_f },
 };
 
 
