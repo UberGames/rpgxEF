@@ -1211,29 +1211,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	// if TF_NO_FRIENDLY_FIRE is set, don't do damage to the target
-	// if the attacker was on the same team
-	// check for completely getting out of the damage
-	if ( !(dflags & DAMAGE_NO_PROTECTION) ) {
-		if ( !(dflags&DAMAGE_ALL_TEAMS) && mod != MOD_TELEFRAG && mod != MOD_DETPACK && targ != attacker ) 
-		{
-			if ( attacker->client && targ->client )
-			{//this only matters between clients
-				if ( !g_friendlyFire.integer ) 
-				{//friendly fire is not allowed
-					return;
-				}
-			}
-			else
-			{//team damage between non-clients is never legal
-				return;
-			}
-		}
-
-		// check for godmode
-		if ( targ->flags & FL_GODMODE ) {
-			return;
-		}
+	// check for godmode
+	if ( targ->flags & FL_GODMODE ) {
+		return;
 	}
 
 	// always give half damage if hurting self
