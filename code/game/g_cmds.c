@@ -742,31 +742,6 @@ qboolean SetTeam( gentity_t *ent, char *s ) {
 				specState = SPECTATOR_FREE;
 			}
 		}
-
-		if ( g_teamForceBalance.integer )
-		{
-			int		counts[TEAM_NUM_TEAMS];
-
-			counts[TEAM_BLUE] = G_Client_TeamCount( clNum, TEAM_BLUE );
-			counts[TEAM_RED] = G_Client_TeamCount( clNum, TEAM_RED );
-
-			// We allow a spread of two
-			if ( team == TEAM_RED && counts[TEAM_RED] - counts[TEAM_BLUE] > 1 )
-			{
-				trap_SendServerCommand( clNum, 
-					"cp \"Red team has too many players.\n\"" );
-				return qfalse; // ignore the request
-			}
-			if ( team == TEAM_BLUE && counts[TEAM_BLUE] - counts[TEAM_RED] > 1 )
-			{
-				trap_SendServerCommand( clNum, 
-					"cp \"Blue team has too many players.\n\"" );
-				return qfalse; // ignore the request
-			}
-
-			// It's ok, the team we are switching to has less or same number of players
-		}
-
 	}
 	else
 	{

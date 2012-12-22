@@ -61,8 +61,6 @@ vmCvar_t	g_logSync;
 vmCvar_t	g_podiumDist;
 vmCvar_t	g_podiumDrop;
 vmCvar_t	g_allowVote;
-vmCvar_t	g_teamAutoJoin;
-vmCvar_t	g_teamForceBalance;
 vmCvar_t	g_banIPs;
 vmCvar_t	g_filterBan;
 vmCvar_t	g_banIDs;	//TiM - Security ban system
@@ -322,8 +320,6 @@ static cvarTable_t		gameCvarTable[] = {
 	// change anytime vars
 	{ &g_dmflags,					"dmflags",						"0",						CVAR_SERVERINFO | CVAR_ARCHIVE,							0, qtrue  },
 	{ &g_synchronousClients,		"g_synchronousClients",			"0",						CVAR_SYSTEMINFO,										0, qfalse },
-	{ &g_teamAutoJoin,				"g_teamAutoJoin",				"0",						CVAR_ARCHIVE,											0, qfalse },
-	{ &g_teamForceBalance,			"g_teamForceBalance",			"1",						CVAR_ARCHIVE,											0, qfalse },
 	{ &g_intermissionTime,			"g_intermissionTime",			"20",						CVAR_ARCHIVE,											0, qtrue  },
 	{ &g_log,						"g_log",						"",							CVAR_ARCHIVE,											0, qfalse },
 	{ &g_logSync,					"g_logSync",					"0",						CVAR_ARCHIVE,											0, qfalse },
