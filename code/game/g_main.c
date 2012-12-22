@@ -36,7 +36,6 @@ g_classData_t	g_classData[MAX_CLASSES];
 
 vmCvar_t	g_gametype;
 vmCvar_t	g_dmflags;
-vmCvar_t	g_friendlyFire;
 vmCvar_t	g_password;
 vmCvar_t	g_needpass;
 vmCvar_t	g_maxclients;
@@ -323,7 +322,6 @@ static cvarTable_t		gameCvarTable[] = {
 	// change anytime vars
 	{ &g_dmflags,					"dmflags",						"0",						CVAR_SERVERINFO | CVAR_ARCHIVE,							0, qtrue  },
 	{ &g_synchronousClients,		"g_synchronousClients",			"0",						CVAR_SYSTEMINFO,										0, qfalse },
-	{ &g_friendlyFire,				"g_friendlyFire",				"0",						CVAR_SERVERINFO | CVAR_ARCHIVE,							0, qtrue  },
 	{ &g_teamAutoJoin,				"g_teamAutoJoin",				"0",						CVAR_ARCHIVE,											0, qfalse },
 	{ &g_teamForceBalance,			"g_teamForceBalance",			"1",						CVAR_ARCHIVE,											0, qfalse },
 	{ &g_intermissionTime,			"g_intermissionTime",			"20",						CVAR_ARCHIVE,											0, qtrue  },

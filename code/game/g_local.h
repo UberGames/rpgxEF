@@ -1404,7 +1404,6 @@ extern	vmCvar_t	g_restarted;
 extern	vmCvar_t	g_language;
 
 extern	vmCvar_t	g_dmflags;
-extern	vmCvar_t	g_friendlyFire;
 extern	vmCvar_t	g_password;
 extern	vmCvar_t	g_needpass;
 extern	vmCvar_t	g_gravity;

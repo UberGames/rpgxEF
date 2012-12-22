@@ -1176,7 +1176,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if ( knockback && targ->client ) 
 	{
 		//if it's non-radius damage knockback from a teammate, don't do it if the damage won't be taken
-		if ( (dflags&DAMAGE_ALL_TEAMS) || (dflags&DAMAGE_RADIUS) || g_friendlyFire.integer || !attacker->client ) 
+		if ( (dflags&DAMAGE_ALL_TEAMS) || (dflags&DAMAGE_RADIUS) || !attacker->client ) 
 		{
 			vec3_t	kvel;
 			float	mass;
