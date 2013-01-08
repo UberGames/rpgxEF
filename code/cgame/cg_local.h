@@ -1009,6 +1009,13 @@ typedef struct {
 
 	// cinematics	
 	int					cinematicFade;
+
+	// selfdestruct	
+	int					selfdestructTime;
+
+	// shiphealth	
+	int					relativeHullStrength;
+	int					relativeShieldStrength;
 } cg_t;
 
 
@@ -1493,13 +1500,6 @@ typedef struct {
 	char				scannableStrings[MAX_SCANNABLES][36];
 
 	qboolean			scannablePanels;
-
-	// selfdestruct	
-	int					selfdestructTime;
-
-	// shiphealth	
-	int					relativeHullStrength;
-	int					relativeShieldStrength;
 } cgs_t;
 
 //==============================================================================

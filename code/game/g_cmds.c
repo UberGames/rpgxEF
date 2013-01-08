@@ -5795,29 +5795,27 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		destructEnt = G_Spawn();
 		destructEnt->classname = "target_selfdestruct";
 		destructEnt->wait = atoi(arg2);
-		destructEnt->flags = atoi(arg6);
+		destructEnt->spawnflags = atoi(arg6);
 		destructEnt->bluename = G_NewString(arg7);
 		destructEnt->target = G_NewString(arg8);
 
-		destructEnt->spawnflags = 1; //tells ent to free once aborted.
-
 		//we need to check a few things here to make sure the entity works properly. Else we free it.
-		if ( destructEnt->wait <= 0 ){ 
+		if ( destructEnt->wait <= 0 )
 			G_PrintfClient(ent, "^1ERROR: duration must not be 0. Removing entity."); 
 
-			while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
-				if(!destructEnt->bluename && safezone->spawnflags & 2){
-					G_PrintfClient(ent, "^1ERROR: safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezonesuse the safezonelist command. Removing entity.");
-					destructEnt->wait = 0; //we'll use this next to free the ent
-					break;
-				}
+		while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
+			if(!destructEnt->bluename && safezone->spawnflags & 2){
+				G_PrintfClient(ent, "^1ERROR: safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezonesuse the safezonelist command. Removing entity.");
+				destructEnt->wait = 0; //we'll use this next to free the ent
+				break;
 			}
-			if(destructEnt->wait <= 0)
-				G_FreeEntity(destructEnt);
-			else
-				G_CallSpawn(destructEnt);
-			return;
 		}
+		if(destructEnt->wait <= 0)
+			G_FreeEntity(destructEnt);
+		else
+			G_CallSpawn(destructEnt);
+		return;
+		
 	} else if (!Q_stricmp(arg, "remaining")) {
 		//Is there sth running alrerady?
 		destructEnt = G_Find(NULL, FOFS(classname), "target_selfdestruct");
@@ -5826,12 +5824,15 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 			return;
 		}
 
-		if(destructEnt->flags == 1)
+		if(destructEnt->spawnflags == 1)
 			return; //we simply don't need this while there is a visible countdown. 
 
 		//we need the remaining time in minutes and seconds from that entity. Just ask them off and have the command do the math.
 		ETAsec = floor(modf((( floor(destructEnt->damage / 1000) - floor(level.time / 1000) ) / 60), &ETAmin)*60); //break it apart, put off the minutes and return the floored secs
-		trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
+		if(ETAsec / 10 < 1) //get leading 0 for secs
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:0%.0f\"", ETAmin, ETAsec ));
+		else
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%.0f\"", ETAmin, ETAsec ));
 	} else if (!Q_stricmp(arg, "abort")) {
 		//Is there sth running alrerady?
 		destructEnt = G_Find(NULL, FOFS(classname), "target_selfdestruct");

@@ -451,7 +451,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	int				clientNum;
 	clientInfo_t	*ci;
 	vec3_t			normal = { 0, 0, 1 };
-	int				a, b;
+	int				a, b, temp;
 
 	refEntity_t		legs;
 	refEntity_t		torso;
@@ -1828,31 +1828,27 @@ case EV_SHAKE_SOUND:
 
 	case EV_SELFDESTRUCT_SETTER:
 		DEBUGNAME("EV_SELFDESTRUCT_SETTER");
-		trap_Print(va("cgs.selfdestructTime preset is %i", cgs.selfdestructTime));
-		if(cent->currentState.eventParm == -1)
-			cgs.selfdestructTime = -1;
+		temp = cent->currentState.eventParm * 60000 + cent->currentState.powerups;
+		if(temp == -1)
+			cg.selfdestructTime = -1;
 		else
-			cgs.selfdestructTime = cent->currentState.eventParm + cg.time;
-		trap_Print(va("cgs.selfdestructTime postset is %i", cgs.selfdestructTime));
-
+			cg.selfdestructTime = temp + cg.time;
 		break;
 
 	case EV_HULLHEALTH_SETTER:
 		DEBUGNAME("EV_HULLHEALTH_SETTER");
 		if(cent->currentState.eventParm == -1)
-			cgs.relativeHullStrength = -1;
+			cg.relativeHullStrength = -1;
 		else
-			cgs.relativeHullStrength = cent->currentState.eventParm;
-
+			cg.relativeHullStrength = cent->currentState.eventParm;
 		break;
 
 	case EV_SHIELDHEALTH_SETTER:
 		DEBUGNAME("EV_SHIELDHEALTH_SETTER");
 		if(cent->currentState.eventParm == -1)
-			cgs.relativeShieldStrength = -1;
+			cg.relativeShieldStrength = -1;
 		else
-			cgs.relativeShieldStrength = cent->currentState.eventParm;
-
+			cg.relativeShieldStrength = cent->currentState.eventParm;
 		break;
 
 // Default

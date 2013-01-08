@@ -2660,7 +2660,7 @@ void SP_target_shaderremap(gentity_t *ent) {
 }
 //RPG-X | Harry Young | 15/10/2011 | MOD END
 
-//RPG-X | Harry Young | 25/07/2012 | MOD START
+//RPG-X | Harry Young | 25/07/2012 | MOD START AUDIO_ON
 /*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8) 
 -----DESCRIPTION-----
 DO NOT USE! This just sits here purely for documantation.
@@ -2669,7 +2669,7 @@ For now this should only be used via the selfdestruct console command, however i
 Should this thing hit 0 the killing part for everyone outside a target_safezone will be done automatically.
 
 -----SPAWNFLAGS-----
-none
+1: AUDIO_ON - tells the script to display the countdown
 
 -----KEYS-----
 "wait" -  total Countdown-Time in secs
@@ -2725,15 +2725,16 @@ static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]
 }
 
 void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(ent->wait > 50 || (ent->spawnflags & 2 && ent->wait > 100)){//if we listed the safezones we're committed
+	if( ent->damage - level.time > 50 ){//if we listed the safezones we're committed
 	//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
 		trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
 		//set wait to -1...
 		ent->wait = -1;
-		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, -1 );
-		//and arrange for a think in a sec
-		ent->nextthink = level.time + 1000;
+		//zero out clock...
+		ent->s.powerups = 0;
+		//and arrange for a think
+		ent->nextthink = level.time + 50;
 	}
 	return;
 }
@@ -2741,7 +2742,7 @@ void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 void target_selfdestruct_think(gentity_t *ent) {
 	gentity_t*	client;	
 	gentity_t   *healthEnt, *safezone=NULL;	
-	int			i = 0;
+	int			i = 0, mins = 0;
 
 	//this is for calling the safezones to list. It needs to stand here to not screw up the remainder of the think.
 	if (ent->wait == 50) {
@@ -2756,9 +2757,17 @@ void target_selfdestruct_think(gentity_t *ent) {
 		return;
 	}
 
-	if (ent->wait > 0){
-		//Send a sznc/signal to all clients
-		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, ( ent->damage - level.time ));
+	if (ent->wait > 0 && ent->spawnflags == 1 ){
+		//Send a sync/signal to all clients
+		ent->s.powerups = ent->damage - level.time;
+		if(ent->s.powerups > 60000){
+			mins = ent->s.powerups / 60000;
+			ent->s.powerups = ent->s.powerups - (60000 * mins);
+			G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, mins );
+		}
+		else
+			G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, mins );
+
 		ent->nextthink = level.time + 10000; 
 
 		//fail horribly if we overshoot bang-time
@@ -2801,16 +2810,19 @@ void target_selfdestruct_think(gentity_t *ent) {
 		if(ent->target)
 			G_UseTargets(ent, ent);
 		//we're done here so let's finish up in a sec.	
+		ent->s.powerups = 0;
 		ent->wait = -1;
 		ent->nextthink = level.time + 1000;
 		return;
-	} else if (ent->wait < 0) {
+	} else if (ent->wait == -1) {
 
 		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
-		ent->nextthink = -1;
-		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, -1 );
+		ent->nextthink = level.time + 50;//give the event time to be conducted
+		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, 0 );
+		ent->wait = -2;
+		return;
+	} else if (ent->wait == -2) {
 		G_FreeEntity(ent);
-
 		return; //And we're done.
 	}
 }
@@ -2841,9 +2853,6 @@ void SP_target_selfdestruct(gentity_t *ent) {
 		ent->splashRadius = 1;
 	}
 
-	if(ent->flags == 1)
-		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, ent->wait );
-
 	//we' may need the total for something so back it up...
 	ent->splashDamage = ent->wait;
 
@@ -2852,10 +2861,16 @@ void SP_target_selfdestruct(gentity_t *ent) {
 
 	//time's set so let's let everyone know that we're counting. I'll need to do a language switch here sometime...
 	ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
-	if (ent->flags == 1) 
-		trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f\"", ETAmin, ETAsec ));
+	if (ent->spawnflags == 1) 
+		if(ETAsec / 10 < 1) //get leading 0 for secs
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:0%.0f\"", ETAmin, ETAsec ));
+		else
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:0%.0f\"", ETAmin, ETAsec ));
 	else 
-		trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%2.0f; There will be no further audio warnings.\"", ETAmin, ETAsec ));	
+		if(ETAsec / 10 < 1) //get leading 0 for secs
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:0%.0f; There will be no ^1further audio warnings.\"", ETAmin, ETAsec ));
+		else
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%.0f; There will be no ^1further audio warnings.\"", ETAmin, ETAsec ));
 	ent->r.svFlags |= SVF_BROADCAST;
 	trap_LinkEntity(ent);
 
@@ -2863,19 +2878,19 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	if (ent->wait == 1200000) {
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/20-a1.mp3"));
 	} else if (ent->wait == 900000) {
-		if (ent->flags == 1 )
+		if (ent->spawnflags == 1 )
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a1.mp3"));
 		else
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a0.mp3"));
 	} else if (ent->wait == 600000) {
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/10-a1.mp3"));
 	} else if (ent->wait == 300000) {
-		if (ent->flags == 1 )
+		if (ent->spawnflags == 1 )
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a1.mp3"));
 		else
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a0.mp3"));
 	} else {
-		if (ent->flags == 1 )
+		if (ent->spawnflags == 1 )
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a1.mp3"));
 		else
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a0.mp3"));
@@ -2886,8 +2901,8 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	ent->use = target_selfdestruct_use;
 	ent->think = target_selfdestruct_think;
 
-	if(ent->flags == 1)
-		ent->nextthink = level.time + 10000; // let's hardcode this, will send refresher signals in case new clients connect.
+	if(ent->spawnflags == 1)
+		ent->nextthink = level.time + 50; // init clock over there... somehow doesn't work in spawnfunc...
 	else
 		ent->nextthink = ent->damage;
 
