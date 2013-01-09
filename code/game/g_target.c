@@ -2804,8 +2804,6 @@ void target_selfdestruct_think(gentity_t *ent) {
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
 			//let's be shakey for a sec... I hope lol ^^
 			trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
-			//let's clear the lower right corner
-			trap_SendServerCommand( -1, va("servermsg \" \""));
 		}
 		if(ent->target)
 			G_UseTargets(ent, ent);
@@ -2865,7 +2863,7 @@ void SP_target_selfdestruct(gentity_t *ent) {
 		if(ETAsec / 10 < 1) //get leading 0 for secs
 			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:0%.0f\"", ETAmin, ETAsec ));
 		else
-			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:0%.0f\"", ETAmin, ETAsec ));
+			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%.0f\"", ETAmin, ETAsec ));
 	else 
 		if(ETAsec / 10 < 1) //get leading 0 for secs
 			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:0%.0f; There will be no ^1further audio warnings.\"", ETAmin, ETAsec ));

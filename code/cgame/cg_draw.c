@@ -1852,11 +1852,32 @@ static float CG_DrawSelfdestructTimer( void ) {
 
 		s = va( "%i:%i%i.%i", mins, tens, seconds, remainder );
 	
-		w = UI_ProportionalStringWidth("SELF-DESTRTUCT IN",UI_SMALLFONT);
-		UI_DrawProportionalString(320 - (w / 2), 10, "SELF-DESTRTUCT IN", UI_SMALLFONT, colorTable[CT_RED]);
+		w = UI_ProportionalStringWidth("SELF-DESTRUCT IN",UI_SMALLFONT);
+		UI_DrawProportionalString(320 - (w / 2), 10, "SELF-DESTRUCT IN", UI_SMALLFONT, colorTable[CT_RED]);
 	
 		w = UI_ProportionalStringWidth(s,UI_SMALLFONT);
 		UI_DrawProportionalString(320 - (w / 2), 30, s, UI_SMALLFONT, colorTable[CT_RED]);
+
+		if((10000 - 0.5 * cg.frametime) < msec && msec < (10000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/10sec.mp3" ) );
+		if((9000 - 0.5 * cg.frametime) < msec && msec < (9000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/9sec.mp3" ) );
+		if((8000 - 0.5 * cg.frametime) < msec && msec < (8000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/8sec.mp3" ) );
+		if((7000 - 0.5 * cg.frametime) < msec && msec < (7000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/7sec.mp3" ) );
+		if((6000 - 0.5 * cg.frametime) < msec && msec < (6000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/6sec.mp3" ) );
+		if((5000 - 0.5 * cg.frametime) < msec && msec < (5000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/5sec.mp3" ) );
+		if((4000 - 0.5 * cg.frametime) < msec && msec < (4000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/4sec.mp3" ) );
+		if((3000 - 0.5 * cg.frametime) < msec && msec < (3000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/3sec.mp3" ) );
+		if((2000 - 0.5 * cg.frametime) < msec && msec < (2000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/2sec.mp3" ) );
+		if((1000 - 0.5 * cg.frametime) < msec && msec < (1000 + 0.5 * cg.frametime))
+			trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( "sound/voice/computer/voy3/1sec.mp3" ) );
 		
 	}
 

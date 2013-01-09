@@ -5850,9 +5850,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		G_PrintfClient(ent,		"safezone: safezone to toggle unsafe at T-50ms. Only for maps with multiple ships (like rpg_runabout). Set NULL to skip.");
 		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0. The entity will automatically shake everyones screen and kill all clients outside an active target_safezone.");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining");
-		G_PrintfClient(ent,		"This will give out the remaining countdown-time to the activating client if the count is muted. It is free to use for all client.");
-		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining global");
-		G_PrintfClient(ent,		"This will give out the remaining countdown-time to all clients if the count is muted. Calling this is restricted to admins");
+		G_PrintfClient(ent,		"This will give out the remaining countdown-time to all clients if the count is muted.");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct abort");
 		G_PrintfClient(ent,		"This will abort any self destruct running");
 		return;
