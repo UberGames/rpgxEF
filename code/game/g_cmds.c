@@ -5999,6 +5999,79 @@ static void Cmd_shiphealth_f(gentity_t *ent) {
 
 /*
 =================
+Cmd_reloadtorpedos_f
+Harry Young | 12/01/2013
+=================
+*/
+static void Cmd_reloadtorpedos_f(gentity_t *ent) {
+	gentity_t	*torpedo=NULL, *single;
+	char		arg[16];
+	char		target[512];
+
+#ifndef SQL
+	if ( !IsAdmin( ent ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" ") );
+		return;
+	}
+#else
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		return;
+	}
+#endif
+
+	if(trap_Argc() == 0){
+		G_PrintfClient(ent,	"Usage: reloadtorpedos [amount] [target] where amount is the number of torpedos the launcher will have after the command executed.\n"); 
+		G_PrintfClient(ent,	"Set 0 to depleet, set -1 to max out. You can not load more torpedos than the entity was designed for. If you do it will just Max out.\n"); 
+		G_PrintfClient(ent,	"target is the specific targetname of the fx_torpedo that shall be reloaded and needs to be entered if there is a map with multiple fx_torpedo's with limited stock.\n");
+		G_PrintfClient(ent,	"If set to all every limited launcher on the map will be set to amount or maxed out accordingly.\n");
+		return;
+	}
+	
+	if(!G_Find(NULL, FOFS(classname), "fx_torpedo")){
+		trap_SendServerCommand( ent-g_entities, "print \"^4This map does not support the fx_torpedo system.\n\"" );
+		return;
+	}
+
+	trap_Argv(1, arg, sizeof(arg));
+
+	if(trap_Argc() > 1){ //we have a specific targets or all entities shall be restocked, so let's go with that
+		Q_strncpyz( target, ConcatArgs( 2 ), sizeof( target ) );
+		while((torpedo = G_Find(torpedo, FOFS(classname), "fx_torpedo")) != NULL){
+			if(!Q_stricmp(torpedo->targetname, target) || !Q_stricmp(target, "all")){ //this entity is generally affectable
+				if(torpedo->damage > 0){ //we only need to consider this for restock if it is restockable
+					if(atoi(arg) < 0 || atoi(arg) > torpedo->damage)
+						torpedo->count = torpedo->damage;
+					else
+						torpedo->count = atoi(arg);
+				}
+			}
+		}
+		return;
+	} else {
+		while((torpedo = G_Find(torpedo, FOFS(classname), "fx_torpedo")) != NULL){
+			if(torpedo->damage < 0)//we can ignore unlimited supplies, we're just concerned with limits, which need to be specific
+				continue;
+			else { //something with stock
+				single = torpedo; //if this is the only one we finish it right away
+				while((torpedo = G_Find(torpedo, FOFS(classname), "fx_torpedo")) != NULL){
+					if(torpedo->damage > 0){// we have 2 with stock so we can be wrong. Inform admin and abort
+						trap_SendServerCommand( ent-g_entities, va("print \"^1 ERROR: This map has more than one fx_torpedo with limited supply, therefore a target or all needs to be specified. Aborting call.\n\"" ) );
+						return;
+					}
+				}//if we got here we only have one entity to restock, so let's do that
+				if(atoi(arg) < 0 || atoi(arg) > single->damage)
+					single->count = single->damage;
+				else
+					single->count = atoi(arg);
+				return;
+			}
+		}
+	}
+}
+
+/*
+=================
 Cmd_admin_centerprint_f
 GSIO01 | 12/05/2009
 =================
@@ -7629,6 +7702,8 @@ void G_Client_Command( int clientNum )
 		Cmd_shipdamage_f(ent);
 	else if (Q_stricmp(cmd, "shiphealth") == 0)
 		Cmd_shiphealth_f(ent);
+	else if (Q_stricmp(cmd, "Cmd_reloadtorpedos_f") == 0)
+		Cmd_reloadtorpedos_f(ent);
 	else if (Q_stricmp(cmd, "msg2") == 0)
 		Cmd_admin_centerprint_f(ent);
 	else if (Q_stricmp(cmd, "forcevote") == 0)

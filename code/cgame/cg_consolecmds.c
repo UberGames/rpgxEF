@@ -920,6 +920,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand("selfdestruct");
 	trap_AddCommand("shipdamage");
 	trap_AddCommand("shiphealth");
+	trap_AddCommand("reloadtorpedos");
 
 	/* precacheFile */
 	trap_AddCommand("generatePrecacheFile");

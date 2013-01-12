@@ -895,6 +895,7 @@ A phaser effect for use as a ship's weapon.
 
 -----KEYS-----
 "target" - endpoint
+"swapname" - lock/unlock entity
 "wait" - how long the phaser fires
 "scale" - adjust the effects scale, default: 20
 "customSnd" - use a custom sound
@@ -905,15 +906,24 @@ A phaser effect for use as a ship's weapon.
 
 void phaser_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if(ent->count == PHASER_FX_UNLINKED) return;
-	if(ent->flags & FL_LOCKED) return;
 
-	if(ent->spawnflags & 2)
-	{ 
-		G_AddEvent(ent, EV_FX_DISRUPTOR, 0);
-	}
-	else 
-	{
-		G_AddEvent(ent, EV_FX_PHASER, 0);
+	if(!Q_stricmp(ent->swapname, activator->target)) {
+		ent->flags ^= FL_LOCKED;
+	} else {
+		if(ent->flags & FL_LOCKED){
+			trap_SendServerCommand(activator-g_entities, va("print \"^1Phasers are offline.\n\""));
+			G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount);
+			return;
+		}
+
+		if(ent->spawnflags & 2)
+		{ 
+			G_AddEvent(ent, EV_FX_DISRUPTOR, 0);
+		}
+		else 
+		{
+			G_AddEvent(ent, EV_FX_PHASER, 0);
+		}
 	}
 
 }
@@ -978,6 +988,7 @@ void SP_fx_phaser(gentity_t *ent) {
 /*QUAKED fx_torpedo (0 0 1) (-8 -8 -8) (8 8 8) QUANTUM NO_SOUND LOCKED
 -----DESCRIPTION-----
 A torpedo effect for use as a ship's weapon.
+Torpedos can be limited and can be set to any value within their maximum range by admin-command "reloadtorpedos [amount] [targetname]"
 
 -----SPAWNFLAGS-----
 1: QUANTUM - set this flag if you whant an quantum fx instead of an photon fx
@@ -986,6 +997,7 @@ A torpedo effect for use as a ship's weapon.
 
 -----KEYS-----
 "target" - used for the calculation of the direction
+"swapname" - lock/unlock entity
 "wait" - time in seconds till fx can be used again
 "noise" - sound to play
 "soundNoAmmo" - sound to play if ammo is depleted
@@ -1000,22 +1012,30 @@ void fx_torpedo_think(gentity_t *ent) {
 }
 
 void fx_torpedo_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(ent->flags & FL_LOCKED) return;
-	
-	if(ent->count > 0) {
-		ent->count--;
-		trap_SendServerCommand(activator-g_entities, va("print \"Torpedos: %i of %i left.\n\"", ent->count, ent->damage));
-		G_AddEvent(ent, EV_GENERAL_SOUND, ent->s.time);
+	if(!Q_stricmp(ent->swapname, activator->target)) {
+		ent->flags ^= FL_LOCKED;
 	} else {
-		trap_SendServerCommand(activator-g_entities, "print \"^1Out of Torpedos.\n\"");
-		G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount);
-		return;
+		if(ent->flags & FL_LOCKED){
+			trap_SendServerCommand(activator-g_entities, va("print \"^1Torpedo launcher is offline.\n\""));
+			G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount);
+			return;
+		}
+	
+		if(ent->count > 0) {
+			ent->count--;
+			trap_SendServerCommand(activator-g_entities, va("print \"Torpedos: %i of %i left.\n\"", ent->count, ent->damage));
+			G_AddEvent(ent, EV_GENERAL_SOUND, ent->s.time);
+		} 
+		if(ent->count == 0){
+			trap_SendServerCommand(activator-g_entities, "print \"^1Out of Torpedos.\n\"");
+			return;
+		}
+	
+		G_AddEvent(ent, EV_FX_TORPEDO, ent->spawnflags);
+		ent->use = 0;
+		ent->think = fx_torpedo_think;
+		ent->nextthink = level.time + ent->wait;
 	}
-
-	G_AddEvent(ent, EV_FX_TORPEDO, ent->spawnflags);
-	ent->use = 0;
-	ent->think = fx_torpedo_think;
-	ent->nextthink = level.time + ent->wait;
 }
 
 void fx_torpedo_link(gentity_t *ent) {
@@ -1039,9 +1059,9 @@ void fx_torpedo_link(gentity_t *ent) {
 	
 	if(!ent->count) {
 		ent->count = -1;
-	} else {
-		ent->damage = ent->count;
-	}
+	} 
+
+	ent->damage = ent->count;
 
 	if(ent->spawnflags & 4) {
 		ent->flags |= FL_LOCKED;
