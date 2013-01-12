@@ -921,6 +921,7 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand("shipdamage");
 	trap_AddCommand("shiphealth");
 	trap_AddCommand("reloadtorpedos");
+	trap_AddCommand("torpedolist");
 
 	/* precacheFile */
 	trap_AddCommand("generatePrecacheFile");
