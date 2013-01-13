@@ -1581,35 +1581,33 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 	if(tr_ent->health < tr_ent->damage) {
 		// still not repaired of let's go on
 		tr_ent->health += rate;
-	} else {
-		if(!strcmp(tr_ent->classname, "func_breakable")) {
-			// else restore it
-			tr_ent->s.solid = CONTENTS_BODY;
-			trap_SetBrushModel(tr_ent, tr_ent->model);
-			tr_ent->r.svFlags &= ~SVF_NOCLIENT;
-			tr_ent->s.eFlags &= ~EF_NODRAW;
-			InitBBrush(tr_ent);
+		if(tr_ent->health >= tr_ent->damage){//we're maxed out after this cycle, reenstate
 			tr_ent->health = tr_ent->damage;
-
-			if(tr_ent->health) {
-				tr_ent->takedamage = qtrue;
-			}
-
-			tr_ent->use = breakable_use;
-
-			if(tr_ent->paintarget) {
-				tr_ent->pain = breakable_pain;
-			}
-
-			tr_ent->clipmask = 0;
-			tr_ent->count = 1;
-
 			if(tr_ent->target) {
 				G_UseTargets2(tr_ent, tr_ent, tr_ent->target);
 			}
-		} else if(!strcmp(tr_ent->classname, "misc_model_breakable")) {
-			tr_ent->health = tr_ent->damage;
-			SP_misc_model_breakable(tr_ent);
+			if(!strcmp(tr_ent->classname, "func_breakable")) {
+				tr_ent->s.solid = CONTENTS_BODY;
+				trap_SetBrushModel(tr_ent, tr_ent->model);
+				tr_ent->r.svFlags &= ~SVF_NOCLIENT;
+				tr_ent->s.eFlags &= ~EF_NODRAW;
+				InitBBrush(tr_ent);
+	
+				if(tr_ent->health) {
+					tr_ent->takedamage = qtrue;
+				}
+
+				tr_ent->use = breakable_use;
+
+				if(tr_ent->paintarget) {
+					tr_ent->pain = breakable_pain;
+				}
+
+				tr_ent->clipmask = 0;
+				tr_ent->count = 1;
+			} else if(!strcmp(tr_ent->classname, "misc_model_breakable")) {
+				SP_misc_model_breakable(tr_ent);
+			}
 		}
 	}
 }
