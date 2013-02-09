@@ -934,6 +934,28 @@ static int CG_DrawHealth(centity_t	*cent)
 	}
 }
 
+static float CG_DrawShipHealth( void )
+{
+		CG_FillRect( 3, 400, 102, 31, colorTable[CT_BLACK]); 
+		//shield
+		CG_FillRect( 4, 401, 100, 14, colorTable[CT_VDKBLUE1]); 
+		if(cg.shieldState == 1){
+			CG_FillRect( 4, 401, floor(cg.relativeHullStrength), 14, colorTable[CT_DKBLUE1]); 	
+			UI_DrawProportionalString(5, 403, va("Shields: %i Pct.", cg.relativeHullStrength), UI_TINYFONT, colorTable[CT_MDGREY]);
+		} else if(cg.shieldState == 0){
+			UI_DrawProportionalString(5, 403, "Shields: standby", UI_TINYFONT, colorTable[CT_MDGREY]);
+		} else if(cg.shieldState == -2){
+			UI_DrawProportionalString(5, 403, "Shields: offline", UI_TINYFONT, colorTable[CT_MDGREY]);
+		} else if(cg.shieldState == -1){
+			UI_DrawProportionalString(5, 403, "Shields: inoperable", UI_TINYFONT, colorTable[CT_MDGREY]);
+		}
+		//hull
+		CG_FillRect( 4, 416, 100, 14, colorTable[CT_VDKRED1]); 
+		CG_FillRect( 4, 416, floor(cg.relativeHullStrength), 14, colorTable[CT_DKRED1]); 
+		UI_DrawProportionalString(5, 418, va("Structural: %i Pct.", cg.relativeHullStrength), UI_TINYFONT, colorTable[CT_MDGREY]);
+		return 0;
+}
+
 /*
 ================
 CG_DrawStatusBar
@@ -987,6 +1009,10 @@ static void CG_DrawStatusBar( void )
 	//RPG-X | Phenix | 09/06/2005
 	// Added return of the width for the cloak etc messages
 	healthBarWidth = CG_DrawHealth(cent);
+
+	//shiphealth
+	if(cg.relativeHullStrength > 0)
+		CG_DrawShipHealth();
 
 
 	// RPG-X

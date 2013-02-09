@@ -2660,13 +2660,13 @@ void SP_target_shaderremap(gentity_t *ent) {
 }
 //RPG-X | Harry Young | 15/10/2011 | MOD END
 
-//RPG-X | Harry Young | 25/07/2012 | MOD START AUDIO_ON
-/*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8) 
+//RPG-X | Harry Young | 25/07/2012 | MOD START 
+/*QUAKED target_selfdestruct (1 0 0) (-8 -8 -8) (8 8 8) AUDIO_ON
 -----DESCRIPTION-----
 DO NOT USE! This just sits here purely for documantation.
 This entity manages the self destruct.
 For now this should only be used via the selfdestruct console command, however it might be usable from within the radiant at a later date.
-Should this thing hit 0 the killing part for everyone outside a target_safezone will be done automatically.
+Should this thing hit 0 the killing part for everyone outside a target_zone configured as safezone will be done automatically.
 
 -----SPAWNFLAGS-----
 1: AUDIO_ON - tells the script to display the countdown
@@ -2674,58 +2674,14 @@ Should this thing hit 0 the killing part for everyone outside a target_safezone 
 -----KEYS-----
 "wait" -  total Countdown-Time in secs
 "flags" - are audio warnings 1 or 0?
-"bluename" - target_safezone this thing affects (multi-ship-maps only) will switch it unsafe at T-50ms
+"bluename" - target_zone this thing affects (multi-ship-maps only) will switch it unsafe at T-50ms
 "target" - Things like fx to fire once the countdown hits 0
 
 "damage" - leveltime of countdowns end
 */
-static int target_selfdestruct_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) {
-	int i, n, num, cur = 0, cur2 = 0;
-	list_iter_p iter = NULL;
-	safeZone_t* sz;
-	int entlist[MAX_GENTITIES];
-	gentity_t *safePlayers[MAX_GENTITIES];
-	qboolean add = qtrue;
-
-	if(level.selfdestructSafeZones != NULL && level.selfdestructSafeZones->length > 0) {
-		// go through all safe zones and compose a list of sade players
-		iter = list_iterator(level.selfdestructSafeZones, FRONT);
-		for(sz = (safeZone_t *)list_next(iter); sz != NULL; sz = (safeZone_t *)list_next(iter)) {
-			if(!sz->active) {
-				continue;
-			}
-			num = trap_EntitiesInBox(sz->mins, sz->maxs, entlist, MAX_GENTITIES);
-			for(n = 0; n < num; n++) {
-				if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
-					safePlayers[cur] = &g_entities[entlist[n]];
-					cur++;
-				}
-			}
-		}
-	}
-
-	// now use that information to determines all unsafe players
-	for(i = 0; i < MAX_CLIENTS; i++) {
-		for(n = 0; n < cur; n++) {
-			if(&g_entities[i] == safePlayers[n]) {
-				add = qfalse;
-				break;
-			}
-		}
-		if(add) {
-			if(&g_entities[i].client) {
-				ents[cur2] = &g_entities[i];
-				cur2++;
-			}
-		}
-	}
-
-	destroy_iterator(iter);
-	return cur2;
-}
 
 void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if( ent->damage - level.time > 50 ){//if we listed the safezones we're committed
+	if( ent->damage - level.time > 50 ){//I'm still sceptical about a few things here, so I'll leave this in place
 	//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
 		trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
@@ -2740,65 +2696,45 @@ void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 }
 
 void target_selfdestruct_think(gentity_t *ent) {
-	gentity_t*	client;	
+	gentity_t	*client = NULL;	
 	gentity_t   *healthEnt, *safezone=NULL;	
-	int			i = 0, mins = 0;
+	int			entlist[MAX_GENTITIES];
+	int			n = 0, num;
 
-	//this is for calling the safezones to list. It needs to stand here to not screw up the remainder of the think.
-	if (ent->wait == 50) {
-		while ((safezone = G_Find( safezone, FOFS( classname ), "target_safezone" )) != NULL  ){
-			if(!Q_stricmp(safezone->targetname, ent->bluename))//free shipwide safezone if it exists
-				G_FreeEntity(safezone);
-			else
-				safezone->use(safezone, ent, ent);
-		}
-		ent->wait = 0;
-		ent->nextthink = level.time + 50;
-		return;
-	}
-
-	if (ent->wait > 0 && ent->spawnflags == 1 ){
-		//Send a sync/signal to all clients
-		ent->s.powerups = ent->damage - level.time;
-		if(ent->s.powerups > 60000){
-			mins = ent->s.powerups / 60000;
-			ent->s.powerups = ent->s.powerups - (60000 * mins);
-			G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, mins );
-		}
-		else
-			G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, mins );
-
-		ent->nextthink = level.time + 10000; 
-
-		//fail horribly if we overshoot bang-time
-		if (ent->nextthink > ent->damage){
-			ent->nextthink = ent->damage;
-			ent->wait = 0;
-		}
-
-		if (ent->nextthink == ent->damage){
-			//we need to get the safezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
-			ent->nextthink = ent->nextthink - 50;
-			ent->wait = 50;
-		}
-		return;
-	} else if (ent->wait == 0) { //bang time ^^
+	if (ent->wait == 0) { //bang time ^^
 		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
 		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
 		if(healthEnt && G_Find(healthEnt, FOFS(classname), "target_shiphealth") == NULL ){
 			healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have just one. makes a lot of stuff easier.
 			healthEnt->use(healthEnt, NULL, NULL);
 		}else{
-			int num;
-			gentity_t *ents[MAX_GENTITIES];
+			while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
+				// go through all safe zones and tag all safe players
+				if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename)) {
+					num = trap_EntitiesInBox(safezone->r.mins, safezone->r.maxs, entlist, MAX_GENTITIES);
+					for(n = 0; n < num; n++) {
+						if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
+							while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
+								if(client->s.number == entlist[n])
+									client->client->nokilli = 1;
+								trap_SendServerCommand( -1, va("print \"SETTING: %i = %i\n\" ", client->s.number, client->client->nokilli) );
+							}
+						}
+					}
+				}
+			}
 
-
-			num = target_selfdestruct_get_unsafe_players(ents);
+			client = NULL;
 
 			//Loop trough all clients on the server.
-			for(i = 0; i < num; i++) {
-				client = ents[i];
-				G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+			while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
+				if (client->client->nokilli != 1)
+					G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+			}
+			//we may go this way once more so clear clients back.
+			client = NULL;
+			while((client = G_Find( client, FOFS( classname ), "player" ))){
+				client->client->nokilli = 0;
 			}
 			//let's hear it
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
@@ -2816,7 +2752,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 
 		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
 		ent->nextthink = level.time + 50;//give the event time to be conducted
-		G_AddEvent( ent, EV_SELFDESTRUCT_SETTER, 0 );
+		trap_SendServerCommand(-1, va("selfdestructupdate %i", -1));
 		ent->wait = -2;
 		return;
 	} else if (ent->wait == -2) {
@@ -2898,40 +2834,35 @@ void SP_target_selfdestruct(gentity_t *ent) {
 
 	ent->use = target_selfdestruct_use;
 	ent->think = target_selfdestruct_think;
+	ent->nextthink = ent->damage;
 
 	if(ent->spawnflags == 1)
-		ent->nextthink = level.time + 50; // init clock over there... somehow doesn't work in spawnfunc...
-	else
-		ent->nextthink = ent->damage;
+		trap_SendServerCommand(-1, va("selfdestructupdate %.0f", ent->wait));
 
-	//fail horribly if an intervall overshoots bang-time
-	if (ent->nextthink > ent->damage){
-		ent->nextthink = ent->damage;
-		ent->wait = 0;
-	}
-
-	if (ent->nextthink == ent->damage){
-		//we need to get the safezones operational and it is highly unlikely that it'll happen in the last .05 secs of the count
-		ent->nextthink = ent->nextthink - 50;
-		ent->wait = 50;
-	}
+	ent->wait = 0;
 
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED target_safezone (1 0 0) ? SPAWN_SAFE SHIP
+/*QUAKED target_zone (1 0 0) ? SPAWN_SAFE SHIP
 -----DESCRIPTION-----
-This is a safezone for when the ship/station is destroyed via shiphelath or selfdestruct.
-It is used like a trigger and requires a targetname or else it will be removed at spawn.
+A generic zone used for entities that need a generic pointer in the world. It needs to be specialized by the team-value.
 
 -----SPAWNFLAGS-----
-1: SPAWN_SAFE - Entity is spawned in it's Safe configurartion
-2: SHIP - iwill mark this safezone as a ship safezone
+Note: Spawnflags will only work with the system they are attached to
+1: SPAWN_SAFE - For safezone only: Entity is spawned in it's safe configurartion
+2: SHIP - For safezone only: will mark this safezone as a ship safezone
 
 -----KEYS-----
-"targetname" - when used will toggle safe/unsafe
+"targetname" - used to link with, some types require this for toggling
+"count" - specifies this zone's type:
+
+	0 - none, will free entity
+	1 - safezone for target_selfdestruct and target_shiphealth
+	2 - display zone for target_shiphealth (HUD overlay)
 
 -----USAGE-----
+As safezone:
 Usage for Escape Pods and similar:
 Fill your escape pod Interior with this trigger and have it targeted by a func_usable/target_relay/target_delay to toggle it between safe and unsafe states.
 
@@ -2943,62 +2874,46 @@ To get the correct one use the /safezonelist-command
 */
 
 void target_safezone_use(gentity_t *ent, gentity_t *other, gentity_t *activator){
-	safeZone_t* sz = (safeZone_t *)malloc(sizeof(safeZone_s));
-
-	if(!Q_stricmp(activator->classname, "target_selfdestruct") || !Q_stricmp(activator->classname, "target_shiphealth")){
-		//our ship is about to die so compose the list of safezones
-		VectorCopy(ent->r.maxs, sz->maxs);
-		VectorCopy(ent->r.mins, sz->mins);
-		VectorAdd(ent->s.origin, ent->r.mins, sz->mins);
-		VectorAdd(ent->s.origin, ent->r.maxs, sz->maxs);
-		sz->name = (char *)malloc(strlen(ent->targetname)+1);
-		strcpy(sz->name, ent->targetname);
-		sz->active = (qboolean)(ent->count == 1);
-	
-		list_add(level.selfdestructSafeZones, sz, sizeof(safeZone_s));
-	
-		G_FreeEntity(ent);
-	} else {
-		//a client used this, so let's set this thing to active
-		if(ent->count == 1)
-			ent->count = 0;
-		else
-			ent->count = 1;
-	}
+	//a client used this, so let's set this thing to active
+	if(ent->n00bCount == 1)
+		ent->n00bCount = 0;
+	else
+		ent->n00bCount = 1;
 }
 
-void target_safezone_destructor(void *p) {
-	safeZone_t *sz = (safeZone_t *)p;
-
-	if(p == NULL) {
-		return;
-	}
-
-	if(sz->name != NULL) {
-		free(sz->name);
-	}
-	free(sz);
-}
-
-void SP_target_safezone(gentity_t *ent) {
+void SP_target_zone(gentity_t *ent) {
 
 	if(!ent->targetname || !ent->targetname[0]) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Safezone without targetname at %s, removing entity.\n", vtos(ent->s.origin)););
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_zone without targetname at %s, removing entity.\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
 	}
 
-	if(level.selfdestructSafeZones == NULL) {
-		level.selfdestructSafeZones = create_list();
-		level.selfdestructSafeZones->destructor = target_safezone_destructor;
+	if(strcmp(ent->classname, "target_zone")){
+		ent->count = 1;
+		ent->classname = G_NewString("target_zone");
+		//strcpy(ent->classname, "target_zone");
+	}
+	
+	if(ent->count == 0) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_zone without specified class by it's count-value at %s, removing entity.\n", vtos(ent->s.origin)););
+		G_FreeEntity(ent);
+		return;
+	}
+
+	if(strcmp(ent->classname, "target_zone")){
+		ent->count = 1;
+		//ent->classname = G_NewString("target_zone");
+		strcpy(ent->classname, "target_zone");
 	}
 
 	if(!ent->luaEntity) {
 		trap_SetBrushModel(ent, ent->model);
 	}
-	if(ent->spawnflags & 1)
-		ent->count = 1;
-	ent->use = target_safezone_use;
+	if(ent->count == 1)
+		ent->use = target_safezone_use;
+	if(ent->count == 1 && ent->spawnflags & 1)
+		ent->n00bCount = 1;
 	ent->r.contents = CONTENTS_NONE;
 	ent->r.svFlags |= SVF_NOCLIENT;
 	trap_LinkEntity(ent);
@@ -3028,6 +2943,8 @@ falsetarget: truename/swapCoreState for target_warp
 bluename: swapname for target_turbolift
 bluesound: swapname for ui_transporter
 falsename: falsename/redname for target_alert
+
+paintarget: target_zones configured as MSD-Display-Zones this thing shoud communicate with
 
 "model" - path to a shader with a MSD-Display (ship) to show. Default will be the Daedalus Class
 
@@ -3104,65 +3021,39 @@ textures/msd/akira //this will be the image you will use for texturing
 
 For distribution put both files (including their relative paths) in a *.pk3 file.
 */
-static int target_shiphealth_get_unsafe_players(gentity_t *ents[MAX_GENTITIES]) {
-	int i, n, num, cur = 0, cur2 = 0;
-	list_iter_p iter = NULL;
-	safeZone_t* sz;
-	int entlist[MAX_GENTITIES];
-	gentity_t *safePlayers[MAX_GENTITIES];
-	qboolean add = qtrue;
 
-	if(level.selfdestructSafeZones != NULL && level.selfdestructSafeZones->length > 0) {
-		// go through all safe zones and compose a list of sade players
-		iter = list_iterator(level.selfdestructSafeZones, FRONT);
-		for(sz = (safeZone_t *)list_next(iter); sz != NULL; sz = (safeZone_t *)list_next(iter)) {
-			if(!sz->active) {
-				continue;
-			}
-			num = trap_EntitiesInBox(sz->mins, sz->maxs, entlist, MAX_GENTITIES);
+void target_shiphealth_die(gentity_t *ent){
+	//we're dying
+	int			n = 0, num;
+	int			entlist[MAX_GENTITIES];
+	gentity_t	*client = NULL, *safezone=NULL;
+
+	while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
+		// go through all safe zones and tag all safe players
+		if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename)) {
+			num = trap_EntitiesInBox(safezone->r.mins, safezone->r.maxs, entlist, MAX_GENTITIES);
 			for(n = 0; n < num; n++) {
 				if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
-					safePlayers[cur] = &g_entities[entlist[n]];
-					cur++;
+					while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
+						if(client->s.number == entlist[n])
+							client->client->nokilli = 1;
+					}
 				}
 			}
 		}
 	}
 
-	// now use that information to determines all unsafe players
-	for(i = 0; i < MAX_CLIENTS; i++) {
-		for(n = 0; n < cur; n++) {
-			if(&g_entities[i] == safePlayers[n]) {
-				add = qfalse;
-				break;
-			}
-		}
-		if(add) {
-			if(&g_entities[i].client) {
-				ents[cur2] = &g_entities[i];
-				cur2++;
-			}
-		}
-	}
-
-	if(iter != NULL) {
-		free(iter);
-	}
-	return cur2;
-}
-
-void target_shiphealth_die(gentity_t *ent){
-	//we're dying
-	int			i, num;
-	gentity_t *ents[MAX_GENTITIES], *client;
-
-
-	num = target_shiphealth_get_unsafe_players(ents);
+	client = NULL;
 
 	//Loop trough all clients on the server.
-	for(i = 0; i < num; i++) {
-		client = ents[i];
-		G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+	while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
+		if (client->client->nokilli != 1)
+			G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+	}
+	//we may go this way once more so clear clients back.
+	client = NULL;
+	while((client = G_Find( client, FOFS( classname ), "player" ))){
+		client->client->nokilli = 0;
 	}
 	//let's hear it
 	G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
@@ -3174,7 +3065,9 @@ void target_shiphealth_die(gentity_t *ent){
 
 void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	double		NSS, NHS, SD, HD, BT;
-	gentity_t	*alertEnt, *warpEnt, *turboEnt, *transEnt, *safezone=NULL;
+	int			n = 0, num;
+	int			entlist[MAX_GENTITIES];
+	gentity_t	*alertEnt, *warpEnt, *turboEnt, *transEnt, *msdzone=NULL, *client=NULL;
 
 	if(ent->damage <= 0){ //failsave
 		return;
@@ -3261,15 +3154,35 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	//let's reset the repair-timer
 	ent->nextthink = level.time + 60000;
 
-	//if we hit 0 use all the safezones and blow in 50 ms 
-	if(ent->count <= 0){
+	//refresh clients HUD Display
+	//first zero out all clients that are connected to this one
+	while((client = G_Find(client, FOFS(classname), "player")) != NULL){
+		if(client->client->myship == ent->s.number)
+			trap_SendServerCommand( client->s.number, va("shiphealthupdate 0 0 0 "));
+	}
 
-		while ((safezone = G_Find( safezone, FOFS( classname ), "target_safezone" )) != NULL  ){
-			if(!Q_stricmp(safezone->targetname, ent->targetname))//free shipwide safezone if it exists
-				G_FreeEntity(safezone);
-			else
-				safezone->use(safezone, ent, ent);
+	client = NULL;
+
+	//now let's loop trough our zones and find the clients to send the info to
+	while ((msdzone = G_Find( msdzone, FOFS( classname ), "target_zone" )) != NULL  ){
+		// go through all safe zones and tag all safe players
+		if(msdzone->count == 2 && Q_stricmp(msdzone->targetname, ent->paintarget)) {
+			num = trap_EntitiesInBox(msdzone->r.mins, msdzone->r.maxs, entlist, MAX_GENTITIES);
+			for(n = 0; n < num; n++) {
+				if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
+					while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
+						if(client->s.number == entlist[n]){
+							trap_SendServerCommand( client->s.number, va("shiphealthupdate %.0f %.0f %i ", floor(ent->count / ent->health), floor(ent->n00bCount / ent->splashRadius), ent->splashDamage));
+							client->client->myship = ent->s.number;
+						}
+					}
+				}
+			}
 		}
+	}
+
+	//if we hit 0 blow in 50 ms 
+	if(ent->count <= 0){
 		ent->think = target_shiphealth_die;
 		ent->nextthink = level.time + 50;
 	}
@@ -3280,7 +3193,10 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 void target_shiphealth_think(gentity_t *ent) {
 	//this will do the healing each minute
 	int			NSS, NHS;
+	int			n = 0, num;
+	int			entlist[MAX_GENTITIES];
 	gentity_t*	alertEnt;
+	gentity_t	*msdzone=NULL, *client=NULL;
 
 	//We have interconnectivity with target_alert here in that at condition green we regenerate twice as fast
 	//so let's find the entity
@@ -3342,6 +3258,33 @@ void target_shiphealth_think(gentity_t *ent) {
 		}
 	}
 	ent->nextthink = level.time + 60000;
+
+	//refresh clients HUD Display
+	//first zero out all clients that are connected to this one
+	while((client = G_Find(client, FOFS(classname), "player")) != NULL){
+		if(client->client->myship == ent->s.number)
+			trap_SendServerCommand( client->s.number, va("shiphealthupdate 0 0 0 "));
+	}
+
+	client = NULL;
+
+	//now let's loop trough our zones and find the clients to send the info to
+	while ((msdzone = G_Find( msdzone, FOFS( classname ), "target_zone" )) != NULL  ){
+		// go through all safe zones and tag all safe players
+		if(msdzone->count == 2 && Q_stricmp(msdzone->targetname, ent->paintarget)) {
+			num = trap_EntitiesInBox(msdzone->r.mins, msdzone->r.maxs, entlist, MAX_GENTITIES);
+			for(n = 0; n < num; n++) {
+				if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
+					while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
+						if(client->s.number == entlist[n]){
+							trap_SendServerCommand( client->s.number, va("shiphealthupdate %.0f %.0f %i ", floor(ent->count / ent->health), floor(ent->n00bCount / ent->splashRadius), ent->splashDamage));
+							client->client->myship = ent->s.number;
+						}
+					}
+				}
+			}
+		}
+	}
 
 	return;
 }

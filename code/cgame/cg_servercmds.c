@@ -916,6 +916,21 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
+	if(!strcmp(cmd, "selfdestructupdate")) {
+		if(atoi(CG_Argv(1)) == -1)
+			cg.selfdestructTime = -1;
+		else
+			cg.selfdestructTime = atoi(CG_Argv(1)) + cg.time;
+		return;
+	}
+
+	if(!strcmp(cmd, "shiphealthupdate")) {
+		cg.relativeShieldStrength = atoi(CG_Argv(1));
+		cg.relativeHullStrength = atoi(CG_Argv(2));
+		cg.shieldState = atoi(CG_Argv(3));
+		return;
+	}
+
 	CG_Printf( "Unknown client game command: %s\n", cmd );
 }
 

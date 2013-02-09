@@ -2017,11 +2017,6 @@ void G_ShutdownGame( int restart ) {
 		BotAIShutdown( restart );
 	}
 
-	// free self destruct safe zones
-	if(level.selfdestructSafeZones != NULL) {
-		destroy_list(level.selfdestructSafeZones);
-	}
-
 	if(level.timedMessages != NULL) {
 		destroy_list(level.timedMessages);
 	}

@@ -599,6 +599,10 @@ struct gclient_s {
 	vec3_t		origViewAngles;
 	vec3_t		origOrigin;
 	gentity_t	*cam;
+
+	// for selfdestruct and shiphealth
+	int			nokilli;						//!< if 1 this player won't be killed if the ship is killed
+	int			myship;							//!< entnum of the shiphealth entity this client currently holds info from
 };
 
 
@@ -694,7 +698,6 @@ typedef struct {
 	int numBrushEnts;					//!< number of entities in the level that use brushmodels
 
 	// selft destruct safezones
-	list_p selfdestructSafeZones;
 	list_p locations;
 	list_p timedMessages;
 
@@ -2083,15 +2086,6 @@ struct luaAlertState_s {
 };
 
 luaAlertState_t *luaAlertState;
-
-// self destruct
-typedef struct safeZone_s safeZone_t;
-struct safeZone_s {
-	char*		name;
-	qboolean	active;
-	vec3_t		maxs;
-	vec3_t		mins;
-} safeZone_s;
 
 // timed messages
 typedef struct timedMessage_s timedMessage_t;

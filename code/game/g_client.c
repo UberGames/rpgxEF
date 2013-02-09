@@ -1593,6 +1593,7 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
 	gentity_t	*ent;
 	gclient_t	*client;
 	gentity_t	*tent;
+	gentity_t	*selfdestruct;
 	int			flags;
 	qboolean	alreadyIn = qfalse;
 	int			score;
@@ -1798,6 +1799,12 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
 		}
       
     }
+	//we may currently be selfdestructing, so send stuff for that case
+	selfdestruct = G_Find(NULL, FOFS(classname), "target_selfdestruct");
+	if(selfdestruct && selfdestruct->spawnflags & 1)
+		trap_SendServerCommand(ent->s.number, va("selfdestructupdate %i", selfdestruct->damage - level.time));
+	else
+		trap_SendServerCommand(ent->s.number, va("selfdestructupdate %i", -1));
 }
 
 // WEAPONS - PHENIX1

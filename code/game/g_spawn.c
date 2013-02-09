@@ -179,7 +179,7 @@ void SP_target_serverchange(gentity_t *ent);
 void SP_target_levelchange(gentity_t *ent);
 void SP_target_shaderremap(gentity_t *ent);
 void SP_target_selfdestruct(gentity_t *ent);
-void SP_target_safezone(gentity_t *ent);
+void SP_target_zone(gentity_t *ent);
 void SP_target_shiphealth(gentity_t *ent);
 
 void SP_light (gentity_t *self);
@@ -366,7 +366,8 @@ spawn_t	spawns[] = {
 	{"target_levelchange",			SP_target_levelchange},
 	{"target_shaderremap",			SP_target_shaderremap},
 	{"target_selfdestruct",			SP_target_selfdestruct},
-	{"target_safezone",				SP_target_safezone},
+	{"target_safezone",				SP_target_zone},
+	{"target_zone",					SP_target_zone},
 	{"target_shiphealth",			SP_target_shiphealth},
 
 	{"light",						SP_light},

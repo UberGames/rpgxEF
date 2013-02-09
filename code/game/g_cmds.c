@@ -5714,12 +5714,14 @@ static void Cmd_alert_f(gentity_t *ent) {
 
 /*
 =================
-Cmd_safezonelist_f
+Cmd_zonelist_f
 Harry Young | 02/11/2012
 =================
 */
-static void Cmd_safezonelist_f(gentity_t *ent) {
-	gentity_t	*safezone=NULL;
+static void Cmd_zonelist_f(gentity_t *ent) {
+	gentity_t	*zone=NULL;
+	char		arg[16];
+	int			type;
 
 #ifndef SQL
 	if ( !IsAdmin( ent ) ) {
@@ -5733,17 +5735,32 @@ static void Cmd_safezonelist_f(gentity_t *ent) {
 	}
 #endif
 
-	trap_SendServerCommand( ent-g_entities, va("print \"\nList of safezones on this map: \n\n\""));
-	while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
-		trap_SendServerCommand( ent-g_entities, va("print \"Name of safezone: %s \n\"", safezone->targetname ));
-		if(safezone->count == 1)
-			trap_SendServerCommand( ent-g_entities, va("print \"Status of safezone: ^2safe \n\""));
-		else
-			trap_SendServerCommand( ent-g_entities, va("print \"Status of safezone: ^1unsafe \n\""));
-		if(safezone->spawnflags & 2)
-			trap_SendServerCommand( ent-g_entities, va("print \"Flagges as ship: yes \n\n\""));
-		else
-			trap_SendServerCommand( ent-g_entities, va("print \"Flagged as ship: no \n\n\""));
+	trap_Argv(1, arg, sizeof(arg));
+
+	type = atoi(arg);
+
+	if(type == 0 || type > 2){
+		trap_SendServerCommand( ent-g_entities, va("print \"Usage: zonelist <type> where type is one of the following types of zones:\n--1 = safezones for Selfdestruct\n--2 = MSD-HUD zones\n\" ") );
+		return;
+	}
+
+	if(type == 1)
+		trap_SendServerCommand( ent-g_entities, va("print \"\nList of safezones on this map: \n\n\""));
+	if(type == 2)
+		trap_SendServerCommand( ent-g_entities, va("print \"\nList of MSD-HUD-zones on this map: \n\n\""));
+
+	while((zone = G_Find(zone, FOFS(classname), "target_zone")) != NULL){
+		if(zone->count == type){
+			trap_SendServerCommand( ent-g_entities, va("print \"Name of zone: %s \n\"", zone->targetname ));
+			if(zone->n00bCount == 1)
+				trap_SendServerCommand( ent-g_entities, va("print \"Status of safezone: ^2safe \n\""));
+			else
+				trap_SendServerCommand( ent-g_entities, va("print \"Status of safezone: ^1unsafe \n\""));
+			if(zone->spawnflags & 2)
+				trap_SendServerCommand( ent-g_entities, va("print \"Flagges as ship: yes \n\n\""));
+			else
+				trap_SendServerCommand( ent-g_entities, va("print \"Flagged as ship: no \n\n\""));
+		}
 	}
 	trap_SendServerCommand( ent-g_entities, va("print \"End of list \n\n\""));
 }
@@ -5803,9 +5820,9 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		if ( destructEnt->wait <= 0 )
 			G_PrintfClient(ent, "^1ERROR: duration must not be 0. Removing entity."); 
 
-		while((safezone = G_Find(safezone, FOFS(classname), "target_safezone")) != NULL){
-			if(!destructEnt->bluename && safezone->spawnflags & 2){
-				G_PrintfClient(ent, "^1ERROR: safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezonesuse the safezonelist command. Removing entity.");
+		while((safezone = G_Find(safezone, FOFS(classname), "target_zone")) != NULL){
+			if(!destructEnt->bluename && safezone->count == 1 && safezone->spawnflags & 2){
+				G_PrintfClient(ent, "^1ERROR: safezone must be given for maps consisting of multiple ships/stations (like rpg_runabout). For a list of safezones use this command: zonelist 1 . Removing entity.");
 				destructEnt->wait = 0; //we'll use this next to free the ent
 				break;
 			}
@@ -5847,8 +5864,9 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		G_PrintfClient(ent,		"^3Usage: selfdestruct start duration audio [safezone] [target]");
 		G_PrintfClient(ent,		"duration: total countdown-duration in seconds. Must not be 0.");
 		G_PrintfClient(ent,		"audio: set this 0 if you do not want to display the countdown-clock in the top center of your screen, else set this 1.");
-		G_PrintfClient(ent,		"safezone: safezone to toggle unsafe at T-50ms. Only for maps with multiple ships (like rpg_runabout). Set NULL to skip.");
-		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0. The entity will automatically shake everyones screen and kill all clients outside an active target_safezone.");
+		G_PrintfClient(ent,		"safezone: Only for maps with multiple ships (like rpg_runabout). it will not be used for processing. Set NULL to skip.");
+		G_PrintfClient(ent,		"target: Optional Argument for Effects to fire once the countdown hist 0.");
+		G_PrintfClient(ent,		"The entity will automatically shake everyones screen and kill all clients outside an active target_zone configured as safezone.");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct remaining");
 		G_PrintfClient(ent,		"This will give out the remaining countdown-time to all clients if the count is muted.");
 		G_PrintfClient(ent,		"\n^3Usage: selfdestruct abort");
@@ -7719,8 +7737,8 @@ void G_Client_Command( int clientNum )
 		Cmd_changeFreq(ent);
 	else if (Q_stricmp(cmd, "alert") == 0)
 		Cmd_alert_f(ent);
-	else if (Q_stricmp(cmd, "safezonelist") == 0)
-		Cmd_safezonelist_f(ent);
+	else if (Q_stricmp(cmd, "zonelist") == 0)
+		Cmd_zonelist_f(ent);
 	else if (Q_stricmp(cmd, "selfdestruct") == 0)
 		Cmd_selfdestruct_f(ent);
 	else if (Q_stricmp(cmd, "shipdamage") == 0)

@@ -451,7 +451,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	int				clientNum;
 	clientInfo_t	*ci;
 	vec3_t			normal = { 0, 0, 1 };
-	int				a, b, temp;
+	int				a, b;
 
 	refEntity_t		legs;
 	refEntity_t		torso;
@@ -1822,33 +1822,6 @@ case EV_SHAKE_SOUND:
 
 	case EV_DEBUG_TRACE:
 		FX_AddLine(cent->currentState.origin, cent->currentState.origin2, 0.5, 0.5, 0.5, 1.0, 1.0, 1000, cgs.media.laserShader);
-		break;
-
-// selfdestruct and shiphealth setter
-
-	case EV_SELFDESTRUCT_SETTER:
-		DEBUGNAME("EV_SELFDESTRUCT_SETTER");
-		temp = cent->currentState.eventParm * 60000 + cent->currentState.powerups;
-		if(temp == -1)
-			cg.selfdestructTime = -1;
-		else
-			cg.selfdestructTime = temp + cg.time;
-		break;
-
-	case EV_HULLHEALTH_SETTER:
-		DEBUGNAME("EV_HULLHEALTH_SETTER");
-		if(cent->currentState.eventParm == -1)
-			cg.relativeHullStrength = -1;
-		else
-			cg.relativeHullStrength = cent->currentState.eventParm;
-		break;
-
-	case EV_SHIELDHEALTH_SETTER:
-		DEBUGNAME("EV_SHIELDHEALTH_SETTER");
-		if(cent->currentState.eventParm == -1)
-			cg.relativeShieldStrength = -1;
-		else
-			cg.relativeShieldStrength = cent->currentState.eventParm;
 		break;
 
 // Default

@@ -1016,6 +1016,7 @@ typedef struct {
 	// shiphealth	
 	int					relativeHullStrength;
 	int					relativeShieldStrength;
+	int					shieldState;
 } cg_t;
 
 

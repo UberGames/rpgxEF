@@ -163,18 +163,18 @@ static void M_msdMenu_Graphics (void)
 	lengthshield = (int)(498 * s_msd.currshield / s_msd.maxshield);
 	lengthhull = (int)(498 * s_msd.currhull / s_msd.maxhull);
 
-	trap_R_SetColor( colorTable[CT_WHITE] ); 
-	UI_DrawHandlePic( 100, 320,  500,  49, uis.whiteShader);		//background
 	trap_R_SetColor( colorTable[CT_BLACK] ); 
+	UI_DrawHandlePic( 100, 320,  500,  49, uis.whiteShader);		//background
+	trap_R_SetColor( colorTable[CT_VDKBLUE1] ); 
 	//trap_R_SetColor( colorTable[CT_VDKPURPLE2] ); 
 	UI_DrawHandlePic( 101, 321,  498,  23, uis.whiteShader);		//Shield Bar BG
-	trap_R_SetColor( colorTable[CT_BLACK] ); 
+	trap_R_SetColor( colorTable[CT_VDKRED1] ); 
 	//trap_R_SetColor( colorTable[CT_VDKORANGE] ); 
 	UI_DrawHandlePic( 101, 345,  498,  23, uis.whiteShader);		//Health Bar BG
 
 	//Shield Bar
 	if(s_msd.shieldstate == 1){
-	trap_R_SetColor( colorTable[CT_BLUE] ); 
+	trap_R_SetColor( colorTable[CT_DKBLUE1] ); 
 	UI_DrawHandlePic( 101, 321,  lengthshield,  23, uis.whiteShader);		
 	UI_DrawProportionalString(103, 323, va("Shields at %.1f Percent", (lengthshield / 4.98)), UI_TINYFONT, colorTable[CT_MDGREY]);
 	} else if(s_msd.shieldstate == 0){
@@ -184,9 +184,9 @@ static void M_msdMenu_Graphics (void)
 	} else if(s_msd.shieldstate == -1){
 	UI_DrawProportionalString(103, 323, "Shields are inoperable", UI_TINYFONT, colorTable[CT_MDGREY]);
 	}
-	trap_R_SetColor( colorTable[CT_YELLOW] ); 
+	trap_R_SetColor( colorTable[CT_DKRED1] ); 
 	UI_DrawHandlePic( 101, 345,  lengthhull,  23, uis.whiteShader);		//Health Bar
-	UI_DrawProportionalString(103, 347, va("Structual Integity at %.1f Percent", (lengthhull / 4.98)), UI_TINYFONT, colorTable[CT_MDGREY]);
+	UI_DrawProportionalString(103, 347, va("Structural Integity at %.1f Percent", (lengthhull / 4.98)), UI_TINYFONT, colorTable[CT_MDGREY]);
 
 	//Sub System indicators
 	//Shields

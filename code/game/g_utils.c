@@ -339,8 +339,6 @@ gentity_t *G_PickTarget (char *targetname)
  */
 void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	gentity_t		*t;
-	list_iter_p		szIter = NULL;
-	safeZone_t		*sz;
 	
 	if ( !ent ) {
 		return;
@@ -507,18 +505,6 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			return;
 		}
 	}
-
-	/* self destruct safe zones */
-	if(level.selfdestructSafeZones != NULL && level.selfdestructSafeZones->length > 0) {
-		szIter = list_iterator(level.selfdestructSafeZones, FRONT);
-		for(sz = (safeZone_t *)list_next(szIter); sz != NULL; sz = (safeZone_t *)list_next(szIter)) {
-			if(!strcmp(sz->name, target)) {
-				sz->active = (qboolean)!sz->active;
-			}
-		}
-	}
-
-	destroy_iterator(szIter);
 }
 
 /**
