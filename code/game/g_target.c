@@ -2701,13 +2701,17 @@ void target_selfdestruct_think(gentity_t *ent) {
 	int			entlist[MAX_GENTITIES];
 	int			n = 0, num;
 
-	if (ent->wait == 0) { //bang time ^^
 		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
 		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
 		if(healthEnt && G_Find(healthEnt, FOFS(classname), "target_shiphealth") == NULL ){
 			healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have just one. makes a lot of stuff easier.
 			healthEnt->use(healthEnt, NULL, NULL);
 		}else{
+			while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
+				if(!Q_stricmp(safezone->targetname, ent->bluename)
+					safezone->n00bCount = 0;
+			}
+			safezone = NULL;
 			while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
 				// go through all safe zones and tag all safe players
 				if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename)) {
@@ -2743,22 +2747,9 @@ void target_selfdestruct_think(gentity_t *ent) {
 		}
 		if(ent->target)
 			G_UseTargets(ent, ent);
-		//we're done here so let's finish up in a sec.	
-		ent->s.powerups = 0;
-		ent->wait = -1;
-		ent->nextthink = level.time + 1000;
-		return;
-	} else if (ent->wait == -1) {
-
-		//we have aborted and the note should be out or ended and everyone should be dead so let's reset
-		ent->nextthink = level.time + 50;//give the event time to be conducted
 		trap_SendServerCommand(-1, va("selfdestructupdate %i", -1));
-		ent->wait = -2;
-		return;
-	} else if (ent->wait == -2) {
 		G_FreeEntity(ent);
-		return; //And we're done.
-	}
+		return;
 }
 
 void SP_target_selfdestruct(gentity_t *ent) {
@@ -2889,10 +2880,9 @@ void SP_target_zone(gentity_t *ent) {
 		return;
 	}
 
-	if(strcmp(ent->classname, "target_zone")){
+	if(Q_strcmp(ent->classname, "target_zone")){
 		ent->count = 1;
 		ent->classname = G_NewString("target_zone");
-		//strcpy(ent->classname, "target_zone");
 	}
 	
 	if(ent->count == 0) {
@@ -2932,7 +2922,7 @@ none
 
 -----KEYS-----
 Required Keys (If any of them are not given the entity will be removed at spawn):
-targetname: Name of the Ship/Station this entity represents. See target_safezone for additional use of this key.
+targetname: Name of the Ship/Station this entity represents. See target_zone for additional use of this key.
 health: Total Hull strength
 splashRadius: total shield strenght
 angle: Hull repair in % per minute
@@ -3028,6 +3018,11 @@ void target_shiphealth_die(gentity_t *ent){
 	int			entlist[MAX_GENTITIES];
 	gentity_t	*client = NULL, *safezone=NULL;
 
+	while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
+		if(!Q_stricmp(safezone->targetname, ent->targetname)
+			safezone->n00bCount = 0;
+	}
+	safezone = NULL;
 	while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
 		// go through all safe zones and tag all safe players
 		if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename)) {
