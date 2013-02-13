@@ -23,7 +23,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 
-
 list_p create_list(){
 	list_p list = (list_p) malloc(sizeof(struct list));
 	list->length = 0;
@@ -41,7 +40,11 @@ list_iter_p list_iterator(list_p list, char init){
 	else if(init==BACK){
 		iter->current = list->last;
 	}
-	else return NULL;
+	else {
+		if(iter != NULL)
+			free(iter);
+		return NULL;
+	}
 	iter->list = list;
 	iter->started = 0;
 	return iter;
@@ -140,8 +143,14 @@ void* list_pop(list_p list){
 	if(last == NULL) return NULL;
 	list->last = last->prev;
 	void* data = last->data;
-	last->prev->next = NULL;
+	if(last->prev != NULL) {
+		last->prev->next = NULL;
+	}
 	free(last);
+	list->length--;
+	if(list->length == 0) {
+		list->last = list->first = NULL;
+	}
 	return data;
 }
 
@@ -150,8 +159,14 @@ void* list_poll(list_p list){
 	if(first == NULL) return NULL;
 	list->first = first->next;
 	void* data = first->data;
-	first->next->prev = NULL;
+	if(first->next != NULL) {
+		first->next->prev = NULL;
+	}
 	free(first);
+	list->length--;
+	if(list->length == 0) {
+		list->last = list->first = NULL;
+	}
 	return data;
 }
 
