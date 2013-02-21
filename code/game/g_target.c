@@ -2708,7 +2708,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 			healthEnt->use(healthEnt, NULL, NULL);
 		}else{
 			while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
-				if(!Q_stricmp(safezone->targetname, ent->bluename)
+				if(!Q_stricmp(safezone->targetname, ent->bluename))
 					safezone->n00bCount = 0;
 			}
 			safezone = NULL;
@@ -2880,7 +2880,7 @@ void SP_target_zone(gentity_t *ent) {
 		return;
 	}
 
-	if(Q_strcmp(ent->classname, "target_zone")){
+	if(Q_stricmp(ent->classname, "target_zone")){
 		ent->count = 1;
 		ent->classname = G_NewString("target_zone");
 	}
@@ -3019,7 +3019,7 @@ void target_shiphealth_die(gentity_t *ent){
 	gentity_t	*client = NULL, *safezone=NULL;
 
 	while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
-		if(!Q_stricmp(safezone->targetname, ent->targetname)
+		if(!Q_stricmp(safezone->targetname, ent->targetname))
 			safezone->n00bCount = 0;
 	}
 	safezone = NULL;
