@@ -2952,9 +2952,9 @@ Galaxy Class || http://lcarsgfx.wordpress.com/2012/06/10/galaxy-class-redux-an-u
 Daedalus Class || http://lcarsgfx.wordpress.com/2011/12/10/daedalus-father-of-icarus/ || <type>/msd/daedalus
 Nebula Class || http://lcarsgfx.wordpress.com/2011/12/08/entering-the-nebula-part-2/ || <type>/msd/nebula
 Intrepid Class || http://lcarsgfx.wordpress.com/2011/05/16/an-intrepid-undertaking/ || <type>/msd/intrepid
-USCM (Alien) || http://lcarsgfx.wordpress.com/2010/08/10/in-space-no-one-can-hear-you-scream/ || Image yet to come
+USCM (Alien) || http://lcarsgfx.wordpress.com/2010/08/10/in-space-no-one-can-hear-you-scream/ || <type>/msd/conestoga
 Olympic Class || http://lcarsgfx.wordpress.com/2010/09/11/the-olympic-class/ || <type>/msd/olympic
-Steamrunner Class || http://lcarsgfx.wordpress.com/2010/08/15/full-steam-ahead/ || Image yet to come
+Steamrunner Class || http://lcarsgfx.wordpress.com/2010/08/15/full-steam-ahead/ || <type>/msd/steamrunner
 Oberth Class || http://lcarsgfx.wordpress.com/2010/08/12/im-a-doctor-not-a-science-vessel/ || <type>/msd/oberth
 Soverign Class || http://lcarsgfx.wordpress.com/2010/03/01/sovereign-of-the-stars/ || <type>/msd/soverign
 Excelsior Class (Retro Design) || http://lcarsgfx.wordpress.com/2010/01/01/retro-excelsior/ || <type>/msd/excelsior-retro

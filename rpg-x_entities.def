@@ -6,7 +6,7 @@
 //g_misc.c - func_group, info_camp, info_null, info_notnull[misc_teleporter_dest, target_position], light, misc_model, misc_portal_surface, misc_portal_camera, shooter_rocker, shooter_plasma, shooter_grenade, shooter_torpedo;
 //g_mover.c - func_door, func_plat, func_button, path_corner, func_train, func_static, func_forcefield, func_rotating, func_door_rotating, func_bobbing, func_pendulum, func_brushmodel, func_lightchange, func_targetmover, path_point, func_mover, func_stasis_door;
 //g_spawn.c - worldspawn;
-//g_target.c - target_give, target_remove_powerups*, target_delay, target_print, target_speaker, target_laser, target_teleporter, target_relay, target_kill, target_location, target_counter, target_objective*, target_boolean, target_gravity, target_shake, target_evosuit, target_turbolift, target_doorlock, target_alert, target_warp, target_deactivate, target_serverchange, target_levelchange, target_holodeck***, target_shaderremap, target_selfdestruct, target_safezone, target_shiphealth;
+//g_target.c - target_give, target_remove_powerups*, target_delay, target_print, target_speaker, target_laser, target_teleporter, target_relay, target_kill, target_location, target_counter, target_objective*, target_boolean, target_gravity, target_shake, target_evosuit, target_turbolift, target_doorlock, target_alert, target_warp, target_deactivate, target_serverchange, target_levelchange, target_holodeck***, target_shaderremap, target_selfdestruct, target_zone, target_shiphealth;
 //g_trigger.c - trigger_multiple, trigger_always, trigger_push, target_push, trigger_teleport, trigger_hurt, func_timer, trigger_transporter, trigger_radiation;
 //g_turrets.c - misc_turret, misc_laser_arm;
 //g_ui.c - ui_transporter, ui_msd, ui_holodeck;
@@ -1956,7 +1956,7 @@ If you want to use a bunch of fires use fx_fire.
 */
 
 // RPG-X ui_*
-/*QUAKED ui_transporter (.5 .5 .5) ? DISABLED
+/*QUAKED ui_transporter (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
 -----DESCRIPTION-----
 Opens the transporter UI.
 
@@ -1968,7 +1968,7 @@ Opens the transporter UI.
 "target" - trigger_transporter to use with this ui_transporter
 */
 
-/*QUAKED ui_msd (.5 .5 .5) ? DISABLED
+/*QUAKED ui_msd (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
 -----DESCRIPTION-----
 Opens a Master Systems Display. It will display data grabbed from a target_shiphealth.
 
@@ -1996,7 +1996,7 @@ none
 "truename" - shader that will replace it
 */
 
-/*QUAKED ui_holodeck (.5 .5 .5) ? DISABLED
+/*QUAKED ui_holodeck (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
 -----Description-----
 Will open  the holodeck UI once this is implemented. For now this will not spawn.
 
@@ -2175,7 +2175,7 @@ none
 
 -----KEYS-----
 Required Keys (If any of them are not given the entity will be removed at spawn):
-targetname: Name of the Ship/Station this entity represents. See target_safezone for additional use of this key.
+targetname: Name of the Ship/Station this entity represents. See target_zone for additional use of this key.
 health: Total Hull strength
 splashRadius: total shield strenght
 angle: Hull repair in % per minute
@@ -2186,6 +2186,8 @@ falsetarget: truename/swapCoreState for target_warp
 bluename: swapname for target_turbolift
 bluesound: swapname for ui_transporter
 falsename: falsename/redname for target_alert
+
+paintarget: target_zones configured as MSD-Display-Zones this thing shoud communicate with
 
 "model" - path to a shader with a MSD-Display (ship) to show. Default will be the Daedalus Class
 
@@ -2203,9 +2205,9 @@ Galaxy Class || http://lcarsgfx.wordpress.com/2012/06/10/galaxy-class-redux-an-u
 Daedalus Class || http://lcarsgfx.wordpress.com/2011/12/10/daedalus-father-of-icarus/ || <type>/msd/daedalus
 Nebula Class || http://lcarsgfx.wordpress.com/2011/12/08/entering-the-nebula-part-2/ || <type>/msd/nebula
 Intrepid Class || http://lcarsgfx.wordpress.com/2011/05/16/an-intrepid-undertaking/ || <type>/msd/intrepid
-USCM (Alien) || http://lcarsgfx.wordpress.com/2010/08/10/in-space-no-one-can-hear-you-scream/ || Image yet to come
+USCM (Alien) || http://lcarsgfx.wordpress.com/2010/08/10/in-space-no-one-can-hear-you-scream/ || <type>/msd/conestoga
 Olympic Class || http://lcarsgfx.wordpress.com/2010/09/11/the-olympic-class/ || <type>/msd/olympic
-Steamrunner Class || http://lcarsgfx.wordpress.com/2010/08/15/full-steam-ahead/ || Image yet to come
+Steamrunner Class || http://lcarsgfx.wordpress.com/2010/08/15/full-steam-ahead/ || <type>/msd/steamrunner
 Oberth Class || http://lcarsgfx.wordpress.com/2010/08/12/im-a-doctor-not-a-science-vessel/ || <type>/msd/oberth
 Soverign Class || http://lcarsgfx.wordpress.com/2010/03/01/sovereign-of-the-stars/ || <type>/msd/soverign
 Excelsior Class (Retro Design) || http://lcarsgfx.wordpress.com/2010/01/01/retro-excelsior/ || <type>/msd/excelsior-retro
@@ -2263,19 +2265,25 @@ textures/msd/akira //this will be the image you will use for texturing
 For distribution put both files (including their relative paths) in a *.pk3 file.
 */
 
-/*QUAKED target_safezone (1 0 0) ? SPAWN_SAFE SHIP
+/*QUAKED target_zone (1 0 0) ? SPAWN_SAFE SHIP
 -----DESCRIPTION-----
-This is a safezone for when the ship/station is destroyed via shiphelath or selfdestruct.
-It is used like a trigger and requires a targetname or else it will be removed at spawn.
+A generic zone used for entities that need a generic pointer in the world. It needs to be specialized by the team-value.
 
 -----SPAWNFLAGS-----
-1: SPAWN_SAFE - Entity is spawned in it's Safe configurartion
-2: SHIP - iwill mark this safezone as a ship safezone
+Note: Spawnflags will only work with the system they are attached to
+1: SPAWN_SAFE - For safezone only: Entity is spawned in it's safe configurartion
+2: SHIP - For safezone only: will mark this safezone as a ship safezone
 
 -----KEYS-----
-"targetname" - when used will toggle safe/unsafe
+"targetname" - used to link with, some types require this for toggling
+"count" - specifies this zone's type:
+
+	0 - none, will free entity
+	1 - safezone for target_selfdestruct and target_shiphealth
+	2 - display zone for target_shiphealth (HUD overlay)
 
 -----USAGE-----
+As safezone:
 Usage for Escape Pods and similar:
 Fill your escape pod Interior with this trigger and have it targeted by a func_usable/target_relay/target_delay to toggle it between safe and unsafe states.
 

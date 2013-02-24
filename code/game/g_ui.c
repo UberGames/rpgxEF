@@ -8,7 +8,7 @@
 
 extern void InitTrigger(gentity_t *self);
 
-/*QUAKED ui_transporter (.5 .5 .5) ? DISABLED
+/*QUAKED ui_transporter (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
 -----DESCRIPTION-----
 Opens the transporter UI.
 
@@ -109,7 +109,7 @@ void SP_ui_transporter(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED ui_msd (.5 .5 .5) ? DISABLED
+/*QUAKED ui_msd (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
 -----DESCRIPTION-----
 Opens a Master Systems Display. It will display data grabbed from a target_shiphealth.
 
@@ -252,7 +252,7 @@ void SP_ui_msd(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED ui_holodeck (.5 .5 .5) ? DISABLED
+/*QUAKED ui_holodeck (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
 -----Description-----
 Will open  the holodeck UI once this is implemented. For now this will not spawn.
 
