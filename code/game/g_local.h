@@ -115,9 +115,7 @@ typedef struct {
 	char		message[MAX_QPATH];	//!< msg when player enters class
 	
 	int			weaponsFlags;		//!< flags denoting default weapons of this class
-	//int			color[3];				//Color denoting the color of dot in radar and class color
 
-	//int			iconColor;			//Denoting which set of icons to use in the scoreboard
 	char		modelSkin[36];		//!< Denoting which skin this class is forced to
 
 	int			isAdmin;			//!< class has admin access
@@ -125,10 +123,6 @@ typedef struct {
 	int			isMedical;			//!< class has medical capacity
 	int			isn00b;				//!< class is a dumbass
 	int			isBorg;				//!< class is a borg
-
-	//int			hasRanks;
-
-	//int			noShow;				//DON'T show this rank in the UI menu
 } g_classData_t;
 
 //Class Data
@@ -219,15 +213,15 @@ struct gentity_s {
 
 	qboolean	inuse;
 
-	char		*classname;			//!< set in QuakeEd
+	char*		classname;			//!< set in QuakeEd
 	int			spawnflags;			//!< set in QuakeEd
 
 	qboolean	neverFree;			//!< if true, FreeEntity will only unlink bodyque uses this
 
 	int			flags;				//!< FL_* variables
 
-	char		*model;				//!< the model or brushmodel the entities uses
-	char		*model2;			//!< an alternate model
+	char*		model;				//!< the model or brushmodel the entities uses
+	char*		model2;			//!< an alternate model
 	int			freetime;			//!< level.time when the object was freed
 
 	int			eventTime;			//!< events will be cleared EVENT_VALID_MSEC after set
@@ -246,24 +240,24 @@ struct gentity_s {
 	int			sound2to1;			//!< soundindex of sound to play when moving from Pos2 to Pos1
 	int			soundPos2;			//!< soundindex of sound to play when reaching Pos2
 	int			soundLoop;			//!< soundindex for looped sounds
-	gentity_t	*parent;			//!< parent of this entity
-	gentity_t	*nextTrain;			//!< next path_corner of a func_train
-	gentity_t	*prevTrain;			//!< previous path_corner of a func_train
+	gentity_t*	parent;			//!< parent of this entity
+	gentity_t*	nextTrain;			//!< next path_corner of a func_train
+	gentity_t*	prevTrain;			//!< previous path_corner of a func_train
 	vec3_t		pos1;				//!< start position for binary movers
 	vec3_t		pos2;				//!< end position for binary movers
 	vec3_t		apos1;				//!< angular start position for movers
 	vec3_t		apos2;				//!< angular end position for movers
 
-	char		*message;			//!< message for target_print
+	char*		message;			//!< message for target_print
 
 	int			timestamp;			//!< body queue sinking, etc
 
 	float		angle;				//!< set in editor, -1 = up, -2 = down
-	char		*target;			//!< target of the entity
-	char		*paintarget;		//!< target to use if entity takes damage
-	char		*targetname;		//!< targetname that identyfies the entity
-	char		*team;				//!< for teamchains
-	gentity_t	*target_ent;		//!< target of turrets etc
+	char*		target;			//!< target of the entity
+	char*		paintarget;		//!< target to use if entity takes damage
+	char*		targetname;		//!< targetname that identyfies the entity
+	char*		team;				//!< for teamchains
+	gentity_t*	target_ent;		//!< target of turrets etc
 
 	float		speed;				//!< moving speed etc
 	vec3_t		movedir;			//!< moving direction
@@ -296,11 +290,11 @@ struct gentity_s {
 	int			count;				//!< used for counting, check whether an entity is allowed to use
 									//!< and other various things
 
-	gentity_t	*lastEnemy;			//!< last enemy of the entity (turrets etc)
-	gentity_t	*enemy;				//!< current enemy of the entity (turrets etc)
-	gentity_t	*activator;			//!< entity that activated/used this entity
-	gentity_t	*teamchain;			//!< next entity in team
-	gentity_t	*teammaster;		//!< master of the team
+	gentity_t*	lastEnemy;			//!< last enemy of the entity (turrets etc)
+	gentity_t*	enemy;				//!< current enemy of the entity (turrets etc)
+	gentity_t*	activator;			//!< entity that activated/used this entity
+	gentity_t*	teamchain;			//!< next entity in team
+	gentity_t*	teammaster;		//!< master of the team
 
 	int			watertype;
 	int			waterlevel;
@@ -314,82 +308,58 @@ struct gentity_s {
 	float		wait;				//!< how long to wait
 	float		random;
 
-	gitem_t		*item;				//!< for bonus items
+	gitem_t*	item;				//!< for bonus items
 
 	qboolean	botDelayBegin;
-	//RPG-X: RedTechie - Added this :P
-	//gentity_t   *beingfiredby;
 
-	//RPG-X: J2J Added to slow down the tr116 rate of fire.
-	//int last_tr116_fire;			//TiM - Why?  Why not use addTime in bg_pmove like the other weapons?
-
-	char		*swapname;			//RPG-X Modification | Phenix | 13/06/2004
-	char		*truename;
-	char		*falsename;
-	char		*truetarget;
-	char		*falsetarget;
+	char*		swapname;			//RPG-X Modification | Phenix | 13/06/2004
+	char*		truename;
+	char*		falsename;
+	char*		truetarget;
+	char*		falsetarget;
 	qboolean	booleanstate;	
-	//char		*gravity; //End Modification || GSIO01 || 28.05.2009 || now in targetname2
-	//float		stopAt;		//RPG-X | Phenix | 8/8/2004 || GSIO01: using distance now
-
-	//float		intensity;	//RPG-X | Phenix | 20/11/2004 | For Target_Shake Map Entity | GSIO01: using distance now
 
 	float		distance;		// VALKYRIE: for rotating doors
 
 	int			n00bCount;	//RPG-X | Phenix | 06/04/2004 | For when people kill
 
 	//RPG-X: TiM : Additional Params for map ents
-	//float		radius;			//Explosion Radius | GSIO01: using distance instead
-	char		*targetname2;	// GSIO01 | 08/05/2009
-	//int			soundLocked;	// GSIO01 | 08/05/2009 for locked doors | now using n00bCount instead
-	gentity_t	*touched;		// GSIO01 | 08/05/2009 repairing breakables
-	//char		*lockMsg;		// GSIO01 | 10/05/2009 | --> swapname
-	//char		*unlockMsg;		// GSIO01 | 10/05/2009 | --> truename
-	//GSIO01 | 10/05/2009 | ok these are for target_alert:
-	char		//*greenname, //--> swapname
-				//*yellowname, //--> truename
-				//*redname, //-->falsename
-				*bluename,
-				//*greentarget, //-->truetarget
-				//*yellowtarget, //-->falsetarget
-				//*redtarget, //-->paintarget
-				//*bluetarget, //-->targetname2
-				*greensound,
-				*yellowsound,
-				*redsound,
-				*bluesound;
+	char*		targetname2;	// GSIO01 | 08/05/2009
 
-	//GSIO01 | 19/05/2009 | target_warp
-	//char		//*swapWarp, // -->swapname
-				//*swapCoreState, // -->truename
-				//*swapCoreEject, // -->falsename
-				//*warpTarget, // -->truetarget
-				//*core, // -->falsetarget
-				//*coreSwap; // -->bluename
+	gentity_t*	touched;		// GSIO01 | 08/05/2009 repairing breakables
+	
+	//GSIO01 | 10/05/2009 | ok these are for target_alert:
+	char*		bluename;
+	char*		greensound;
+	char*		yellowsound;
+	char*		redsound;
+	char*		bluesound;
 
 	char		*targetShaderName;		//!< shader to remap for shader remapping
 	char		*targetShaderNewName;	//!< shader to remap to for shader remapping
 
 	qboolean	tmpEntity;				//!< is this a temporal entity?
+
 #ifdef G_LUA
 	// for lua hooks
 	// pointers to lua functions
-	char		*luaTouch;
-	char		*luaUse;
-	char		*luaThink;
-	char		*luaHurt;
-	char		*luaDie;
-	char		*luaFree;
-	char		*luaTrigger;
-	char		*luaReached;
-	char		*luaReachedAngular;
-	char		*luaSpawn;
-	char		*luaParm1;
-	char		*luaParm2;
-	char		*luaParm3;
-	char		*luaParm4;
+	char*		luaTouch;
+	char*		luaUse;
+	char*		luaThink;
+	char*		luaHurt;
+	char*		luaDie;
+	char*		luaFree;
+	char*		luaTrigger;
+	char*		luaReached;
+	char*		luaReachedAngular;
+	char*		luaSpawn;
+	char*		luaParm1;
+	char*		luaParm2;
+	char*		luaParm3;
+	char*		luaParm4;
 	qboolean	luaEntity;
 #endif
+
 	vec4_t		startRGBA;
 	vec4_t		finalRGBA;
 };
@@ -464,13 +434,13 @@ typedef struct {
 *	MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
 */
 typedef struct {
-	team_t		sessionTeam;
-	//pclass_t	sessionClass;
-	int			sessionClass;
-	int			spectatorTime;		//!< for determining next-in-line to play
-	spectatorState_t	spectatorState;
-	int			spectatorClient;	//!< for chasecam and follow mode
-	int			wins, losses;		//!< tournament stats
+	team_t				sessionTeam;		//!< team of the client
+	int					sessionClass;		//!< class of the client is in
+	int					spectatorTime;		//!< for determining next-in-line to play
+	spectatorState_t	spectatorState;		//!< spectator state
+	int					spectatorClient;	//!< for chasecam and follow mode
+	int					wins;				//!< tournament stat wins
+	int					losses;				//!< tournament stat losses
 } clientSession_t;
 
 #define	MAX_VOTE_COUNT		3
@@ -484,20 +454,20 @@ void SetScore( gentity_t *ent, int score );
 */
 typedef struct {
 	clientConnected_t	connected;
-	usercmd_t	cmd;				// we would lose angles if not persistant
-	qboolean	localClient;		// true if "ip" info key is "localhost"
-	qboolean	initialSpawn;		// the first spawn should be at a cool location
-	qboolean	predictItemPickup;	// based on cg_predictItems userinfo
-	char		netname[36];
-	int			maxHealth;			// for handicapping
-	int			enterTime;			// level.time the client entered the game
-	playerTeamState_t teamState;	// status in teamplay games
-	int			voteCount;			// to prevent people from constantly calling votes
-	int			kickCount;
-	int			suicideCount;
-	qboolean	teamInfo;			// send team overlay updates?
-	char		ip[64];				// RPG-X - Store this for login comparisons
-	float		pms_height;			//player model system, height
+	usercmd_t			cmd;				// we would lose angles if not persistant
+	qboolean			localClient;		// true if "ip" info key is "localhost"
+	qboolean			initialSpawn;		// the first spawn should be at a cool location
+	qboolean			predictItemPickup;	// based on cg_predictItems userinfo
+	char				netname[36];
+	int					maxHealth;			// for handicapping
+	int					enterTime;			// level.time the client entered the game
+	playerTeamState_t	teamState;	// status in teamplay games
+	int					voteCount;			// to prevent people from constantly calling votes
+	int					kickCount;
+	int					suicideCount;
+	qboolean			teamInfo;			// send team overlay updates?
+	char				ip[64];				// RPG-X - Store this for login comparisons
+	float				pms_height;			//player model system, height
 } clientPersistant_t;
 
 /** \struct gclient_s
@@ -507,102 +477,101 @@ typedef struct {
 */
 struct gclient_s {
 	// ps MUST be the first element, because the server expects it
-	playerState_t	ps;				//!< communicated by server to clients
+	playerState_t		ps;				//!< communicated by server to clients
 
 	// the rest of the structure is private to game
 	clientPersistant_t	pers;
 	clientSession_t		sess;
 
-	qboolean	readyToExit;		//!< wishes to leave the intermission
+	qboolean			readyToExit;		//!< wishes to leave the intermission
 
-	qboolean	noclip;
+	qboolean			noclip;
 
-	int			lastCmdTime;		//!< level.time of last usercmd_t, for EF_CONNECTION we can't just use pers.lastCommand.time, because of the g_sycronousclients case
-	int			buttons;
-	int			oldbuttons;
-	int			latched_buttons;
+	int					lastCmdTime;		//!< level.time of last usercmd_t, for EF_CONNECTION we can't just use pers.lastCommand.time, because of the g_sycronousclients case
+	int					buttons;
+	int					oldbuttons;
+	int					latched_buttons;
 
 	// sum up damage over an entire frame, so
 	// shotgun blasts give a single big kick
-	int			damage_armor;		//!< damage absorbed by armor
-	int			damage_blood;		//!< damage taken out of health
-	int			damage_knockback;	//!< impact damage
-	vec3_t		damage_from;		//!< origin for vector calculation
-	qboolean	damage_fromWorld;	//!< if true, don't use the damage_from vector
+	int					damage_armor;		//!< damage absorbed by armor
+	int					damage_blood;		//!< damage taken out of health
+	int					damage_knockback;	//!< impact damage
+	vec3_t				damage_from;		//!< origin for vector calculation
+	qboolean			damage_fromWorld;	//!< if true, don't use the damage_from vector
 
-	int			accurateCount;		//!< for "impressive" reward sound
-	int			streakCount;		//!< To count up kills without dying.
+	int					accurateCount;		//!< for "impressive" reward sound
+	int					streakCount;		//!< To count up kills without dying.
 
 	//
-	int			lasthurt_client;	//!< last client that damaged this client
-	int			lasthurt_mod;		//!< type of damage the client did
-	int			lasthurt_location;	//!< Where the client was hit.
+	int					lasthurt_client;	//!< last client that damaged this client
+	int					lasthurt_mod;		//!< type of damage the client did
+	int					lasthurt_location;	//!< Where the client was hit.
 
 	// timers
-	int			respawnTime;		//!< can respawn when time > this, force after g_forcerespwan
-	int			inactivityTime;		//!< kick players when time > this
-	qboolean	inactivityWarning;	//!< qtrue if the five seoond warning has been given
-	int			rewardTime;			//!< clear the EF_AWARD_IMPRESSIVE, etc when time > this
+	int					respawnTime;		//!< can respawn when time > this, force after g_forcerespwan
+	int					inactivityTime;		//!< kick players when time > this
+	qboolean			inactivityWarning;	//!< qtrue if the five seoond warning has been given
+	int					rewardTime;			//!< clear the EF_AWARD_IMPRESSIVE, etc when time > this
 
-	int			airOutTime;
+	int					airOutTime;
 
-	int			lastKillTime;		//!< for multiple kill rewards
-	int			nextRespawn;		//!< level.time when player is allowed to use the respawn command/button again
+	int					lastKillTime;		//!< for multiple kill rewards
+	int					nextRespawn;		//!< level.time when player is allowed to use the respawn command/button again
 
-	qboolean	fireHeld;			//!< used for hook
-	gentity_t	*hook;				//!< grapple hook if out
-	//gentity_t	*lasersight;		// lasersight OR flashlight if in use
+	qboolean			fireHeld;			//!< used for hook
+	gentity_t*			hook;				//!< grapple hook if out
 
-	int			switchTeamTime;
+	int					switchTeamTime;
 
 	// timeResidual is used to handle events that happen every second
 	// like health / armor countdowns and regeneration
-	int			timeResidual;
-	int			mod;				//!< means of death
+	int					timeResidual;
+	int					mod;				//!< means of death
 
 	//added for new game mods
-	int			teleportTime;		//!< Borg teleporting
-	int			classChangeDebounceTime;	//!< next time you can change classes
+	int					teleportTime;				//!< Borg teleporting
+	int					classChangeDebounceTime;	//!< next time you can change classes
 
 	//RPG-X Specific
-	qboolean	SpecialGrav;					//!<	Added for target_gravity ent
-												//	RPG-X: J2J
-	qboolean	UpdateScore;					//!< Check if we should update the score or not
-												//	RPG-X: RedTechie
-	int			AdminFailed;					//!< For failed admin logins.
-												//	RPG-X | Phenix | 21/11/2004
-	qboolean	LoggedAsAdmin;					//!< For AdminLogin command
-												//	RPG-X | Phenix | 21/11/2004 
-	qboolean	LoggedAsDeveloper;				//!< For Debuging Admin Commands
-												//	RPG-X | Phenix | 21/11/2004
-	int			n00bTime;						//!< For when to bring them out of n00b
-												//	RPG-X | Phenix | 06/04/2004
-	char		origClass[MAX_STRING_CHARS];	//!<	What class they came from
-												//	RPG-X | Phenix | 06/04/2004
-	qboolean	noAdminChat;					//!< If admins choose not to see admin messages
-												//	RPG-X | TiM    | 02/04/2006
+	qboolean			SpecialGrav;					//!<	Added for target_gravity ent
+														//	RPG-X: J2J
+	qboolean			UpdateScore;					//!< Check if we should update the score or not
+														//	RPG-X: RedTechie
+	int					AdminFailed;					//!< For failed admin logins.
+														//	RPG-X | Phenix | 21/11/2004
+	qboolean			LoggedAsAdmin;					//!< For AdminLogin command
+														//	RPG-X | Phenix | 21/11/2004 
+	qboolean			LoggedAsDeveloper;				//!< For Debuging Admin Commands
+														//	RPG-X | Phenix | 21/11/2004
+	int					n00bTime;						//!< For when to bring them out of n00b
+														//	RPG-X | Phenix | 06/04/2004
+	char				origClass[MAX_STRING_CHARS];	//!<	What class they came from
+														//	RPG-X | Phenix | 06/04/2004
+	qboolean			noAdminChat;					//!< If admins choose not to see admin messages
+														//	RPG-X | TiM    | 02/04/2006
 
-	fxGunData_t	fxGunData;						//!< Storage point for info needed for multiple admin gun FX				
+	fxGunData_t			fxGunData;						//!< Storage point for info needed for multiple admin gun FX				
 
-    char		lastPaddMsg[256];               //!< Padd buffer
-												//	RPG-X | Marcin | 08/12/2008
-	qboolean	pressedUse;						//!< To prevent multiple pickups per press
-												//	RPG-X | Marcin | 30/12/2008 
-	int			fraggerTime;					//!< For rpg_fraggerSpawnDelay
-												//	RPG-X | Marcin | 03/01/2009
+    char				lastPaddMsg[256];               //!< Padd buffer
+														//	RPG-X | Marcin | 08/12/2008
+	qboolean			pressedUse;						//!< To prevent multiple pickups per press
+														//	RPG-X | Marcin | 30/12/2008 
+	int					fraggerTime;					//!< For rpg_fraggerSpawnDelay
+														//	RPG-X | Marcin | 03/01/2009
 
 	// for sql
-	char		*userName;						//!< username (not player name) in the sql database
-	int			uid;							//!< uiser id of the player in the sql database 
+	char*				userName;						//!< username (not player name) in the sql database
+	int					uid;							//!< uiser id of the player in the sql database 
 
 	// CCAM
-	vec3_t		origViewAngles;
-	vec3_t		origOrigin;
-	gentity_t	*cam;
+	vec3_t				origViewAngles;
+	vec3_t				origOrigin;
+	gentity_t*			cam;
 
 	// for selfdestruct and shiphealth
-	int			nokilli;						//!< if 1 this player won't be killed if the ship is killed
-	int			myship;							//!< entnum of the shiphealth entity this client currently holds info from
+	int					nokilli;						//!< if 1 this player won't be killed if the ship is killed
+	int					myship;							//!< entnum of the shiphealth entity this client currently holds info from
 };
 
 
