@@ -1531,7 +1531,6 @@ static void G_SendHoloData(int clientNum) {
 	holoTent->nextthink = level.time + 2500;
 }
 
-extern srvChangeData_t srvChangeData;
 extern mapChangeData_t mapChangeData;
 
 //! Think function for temporal entity that transmits the server change data and map change data for transporter UI
@@ -1541,16 +1540,16 @@ void transTent_think(gentity_t *ent) {
 
 	memset(temp, 0, sizeof(temp));
 
-	for(i = 0; i < 6; i++) {
-		if(!srvChangeData.name[i][0]) break;
+	for(i = 0; i < level.srvChangeData.count; i++) {
 		if(!temp[0])
-			Com_sprintf(temp, sizeof(temp), "d%i\\%s\\", i, srvChangeData.name[i]);
+			Com_sprintf(temp, sizeof(temp), "ui_trdata d%i\\%s\\", i, level.srvChangeData.name[i]);
 		else
-			Com_sprintf(temp, sizeof(temp), "%sd%i\\%s\\", temp, i, srvChangeData.name[i]);
+			Com_sprintf(temp, sizeof(temp), "%sd%i\\%s\\", temp, i, level.srvChangeData.name[i]);
 	}
 
-	trap_SendServerCommand(ent-g_entities, va("ui_trdata \"%s\"", temp));
+	trap_SendServerCommand(ent->target_ent-g_entities, temp);
 
+#if 0
 	memset(temp, 0, sizeof(temp));
 
 	for(i = 0; i < 16; i++) {
@@ -1561,7 +1560,8 @@ void transTent_think(gentity_t *ent) {
 			Com_sprintf(temp, sizeof(temp), "%sa%i\\%s\\", temp, i, mapChangeData.name[i]);
 	}
 
-	trap_SendServerCommand(ent-g_entities, va("ui_trdata \"%s\"", temp));
+	trap_SendServerCommand(ent->target_ent-g_entities, va("ui_trdata \"%s\"", temp));
+#endif
 
 	G_FreeEntity(ent);
 }
@@ -1747,7 +1747,7 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
 
 	// send srv change data to ui
 	if(!isBot && first) {
-		if(srvChangeData.ip[0][0])
+		if(level.srvChangeData.count > 0)
 			G_SendTransData(clientNum);
 	}
 

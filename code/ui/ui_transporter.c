@@ -9,6 +9,7 @@ char *delayList[20] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 						"11", "12", "13", "14", "15", "20", "30", "60", 0 };
 
 char			srvList[6][MAX_QPATH];
+int				srvCount;
 
 typedef struct //static
 {
@@ -53,10 +54,12 @@ TransDataReceived
 void TransDataReceived(const char *data) {
 	char *temp;
 	int i;
+
 	for(i = 0; i < 6; i++) {
 		temp = Info_ValueForKey(data, va("d%i", i));
 		if(!temp[0]) break;
 		Q_strncpyz(srvList[i], temp, sizeof(srvList[i]));
+		srvCount++;
 	}
 }
 
@@ -106,22 +109,24 @@ static void M_Transporter_Event (void* ptr, int notification)
 			break;
 		case ID_ENGAGE2:		// Active only if a deck has been chosen
 			if ( notification == QM_ACTIVATED ) {
-				if(s_transporter.delButton.curvalue <= 16)
-					trap_Cmd_ExecuteText( EXEC_APPEND, va("ui_transporterExt %i %i %i", s_transporter.targetEntID, s_transporter.srvButton.curvalue , s_transporter.delButton.curvalue));
-				else {
-					switch(s_transporter.delButton.curvalue) {
-						case 17:
-							trap_Cmd_ExecuteText( EXEC_APPEND, va("ui_transporterExt %i %i %i", s_transporter.targetEntID, s_transporter.srvButton.curvalue, 20));
-							break;
-						case 18:
-							trap_Cmd_ExecuteText( EXEC_APPEND, va("ui_transporterExt %i %i %i", s_transporter.targetEntID, s_transporter.srvButton.curvalue, 30));
-							break;
-						case 19:
-							trap_Cmd_ExecuteText( EXEC_APPEND, va("ui_transporterExt %i %i %i", s_transporter.targetEntID, s_transporter.srvButton.curvalue, 60));
-							break;
+				if(srvCount > 0) {
+					if(s_transporter.delButton.curvalue <= 16)
+						trap_Cmd_ExecuteText( EXEC_APPEND, va("ui_transporterExt %i %i %i", s_transporter.targetEntID, s_transporter.srvButton.curvalue , s_transporter.delButton.curvalue));
+					else {
+						switch(s_transporter.delButton.curvalue) {
+							case 17:
+								trap_Cmd_ExecuteText( EXEC_APPEND, va("ui_transporterExt %i %i %i", s_transporter.targetEntID, s_transporter.srvButton.curvalue, 20));
+								break;
+							case 18:
+								trap_Cmd_ExecuteText( EXEC_APPEND, va("ui_transporterExt %i %i %i", s_transporter.targetEntID, s_transporter.srvButton.curvalue, 30));
+								break;
+							case 19:
+								trap_Cmd_ExecuteText( EXEC_APPEND, va("ui_transporterExt %i %i %i", s_transporter.targetEntID, s_transporter.srvButton.curvalue, 60));
+								break;
+						}
 					}
+					UI_ForceMenuOff();
 				}
-				UI_ForceMenuOff();
 			}
 			break;
 	}
@@ -261,6 +266,7 @@ TransporterMenu_Draw
 static void TransporterMenu_Draw(void)
 {
 	// Draw graphics particular to Main Menu
+
 	M_TransporterMenu_Graphics();
 	
 	Menu_Draw( &s_transporter.menu );

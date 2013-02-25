@@ -951,8 +951,6 @@ void trigger_transporter_serverchange(gentity_t *ent) {
 	G_FreeEntity(ent);
 }
 
-extern srvChangeData_t srvChangeData;
-
 /**
  * \brief Touch function of trigger_transporter.
  *
@@ -991,7 +989,7 @@ void trigger_transporter_touch(gentity_t *ent, gentity_t *other, trace_t *trace)
 		}
 	else {
 
-		srv = srvChangeData.ip[ent->health];
+		srv = level.srvChangeData.ip[ent->health];
 
 		tent = G_Spawn();
 		tent->think = trigger_transporter_serverchange;

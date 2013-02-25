@@ -1324,7 +1324,7 @@ qboolean UI_ConsoleCommand( void ) {
 		return qtrue;
 	}
 
-	if ( Q_stricmp( cmd, "ui_trdata" ) == 0 ) {;
+	if ( Q_stricmp( cmd, "ui_trdata" ) == 0 ) {
 		TransDataReceived(UI_Argv(1));
 		return qtrue;
 	}

@@ -2494,8 +2494,6 @@ Can be toggled by an usable if the usable has NO_ACTIVATOR spawnflag.
 -----KEYS-----
 "serverNum" - server to connect to (rpg_server<serverNum> cvar)
 */
-extern srvChangeData_t srvChangeData;
-
 void target_serverchange_think(gentity_t *ent) {
 	if(!ent->touched || !ent->touched->client) return;
 	trap_SendServerCommand(ent->touched->client->ps.clientNum, va("cg_connect \"%s\"\n", ent->targetname2));
@@ -2519,7 +2517,7 @@ void target_serverchange_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 		TransDat[ent->client->ps.clientNum].beamTime = level.time + 8000;
 		activator->client->ps.powerups[PW_BEAM_OUT] = level.time + 8000;
 		ent->touched = activator;
-		ent->targetname2 = srvChangeData.ip[ent->count];
+		ent->targetname2 = level.srvChangeData.ip[ent->count];
 	}
 }
 

@@ -1110,14 +1110,13 @@ static void G_LoadHolodeckFile(void) {
 	free(buffer);
 }
 
-srvChangeData_t srvChangeData;
-
 static void G_LoadServerChangeFile(void) {
 	char			fileRoute[MAX_QPATH];
 	fileHandle_t	f;
-	char			*buffer;
+	char*			buffer;
 	int				file_len;
-	char			*txtPtr, *token;
+	char*			txtPtr;
+	char*			token;
 	int				cnt = 0;
 	int				i = 0;
 
@@ -1147,7 +1146,9 @@ static void G_LoadServerChangeFile(void) {
 	buffer[file_len] = '\0';
 	trap_FS_FCloseFile(f);
 
-	memset(&srvChangeData, 0, sizeof(srvChangeData));
+	memset(&level.srvChangeData, 0, sizeof(&level.srvChangeData));
+
+	G_Printf("Loading ServerChangeConfig '%s'.\n", fileRoute);
 
 	COM_BeginParseSession();
 	txtPtr = buffer;
@@ -1183,9 +1184,9 @@ static void G_LoadServerChangeFile(void) {
 						if(cnt > 12) break;
 
 						if(cnt % 2 == 0)
-							Q_strncpyz(srvChangeData.ip[i], token, sizeof(srvChangeData.ip[i]));
+							Q_strncpyz(level.srvChangeData.ip[i], token, sizeof(level.srvChangeData.ip[i]));
 						else
-							Q_strncpyz(srvChangeData.name[i], token, sizeof(srvChangeData.name[i]));
+							Q_strncpyz(level.srvChangeData.name[i], token, sizeof(level.srvChangeData.name[i]));
 
 						cnt++;
 						if(cnt % 2 == 0)
@@ -1198,6 +1199,7 @@ static void G_LoadServerChangeFile(void) {
 		}
 	}
 
+	level.srvChangeData.count = i;
 	free(buffer);
 }
 
@@ -1238,7 +1240,7 @@ static void G_LoadMapChangeFile(void) {
 	buffer[file_len] = '\0';
 	trap_FS_FCloseFile(f);
 
-	memset(&srvChangeData, 0, sizeof(srvChangeData));
+	memset(&mapChangeData, 0, sizeof(mapChangeData));
 
 	COM_BeginParseSession();
 	txtPtr = buffer;

@@ -612,6 +612,24 @@ struct gclient_s {
 #define	MAX_SPAWN_VARS			64
 #define	MAX_SPAWN_VARS_CHARS	2048
 
+/** \typedef srvChangeData_t
+*	Pointer to \link srvChangeData_s \endlink
+*
+*	\author Ubergames - GSIO01
+*/
+typedef struct srvChangeData_s srvChangeData_t;
+
+/** \struct srvChangeData_s
+*	Contains data needed by traporter UI and transportet entities for serverchage transports.
+*
+*	\author Ubergames - GSIO01
+*/
+struct srvChangeData_s {
+	char name[6][MAX_QPATH];	//!< name of the locations
+	char ip[6][MAX_QPATH];		//!< IPs of the servers to connect to
+	int count;
+};
+
 /**
 *	Contains important informations about the current leve and information needed for game logic.
 */
@@ -700,6 +718,9 @@ typedef struct {
 	// selft destruct safezones
 	list_p locations;
 	list_p timedMessages;
+
+	// other stuff
+	srvChangeData_t srvChangeData;
 
 	// override rpg_calcLiftTravelDuration
 	int overrideCalcLiftTravelDuration;
@@ -2046,24 +2067,6 @@ struct holoData_s {
 	int			active;					//!< active holodeck program
 	int			numProgs;				//!< number of programs <= 5
 };
-
-/** \typedef srvChangeData_t
-*	Pointer to \link srvChangeData_s \endlink
-*
-*	\author Ubergames - GSIO01
-*/
-typedef struct srvChangeData_s srvChangeData_t;
-
-/** \struct srvChangeData_s
-*	Contains data needed by traporter UI and transportet entities for serverchage transports.
-*
-*	\author Ubergames - GSIO01
-*/
-struct srvChangeData_s {
-	char name[6][MAX_QPATH];	//!< name of the locations
-	char ip[6][MAX_QPATH];		//!< IPs of the servers to connect to
-};
-
 
  typedef struct mapChangeData_s mapChangeData_t;
  struct mapChangeData_s {
