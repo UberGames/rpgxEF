@@ -351,10 +351,10 @@ static cvarTable_t		gameCvarTable[] = {
 #endif
 	{ &g_language,					"g_language",					"",							CVAR_ARCHIVE,											0, qfalse },
 	{ &g_holoIntro,					"g_holoIntro",					"1",						CVAR_ARCHIVE,											0, qfalse },
-	{ &g_team_group_red,			"g_team_group_red",				"",							CVAR_LATCH,												0, qfalse }, // Used to have CVAR_ARCHIVE	
+	{ &g_team_group_red,			"g_team_group_red",				"",							CVAR_LATCH,												0, qfalse }, // Used to have CVAR_ARCHIVE
 	{ &g_team_group_blue,			"g_team_group_blue",			"",							CVAR_LATCH,												0, qfalse }, // Used to have CVAR_ARCHIVE
 	{ &g_random_skin_limit,			"g_random_skin_limit",			"4",						CVAR_ARCHIVE,											0, qfalse },
-	{ &g_classChangeDebounceTime,	"g_classChangeDebounceTime",	"180",						CVAR_ARCHIVE,											0, qfalse },	
+	{ &g_classChangeDebounceTime,	"g_classChangeDebounceTime",	"180",						CVAR_ARCHIVE,											0, qfalse },
 	//RPG-X: RedTechie - RPG-X CVARS....duh....just for the slow ones
 	{ &rpg_allowvote,				"rpg_allowVote",				"1",						CVAR_ARCHIVE,											0, qfalse },
 	{ &rpg_chatsallowed,			"rpg_chatsAllowed",				"10",						CVAR_ARCHIVE,											0, qfalse },
@@ -499,7 +499,7 @@ This is the only way control passes into the module.
 This MUST be the very first function compiled into the .q3vm file
 ================
 */
-intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
+Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
 	switch ( command ) {
 	case GAME_INIT:
 		G_InitGame( arg0, arg1, arg2 );
@@ -559,7 +559,7 @@ void QDECL G_PrintfClient(gentity_t *ent, const char *fmt, ...) {
 	#ifdef G_LUA
 	LuaHook_G_ClientPrint(text, ent-g_entities);
 	#endif
-	
+
 	trap_SendServerCommand(ent-g_entities, va("print \"%s\n\"", text));
 }
 
@@ -601,17 +601,17 @@ void QDECL G_Error( const char *fmt, ... ) {
 stringID_table_t WeaponTable[] = {
 	{ ENUM2STRING(WP_2) },
 	{ ENUM2STRING(WP_3) },
-	{ ENUM2STRING(WP_4) },				
-	{ ENUM2STRING(WP_5) },				
-	{ ENUM2STRING(WP_6) },	
+	{ ENUM2STRING(WP_4) },
+	{ ENUM2STRING(WP_5) },
+	{ ENUM2STRING(WP_6) },
 	{ ENUM2STRING(WP_7) },
 	{ ENUM2STRING(WP_8) },
-	{ ENUM2STRING(WP_9) },		
-	{ ENUM2STRING(WP_10) },			
-	{ ENUM2STRING(WP_11) },				
-	{ ENUM2STRING(WP_12) },		
-	{ ENUM2STRING(WP_13) },		
-	{ ENUM2STRING(WP_14) },				
+	{ ENUM2STRING(WP_9) },
+	{ ENUM2STRING(WP_10) },
+	{ ENUM2STRING(WP_11) },
+	{ ENUM2STRING(WP_12) },
+	{ ENUM2STRING(WP_13) },
+	{ ENUM2STRING(WP_14) },
 	{ ENUM2STRING(WP_15) },
 
 	{ "WP_TRICORDER",			WP_2  },
@@ -628,7 +628,7 @@ stringID_table_t WeaponTable[] = {
 	{ "WP_DERMAL_REGEN",		WP_13 },
 	{ "WP_TOOLKIT",				WP_14 },
 	{ "WP_HYPERSPANNER",		WP_15 },
-	
+
 	{ NULL, -1 }
 };
 
@@ -653,7 +653,7 @@ static qboolean G_LoadClassData( char* fileName )
 
 	//Init the storage place
 	memset( &g_classData, 0, sizeof ( g_classData ) );
-	
+
 	fileLen = trap_FS_FOpenFile( fileName, &f, FS_READ );
 
 	if ( !f ) {
@@ -691,23 +691,23 @@ static qboolean G_LoadClassData( char* fileName )
 		return qfalse;
 	}
 
-	while ( 1 ) 
+	while ( 1 )
 	{
 		if ( classIndex >= MAX_CLASSES )
 			break;
 
-		if ( !Q_stricmpn( token, "{", 1 ) ) 
+		if ( !Q_stricmpn( token, "{", 1 ) )
 		{
-			while ( 1 ) 
+			while ( 1 )
 			{
 				token = COM_Parse( &textPtr );
 				if (!token[0]) {
 					break;
-				}				
+				}
 
 				if ( !Q_stricmpn( token, "consoleName", 11 ) )
 				{
-					if ( COM_ParseString( &textPtr, &token ) ) 
+					if ( COM_ParseString( &textPtr, &token ) )
 					{
 						G_Printf( S_COLOR_RED "ERROR: Invalid class console name in class index: %i.\n", classIndex );
 						SkipBracedSection( &textPtr );
@@ -722,7 +722,7 @@ static qboolean G_LoadClassData( char* fileName )
 
 				if ( !Q_stricmpn( token, "formalName", 11 ) )
 				{
-					if ( COM_ParseString( &textPtr, &token ) ) 
+					if ( COM_ParseString( &textPtr, &token ) )
 					{
 						G_Printf( S_COLOR_RED "ERROR: Invalid class formal name in class index: %i.\n", classIndex );
 						SkipBracedSection( &textPtr );
@@ -731,25 +731,25 @@ static qboolean G_LoadClassData( char* fileName )
 
 					Q_strncpyz( g_classData[classIndex].formalName, token, sizeof( g_classData[classIndex].formalName ) );
 					classValid = qtrue;
-					
+
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "message", 7 ) ) 
+				if ( !Q_stricmpn( token, "message", 7 ) )
 				{
-					if ( COM_ParseString( &textPtr, &token ) ) 
+					if ( COM_ParseString( &textPtr, &token ) )
 					{
 						G_Printf( S_COLOR_RED "ERROR: Invalid class message in class index: %i.\n", classIndex );
 						continue;
 					}
 
 					Q_strncpyz( g_classData[classIndex].message, token, sizeof( g_classData[classIndex].message ) );
-					continue;					
+					continue;
 				}
 
-				if ( !Q_stricmpn( token, "modelSkin", 9 ) ) 
+				if ( !Q_stricmpn( token, "modelSkin", 9 ) )
 				{
-					if ( COM_ParseString( &textPtr, &token ) ) 
+					if ( COM_ParseString( &textPtr, &token ) )
 					{
 						G_Printf( S_COLOR_RED "ERROR: Invalid class skin color in class index: %i.\n", classIndex );
 						continue;
@@ -759,11 +759,11 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "weapons", 7) ) 
+				if ( !Q_stricmpn( token, "weapons", 7) )
 				{
 					token = COM_Parse( &textPtr );
 
-					if ( Q_stricmpn( token, "{", 1 ) ) 
+					if ( Q_stricmpn( token, "{", 1 ) )
 					{
 						G_Printf( S_COLOR_RED "No opening bracket found for weapons field in class: %i.\n", classIndex );
 						SkipRestOfLine( &textPtr );
@@ -771,24 +771,24 @@ static qboolean G_LoadClassData( char* fileName )
 					}
 
 					//sub loop
-					while ( 1 ) 
+					while ( 1 )
 					{
 						token = COM_Parse( &textPtr );
 
 						if ( !token[0] )
 							break;
-						
+
 						if ( !Q_stricmpn( token, "|", 1 ) )
 							continue;
 
 						if ( !Q_stricmpn( token, "}", 1 ) )
 							break;
 
-						if( !Q_stricmpn( token, "WP_", 3 ) ) 
+						if( !Q_stricmpn( token, "WP_", 3 ) )
 						{
 							weapon = GetIDForString( WeaponTable, token );
 
-							if ( weapon >= 0 ) 
+							if ( weapon >= 0 )
 							{
 								g_classData[classIndex].weaponsFlags |= ( 1 << weapon );
 								continue;
@@ -799,9 +799,9 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "admin", 5 ) ) 
+				if ( !Q_stricmpn( token, "admin", 5 ) )
 				{
-					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isAdmin ) ) 
+					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isAdmin ) )
 					{
 						G_Printf( S_COLOR_RED "ERROR: Class admin check for class %i was invalid.\n", classIndex );
 						continue;
@@ -810,9 +810,9 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "marine", 6 ) ) 
+				if ( !Q_stricmpn( token, "marine", 6 ) )
 				{
-					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isMarine ) ) 
+					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isMarine ) )
 					{
 						G_Printf( S_COLOR_RED "ERROR: Class marine check for class %i was invalid.\n", classIndex );
 						continue;
@@ -821,9 +821,9 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "medical", 7 ) ) 
+				if ( !Q_stricmpn( token, "medical", 7 ) )
 				{
-					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isMedical ) ) 
+					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isMedical ) )
 					{
 						G_Printf( S_COLOR_RED "ERROR: Class medic check for class %i was invalid.\n", classIndex );
 						continue;
@@ -842,9 +842,9 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "n00b", 4 ) ) 
+				if ( !Q_stricmpn( token, "n00b", 4 ) )
 				{
-					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isn00b ) ) 
+					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isn00b ) )
 					{
 						G_Printf( S_COLOR_RED "ERROR: Class n00b check for class %i was invalid.\n", classIndex );
 						continue;
@@ -854,9 +854,9 @@ static qboolean G_LoadClassData( char* fileName )
 				}
 
 				//skip the client-side specific entries since they interfere with the parsing
-				if ( !Q_stricmpn( token, "radarColor", 10 ) 
-					|| !Q_stricmpn( token, "iconColor", 9 ) 
-					|| !Q_stricmpn( token, "hasRanks", 8 ) 
+				if ( !Q_stricmpn( token, "radarColor", 10 )
+					|| !Q_stricmpn( token, "iconColor", 9 )
+					|| !Q_stricmpn( token, "hasRanks", 8 )
 					|| !Q_stricmpn( token, "noShow", 6 )
 					)
 				{
@@ -864,22 +864,22 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "}", 1 ) ) 
+				if ( !Q_stricmpn( token, "}", 1 ) )
 				{
 					break;
 				}
 			}
 
-			
-			if ( classValid ) 
+
+			if ( classValid )
 			{
 				classIndex++;
 				classValid = qfalse;
 			}
 		}
-		
-		token = COM_Parse( &textPtr );	
-		if (!token[0]) 
+
+		token = COM_Parse( &textPtr );
+		if (!token[0])
 		{
 			break;
 		}
@@ -888,17 +888,17 @@ static qboolean G_LoadClassData( char* fileName )
 	free(buffer);
 
 	//build ourselves custom CVARs for each class
-	for ( i=0; g_classData[i].consoleName[0] && i < MAX_CLASSES; i++ ) 
+	for ( i=0; g_classData[i].consoleName[0] && i < MAX_CLASSES; i++ )
 	{
 		trap_Cvar_Register( NULL, va("rpg_%sPass", g_classData[i].consoleName ), g_classData[i].consoleName, CVAR_ARCHIVE );
 		trap_Cvar_Register( NULL, va("rpg_%sFlags", g_classData[i].consoleName ), va("%i", g_classData[i].weaponsFlags), CVAR_ARCHIVE );
 	}
 
-	if ( classIndex > 0 ) 
+	if ( classIndex > 0 )
 	{
 		return qtrue;
 	}
-	else 
+	else
 	{
 		G_Printf( S_COLOR_RED "ERROR: No valid classes were found.\n");
 		return qfalse;
@@ -1124,7 +1124,7 @@ static void G_LoadServerChangeFile(void) {
 
 	file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
-	if(!file_len) 
+	if(!file_len)
 		return;
 
 	buffer = (char *)malloc(32000 * sizeof(char));
@@ -1164,7 +1164,7 @@ static void G_LoadServerChangeFile(void) {
 				G_Printf( S_COLOR_RED "ERROR: ServerChangeConfig had no opening brace ( { )!\n" );
 				continue;
 			}
-			
+
 			while(Q_strncmp(token, "}", 1)) {
 				token = COM_Parse(&txtPtr);
 				if(!token[0]) break;
@@ -1218,7 +1218,7 @@ static void G_LoadMapChangeFile(void) {
 
 	file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
-	if(!file_len) 
+	if(!file_len)
 		return;
 
 	buffer = (char *)malloc(32000 * sizeof(char));
@@ -1256,7 +1256,7 @@ static void G_LoadMapChangeFile(void) {
 				G_Printf( S_COLOR_RED "ERROR: MapChangeConfig had no opening brace ( { )!\n" );
 				continue;
 			}
-			
+
 			while(Q_strncmp(token, "}", 1)) {
 				token = COM_Parse(&txtPtr);
 				if(!token[0]) break;
@@ -1347,7 +1347,7 @@ static void G_LoadLocationsFile( void )
 
 	buffer[file_len] = '\0';
 	trap_FS_FCloseFile( f );
-	
+
 	G_Printf( "Locations file %s located. Proceeding to load scan data.\n", fileRoute ); //GSIO01: why did this say "Usables file ..."? lol ;)
 
 	COM_BeginParseSession();
@@ -1514,7 +1514,7 @@ static void G_LoadLocationsFile( void )
 				token = COM_Parse( &textPtr );
 			}
 		}
-	} 
+	}
 
 	free(buffer);
 }
@@ -1684,7 +1684,7 @@ static void G_UpdateCvars( void )
 						//RPG-X: J2J - Don't show gravity changed messages any more (for the gravity target ents)
 						if(Q_stricmp(cv->cvarName,"g_gravity") != 0)
 						{
-							trap_SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"", 
+							trap_SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
 								cv->cvarName, cv->vmCvar->string ) );
 						}
 					}
@@ -1764,8 +1764,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	//Class loader
 	memset( fileName, 0, sizeof( fileName ) );
-	Com_sprintf( fileName, sizeof( fileName ), "ext_data/classes/%s.classes", rpg_classSet.string );	
-	if ( !G_LoadClassData( fileName ) ) 
+	Com_sprintf( fileName, sizeof( fileName ), "ext_data/classes/%s.classes", rpg_classSet.string );
+	if ( !G_LoadClassData( fileName ) )
 	{
 		G_Printf( S_COLOR_RED "ERROR: Could not load class set %s. Reverting to default.\n", fileName );
 		trap_Cvar_Set( "rpg_classSet", CLASS_DEFAULT );
@@ -1779,12 +1779,12 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	//Rank Loader
 	memset( fileName, 0, sizeof( fileName ) );
 	Com_sprintf( fileName, sizeof( fileName ), "ext_data/ranksets/%s.ranks", rpg_rankSet.string );
-	if ( !BG_ParseRankNames( fileName, g_rankNames ) ) 
+	if ( !BG_ParseRankNames( fileName, g_rankNames ) )
 	{
 		G_Printf( S_COLOR_RED "ERROR: Could not load rankset %s. Reverting to default.\n", fileName );
 		trap_Cvar_Set( "rpg_rankSet", RANKSET_DEFAULT );
 
-		if ( !BG_ParseRankNames( va( "ext_data/ranksets/%s.ranks", RANKSET_DEFAULT ), g_rankNames ) ) 
+		if ( !BG_ParseRankNames( va( "ext_data/ranksets/%s.ranks", RANKSET_DEFAULT ), g_rankNames ) )
 		{
 			G_Error( "Could not load default rankset: %s", RANKSET_DEFAULT );
 		}
@@ -1846,14 +1846,14 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	for ( i=0 ; i<level.maxclients ; i++ ) {
 		g_entities[i].client = level.clients + i;
 	}
-	
+
 	// always leave room for the max number of clients,
 	// even if they aren't all used, so numbers inside that
 	// range are NEVER anything but clients
 	level.num_entities = MAX_CLIENTS;
 
 	// let the server system know where the entites are
-	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ), 
+	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
 		&level.clients[0].ps, sizeof( level.clients[0] ) );
 
 	// reserve some spots for dead player bodies
@@ -1906,7 +1906,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	}
 
 	G_InitModRules();
-	
+
 	levelExiting = qfalse;
 
 	/*RPG-X J2J************************************************************************************/
@@ -1915,7 +1915,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	//WARNING - used hard coded number to shut up compiler, 1023 is MAX_ENTITIES (which apperently cant be increased without substansial exe recoding)
 	//TiM : NB Ents 0 -> 128 are clients only. cyclicng thru all ents here is not needed.
 	for(i = 0; i < MAX_CLIENTS; i++)
-	{	
+	{
 		//RPG-X: Redtechie - Make sure score cant be chnaged unless other wise told to
 		if(g_entities[i].client){
 			g_entities[i].client->UpdateScore = qfalse;
@@ -1969,24 +1969,24 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 /*************************************************************************************************/
 
 	G_Printf("                       ,.                      \n");	  G_Printf("          ..:,        :Xt.       ,:.            \n");
-    G_Printf("         ,=+t:       .IRX=       :++=.         \n");	  G_Printf("        .=iVt:.      :RYYI.      .itt+         \n");    
-	G_Printf("       .:tXI=;.      tRtiV;       ,IYY:.       \n");	  G_Printf("      .+;ii=;.      ,XVi+Vt.       :tIi+      \n");    
-	G_Printf("     .;ti;;:.       +RI++IY,        ,+tt=.     \n");	  G_Printf("    ,++YY;.        ,XXi+++X=         ;IYI=.    \n");    
-	G_Printf("    ;ttY+;.    .,=iVRI++++YX+;.       ;VYt;    \n");	  G_Printf("   .;ii+=,   .;IXRRXVi++++iVRXVi:.    ,=iii.   \n");    
-	G_Printf("  .==;ti,  .;YRRVVXYii+++++IVIVRXt,   ,+=tI=   \n");	  G_Printf("  .iitY=, .tRRVXXVRV+++ii++YRXVIYXV;   :tYti,  \n");   
-	G_Printf("  .+iii=,,IBVVXYiiXViiiiiiitVtIXViVR=  ,+t+I:  \n");	  G_Printf("   =+=I:.tBVXVt=;tRIiiiiiiiiXi:=YXiIX; :+=It;  \n");    
+    G_Printf("         ,=+t:       .IRX=       :++=.         \n");	  G_Printf("        .=iVt:.      :RYYI.      .itt+         \n");
+	G_Printf("       .:tXI=;.      tRtiV;       ,IYY:.       \n");	  G_Printf("      .+;ii=;.      ,XVi+Vt.       :tIi+      \n");
+	G_Printf("     .;ti;;:.       +RI++IY,        ,+tt=.     \n");	  G_Printf("    ,++YY;.        ,XXi+++X=         ;IYI=.    \n");
+	G_Printf("    ;ttY+;.    .,=iVRI++++YX+;.       ;VYt;    \n");	  G_Printf("   .;ii+=,   .;IXRRXVi++++iVRXVi:.    ,=iii.   \n");
+	G_Printf("  .==;ti,  .;YRRVVXYii+++++IVIVRXt,   ,+=tI=   \n");	  G_Printf("  .iitY=, .tRRVXXVRV+++ii++YRXVIYXV;   :tYti,  \n");
+	G_Printf("  .+iii=,,IBVVXYiiXViiiiiiitVtIXViVR=  ,+t+I:  \n");	  G_Printf("   =+=I:.tBVXVt=;tRIiiiiiiiiXi:=YXiIX; :+=It;  \n");
 	G_Printf(" .;;tYt:;RVVV+=:,YRiiiiiiiiiYI,.:IXiVY..+IYi=  \n");	  G_Printf(" .ti=t+;tRIXi;, :XViiiiiiiiiIV:  ,YViX=.:titt. \n");
-	G_Printf("  iY++I;YVYY=:  +BIiiiiiiiiiiX=   +XiVi;i++Vi, \n");    G_Printf(" ,+YYYI:VYYY;. .YRiiiiiiiiiiiVt.  ;RIYt:IIVVi: \n");	
+	G_Printf("  iY++I;YVYY=:  +BIiiiiiiiiiiX=   +XiVi;i++Vi, \n");    G_Printf(" ,+YYYI:VYYY;. .YRiiiiiiiiiiiVt.  ;RIYt:IIVVi: \n");
 	G_Printf(" ,+tYXi;YVIX;  ;RVtiiiiIXXtiiVI,  iRIVt,=XVit: \n");    G_Printf(" .+iiti++XiXI. iBIiiiiYXIIXtiIV: :XXIV++;i+iI;.\n");
-	G_Printf("  ;Ii=ii:VYtRi,VRtiiiVVi=;IXitX=;VBYXI=i+;iV+;.\n");    G_Printf("  ;tYtVt;;XYIRXBVttiVV+;:.:VYiXVRBVXY+;+IYVt+, \n");	
+	G_Printf("  ;Ii=ii:VYtRi,VRtiiiVVi=;IXitX=;VBYXI=i+;iV+;.\n");    G_Printf("  ;tYtVt;;XYIRXBVttiVV+;:.:VYiXVRBVXY+;+IYVt+, \n");
 	G_Printf("  =iiItii,=XVIRRIttXV+=:..,tRtVBXVRI+=i:iIit+. \n");    G_Printf("  :t==++I:.=YXYIIiYBXYIttIVRBYtVXXI+;;t+;;+Y=, \n");
-	G_Printf("   +I=;+Y= .:IRItYIVXRRRBBRXXVIRY+=;.:i=;iVi;. \n");    G_Printf("   .+IYVV+:  +BYXXVXXXXXXXXXVRVVi;:.:;tVYY+=:  \n");	
+	G_Printf("   +I=;+Y= .:IRItYIVXRRRBBRXXVIRY+=;.:i=;iVi;. \n");    G_Printf("   .+IYVV+:  +BYXXVXXXXXXXXXVRVVi;:.:;tVYY+=:  \n");
 	G_Printf("    .+ttii+ .IBXY++ittIIIti++tXXi, .++=tI+;:   \n");    G_Printf("     ;YYtIY;;VBI+;:,::;;;;;:,:IBt,::tItYV=.    \n");
 	G_Printf("      =IYYI++ti+;,   .......  :Xt;i=iYYI+;.    \n");    G_Printf("      .:+i++ii;;.             .=i=+i=t+;;:.    \n");
 	G_Printf("        ,tYIVI==:,..       ..,;=+iYIVt:..      \n");    G_Printf("         ,itt+iIYYti;.   ,;itYIIt:iIi=;.       \n");
-	G_Printf("          .:;;:+tIIVIi:.;iYYIii+=:,;;:.        \n");    G_Printf("            .  ,:=itIXi.tXYit=;::,  .          \n");	
-	G_Printf("                 .+tti=,,iIt+;.                \n");    G_Printf("                  .:;;:. ,;;;:.                \n");	
-	
+	G_Printf("          .:;;:+tIIVIi:.;iYYIii+=:,;;:.        \n");    G_Printf("            .  ,:=itIXi.tXYit=;::,  .          \n");
+	G_Printf("                 .+tti=,,iIt+;.                \n");    G_Printf("                  .:;;:. ,;;;:.                \n");
+
 }
 
 extern list_iter_p iterTimedMessages; /* list iterator for timed messages */
@@ -2216,7 +2216,7 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 
 			if ( level.clients[i].sess.sessionTeam != TEAM_SPECTATOR ) {
 				level.numNonSpectatorClients++;
-			
+
 				// decide if this should be auto-followed
 				if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 					level.numPlayingClients++;
@@ -2233,7 +2233,7 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 		}
 	}
 
-	qsort( level.sortedClients, level.numConnectedClients, 
+	qsort( level.sortedClients, level.numConnectedClients,
 		sizeof(level.sortedClients[0]), SortRanks );
 
 	// set the rank value for all clients that are connected and not spectators
@@ -2249,7 +2249,7 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 				cl->ps.persistant[PERS_RANK] = 1;
 			}
 		}
-	} else {	
+	} else {
 		rank = -1;
 		score = 0;
 		for ( i = 0;  i < level.numPlayingClients; i++ ) {
@@ -2404,7 +2404,7 @@ static void ClearFiringFlags(void)
 	int i = 0;
 	gentity_t	*ent = NULL;
 
-	for (i=0 ; i< level.maxclients ; i++) 
+	for (i=0 ; i< level.maxclients ; i++)
 	{
 		ent = g_entities + i;
 		if (!ent->inuse)
@@ -2486,7 +2486,7 @@ void G_ClearObjectives( void )
 ExitLevel
 
 When the intermission has been exited, the server is either killed
-or moved to a new level based on the "nextmap" cvar 
+or moved to a new level based on the "nextmap" cvar
 
 =============
 */
@@ -2510,7 +2510,7 @@ void ExitLevel (void) {
 			level.changemap = NULL;
 			level.intermissiontime = 0;
 		}
-		return;	
+		return;
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
@@ -2571,7 +2571,7 @@ static void CheckTournement( void ) {
 		if ( level.warmupTime == 0 || level.warmupTime != 0) {//RPG-X: RedTechie - No warmup Fail safe
 			return;
 		}
-	} else if ( g_gametype.integer != GT_SINGLE_PLAYER  ) {	
+	} else if ( g_gametype.integer != GT_SINGLE_PLAYER  ) {
 		if ( level.warmupTime == 0) {
 			return;
 		}
@@ -2644,7 +2644,7 @@ void G_RunThink (gentity_t *ent) {
 	if (thinktime > level.time) {
 		return;
 	}
-	
+
 	ent->nextthink = 0;
 	if (!ent->think) {
 		G_Error ( "NULL ent->think");

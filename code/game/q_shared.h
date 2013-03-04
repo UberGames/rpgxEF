@@ -10,9 +10,9 @@
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
-#if defined(ppc) || defined(__ppc) || defined(__ppc__) 
-#define idppc 
-#endif 
+#if defined(ppc) || defined(__ppc) || defined(__ppc__)
+#define idppc
+#endif
 
 //#define MISSION_PACK //TiM: was commented out
 
@@ -42,6 +42,16 @@
 #ifndef __attribute__
 #define __attribute__(x)
 #endif
+#endif
+
+#if (defined _MSC_VER)
+#define Q_EXPORT __declspec(dllexport)
+#elif (defined __SUNPRO_C)
+#define Q_EXPORT __global
+#elif ((__GNUC__ >= 3) && (!__EMX__) && (!sun))
+#define Q_EXPORT __attribute__((visibility("default")))
+#else
+#define Q_EXPORT
 #endif
 
 /**********************************************************************
@@ -693,7 +703,7 @@ char*	Q_strupr( char *s1 );
 char*	Q_strrchr( const char* string, int c );
 /**
  * Goes through a given str searching for one of the given tokens.
- * If it finds one it returns a new string containing everything 
+ * If it finds one it returns a new string containing everything
  * from str until the found token (Note: remember to free the result
  * if no longer needed). Returns NULL if no token is found. Make sure
  * to adjust str for the next call yourself as this function won't do that.
@@ -962,7 +972,7 @@ typedef struct {
 #define	MAX_STATS				16
 #define	MAX_PERSISTANT			16
 #define	MAX_POWERUPS			16 //RPG-X:TiM
-#define	MAX_WEAPONS				16		
+#define	MAX_WEAPONS				16
 
 #define	MAX_PS_EVENTS			4
 
@@ -993,7 +1003,7 @@ typedef struct playerState_s {
 	int			weaponTime;
 	int			rechargeTime;		// for the phaser
 	short		useTime;			// use debounce
-	
+
 	int			introTime;			// for the holodoor
 
 	int			gravity;
@@ -1167,7 +1177,7 @@ typedef struct entityState_s {
 typedef enum {
 	CA_UNINITIALIZED,
 	CA_DISCONNECTED, 	// not talking to a server
-	CA_AUTHORIZING,		// not used any more, was checking cd key 
+	CA_AUTHORIZING,		// not used any more, was checking cd key
 	CA_CONNECTING,		// sending request packets to the server
 	CA_CHALLENGING,		// sending challenge packets to the server
 	CA_CONNECTED,		// netchan_t established, getting gamestate
@@ -1185,7 +1195,7 @@ typedef enum {
 
 //extern	vmCvar_t	rpg_medicsrevive;			//RPG-X: RedTechie - To let bg_pmovto work
 //extern	vmCvar_t	rpg_noclipspectating;			//Added here (by rpg-x:j2j) so it could be seen in bg_pmove.c
-//extern  qboolean    ClientNCSpec;					//Private flag for weather the client chooses to spectate noclip style (rpg-x:j2j)	
+//extern  qboolean    ClientNCSpec;					//Private flag for weather the client chooses to spectate noclip style (rpg-x:j2j)
 
 /*
 ========================================================================
@@ -1205,6 +1215,6 @@ typedef struct stringID_table_s
 } stringID_table_t;
 
 int GetIDForString ( stringID_table_t *table, const char *string );
-const char *GetStringForID( stringID_table_t *table, int id );		
+const char *GetStringForID( stringID_table_t *table, int id );
 
 #endif	// __Q_SHARED_H

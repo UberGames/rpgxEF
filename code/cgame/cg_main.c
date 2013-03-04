@@ -36,7 +36,7 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .q3vm file
 ================
 */
-int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
+Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
 	switch ( command ) {
 	case CG_INIT:
 		CG_Init( arg0, arg1 );
@@ -306,11 +306,11 @@ static cvarTable_t	cvarTable[] = {
 
 	{ &cg_thirdPersonZoomRate, "cg_thirdPersonZoomRate", "25", CVAR_ARCHIVE },
 	{ &cg_showEntityNums, "cg_showEntityNums", "1", CVAR_ARCHIVE },
-	
+
 	//TiM - security cvars
 	{ &sv_securityHash, "sv_securityHash", "4294967295", CVAR_ARCHIVE | CVAR_ROM | CVAR_NORESTART },
-	{ &sv_securityCode, "sv_securityCode", "4294967295", CVAR_ARCHIVE | CVAR_USERINFO | CVAR_ROM | CVAR_NORESTART },	
-	
+	{ &sv_securityCode, "sv_securityCode", "4294967295", CVAR_ARCHIVE | CVAR_USERINFO | CVAR_ROM | CVAR_NORESTART },
+
 	{ &cg_handleWidescreen, "cg_handleWidescreen", "1", CVAR_ARCHIVE },
 	{ &ui_handleWidescreen, "ui_handleWidescreen", "1", CVAR_ARCHIVE },
 
@@ -347,7 +347,7 @@ void CG_PrecacheRemapShaders(void) {
 	qhandle_t shader;
 
 	COM_StripExtension(cgs.mapname, filepath);
-	Com_sprintf(filepath, MAX_QPATH, "%s.precache", filepath); 
+	Com_sprintf(filepath, MAX_QPATH, "%s.precache", filepath);
 
 	len = trap_FS_FOpenFile(filepath, &f, FS_READ);
 
@@ -574,7 +574,7 @@ static void CG_RegisterItemSounds( int itemNum ) {
 
 		len = s-start;
 		if (len >= MAX_QPATH || len < 5) {
-			CG_Error( "PrecacheItem: %s has bad precache string", 
+			CG_Error( "PrecacheItem: %s has bad precache string",
 				item->classname);
 			return;
 		}
@@ -709,8 +709,8 @@ static void CG_RegisterSounds( void )
 	cgs.media.glassChunkSound	= trap_S_RegisterSound( "sound/weapons/explosions/glassbreak1.wav" );
 	cgs.media.woodChunkSound	= trap_S_RegisterSound( "sound/weapons/explosions/metalexplode.wav" );
 	cgs.media.stoneChunkSound	= trap_S_RegisterSound( "sound/weapons/explosions/metalexplode.wav" );
-	
-	// trek sounds	
+
+	// trek sounds
 
 	//TiM : Q flash
 	cgs.media.qFlash = trap_S_RegisterSound( "sound/world/q_flash.wav" );
@@ -872,13 +872,13 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.weaponPlaceholderShader	= trap_R_RegisterShader("powerups/placeholder" );
 	cgs.media.rezOutShader				= trap_R_RegisterShader("powerups/rezout");
 	cgs.media.electricBodyShader		= trap_R_RegisterShader("gfx/misc/electric");
-	
+
 	//RPG-X: RedTechie - Scoreboard Endcaps
 	cgs.media.scoreboardtopleft = trap_R_RegisterShaderNoMip( "menu/common/rpgx_sb_topleft");
 	cgs.media.scoreboardtopright = trap_R_RegisterShaderNoMip( "menu/common/rpgx_sb_topright");
 	cgs.media.scoreboardbotleft = trap_R_RegisterShaderNoMip( "menu/common/rpgx_sb_bottomleft");
 	cgs.media.scoreboardbotright = trap_R_RegisterShaderNoMip( "menu/common/rpgx_sb_bottomright");
-	
+
 	//RPG-X: RedTechie - Healthbar Curves
 	cgs.media.healthendcap = trap_R_RegisterShaderNoMip("gfx/interface/rpgx_healthbar_endcap");
 	cgs.media.healthbigcurve = trap_R_RegisterShaderNoMip("gfx/interface/rpgx_healthbar_leftcorner");
@@ -1064,7 +1064,7 @@ static void CG_RegisterGraphics( void ) {
 	if ( cg_dynamiclensflares.integer ) {
 		cgs.media.flareCore = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_core");
 		cgs.media.flareStreak = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_streak");
-		cgs.media.flareHaze = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_haze");	
+		cgs.media.flareHaze = trap_R_RegisterShaderNoMip("gfx/effects/flares/flare_haze");
 
 		for ( i=0; i<10; i++ ) {
 			lensReflec[i].graphic = trap_R_RegisterShaderNoMip( lensReflec[i].file );
@@ -1236,7 +1236,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence ) {
 	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0;
 
 	//TiM - handle wide screens
-	if ( cgs.glconfig.vidWidth  * 480 > cgs.glconfig.vidHeight * 640 ) 
+	if ( cgs.glconfig.vidWidth  * 480 > cgs.glconfig.vidHeight * 640 )
 	{
 		cgs.widescreen.ratio	= 640.0f*cgs.screenYScale  * (1.0f/cgs.glconfig.vidWidth);
 		cgs.widescreen.bias		= 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * (640.0/480.0) ) );
@@ -1293,11 +1293,11 @@ void CG_Init( int serverMessageNum, int serverCommandSequence ) {
 	CG_LoadingString( "" );
 
 	//RPG-X | GSIO01 | 08/05/09:
-	//Make sure all weapons are registered to prevent 
+	//Make sure all weapons are registered to prevent
 	//missing models when someone get killed and weapons are dropped
 	for(i = 0; i < WP_NUM_WEAPONS; i++) {
 		CG_RegisterWeapon(i);
-	}	
+	}
 
 	// To get the interface timing started
 	cg.interfaceStartupTime = 0;
@@ -1305,12 +1305,12 @@ void CG_Init( int serverMessageNum, int serverCommandSequence ) {
 
 	CG_InitModRules();
 
-	if ( !CG_LoadCrosshairs() ) 
+	if ( !CG_LoadCrosshairs() )
 	{
 		CG_Error( "Couldn't load crosshairs script" );
 	}
 
-	if ( !CG_LoadRanks() ) 
+	if ( !CG_LoadRanks() )
 	{
 		CG_Error( "Couldn't load rankset script: %s", cgs.rankSet );
 	}
@@ -1364,7 +1364,7 @@ void CG_ParseIngameText(void)
 
 	buffer = ingameText;
 	i = 1;	// Zero is null string
-	while ( buffer ) 
+	while ( buffer )
 	{
 		token = COM_ParseExt( &buffer, qtrue );
 
@@ -1442,7 +1442,7 @@ void CG_LoadIngameText(void)
 
 	len = trap_FS_FOpenFile( fileName, &f, FS_READ );
 
-	if ( !f ) 
+	if ( !f )
 	{
 		Com_Printf( S_COLOR_RED "CG_LoadIngameText : mp_ingametext.dat file not found!\n");
 		return;
@@ -1455,7 +1455,7 @@ void CG_LoadIngameText(void)
 	}
 
 	// initialise the data area
-	memset(ingameText, 0, sizeof(ingameText));	
+	memset(ingameText, 0, sizeof(ingameText));
 
 	trap_FS_Read( ingameText, len, f );
 
@@ -1498,7 +1498,7 @@ void CG_LoadObjectivesForMap(void)
 
 	buf = objtext;
 	//Now parse out each objective
-	while ( 1 ) 
+	while ( 1 )
 	{
 		token = COM_ParseExt( &buf, qtrue );
 		if ( !token[0] ) {
@@ -1506,7 +1506,7 @@ void CG_LoadObjectivesForMap(void)
 		}
 
 		// Normal objective text
-		if ( !Q_strncmp( token, "obj", 3 ) ) 
+		if ( !Q_strncmp( token, "obj", 3 ) )
 		{
 			objnum = atoi( &token[3] );
 
@@ -1520,11 +1520,11 @@ void CG_LoadObjectivesForMap(void)
 			Q_strncpyz( cgs.objectives[objnum-1].text, token, sizeof(cgs.objectives[objnum-1].text) );
 		}
 
-		else if ( !Q_strncmp( token, "abridged_obj", 12 ) ) 
+		else if ( !Q_strncmp( token, "abridged_obj", 12 ) )
 		{
 			objnum = atoi( &token[12] );
 
-			if ( objnum < 1 || objnum == MAX_OBJECTIVES ) 
+			if ( objnum < 1 || objnum == MAX_OBJECTIVES )
 			{
 				Com_Printf( "Invalid objective number (%d), valid range is 1 to %d\n", objnum, MAX_OBJECTIVES );
 				break;
@@ -1559,7 +1559,7 @@ qboolean CG_LoadClasses( void )
 		CG_Printf( S_COLOR_RED "Couldn't find class file: %s\n", filePath );
 		return qfalse;
 	}
-	
+
 	if ( file_len > sizeof( buffer ) )
 	{
 		CG_Printf( S_COLOR_RED "File %s was way too big to be loaded.\n", filePath );
@@ -1598,14 +1598,14 @@ qboolean CG_LoadClasses( void )
 			while ( 1 )
 			{
 				token = COM_Parse( &textPtr );
-		
+
 				if (!token[0]) {
 					break;
 				}
 
-				if ( !Q_stricmpn( token, "formalName", 10 ) ) 
+				if ( !Q_stricmpn( token, "formalName", 10 ) )
 				{
-					if ( COM_ParseString( &textPtr, &token ) ) 
+					if ( COM_ParseString( &textPtr, &token ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: Invalid class formal name in class index: %i.\n", numClasses );
 						continue;
@@ -1615,17 +1615,17 @@ qboolean CG_LoadClasses( void )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "radarColor", 5 ) ) 
+				if ( !Q_stricmpn( token, "radarColor", 5 ) )
 				{
 					vec3_t	temp;
 
-					if ( COM_ParseVec3( &textPtr, temp ) ) 
+					if ( COM_ParseVec3( &textPtr, temp ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: Invalid color values in class index: %i.\n", numClasses );
 						continue;
 					}
 
-					for ( i = 0; i < 3; i++ ) 
+					for ( i = 0; i < 3; i++ )
 					{
 						cgs.classData[numClasses].radarColor[i] = (int)Com_Clamp( 0, 255, (int)temp[i] );
 					}
@@ -1633,9 +1633,9 @@ qboolean CG_LoadClasses( void )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "iconColor", 9 ) ) 
+				if ( !Q_stricmpn( token, "iconColor", 9 ) )
 				{
-					if ( COM_ParseString( &textPtr, &token ) ) 
+					if ( COM_ParseString( &textPtr, &token ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: Invalid class icon color in class index: %i.\n", numClasses );
 						continue;
@@ -1643,23 +1643,23 @@ qboolean CG_LoadClasses( void )
 
 					//Eh... there are enum values for these,
 					//but they're currently out of scope ;P
-					if ( !Q_stricmp( token, "red" ) ) 
+					if ( !Q_stricmp( token, "red" ) )
 					{
 						cgs.classData[numClasses].iconColor = 1; //CLR_RED
 					}
-					else if ( !Q_stricmp( token, "gold" ) ) 
+					else if ( !Q_stricmp( token, "gold" ) )
 					{
 						cgs.classData[numClasses].iconColor = 2; //CLR_GOLD
 					}
-					else if ( !Q_stricmp( token, "teal" ) ) 
+					else if ( !Q_stricmp( token, "teal" ) )
 					{
 						cgs.classData[numClasses].iconColor = 3; //CLR_TEAL
 					}
-					else if ( !Q_stricmp( token, "green" ) ) 
+					else if ( !Q_stricmp( token, "green" ) )
 					{
 						cgs.classData[numClasses].iconColor = 4; //CLR_GREEN
 					}
-					else 
+					else
 					{
 						cgs.classData[numClasses].iconColor = 0; //0
 					}
@@ -1667,9 +1667,9 @@ qboolean CG_LoadClasses( void )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "medical", 7 ) ) 
+				if ( !Q_stricmpn( token, "medical", 7 ) )
 				{
-					if ( COM_ParseInt( &textPtr, (int *)&cgs.classData[numClasses].isMedic ) ) 
+					if ( COM_ParseInt( &textPtr, (int *)&cgs.classData[numClasses].isMedic ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: Class medic check for class %i was invalid.\n", numClasses );
 						continue;
@@ -1688,9 +1688,9 @@ qboolean CG_LoadClasses( void )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "hasRanks", 8 ) ) 
+				if ( !Q_stricmpn( token, "hasRanks", 8 ) )
 				{
-					if ( COM_ParseInt( &textPtr, (int *)&cgs.classData[numClasses].showRanks ) ) 
+					if ( COM_ParseInt( &textPtr, (int *)&cgs.classData[numClasses].showRanks ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: Class Ranks check for class %i was invalid.\n", numClasses );
 						continue;
@@ -1702,13 +1702,13 @@ qboolean CG_LoadClasses( void )
 				//I'm a n00b lol. I made a class called 'medical' and a parameter called 'medical'.
 				//I have to double check both parms or else it confuses the parser
 				//better check all of them. I'm still getting errors
-				if ( !Q_stricmpn( token, "consoleName", 10 ) 
-					|| !Q_stricmpn( token, "modelSkin", 9 ) 
+				if ( !Q_stricmpn( token, "consoleName", 10 )
+					|| !Q_stricmpn( token, "modelSkin", 9 )
 					|| !Q_stricmpn( token, "message", 7 )
 					|| !Q_stricmpn( token, "admin", 5 )
 					|| !Q_stricmpn( token, "marine", 6 )
 					|| !Q_stricmpn( token, "noShow", 6 )
-					) 
+					)
 				{
 					SkipRestOfLine(&textPtr);
 					continue;
@@ -1721,7 +1721,7 @@ qboolean CG_LoadClasses( void )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "}", 1 ) ) 
+				if ( !Q_stricmpn( token, "}", 1 ) )
 				{
 					numClasses++;
 					break;
@@ -1730,8 +1730,8 @@ qboolean CG_LoadClasses( void )
 		}
 
 		token = COM_Parse( &textPtr );
-		
-		if (!token[0]) 
+
+		if (!token[0])
 		{
 			break;
 		}
@@ -1786,7 +1786,7 @@ qboolean CG_LoadUsablesStrings( void )
 	buffer[file_len] = '0';
 
 	trap_FS_FCloseFile( f );
-	
+
 	if ( !buffer[0] )
 	{
 		CG_Printf( S_COLOR_RED "ERROR: Attempted to load %s, but no data was inside!\n", fileRoute );

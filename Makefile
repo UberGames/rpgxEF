@@ -385,14 +385,13 @@ ifneq (,$(findstring "$(PLATFORM)", "linux" "gnu_kfreebsd" "kfreebsd-gnu"))
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC -fvisibility=hidden
   SHLIBLDFLAGS=-shared $(LDFLAGS) -pthread
-  
+
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
   endif
 
   THREAD_LIBS=-lpthread
   LIBS=-ldl -lm
-  LIBS += -L/emul/linux/x86/usr/lib
 
   CLIENT_LIBS=$(SDL_LIBS)
   RENDERER_LIBS = $(SDL_LIBS) -lGL
@@ -445,7 +444,7 @@ ifeq ($(PLATFORM),darwin)
   CLIENT_LIBS=
   RENDERER_LIBS=
   OPTIMIZEVM=
-  
+
   BASE_CFLAGS = -Wall -Wimplicit -Wstrict-prototypes
 
   ifeq ($(ARCH),ppc)
@@ -508,7 +507,7 @@ ifeq ($(PLATFORM),darwin)
   SHLIBEXT=dylib
   SHLIBCFLAGS=-fPIC -fno-common
   SHLIBLDFLAGS=-dynamiclib $(LDFLAGS) -Wl,-U,_com_altivec -pthread
-  
+
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
   endif
@@ -549,7 +548,7 @@ ifeq ($(PLATFORM),mingw32)
       CLIENT_LDFLAGS += $(OPENAL_LDFLAGS)
     endif
   endif
-  
+
   ifeq ($(USE_CODEC_MP3),1)
     BASE_CFLAGS += -DUSE_CODEC_MP3
     CLIENT_LIBS += -lmad
@@ -573,7 +572,7 @@ ifeq ($(PLATFORM),mingw32)
   SHLIBEXT=dll
   SHLIBCFLAGS=
   SHLIBLDFLAGS=-shared $(LDFLAGS)
-  
+
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
   endif
@@ -584,7 +583,7 @@ ifeq ($(PLATFORM),mingw32)
   CLIENT_LDFLAGS += -mwindows
   CLIENT_LIBS = -lgdi32 -lole32
   RENDERER_LIBS = -lgdi32 -lole32 -lopengl32
-  
+
   ifeq ($(USE_CURL),1)
     CLIENT_CFLAGS += $(CURL_CFLAGS)
     ifneq ($(USE_CURL_DLOPEN),1)
@@ -623,7 +622,7 @@ ifeq ($(PLATFORM),mingw32)
   # libmingw32 must be linked before libSDLmain
   CLIENT_LIBS += -lmingw32
   RENDERER_LIBS += -lmingw32
-  
+
   ifeq ($(USE_LOCAL_HEADERS),1)
     CLIENT_CFLAGS += -I$(SDLHDIR)/include
     ifeq ($(ARCH), x86)
@@ -666,7 +665,7 @@ ifeq ($(PLATFORM),freebsd)
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC
   SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread
-  
+
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
   endif
@@ -742,7 +741,7 @@ ifeq ($(PLATFORM),openbsd)
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
   endif
-  
+
   THREAD_LIBS=-pthread
   LIBS=-lm
 
@@ -761,7 +760,7 @@ ifeq ($(PLATFORM),openbsd)
     CLIENT_LIBS += -lvorbisfile -lvorbis -logg
   endif
 
-  ifeq ($(USE_CURL),1) 
+  ifeq ($(USE_CURL),1)
     ifneq ($(USE_CURL_DLOPEN),1)
       CLIENT_LIBS += -lcurl
     endif
@@ -784,7 +783,7 @@ ifeq ($(PLATFORM),netbsd)
   SHLIBCFLAGS=-fPIC
   SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread
   THREAD_LIBS=-lpthread
-  
+
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
   endif
@@ -814,7 +813,7 @@ ifeq ($(PLATFORM),irix64)
     -I. -I$(ROOT)/usr/include
   CLIENT_CFLAGS += $(SDL_CFLAGS)
   OPTIMIZE = -O3
-  
+
   SHLIBEXT=so
   SHLIBCFLAGS=
   SHLIBLDFLAGS=-shared -lptrhead
@@ -822,7 +821,7 @@ ifeq ($(PLATFORM),irix64)
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
   endif
-  
+
   LIBS=-ldl -lm -lgen
   # FIXME: The X libraries probably aren't necessary?
   CLIENT_LIBS=-L/usr/X11/$(LIB) $(SDL_LIBS) \
@@ -876,7 +875,7 @@ ifeq ($(PLATFORM),sunos)
     CLIENT_LDFLAGS += -L/usr/X11/lib/NVIDIA -R/usr/X11/lib/NVIDIA
   endif
   endif
-  
+
   OPTIMIZE = $(OPTIMIZEVM) -ffast-math
 
   SHLIBEXT=so
@@ -886,7 +885,7 @@ ifeq ($(PLATFORM),sunos)
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
   endif
-  
+
   THREAD_LIBS=-lpthread
   LIBS=-lsocket -lnsl -ldl -lm
 
@@ -1576,7 +1575,7 @@ Q3ROBJ = \
   $(B)/renderer/tr_world.o \
   \
   $(B)/renderer/sdl_gamma.o
-  
+
 ifneq ($(USE_RENDERER_DLOPEN), 0)
   Q3ROBJ += \
     $(B)/renderer/q_shared.o \
@@ -1921,22 +1920,22 @@ ifeq ($(ARCH),x86)
   Q3DOBJ += \
       $(B)/ded/matha.o \
       $(B)/ded/snapvector.o \
-      $(B)/ded/ftola.o 
+      $(B)/ded/ftola.o
 endif
 ifeq ($(ARCH),x86_64)
   Q3DOBJ += \
       $(B)/ded/snapvector.o \
-      $(B)/ded/ftola.o 
+      $(B)/ded/ftola.o
 endif
 ifeq ($(ARCH),amd64)
   Q3DOBJ += \
       $(B)/ded/snapvector.o \
-      $(B)/ded/ftola.o 
+      $(B)/ded/ftola.o
 endif
 ifeq ($(ARCH),x64)
   Q3DOBJ += \
       $(B)/ded/snapvector.o \
-      $(B)/ded/ftola.o 
+      $(B)/ded/ftola.o
 endif
 
 ifeq ($(USE_INTERNAL_ZLIB),1)
@@ -2521,12 +2520,12 @@ endif
 
 $(B)/$(BASEGAME)/cgame/bg_%.o: $(GDIR)/bg_%.c
 	$(DO_CGAME_CC)
-	
+
 $(B)/$(BASEGAME)/cgame/l%.o: $(GDIR)/l%.c
-	$(DO_CGAME_CC)	
-	
+	$(DO_CGAME_CC)
+
 $(B)/$(BASEGAME)/cgame/q_%.o: $(GDIR)/q_%.c
-	$(DO_CGAME_CC)	
+	$(DO_CGAME_CC)
 
 $(B)/$(BASEGAME)/cgame/%.o: $(CGDIR)/%.c
 	$(DO_CGAME_CC)
@@ -2570,7 +2569,7 @@ $(B)/$(BASEGAME)/ui/bg_%.o: $(GDIR)/bg_%.c
 
 $(B)/$(BASEGAME)/ui/q_%.o: $(GDIR)/q_%.c
 	$(DO_UI_CC)
-	
+
 $(B)/$(BASEGAME)/ui/%.o: $(Q3UIDIR)/%.c
 	$(DO_UI_CC)
 

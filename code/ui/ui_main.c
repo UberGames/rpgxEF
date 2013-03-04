@@ -20,7 +20,7 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .qvm file
 ================
 */
-int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
+Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
 	switch ( command ) {
 	case UI_GETAPIVERSION:
 		return UI_API_VERSION;
@@ -417,7 +417,7 @@ static cvarTable_t		cvarTable[] = {
 //	{ &ui_lastactive, "sys_lastactive", "0", CVAR_ARCHIVE }, //RPG-X | Phenix | 25/02/2005 (Trying to make a timer for intro)
 	//TiM : RPG-X variables 8-8-2005
 	{ &ui_dynamicLensFlares, "cg_dynamicLensFlares", "1", CVAR_ARCHIVE },
-	{ &ui_dynamicCrosshair, "cg_dynamicCrosshair", "1", CVAR_ARCHIVE }, 
+	{ &ui_dynamicCrosshair, "cg_dynamicCrosshair", "1", CVAR_ARCHIVE },
 	{ &ui_currentRankSet, "ui_currentRankSet", RANKSET_DEFAULT, CVAR_ARCHIVE | CVAR_ROM },
 	{ &ui_currentClassSet, "ui_currentClassSet", CLASS_DEFAULT, CVAR_ARCHIVE | CVAR_ROM },
 
@@ -481,11 +481,11 @@ UI_RegisterCvars
 void UI_RegisterCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
-	
+
 	//RPG-X: RedTechie - Keep no class default
 	//RPG-X: TiM - just commented this out for now to see if I can add class support to the main UI
 //	trap_Cvar_Set( "ui_playerclass", "NOCLASS" );
-	
+
 	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
 	}
@@ -542,7 +542,7 @@ int UI_GetAnim ( int anim, int weapon, qboolean upper )
 				case WP_10:
 					if ( upper )
 						return TORSO_WEAPONPOSE1;
-					else 
+					else
 						return BOTH_CROUCH1IDLE;
 					break;
 				case WP_4:
@@ -612,7 +612,7 @@ int UI_GetAnim ( int anim, int weapon, qboolean upper )
 				case WP_5:
 				case WP_10:
 					if (upper)
-						return TORSO_WEAPONREADY1; 
+						return TORSO_WEAPONREADY1;
 					else
 						return BOTH_STAND1;
 					break;
@@ -645,7 +645,7 @@ int UI_GetAnim ( int anim, int weapon, qboolean upper )
 					return BOTH_STAND1;
 			//Other: "Toolkit"
 			/*case WP_14:
-				//Return nothing.  
+				//Return nothing.
 				//A bit hacky, but the engine accepts it :P
 				break;*/
 			//Other Tools "everything else"
@@ -673,7 +673,7 @@ int UI_GetAnim ( int anim, int weapon, qboolean upper )
 				//break;
 			default:
 				if (upper)
-					return TORSO_WEAPONREADY1; 
+					return TORSO_WEAPONREADY1;
 				else
 					return BOTH_STAND1;
 				break;
@@ -683,7 +683,7 @@ int UI_GetAnim ( int anim, int weapon, qboolean upper )
 		//When the player jumps
 		case ANIM_JUMP:
 			return BOTH_JUMP1;
-	
+
 		//When the player runs
 		case ANIM_RUN:
 			//2 handed weapons
@@ -729,11 +729,11 @@ int UI_GetAnim ( int anim, int weapon, qboolean upper )
 					break;
 			}
 			break;
-		
+
 		//When the player walks
 		case ANIM_BACK:
 			//2 handed weapons
-			switch (weapon) 
+			switch (weapon)
 			{
 				//case WP_7:
 				case WP_8:

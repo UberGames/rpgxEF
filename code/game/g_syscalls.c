@@ -7,7 +7,7 @@
 
 static intptr_t (QDECL *syscall)( intptr_t arg, ... ) = (intptr_t (QDECL *)( intptr_t, ...))-1;
 
-void dllEntry( intptr_t (QDECL *syscallptr)( intptr_t arg,... ) ) {
+Q_EXPORT void dllEntry( intptr_t (QDECL *syscallptr)( intptr_t arg,... ) ) {
 	syscall = syscallptr;
 }
 
@@ -26,7 +26,7 @@ void	trap_Error( const char *fmt ) {
 }
 
 int		trap_Milliseconds( void ) {
-	return syscall( G_MILLISECONDS ); 
+	return syscall( G_MILLISECONDS );
 }
 int		trap_Argc( void ) {
 	return syscall( G_ARGC );

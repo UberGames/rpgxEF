@@ -15,7 +15,7 @@ static void Video_MenuEvent (void* ptr, int event);
 #define PIC_SLIDER		"menu/common/slider.tga"
 
 // Video Data
-typedef struct 
+typedef struct
 {
 	menuframework_s	menu;
 
@@ -30,7 +30,7 @@ static videoddata_t	s_videodata;
 
 
 // Video Drivers
-typedef struct 
+typedef struct
 {
 	menuframework_s	menu;
 
@@ -40,7 +40,7 @@ typedef struct
 
 
 // Video Data 2
-typedef struct 
+typedef struct
 {
 	menuframework_s	menu;
 
@@ -80,7 +80,7 @@ static int s_graphics_options_Names[] =
 
 extern int s_OffOnNone_Names[];
 
-static int s_resolutions[] = 
+static int s_resolutions[] =
 {
 //	MNT_320X200,
 //	MNT_400X300,
@@ -109,6 +109,7 @@ static char *s_wideResolutions16x9[] =
 {
 	"854x480",
 	"1280x720",
+	"1366x768",
 	"1920x1080",
 	0
 };
@@ -117,6 +118,7 @@ static videoResolutions_t videoResolutions16x9[] =
 {
 	{ 854, 480 },
 	{ 1280, 720 },
+	{ 1366, 768 },
 	{ 1920, 1080 }
 };
 
@@ -139,7 +141,7 @@ static videoResolutions_t videoResolutions16x10[] =
 	{ 2560, 1600 }
 };
 
-static void *s_widescreenResolutions[] = 
+static void *s_widescreenResolutions[] =
 {
 	&videoResolutions16x9,
 	&videoResolutions16x10,
@@ -154,11 +156,11 @@ static void *s_widescreenResStrings[] =
 };
 
 //store the number of widescreen arrays
-static int s_wideScreenSets = 2; 
+static int s_wideScreenSets = 2;
 
 //store the number of resolutions in each array.
 //This will be necessary when we change the lists over
-static int s_resolutionNums[] = {9,3,5};
+static int s_resolutionNums[] = {9,4,5};
 
 //finally for reference sake, use an enum
 typedef enum
@@ -237,7 +239,7 @@ static menubitmap_s			s_video_data2;
 
 // Precache stuff for Video Driver
 #define MAX_VID_DRIVERS 128
-static struct 
+static struct
 {
 	menuframework_s		menu;
 
@@ -284,34 +286,34 @@ static struct
 
 static void* g_videolines[] =
 {
-	&s_videodriver.line1, 
-	&s_videodriver.line2, 
-	&s_videodriver.line3, 
-	&s_videodriver.line4, 
-	&s_videodriver.line5, 
-	&s_videodriver.line6, 
-	&s_videodriver.line7, 
-	&s_videodriver.line8, 
-	&s_videodriver.line9, 
-	&s_videodriver.line10, 
-	&s_videodriver.line11, 
-	&s_videodriver.line12, 
-	&s_videodriver.line13, 
-	&s_videodriver.line14, 
-	&s_videodriver.line15, 
-	&s_videodriver.line16, 
-	&s_videodriver.line17, 
-	&s_videodriver.line18, 
-	&s_videodriver.line19, 
-	&s_videodriver.line20, 
-	&s_videodriver.line21, 
-	&s_videodriver.line22, 
-	&s_videodriver.line23, 
-	&s_videodriver.line24, 
+	&s_videodriver.line1,
+	&s_videodriver.line2,
+	&s_videodriver.line3,
+	&s_videodriver.line4,
+	&s_videodriver.line5,
+	&s_videodriver.line6,
+	&s_videodriver.line7,
+	&s_videodriver.line8,
+	&s_videodriver.line9,
+	&s_videodriver.line10,
+	&s_videodriver.line11,
+	&s_videodriver.line12,
+	&s_videodriver.line13,
+	&s_videodriver.line14,
+	&s_videodriver.line15,
+	&s_videodriver.line16,
+	&s_videodriver.line17,
+	&s_videodriver.line18,
+	&s_videodriver.line19,
+	&s_videodriver.line20,
+	&s_videodriver.line21,
+	&s_videodriver.line22,
+	&s_videodriver.line23,
+	&s_videodriver.line24,
 	NULL,
 };
 
-int video_sidebuttons[3][2] = 
+int video_sidebuttons[3][2] =
 {
 	{ 30, 250													},	// Video Data Button
 	{ 30, 250 + 6 + (MENU_BUTTON_MED_HEIGHT * 1.5)				},	// Video Drivers Button
@@ -516,7 +518,7 @@ typedef struct {
 	menutext_s		display;
 	menutext_s		sound;
 	menutext_s		network;
-	
+
 	menulist_s		aspectRatio;
 	menulist_s		list;
 	menulist_s		mode;
@@ -558,7 +560,7 @@ typedef struct
 } InitialVideoOptions_s;
 
 static InitialVideoOptions_s	s_ivo;
-static graphicsoptions_t		s_graphicsoptions;	
+static graphicsoptions_t		s_graphicsoptions;
 
 static InitialVideoOptions_s s_ivo_templates[] =
 {
@@ -767,7 +769,7 @@ static void GraphicsOptions_UpdateMenuItems( void )
 	}
 
 	GraphicsOptions_CheckConfig();
-}	
+}
 
 /*
 =================
@@ -827,9 +829,9 @@ static void GraphicsOptions_ApplyChanges( void *unused, int notification )
 	}
 
 	trap_Cvar_SetValue( "r_lowEndVideo", s_graphicsoptions.simpleshaders.curvalue );
-	
+
 	trap_Cvar_SetValue( "r_ext_compress_textures", s_graphicsoptions.compresstextures.curvalue );
-	
+
 	switch ( s_graphicsoptions.colordepth.curvalue )
 	{
 	case 0:
@@ -882,7 +884,7 @@ static void GraphicsOptions_ApplyChanges( void *unused, int notification )
 GraphicsOptions_Event
 =================
 */
-static void GraphicsOptions_Event( void* ptr, int event ) 
+static void GraphicsOptions_Event( void* ptr, int event )
 {
 	InitialVideoOptions_s *ivo;
 
@@ -1010,7 +1012,7 @@ static void GraphicsOptions_SetMenuItems( void )
 	s_graphicsoptions.aspectRatio.curvalue	= ASPECTRATIO_4X3; //set aspect to 'Normal' for now
 
 	s_graphicsoptions.mode.curvalue			= (trap_Cvar_VariableValue( "r_mode" ) - 2);
-	
+
 	//TiM - adjust for widescreen
 	if ( s_graphicsoptions.mode.curvalue < 0 && !GraphicsOptions_CheckWidescreen() ) //less than 0 means custom resolution now
 		s_graphicsoptions.mode.curvalue = 1;
@@ -1093,7 +1095,7 @@ static void GraphicsOptions_SetMenuItems( void )
 
 
 
-void VideoSideButtonsAction( qboolean result ) 
+void VideoSideButtonsAction( qboolean result )
 {
 	if ( result )	// Yes - do it
 	{
@@ -1117,7 +1119,7 @@ static void VideoSideButtons_MenuEvent (void* ptr, int event)
 
 	if (s_graphicsoptions.apply.generic.flags & QMF_BLINK)	// Video apply changes button is flashing
 	{
-		UI_ConfirmMenu(menu_normal_text[MNT_LOOSEVIDSETTINGS], 0, VideoSideButtonsAction);	
+		UI_ConfirmMenu(menu_normal_text[MNT_LOOSEVIDSETTINGS], 0, VideoSideButtonsAction);
 	}
 	else	// Go ahead, act normal
 	{
@@ -1303,7 +1305,7 @@ static void VideoData_MenuInit( void )
 	x = 170;
 	y = 178;
 	width = 145;
-	
+
 	s_graphicsoptions.list.generic.type			= MTYPE_SPINCONTROL;
 	s_graphicsoptions.list.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
 	s_graphicsoptions.list.generic.x			= x;
@@ -1353,7 +1355,7 @@ static void VideoData_MenuInit( void )
 
 	y += inc;
 	// references/modifies "r_mode"
-	// TiM: can now be potentially '-1', 
+	// TiM: can now be potentially '-1',
 	// in which case 'r_customeheight' and 'r_customwidth'
 	// will be used
 	s_graphicsoptions.mode.generic.type					= MTYPE_SPINCONTROL;
@@ -1580,7 +1582,7 @@ void Video_SideButtons(menuframework_s *menu,int menuType)
 {
 
 	// Button Data
-	s_video_data.generic.type				= MTYPE_BITMAP;      
+	s_video_data.generic.type				= MTYPE_BITMAP;
 	s_video_data.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
 	s_video_data.generic.x					= video_sidebuttons[0][0];
 	s_video_data.generic.y					= video_sidebuttons[0][1];
@@ -1613,7 +1615,7 @@ void Video_SideButtons(menuframework_s *menu,int menuType)
 		s_video_data.textcolor2				= CT_WHITE;
 	}
 
-	s_video_data2.generic.type				= MTYPE_BITMAP;      
+	s_video_data2.generic.type				= MTYPE_BITMAP;
 	s_video_data2.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
 	s_video_data2.generic.x					= video_sidebuttons[1][0];
 	s_video_data2.generic.y					= video_sidebuttons[1][1];
@@ -1648,7 +1650,7 @@ void Video_SideButtons(menuframework_s *menu,int menuType)
 		s_video_data2.textcolor2			= CT_WHITE;
 	}
 
-	s_video_drivers.generic.type			= MTYPE_BITMAP;      
+	s_video_drivers.generic.type			= MTYPE_BITMAP;
 	s_video_drivers.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
 	s_video_drivers.generic.x				= video_sidebuttons[2][0];
 	s_video_drivers.generic.y				= video_sidebuttons[2][1];
@@ -1733,23 +1735,23 @@ void VideoDriver_Lines(int increment)
 		{
 			if (i2<24)
 			{
-				((menutext_s *)g_videolines[i2])->string	= s_videodriver.drivers[i];      
+				((menutext_s *)g_videolines[i2])->string	= s_videodriver.drivers[i];
 				i2++;
 			}
 		}
-		else 
+		else
 		{
 			if (i2<24)
 			{
-				((menutext_s *)g_videolines[i2])->string	= NULL;      
+				((menutext_s *)g_videolines[i2])->string	= NULL;
 				i2++;
 			}
-			else 
+			else
 			{
 				break;
 			}
 		}
-	}	
+	}
 
 	// Set up arrows
 
@@ -1769,7 +1771,7 @@ void VideoDriver_Lines(int increment)
 	}
 
 	i = (s_videodriver.currentDriverLine * 2);
-	if (!s_videodriver.drivers[i + 24]) 
+	if (!s_videodriver.drivers[i + 24])
 	{
 		s_videodriver.activeArrowDwn = qfalse;
 		return;
@@ -1810,15 +1812,15 @@ void VideoDriver_LineSetup(void)
 
 			if (i<24)
 			{
-				((menutext_s *)g_videolines[i])->string	= eptr;      
+				((menutext_s *)g_videolines[i])->string	= eptr;
 			}
 
-			bufhold++;	
+			bufhold++;
 			eptr = bufhold;
 			s_videodriver.driverCnt++;
 			i++;
 		}
-	}	
+	}
 
 	// Set down arrows
 	if (i> 24)
@@ -1890,12 +1892,12 @@ void M_VideoDriverMenu_Graphics (void)
 	trap_R_SetColor( colorTable[CT_LTGOLD1]);
 	if (s_videodriver.activeArrowUp)
 	{
-		UI_DrawHandlePic( 382, 237, 32,  -14, s_videodriver.arrow_dn);	
+		UI_DrawHandlePic( 382, 237, 32,  -14, s_videodriver.arrow_dn);
 	}
 
 	if (s_videodriver.activeArrowDwn)
 	{
-		UI_DrawHandlePic( 382, 422, 32,   14, s_videodriver.arrow_dn);	
+		UI_DrawHandlePic( 382, 422, 32,   14, s_videodriver.arrow_dn);
 	}
 
 	x = 204;
@@ -1972,7 +1974,7 @@ static void VideoDriver_MenuInit( void )
 
 	Video_SideButtons(&s_videodriver.menu,ID_VIDEODRIVERS);
 
-	s_videodriver.arrowup.generic.type				= MTYPE_BITMAP;      
+	s_videodriver.arrowup.generic.type				= MTYPE_BITMAP;
 	s_videodriver.arrowup.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
 	s_videodriver.arrowup.generic.x					= 572;
 	s_videodriver.arrowup.generic.y					= 262;
@@ -1990,7 +1992,7 @@ static void VideoDriver_MenuInit( void )
 	s_videodriver.arrowup.textcolor2				= CT_WHITE;
 	Menu_AddItem( &s_videodriver.menu,( void * ) &s_videodriver.arrowup);
 
-	s_videodriver.arrowdwn.generic.type				= MTYPE_BITMAP;      
+	s_videodriver.arrowdwn.generic.type				= MTYPE_BITMAP;
 	s_videodriver.arrowdwn.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
 	s_videodriver.arrowdwn.generic.x				= 572;
 	s_videodriver.arrowdwn.generic.y				= 397;
@@ -2017,14 +2019,14 @@ static void VideoDriver_MenuInit( void )
 
 	for (i=0;i<24;i++)
 	{
-		((menutext_s *)g_videolines[i])->generic.type		= MTYPE_TEXT;      
+		((menutext_s *)g_videolines[i])->generic.type		= MTYPE_TEXT;
 		((menutext_s *)g_videolines[i])->generic.flags		= QMF_LEFT_JUSTIFY | QMF_INACTIVE;
 		((menutext_s *)g_videolines[i])->generic.y			= y;
 		if ((i % 2 ) == 0)
 		{
 			((menutext_s *)g_videolines[i])->generic.x			= x;
 		}
-		else 
+		else
 		{
 			((menutext_s *)g_videolines[i])->generic.x			= x2;
 			y +=13;
@@ -2099,7 +2101,7 @@ void M_VideoData2Menu_Graphics (void)
 	if (uis.glconfig.deviceSupportsGamma)
 	{
 		trap_R_SetColor( colorTable[CT_DKGREY]);
-		UI_DrawHandlePic(  178, y, 68, 68, uis.whiteShader);	// 
+		UI_DrawHandlePic(  178, y, 68, 68, uis.whiteShader);	//
 		trap_R_SetColor( colorTable[CT_WHITE]);
 		UI_DrawHandlePic(  180, y+2, 64, 64, s_videodata2.gamma);	// Starfleet graphic
 
@@ -2271,19 +2273,19 @@ static void VideoData2_MenuInit( void )
 	s_videodata2.screensize_slider.thumbColor2		= CT_LTBLUE1;
 
 	y += 34;
-	s_videodata2.anisotropicfiltering.generic.type			= MTYPE_SPINCONTROL;      
+	s_videodata2.anisotropicfiltering.generic.type			= MTYPE_SPINCONTROL;
 	s_videodata2.anisotropicfiltering.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
 	s_videodata2.anisotropicfiltering.generic.x				= x;
 	s_videodata2.anisotropicfiltering.generic.y				= y;
 	s_videodata2.anisotropicfiltering.generic.name			= GRAPHIC_BUTTONRIGHT;
-	s_videodata2.anisotropicfiltering.generic.callback		= AnisotropicFilteringCallback; 
+	s_videodata2.anisotropicfiltering.generic.callback		= AnisotropicFilteringCallback;
 	s_videodata2.anisotropicfiltering.color					= CT_DKPURPLE1;
 	s_videodata2.anisotropicfiltering.color2					= CT_LTPURPLE1;
 	s_videodata2.anisotropicfiltering.textX					= MENU_BUTTON_TEXT_X;
 	s_videodata2.anisotropicfiltering.textY					= MENU_BUTTON_TEXT_Y;
 	s_videodata2.anisotropicfiltering.textEnum				= MBT_ANISOTROPICFILTERING;
 	s_videodata2.anisotropicfiltering.textcolor				= CT_BLACK;
-	s_videodata2.anisotropicfiltering.textcolor2				= CT_WHITE;	
+	s_videodata2.anisotropicfiltering.textcolor2				= CT_WHITE;
 	s_videodata2.anisotropicfiltering.listnames				= s_OffOnNone_Names;
 
 
