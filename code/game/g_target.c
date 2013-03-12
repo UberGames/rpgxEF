@@ -2678,16 +2678,19 @@ Should this thing hit 0 the killing part for everyone outside a target_zone conf
 "damage" - leveltime of countdowns end
 */
 
+void target_selfdestruct_end(gentity_t *ent) {
+	G_FreeEntity(ent);
+	return;
+}
+
 void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if( ent->damage - level.time > 50 ){//I'm still sceptical about a few things here, so I'll leave this in place
 	//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
 		trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
-		//set wait to -1...
-		ent->wait = -1;
-		//zero out clock...
-		ent->s.powerups = 0;
-		//and arrange for a think
+		trap_SendServerCommand(-1, va("selfdestructupdate %i", -1));
+		//...and arrange for a thnk to and in 50 ms
+		ent->think = target_selfdestruct_end;
 		ent->nextthink = level.time + 50;
 	}
 	return;
