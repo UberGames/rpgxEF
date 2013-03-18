@@ -1864,7 +1864,7 @@ extern void TransDataReceived(const char *data);
 //
 // ui_login.c
 //
-/* nothing for now */
+void UI_LoginMenu(void);
 
 //
 // ui_demo2.c

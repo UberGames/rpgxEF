@@ -80,6 +80,7 @@ typedef struct
 
 	menubitmap_s		emotes;
 	menubitmap_s		admin;
+	menubitmap_s		login;
 
 	menubitmap_s		motd;
 	menubitmap_s		respawn;
@@ -92,6 +93,7 @@ typedef struct
 	int					prevMenu;
 
 	qboolean			isAdmin;
+	int					isSQL;
 
 } ingamemenu_t;
 
@@ -186,7 +188,7 @@ static void InGame_RestartAction( qboolean result )
 	}
 
 	UI_PopMenu();
-	trap_Cmd_ExecuteText( EXEC_APPEND, "map_restart 0\n" );
+	trap_Cmd_ExecuteText( EXEC_APPEND, "callvote map_restart 0\n" );
 }
 
 /*
@@ -306,7 +308,11 @@ void InGame_Event( void *ptr, int notification )
 		break;
 
 	case ID_ADMIN:
-		UI_AdminMenu(qfalse);
+		if ( s_ingame.isAdmin || s_ingame.isSQL ) {
+			UI_AdminMenu(qfalse);
+		} else {
+			UI_LoginMenu();
+		}
 		break;
 
 	case ID_MOTD: // RPG-X | Marcin | 03/01/2008
@@ -416,11 +422,9 @@ static void UI_InGameMenu_Draw( void )
 	UI_DrawHandlePic( s_ingame.respawn.generic.x - 14, s_ingame.respawn.generic.y,
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd );
 
-
-	if ( s_ingame.isAdmin/*s_ingame.pclass == PC_ADMIN*/ ) {
-		UI_DrawHandlePic( s_ingame.admin.generic.x - 14, s_ingame.admin.generic.y,
-			MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd );
-	}
+	UI_DrawHandlePic( s_ingame.admin.generic.x - 14, s_ingame.admin.generic.y,
+		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd );
+	
 
 	trap_R_SetColor( colorTable[CT_VDKRED1] );
 	UI_DrawHandlePic(s_ingame.leave.generic.x - 14, s_ingame.leave.generic.y, 
@@ -624,6 +628,7 @@ void InGame_MenuInit( void )
 	//TiM - Store current class
 	s_ingame.pclass = atoi( Info_ValueForKey( info, "p" ) );
 	s_ingame.isAdmin = atoi( Info_ValueForKey( info, "admin" ));
+	s_ingame.isSQL = atoi( Info_ValueForKey( info, "uid" ));
 
 	//TiM: flush the ranks data
 	trap_GetConfigString( CS_SERVERINFO, info_server, MAX_INFO_STRING );
@@ -763,10 +768,6 @@ void InGame_MenuInit( void )
 	s_ingame.admin.textcolor				= CT_BLACK;
 	s_ingame.admin.textcolor2				= CT_WHITE;
 
-	if ( !s_ingame.isAdmin/*s_ingame.pclass != PC_ADMIN*/ ) {
-		s_ingame.admin.generic.flags		|= (QMF_HIDDEN|QMF_INACTIVE|QMF_GRAYED);
-	}
-
 	/*y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.teamorders.generic.type		= MTYPE_BITMAP;
 	s_ingame.teamorders.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
@@ -895,7 +896,7 @@ void InGame_MenuInit( void )
 	s_ingame.restart.textEnum			= MBT_INGAMERESTART;
 	s_ingame.restart.textcolor			= CT_BLACK;
 	s_ingame.restart.textcolor2			= CT_WHITE;
-	if( !trap_Cvar_VariableValue( "sv_running" ) ) 
+	if( !trap_Cvar_VariableValue( "g_allowVote" ) ) 
 	{
 		s_ingame.restart.generic.flags |= QMF_GRAYED;
 	}
