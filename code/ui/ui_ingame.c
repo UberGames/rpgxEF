@@ -308,10 +308,10 @@ void InGame_Event( void *ptr, int notification )
 		break;
 
 	case ID_ADMIN:
-		if ( s_ingame.isAdmin || s_ingame.isSQL ) {
-			UI_AdminMenu(qfalse);
+		if ( s_ingame.isAdmin || s_ingame.isSQL > 0 ) {
+			UI_AdminWelcomeMenu(qfalse);
 		} else {
-			UI_LoginMenu();
+			UI_LoginMenu(qfalse);
 		}
 		break;
 

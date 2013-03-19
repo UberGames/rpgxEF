@@ -2777,11 +2777,10 @@ void UI_AdminAudioMenu( void )
 }
 
 /**********************************************************************
-	UI_LOGIN.C
+	UI_LOGIN
 
 	User inferface for user login (sql)
 **********************************************************************/
-#include "ui_local.h"
 
 static byte sqlkey;
 
@@ -2794,6 +2793,7 @@ typedef struct {
 	menufield_s		apassword;
 	menufield_s		username;
 	menufield_s		password;
+	qboolean		fromConsole;
 } login_t;
 
 login_t s_login;
@@ -2803,7 +2803,6 @@ login_t s_login;
 #define ID_ADMIN			100001
 #define ID_SQL				100002
 
-void UI_LoginMenu_Cache (void);
 
 /*
 =================
@@ -2849,32 +2848,28 @@ sfxHandle_t LoginMenu_Key(int key) {
 	return (Menu_DefaultKey(&s_login.menu, key));
 }
 
-extern qhandle_t			leftRound;
-extern qhandle_t			corner_ul_24_60;
-extern qhandle_t			corner_ll_12_60;
-
 /*
 ===============
 LoginMenu_Draw
 ===============
 */
 static void LoginMenu_Draw(void) {
-	AdminMenu_DrawCommon();
-	vec_t*	color = colorTable[CT_LTORANGE];
-	AdminMenu_DrawLCARSBox( 81, 194, 339, 70, color, MNT_BROADCAST_CMDS ); /* Admin Login */
-	AdminMenu_DrawLCARSBox( 81, 268, 339, 91, color, MNT_BROADCAST_CMDS ); /* SQL Login */
-	Menu_Draw(&s_login.menu);
-}
+	int length;
 
-/*
-===============
-UI_LoginMenu_Cache
-===============
-*/
-void UI_LoginMenu_Cache(void) {
-	leftRound = trap_R_RegisterShaderNoMip("menu/common/halfroundl_24.tga");
-	corner_ul_24_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ul_24_60.tga");
-	corner_ll_12_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ll_12_60.tga");
+	AdminMenu_DrawCommon();
+	UI_MenuFrame2( &s_login.menu );
+
+	length = UI_ProportionalStringWidth( "LCARS ODN BACKEND PROCESSING",UI_BIGFONT);
+	UI_DrawProportionalString( 360 - ( length / 2 ), 130, "LCARS ODN BACKEND PROCESSING", UI_BIGFONT, colorTable[CT_WHITE]);	
+	length = UI_ProportionalStringWidth( "ACCESS DENIED",UI_BIGFONT);
+	UI_DrawProportionalString( 360 - ( length / 2 ), 160, "ACCESS DENIED", UI_BIGFONT, colorTable[CT_RED]);
+	length = UI_ProportionalStringWidth( "PLEASE ENTER AUTHORISATION CODE",UI_BIGFONT);
+	UI_DrawProportionalString( 360 - ( length / 2 ), 190, "PLEASE ENTER AUTHORISATION CODE", UI_BIGFONT, colorTable[CT_WHITE]);	
+
+	vec_t*	color = colorTable[CT_LTORANGE];
+	AdminMenu_DrawLCARSBox( 190, 268, 340, 70, color, MNT_BROADCAST_CMDS ); /* Admin Login */
+	AdminMenu_DrawLCARSBox( 190, 342, 340, 91, color, MNT_BROADCAST_CMDS ); /* SQL Login */
+	Menu_Draw(&s_login.menu);
 }
 
 /*
@@ -2885,6 +2880,8 @@ LoginMenu_Init
 void LoginMenu_Init(void) {
 	/*int y, pad, x;
 	int i, width;*/
+
+	UI_AdminMenu_Cache();
 
 	s_login.menu.wrapAround			= qtrue;
 	s_login.menu.fullscreen			= qtrue;
@@ -2900,8 +2897,8 @@ void LoginMenu_Init(void) {
 	s_login.apassword.generic.type		= MTYPE_FIELD;
 	s_login.apassword.field.widthInChars	= 30;
 	s_login.apassword.field.maxchars		= MAX_TOKEN_CHARS; /* Freeking hell this is long... who coded this admin thing? O_O */
-	s_login.apassword.generic.x		= 90 + 5 + UI_ProportionalStringWidth( menu_button_text[MBT_ADMIN_MESSAGE][0], UI_SMALLFONT ); /* 159; */
-	s_login.apassword.generic.y		= 217;
+	s_login.apassword.generic.x		= 200 + 5 + UI_ProportionalStringWidth( menu_button_text[MBT_ADMIN_MESSAGE][0], UI_SMALLFONT ); /* 159; */
+	s_login.apassword.generic.y		= 290;
 	s_login.apassword.field.style		= UI_SMALLFONT;
 	s_login.apassword.field.titleEnum		= MBT_ADMIN_MESSAGE;
 	s_login.apassword.field.titlecolor		= CT_WHITE;
@@ -2913,8 +2910,8 @@ void LoginMenu_Init(void) {
 	s_login.admin.generic.callback		= M_Login_Event;
 	s_login.admin.generic.ownerdraw		= AdminMenu_DrawButton;
 	s_login.admin.generic.id			= ID_ADMIN;
-	s_login.admin.generic.x			= 90;
-	s_login.admin.generic.y			= 238;
+	s_login.admin.generic.x			= 200;
+	s_login.admin.generic.y			= 312;
 	s_login.admin.textX			= 9;
 	s_login.admin.textY			= 1;
 	s_login.admin.textEnum			= MBT_ADMIN_EXECUTE;
@@ -2928,8 +2925,8 @@ void LoginMenu_Init(void) {
 	s_login.username.generic.type		= MTYPE_FIELD;
 	s_login.username.field.widthInChars	= 30;
 	s_login.username.field.maxchars		= MAX_TOKEN_CHARS; /* Freeking hell this is long... who coded this admin thing? O_O */
-	s_login.username.generic.x		= 90 + 5 + UI_ProportionalStringWidth( menu_button_text[MBT_ADMIN_MESSAGE][0], UI_SMALLFONT ); /* 159; */
-	s_login.username.generic.y		= 290;
+	s_login.username.generic.x		= 200 + 5 + UI_ProportionalStringWidth( menu_button_text[MBT_ADMIN_MESSAGE][0], UI_SMALLFONT ); /* 159; */
+	s_login.username.generic.y		= 364;
 	s_login.username.field.style		= UI_SMALLFONT;
 	s_login.username.field.titleEnum		= MBT_ADMIN_MESSAGE;
 	s_login.username.field.titlecolor		= CT_WHITE;
@@ -2939,8 +2936,8 @@ void LoginMenu_Init(void) {
 	s_login.password.generic.type		= MTYPE_FIELD;
 	s_login.password.field.widthInChars	= 30;
 	s_login.password.field.maxchars		= MAX_TOKEN_CHARS; /* Freeking hell this is long... who coded this admin thing? O_O */
-	s_login.password.generic.x		= 90 + 5 + UI_ProportionalStringWidth( menu_button_text[MBT_ADMIN_MESSAGE][0], UI_SMALLFONT ); /* 159; */
-	s_login.password.generic.y		= 312;
+	s_login.password.generic.x		= 200 + 5 + UI_ProportionalStringWidth( menu_button_text[MBT_ADMIN_MESSAGE][0], UI_SMALLFONT ); /* 159; */
+	s_login.password.generic.y		= 386;
 	s_login.password.field.style		= UI_SMALLFONT;
 	s_login.password.field.titleEnum		= MBT_ADMIN_MESSAGE;
 	s_login.password.field.titlecolor		= CT_WHITE;
@@ -2952,8 +2949,8 @@ void LoginMenu_Init(void) {
 	s_login.sql.generic.callback		= M_Login_Event;
 	s_login.sql.generic.ownerdraw		= AdminMenu_DrawButton;
 	s_login.sql.generic.id			= ID_SQL;
-	s_login.sql.generic.x			= 90;
-	s_login.sql.generic.y			= 334;
+	s_login.sql.generic.x			= 200;
+	s_login.sql.generic.y			= 408;
 	s_login.sql.textX			= 9;
 	s_login.sql.textY			= 1;
 	s_login.sql.textEnum			= MBT_ADMIN_EXECUTE;
@@ -2979,16 +2976,16 @@ void LoginMenu_Init(void) {
 UI_LoginMenu
 ===============
 */
-void UI_LoginMenu(void) {
+void UI_LoginMenu(qboolean fromConsole) {
 	memset(&s_login, 0, sizeof(s_login));
 
 	uis.menusp = 0;
 
 	ingameFlag = qtrue;
 
-	Mouse_Show();
+	s_login.fromConsole = fromConsole;
 
-	UI_LoginMenu_Cache();
+	Mouse_Show();
 
 	LoginMenu_Init();
 
@@ -2998,4 +2995,92 @@ void UI_LoginMenu(void) {
 }
 
 
+/**********************************************************************
+	UI_AdminWelcomeMenu
 
+	User inferface for user login (sql)
+**********************************************************************/
+
+typedef struct {
+	menuframework_s menu;
+	qboolean		fromConsole;
+} AWM_t;
+
+AWM_t s_AWM;
+
+/*
+=================
+AdminWelcomeMenu_Key
+=================
+*/
+sfxHandle_t AdminWelcomeMenu_Key(int key) {
+	return (Menu_DefaultKey(&s_login.menu, key));
+}
+
+/*
+===============
+AdminWelcomeMenu_Draw
+===============
+*/
+static void AdminWelcomeMenu_Draw(void) {
+	int length;
+
+	AdminMenu_DrawCommon();
+	UI_MenuFrame2( &s_AWM.menu );
+
+	length = UI_ProportionalStringWidth( "WELCOME TO",UI_BIGFONT);
+	UI_DrawProportionalString( 360 - ( length / 2 ), 130, "WELCOME TO", UI_BIGFONT, colorTable[CT_WHITE]);	;
+	length = UI_ProportionalStringWidth( "LCARS ODN BACKEND PROCESSING",UI_BIGFONT);
+	UI_DrawProportionalString( 360 - ( length / 2 ), 160, "LCARS ODN BACKEND PROCESSING", UI_BIGFONT, colorTable[CT_WHITE]);	
+	length = UI_ProportionalStringWidth( "ACCESS GRANTED",UI_BIGFONT);
+	UI_DrawProportionalString( 360 - ( length / 2 ), 190, "ACCESS GRANTED", UI_BIGFONT, colorTable[CT_GREEN]);
+	Menu_Draw(&s_AWM.menu);
+}
+
+/*
+===============
+AdminWelcomeMenu_Init
+===============
+*/
+void AdminWelcomeMenu_Init(void) {
+	/*int y, pad, x;
+	int i, width;*/
+
+	UI_AdminMenu_Cache();
+
+	s_AWM.menu.wrapAround			= qtrue;
+	s_AWM.menu.fullscreen			= qtrue;
+	s_AWM.menu.draw			= AdminWelcomeMenu_Draw;
+	s_AWM.menu.descX			= MENU_DESC_X;
+	s_AWM.menu.descY			= MENU_DESC_Y;
+	s_AWM.menu.titleX			= MENU_TITLE_X;
+	s_AWM.menu.titleY			= MENU_TITLE_Y;
+	s_AWM.menu.footNoteEnum		= MNT_ADMIN;
+	s_AWM.menu.titleI			= MNT_ADMIN_MENU;
+	s_AWM.menu.key			= AdminWelcomeMenu_Key;
+
+	AdminMenu_InitButtons( &s_AWM.menu );
+}
+
+/*
+===============
+UI_AdminWelcomeMenu
+===============
+*/
+void UI_AdminWelcomeMenu(qboolean fromConsole) {
+	memset(&s_AWM, 0, sizeof(s_AWM));
+
+	uis.menusp = 0;
+
+	ingameFlag = qtrue;
+
+	s_AWM.fromConsole = fromConsole;
+
+	Mouse_Show();
+
+	AdminWelcomeMenu_Init();
+
+	UI_PushMenu(&s_AWM.menu);
+
+	Menu_AdjustCursor(&s_AWM.menu, 1);
+}

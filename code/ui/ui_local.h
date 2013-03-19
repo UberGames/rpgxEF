@@ -1849,6 +1849,8 @@ extern void HoloDataReceived(const char *data);
 //
 extern void UI_AdminMenu( qboolean fromConsole );
 extern void UI_AdminMenu_Cache( void );
+extern void UI_LoginMenu( qboolean fromConsole );
+extern void UI_AdminWelcomeMenu( qboolean fromConsole );
 
 //
 // ui_msd.c
@@ -1860,11 +1862,6 @@ extern void UI_msdMenu(int maxhull, int currhull, int maxshield, int currshield,
 //
 extern void UI_TransporterMenu(int trNum);
 extern void TransDataReceived(const char *data);
-
-//
-// ui_login.c
-//
-void UI_LoginMenu(void);
 
 //
 // ui_demo2.c
