@@ -308,11 +308,7 @@ void InGame_Event( void *ptr, int notification )
 		break;
 
 	case ID_ADMIN:
-		if ( s_ingame.isAdmin || s_ingame.isSQL > 0 ) {
-			UI_AdminWelcomeMenu(qfalse);
-		} else {
-			UI_LoginMenu(qfalse);
-		}
+		UI_LoginMenu(qfalse);
 		break;
 
 	case ID_MOTD: // RPG-X | Marcin | 03/01/2008
@@ -387,7 +383,7 @@ static void UI_InGameMenu_Draw( void )
 	UI_DrawHandlePic(30,203,  47, 186, uis.whiteShader);	// Long left column square on bottom 3rd
 
 	// Left rounded ends for buttons
-	trap_R_SetColor( colorTable[CT_DKPURPLE1]);
+	trap_R_SetColor( colorTable[CT_MDGREY]);
 
 	/*UI_DrawHandlePic(s_ingame.team.generic.x - 14, s_ingame.team.generic.y, 
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);*/
@@ -398,6 +394,7 @@ static void UI_InGameMenu_Draw( void )
 	UI_DrawHandlePic(s_ingame.removebots.generic.x - 14, s_ingame.removebots.generic.y, 
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
 
+	trap_R_SetColor( colorTable[CT_DKPURPLE1]);
 //	UI_DrawHandlePic(s_ingame.teamorders.generic.x - 14, s_ingame.teamorders.generic.y, 
 //		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
 
@@ -627,8 +624,6 @@ void InGame_MenuInit( void )
 
 	//TiM - Store current class
 	s_ingame.pclass = atoi( Info_ValueForKey( info, "p" ) );
-	s_ingame.isAdmin = atoi( Info_ValueForKey( info, "admin" ));
-	s_ingame.isSQL = atoi( Info_ValueForKey( info, "uid" ));
 
 	//TiM: flush the ranks data
 	trap_GetConfigString( CS_SERVERINFO, info_server, MAX_INFO_STRING );
@@ -672,7 +667,7 @@ void InGame_MenuInit( void )
 
 //	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.addbots.generic.type		= MTYPE_BITMAP;
-	s_ingame.addbots.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
+	s_ingame.addbots.generic.flags		= QMF_GRAYED | QMF_INACTIVE;
 	s_ingame.addbots.generic.x			= x;
 	s_ingame.addbots.generic.y			= y;
 	s_ingame.addbots.generic.id			= ID_ADDBOTS;
@@ -687,14 +682,10 @@ void InGame_MenuInit( void )
 	s_ingame.addbots.textEnum			= MBT_INGAMEADDSIMULANTS;
 	s_ingame.addbots.textcolor			= CT_BLACK;
 	s_ingame.addbots.textcolor2			= CT_WHITE;
-	if( !trap_Cvar_VariableValue( "sv_running" ) || !trap_Cvar_VariableValue( "bot_enable" ) || (trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)) 
-	{
-		s_ingame.addbots.generic.flags |= QMF_GRAYED;
-	}
 
 	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.removebots.generic.type		= MTYPE_BITMAP;
-	s_ingame.removebots.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
+	s_ingame.removebots.generic.flags		= QMF_GRAYED | QMF_INACTIVE;
 	s_ingame.removebots.generic.x			= x;
 	s_ingame.removebots.generic.y			= y;
 	s_ingame.removebots.generic.id			= ID_REMOVEBOTS;
@@ -709,9 +700,6 @@ void InGame_MenuInit( void )
 	s_ingame.removebots.textEnum			= MBT_INGAMEREMOVESIMULANTS;
 	s_ingame.removebots.textcolor			= CT_BLACK;
 	s_ingame.removebots.textcolor2			= CT_WHITE;
-	if( !trap_Cvar_VariableValue( "sv_running" ) || !trap_Cvar_VariableValue( "bot_enable" ) || (trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)) {
-		s_ingame.removebots.generic.flags |= QMF_GRAYED;
-	}
 
 	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.respawn.generic.type			= MTYPE_BITMAP;

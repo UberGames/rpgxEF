@@ -7242,7 +7242,15 @@ static void Cmd_SqlLogin_f(gentity_t *ent) {
 
 	if(!sql_use.integer || !ent || !ent->client) return;
 
-	if(trap_Argc() < 2) {
+	//logout if no argument and player is loged in
+	if(!uName[0] && !pwd[0] && ent->client->uid) {
+		ent->client->uid = 0;
+		trap_SendServerCommand( ent-g_entities, va("print \"You are now logged out.\n\"") );
+		G_Client_UserinfoChanged( ent-g_entities );
+		return;
+	}
+	else if ( !uName[0] && !pwd[0] ) { //if user added no args (ie wanted the parameters)
+		trap_SendServerCommand( ent-g_entities, va("print \"\nUsage: Allows a player to login via the User-DB\nCommand: userlogin <User Name> <User Password>\nEntering userlogin without password will log you out if you are loged in\n\" ") );
 		return;
 	}
 

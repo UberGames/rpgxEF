@@ -1850,7 +1850,6 @@ extern void HoloDataReceived(const char *data);
 extern void UI_AdminMenu( qboolean fromConsole );
 extern void UI_AdminMenu_Cache( void );
 extern void UI_LoginMenu( qboolean fromConsole );
-extern void UI_AdminWelcomeMenu( qboolean fromConsole );
 
 //
 // ui_msd.c
