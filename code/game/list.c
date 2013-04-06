@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2011 Zhehao Mao
+Copyright (c) 2013 Ubergames
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -20,80 +20,102 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include "list.h"
-#include <stdlib.h>
 #include <string.h>
 
-list_p create_list(){
-	list_p list = (list_p) malloc(sizeof(struct list));
+list_p create_list() {
+	list_p list = (list_p)malloc(sizeof(struct list));
+
+	if(list == NULL) {
+		return NULL;
+	}
+
 	list->length = 0;
 	list->first = NULL;
 	list->last = NULL;
 	list->destructor = free;
+
 	return list;
 }
 
-list_iter_p list_iterator(list_p list, char init){
+list_iter_p list_iterator(list_p list, char init) {
 	list_iter_p iter = (list_iter_p)malloc(sizeof(struct list_iter));
-	if(init==FRONT){
-		iter->current = list->first;
-	}
-	else if(init==BACK){
-		iter->current = list->last;
-	}
-	else {
-		if(iter != NULL)
-			free(iter);
+
+	if(iter == NULL) {
 		return NULL;
 	}
+
+	if(init == LIST_FRONT) {
+		iter->current = list->first;
+	} else if(init == LIST_BACK) {
+		iter->current = list->last;
+	} else { // asume front
+		iter->current = list->first;
+	}
+
 	iter->list = list;
 	iter->started = 0;
+
 	return iter;
 }
 
-void list_add(list_p list, void* data, int size){
+int list_add(list_p list, void* data, dataType_t type, int size) {
 	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
-	node->data = malloc(size);
-	memcpy(node->data, data, size);
 
-	if(list->first==NULL){
+	node->cont = (container_p)(sizeof(container));
+	if(node->cont == NULL) {
+		return 0;
+	}
+
+	node->cont->data = malloc(size);
+	if(node->cont->data == NULL) {
+		return 0;
+	}
+	memcpy(node->cont->data, data, size);
+
+	if(list->first == NULL) {
 		node->prev = NULL;
 		node->next = NULL;
 		list->first = node;
 		list->last = node;
-	}
-	else{
+	} else {
 		list->last->next = node;
 		node->prev = list->last;
 		node->next = NULL;
 		list->last = node;
 	}
 	list->length++;
+
+	return list->length;
 }
 
-void* list_current(list_iter_p iter){
-	if(iter->started&&iter->current!=NULL)
-		return iter->current->data;
+container_p list_current(list_iter_p iter){
+	if(iter->started && iter->current != NULL) {
+		return iter->current->cont;
+	}
+
 	return NULL;
 }
 
-void* list_next(list_iter_p iter){
-	if(!iter->started&&iter->current!=NULL){
-		iter->started=1;
-		return iter->current->data;
+container_p list_next(list_iter_p iter) {
+	if(!iter->started && iter->current != NULL) {
+		iter->started = 1;
+		return iter->current->cont;
 	}
-	if(iter->current!=NULL){
+
+	if(iter->current != NULL) {
 		iter->current = iter->current->next;
 		return list_current(iter);
 	}
+
 	return NULL;
 }
 
-void* list_cycl_next(list_iter_p iter){
-	if(!iter->started&&iter->current!=NULL){
-		iter->started=1;
-		return iter->current->data;
+container_p list_cycl_next(list_iter_p iter) {
+	if(!iter->started && iter->current != NULL) {
+		iter->started = 1;
+		return iter->current->cont;
 	}
-	if(iter->current!=NULL){
+	if(iter->current != NULL) {
 		iter->current = iter->current->next;
 		if(iter->current == NULL) {
 			iter->current = iter->list->first;
@@ -103,90 +125,123 @@ void* list_cycl_next(list_iter_p iter){
 	return NULL;
 }
 
-void* list_prev(list_iter_p iter){
-	if(!iter->started&&iter->current!=NULL){
-		iter->started=1;
-		return iter->current->data;
+container_p list_prev(list_iter_p iter) {
+	if(!iter->started&&iter->current!=NULL) {
+		iter->started = 1;
+		return iter->current->cont;
 	}
-	if(iter->current!=NULL){
+	if(iter->current!=NULL) {
 		iter->current = iter->current->prev;
 		return list_current(iter);
 	}
 	return NULL;
 }
 
-void* list_cycl_prev(list_iter_p iter){
-	if(!iter->started&&iter->current!=NULL){
-		iter->started=1;
-		return iter->current->data;
+container_p list_cycl_prev(list_iter_p iter){
+	if(!iter->started && iter->current != NULL) {
+		iter->started =1 ;
+		return iter->current->cont;
 	}
-	if(iter->current!=NULL){
+
+	if(iter->current!=NULL) {
 		iter->current = iter->current->prev;
 		if(iter->current == NULL) {
 			iter->current = iter->list->last;
 		}
 		return list_current(iter);
 	}
+
 	return NULL;
 }
 
-void* list_first(list_p list){
-	return list->first->data;
+container_p list_first(list_p list) {
+	return list->first->cont;
 }
 
-void* list_last(list_p list){
-	return list->last->data;
+container_p list_last(list_p list) {
+	return list->last->cont;
 }
 
-void* list_pop(list_p list){
+container_p list_pop(list_p list) {
+	container_p cont;
 	lnode_p last = list->last;
-	if(last == NULL) return NULL;
+
+	if(last == NULL) {
+		return NULL;
+	}
+
 	list->last = last->prev;
-	void* data = last->data;
+	cont = last->cont;
+
 	if(last->prev != NULL) {
 		last->prev->next = NULL;
 	}
+
 	free(last);
 	list->length--;
+
 	if(list->length == 0) {
 		list->last = list->first = NULL;
 	}
-	return data;
+
+	return cont;
 }
 
-void* list_poll(list_p list){
+container_p list_poll(list_p list){
+	container_p cont;
 	lnode_p first = list->first;
-	if(first == NULL) return NULL;
+
+	if(first == NULL) {
+		return NULL;
+	}
+
 	list->first = first->next;
-	void* data = first->data;
+	cont = first->cont;
+
 	if(first->next != NULL) {
 		first->next->prev = NULL;
 	}
+
 	free(first);
 	list->length--;
+
 	if(list->length == 0) {
 		list->last = list->first = NULL;
 	}
-	return data;
+
+	return cont;
 }
 
-void list_remove(list_p list, char end){
-	void * data;
-	if(end == FRONT)
-		data = list_poll(list);
-	else if (end == BACK)
-		data = list_pop(list);
-	else return;
-	list->destructor(data);
+void list_remove(list_p list, char end) {
+	container_p cont;
+	void (*destructor)(void*) = list->destructor;
+
+	if(end == LIST_FRONT) {
+		cont = list_poll(list);
+	} else if (end == LIST_BACK) {
+		cont = list_pop(list);
+	} else {
+		return;
+	}
+
+	if(cont != NULL) {
+		if(cont->data != NULL) {
+			destructor(cont->data);
+		}
+
+		free(cont);
+	}
 }
 
-void destroy_list(list_p list){
+void destroy_list(list_p list) {
 	lnode_p cur = list->first;
 	lnode_p next;
+
 	while(cur!=NULL){
 		next = cur->next;
 		if(list->destructor != NULL) { // only destroy data if there is a destructor set
-			list->destructor(cur->data);
+			list->destructor(cur->cont->data);
+			free(cur->cont);
 		}
 		free(cur);
 		cur = next;
@@ -195,7 +250,10 @@ void destroy_list(list_p list){
 }
 
 void destroy_iterator(list_iter_p iter) {
-	if(iter == NULL) return;
+	if(iter == NULL) {
+		return;
+	}
 
 	free(iter);
 }
+
