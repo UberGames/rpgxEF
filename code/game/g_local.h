@@ -581,8 +581,41 @@ struct gclient_s {
 #define	MAX_SPAWN_VARS			64
 #define	MAX_SPAWN_VARS_CHARS	2048
 
+/** \typedef levelLocation
+*	Type for level location.
+*	@see levelLocation_s
+*
+*	\author Ubergames - GSIO01
+*/
+typedef struct levelLocation_s levelLocation;
+
+/** \typedef levelLocation´_p
+*	Pointer to a level location.
+*	@see levelLocation
+*	@see levelLocation_s
+*
+*	\author Ubergames - GSIO01
+*/
+typedef levelLocation levelLocation_p;
+
+/** \struct levelLocation_s
+*	Describes a level location.
+*
+*	Contains a list of origin and angles where the first is the primary location origin and angles.
+*	A name which identifies the location like the targetname for entities.
+*	The actual description displayed.
+*
+*	\author Ubergames - GSIO01
+*/
+struct levelLocation_s {
+	list_p	origins;
+	list_p	angles;
+	char*	name;
+	char*	description;
+};
+
 /** \typedef srvChangeData_t
-*	Pointer to \link srvChangeData_s \endlink
+*	Type for \link srvChangeData_s \endlink
 *
 *	\author Ubergames - GSIO01
 */
@@ -603,96 +636,96 @@ struct srvChangeData_s {
 *	Contains important informations about the current leve and information needed for game logic.
 */
 typedef struct {
-	struct gclient_s*	clients;	// [maxclients]
+	struct gclient_s*	clients;	/*!< level clients */
 
-	struct gentity_s*	gentities;
-	int					gentitySize;
-	int					num_entities;		//!< current number, <= MAX_GENTITIES
+	struct gentity_s*	gentities;			/*! level gentities */
+	int					gentitySize;		/*! size of gentity */
+	int					num_entities;		/*!< current number of entities, <= MAX_GENTITIES */
 
-	int					warmupTime;			//!< restart match at this time
+	int					warmupTime;			/*!< restart match at this time */
 
-	fileHandle_t		logFile;
+	fileHandle_t		logFile;					/*! file handle for the log file */
 
 	// store latched cvars here that we want to get at often
-	int					maxclients;
+	int					maxclients;					/*! maximum number of clients allowed */
 
-	int					framenum;
-	int					time;						//!< in msec
-	int					previousTime;				//!< so movers can back up when blocked
+	int					framenum;					/*!< number of the frame */
+	int					time;						/*!< time since level start in msec */
+	int					previousTime;				/*!< so movers can back up when blocked */
 
-	int					startTime;					//!< level.time the map was started
+	int					startTime;					/*!< level.time the map was started */
 
-	int					message;					//!< MESSAGE TIME
+	int					message;					/*!< MESSAGE TIME */
 
-	int					teamScores[TEAM_NUM_TEAMS];
-	int					lastTeamLocationTime;		//!< last time of client team location update
+	int					teamScores[TEAM_NUM_TEAMS];	/*!< scores for each team */
+	int					lastTeamLocationTime;		/*!< last time of client team location update */
 
-	qboolean			newSession;					//!< don't use any old session data, because we changed gametype
+	qboolean			newSession;					/*!< don't use any old session data, because we changed gametype */
 
-	qboolean			restarted;					//!< waiting for a map_restart to fire
+	qboolean			restarted;					/*!< waiting for a map_restart to fire */
 
-	int					numConnectedClients;
-	int					numNonSpectatorClients;		//!< includes connecting clients
-	int					numPlayingClients;			//!< connected, non-spectators
-	int					sortedClients[MAX_CLIENTS];	//!< sorted by score
-	int					follow1, follow2;			//!< clientNums for auto-follow spectators
+	int					numConnectedClients;		/*!< number of connected clients */
+	int					numNonSpectatorClients;		/*!< includes connecting clients */
+	int					numPlayingClients;			/*!< connected, non-spectators */
+	int					sortedClients[MAX_CLIENTS];	/*!< Clients sorted by score */
+	int					follow1, follow2;			/*!< clientNums for auto-follow spectators */
 
-	int					snd_fry;					//!< sound index for standing in lava
+	int					snd_fry;					/*!< sound index for standing in lava */
 
-	qboolean			firstStrike;
+	qboolean			firstStrike;				/*!< Was the first strike done yet? */
 
 	// voting state
 	char				voteString[MAX_STRING_CHARS];
-	int					voteTime;					//!< level.time vote was called
-	int					voteYes;
-	int					voteNo;
-	int					numVotingClients;			//!< set by CalculateRanks
+	int					voteTime;					/*!< level.time vote was called */
+	int					voteYes;					/*!< Number of yes votes */
+	int					voteNo;						/*!< Number of no votes */
+	int					numVotingClients;			/*!< Set by CalculateRanks */
 
 	// spawn variables
-	qboolean			spawning;						//!< the G_Spawn*() functions are valid
-	int					numSpawnVars;
-	char*				spawnVars[MAX_SPAWN_VARS][2];	//!< key / value pairs
-	int					numSpawnVarChars;
-	char				spawnVarChars[MAX_SPAWN_VARS_CHARS];
+	qboolean			spawning;						/*!< the G_Spawn*() functions are valid */
+	int					numSpawnVars;					/*!< Number of spawn vars */
+	char*				spawnVars[MAX_SPAWN_VARS][2];	/*!< key / value pairs */
+	int					numSpawnVarChars;					/*!< Number of spawn var chars */
+	char				spawnVarChars[MAX_SPAWN_VARS_CHARS];/*!< The spawn var chars */
 
 	// intermission state
-	int					intermissionQueued;		//!< intermission was qualified, but wait INTERMISSION_DELAY_TIME before actually going there so the last frag can be watched.  Disable future kills during this delay
-	int					intermissiontime;		//!< time the intermission was started
-	char*				changemap;
-	qboolean			readyToExit;			//!< at least one client wants to exit
-	int					exitTime;
-	vec3_t				intermission_origin;	//!< also used for spectator spawns
-	vec3_t				intermission_angle;
+	int					intermissionQueued;		/*!< Intermission was qualified, but wait INTERMISSION_DELAY_TIME before actually going there so the last frag can be watched.  Disable future kills during this delay */
+	int					intermissiontime;		/*!< Time the intermission was started */
+	char*				changemap;				/*!< ??? */
+	qboolean			readyToExit;			/*!< Determines whether at least one client wants to exit */
+	int					exitTime;				/*!< Exit time */
+	vec3_t				intermission_origin;	/*!< Origin of the camera for intermission. Also used for spectator spawns. */
+	vec3_t				intermission_angle;		/*!< Angle of the camera for intermission. Also used for spectator spawns. */
 
-	qboolean			locationLinked;			//!< target_locations get linked
-	gentity_t*			locationHead;			//!< head of the location list
-	int					bodyQueIndex;			//!< dead bodies
-	gentity_t*			bodyQue[BODY_QUEUE_SIZE];
+	qboolean			locationLinked;			/*!< target_locations get linked */
+	gentity_t*			locationHead;			/*!< head of the location list */
+	int					bodyQueIndex;			/*!< dead bodies */
+	gentity_t*			bodyQue[BODY_QUEUE_SIZE]; /*!< body Que */
 
-	int					numObjectives;			//
+	int					numObjectives;			/*! Number of level objectives (unused) */
 
 	//RPG-X - Decoy index
-	int					decoyIndex;				//!< 0-128. Counting decoys.  If we do hit the end (omfg), start from the beginning again lol
-	int					numDecks;				//!< Counts the number of turbolift decks on the map
-	int					borgAdaptHits[WP_NUM_WEAPONS];
+	int					decoyIndex;				/*!< 0-128. Counting decoys.  If we do hit the end (omfg), start from the beginning again lol */
+	int					numDecks;				/*!< Counts the number of turbolift decks on the map */
+	int					borgAdaptHits[WP_NUM_WEAPONS];	/*!< Counts of hits for each weapon for borg adaption */
 	// usable things
 	//TiM - usables client side text defines
-	int					g_scannables[MAX_SCANNABLES];			//!< the ID is stored here, but the index is what's referenced
-	int					g_entScannables[MAX_ENTSCANNABLES][2];	//!< first cell is the entity ID, the second is the id of the object in question
-	qboolean			hasScannableFile;						//!< Most maps probably won't even have one of these
-	qboolean			hasEntScannableFile;					//!< Only older maps would probably have this
+	int					g_scannables[MAX_SCANNABLES];			/*!< the ID is stored here, but the index is what's referenced */
+	int					g_entScannables[MAX_ENTSCANNABLES][2];	/*!< first cell is the entity ID, the second is the id of the object in question */
+	qboolean			hasScannableFile;						/*!< Most maps probably won't even have one of these */
+	qboolean			hasEntScannableFile;					/*!< Only older maps would probably have this */
 
-	int					numBrushEnts;							//!< number of entities in the level that use brushmodels
+	int					numBrushEnts;							/*!< number of entities in the level that use brushmodels */
 
-	// selft destruct safezones
-	list_p				locations;
-	list_p				timedMessages;
+	list_p				safezones;								/*!< self destruct safezones list */
+	list_p				locations;								/*!< level locations list */
+	list_p				timedMessages;							/*!< timed messages list */
 
 	// other stuff
-	srvChangeData_t		srvChangeData;
+	srvChangeData_t		srvChangeData;							/*!< Server change data */
 
 	// override rpg_calcLiftTravelDuration
-	int					overrideCalcLiftTravelDuration;
+	int					overrideCalcLiftTravelDuration;			/*!< Indicated whether the level author wants to override rpg_calcLiftTravelDuration */
 } level_locals_t;
 
 
