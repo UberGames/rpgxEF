@@ -7450,20 +7450,20 @@ void addShaderToList(list_p list, char *shader) {
 		return;
 	}
 
-	i = list_iterator(list, LIST_FRONT);
+	i = list_iterator(list, FRONT);
 	if(i == NULL) {
 		free(s->s);
 		free(s);
 		return;
 	}
 
-	for(t = (rShader_s *)list_next(i)->data; t != NULL; t = (rShader_s *)list_next(i)->data) {
+	for(t = (rShader_s *)list_next(i); t != NULL; t = (rShader_s *)list_next(i)) {
 		if(!strcmp(shader, t->s)) {
 			return;
 		}
 	}
 
-	list_add(list, s, LT_DATA, sizeof(rShader_s));
+	list_add(list, s, sizeof(rShader_s));
 }
 
 extern target_alert_Shaders_s alertShaders;
@@ -7519,14 +7519,14 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 		}
 	}
 
-	iter = list_iterator(shaders, LIST_FRONT);
+	iter = list_iterator(shaders, FRONT);
 	if(iter == NULL) {
 		trap_FS_FCloseFile(f);
 		destroy_list(shaders);
 		return;
 	}
 
-	for(s = (rShader_s *)list_next(iter)->data; s != NULL; s = (rShader_s *)list_next(iter)->data) {
+	for(s = (rShader_s *)list_next(iter); s != NULL; s = (rShader_s *)list_next(iter)) {
 		G_Printf("\t%s\n", s->s);
 		if(first) {
 			trap_FS_Write("\"", 1, f);
