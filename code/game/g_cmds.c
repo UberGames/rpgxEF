@@ -7438,6 +7438,7 @@ typedef struct rShader_s {
 void addShaderToList(list_p list, char *shader) {
 	rShader_s* s = (rShader_s *)malloc(sizeof(rShader_s));
 	rShader_s* t;
+	container_p c;
 	list_iter_p i;
 
 	if(s == NULL) return;
@@ -7457,7 +7458,8 @@ void addShaderToList(list_p list, char *shader) {
 		return;
 	}
 
-	for(t = (rShader_s *)list_next(i)->data; t != NULL; t = (rShader_s *)list_next(i)->data) {
+	for(c = list_next(i)->data; c != NULL; c = list_next(i)->data) {
+		t = c->data;
 		if(!strcmp(shader, t->s)) {
 			return;
 		}
@@ -7476,6 +7478,7 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 	qboolean first = qtrue;
 	fileHandle_t f;
 	rShader_s* s;
+	container_p c;
 
 	trap_GetServerinfo(info, MAX_INFO_STRING);
 	Com_sprintf(file, MAX_QPATH, "maps/%s.precache", Info_ValueForKey(info, "mapname"));
@@ -7526,7 +7529,8 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 		return;
 	}
 
-	for(s = (rShader_s *)list_next(iter)->data; s != NULL; s = (rShader_s *)list_next(iter)->data) {
+	for(c = list_next(iter)->data; c != NULL; c = list_next(iter)->data) {
+		s = c->data;
 		G_Printf("\t%s\n", s->s);
 		if(first) {
 			trap_FS_Write("\"", 1, f);

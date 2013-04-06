@@ -61,7 +61,7 @@ list_iter_p list_iterator(list_p list, char init) {
 int list_add(list_p list, void* data, dataType_t type, size_t size, char end) {
 	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
 
-	node->cont = (container_p)(sizeof(container));
+	node->cont = (container_p)malloc(sizeof(container));
 	if(node->cont == NULL) {
 		return 0;
 	}
