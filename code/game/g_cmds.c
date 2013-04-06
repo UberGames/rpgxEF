@@ -7463,7 +7463,7 @@ void addShaderToList(list_p list, char *shader) {
 		}
 	}
 
-	list_add(list, s, LT_DATA, sizeof(rShader_s));
+	list_append(list, s, LT_DATA, sizeof(rShader_s));
 }
 
 extern target_alert_Shaders_s alertShaders;

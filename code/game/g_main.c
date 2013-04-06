@@ -968,7 +968,7 @@ static void G_LoadTimedMessages(void) {
 			}
 
 			msg->message = strdup(token);
-			list_add(level.timedMessages, msg, LT_DATA, sizeof(timedMessage_s));
+			list_append(level.timedMessages, msg, LT_DATA, sizeof(timedMessage_s));
 		} else {
 			if(token[0] == '}') {
 				break;

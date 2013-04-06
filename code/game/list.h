@@ -93,12 +93,28 @@ list_p create_list(void);
 list_iter_p list_iterator(list_p list, char init);
 
 /** 
- * Add an item with the given value, type, and size to the back of the list.
+ * Add an item with the given value, type, and size of the list.
  * The data is copied by value, so the original pointer must be freed if it
  * was allocated on the heap. 
  * Returns the length of the list if succesfull else returns 0.
  */
-int list_add(list_p list, void* data, dataType_t type, int size);
+int list_add(list_p list, void* data, dataType_t type, size_t size, char end);
+
+/**
+ * Add an item with the given calue, type, and size to the end of the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap.
+ * Returns the length of the list if successfull else returns 0.
+ */
+int list_append(list_p list, void* data, dataType_t type, size_t size);
+
+/**
+ * Add an item with the given calue, type, and size to the front of the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap.
+ * Returns the length of the list if successfull else returns 0.
+ */
+int list_prepend(list_p list, void* data, dataType_t type, size_t size);
 
 /**
  * Gets the data stored in the first item of the list or NULL if the list is empty 
