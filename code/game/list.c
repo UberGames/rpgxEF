@@ -293,7 +293,7 @@ void list_remove(list_p list, char end) {
 	}
 
 	if(cont != NULL) {
-		if(cont->pointer > 0 && cont->data != NULL) {
+		if(cont->pointer == 0 && cont->data != NULL) {
 			destructor(cont->data);
 		}
 
@@ -308,7 +308,7 @@ void destroy_list(list_p list) {
 	while(cur!=NULL){
 		next = cur->next;
 		if(list->destructor != NULL) { // only destroy data if there is a destructor set
-			if(cur->cont->pointer > 0 && cur->cont->data != NULL) {
+			if(cur->cont->pointer == 0 && cur->cont->data != NULL) {
 				list->destructor(cur->cont->data);
 			}
 			free(cur->cont);
@@ -317,6 +317,12 @@ void destroy_list(list_p list) {
 		cur = next;
 	}
 	free(list);
+}
+
+void list_clear(list_p list) {
+	while(list->length > 0) {
+		list_remove(list, LIST_BACK);
+	}
 }
 
 void destroy_iterator(list_iter_p iter) {
