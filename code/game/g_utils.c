@@ -1083,7 +1083,7 @@ int G_RadiusList ( vec3_t origin, float radius,	gentity_t *ignore, qboolean take
 	return(ent_count);
 }
 
-int G_RadiusListOfTypes(char *classname[], int count, vec3_t origin, float radius, gentity_t *ignore, gentity_t *ent_list[MAX_GENTITIES]) {
+int G_RadiusListOfTypes(char *classname[], int count, vec3_t origin, float radius, gentity_t *ignore, list_p ent_list) {
 	float		dist;
 	gentity_t	*ent;
 	int			entityList[MAX_GENTITIES];
@@ -1091,8 +1091,11 @@ int G_RadiusListOfTypes(char *classname[], int count, vec3_t origin, float radiu
 	vec3_t		mins, maxs;
 	vec3_t		v;
 	int			i, e;
-	int			ent_count = 0;
 	qboolean	valid = qfalse;
+
+	if(ent_list == NULL) {
+		ent_list = create_list();
+	}
 
 	if ( radius < 1 ) 
 	{
@@ -1146,13 +1149,12 @@ int G_RadiusListOfTypes(char *classname[], int count, vec3_t origin, float radiu
 		}
 		
 		/* ok, we are within the radius, add us to the incoming list */
-		ent_list[ent_count] = ent;
-		ent_count++;
+		list_append_ptr(ent_list, ent, LT_DATA);
 
 		valid = qfalse;
 	}
 	/*  we are done, return how many we found */
-	return(ent_count);
+	return ent_list->length;
 }
 
 /**

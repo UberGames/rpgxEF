@@ -235,4 +235,9 @@ container_p list_cycl_next(list_iter_p list);
  */
 container_p list_cycl_prev(list_iter_p list);
 
+/**
+ *	Remove all elements.
+ */
+void list_clear(list_p list);
+
 #endif
