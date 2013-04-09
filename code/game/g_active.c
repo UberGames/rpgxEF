@@ -512,7 +512,6 @@ list_iter_p iterTimedMessages;
 */
 static char *TimedMessage( void ){
 	char* message;
-	timedMessage_t *msg;
 	container_p c;
 
 	if(!level.timedMessages->length) {
@@ -527,8 +526,7 @@ static char *TimedMessage( void ){
 	}
 
 	c = list_cycl_next(iterTimedMessages);
-	msg = c->data;
-	message = msg->message;
+	message = c->data;
 
 	return message;
 }
