@@ -184,7 +184,8 @@ typedef enum {
 
 /**	\typedef gentity_t
 *
-*	Pointer to \link gentity_s \endlink
+*	Type for \link gentity_s \endlink
+*	@see gentity_s
 *
 */
 typedef struct gentity_s gentity_t;
