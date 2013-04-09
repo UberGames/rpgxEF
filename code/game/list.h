@@ -50,6 +50,7 @@ struct container {
 	void*		data;
 	size_t		size;
 	dataType_t	type;
+	int			pointer;
 } container;
 
 typedef struct container* container_p;
@@ -93,7 +94,31 @@ list_p create_list(void);
 list_iter_p list_iterator(list_p list, char init);
 
 /** 
- * Add an item with the given value, type, and size of the list.
+ * Add a pointer to an item with the given value and type to the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap. 
+ * Returns the length of the list if succesfull else returns 0.
+ */
+int list_add_ptr(list_p list, void* data, dataType_t type, char end);
+
+/**
+ * Add a pointer to an item with the given calue, type, and size to the end of the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap.
+ * Returns the length of the list if successfull else returns 0.
+ */
+int list_append_ptr(list_p list, void* data, dataType_t type);
+
+/**
+ * Add a pointer to an item with the given calue, type, and size to the front of the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap.
+ * Returns the length of the list if successfull else returns 0.
+ */
+int list_prepend_ptr(list_p list, void* data, dataType_t type);
+
+/** 
+ * Add an item with the given value, type, and size to the list.
  * The data is copied by value, so the original pointer must be freed if it
  * was allocated on the heap. 
  * Returns the length of the list if succesfull else returns 0.
