@@ -65,13 +65,15 @@ int list_add(list_p list, void* data, dataType_t type, size_t size, char end) {
 	if(node->cont == NULL) {
 		return 0;
 	}
-	node->cont->type = type;
 
+	node->cont->type = type;
 	node->cont->data = malloc(size);
 	if(node->cont->data == NULL) {
 		return 0;
 	}
 	memcpy(node->cont->data, data, size);
+	node->cont->pointer = 0;
+	node->cont->size = size;
 
 	if(list->first == NULL) {
 		node->prev = NULL;
@@ -105,6 +107,53 @@ int list_append(list_p list, void* data, dataType_t type, size_t size) {
 
 int list_prepend(list_p list, void* data, dataType_t type, size_t size) {
 	return list_add(list, data, type, size, LIST_FRONT);
+}
+
+int list_add_ptr(list_p list, void* data, dataType_t type, char end) {
+	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
+
+	node->cont = (container_p)malloc(sizeof(container));
+	if(node->cont == NULL) {
+		return 0;
+	}
+
+	node->cont->type = type;
+	node->cont->data = data;
+	node->cont->pointer = 1;
+	node->cont->size = 0;
+
+	if(list->first == NULL) {
+		node->prev = NULL;
+		node->next = NULL;
+		list->first = node;
+		list->last = node;
+	} else if(end == LIST_BACK) {
+		list->last->next = node;
+		node->prev = list->last;
+		node->next = NULL;
+		list->last = node;
+	} else if(end == LIST_FRONT) {
+		list->first->prev = node;
+		node->next = list->first;
+		node->prev = NULL;
+		list->first = node;
+	} else { // assume back
+		list->last->next = node;
+		node->prev = list->last;
+		node->next = NULL;
+		list->last = node;
+	}
+	list->length++;
+
+	return list->length;
+}
+
+int list_append_ptr(list_p list, void* data, dataType_t type) {
+	return list_add_ptr(list, data, type, LIST_BACK);
+}
+
+int list_prepend_ptr(list_p list, void* data, dataType_t type) {
+	return list_add_ptr(list, data, type, LIST_FRONT);
 }
 
 container_p list_current(list_iter_p iter){
@@ -244,7 +293,7 @@ void list_remove(list_p list, char end) {
 	}
 
 	if(cont != NULL) {
-		if(cont->data != NULL) {
+		if(cont->pointer > 0 && cont->data != NULL) {
 			destructor(cont->data);
 		}
 
@@ -259,7 +308,9 @@ void destroy_list(list_p list) {
 	while(cur!=NULL){
 		next = cur->next;
 		if(list->destructor != NULL) { // only destroy data if there is a destructor set
-			list->destructor(cur->cont->data);
+			if(cur->cont->pointer > 0 && cur->cont->data != NULL) {
+				list->destructor(cur->cont->data);
+			}
 			free(cur->cont);
 		}
 		free(cur);

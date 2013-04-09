@@ -30,6 +30,10 @@ Can be used as a LIFO stack of FIFO queue. */
 #define LIST_FRONT 0
 #define LIST_BACK 1
 
+/**
+ * Possible type the data in a container may have.
+ * LT_DATA means that a custom struct was added.
+ */
 typedef enum {
 	LT_BOOLEAN,
 	LT_CHAR,
@@ -46,37 +50,64 @@ typedef enum {
 	LT_MAX
 } dataType_t;
 
+/**
+ *	Container for data added to the list.
+ *	Use of a container allows to add standard c types to the list 
+ *	without the need to embed them into a struct.
+ */
 struct container {
-	void*		data;
-	size_t		size;
-	dataType_t	type;
+	void*		data;		/*!< pointer to the data */
+	size_t		size;		/*!< size of the data    */
+	dataType_t	type;		/*!< type of the data    */
+	char		pointer;	/*!< determin if the data is a pointer */
 } container;
 
+/**
+ * Type for a pointer to a container.
+ */
 typedef struct container* container_p;
 
+/**
+ *	Node for a double linked list.
+ */
 struct linked_node {
-	container_p cont;
-	struct linked_node* next;
-	struct linked_node* prev;
+	container_p cont;			/*!< cointainer with the data */
+	struct linked_node* next;	/*!< next list element */
+	struct linked_node* prev;	/*!< previous list element */
 };
 
+/**
+ * Type for a pointer to a node.
+ */
 typedef struct linked_node* lnode_p;
 
+/**
+ * Struct describing a list.
+ */
 struct list{
-	int length;
-	lnode_p first;
-	lnode_p last;
-	void (*destructor)(void*);
+	int length;					/*!< count of elements in the list */
+	lnode_p first;				/*!< first element of the list */
+	lnode_p last;				/*!< last element of the list */
+	void (*destructor)(void*);	/*!< pointer to destructor for data. Default is free. */
 };
 
+/**
+ *	Type for a pointer to a list.
+ */
 typedef struct list * list_p;
 
+/** 
+ * Struct describing a list iterator.
+ */
 struct list_iter{
-	list_p	list;
-	lnode_p current;
-	char started;
+	list_p	list;			/*!< the list */
+	lnode_p current;		/*!< current node */
+	char started;			/*!< has iteration started */
 };
 
+/**
+ * Type for a pointer to a list iterator.
+ */
 typedef struct list_iter * list_iter_p;
 
 /** 
@@ -93,7 +124,31 @@ list_p create_list(void);
 list_iter_p list_iterator(list_p list, char init);
 
 /** 
- * Add an item with the given value, type, and size of the list.
+ * Add a pointer to an item with the given value and type to the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap. 
+ * Returns the length of the list if succesfull else returns 0.
+ */
+int list_add_ptr(list_p list, void* data, dataType_t type, char end);
+
+/**
+ * Add a pointer to an item with the given calue, type, and size to the end of the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap.
+ * Returns the length of the list if successfull else returns 0.
+ */
+int list_append_ptr(list_p list, void* data, dataType_t type);
+
+/**
+ * Add a pointer to an item with the given calue, type, and size to the front of the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap.
+ * Returns the length of the list if successfull else returns 0.
+ */
+int list_prepend_ptr(list_p list, void* data, dataType_t type);
+
+/** 
+ * Add an item with the given value, type, and size to the list.
  * The data is copied by value, so the original pointer must be freed if it
  * was allocated on the heap. 
  * Returns the length of the list if succesfull else returns 0.
