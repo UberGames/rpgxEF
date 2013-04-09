@@ -2059,12 +2059,6 @@ struct luaAlertState_s {
 
 luaAlertState_t* luaAlertState;
 
-// timed messages
-typedef struct timedMessage_s timedMessage_t;
-struct timedMessage_s {
-	char* message;
-} timedMessage_s;
-
 /* alert shaders */
 typedef struct {
 	char*	greenShaders[10];

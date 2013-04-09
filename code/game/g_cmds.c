@@ -7432,40 +7432,33 @@ void Cmd_CamtestEnd_f(gentity_t *ent) {
 }
 // END CCAM
 
-typedef struct rShader_s {
-	char *s;
-} rShader_s;
 void addShaderToList(list_p list, char *shader) {
-	rShader_s* s = (rShader_s *)malloc(sizeof(rShader_s));
-	rShader_s* t;
+	char* s;
+	char* t;
 	container_p c;
 	list_iter_p i;
 
-	if(s == NULL) return;
 	if(shader[0] == 0) return;
 	if(list == NULL) return;
 
-	s->s = strdup(shader);
-	if(s->s == NULL) {
-		free(s);
+	s = strdup(shader);
+	if(s == NULL) {
 		return;
 	}
 
 	i = list_iterator(list, LIST_FRONT);
 	if(i == NULL) {
-		free(s->s);
-		free(s);
 		return;
 	}
 
 	for(c = list_next(i)->data; c != NULL; c = list_next(i)->data) {
 		t = c->data;
-		if(!strcmp(shader, t->s)) {
+		if(!strcmp(shader, t)) {
 			return;
 		}
 	}
 
-	list_append(list, s, LT_DATA, sizeof(rShader_s));
+	list_append(list, s, LT_DATA, strlen(s)+1);
 }
 
 extern target_alert_Shaders_s alertShaders;
@@ -7477,7 +7470,7 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 	list_iter_p iter;
 	qboolean first = qtrue;
 	fileHandle_t f;
-	rShader_s* s;
+	char* s;
 	container_p c;
 
 	trap_GetServerinfo(info, MAX_INFO_STRING);
@@ -7531,15 +7524,15 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 
 	for(c = list_next(iter)->data; c != NULL; c = list_next(iter)->data) {
 		s = c->data;
-		G_Printf("\t%s\n", s->s);
+		G_Printf("\t%s\n", s);
 		if(first) {
 			trap_FS_Write("\"", 1, f);
-			trap_FS_Write(s->s, strlen(s->s), f);
+			trap_FS_Write(s, strlen(s), f);
 			trap_FS_Write("\"", 1, f);
 			first = qfalse;
 		} else {
 			trap_FS_Write("\n\"", 2, f);
-			trap_FS_Write(s->s, strlen(s->s), f);
+			trap_FS_Write(s, strlen(s), f);
 			trap_FS_Write("\"", 1, f);
 		}
 	}

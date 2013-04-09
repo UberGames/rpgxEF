@@ -915,7 +915,6 @@ static void G_LoadTimedMessages(void) {
 	char*			token;
 	int				len;
 	int				i;
-	timedMessage_t	*msg;
 
 	len = trap_FS_FOpenFile("timedmessages.cfg", &f, FS_READ);
 	if(!len) return;
@@ -961,14 +960,7 @@ static void G_LoadTimedMessages(void) {
 				continue;
 			}
 
-			msg = (timedMessage_t *)malloc(sizeof(timedMessage_s));
-			if(msg == NULL) {
-				G_Printf("G_LoadTimedMessages -  was unable to allocate timed message storage\n");
-				continue;
-			}
-
-			msg->message = strdup(token);
-			list_append(level.timedMessages, msg, LT_DATA, sizeof(timedMessage_s));
+			list_append(level.timedMessages, token, LT_DATA, strlen(token)+1);
 		} else {
 			if(token[0] == '}') {
 				break;
