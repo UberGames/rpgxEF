@@ -282,7 +282,6 @@ container_p list_poll(list_p list){
 
 void list_remove(list_p list, char end) {
 	container_p cont;
-	void (*destructor)(void*) = list->destructor;
 
 	if(end == LIST_FRONT) {
 		cont = list_poll(list);
@@ -294,7 +293,7 @@ void list_remove(list_p list, char end) {
 
 	if(cont != NULL) {
 		if(cont->pointer == 0 && cont->data != NULL) {
-			destructor(cont->data);
+			list->destructor(cont->data);
 		}
 
 		free(cont);
@@ -331,5 +330,10 @@ void destroy_iterator(list_iter_p iter) {
 	}
 
 	free(iter);
+}
+
+void list_init(struct list * l, void (*destructor)(void*)) {
+	memset(l, 0, sizeof(struct list));
+	l->destructor = destructor;
 }
 

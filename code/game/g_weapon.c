@@ -120,11 +120,17 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 	float		nearestd = 65000;
 	vec3_t		dVec, end;
 	vec3_t		mins = { -40, -40, 0 }, maxs = { 40, 40, 0 };
-	char*		classnames[] = { "func_breakable", "misc_model_breakable" };
+	struct list	classnames;
+
+	/* prepare lists */
+	list_init(&classnames, free);
+	list_init(&validEnts, free);
+	list_append(&classnames, "func_breakable", LT_STRING, strlen("func_breakable")+1);
+	list_append(&classnames, "misc_model_breakable", LT_STRING, strlen("misc_model_breakable")+1);
 
 	/* find all vlaid entities in range */
-	memset(&validEnts, 0, sizeof(struct list));
-	count = G_RadiusListOfTypes(classnames, 2, ent->r.currentOrigin, 512, NULL, &validEnts);
+	count = G_RadiusListOfTypes(&classnames, ent->r.currentOrigin, 512, NULL, &validEnts);
+	list_clear(&classnames);
 	//G_Printf("Found %d possible candidates\n", count);
 	if(count) {
 		trace_t tr;
