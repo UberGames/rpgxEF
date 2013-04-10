@@ -716,13 +716,6 @@ gentity_t *LaunchItem( gitem_t *item, gentity_t *who, vec3_t origin, vec3_t velo
 	return dropped;
 }
 
-/*
-================
-DropWeapon
-RPG-X
-Marcin 03/12/2008
-================
-*/
 gentity_t *DropWeapon( gentity_t *ent, gitem_t *item, float angle, int flags, char *txt ) {
 	vec3_t	velocity;
 	vec3_t	origin;

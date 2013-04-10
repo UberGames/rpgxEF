@@ -41,13 +41,6 @@ static void G_WriteClientSessionData( gclient_t *client ) {
 	trap_Cvar_Set( var, s );
 }
 
-/*
-================
-G_ReadSessionData
-
-Called on a reconnect
-================
-*/
 void G_ReadSessionData( gclient_t *client ) {
 	char	s[MAX_STRING_CHARS];
 	const char	*var;
@@ -69,14 +62,6 @@ void G_ReadSessionData( gclient_t *client ) {
 	client->sess.spectatorState = (spectatorState_t)spec;
 }
 
-
-/*
-================
-G_InitSessionData
-
-Called on a first-time connect
-================
-*/
 void G_InitSessionData( gclient_t *client, char *userinfo ) {
 	clientSession_t	*sess;
 	const char		*value;
@@ -114,13 +99,6 @@ void G_InitSessionData( gclient_t *client, char *userinfo ) {
 	G_WriteClientSessionData( client );
 }
 
-
-/*
-==================
-G_InitWorldSession
-
-==================
-*/
 void G_InitWorldSession( void ) {
 	char	s[MAX_STRING_CHARS];
 	int			gt;
@@ -136,12 +114,6 @@ void G_InitWorldSession( void ) {
 	}
 }
 
-/*
-==================
-G_WriteSessionData
-
-==================
-*/
 void G_WriteSessionData( void ) {
 	int		i;
 
