@@ -848,7 +848,21 @@ void		G_AddEvent( gentity_t* ent, int event, int eventParm );
 void		G_SetOrigin( gentity_t* ent, vec3_t origin );
 void		G_SetAngles( gentity_t* ent, vec3_t anlges ); //RPG-X | GSIO01 | 24.08.2009
 int			G_RadiusList ( vec3_t origin, float radius,	gentity_t* ignore, qboolean takeDamage, gentity_t* ent_list[MAX_GENTITIES]);
-int			G_RadiusListOfTypes(char* classname[], int count, vec3_t origin, float radius, gentity_t* ignore, list_p ent_list);
+
+/**
+ *	Get a list of specified entity classes in a specified radius.
+ *
+ *	\author Ubergames - GSIO01
+ *
+ *	\param classname class names for searched entity classes
+ *	\param count cout of class names in classname
+ *	\param origin origin around which entities are searched
+ *	\param radius radius to search in
+ *	\param ignore entity to ignore
+ *	\param ent_list list to store the results
+ *	\return count of found entities
+ */
+int			G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p ignore, list_p ent_list);
 gentity_t*	G_GetNearestEnt(char* classname, vec3_t origin, float radius, gentity_t* ignore, qboolean takeDamage);
 gentity_t*	G_GetNearestPlayer(vec3_t origin, float radius, gentity_t* ignore );
 
