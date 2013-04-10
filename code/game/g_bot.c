@@ -971,11 +971,6 @@ char *G_GetBotInfoByName( const char *name ) {
 	return NULL;
 }
 
-/*
-===============
-G_InitBots
-===============
-*/
 void G_InitBots( qboolean restart ) {
 	int			fragLimit;
 	int			timeLimit;

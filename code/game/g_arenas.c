@@ -15,13 +15,6 @@ gentity_t	*podium1;
 gentity_t	*podium2;
 gentity_t	*podium3;
 
-
-/*
-==================
-UpdateTournamentInfo
-==================
-*/
-
 void UpdateTournamentInfo( void ) {
 	int			i = 0, j = 0, k = 0;
 	gentity_t	*player = NULL;
@@ -360,12 +353,6 @@ static gentity_t *SpawnPodium( void ) {
 	return podium;
 }
 
-
-/*
-==================
-SpawnModelsOnVictoryPads
-==================
-*/
 void SpawnModelsOnVictoryPads( void ) {
 	gentity_t	*player;
 	gentity_t	*podium;
@@ -408,12 +395,6 @@ void SpawnModelsOnVictoryPads( void ) {
 	}
 }
 
-
-/*
-===============
-Svcmd_AbortPodium_f
-===============
-*/
 void Svcmd_AbortPodium_f( void ) {
 	if( g_gametype.integer != GT_SINGLE_PLAYER ) {
 		return;
