@@ -1083,18 +1083,26 @@ int G_RadiusList ( vec3_t origin, float radius,	gentity_t *ignore, qboolean take
 	return(ent_count);
 }
 
-int G_RadiusListOfTypes(char *classname[], int count, vec3_t origin, float radius, gentity_t *ignore, list_p ent_list) {
+int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p ignore, list_p ent_list) {
 	float		dist;
 	gentity_t	*ent;
+	gentity_t	*t;
 	int			entityList[MAX_GENTITIES];
 	int			numListedEntities;
 	vec3_t		mins, maxs;
 	vec3_t		v;
 	int			i, e;
 	qboolean	valid = qfalse;
+	list_iter_p	iter;
+	container_p c;
+	qboolean	n = qfalse;
 
 	if(ent_list == NULL) {
 		ent_list = create_list();
+	}
+
+	if(classnames == NULL || classnames->length == 0) {
+		return 0;
 	}
 
 	if ( radius < 1 ) 
@@ -1114,14 +1122,39 @@ int G_RadiusListOfTypes(char *classname[], int count, vec3_t origin, float radiu
 	{
 		ent = &g_entities[entityList[e]];
 
-		if ((ent == ignore) || !(ent->inuse))
+		if(!(ent->inuse)) {
 			continue;
+		}
 
-		for(i = 0; i < count; i++) {
-			if(!strcmp(ent->classname, classname[i])) {
+		if(ignore != NULL) {
+			iter = list_iterator(ignore, LIST_FRONT);
+			for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+				t = c->data;
+
+				if(t == NULL) {
+					continue;
+				}
+
+				if(ent == t) {
+					n = qtrue;
+					break;
+				}
+			}
+			destroy_iterator(iter);
+		}
+
+		if(n == qtrue) {
+			continue;
+		}
+
+		iter = list_iterator(classnames, LIST_FRONT);
+		for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+			if(!strcmp(ent->classname, (char*)c->data)) {
 				valid = qtrue;
+				break;
 			}
 		}
+		destroy_iterator(iter);
 
 		if(!valid) {
 			continue;
