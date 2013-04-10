@@ -1808,19 +1808,6 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
 void BotTestSolid(vec3_t origin);
 
-/*
-=============
-ThrowWeapon
-
-RPG-X
-Marcin 03/12/2008
-=============
-*/
-/**
-*	Throw a weapon away.
-*	\author Ubergames - Marcin
-*	\date 03/12/2008
-*/
 void ThrowWeapon( gentity_t *ent, char *txt )
 {
 	gclient_t	*client;

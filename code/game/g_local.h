@@ -1272,8 +1272,27 @@ void ClientEndFrame( gentity_t* ent ); // TODO move me to g_client.c
 void G_RunClient( gentity_t* ent ); // TODO move me to g_client.c
 void G_Active_ShieldRemove(gentity_t* self);
 
-//RPG-X | Marcin | 03/12/2008
+/**
+*	Throw a weapon away.
+*
+*	\author Ubergames - Marcin
+*	\date 03/12/2008
+*	\param ent The client.
+*	\param txt Optional message for PADD dropping.
+*/
 void ThrowWeapon( gentity_t* ent, char* txt );
+
+/**
+ *	Drop a weapon.
+ *
+ *	\author Ubergames - Marcin 
+ *	\date 03/12/2008
+ *	\param ent The client.
+ *	\param item The item.
+ *	\param angle Angle to throw at.
+ *	\param flags Entity flags to use.
+ *	\param Optional message for PADD dropping.
+ */
 gentity_t *DropWeapon( gentity_t* ent, gitem_t* item, float angle, int flags, char* txt );
 
 //
@@ -1286,30 +1305,137 @@ void	Svcmd_GameMem_f( void );
 //
 // g_session.c
 //
+
+/**
+ *	Read session data for a client.
+ *
+ *	Called on a reconnect
+ *
+ *	\param client The client.
+ */
 void G_ReadSessionData( gclient_t* client );
+
+/**
+ *	Initialize session data for a client.
+ *
+ *	Called on a first-time connect
+ *
+ *	\param client The client.
+ *	\param userinfo String containing user info.
+ */
 void G_InitSessionData( gclient_t* client, char* userinfo );
 
+/**
+ *	Initialize world session.
+ */
 void G_InitWorldSession( void );
+
+/**
+ *	Write session data.
+ */
 void G_WriteSessionData( void );
 
 //
 // g_arenas.c
 //
+
+/**
+ *	Update the tournament information.
+ *
+ *	\todo Remove function and tournament related code.
+ */
 void UpdateTournamentInfo( void );
+
+/**
+ *	Spawn models on the victory pads.
+ *
+ *	\todo Remove function and related code.
+ */
 void SpawnModelsOnVictoryPads( void );
+
+/**
+ *	Abort end of match podium display.
+ *
+ *	\todo Remove function and related code.
+ */
 void Svcmd_AbortPodium_f( void );
 
 //
 // g_bot.c
 //
+
+/**
+ *	Initialize bots.
+ *
+ *	\param restart True if map restart.
+ *
+ *	\todo Remove? We don't support bots.
+ */
 void		G_InitBots( qboolean restart );
+
+/**
+ *	Get bot info by number.
+ *
+ * \param num number
+ *
+ * \todo Remove? We don't support bots.
+ */
 char*		G_GetBotInfoByNumber( int num );
+
+/**
+ *	Get bot info by name.
+ *
+ *	\param name Bot name.
+ *
+ *	\todo Remove? We don't support bots.
+ */
 char*		G_GetBotInfoByName( const char* name );
+
+/**
+ *	Check bot spawn queue and spawn bots if they are allowed.
+ *
+ *	\todo Remove? We don't support bots.
+ */
 void		G_CheckBotSpawn( void );
+
+/**
+ *	Add a bot to the bot spawn queue.
+ *
+ *	\param clientNum Client number for this bot.
+ *
+ *	\todo Remove? We don't support bots.
+ */
 void		G_QueueBotBegin( int clientNum );
+
+/**
+ *	Try to connect a bot to the game.
+ *
+ *	\param clientNum Client number for the bot.
+ *	\param restart Is this a restart?
+ *
+ *	\todo Remove? We don't support bots.
+ */
 qboolean	G_BotConnect( int clientNum, qboolean restart );
+
+/**
+ *	Server command. Add bot.
+ *
+ *	\todo Remove? We don't support bots.
+ */
 void		Svcmd_AddBot_f( void );
+
+/**
+ *	Server command. Bot list.
+ *
+ *	\todo Remove? We don't support bots.
+ */
 void		Svcmd_BotList_f( void );
+
+/**
+ *	???
+ *
+ *	\todo Remove? We don't support bots.
+ */
 void		BotInterbreedEndMatch( void );
 
 // ai_main.c
@@ -1324,10 +1450,10 @@ void		BotInterbreedEndMatch( void );
 */
 typedef struct bot_settings_s
 {
-	char	characterfile[MAX_FILEPATH];
-	int		skill;
-	char	team[MAX_FILEPATH];
-	char	pclass[MAX_FILEPATH];
+	char	characterfile[MAX_FILEPATH];	/*!< filename of character file */
+	int		skill;							/*!< skill level */
+	char	team[MAX_FILEPATH];				/*!< team */
+	char	pclass[MAX_FILEPATH];			/*!< class */
 } bot_settings_t;
 
 int BotAISetup( int restart );
@@ -1342,12 +1468,60 @@ int BotAIStartFrame( int time );
 //	g_lua.c
 //
 #ifdef G_LUA
+/**
+ *	Lua hook for InitGame event.
+ *
+ *	\param leveltime level time the event occured
+ *	\param radomseed a random seed
+ *	\param restart is this a map restart?
+ */
 void		LuaHook_G_InitGame(int leveltime, int randomseed, int restart);
+
+/**
+ *	Lua hook for Shutdown event.
+ *
+ *	\param restart is this a map restart?
+ */
 void		LuaHook_G_Shutdown(int restart);
+
+/**
+ *	Lua hook for RunFrame event.
+ *
+ *	\param leveltime the level time
+ */
 void		LuaHook_G_RunFrame(int leveltime);
+
+/**
+ * Lua hook for G_Print function.
+ *
+ *	\param text text to be printed
+ */
 void		LuaHook_G_Print(char* text);
+/**
+ * Lua hook for G_ClientPrint function.
+ *
+ *	\param text text to be printed
+ *	\param entnum entity index for client the text gets send to
+ */
 void		LuaHook_G_ClientPrint(char* text, int entnum);
+
+/**
+ * Lua hook for entity think function function.
+ *
+ *	\param function name of function to call
+ *	\param entnum entity index of entity the think function was called on
+ *	\return success or fail
+ */
 qboolean	LuaHook_G_EntityThink(char* function, int entnum);
+
+/**
+ * Lua hook for entity touch function function.
+ *
+ *	\param function name of function to call
+ *	\param entnum entity index of entity the touch function was called on
+ *	\param othernum entiy index of touching entity
+ *	\return success or fail
+ */
 qboolean	LuaHook_G_EntityTouch(char* function, int entnum, int othernum);
 qboolean	LuaHook_G_EntityUse(char* function, int entnum, int othernum, int activatornum);
 qboolean	LuaHook_G_EntityHurt(char* function, int entnum, int inflictornum, int attackernum);
