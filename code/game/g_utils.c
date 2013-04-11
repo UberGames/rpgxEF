@@ -1350,21 +1350,23 @@ gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore ) {
  *
  * @return number of entities found
  */
-int G_GetEntityByTargetname(const char *targetname, gentity_t *entities[MAX_GENTITIES]) {
+int G_GetEntityByTargetname(const char *targetname, list_p entities) {
 	int i;
-	int cnt = 0;
 	gentity_t *t;
+
+	if(entities == NULL) {
+		return 0;
+	}
 
 	for(i = MAX_GENTITIES - 1; i > -1; i--) {
 		if(!&g_entities[i]) continue;
 		t = &g_entities[i];
 		if(t->targetname && !Q_strncmp(t->targetname, targetname, strlen(targetname))) {
-			entities[cnt] = t;
-			cnt++;
+			list_append_ptr(entities, t, LT_DATA);
 		}
 	}
 
-	return cnt;
+	return entities->length;
 }
 
 /**
@@ -1378,21 +1380,23 @@ int G_GetEntityByTargetname(const char *targetname, gentity_t *entities[MAX_GENT
  *
  *  @return number of matches found
  */
-int G_GetEntityByTarget(const char *target, gentity_t *entities[MAX_GENTITIES]) {
+int G_GetEntityByTarget(const char *target, list_p entities) {
 	int i;
-	int cnt = 0;
 	gentity_t *t;
+
+	if(entities == NULL) {
+		return 0;
+	}
 
 	for(i = MAX_GENTITIES - 1; i > -1; i--) {
 		if(!&g_entities[i]) continue;
 		t = &g_entities[i];
 		if(t->target && !Q_strncmp(t->target, target, strlen(target))) {
-			entities[cnt] = t;
-			cnt++;
+			list_append_ptr(entities, t, LT_DATA);
 		}
 	}
 
-	return cnt;
+	return entities->length;
 }
 
 /**
@@ -1407,21 +1411,23 @@ int G_GetEntityByTarget(const char *target, gentity_t *entities[MAX_GENTITIES]) 
  *
  * @return number of matches found
  */
-int G_GetEntityByBmodel(char *bmodel, gentity_t *entities[MAX_GENTITIES]) {
+int G_GetEntityByBmodel(char *bmodel, list_p entities) {
 	int i;
-	int cnt = 0;
 	gentity_t *t;
+
+	if(entities == NULL) {
+		return 0;
+	}
 
 	for(i = MAX_GENTITIES - 1; i > -1; i--) {
 		if(!&g_entities[i]) continue;
 		t = &g_entities[i];
 		if(t->model && !Q_strncmp(t->model, bmodel, strlen(bmodel))) {
-			entities[cnt] = t;
-			cnt++;
+			list_append_ptr(entities, t, LT_DATA);
 		}
 	}
 
-	return cnt;
+	return entities->length;
 }
 
 /**

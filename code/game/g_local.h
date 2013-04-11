@@ -848,7 +848,16 @@ void		G_AddEvent( gentity_t* ent, int event, int eventParm );
 void		G_SetOrigin( gentity_t* ent, vec3_t origin );
 void		G_SetAngles( gentity_t* ent, vec3_t anlges ); //RPG-X | GSIO01 | 24.08.2009
 
-
+/**
+ * Get a list of entities in a specified radous around an origin.
+ *
+ * \param origin Origin to search around.
+ * \param radius Radius to serach in.
+ * \param ignore List of entities to ignore.
+ * \param takeDamage Only return entities matching this value for takeDamage.
+ * \param ent_list List to store found entities in.
+ * \return Count of entities found.
+ */
 int			G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDamage, list_p ent_list);
 
 /**
@@ -865,13 +874,33 @@ int			G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDa
  *	\return count of found entities
  */
 int			G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p ignore, list_p ent_list);
+
+/**
+ * Get the neares entity to an origin.
+ *
+ * \param classname Filter by this classname.
+ * \param origin Origin to search around.
+ * \param radius Radius to search in.
+ * \param ignore List of entities to ignore.
+ * \param takeDamage Only return entities that match this value for takeDamage.
+ * \return Nearest entity found.
+ */
 gentity_t*	G_GetNearestEnt(char* classname, vec3_t origin, float radius, list_p ignore, qboolean takeDamage);
+
+/**
+ * Get the nearest player orund an origin.
+ *
+ * \param origin Origin to search around.
+ * \param radius Radius to search in.
+ * \param ignore List of entities to ignore.
+ * \return Nearest player.
+ */
 gentity_t*	G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore );
 
 // GSIO - additional util funcs to make life easier with spawnfile
-int G_GetEntityByTargetname(const char* targetname, gentity_t* entities[MAX_GENTITIES]);
-int G_GetEntityByTarget(const char* target, gentity_t* entities[MAX_GENTITIES]);
-int G_GetEntityByBmodel(char* bmodel, gentity_t* entities[MAX_GENTITIES]);
+int G_GetEntityByTargetname(const char* targetname, list_p entities);
+int G_GetEntityByTarget(const char* target, list_p entities);
+int G_GetEntityByBmodel(char* bmodel,list_p entities);
 
 /* shader remapping */
 void AddRemap(const char* oldShader, const char* newShader, float timeOffset);

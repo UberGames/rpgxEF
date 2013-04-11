@@ -689,7 +689,7 @@ SetTeam
 qboolean SetTeam( gentity_t *ent, char *s ) {
 	int					team, oldTeam;
 	gclient_t			*client;
-	int					clientNum, clNum;
+	int					clientNum;
 	spectatorState_t	specState;
 	int					specClient;
 	int					isBot;
@@ -708,7 +708,6 @@ qboolean SetTeam( gentity_t *ent, char *s ) {
 
 	specState = SPECTATOR_NOT;
 
-	clNum = client->ps.clientNum;
 	sess = &client->sess;
 
 	if ( g_gametype.integer >= GT_TEAM && !isBot )
@@ -6349,9 +6348,10 @@ Cmd_getEntByTarget_f
 */
 static void Cmd_getEntByTarget_f(gentity_t *ent) {
 	char arg[MAX_STRING_TOKENS];
-	int cnt;
-	int i;
-	gentity_t *entities[MAX_GENTITIES];
+	struct list entities;
+	list_iter_p iter;
+	container_p c;
+	gentity_t* t;
 
 #ifndef SQL
 	if ( !IsAdmin( ent ) ) {
@@ -6367,12 +6367,25 @@ static void Cmd_getEntByTarget_f(gentity_t *ent) {
 
 	trap_Argv(1, arg, sizeof(arg));
 
-	cnt = G_GetEntityByTarget(arg, entities);
+	list_init(&entities, free);
+	G_GetEntityByTarget(arg, &entities);
 
-	for(i = 0; i < cnt; i++) {
-		if(!entities[i] || !entities[i]->classname) continue;
-		G_PrintfClient(ent, "ENT %i: %s\n\"", entities[i]->s.number, entities[i]->classname);
+	iter = list_iterator(&entities, LIST_FRONT);
+	for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+		t = c->data;
+
+		if(t == NULL) {
+			continue;
+		}
+
+		if(!t->classname) {
+			continue;
+		}
+
+		G_PrintfClient(ent, "ENT %i: %s\n\"", t->s.number, t->classname);
 	}
+	destroy_iterator(iter);
+	list_clear(&entities);
 }
 
 /*
