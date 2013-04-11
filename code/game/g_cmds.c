@@ -7362,8 +7362,11 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 	char		*classname = NULL;
 	qboolean	all = qfalse;
 	qboolean	takeDamage = qfalse;
-	gentity_t	*entities[MAX_GENTITIES];
-	int			numEntities;
+	struct list entities;
+	struct list ignore;
+	list_iter_p iter;
+	container_p c;
+	gentity_t*  t;
 
 #ifndef SQL
 	if ( !IsAdmin( ent ) ) {
@@ -7393,16 +7396,30 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 	trap_Argv(3, arg, sizeof(arg));
 	takeDamage = (qboolean)atoi(arg);
 
-	numEntities = G_RadiusList(ent->r.currentOrigin, radius, ent, takeDamage, entities);
+	list_init(&entities, free);
+	list_init(&ignore, free);
+	list_append_ptr(&ignore, ent, LT_DATA);
+	G_RadiusList(ent->r.currentOrigin, radius, &ignore, takeDamage, &entities);
+	list_clear(&ignore);
 
-	for(radius = 0; radius < numEntities; radius++) {
-		if(all)
-			G_PrintfClient(ent, "Entity: %i, Classname: %s", entities[radius]-g_entities, entities[radius]->classname);
-		else {
-			if(!Q_stricmpn(entities[radius]->classname, classname, strlen(classname)))
-				G_PrintfClient(ent, "Entity: %i Classname: %s", entities[radius]-g_entities, classname);
+	iter = list_iterator(&entities, LIST_FRONT);
+	for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+		t = c->data;
+
+		if(t == NULL) {
+			continue;
+		}
+
+		if(all) {
+			G_PrintfClient(ent, "Entity: %i, Classname: %s", t-g_entities, t->classname);
+		} else {
+			if(!Q_stricmpn(t->classname, classname, strlen(classname))) {
+				G_PrintfClient(ent, "Entity: %i Classname: %s", t-g_entities, classname);
+			}
 		}
 	}
+	destroy_iterator(iter);
+	list_clear(&entities);
 }
 
 // CCAM

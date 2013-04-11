@@ -1022,16 +1022,23 @@ void G_SetAngles(gentity_t *ent, vec3_t angles) {
  *
  * @return the number of found entities in the list
  */
-int G_RadiusList ( vec3_t origin, float radius,	gentity_t *ignore, qboolean takeDamage, gentity_t *ent_list[MAX_GENTITIES])					  
+int G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDamage, list_p ent_list)					  
 {
 	float		dist;
-	gentity_t	*ent;
+	gentity_t*	ent;
+	gentity_t*	t = NULL;
 	int			entityList[MAX_GENTITIES];
 	int			numListedEntities;
+	int			i, e;
 	vec3_t		mins, maxs;
 	vec3_t		v;
-	int			i, e;
-	int			ent_count = 0;
+	list_iter_p	iter;
+	container_p c;
+	qboolean	n = qfalse;
+
+	if(ent_list == NULL) {
+		return 0;
+	}
 
 	if ( radius < 1 ) 
 	{
@@ -1048,10 +1055,33 @@ int G_RadiusList ( vec3_t origin, float radius,	gentity_t *ignore, qboolean take
 
 	for ( e = 0 ; e < numListedEntities ; e++ ) 
 	{
+		n = qfalse;
 		ent = &g_entities[entityList[e]];
 
-		if ((ent == ignore) || !(ent->inuse) || ent->takedamage != takeDamage)
+		if (!(ent->inuse) || ent->takedamage != takeDamage) {
 			continue;
+		}
+
+		if(ignore != NULL) {
+			iter = list_iterator(ignore, LIST_FRONT);
+			for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+				t = c->data;
+
+				if(t == NULL) {
+					continue;
+				}
+
+				if(t == ent) {
+					n = qtrue;
+					break;
+				}
+			}
+			destroy_iterator(iter);
+		}
+
+		if(n == qtrue) {
+			continue;
+		}
 
 		/* find the distance from the edge of the bounding box */
 		for ( i = 0 ; i < 3 ; i++ ) 
@@ -1075,18 +1105,16 @@ int G_RadiusList ( vec3_t origin, float radius,	gentity_t *ignore, qboolean take
 		}
 		
 		/* ok, we are within the radius, add us to the incoming list */
-		ent_list[ent_count] = ent;
-		ent_count++;
-
+		list_append_ptr(ent_list, ent, LT_DATA);
 	}
 	/*  we are done, return how many we found */
-	return(ent_count);
+	return ent_list->length;
 }
 
 int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p ignore, list_p ent_list) {
 	float		dist;
 	gentity_t	*ent;
-	gentity_t	*t;
+	gentity_t	*t = NULL;
 	int			entityList[MAX_GENTITIES];
 	int			numListedEntities;
 	vec3_t		mins, maxs;
@@ -1098,7 +1126,7 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
 	qboolean	n = qfalse;
 
 	if(ent_list == NULL) {
-		ent_list = create_list();
+		return 0;
 	}
 
 	if(classnames == NULL || classnames->length == 0) {
@@ -1120,6 +1148,7 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
 
 	for ( e = 0 ; e < numListedEntities ; e++ ) 
 	{
+		n = qfalse;
 		ent = &g_entities[entityList[e]];
 
 		if(!(ent->inuse)) {
@@ -1203,46 +1232,56 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
  *
  * @return the nearest entity
  */
-gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, gentity_t *ignore, qboolean takeDamage) {
-	gentity_t	*entList[MAX_GENTITIES], *nearest = NULL;
-	int			count, i;
+gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, list_p ignore, qboolean takeDamage) {
+	gentity_t*	nearest = NULL;
+	gentity_t*	t = NULL;
 	float		distance, minDist;
 	vec3_t		dist;
+	struct list entList;
+	list_iter_p iter;
+	container_p c;
 
 	if(!radius) { /* we don't care how far it is away */
 		radius = 9999999;
 	}
-
 	minDist = radius;
 
-	count = G_RadiusList(origin, radius, ignore, takeDamage, entList);
+	list_init(&entList, free);
+	G_RadiusList(origin, radius, ignore, takeDamage, &entList);
 
-	for(i = 0; i < count; i++) {
-		if(entList[i] != ignore) {
-			if(entList[i]->s.origin[0] || entList[i]->s.origin[1] || entList[i]->s.origin[2]) {
-				VectorSubtract(origin, entList[i]->s.origin, dist);
-			} else if(entList[i]->r.currentOrigin[0] || entList[i]->r.currentOrigin[1] || entList[i]->r.currentOrigin[2]) {
-				VectorSubtract(origin, entList[i]->r.currentOrigin, dist);
-			} else if(entList[i]->s.pos.trBase[0] || entList[i]->s.pos.trBase[1] || entList[i]->s.pos.trBase[2]) {
-				VectorSubtract(origin, entList[i]->s.pos.trBase, dist);
-			} else { /* wow none of above ... well then assume it's origin is 0 0 0*/
-				VectorCopy(origin, dist);
-			}
-			distance = VectorLength(dist);
-			if(distance < 0) {
-				distance *= -1;
-			}
-			if(distance < minDist) {
-				if(classname && !Q_stricmp(classname, entList[i]->classname)) {
-					minDist = distance;
-					nearest = entList[i];
-				} else if(!classname) {
-					minDist = distance;
-					nearest = entList[i];
-				}
+	iter = list_iterator(&entList, LIST_FRONT);
+	for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+		t = c->data;
+
+		if(t == NULL) {
+			continue;
+		}
+
+		if(t->s.origin[0] || t->s.origin[1] || t->s.origin[2]) {
+			VectorSubtract(origin, t->s.origin, dist);
+		} else if(t->r.currentOrigin[0] || t->r.currentOrigin[1] || t->r.currentOrigin[2]) {
+			VectorSubtract(origin, t->r.currentOrigin, dist);
+		} else if(t->s.pos.trBase[0] || t->s.pos.trBase[1] || t->s.pos.trBase[2]) {
+			VectorSubtract(origin, t->s.pos.trBase, dist);
+		} else { /* wow none of above ... well then assume it's origin is 0 0 0*/
+			VectorCopy(origin, dist);
+		}
+		distance = VectorLength(dist);
+		if(distance < 0) {
+			distance *= -1;
+		}
+		if(distance < minDist) {
+			if(classname && !Q_stricmp(classname, t->classname)) {
+				minDist = distance;
+				nearest = t;
+			} else if(!classname) {
+				minDist = distance;
+				nearest = t;
 			}
 		}
 	}
+	destroy_iterator(iter);
+	list_clear(&entList);
 
 	return nearest;
 }
@@ -1258,31 +1297,44 @@ gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, gentity
  *
  * @return the nearest player
  */
-gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, gentity_t *ignore ) {
-	gentity_t	*entList[MAX_GENTITIES], *nearest = NULL;
-	int			i;
+gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore ) {
+	gentity_t*	nearest = NULL;
+	gentity_t*	t;
 	float		distance, minDist;
 	vec3_t		dist;
+	struct list entList;
+	list_iter_p iter;
+	container_p c;
 
-	if(!radius)
+	if(!radius) {
 		radius = 999999;
-
+	}
 	minDist = radius;
 
-	G_RadiusList(origin, radius, ignore, qtrue, entList);
+	list_init(&entList, free);
+	G_RadiusList(origin, radius, ignore, qtrue, &entList);
 	
-	for(i = 0; i < MAX_CLIENTS; i++) {
-		if(entList[i]->client) {
-			VectorSubtract(origin, entList[i]->r.currentOrigin, dist);
+	iter = list_iterator(&entList, LIST_FRONT);
+	for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+		t = c->data;
+
+		if(t == NULL) {
+			continue;
+		}
+
+		if(t->client) {
+			VectorSubtract(origin, t->r.currentOrigin, dist);
 			distance = VectorLength(dist);
 			if(distance < 0)
 				distance *= -1;
 			if(distance < minDist) {
 				minDist = distance;
-				nearest = entList[i];
+				nearest = t;
 			}
 		}
 	}
+	destroy_iterator(iter);
+	list_clear(&entList);
 
 	return nearest;
 }
