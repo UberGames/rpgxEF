@@ -537,9 +537,12 @@ void turret_base_think (gentity_t *self)
 
 	if ( !self->enemy )
 	{/* Find one */
-		gentity_t	*entity_list[MAX_GENTITIES], *target;
-		int			count, i;
+		gentity_t	*target;
 		float		bestDist = self->random * self->random;
+		struct list entity_list;
+		struct list ignore;
+		list_iter_p iter;
+		container_p c;
 
 		if ( self->last_move_time > level.time )
 		{/* We're active and alert, had an enemy in the last 5 secs */
@@ -550,13 +553,25 @@ void turret_base_think (gentity_t *self)
 			}
 		}
 
-		if(lastEnemy && lastEnemy->lastEnemy)
-			count = G_RadiusList( self->r.currentOrigin, self->random, lastEnemy->lastEnemy, qtrue, entity_list );
-		else 
-			count = G_RadiusList( self->r.currentOrigin, self->random, NULL, qtrue, entity_list );
-		for ( i = 0; i < count; i++ )
-		{
-			target = entity_list[i];
+		list_init(&entity_list, free);
+		list_init(&ignore, free);
+
+		if(lastEnemy && lastEnemy->lastEnemy) {
+			list_append_ptr(&ignore, lastEnemy->lastEnemy, LT_DATA);
+			G_RadiusList( self->r.currentOrigin, self->random, &ignore, qtrue, &entity_list );
+		} else {
+			G_RadiusList( self->r.currentOrigin, self->random, NULL, qtrue, &entity_list );
+		}
+		list_clear(&ignore);
+
+		iter = list_iterator(&entity_list, LIST_FRONT);
+		for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+			target = c->data;
+
+			if(target == NULL) {
+				continue;
+			}
+
 			if ( target == self )
 			{
 				continue;
@@ -600,6 +615,8 @@ void turret_base_think (gentity_t *self)
 				}
 			}
 		}
+		destroy_iterator(iter);
+		list_clear(&entity_list);
 	}
 
 	if ( self->enemy )
