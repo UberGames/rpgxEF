@@ -324,4 +324,13 @@ void list_clear(list_p list);
  */
 void list_init(struct list * l, void (*destructor)(void*));
 
+/**
+ * Get the element at the given index.
+ *
+ * \param list a list
+ * \param idx index
+ * \return element at given index or NULL if index is out of bounds
+ */
+container_p list_at(list_p list, int idx);
+
 #endif
