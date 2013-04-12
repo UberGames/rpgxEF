@@ -78,8 +78,8 @@ static int Entity_MMBRefit(lua_State * L)
 // returns a target entity of ent
 static int Entity_GetTarget(lua_State * L)
 {
-	lent_t     *lent;
-	gentity_t      *t = NULL;
+	lent_t*		lent = NULL;
+	gentity_t*	t = NULL;
 
 	lent = Lua_GetEntity(L, 1);
 	t = G_PickTarget(lent->e->target);
@@ -530,8 +530,12 @@ static int Entity_CallSpawn(lua_State *L) {
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(lent)
+	if(lent != NULL) {
 		e = lent->e;
+	} else {
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
 
 	if(!Q_stricmp(lent->e->classname, "target_selfdestruct"))
 		return 1; //we will not selfdestruct this way
@@ -766,7 +770,10 @@ static int Entity_IsLocked(lua_State *L) {
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(!lent || lent->e) return 1;
+	if(lent == NULL || lent->e == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
 
 	ent = lent->e;
 
@@ -1176,8 +1183,9 @@ static int Entity_SetEnemy(lua_State *L) {
 	lent_t *enemy;
 
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || lent->e)
+	if(lent == NULL || lent->e == NULL) {
 		return 1;
+	}
 	if(lua_isnil(L, 2)) {
 		lent->e->enemy = NULL;
 	} else {
@@ -1782,7 +1790,7 @@ static int Entity_GetModel(lua_State *L) {
 	lent_t	*lent;
 
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || lent->e) 
+	if(lent == NULL || lent->e == NULL) 
 		lua_pushnil(L);
 	else
 		lua_pushstring(L, lent->e->model);

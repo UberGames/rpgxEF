@@ -364,7 +364,7 @@ void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 	}
 
 	/* RPG-X: J2J noclip use */
-	if ( activator->client->ps.pm_type != PM_NORMAL || activator->client->ps.pm_type != PM_NOCLIP) {
+	if ( (activator->client->ps.pm_type != PM_NORMAL) || (activator->client->ps.pm_type != PM_NOCLIP)) {
 		return;
 	}
 

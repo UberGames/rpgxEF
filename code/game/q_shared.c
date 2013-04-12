@@ -918,6 +918,10 @@ char *Q_CleanStr( char *string ) {
 	char*	s;
 	int		c;
 
+	if(string == NULL) {
+		return string;
+	}
+
 	s = string;
 	d = string;
 	while ((c = *s) != 0 ) {
@@ -1162,8 +1166,8 @@ Info_RemoveKey_Big
 */
 void Info_RemoveKey_Big( char *s, const char *key ) {
 	char	*start;
-	char	pkey[BIG_INFO_KEY];
-	char	value[BIG_INFO_VALUE];
+	char	pkey[BIG_INFO_KEY];		// TODO move to heap?
+	char	value[BIG_INFO_VALUE];	// TODO move to heap?
 	char	*o;
 
 	if ( strlen( s ) >= BIG_INFO_STRING ) {

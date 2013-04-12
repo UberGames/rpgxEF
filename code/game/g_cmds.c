@@ -300,6 +300,10 @@ static void Cmd_Give_f( gentity_t *ent ) {
 	for ( i = bg_numGiveItems - 1; i > -1; i-- ) {
 		item = &bg_giveItem[i];
 
+		if(item == NULL) {
+			continue;
+		}
+
 		if ( !Q_stricmp( arg, item->consoleName ) ) {
 			break;
 		}
@@ -316,6 +320,10 @@ static void Cmd_Give_f( gentity_t *ent ) {
 	}
 
 	//Fuck this. Why does ioEF crash if you don't break a case statement with code in it? :S
+
+	if(item == NULL) {
+		return;
+	}
 
 	switch ( item->giveType ) {
 	case TYPE_ALL:
@@ -1566,16 +1574,16 @@ static void Cmd_SayArea( gentity_t *ent, char* text)
 
 		OtherPlayer = &g_entities[i];			//Point OtherPlayer to next player
 
-		//Send message to admins warning about command being used.
-		//TiM - since double spamming is annoying, ensure that the target admin wants this alert
-		if ( !OtherPlayer->client->noAdminChat )
-			G_SayTo( ent, OtherPlayer, SAY_ADMIN, COLOR_CYAN, va("%s ^7said to area: ", pers->netname ), text  ); //^2%s
-
 		//Check is OtherPlayer is valid
 		if ( !OtherPlayer || !OtherPlayer->inuse || !OtherPlayer->client ) 
 		{
 			continue;
 		}
+
+		//Send message to admins warning about command being used.
+		//TiM - since double spamming is annoying, ensure that the target admin wants this alert
+		if ( !OtherPlayer->client->noAdminChat )
+			G_SayTo( ent, OtherPlayer, SAY_ADMIN, COLOR_CYAN, va("%s ^7said to area: ", pers->netname ), text  ); //^2%s
 
 		//TiM - I have a better solution. the trap_inPVS function lets u see if two points are within the same Vis cluster
 		//in the BSP tree. That should mean as long as they're in the same room, regardless if they can see each other or not,
@@ -2219,6 +2227,10 @@ static void Cmd_ForceKill_f( gentity_t *ent ) {
 				G_Client_Die (target, target, target, 100000, MOD_FORCEDSUICIDE);
 			}
 		} // end iterations
+
+		if(target == NULL) {
+			return;
+		}
 
 		Com_sprintf (send, sizeof(send), "%s ^7forced %s^7's death", ent->client->pers.netname, target->client->pers.netname);
 
@@ -3725,7 +3737,7 @@ static void Cmd_EntList_f ( gentity_t *ent ) {
 						Com_sprintf( entBuffer, sizeof( entBuffer ), "ClassName: '%s', ID: %i\n", mapEnt->classname, i);
 					}
 
-					if ( strlen(mainBuffer) + strlen(entBuffer) > sizeof( mainBuffer ) ) {
+					if ( strlen(mainBuffer) + strlen(entBuffer) >= sizeof( mainBuffer ) ) {
 						break;
 					}
 					else {
@@ -5262,7 +5274,7 @@ static void Cmd_MapsList_f( gentity_t *ent )
 			continue;
 		}
 
-		if ( strlen(mapList) + len + 20 > sizeof( mapList ) )
+		if ( strlen(mapList) + len + 20 >= sizeof( mapList ) )
 			break;
 
 		Q_strcat( mapList, sizeof( mapList ), filePtr );

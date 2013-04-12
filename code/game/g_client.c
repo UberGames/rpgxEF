@@ -1750,7 +1750,7 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
         int len;
         fileHandle_t file;
 		char *p, *q;
-        char buf[16000];
+        char buf[16000]; // TODO move to heap ?
 
         len = trap_FS_FOpenFile( rpg_motdFile.string, &file, FS_READ );
         if (!file || !len) {
