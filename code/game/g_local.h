@@ -370,9 +370,9 @@ struct gentity_s {
 *	Various connection states a client can have.
 */
 typedef enum {
-	CON_DISCONNECTED,
-	CON_CONNECTING,
-	CON_CONNECTED
+	CON_DISCONNECTED,	/*!< client is disconnected */
+	CON_CONNECTING,		/*!< client is connecting */
+	CON_CONNECTED		/*!< client is connected */
 } clientConnected_t;
 
 /** \enum spectatorState_t
@@ -380,10 +380,10 @@ typedef enum {
 *	Diffrent spectator modes.
 */
 typedef enum {
-	SPECTATOR_NOT,
-	SPECTATOR_FREE,
-	SPECTATOR_FOLLOW,
-	SPECTATOR_SCOREBOARD
+	SPECTATOR_NOT,			/*!< not spectating */
+	SPECTATOR_FREE,			/*!< free spectator mode */
+	SPECTATOR_FOLLOW,		/*!< follow spectator mode */
+	SPECTATOR_SCOREBOARD	/*!< spectator scoreboard */
 } spectatorState_t;
 
 /** \enum playerTeamStateState_t
@@ -397,14 +397,16 @@ typedef enum {
 /**
 *	\brief Contains statistic information about players for team games.
 *
+*	\todo remove me
+*
 *	For example number of flag captures.
 */
 typedef struct {
-	playerTeamStateState_t	state;
+	playerTeamStateState_t	state;	/*!< players team state */
 
-	int			location;
+	int			location;			/*!< current location */
 
-	int			captures;
+	int			captures;			/*!< number of captured flags */
 	int			basedefense;
 	int			carrierdefense;
 	int			flagrecovery;
@@ -446,6 +448,12 @@ typedef struct {
 
 #define	MAX_VOTE_COUNT		3
 
+/**
+ * Set the score for a client.
+ *
+ * \param ent The client.
+ * \param score New score for the client.
+ */
 void SetScore( gentity_t *ent, int score );
 
 /**
@@ -733,37 +741,111 @@ typedef struct {
 //
 // g_spawn.c
 //
-qboolean	G_SpawnString( const char* key, const char* defaultString, char** out );
-// spawn string returns a temporary reference, you must CopyString() if you want to keep it
-qboolean	G_SpawnFloat( const char* key, const char* defaultString, float* out );
-qboolean	G_SpawnInt( const char* key, const char* defaultString, int* out );
+/**
+ * \brief Get a string for a custom entity key.
+ *
+ * Spawn string returns a temporary reference, you must copy the string if you want to keep it.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
+qboolean G_SpawnString( const char* key, const char* defaultString, char** out );
+
+/**
+ * \brief Get a float for a custom entity key.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
+qboolean G_SpawnFloat( const char* key, const char* defaultString, float* out );
+
+/**
+ * \brief Get a int for a custom entity key.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
+qboolean G_SpawnInt( const char* key, const char* defaultString, int* out );
+
+/**
+ * \brief Get a vector for a custom entity key.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
 qboolean	G_SpawnVector( const char* key, const char* defaultString, float* out );
+
+/**
+ * \brief Spawn all entities from the entity string.
+ */
 void		G_SpawnEntitiesFromString( void );
+
+/**
+ * \brief Creates a copy of the given string. Allocated on the memory pool.
+ *
+ * \param string String to copy.
+ * \return Copy of the string.
+ */
 char*		G_NewString( const char* string );
-
-//
-// Flash Light / Laser
-//
-void Laser_Gen (gentity_t* ent, int type);
-void Laser_Think( gentity_t* self );
-
 
 //
 // g_cmds.c
 //
-char*		ConcatArgs( int start );
-void		Cmd_Score_f (gentity_t* ent);
-void		StopFollowing( gentity_t* ent );
-void		BroadcastTeamChange( gclient_t* client, int oldTeam );
-qboolean	SetTeam( gentity_t* ent, char* s );
-void		Cmd_FollowCycle_f( gentity_t* ent, int dir );
-void		Cmd_Ready_f (gentity_t* ent);
+/**
+ * Concatenate all arguments for this string.
+ *
+ * \param start start from the given argument
+ * \return String containing concatenated command arguments.
+ */
+char* ConcatArgs( int start );
 
-//
-// g_roff.c
-//
-int		G_LoadRoff( const char* fileName );
-void	G_Roff( gentity_t* ent );
+/**
+ * Request current scoreboard information.
+ */
+void Cmd_Score_f (gentity_t* ent);
+
+/**
+ * If the client being followed leaves the game, or you just want to drop
+ * to free floating spectator mode
+ */
+void StopFollowing( gentity_t* ent );
+
+/**
+ * Let everyone know about a team change.
+ *
+ * \param client The client that changed team.
+ * \param oldTeam The team the client was in.
+ */
+void BroadcastTeamChange( gclient_t* client, int oldTeam );
+
+/**
+ * Set the team for a player.
+ *
+ * \param ent A player.
+ * \param s The new team.
+ * \return Success or fail.
+ */
+qboolean SetTeam( gentity_t* ent, char* s );
+
+/**
+ * Cycle different players.
+ */
+void Cmd_FollowCycle_f( gentity_t* ent, int dir );
+
+/**
+ * Command signaling player readiness.
+ *
+ * \param ent A player.
+ */
+void Cmd_Ready_f (gentity_t* ent);
 
 //
 // g_items.c
@@ -782,71 +864,400 @@ typedef struct
 	char		value[256];
 } paddData_t;
 
-#define PADD_DATA_MAX	256 // max number of padds
-#define MAX_DROPPED		255 // should be reasonable
+#define PADD_DATA_MAX	256 //!< max number of padds
+#define MAX_DROPPED		255 //!< should be reasonable
 
 extern paddData_t	paddData[PADD_DATA_MAX];
 extern int			paddDataNum;
 extern int			numTotalDropped;
 
-void	Padd_Add( gentity_t* key, gentity_t* who, char* txt);
-char*	Padd_Get( gentity_t* key, gentity_t* who );
-void	Padd_Remove( gentity_t* key );
+/**
+ * Add a new padd.
+ *
+ * \param key entity
+ * \param who owner of the padd
+ * \param txt text of the padd
+ * \author Ubergames - Marcin
+ * \date 06/12/2008
+ */
+void Padd_Add( gentity_t* key, gentity_t* who, char* txt);
 
-void	G_RunItem( gentity_t* ent );
-void	RespawnItem( gentity_t* ent );
+/**
+ * Pickup padd.
+ *
+ * \param key entity
+ * \param who Who picked up the padd.
+ * \return Text of the padd.
+ * \author Ubergames - Marcin
+ * \date 06/12/2008
+ */
+char* Padd_Get( gentity_t* key, gentity_t* who );
 
-void		UseHoldableItem( gentity_t* ent );
-void		PrecacheItem (gitem_t* it);
-gentity_t*	Drop_Item( gentity_t* ent, gitem_t* item, float angle );
-void		SetRespawn (gentity_t* ent, float delay);
-void		G_SpawnItem (gentity_t* ent, gitem_t* item);
-void		FinishSpawningItem( gentity_t* ent );
-void		Think_Weapon (gentity_t* ent);
-int			ArmorIndex (gentity_t* ent);
-void		Add_Ammo (gentity_t* ent, int weapon, int count);
-void		Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace);
+/**
+ * Remove a padd.
+ *
+ * \param key entity
+ * \author Ubergames - Marcin
+ * \date 06/12/2008
+ */
+void Padd_Remove( gentity_t* key );
 
-void	ClearRegisteredItems( void );
-void	RegisterItem( gitem_t* item );
-void	SaveRegisteredItems( void );
+/**
+ * Run an item.
+ *
+ * \param ent The item.
+ */
+void G_RunItem( gentity_t* ent );
+
+/**
+ * Repsawn an item.
+ *
+ * \param ent The item.
+ */
+void RespawnItem( gentity_t* ent );
+
+/**
+ * Spawns an item and tosses it forward.
+ *
+ * \param ent An entity to toss from.
+ * \param item The item.
+ * \param angle Direction to toss to.
+ * \return The entity for the item.
+ */
+gentity_t* Drop_Item( gentity_t* ent, gitem_t* item, float angle );
+
+/**
+ * Sets the clipping size and plants the object on the floor.
+ * Items can't be immediately dropped to floor, because they might
+ * be on an entity that hasn't spawned yet.
+ *
+ * \param ent Entity for item.
+ * \param item The item.
+ */
+void G_SpawnItem (gentity_t* ent, gitem_t* item);
+
+/**
+ * Traces down to find where an item should rest, instead of letting them
+ * free fall from their spawn points
+ *
+ * \param ent Entity for the item.
+ */
+void FinishSpawningItem( gentity_t* ent );
+
+/**
+ * Add ammo for a weapon to a player.
+ *
+ * \param ent The player.
+ * \param weapon For which weapon.
+ * \param count Ammount of ammo.
+ */
+void Add_Ammo (gentity_t* ent, int weapon, int count);
+
+/**
+ * Touch function for items.
+ *
+ * \param ent The entity for the item.
+ * \param other The touching entity.
+ * \param trace A trace.
+ */
+void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace);
+
+/**
+ * Clear all registered items.
+ */
+void ClearRegisteredItems( void );
+
+/**
+ * Register a new item. The item will be added to the precache list.
+ *
+ * \param item Item to register.
+ */
+void RegisterItem( gitem_t* item );
+
+/**
+ * Write the needed items to a config string so the client will know which ones to precache.
+ */
+void SaveRegisteredItems( void );
 
 //
 // g_utils.c
 //
-int		G_ModelIndex( char* name );
-int		G_SoundIndex( char* name );
-void	G_TeamCommand( team_t team, char* cmd );
-int		G_TricStringIndex( char* name ); //TiM
-void	G_KillBox (gentity_t* ent);
-//RPG-X: J2J - Added to move enities out of a transporting player area.
-qboolean	G_MoveBox (gentity_t* ent);
-gentity_t*	G_Find (gentity_t* from, int fieldofs, const char* match);
-gentity_t*	G_PickTarget (char* targetname);
-//TiM
-//gentity_t *G_PickEntity ( char* className, int fieldofs, const char *match );
-void	G_UseTargets (gentity_t* ent, gentity_t* activator);
-void	G_UseTargets2( gentity_t* ent, gentity_t* activator, char* target );
-void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
+/**
+ * \brief Get the model index for a model.
+ *
+ * Get the model index for a model.
+ *
+ * \param name the model name
+ *
+ * \return the models index
+ */
+int G_ModelIndex( char* name );
 
-void		G_InitGentity( gentity_t* ent );
-gentity_t*	G_Spawn (void);
-gentity_t*	G_TempEntity( vec3_t origin, int event );
-void		G_Sound( gentity_t* ent, int soundIndex );
-void		G_FreeEntity( gentity_t* ent );
+/**
+ * \brief Get the sound index for a sound.
+ *
+ * Get the sound index for a sound.
+ *
+ * \param name the sound name
+ *
+ * \return the sounds index
+ */
+int G_SoundIndex( char* name );
 
-void		G_TouchTriggers (gentity_t* ent);
-void		G_TouchSolids (gentity_t* ent);
+/**
+ * \brief Issue a team command.
+ *
+ * Issue a team command.
+ *
+ * \param team the team
+ * \param cmd the command
+ */
+void G_TeamCommand( team_t team, char* cmd );
 
-float*		tv (float x, float y, float z);
-char*		vtos( const vec3_t v );
+/**
+ * \brief Get the tric string index.
+ *
+ * Get the tric string index.
+ *
+ * \param name the tric string name
+ *
+ * \return the tric strings index
+ *
+ * \author Ubergames - TiM
+ */
+int G_TricStringIndex( char* name );
 
+/**
+ * \brief Kill all that would be inside a new one.
+ *
+ * Kills all entities that would touch the proposed new positioning
+ * of ent.  Ent should be unlinked before calling this!
+ * 
+ * \param ent the entity
+ */
+void G_KillBox (gentity_t* ent);
+
+/**
+ * \author Ubergames - J2J
+ * \brief Push all entities away that are inside a new entity.
+ *
+ * Basically does teh same as G_KillBox except it will
+ * push players and other entities away instead of killing them.
+ *
+ * \param ent the entity
+ *
+ * \return was an ent moved?
+ */
+qboolean G_MoveBox (gentity_t* ent);
+
+/**
+ *
+ * \brief Finds an entity.
+ *
+ * Searches all active entities for the next one that holds
+ * the matching string at fieldofs (use the FOFS() macro) in the structure.
+ * Searches beginning at the entity after from, or the beginning if NULL
+ * NULL will be returned if the end of the list is reached.
+ *
+ * \param from search from this entity on
+ * \param fieldofs in which field to look
+ * \param match string to match
+ *
+ * \return an matching entity or NULL
+ */
+gentity_t* G_Find (gentity_t* from, int fieldofs, const char* match);
+
+/**
+ * \brief Pick a target.
+ *
+ * Selects a random entity from among the targets.
+ *
+ * \param targetname the targets targetname
+ *
+ * \return an entity or NULL
+ */
+gentity_t* G_PickTarget (char* targetname);
+
+/**
+ * \brief Use all of the given entity's targets.
+ *
+ * Use all of the given entity's targets.
+ *
+ * \param ent the entity
+ * \param activator the initiator of the function call
+ */
+void G_UseTargets (gentity_t* ent, gentity_t* activator);
+
+/**
+ * \brief Use all targets of the given entity.
+ *
+ * Goes through all entities and calls ther use function if their
+ * targetname, swapname, truename, falsename, bluename are matching
+ * the target. activator should be set the the inflictor of this function
+ * call.
+ *
+ * \param ent the entity
+ * \param activator the activator
+ * \param target target to match
+ */
+void G_UseTargets2( gentity_t* ent, gentity_t* activator, char* target );
+
+/**
+ * \brief Converts angles to move directions.
+ *
+ * The editor only specifies a single value for angles (yaw),
+ * but we have special constants to generate an up or down direction.
+ * Angles will be cleared, because it is being used to represent a direction
+ * instead of an orientation.
+ *
+ * \param angles the angles
+ * \param movedir the movedir
+ */
+void G_SetMovedir ( vec3_t angles, vec3_t movedir);
+
+/**
+ * \brief Init the entity.
+ *
+ * Inits a given game entity.
+ *
+ * \param e the entity
+ */
+void G_InitGentity( gentity_t* ent );
+/**
+ * \brief Spawns a new entity.
+ *
+ * Either finds a free entity, or allocates a new one.
+ * The slots from 0 to MAX_CLIENTS-1 are always reserved for clients, 
+ * and will never be used by anything else.
+ * Try to avoid reusing an entity that was recently freed, because it
+ * can cause the client to think the entity morphed into something else
+ * instead of being removed and recreated, which can cause interpolated
+ * angles and bad trails.
+ *
+ * \return a new entity or NULL
+ */
+gentity_t* G_Spawn (void);
+
+/**
+ * \brief Spawn an temporary entity.
+ *
+ * Spawns an event entity that will be auto-removed
+ * The origin will be snapped to save net bandwidth, so care
+ * must be taken if the origin is right on a surface (snap towards start vector first)
+ *
+ * \param origin the origin
+ * \param event the event to use for this entity
+ *
+ * \return the temporary entity
+ */
+gentity_t* G_TempEntity( vec3_t origin, int event );
+
+/**
+ * \brief Makes an entity to play a non looping sound.
+ *
+ * Makes an entity to play a non looping sound.
+ *
+ * \param ent the entity
+ * \param soundIndex the sounds index
+ */
+void G_Sound( gentity_t* ent, int soundIndex );
+
+/**
+ * \brief Free an entity.
+ *
+ * Marks the entity as free.
+ *
+ * \param ed entity to free
+ */
+void G_FreeEntity( gentity_t* ent );
+
+/**
+*	Find all trigger entities that ent's current position touches.
+*	Spectators will only interact with teleporters.
+*/
+void G_TouchTriggers (gentity_t* ent);
+
+/**
+ * \brief Create a temporary vector.
+ *
+ * This is just a convenience function
+ * for making temporary vectors for function calls
+ *
+ * \param x x-value
+ * \param y y-value
+ * \param z z-value
+ *
+ * \return temporary vector
+ */
+float* tv(float x, float y, float z);
+
+/**
+ * \brief Converts a vector to a string to be printed.
+ *
+ * This is just a convenience function
+ * for printing vectors
+ *
+ * \param v the vector
+ *
+ * \return string representation of the vector
+ */
+char* vtos( const vec3_t v );
+
+/**
+ * \brief Get the yaw from a vector.
+ *
+ * Get the yaw from a vector.
+ *
+ * \param vec the vector
+ *
+ * \return the yaw
+ */
 float vectoyaw( const vec3_t vec );
 
-void		G_AddPredictableEvent( gentity_t* ent, int event, int eventParm );
-void		G_AddEvent( gentity_t* ent, int event, int eventParm );
-void		G_SetOrigin( gentity_t* ent, vec3_t origin );
-void		G_SetAngles( gentity_t* ent, vec3_t anlges ); //RPG-X | GSIO01 | 24.08.2009
+/**
+ * \brief Adds a new Predictable event.
+ *
+ * Use for non-pmove events that would also be predicted on the
+ * client side: jumppads and item pickups
+ * Adds an event+parm and twiddles the event counter
+ *
+ * \param ent the entity
+ * \param event the event
+ * \param eventParm any parameters for the event
+ */
+void G_AddPredictableEvent( gentity_t* ent, int event, int eventParm );
+
+/**
+ * \brief Add a new event.
+ * 
+ * Adds an event+parm and twiddles the event counter
+ *
+ * \param ent the entity
+ * \param event the event
+ * \param eventParm parameter for the event
+ */
+void G_AddEvent( gentity_t* ent, int event, int eventParm );
+
+/**
+ * \brief Set the Origin of an entity.
+ *
+ * Sets the pos trajectory for a fixed position
+ *
+ * \param ent the entity
+ * \param origin the new origin
+ */
+void G_SetOrigin( gentity_t* ent, vec3_t origin );
+
+/**
+ * \brief Set the angles of an entity.
+ *
+ * Sets the pos trajectory for a fixed angular position
+ *
+ * \param ent the entity
+ * \param angles the new angles
+ * \author Ubergames - GSIO01
+ */
+void G_SetAngles( gentity_t* ent, vec3_t anlges ); //RPG-X | GSIO01 | 24.08.2009
 
 /**
  * Get a list of entities in a specified radous around an origin.
@@ -858,7 +1269,7 @@ void		G_SetAngles( gentity_t* ent, vec3_t anlges ); //RPG-X | GSIO01 | 24.08.200
  * \param ent_list List to store found entities in.
  * \return Count of entities found.
  */
-int			G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDamage, list_p ent_list);
+int G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDamage, list_p ent_list);
 
 /**
  *	Get a list of specified entity classes in a specified radius.
@@ -873,7 +1284,7 @@ int			G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDa
  *	\param ent_list list to store the results
  *	\return count of found entities
  */
-int			G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p ignore, list_p ent_list);
+int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p ignore, list_p ent_list);
 
 /**
  * Get the neares entity to an origin.
@@ -885,7 +1296,7 @@ int			G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p
  * \param takeDamage Only return entities that match this value for takeDamage.
  * \return Nearest entity found.
  */
-gentity_t*	G_GetNearestEnt(char* classname, vec3_t origin, float radius, list_p ignore, qboolean takeDamage);
+gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, float radius, list_p ignore, qboolean takeDamage);
 
 /**
  * Get the nearest player orund an origin.
@@ -895,25 +1306,137 @@ gentity_t*	G_GetNearestEnt(char* classname, vec3_t origin, float radius, list_p 
  * \param ignore List of entities to ignore.
  * \return Nearest player.
  */
-gentity_t*	G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore );
+gentity_t* G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore );
 
-// GSIO - additional util funcs to make life easier with spawnfile
+/**
+ * \author Ubergames - GSIO01
+ * \brief Get all entities with the specified targetname.
+ *
+ * Get all entities with the specified targetname.
+ *
+ * \param targetname the targetname
+ * \param entities the result
+ *
+ * \return number of entities found
+ */
 int G_GetEntityByTargetname(const char* targetname, list_p entities);
+
+/**
+ * \author Ubergames - GSIO01
+ * \brief Get all entities with specified target.
+ * 
+ *  Get all entities matching the specifie target.
+ *
+ *  \param target target the entities should have
+ *  \param entities the result
+ *
+ *  \return number of matches found
+ */
 int G_GetEntityByTarget(const char* target, list_p entities);
+
+/**
+ * \author Ubergames - GSIO01
+ * \brief Get all entities with specified brush model
+ *
+ * Get all entities matching the specified brush model.
+ * Normally this only shoud be one entity.
+ *
+ * \param bmodel brush model to match
+ * \param entities the result
+ *
+ * \return number of matches found
+ */
 int G_GetEntityByBmodel(char* bmodel,list_p entities);
 
-/* shader remapping */
+/**
+ * \brief Add a new shader remap.
+ *
+ * Remaps oldShader with newShader.
+ *
+ * \param oldShader shader to be remapped
+ * \param newShader replacement shader
+ * \param timeOffset time offset
+ */
 void AddRemap(const char* oldShader, const char* newShader, float timeOffset);
 
 //
 // g_combat.c
 //
-qboolean	CanDamage (gentity_t* targ, vec3_t origin);
-void		G_Damage (gentity_t* targ, gentity_t* inflictor, gentity_t* attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
-qboolean	G_RadiusDamage (vec3_t origin, gentity_t* attacker, float damage, float radius, gentity_t* ignore, int dflags, int mod);
-void		body_die( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int meansOfDeath );
-void		TossClientItems( gentity_t* self, qboolean dis_con );
-void		G_Repair(gentity_t* ent, gentity_t* tr_ent, float rate); //RPG-X | GSIO01 | 09/05/2009
+/**
+ * Returns qtrue if the inflictor can directly damage the target.  Used for
+ * explosions and melee attacks.
+ *
+ * \param targ the target
+ * \param origin the origin
+ * \return qtrue if the inflictor can directly damage the target.  Used for explosions and melee attacks.
+ */
+qboolean CanDamage (gentity_t* targ, vec3_t origin);
+
+/**
+ * Damage an entity.
+ *
+ * \param targ entity that is being damaged
+ * \param inflictor entity that is causing the damage
+ * \param attacker entity that caused the inflictor to damage targ
+ * \param dir direction of the attack for knockback
+ * \param point point at which the damage is being inflicted, used for headshots
+ * \param damage amount of damage being inflicted
+ * \param knockback force to be applied against targ as a result of the damage
+ * \param dflags these flags are used to control how G_Damage works
+ * \param mod means of death
+ *
+ * Damage flags:
+ * DAMAGE_RADIUS			damage was indirect (from a nearby explosion)
+ * DAMAGE_NO_ARMOR			armor does not protect from this damage
+ * DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
+ * DAMAGE_NO_PROTECTION		kills godmode, armor, everything
+ */
+void G_Damage (gentity_t* targ, gentity_t* inflictor, gentity_t* attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
+
+/**
+ * Damage all entities around an origin in a specified radius.
+ *
+ * \return Hit a client?
+ * \param origin Origin.
+ * \param attacker Attacker.
+ * \param damage Amount much damage.
+ * \param radius Radius.
+ * \param ignore Entity to ignore.
+ * \param dflags Damage flags.
+ * \param mod Means of death.
+ * \todo Replace ignore entity by list of entites.
+ */
+qboolean G_RadiusDamage (vec3_t origin, gentity_t* attacker, float damage, float radius, gentity_t* ignore, int dflags, int mod);
+
+/**
+ * Let a body die.
+ *
+ * \param self Self.
+ * \param inflictor entity that is causing the damage
+ * \param attacker entity that caused the inflictor to damage targ
+ * \param damage Amount of damage.
+ * \param meansOfDeath Means of death.
+ */
+void body_die( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int meansOfDeath );
+
+/**
+ * Toss the weapon and powerups for the killed player.
+ *
+ * \param self the client.
+ * \param Caused by disconnect?
+ */
+void TossClientItems( gentity_t* self, qboolean dis_con );
+
+/**
+ * Repairs repairable entities.
+ *
+ * \param ent The player.
+ * \param tr_ent Entity to repair.
+ * \param rate Rate to repair with.
+ * \author Ubergames - GSIO01
+ * \date 09/05/2009
+ */
+void G_Repair(gentity_t* ent, gentity_t* tr_ent, float rate);
 
 // damage flags
 #define DAMAGE_RADIUS				0x00000001	// damage was indirect
@@ -929,164 +1452,399 @@ void		G_Repair(gentity_t* ent, gentity_t* tr_ent, float rate); //RPG-X | GSIO01 
 //
 // g_missile.c
 //
-void		G_Missile_Run( gentity_t* ent );
-gentity_t*	fire_blaster (gentity_t* self, vec3_t start, vec3_t aimdir);
+/**
+ * Run a missile.
+ *
+ * \param ent the missile
+ */
+void G_Missile_Run( gentity_t* ent );
+
+/**
+ * Fire alient plasma projectile.
+ *
+ * \param The shooter.
+ * \param start Start point.
+ * \param aimdir Direction.
+ */
 gentity_t*	fire_plasma (gentity_t* self, vec3_t start, vec3_t aimdir);
+
+/**
+ * Fire torpedo projectile.
+ *
+ * \param The shooter.
+ * \param start Start point.
+ * \param aimdir Direction.
+ */
 gentity_t*	fire_quantum (gentity_t* self, vec3_t start, vec3_t aimdir);
+
+/**
+ * Fire grenade.
+ *
+ * \param The shooter.
+ * \param start Start point.
+ * \param aimdir Direction.
+ */
 gentity_t*	fire_grenade (gentity_t* self, vec3_t start, vec3_t aimdir);
+
+/**
+ * Fire a rocket.
+ *
+ * \param The shooter.
+ * \param start Start point.
+ * \param dir Direction.
+ */
 gentity_t*	fire_rocket (gentity_t* self, vec3_t start, vec3_t dir);
-gentity_t*	fire_grapple (gentity_t* self, vec3_t start, vec3_t dir);
+
+/**
+ * Fire a compression rifle projectile.
+ *
+ * \param The shooter.
+ * \param start Start point.
+ * \param dir Direction.
+ */
 gentity_t*	fire_comprifle (gentity_t* self, vec3_t start, vec3_t dir);
-
-
 
 //
 // g_mover.c
 //
+/**
+ * Run a mover.
+ *
+ * \param ent Mover to run.
+ */
 void G_Mover_Run( gentity_t* ent );
+
+/**
+ * Touch function for doors.
+ *
+ * \param ent The mover.
+ * \param other The touching entity.
+ * \param trace A trace.
+ */
 void G_Mover_TouchDoorTrigger( gentity_t* ent, gentity_t* other, trace_t* trace );
+
+/**
+ * Use function for binary movers.
+ *
+ * \param ent The mover.
+ * \param other Other entity.
+ * \param activator Activator.
+ */
 void G_Mover_UseBinaryMover( gentity_t* ent, gentity_t* other, gentity_t* activator );
-
-//
-// g_trigger.c
-//
-void trigger_teleporter_touch (gentity_t* self, gentity_t* other, trace_t* trace );
-
 
 //
 // g_misc.c
 //
+/**
+ * Teleport a player to an origin.
+ *
+ * \param player The player.
+ * \param origin Where to teleport.
+ * \param angles Angles of the player at destination.
+ * \param tyTpye Teleport type.
+ */
 void TeleportPlayer( gentity_t* player, vec3_t origin, vec3_t angles, tpType_t tyType );
+
+/**
+ * Transport a player to an origin.
+ *
+ * \param player The player.
+ * \param origin Destination.
+ * \param angles Angles at destination.
+ * \param speed Spit out speed at destination.
+ */
 void TransportPlayer( gentity_t* player, vec3_t origin, vec3_t angles, int speed );
 
-//TiM - g_target.c
+/**
+ * Start turbolist travel.
+ *
+ * \param ent The turbolift.
+ * \author Ubergames - TiM
+ */
 void target_turbolift_start( gentity_t* ent );
 
 //
 // g_weapon.c
 //
-qboolean	G_Weapon_LogAccuracyHit( gentity_t* target, gentity_t* attacker );
-void		G_Weapon_CalcMuzzlePoint ( gentity_t* ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint, float projsize);
-void		G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to );
+/**
+ * \brief Checks wether accuray for this hit should be logged.
+ *
+ * \param target the target entity
+ * \param attacker the attacker entity
+ */
+qboolean G_Weapon_LogAccuracyHit( gentity_t* target, gentity_t* attacker );
+
+/**
+ * \brief Calculates the muzzle point.
+ *
+ * Calculates the muzzle point.
+ *
+ * \param ent the player
+ * \param fwd the forward vector
+ * \param rt the right vector
+ * \param vup the up vector
+ * \param muzzlePoint the muzzle point
+ * \param projsize projsize
+ */
+void G_Weapon_CalcMuzzlePoint ( gentity_t* ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint, float projsize);
+
+/**
+ * Round a vector to integers for more efficient network
+ * transmission, but make sure that it rounds towards a given point
+ * rather than blindly truncating.  This prevents it from truncating 
+ * into a wall.
+ *
+ * \param v vector to round
+ * \param to rounded vector
+ */
+void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to );
 
 //
 // g_client.c
 //
 /**
  * Get number of clients in team.
+ *
+ * \param ignoreClientNum Client to ignore.
+ * \param team Team.
+ * \reutrn Number of clients in team.
  */
-team_t		G_Client_TeamCount( int ignoreClientNum, int team );
+team_t G_Client_TeamCount( int ignoreClientNum, int team );
+
 /**
  * Pick a random team.
+ *
+ * \param ignoreClientNum Client to ignore.
+ * \return Random team.
  */
-team_t		G_Client_PickTeam( int ignoreClientNum );
+team_t G_Client_PickTeam( int ignoreClientNum );
+
 /**
  * Set the clients view angle.
+ *
+ * \param ent Entity for which to set view angle.
+ * \param angle New view angle.
  */
-void		G_Client_SetViewAngle( gentity_t* ent, vec3_t angle );
+void G_Client_SetViewAngle( gentity_t* ent, vec3_t angle );
+
 /**
  * Select a spawnpoint.
+ *
+ * \param avoidPoint Point to avoid.
+ * \param origin Origin.
+ * \param angles Angles.
  */
-gentity_t*	G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
+gentity_t* G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
+
 /**
  * Respawn client.
+ *
+ * \param ent Client to respawn.
  */
-void		G_Client_Respawn(gentity_t *ent);
+void G_Client_Respawn(gentity_t *ent);
+
 /**
  * Begin intermission.
  */
-void		G_Client_BeginIntermission(void);
+void G_Client_BeginIntermission(void);
+
 /**
  * Init the body que.
  */
-void		G_Client_InitBodyQue(void);
+void G_Client_InitBodyQue(void);
+
 /**
  * Spawn client.
+ *
+ * \param ent Client to spawn
+ * \param rpgx_spawn rpgx_spawn
+ * \param fromDeath Is this a spawn from death?
  */
-void		G_Client_Spawn( gentity_t* ent, int rpgx_spawn, qboolean fromDeath );
+void G_Client_Spawn( gentity_t* ent, int rpgx_spawn, qboolean fromDeath );
+
 /**
  * Let the client die.
+ *
+ * \param self Client.
+ * \param inflictor Entity causing death.
+ * \param attacker Entity that made inflicotr cause death.
+ * \param damage ammount of demage
+ * \param mod means of death
  */
-void		G_Client_Die (gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int mod);
+void G_Client_Die (gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int mod);
+
 /**
  * Add score for the client.
+ *
+ * \param ent The client.
+ * \param score Ammount of score to add.
  */
-void		G_Client_AddScore( gentity_t* ent, int score );
+void G_Client_AddScore( gentity_t* ent, int score );
+
 /**
  * Calculate clients ranks.
+ *
+ * \param fromExit From exit?
  */
-void		G_Client_CalculateRanks( qboolean fromExit );
+void G_Client_CalculateRanks( qboolean fromExit );
+
 /**
  * Determine whether spot would telefrag.
+ *
+ * \param spot Spot to check.
+ * \return Whether this spot would telefrag.
  */
-qboolean	G_Client_SpotWouldTelefrag( gentity_t* spot );
+qboolean G_Client_SpotWouldTelefrag( gentity_t* spot );
+
 /**
  * Get weapons for a class.
+ *
+ * \param client The client.
+ * \param pclass Class to get weapons for.
  */
-void		G_Client_WeaponsForClass( gclient_t* client, pclass_t pclass );
+void G_Client_WeaponsForClass( gclient_t* client, pclass_t pclass );
+
 /**
  * Get holdable items for a class.
+ *
+ * \param client The client.
+ * \param pclass Class for which to get holdables.
  */
-void		G_Client_HoldablesForClass( gclient_t* client, pclass_t pclass );
+void G_Client_HoldablesForClass( gclient_t* client, pclass_t pclass );
+
 /**
  * Store the clients initial status.
+ *
+ * \param ent The client.
  */
-void		G_Client_StoreClientInitialStatus( gentity_t* ent );
+void G_Client_StoreClientInitialStatus( gentity_t* ent );
+
 /**
  *	Get location message for a client.
+ * 
+ * \param ent The client.
+ * \param loc Location char.
+ * \param loclen Length of location char.
+ * \return Indicates success or fail.
  */
-qboolean	G_Client_GetLocationMsg(gentity_t* ent, char* loc, int loclen);
+qboolean G_Client_GetLocationMsg(gentity_t* ent, char* loc, int loclen);
+
 /**
  * Check client statuses.
  */
-void		G_Client_CheckClientStatus(void);
+void G_Client_CheckClientStatus(void);
+
 /**
  * Send client location information.
+ *
+ * \param ent The client.
  */
-void		G_Client_LocationsMessage( gentity_t *ent );
+void G_Client_LocationsMessage( gentity_t *ent );
+
 /**
  * Client connect.
+ *
+ * \param clientNum Client num.
+ * \param firstTime Indicate whether this was the first connect.
+ * \param isBot Indicate if bot or player.
  */
 char* G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot );
+
 /**
  * Clients user info changed.
+ *
+ * \param clientNum Client num.
  */
 void G_Client_UserinfoChanged( int clientNum );
+
 /**
  * Disconnect client.
+ *
+ * \param clientNum Client num.
  */
 void G_Client_Disconnect( int clientNum );
+
 /**
  * Initialize client.
+ *
+ * \param clientNum Client num.
+ * \param careAboutWarmup Indicate whether to care about warm up.
+ * \param isBot Bot or client?
+ * \param first First time?
  */
 void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qboolean first );
+
 /**
  * Client command.
+ *
+ * \param clientNum Client num.
  */
 void G_Client_Command( int clientNum );
 
 //
 // g_svcmds.c
 //
-qboolean	ConsoleCommand( void ); //void
-void		G_ProcessIPBans(void);
-qboolean	G_FilterPacket (char* from);
-gclient_t*	ClientForString( const char* s ); //RPG-X: RedTechie - Added so g_cmds could read the function
-//TiM
-void		G_ProcessIDBans( void );
-qboolean	CheckID( char*	id );
+/**
+ * Check for server console command and run if it is.
+ *
+ * \return whether this was a server command.
+ */
+qboolean ConsoleCommand( void );
+
+/**
+ * Process IP bans.
+ */
+void G_ProcessIPBans(void);
+
+/**
+ * Filter a packet.
+ */
+qboolean G_FilterPacket (char* from);
+
+/**
+ * Get a client for a string.
+ */
+gclient_t* ClientForString( const char* s ); //RPG-X: RedTechie - Added so g_cmds could read the function
+
+/**
+ * Process ID bans.
+ */
+void G_ProcessIDBans( void );
+
+/**
+ * Check ID.
+ */
+qboolean CheckID( char*	id );
 
 //
 // g_weapon.c
 //
+/**
+ * \brief Fire weapons.
+ *
+ * Handles weapon firing.
+ *
+ * \param ent the player
+ * \param alt_fire was this alt fire mode?
+ */
 void FireWeapon( gentity_t* ent, qboolean alt_fire );
-void steam_think( gentity_t* ent );
 
 //
 // p_hud.c
 //
+/**
+ * When the intermission starts, this will be called for all players.
+ * If a new client connects, this will be called after the spawn function.
+ *
+ * \param client A client.
+ */
 void MoveClientToIntermission (gentity_t* client);
-void G_SetStats (gentity_t* ent);
+
+/**
+ * Send deathmatch scorebard message.
+ *
+ * \param client A client.
+ */
 void DeathmatchScoreboardMessage (gentity_t* client);
 
 //
@@ -1095,39 +1853,121 @@ void DeathmatchScoreboardMessage (gentity_t* client);
 void SP_fx_spark( gentity_t* ent );
 
 //
-// g_cmds.c
-//
-//static void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, const char *name, const char *message );
-
-//
-// g_pweapon.c
-//
-
-
-//
 // g_main.c
 //
+/**
+ * Find the intermission point. This is also used for spectator spawns.
+ */
 void FindIntermissionPoint( void );
+
+/**
+ * Run think functions for entity.
+ */
 void G_RunThink (gentity_t* ent);
+
+/**
+ * Send scorebard message to all clients.
+ */
 void SendScoreboardMessageToAllClients( void );
+
+/**
+ * Print function that prints to the server console.
+ */
 void QDECL G_Printf( const char* fmt, ... ) __attribute__ ((format (printf, 1, 2)));
+
+/**
+ * Error function. Will result in any running map to be stoped and this way somewhat stops the server.
+ */
 void QDECL G_Error( const char* fmt, ... ) __attribute__ ((format (printf, 1, 2)));
+
+/**
+ * Print a message in a specified clients console.
+ */
 void QDECL G_PrintfClient( gentity_t* ent, const char* fmt, ...) __attribute__ ((format (printf, 2, 3)));
+
+/**
+ * Print a message in all clients consoles.
+ */
 void QDECL G_PrintfClientAll(const char* fmt, ...) __attribute__ ((format (printf, 1, 2)));
 
 //
 // g_sql.c
 //
-extern		qboolean sql_ready;
-qboolean	G_Sql_Init(void);
-void		G_Sql_Shutdown(void);
-qboolean	G_Sql_UserDB_Add(const char* uName, const char* password);
-qboolean	G_Sql_UserDB_CheckRight(int uid, int right);
-qboolean	G_Sql_UserDB_AddRight(int uid, int right);
-qboolean	G_Sql_UserDB_RemoveRight(int uid, int right);
-qboolean	G_Sql_UserDB_Del(const char* uName);
-qboolean	G_Sql_UserDB_Login(const char* uName, const char* pwd, int clientnum);
-int			G_Sql_UserDB_GetUID(const char* uName);
+extern qboolean sql_ready; /*<! Indicates whether sql is ready. */
+
+/**
+ * Initialize SQL.
+ *
+ * \return Success or fail.
+ */
+qboolean G_Sql_Init(void);
+
+/**
+ * Shutdown SQL.
+ */
+void G_Sql_Shutdown(void);
+
+/**
+ * Add a new user to the user database.
+ *
+ * \param uName Username.
+ * \param password User's password.
+ * \return Success or fail.
+ */
+qboolean G_Sql_UserDB_Add(const char* uName, const char* password);
+
+/**
+ * Check if a user has a specific right.
+ *
+ * \param uid User's id.
+ * \param right Right's id.
+ * \return Access or not.
+ */
+qboolean G_Sql_UserDB_CheckRight(int uid, int right);
+
+/**
+ * Grant a user a specific right.
+ *
+ * \param uid User's id.
+ * \param right Right's id.
+ * \return Success or fail.
+ */
+qboolean G_Sql_UserDB_AddRight(int uid, int right);
+
+/**
+ * Revoe a user a specific right.
+ *
+ * \param uid User's id.
+ * \param right Right's id.
+ * \return Success or fail.
+ */
+qboolean G_Sql_UserDB_RemoveRight(int uid, int right);
+
+/**
+ * Delete a user.
+ *
+ * \param uName Username.
+ * \return Success or fail.
+ */
+qboolean G_Sql_UserDB_Del(const char* uName);
+
+/**
+ * User login.
+ *
+ * \param uName Username.
+ * \param pwd Password.
+ * \param clientnum User's clientnum.
+ * \return Success or fail.
+ */
+qboolean G_Sql_UserDB_Login(const char* uName, const char* pwd, int clientnum);
+
+/**
+ * Get user id for a user.
+ *
+ * \param uName Username.
+ * \return UID
+ */
+int G_Sql_UserDB_GetUID(const char* uName);
 
 //RPG-X: J2J - Nice neat struct to hold info for admin tricorder transport..//////
 //TiM: I may be a complete nutter here, but I'm gonna try and mod this to see if we can mosey SP transportery FX in here
@@ -1217,11 +2057,23 @@ extern RPGX_DragData DragDat[];
 
 //////////////
 
+/**
+ * \brief Select a random spawn point.  
+ *
+ * Select a random spawn point.
+ * 
+ * \return a random spawn point
+ */
 gentity_t* SelectRandomSpawnPoint( void );		//Added so it can be used in main.
 
 //RPG-X Misc Sounds:
 //extern sfxHandle_t n00bsnd;
 
+/**
+ * Shutdown game.
+ *
+ * \param restart For map restart?
+ */
 void G_ShutdownGame( int restart );
 
 //RPG-X END///////////////////////////////////////////////////////////////////////
@@ -1345,9 +2197,34 @@ typedef struct
 // g_active.c
 //
 
+/**
+ *	A new command has arrived from the client
+ *
+ * \param clientNum Cleintnum.
+ */
 void ClientThink( int clientNum ); // TODO move me to g_client.c
+
+/**
+ *	Called at the end of each server frame for each connected client
+ *	A fast client will have multiple ClientThink for each ClientEdFrame,
+ *	while a slow client may have multiple ClientEndFrame between ClientThink.
+ *
+ * \param ent Client.
+ */
 void ClientEndFrame( gentity_t* ent ); // TODO move me to g_client.c
+
+/**
+ * Run client.
+ *
+ * \param ent Client.
+ */
 void G_RunClient( gentity_t* ent ); // TODO move me to g_client.c
+
+/**
+ * Remove a forcefield
+ *
+ * \param self The forcefield.
+ */
 void G_Active_ShieldRemove(gentity_t* self);
 
 /**
@@ -1376,9 +2253,22 @@ gentity_t *DropWeapon( gentity_t* ent, gitem_t* item, float angle, int flags, ch
 //
 // g_mem.c
 //
-void*	G_Alloc( int size );
-void	G_InitMemory( void );
-void	Svcmd_GameMem_f( void );
+/**
+ * Allocate memory from the memory pool.
+ *
+ * \param size Amount of memory to allocate.
+ */
+void* G_Alloc( int size );
+
+/**
+ * Init memory pool.
+ */
+void G_InitMemory( void );
+
+/**
+ * Print memory pool information.
+ */
+void Svcmd_GameMem_f( void );
 
 //
 // g_session.c

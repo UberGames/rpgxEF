@@ -431,13 +431,6 @@ trigger_teleport
 
 #define MAX_TRANSPORTER_POINTS 16
 
-/**
- * \brief Select a random spawn point.  
- *
- * Select a random spawn point.
- * 
- * @return a random spawn point
- */
 gentity_t *SelectRandomSpawnPoint( void )
 {
 	gentity_t	*spot = NULL;

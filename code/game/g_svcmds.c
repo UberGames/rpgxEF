@@ -128,11 +128,6 @@ static void UpdateIPBans (void)
 	trap_Cvar_Set( "g_banIPs", iplist );
 }
 
-/*
-=================
-G_FilterPacket
-=================
-*/
 qboolean G_FilterPacket (char *from)
 {
 	int		i;
@@ -790,12 +785,6 @@ static void Svcmd_LuaRestart_f(void)
 }
 #endif
 
-/*
-=================
-ConsoleCommand
-
-=================
-*/
 qboolean	ConsoleCommand( void ) { //void
 	char	cmd[MAX_TOKEN_CHARS];
 

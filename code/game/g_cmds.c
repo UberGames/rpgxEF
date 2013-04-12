@@ -17,12 +17,6 @@ extern int	numKilled;
 extern clInitStatus_t clientInitialStatus[];
 extern qboolean levelExiting;
 
-/*
-==================
-DeathmatchScoreboardMessage
-
-==================
-*/
 void DeathmatchScoreboardMessage( gentity_t *ent ) {
 	char		entry[1024];
 	char		string[1400];
@@ -75,14 +69,6 @@ void DeathmatchScoreboardMessage( gentity_t *ent ) {
 		string ) );
 }
 
-
-/*
-==================
-Cmd_Score_f
-
-Request current scoreboard information
-==================
-*/
 void Cmd_Score_f( gentity_t *ent ) {
 	DeathmatchScoreboardMessage( ent );
 }
@@ -106,12 +92,6 @@ static qboolean	CheatsOk( gentity_t *ent ) {
 	return qtrue;
 }
 
-
-/*
-==================
-ConcatArgs
-==================
-*/
 char	*ConcatArgs( int start ) {
 	int		i, c, tlen;
 	static char	line[MAX_STRING_CHARS];
@@ -625,13 +605,6 @@ static void Cmd_Kill_f( gentity_t *ent )
 	}
 }
 
-/*
-=================
-BroadCastTeamChange
-
-Let everyone know about a team change
-=================
-*/
 void BroadcastTeamChange( gclient_t *client, int oldTeam )
 {
 	clientSession_t *sess = &client->sess;
@@ -681,11 +654,6 @@ void BroadcastClassChange( gclient_t *client, pclass_t oldPClass )
 		trap_SendServerCommand( -1, va("cp \"%.15s" S_COLOR_WHITE "%s\n\"", client->pers.netname, g_classData[client->sess.sessionClass].message) );
 }
 
-/*
-=================
-SetTeam
-=================
-*/
 qboolean SetTeam( gentity_t *ent, char *s ) {
 	int					team, oldTeam;
 	gclient_t			*client;
@@ -977,14 +945,7 @@ qboolean SetClass( gentity_t *ent, char *s, char *teamName, qboolean SaveToCvar 
 
 	return qtrue;
 }
-/*
-=================
-StopFollowing
 
-If the client being followed leaves the game, or you just want to drop
-to free floating spectator mode
-=================
-*/
 void StopFollowing( gentity_t *ent ) {
 	playerState_t *ps = &ent->client->ps;
 	clientSession_t *sess = &ent->client->sess;
@@ -1285,11 +1246,6 @@ static void Cmd_Flight_f( gentity_t *ent )
 	trap_SendServerCommand( ent-g_entities, va("print \"%s\"", msg));
 }
 
-/*
-=================
-Cmd_FollowCycle_f
-=================
-*/
 void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
 	int		clientnum;
 	int		original;
