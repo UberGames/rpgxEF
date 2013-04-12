@@ -337,3 +337,22 @@ void list_init(struct list * l, void (*destructor)(void*)) {
 	l->destructor = destructor;
 }
 
+container_p list_at(list_p list, int idx) {
+	list_iter_p iter;
+	container_p c = NULL;
+	int i;
+
+	if(idx < 0 || idx >= list->length || list == NULL) {
+		return NULL;
+	}
+
+	iter = list_iterator(list, LIST_FRONT);
+	for(c = list_next(iter), i  = 0; c != NULL; c = list_next(iter), i++) {
+		if(i == idx) {
+			break;
+		}
+	}
+
+	return c;
+}
+
