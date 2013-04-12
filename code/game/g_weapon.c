@@ -61,15 +61,6 @@ extern vmCvar_t	rpg_photonAltDamage;
 #define QUANTUM_ALT_SPLASH_DAM		rpg_photonAltDamage.integer
 #define QUANTUM_ALT_SPLASH_RAD		80
 
-/**
-Round a vector to integers for more efficient network
-transmission, but make sure that it rounds towards a given point
-rather than blindly truncating.  This prevents it from truncating 
-into a wall.
-
-@param v vector to round
-@param to rounded vector
-*/
 void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
 	int i;
 
@@ -1328,13 +1319,6 @@ static void WP_FireQuantumBurst( gentity_t *ent, qboolean alt_fire )
 	G_LogWeaponFire(ent->s.number, WP_9);
 }
 
-
-/**
- * \brief Checks wether accuray for this hit should be logged.
- *
- * @param target the target entity
- * @param attacker the attacker entity
- */
 qboolean G_Weapon_LogAccuracyHit( gentity_t *target, gentity_t *attacker ) {
 	if( !target->takedamage ) {
 		return qfalse;
@@ -1496,20 +1480,6 @@ static float WP_ShotAltSize[WP_NUM_WEAPONS] =
 /*	0,*/				/* WP_7 */
 };
 
-
-
-/**
- * \brief Calculates the muzzle point.
- *
- * Calculates the muzzle point.
- *
- * @param ent the player
- * @param fwd the forward vector
- * @param rt the right vector
- * @param vup the up vector
- * @param muzzlePoint the muzzle point
- * @param projsize projsize
- */
 void G_Weapon_CalcMuzzlePoint ( gentity_t *ent, vec3_t fwd, vec3_t rt, vec3_t vup, vec3_t muzzlePoint, float projsize) 
 {
 	int weapontype;
@@ -1734,14 +1704,6 @@ FireWeapon
 #define ACCURACY_TRACKING_DELAY			100 /* in ms */
 #define NUM_FAST_WEAPONS			3
 
-/**
- * \brief Fire weapons.
- *
- * Handles weapon firing.
- *
- * @param ent the player
- * @param alt_fire was this alt fire mode?
- */
 void FireWeapon( gentity_t *ent, qboolean alt_fire ) 
 {
 	float			projsize;

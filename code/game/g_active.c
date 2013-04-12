@@ -303,15 +303,6 @@ static void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
 
 }
 
-/*
-============
-G_TouchTriggers
-============
-*/
-/**
-*	Find all trigger entities that ent's current position touches.
-*	Spectators will only interact with teleporters.
-*/
 void G_TouchTriggers( gentity_t *ent ) {
 	int			i, num;
 	int			touch[MAX_GENTITIES];
@@ -931,10 +922,6 @@ static qhandle_t	shieldDamageSound=0;
 static qhandle_t	shieldMurderSound=0;
 static qhandle_t	shieldDeactivateSound=0;
 
-
-/**
-*	Remove a forcefield
-*/
 void G_Active_ShieldRemove(gentity_t *self)
 {
 	self->think = G_FreeEntity;
@@ -2210,15 +2197,6 @@ static void ClientThink_real( gentity_t *ent ) {
 
 }
 
-/*
-==================
-ClientThink
-
-==================
-*/
-/**
-*	A new command has arrived from the client
-*/
 void ClientThink( int clientNum ) {
 	gentity_t *ent;
 
@@ -2290,16 +2268,6 @@ static void SpectatorClientEndFrame( gentity_t *ent ) {
 	}
 }
 
-/*
-==============
-ClientEndFrame
-==============
-*/
-/**
-*	Called at the end of each server frame for each connected client
-*	A fast client will have multiple ClientThink for each ClientEdFrame,
-*	while a slow client may have multiple ClientEndFrame between ClientThink.
-*/
 void ClientEndFrame( gentity_t *ent ) {
 	int			i;
 	playerState_t *ps = &ent->client->ps;

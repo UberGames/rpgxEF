@@ -519,16 +519,6 @@ void G_Client_Respawn( gentity_t *ent ) {
 	tent->s.clientNum = ent->s.clientNum;
 }
 
-/*
-================
-G_Client_TeamCount
-
-Returns number of players on a team
-================
-*/
-/**
-*	Returns number of players on a team
-*/
 team_t G_Client_TeamCount( int ignoreClientNum, int team ) {
 	int		i;
 	int		count = 0;
@@ -548,13 +538,6 @@ team_t G_Client_TeamCount( int ignoreClientNum, int team ) {
 	return (team_t)count;
 }
 
-
-/*
-================
-G_Client_PickTeam
-
-================
-*/
 team_t G_Client_PickTeam( int ignoreClientNum ) {
 	int		counts[TEAM_NUM_TEAMS];
 
