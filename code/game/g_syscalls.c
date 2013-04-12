@@ -127,8 +127,10 @@ void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
 	syscall( G_TRACE, results, start, mins, maxs, end, passEntityNum, contentmask );
 	if(g_developer.integer & 2) { // Debug trace
 		vec3_t s;
+		gentity_t* tmp;
+
 		VectorCopy(start, s);
-		gentity_t* tmp = G_TempEntity(s, EV_DEBUG_TRACE);
+		tmp = G_TempEntity(s, EV_DEBUG_TRACE);
 		VectorCopy(end, tmp->s.origin2);
 	}
 }
