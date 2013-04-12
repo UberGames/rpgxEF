@@ -1908,6 +1908,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	pclass_t	pClass = 0;//PC_NOCLASS;
 	int		cCDT = 0;
 	int clientNum;
+	pclass_t oClass;
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -2023,7 +2024,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	// health will count down towards max_health
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] * 1.25;
 
-	pclass_t oClass = client->sess.sessionClass;
+	oClass = client->sess.sessionClass;
 
 	if ( oClass != client->sess.sessionClass )
 	{//need to send the class change
