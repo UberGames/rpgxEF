@@ -31,15 +31,6 @@ static int remapCount = 0;
 /** List of shader remaps */
 static shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
 
-/**
- * \brief Add a new shader remap.
- *
- * Remaps oldShader with newShader.
- *
- * @param oldShader shader to be remapped
- * @param newShader replacement shader
- * @param timeOffset time offset
- */
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	int i;
 
@@ -131,56 +122,20 @@ int G_FindConfigstringIndex( char *name, int start, int max, qboolean create ) {
 	return i;
 }
 
-/**
- * \brief Get the model index for a model.
- *
- * Get the model index for a model.
- *
- * @param name the model name
- *
- * @return the models index
- */
 int G_ModelIndex( char *name ) {
 	return G_FindConfigstringIndex (name, CS_MODELS, MAX_MODELS, qtrue);
 }
 
-/**
- * \brief Get the sound index for a sound.
- *
- * Get the sound index for a sound.
- *
- * @param name the sound name
- *
- * @return the sounds index
- */
 int G_SoundIndex( char *name ) {
 	return G_FindConfigstringIndex (name, CS_SOUNDS, MAX_SOUNDS, qtrue);
 }
 
-/**
- * \brief Get the tric string index.
- *
- * Get the tric string index.
- *
- * @param name the tric string name
- *
- * @return the tric strings index
- */
 int G_TricStringIndex( char *name ) {
 	return G_FindConfigstringIndex (name, CS_TRIC_STRINGS, MAX_TRIC_STRINGS, qtrue);
 }
 
 //=====================================================================
 
-
-/**
- * \brief Issue a team command.
- *
- * Issue a team command.
- *
- * @param team the team
- * @param cmd the command
- */
 void G_TeamCommand( team_t team, char *cmd ) {
 	int		i;
 
@@ -193,22 +148,6 @@ void G_TeamCommand( team_t team, char *cmd ) {
 	}
 }
 
-
-/**
- *
- * \brief Finds an entity.
- *
- * Searches all active entities for the next one that holds
- * the matching string at fieldofs (use the FOFS() macro) in the structure.
- * Searches beginning at the entity after from, or the beginning if NULL
- * NULL will be returned if the end of the list is reached.
- *
- * @param from search from this entity on
- * @param fieldofs in which field to look
- * @param match string to match
- *
- * @return an matching entity or NULL
- */
 gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
 {
 	char	*s;
@@ -236,15 +175,6 @@ gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
 /** Maximum number of possible choices for G_PickTarget. */
 #define MAXCHOICES 	32
 
-/**
- * \brief Pick a target.
- *
- * Selects a random entity from among the targets.
- *
- * @param targetname the targets targetname
- *
- * @return an entity or NULL
- */
 gentity_t *G_PickTarget (char *targetname)
 {
 	gentity_t	*ent = NULL;
@@ -325,18 +255,6 @@ gentity_t *G_PickTarget (char *targetname)
 	return choice[rand() % num_choices];
 }
 
-/**
- * \brief Use all targets of the given entity.
- *
- * Goes through all entities and calls ther use function if their
- * targetname, swapname, truename, falsename, bluename are matching
- * the target. activator should be set the the inflictor of this function
- * call.
- *
- * @param ent the entity
- * @param activator the activator
- * @param target target to match
- */
 void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	gentity_t		*t;
 	
@@ -507,14 +425,6 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	}
 }
 
-/**
- * \brief Use all of the given entity's targets.
- *
- * Use all of the given entity's targets.
- *
- * @param ent the entity
- * @param activator the initiator of the function call
- */
 void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
 	if ( !ent ) {
 		return;
@@ -522,19 +432,6 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
 	G_UseTargets2( ent, activator, ent->target );
 }
 
-
-/**
- * \brief Create a temporary vector.
- *
- * This is just a convenience function
- * for making temporary vectors for function calls
- *
- * @param x x-value
- * @param y y-value
- * @param z z-value
- *
- * @return temporary vector
- */
 float	*tv( float x, float y, float z ) {
 	static	int		index;
 	static	vec3_t	vecs[8];
@@ -554,18 +451,7 @@ float	*tv( float x, float y, float z ) {
 	return v;
 }
 
-
-/**
- * \brief Converts a vector to a string to be printed.
- *
- * This is just a convenience function
- * for printing vectors
- *
- * @param v the vector
- *
- * @return string representation of the vector
- */
-char	*vtos( const vec3_t v ) {
+char *vtos( const vec3_t v ) {
 	static	int		index;
 	static	char	str[8][32];
 	char	*s;
@@ -579,19 +465,6 @@ char	*vtos( const vec3_t v ) {
 	return s;
 }
 
-
-
-/**
- * \brief Converts angles to move directions.
- *
- * The editor only specifies a single value for angles (yaw),
- * but we have special constants to generate an up or down direction.
- * Angles will be cleared, because it is being used to represent a direction
- * instead of an orientation.
- *
- * @param angles the angles
- * @param movedir the movedir
- */
 void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
 	static vec3_t VEC_UP		= {0, -1, 0};
 	static vec3_t MOVEDIR_UP	= {0, 0, 1};
@@ -608,15 +481,6 @@ void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
 	VectorClear( angles );
 }
 
-/**
- * \brief Get the yaw from a vector.
- *
- * Get the yaw from a vector.
- *
- * @param vec the vector
- *
- * @return the yaw
- */
 float vectoyaw( const vec3_t vec ) {
 	float	yaw;
 	
@@ -638,13 +502,6 @@ float vectoyaw( const vec3_t vec ) {
 	return yaw;
 }
 
-/**
- * \brief Init the entity.
- *
- * Inits a given game entity.
- *
- * @param e the entity
- */
 void G_InitGentity( gentity_t *e ) {
 	e->inuse = qtrue;
 	e->classname = "noclass";
@@ -652,19 +509,6 @@ void G_InitGentity( gentity_t *e ) {
 	e->r.ownerNum = ENTITYNUM_NONE;
 }
 
-/**
- * \brief Spawns a new entity.
- *
- * Either finds a free entity, or allocates a new one.
- * The slots from 0 to MAX_CLIENTS-1 are always reserved for clients, 
- * and will never be used by anything else.
- * Try to avoid reusing an entity that was recently freed, because it
- * can cause the client to think the entity morphed into something else
- * instead of being removed and recreated, which can cause interpolated
- * angles and bad trails.
- *
- * @return a new entity or NULL
- */
 gentity_t *G_Spawn( void ) {
 	int			i, force;
 	gentity_t	*e;
@@ -745,14 +589,6 @@ gentity_t *G_Spawn( void ) {
 	return e;
 }
 
-
-/**
- * \brief Free an entity.
- *
- * Marks the entity as free.
- *
- * @param ed entity to free
- */
 void G_FreeEntity( gentity_t *ed ) {
 	trap_UnlinkEntity (ed);		/* unlink from world */
 
@@ -774,18 +610,6 @@ void G_FreeEntity( gentity_t *ed ) {
 	ed->inuse = qfalse;
 }
 
-/**
- * \brief Spawn an temporary entity.
- *
- * Spawns an event entity that will be auto-removed
- * The origin will be snapped to save net bandwidth, so care
- * must be taken if the origin is right on a surface (snap towards start vector first)
- *
- * @param origin the origin
- * @param event the event to use for this entity
- *
- * @return the temporary entity
- */
 gentity_t *G_TempEntity( vec3_t origin, int event ) {
 	gentity_t		*e;
 	vec3_t		snapped;
@@ -817,14 +641,6 @@ Kill box
 ==============================================================================
 */
 
-/**
- * \brief Kill all that would be inside a new one.
- *
- * Kills all entities that would touch the proposed new positioning
- * of ent.  Ent should be unlinked before calling this!
- * 
- * @param ent the entity
- */
 void G_KillBox (gentity_t *ent) {
 	int		i, num;
 	int		touch[MAX_GENTITIES];
@@ -848,17 +664,6 @@ void G_KillBox (gentity_t *ent) {
 
 }
 
-/**
- * \author J2J
- * \brief Push all entities away that are inside a new entity.
- *
- * Basically does teh same as G_KillBox except it will
- * push players and other entities away instead of killing them.
- *
- * @param ent the entity
- *
- * @return was an ent moved?
- */
 qboolean G_MoveBox (gentity_t *ent )
 {
 	int		i, num;
@@ -895,17 +700,6 @@ qboolean G_MoveBox (gentity_t *ent )
 
 //==============================================================================
 
-/**
- * \brief Adds a new Predictable event.
- *
- * Use for non-pmove events that would also be predicted on the
- * client side: jumppads and item pickups
- * Adds an event+parm and twiddles the event counter
- *
- * @param ent the entity
- * @param event the event
- * @param eventParm any parameters for the event
- */
 void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm ) {
 	if ( !ent->client ) {
 		return;
@@ -913,16 +707,6 @@ void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm ) {
 	BG_AddPredictableEventToPlayerstate( event, eventParm, &ent->client->ps );
 }
 
-
-/**
- * \brief Add a new event.
- * 
- * Adds an event+parm and twiddles the event counter
- *
- * @param ent the entity
- * @param event the event
- * @param eventParm parameter for the event
- */
 void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 	int		bits;
 	playerState_t *ps = &ent->client->ps;
@@ -948,15 +732,6 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 	ent->eventTime = level.time;
 }
 
-
-/**
- * \brief Makes an entity to play a non looping sound.
- *
- * Makes an entity to play a non looping sound.
- *
- * @param ent the entity
- * @param soundIndex the sounds index
- */
 void G_Sound( gentity_t *ent, int soundIndex ) {
 	gentity_t	*te;
 
@@ -967,15 +742,6 @@ void G_Sound( gentity_t *ent, int soundIndex ) {
 
 //==============================================================================
 
-
-/**
- * \brief Set the Origin of an entity.
- *
- * Sets the pos trajectory for a fixed position
- *
- * @param ent the entity
- * @param origin the new origin
- */
 void G_SetOrigin( gentity_t *ent, vec3_t origin ) {
 	// lets try this to fix setting origins for brush ents without origin brush
 	VectorCopy(origin, ent->pos1); // needs testing
@@ -990,14 +756,6 @@ void G_SetOrigin( gentity_t *ent, vec3_t origin ) {
 	VectorCopy( origin, ent->s.origin); /* RPG-X | GSIO01 | 24.08.2009 */
 }
 
-/**
- * \brief Set the angles of an entity.
- *
- * Sets the pos trajectory for a fixed angular position
- *
- * @param ent the entity
- * @param angles the new angles
- */
 void G_SetAngles(gentity_t *ent, vec3_t angles) {
 	VectorCopy(angles, ent->s.apos.trBase);
 	ent->s.apos.trType = TR_STATIONARY;
@@ -1339,17 +1097,6 @@ gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore ) {
 	return nearest;
 }
 
-/**
- * \author GSIO01
- * \brief Get all entities with the specified targetname.
- *
- * Get all entities with the specified targetname.
- *
- * @param targetname the targetname
- * @param entities the result
- *
- * @return number of entities found
- */
 int G_GetEntityByTargetname(const char *targetname, list_p entities) {
 	int i;
 	gentity_t *t;
@@ -1369,17 +1116,6 @@ int G_GetEntityByTargetname(const char *targetname, list_p entities) {
 	return entities->length;
 }
 
-/**
- * \author GSIO01
- * \brief Get all entities with specified target.
- * 
- *  Get all entities matching the specifie target.
- *
- *  @param target target the entities should have
- *  @param entities the result
- *
- *  @return number of matches found
- */
 int G_GetEntityByTarget(const char *target, list_p entities) {
 	int i;
 	gentity_t *t;
@@ -1399,18 +1135,6 @@ int G_GetEntityByTarget(const char *target, list_p entities) {
 	return entities->length;
 }
 
-/**
- * \author GSIO01
- * \brief Get all entities with specified brush model
- *
- * Get all entities matching the specified brush model.
- * Normally this only shoud be one entity.
- *
- * @param bmodel brush model to match
- * @param entities the result
- *
- * @return number of matches found
- */
 int G_GetEntityByBmodel(char *bmodel, list_p entities) {
 	int i;
 	gentity_t *t;

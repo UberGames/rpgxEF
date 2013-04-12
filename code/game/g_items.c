@@ -111,13 +111,6 @@ int Min_Weapon(int num)
 	}
 }
 
-
-/*
-===============
-Padd_Add
-RPG-X | Marcin | 06/12/2008
-===============
-*/
 void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
 {
     int i = 0;
@@ -158,12 +151,6 @@ void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
     ++paddDataNum;
 }
 
-/*
-===============
-Padd_Get
-RPG-X | Marcin | 06/12/2008
-===============
-*/
 char *Padd_Get( gentity_t *key, gentity_t *who )
 {
     int i, j;
@@ -188,12 +175,6 @@ char *Padd_Get( gentity_t *key, gentity_t *who )
     return 0;
 }
 
-/*
-===============
-Padd_Remove
-RPG-X | Marcin | 06/12/2008
-===============
-*/
 void Padd_Remove( gentity_t *key )
 {
     int i = 0;
@@ -452,11 +433,6 @@ int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
 
 //======================================================================
 
-/*
-===============
-RespawnItem
-===============
-*/
 void RespawnItem( gentity_t *ent ) {
 	if(!ent) return;
 
@@ -503,11 +479,6 @@ void RespawnItem( gentity_t *ent ) {
 }
 
 
-/*
-===============
-Touch_Item
-===============
-*/
 void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	int			respawn;
 
@@ -736,14 +707,6 @@ gentity_t *DropWeapon( gentity_t *ent, gitem_t *item, float angle, int flags, ch
 	return LaunchItem( item, ent, origin, velocity, flags, txt );
 }
 
-
-/*
-================
-Drop_Item
-
-Spawns an item and tosses it forward
-================
-*/
 gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
 	vec3_t	velocity;
 	vec3_t	angles;
@@ -773,14 +736,6 @@ void Use_Item( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 
 //======================================================================
 
-/*
-================
-FinishSpawningItem
-
-Traces down to find where an item should rest, instead of letting them
-free fall from their spawn points
-================
-*/
 void FinishSpawningItem( gentity_t *ent ) {
 	trace_t		tr;
 	vec3_t		dest;
@@ -955,11 +910,6 @@ qboolean FinishSpawningDecoy( gentity_t *ent, int itemIndex )
 
 qboolean	itemRegistered[MAX_ITEMS];
 
-/*
-==============
-ClearRegisteredItems
-==============
-*/
 void ClearRegisteredItems( void ) {
 	memset( itemRegistered, 0, sizeof( itemRegistered ) );
 	// players always start with the base weapon
@@ -979,13 +929,6 @@ void ClearRegisteredItems( void ) {
 	RegisterItem( BG_FindItemForWeapon( WP_7 ) );
 }
 
-/*
-===============
-RegisterItem
-
-The item will be added to the precache list
-===============
-*/
 void RegisterItem( gitem_t *item  ) {
 	if ( !item ) {
 		G_Error( "RegisterItem: NULL" );
@@ -995,15 +938,6 @@ void RegisterItem( gitem_t *item  ) {
 	itemRegistered[ item - bg_itemlist ] = qtrue;
 }
 
-
-/*
-===============
-SaveRegisteredItems
-
-Write the needed items to a config string
-so the client will know which ones to precache
-===============
-*/
 void SaveRegisteredItems( void ) {
 	char	string[MAX_ITEMS+1];
 	int		i;
@@ -1062,16 +996,6 @@ qboolean G_ItemClassnameSuppressed( char *itemname )
 	return G_ItemSuppressed( itemType, itemTag );
 }
 
-/*
-============
-G_SpawnItem
-
-Sets the clipping size and plants the object on the floor.
-
-Items can't be immediately dropped to floor, because they might
-be on an entity that hasn't spawned yet.
-============
-*/
 void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 	if ( G_ItemSuppressed( item->giType, item->giTag ) )
 	{
@@ -1130,13 +1054,6 @@ void G_BounceItem( gentity_t *ent, trace_t *trace ) {
 	ent->s.pos.trTime = level.time;
 }
 
-
-/*
-================
-G_RunItem
-
-================
-*/
 void G_RunItem( gentity_t *ent ) {
 	vec3_t		origin;
 	trace_t		tr;

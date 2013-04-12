@@ -1982,11 +1982,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 }
 
 extern list_iter_p iterTimedMessages; /* list iterator for timed messages */
-/*
-=================
-G_ShutdownGame
-=================
-*/
+
 void G_ShutdownGame( int restart ) {
 	G_Printf ("==== ShutdownGame ====\n");
 
@@ -2319,14 +2315,6 @@ void SendScoreboardMessageToAllClients( void ) {
 	}
 }
 
-/*
-========================
-MoveClientToIntermission
-
-When the intermission starts, this will be called for all players.
-If a new client connects, this will be called after the spawn function.
-========================
-*/
 void MoveClientToIntermission( gentity_t *ent ) {
 	entityState_t *es = &ent->s;
 	playerState_t *ps = &ent->client->ps;
@@ -2356,13 +2344,6 @@ void MoveClientToIntermission( gentity_t *ent ) {
 	ent->r.contents = 0;
 }
 
-/*
-==================
-FindIntermissionPoint
-
-This is also used for spectator spawns
-==================
-*/
 void FindIntermissionPoint( void ) {
 	gentity_t	*ent, *target;
 	vec3_t		dir;

@@ -72,13 +72,7 @@ void SetScore( gentity_t *ent, int score ) {
 	//RPG-X: RedTechie - Lets enable score updating without this scores will not be updated
 	ent->client->UpdateScore = qfalse;
 }
-/*
-=================
-TossClientItems
 
-Toss the weapon and powerups for the killed player
-=================
-*/
 void TossClientItems( gentity_t *self, qboolean dis_con ) {
 	gitem_t		*item;
 	float		angle;
@@ -171,13 +165,8 @@ static void GibEntity( gentity_t *self, int killer ) {
 	self->r.contents = 0;
 }
 
-/*
-==================
-body_die
-==================
-*/
 void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ) {
-	int			contents;
+	int contents;
 	contents = trap_PointContents( self->r.currentOrigin, -1 );
 	if(rpg_medicsrevive.integer == 1 && !( contents & CONTENTS_NODROP ) && (meansOfDeath != MOD_TRIGGER_HURT)){
 		if ( self->health > GIB_HEALTH_IMPOSSIBLE ) {
@@ -1050,30 +1039,6 @@ static int G_LocationDamage(vec3_t point, gentity_t* targ, gentity_t* attacker, 
 	return take;
 }
 
-/*
-============
-T_Damage
-
-targ		entity that is being damaged
-inflictor	entity that is causing the damage
-attacker	entity that caused the inflictor to damage targ
-example: targ=monster, inflictor=rocket, attacker=player
-
-dir			direction of the attack for knockback
-point		point at which the damage is being inflicted, used for headshots
-damage		amount of damage being inflicted
-knockback	force to be applied against targ as a result of the damage
-
-inflictor, attacker, dir, and point can be NULL for environmental effects
-
-dflags		these flags are used to control how T_Damage works
-DAMAGE_RADIUS			damage was indirect (from a nearby explosion)
-DAMAGE_NO_ARMOR			armor does not protect from this damage
-DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
-DAMAGE_NO_PROTECTION	kills godmode, armor, everything
-============
-*/
-
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			  vec3_t dir, vec3_t point, int damage, int dflags, int mod ) {
 	gclient_t	*client;
@@ -1360,15 +1325,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 }
 
-
-/*
-============
-CanDamage
-
-Returns qtrue if the inflictor can directly damage the target.  Used for
-explosions and melee attacks.
-============
-*/
 qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 	vec3_t	dest;
 	trace_t	tr;
@@ -1418,12 +1374,6 @@ qboolean CanDamage (gentity_t *targ, vec3_t origin) {
 	return qfalse;
 }
 
-
-/*
-============
-G_RadiusDamage
-============
-*/
 extern void tripwireThink ( gentity_t *ent );
 qboolean G_RadiusDamage ( vec3_t origin, gentity_t *attacker, float damage, float radius,
 						 gentity_t *ignore, int dflags, int mod) {
@@ -1531,12 +1481,7 @@ qboolean IsBorg(gentity_t *ent) {
 
 extern void InitBBrush(gentity_t *ent);
 extern void SP_misc_model_breakable(gentity_t* self);
-/*
-============
-G_Repair
-RPG-X | GSIO01 | 09/05/2009 
-============
-*/
+
 void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 	float		distance;
 	vec3_t		help, forward;

@@ -13,11 +13,6 @@
 sqlite3	*user_db;
 qboolean sql_ready = qfalse;
 
-/*
-===============
-G_Sql_Check_StepReturn
-===============
-*/
 static qboolean G_Sql_Check_StepReturn(int r) {
 	switch(r) {
 		case SQLITE_ROW:
@@ -30,11 +25,6 @@ static qboolean G_Sql_Check_StepReturn(int r) {
 	return qtrue;
 }
 
-/*
-===============
-G_Sql_Check_PrepareReturn
-===============
-*/
 static qboolean G_Sql_Check_PrepareReturn(int r) {
 	switch(r) {
 		case SQLITE_OK:
@@ -46,11 +36,6 @@ static qboolean G_Sql_Check_PrepareReturn(int r) {
 	return qtrue;
 }
 
-/*
-===============
-G_Sql_Check_BindReturn
-===============
-*/
 static qboolean G_Sql_Check_BindReturn(int r) {
 	switch(r) {
 		case SQLITE_OK:
@@ -62,11 +47,6 @@ static qboolean G_Sql_Check_BindReturn(int r) {
 	return qtrue;
 }
 
-/*
-===============
-G_Sql_Md5
-===============
-*/
 static char *G_Sql_Md5(const char *s) {
 	char *res;
 	unsigned char sig[16];
@@ -89,11 +69,6 @@ static char *G_Sql_Md5(const char *s) {
 	return res;
 }
 
-/*
-===============
-G_SqlInit
-===============
-*/
 qboolean G_Sql_Init(void) {
 	int res;
 	sqlite3_stmt *stmt;
@@ -152,11 +127,6 @@ qboolean G_Sql_Init(void) {
 	return qtrue;
 }
 
-/*
-===============
-G_Sql_Shutdown
-===============
-*/
 void G_Sql_Shutdown(void) {
 
 	if(!sql_use.integer) return;
@@ -166,11 +136,6 @@ void G_Sql_Shutdown(void) {
 	sqlite3_close(user_db);
 }
 
-/*
-===============
-G_Sql_UserDB_Del
-===============
-*/
 qboolean G_Sql_UserDB_Del(const char *uName) {
 	sqlite3_stmt *stmt;
 	int res, id = -1;
@@ -241,11 +206,6 @@ qboolean G_Sql_UserDB_Del(const char *uName) {
 	return qtrue;
 }
 
-/*
-===============
-G_Sql_UserAdd
-===============
-*/
 qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 	sqlite3_stmt *stmt;
 	int res, id;
@@ -334,11 +294,6 @@ qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 	return qtrue;
 }
 
-/*
-===============
-G_Sql_UserDB_login
-===============
-*/
 qboolean G_Sql_UserDB_Login(const char *uName, const char *pwd, int clientnum) {
 	sqlite3_stmt *stmt;
 	int res, id;
@@ -406,11 +361,6 @@ qboolean G_Sql_UserDB_Login(const char *uName, const char *pwd, int clientnum) {
 	return qtrue;
 }
 
-/*
-===============
-G_Sql_UserDB_CheckRight
-===============
-*/
 qboolean G_Sql_UserDB_CheckRight(int uid, int right) {
 	sqlite3_stmt *stmt;
 	int res;
@@ -454,11 +404,6 @@ qboolean G_Sql_UserDB_CheckRight(int uid, int right) {
 	return qfalse;
 }
 
-/*
-===============
-G_Sql_UserDB_AddRight
-===============
-*/
 qboolean G_Sql_UserDB_AddRight(int uid, int right) {
 	sqlite3_stmt *stmt;
 	int res;
@@ -512,11 +457,6 @@ qboolean G_Sql_UserDB_AddRight(int uid, int right) {
 	return qtrue;
 }
 
-/*
-===============
-G_Sql_UserDB_RemoveRight
-===============
-*/
 qboolean G_Sql_UserDB_RemoveRight(int uid, int right) {
 	sqlite3_stmt *stmt;
 	int res;
@@ -570,11 +510,6 @@ qboolean G_Sql_UserDB_RemoveRight(int uid, int right) {
 	return qtrue;	
 }
 
-/*
-===============
-G_Sql_UserDB_GetUID
-===============
-*/
 int	G_Sql_UserDB_GetUID(const char *uName) {
 	sqlite3_stmt *stmt;
 	int res;

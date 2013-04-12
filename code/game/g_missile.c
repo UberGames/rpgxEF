@@ -365,12 +365,6 @@ static void G_RunStuckMissile( gentity_t *ent )
 	G_RunThink( ent );
 }
 
-/*
-================
-G_Missile_Run
-
-================
-*/
 void G_Missile_Run( gentity_t *ent ) {
 	vec3_t		origin;
 	trace_t		tr;
@@ -416,12 +410,6 @@ void G_Missile_Run( gentity_t *ent ) {
 
 //=============================================================================
 
-/*
-=================
-fire_plasma
-
-=================
-*/
 gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t dir) {
 	gentity_t	*bolt;
 
@@ -492,13 +480,6 @@ gentity_t *fire_comprifle(gentity_t *self, vec3_t start, vec3_t dir) {
 
 //=============================================================================
 
-
-/*
-=================
-fire_quantum
-
-=================
-*/
 gentity_t *fire_quantum (gentity_t *self, vec3_t start, vec3_t dir) {
 	gentity_t	*bolt;
 
@@ -536,11 +517,6 @@ gentity_t *fire_quantum (gentity_t *self, vec3_t start, vec3_t dir) {
 
 //=============================================================================
 
-/*
-=================
-fire_grenade
-=================
-*/
 gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	gentity_t	*bolt;
 
@@ -580,12 +556,6 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 
 //=============================================================================
 
-
-/*
-=================
-fire_rocket
-=================
-*/
 gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir) {
 	gentity_t	*bolt;
 

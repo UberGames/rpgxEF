@@ -358,12 +358,6 @@ static void G_MoverTeam( gentity_t *ent ) {
 	}
 }
 
-/*
-================
-G_Mover_Run
-
-================
-*/
 void G_Mover_Run( gentity_t *ent ) {
 	// if not a team captain, don't do anything, because
 	// the captain will handle everything
@@ -775,12 +769,6 @@ void Reached_BinaryMover( gentity_t *ent ) {
 	}
 }
 
-
-/*
-================
-G_Mover_UseBinaryMover
-================
-*/
 void G_Mover_UseBinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	int		total;
 	int		partial;
@@ -1218,11 +1206,6 @@ static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_
 
 void DoorTriggerReactivate(gentity_t *ent);
 
-/*
-================
-G_Mover_TouchDoorTrigger
-================
-*/
 void G_Mover_TouchDoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace ) {
 #if 0
 	vec3_t	vec, doorcenter, movedir;
