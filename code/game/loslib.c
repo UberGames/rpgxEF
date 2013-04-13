@@ -1,5 +1,5 @@
 /*
-** $Id: loslib.c,v 1.32 2010/10/05 12:18:03 roberto Exp $
+** $Id: loslib.c,v 1.40 2012/10/19 15:54:02 roberto Exp $
 ** Standard Operating System library
 ** See Copyright Notice in lua.h
 */
@@ -21,16 +21,17 @@
 
 
 /*
-** list of valid conversion specifiers @* for the 'strftime' function
+** list of valid conversion specifiers for the 'strftime' function
 */
 #if !defined(LUA_STRFTIMEOPTIONS)
 
 #if !defined(LUA_USE_POSIX)
-#define LUA_STRFTIMEOPTIONS     { "aAbBcdHIjmMpSUwWxXyYz%", "" }
+#define LUA_STRFTIMEOPTIONS	{ "aAbBcdHIjmMpSUwWxXyYz%", "" }
 #else
-#define LUA_STRFTIMEOPTIONS     { "aAbBcCdDeFgGhHIjmMnprRStTuUVwWxXyYzZ%", "", \
-                                "E", "cCxXyY",  \
-                                "O", "deHImMSuUVwWy" }
+#define LUA_STRFTIMEOPTIONS \
+	{ "aAbBcCdDeFgGhHIjmMnprRStTuUVwWxXyYzZ%", "" \
+	  "", "E", "cCxXyY",  \
+	  "O", "deHImMSuUVwWy" }
 #endif
 
 #endif
@@ -43,7 +44,7 @@
 */
 #if defined(LUA_USE_MKSTEMP)
 #include <unistd.h>
-#define LUA_TMPNAMBUFSIZE       32
+#define LUA_TMPNAMBUFSIZE	32
 #define lua_tmpnam(b,e) { \
         strcpy(b, "/tmp/lua_XXXXXX"); \
         e = mkstemp(b); \
@@ -52,44 +53,52 @@
 
 #elif !defined(lua_tmpnam)
 
-#define LUA_TMPNAMBUFSIZE       L_tmpnam
-#define lua_tmpnam(b,e)         { e = (tmpnam(b) == NULL); }
+#define LUA_TMPNAMBUFSIZE	L_tmpnam
+#define lua_tmpnam(b,e)		{ e = (tmpnam(b) == NULL); }
+
+#endif
+
+
+/*
+** By default, Lua uses gmtime/localtime, except when POSIX is available,
+** where it uses gmtime_r/localtime_r
+*/
+#if defined(LUA_USE_GMTIME_R)
+
+#define l_gmtime(t,r)		gmtime_r(t,r)
+#define l_localtime(t,r)	localtime_r(t,r)
+
+#elif !defined(l_gmtime)
+
+#define l_gmtime(t,r)		((void)r, gmtime(t))
+#define l_localtime(t,r)  	((void)r, localtime(t))
 
 #endif
 
 
 
-static int os_pushresult (lua_State *L, int i, const char *filename) {
-  int en = errno;  /* calls to Lua API may change this value */
-  if (i) {
-    lua_pushboolean(L, 1);
+static int os_execute (lua_State *L) {
+  const char *cmd = luaL_optstring(L, 1, NULL);
+  int stat = system(cmd);
+  if (cmd != NULL)
+    return luaL_execresult(L, stat);
+  else {
+    lua_pushboolean(L, stat);  /* true if there is a shell */
     return 1;
   }
-  else {
-    lua_pushnil(L);
-    lua_pushfstring(L, "%s: %s", filename, strerror(en));
-    lua_pushinteger(L, en);
-    return 3;
-  }
-}
-
-
-static int os_execute (lua_State *L) {
-  lua_pushinteger(L, system(luaL_optstring(L, 1, NULL)));
-  return 1;
 }
 
 
 static int os_remove (lua_State *L) {
   const char *filename = luaL_checkstring(L, 1);
-  return os_pushresult(L, remove(filename) == 0, filename);
+  return luaL_fileresult(L, remove(filename) == 0, filename);
 }
 
 
 static int os_rename (lua_State *L) {
   const char *fromname = luaL_checkstring(L, 1);
   const char *toname = luaL_checkstring(L, 2);
-  return os_pushresult(L, rename(fromname, toname) == 0, fromname);
+  return luaL_fileresult(L, rename(fromname, toname) == 0, NULL);
 }
 
 
@@ -182,17 +191,17 @@ static const char *checkoption (lua_State *L, const char *conv, char *buff) {
   return conv;  /* to avoid warnings */
 }
 
-    
+
 static int os_date (lua_State *L) {
   const char *s = luaL_optstring(L, 1, "%c");
   time_t t = luaL_opt(L, (time_t)luaL_checknumber, 2, time(NULL));
-  struct tm *stm;
+  struct tm tmr, *stm;
   if (*s == '!') {  /* UTC? */
-    stm = gmtime(&t);
+    stm = l_gmtime(&t, &tmr);
     s++;  /* skip `!' */
   }
   else
-    stm = localtime(&t);
+    stm = l_localtime(&t, &tmr);
   if (stm == NULL)  /* invalid date? */
     lua_pushnil(L);
   else if (strcmp(s, "*t") == 0) {
@@ -283,7 +292,8 @@ static int os_exit (lua_State *L) {
     status = luaL_optint(L, 1, EXIT_SUCCESS);
   if (lua_toboolean(L, 2))
     lua_close(L);
-  exit(status);
+  if (L) exit(status);  /* 'if' to avoid warnings for unreachable 'return' */
+  return 0;
 }
 
 

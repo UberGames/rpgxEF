@@ -1,5 +1,5 @@
 /*
-** $Id: lparser.h,v 1.65 2010/07/07 16:27:29 roberto Exp $
+** $Id: lparser.h,v 1.70 2012/05/08 13:53:33 roberto Exp $
 ** Lua Parser
 ** See Copyright Notice in lua.h
 */
@@ -53,19 +53,42 @@ typedef struct expdesc {
 } expdesc;
 
 
-typedef struct vardesc {
-  unsigned short idx;
-} vardesc;
+/* description of active local variable */
+typedef struct Vardesc {
+  short idx;  /* variable index in stack */
+} Vardesc;
 
 
-/* list of all active local variables */
-typedef struct Varlist {
-  vardesc *actvar;
-  int nactvar;
-  int actvarsize;
-} Varlist;
+/* description of pending goto statements and label statements */
+typedef struct Labeldesc {
+  TString *name;  /* label identifier */
+  int pc;  /* position in code */
+  int line;  /* line where it appeared */
+  lu_byte nactvar;  /* local level where it appears in current block */
+} Labeldesc;
 
 
+/* list of labels or gotos */
+typedef struct Labellist {
+  Labeldesc *arr;  /* array */
+  int n;  /* number of entries in use */
+  int size;  /* array size */
+} Labellist;
+
+
+/* dynamic structures used by the parser */
+typedef struct Dyndata {
+  struct {  /* list of active local variables */
+    Vardesc *arr;
+    int n;
+    int size;
+  } actvar;
+  Labellist gt;  /* list of pending gotos */
+  Labellist label;   /* list of active labels */
+} Dyndata;
+
+
+/* control of blocks */
 struct BlockCnt;  /* defined in lparser.c */
 
 
@@ -75,23 +98,22 @@ typedef struct FuncState {
   Table *h;  /* table to find (and reuse) elements in `k' */
   struct FuncState *prev;  /* enclosing function */
   struct LexState *ls;  /* lexical state */
-  struct lua_State *L;  /* copy of the Lua state */
   struct BlockCnt *bl;  /* chain of current blocks */
   int pc;  /* next position to code (equivalent to `ncode') */
-  int lasttarget;   /* `pc' of last `jump target' */
+  int lasttarget;   /* 'label' of last 'jump label' */
   int jpc;  /* list of pending jumps to `pc' */
-  int freereg;  /* first free register */
   int nk;  /* number of elements in `k' */
   int np;  /* number of elements in `p' */
-  int firstlocal;  /* index of first local var of this function */
-  short nlocvars;  /* number of elements in `locvars' */
+  int firstlocal;  /* index of first local var (in Dyndata array) */
+  short nlocvars;  /* number of elements in 'f->locvars' */
   lu_byte nactvar;  /* number of active local variables */
   lu_byte nups;  /* number of upvalues */
+  lu_byte freereg;  /* first free register */
 } FuncState;
 
 
-LUAI_FUNC Proto *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff,
-                              Varlist *varl, const char *name);
+LUAI_FUNC Closure *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff,
+                                Dyndata *dyd, const char *name, int firstchar);
 
 
 #endif

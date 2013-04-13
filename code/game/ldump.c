@@ -1,5 +1,5 @@
 /*
-** $Id: ldump.c,v 1.17 2010/10/13 21:04:52 lhf Exp $
+** $Id: ldump.c,v 2.17 2012/01/23 23:02:10 roberto Exp $
 ** save precompiled Lua chunks
 ** See Copyright Notice in lua.h
 */
@@ -69,7 +69,7 @@ static void DumpString(const TString* s, DumpState* D)
  {
   size_t size=s->tsv.len+1;		/* include trailing '\0' */
   DumpVar(size,D);
-  DumpBlock(getstr(s),size,D);
+  DumpBlock(getstr(s),size*sizeof(char),D);
  }
 }
 
@@ -84,8 +84,8 @@ static void DumpConstants(const Proto* f, DumpState* D)
  for (i=0; i<n; i++)
  {
   const TValue* o=&f->k[i];
-  DumpChar(ttype(o),D);
-  switch (ttype(o))
+  DumpChar(ttypenv(o),D);
+  switch (ttypenv(o))
   {
    case LUA_TNIL:
 	break;
@@ -98,6 +98,7 @@ static void DumpConstants(const Proto* f, DumpState* D)
    case LUA_TSTRING:
 	DumpString(rawtsvalue(o),D);
 	break;
+    default: lua_assert(0);
   }
  }
  n=f->sizep;
@@ -111,8 +112,8 @@ static void DumpUpvalues(const Proto* f, DumpState* D)
  DumpInt(n,D);
  for (i=0; i<n; i++)
  {
-  DumpChar(f->upvalues[i].instack, D);
-  DumpChar(f->upvalues[i].idx, D);
+  DumpChar(f->upvalues[i].instack,D);
+  DumpChar(f->upvalues[i].idx,D);
  }
 }
 
@@ -150,7 +151,7 @@ static void DumpFunction(const Proto* f, DumpState* D)
 
 static void DumpHeader(DumpState* D)
 {
- char h[LUAC_HEADERSIZE];
+ lu_byte h[LUAC_HEADERSIZE];
  luaU_header(h);
  DumpBlock(h,LUAC_HEADERSIZE,D);
 }

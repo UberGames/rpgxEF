@@ -1,5 +1,5 @@
 /*
-** $Id: lmem.h,v 1.36 2010/04/08 17:16:46 roberto Exp $
+** $Id: lmem.h,v 1.40 2013/02/20 14:08:21 roberto Exp $
 ** Interface to Memory Manager
 ** See Copyright Notice in lua.h
 */
@@ -14,10 +14,17 @@
 #include "lua.h"
 
 
+/*
+** This macro avoids the runtime division MAX_SIZET/(e), as 'e' is
+** always constant.
+** The macro is somewhat complex to avoid warnings:
+** +1 avoids warnings of "comparison has constant result";
+** cast to 'void' avoids warnings of "value unused".
+*/
 #define luaM_reallocv(L,b,on,n,e) \
-	((cast(size_t, (n)+1) <= MAX_SIZET/(e)) ?  /* +1 to avoid warnings */ \
-		luaM_realloc_(L, (b), (on)*(e), (n)*(e)) : \
-		luaM_toobig(L))
+  (cast(void, \
+     (cast(size_t, (n)+1) > MAX_SIZET/(e)) ? (luaM_toobig(L), 0) : 0), \
+   luaM_realloc_(L, (b), (on)*(e), (n)*(e)))
 
 #define luaM_freemem(L, b, s)	luaM_realloc_(L, (b), (s), 0)
 #define luaM_free(L, b)		luaM_realloc_(L, (b), sizeof(*(b)), 0)
@@ -37,7 +44,7 @@
 #define luaM_reallocvector(L, v,oldn,n,t) \
    ((v)=cast(t *, luaM_reallocv(L, v, oldn, n, sizeof(t))))
 
-LUAI_FUNC void *luaM_toobig (lua_State *L);
+LUAI_FUNC l_noret luaM_toobig (lua_State *L);
 
 /* not to be called directly */
 LUAI_FUNC void *luaM_realloc_ (lua_State *L, void *block, size_t oldsize,
