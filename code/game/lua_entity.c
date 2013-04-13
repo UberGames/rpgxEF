@@ -543,14 +543,18 @@ static int Entity_SetClassName(lua_State * L)
 {
 	lent_t* lent = NULL;
 
+	LUA_DEBUG("BEGIN - entity.SetClassname");
+
 	lent = Lua_GetEntity(L, 1);
 	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetClassname - entity NULL");
 		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 	
 	lent->e->classname = (char *)luaL_checkstring(L, 2);
 	lua_pushboolean(L, qtrue);
+	LUA_DEBUG("END - entity.SetClassname");
 	return 1;
 }
 
@@ -560,13 +564,17 @@ static int Entity_GetTargetName(lua_State * L)
 {
 	lent_t* lent = NULL;
 
+	LUA_DEBUG("BEGIN - entity.GetTargetname");
+
 	lent = Lua_GetEntity(L, 1);
 	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetTargetname - entity NULL");
 		lua_pushnil(L);
 	} else {
 		lua_pushstring(L, lent->e->targetname);
 	}
 
+	LUA_DEBUG("END - entity.GetTargetname");
 	return 1;
 }
 
@@ -578,10 +586,19 @@ static int Entity_Rotate(lua_State * L)
 	lent_t*	lent = NULL;
 	vec_t*	vec = NULL;
 
+	LUA_DEBUG("BEGIN - entity.Rotate");
+
 	lent = Lua_GetEntity(L, 1);
 	vec = Lua_GetVector(L, 2);
 
-	if(lent == NULL || lent->e == NULL || vec == NULL) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.Rotate - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+
+	if(vec == NULL) {
+		LUA_DEBUG("ERROR - entity.Rotate - vector NULL");
 		lua_pushboolean(L, qfalse);
 		return 1;
 	}
@@ -592,6 +609,7 @@ static int Entity_Rotate(lua_State * L)
 	lent->e->s.apos.trDelta[2] = vec[2];
 
 	lua_pushboolean(L, qtrue);
+	LUA_DEBUG("END - entity.Rotate");
 	return 1;
 }
 
@@ -609,9 +627,12 @@ static int Entity_ToString(lua_State * L)
 	gentity_t*	gent = NULL;
 	char		buf[MAX_STRING_CHARS];
 
+	LUA_DEBUG("BEGIN - entity.ToString");
+
 	lent = Lua_GetEntity(L, 1);
 
 	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.ToString - entity NULL");
 		lua_pushnil(L);
 		return 1;
 	}
@@ -620,6 +641,7 @@ static int Entity_ToString(lua_State * L)
 	Com_sprintf(buf, sizeof(buf), "entity: class=%s name=%s id=%i pointer=%p\n", gent->classname, gent->targetname, gent-g_entities, gent);
 	lua_pushstring(L, buf);
 
+	LUA_DEBUG("END - entity.ToString");
 	return 1;
 }
 
@@ -635,14 +657,18 @@ static int Entity_DelayedCallSpawn(lua_State *L) {
 	lent_t*	lent = NULL;
 	int		delay;
 
+	LUA_DEBUG("BEGIN - entity.DelayedCallSpawn");
+
 	lent = Lua_GetEntity(L, 1);
 
 	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.DelayedCallSpawn - entity NULL");
 		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
 	if(!Q_stricmp(lent->e->classname, "target_selfdestruct")) {
+		LUA_DEBUG("ERROR - entity.DelayedCallSpawn - entity is target_selfdestruct");
 		lua_pushboolean(L, qfalse);
 		return 1; //we will not selfdestruct this way
 	}
@@ -656,6 +682,7 @@ static int Entity_DelayedCallSpawn(lua_State *L) {
 	lent->e->nextthink = delay;
 	lent->e->think = ent_delay;
 	lua_pushboolean(L, qtrue);
+	LUA_DEBUG("END - entity.DelayedCallSpawn");
 	return 1;
 }
 
@@ -666,33 +693,28 @@ static int Entity_CallSpawn(lua_State *L) {
 	qboolean r = qfalse;
 	gentity_t* e = NULL;
 
-	LUA_DEBUG("Entity_CallSpawn - start");
+	LUA_DEBUG("BEGIN - entity.CallSpawn");
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(lent != NULL) {
-		e = lent->e;
-	} else {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.CallSpawn - entity NULL");
 		lua_pushboolean(L, qfalse);
 		return 1;
 	}
+	e = lent->e;
 
 	if(!Q_stricmp(lent->e->classname, "target_selfdestruct")) {
+		LUA_DEBUG("ERROR - entity.CallSpawn - entity is target_selfdestruct");
 		lua_pushboolean(L, qfalse);
 		return 1; //we will not selfdestruct this way
 	}
 
-	if(e != NULL) {
-		LUA_DEBUG("Entity_CallSpawn - G_CallSpawn");
-		trap_UnlinkEntity(e);
-		r = G_CallSpawn(e);
-		lua_pushboolean(L, r);
-		return 1;
-	} else {
-		LUA_DEBUG("Entity_CallSpawn - NULL entity");
-	}
-	
-	lua_pushboolean(L, qfalse);
+	LUA_DEBUG("INFO - entity.CallSpawn - G_CallSpawn");
+	trap_UnlinkEntity(e);
+	r = G_CallSpawn(e);
+	lua_pushboolean(L, r);
+	LUA_DEBUG("END - entity.CallSpawn");
 	return 1;
 }
 
@@ -703,6 +725,8 @@ static int Entity_RemoveUnnamedSpawns(lua_State *L) {
 	gentity_t *ent;
 	int cnt = 0, i;
 	
+	LUA_DEBUG("BEGIN - entity.RemoveUnnamedSpawns");
+
 	for(i = 0; i < MAX_GENTITIES; i++) {
 		if(!&g_entities[i]) continue;
 		ent = &g_entities[i];
@@ -715,6 +739,7 @@ static int Entity_RemoveUnnamedSpawns(lua_State *L) {
 	}
 
 	lua_pushnumber(L, cnt);
+	LUA_DEBUG("END - entity.RemoveUnnamedSpawns");
 	return 1;
 }
 
@@ -724,6 +749,8 @@ static int Entity_RemoveSpawns(lua_State *L) {
 	gentity_t *ent;
 	int cnt = 0, i;
 	
+	LUA_DEBUG("BEGIN - entity.RemoveSpawns");
+
 	for(i = 0; i < MAX_GENTITIES; i++) {
 		if(!&g_entities[i]) continue;
 		ent = &g_entities[i];
@@ -735,6 +762,7 @@ static int Entity_RemoveSpawns(lua_State *L) {
 	}
 
 	lua_pushnumber(L, cnt);
+	LUA_DEBUG("END - entity.RemoveSpawns");
 	return 1;
 }
 
@@ -744,8 +772,11 @@ static int Entity_RemoveType(lua_State *L) {
 	int i, cnt = 0;
 	char *classname;
 
+	LUA_DEBUG("BEGIN - entity.RemoveType");
+
 	classname = (char *)luaL_checkstring(L , 1);
-	if(!classname) {
+	if(classname == NULL) {
+		LUA_DEBUG("ERROR - entity.RemoveType - classname NULL");
 		lua_pushinteger(L, -1);
 		return 1;
 	}
@@ -758,6 +789,7 @@ static int Entity_RemoveType(lua_State *L) {
 	}
 
 	lua_pushinteger(L, cnt);
+	LUA_DEBUG("END - entity.RemoveType");
 	return 1;
 }
 
@@ -766,21 +798,33 @@ static int Entity_RemoveType(lua_State *L) {
 static int Entity_Remove(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.Remove");
+
 	lent = Lua_GetEntity(L, 1);
 
-	if(!lent || !lent->e) {
-		lua_pushboolean(L, 0);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.Remove - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
-	if(lent->e->neverFree || lent->e->client) {
-		lua_pushboolean(L, 0);
+	if(lent->e->neverFree) {
+		LUA_DEBUG("INFO - entity.Remove - entity->neverFree");
+		LUA_DEBUG("END - entity.Remove");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+
+	if(lent->e->client != NULL) {
+		LUA_DEBUG("INFO - entity.Remove - entity is client");
+		LUA_DEBUG("END - entity.Remove");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
 	G_FreeEntity(lent->e);
-	lua_pushboolean(L, 1);
-
+	lua_pushboolean(L, qtrue);
+	LUA_DEBUG("END - entity.Remove");
 	return 1;
 }
 
@@ -792,15 +836,19 @@ static int Entity_Remove(lua_State *L) {
 // * y length along the Y-Axis
 // * z length along the Z-axis
 // * Can also be stowed in a vector size
+// Returns succcess or fail
 static int Entity_SetupTrigger(lua_State *L) {
 	lent_t *lent;
 	gentity_t *e;
 	vec_t  *vptr;
 	vec3_t size;
 
-	lent = Lua_GetEntity(L, 1);
+	LUA_DEBUG("BEGIN - entity.SetupTrigger");
 
-	if(!lent || !lent->e) {
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetupTrigger - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
@@ -824,6 +872,7 @@ static int Entity_SetupTrigger(lua_State *L) {
 
 	e->tmpEntity = qtrue;
 
+	LUA_DEBUG("END - entity.SetupTrigger");
 	return 1;
 }
 
@@ -833,32 +882,42 @@ static int Entity_GetOrigin(lua_State *L) {
 	lent_t *lent;
 	vec3_t	origin;
 
-	lent = Lua_GetEntity(L, 1);
+	LUA_DEBUG("BEGIN - entity.GetOrigin");
 
-	if(!lent || !lent->e) {
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetOrigin - entity NULL");
 		lua_pushnil(L);
 		return 1;
 	}
 
-	if(lent->e->r.svFlags & SVF_USE_CURRENT_ORIGIN)
+	if(lent->e->r.svFlags & SVF_USE_CURRENT_ORIGIN) {
 		VectorCopy(lent->e->r.currentOrigin, origin);
-	else
+	} else {
 		VectorCopy(lent->e->s.origin, origin);
+	}
 
 	Lua_PushVector(L, origin);
-
+	LUA_DEBUG("END - entity.GetOrigin");
 	return 1;
 }
 
 // ent.Lock(entity ent)
 // Looks the entity ent. Works with anything that can be locked (doors, turbolifts, usables, ...).
+// Returns success or fail
 static int Entity_Lock(lua_State *L) {
 	lent_t *lent;
 	gentity_t *ent;
 
+	LUA_DEBUG("BEGIN - entity.Lock");
+
 	lent = Lua_GetEntity(L, 1);
 
-	if(!lent || !lent->e) return 1;
+	if(!lent || !lent->e) {
+		LUA_DEBUG("ERROR - entity.Lock - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
 
 	ent = lent->e;
 
@@ -872,24 +931,42 @@ static int Entity_Lock(lua_State *L) {
 		!strncmp(ent->classname, "ui_transporter", 14) ||
 		!strncmp(ent->classname, "ui_holodeck", 11)
 		) {
-		if(ent->flags & FL_LOCKED) return 1;
+		if(ent->flags & FL_LOCKED) {
+			LUA_DEBUG("INFO - entity.Lock - already locked");
+			LUA_DEBUG("END - entity.Lock");
+			lua_pushboolean(L, qtrue);
+			return 1;
+		}
 		ent->flags ^= FL_LOCKED;
+	} else {
+		LUA_DEBUG("INFO - entity.Lock - entity not valid");
+		LUA_DEBUG("END - entity.Lock");
+		lua_pushboolean(L, qfalse);
+		return 1;
 	}
+
+	LUA_DEBUG("END - entity.Lock");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 // ent.Unlock(entity ent)
 // Unlooks the entity ent. Works with anything that can be locked (doors, turbolifts, usables, ...).
+// Returns success or fail
 static int Entity_Unlock(lua_State *L) {
 	lent_t *lent;
 	gentity_t *ent;
 
-	lent = Lua_GetEntity(L, 1);
+	LUA_DEBUG("BEGIN - entity.Unlock");
 
-	if(!lent || !lent->e) return 1;
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.Unlock - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
 
 	ent = lent->e;
-
 	if(!strncmp(ent->classname, "func_door", 9) ||
 		!strncmp(ent->classname, "func_door_rotating", 18) ||
 		!strncmp(ent->classname, "target_teleporter", 17) ||
@@ -900,9 +977,18 @@ static int Entity_Unlock(lua_State *L) {
 		!strncmp(ent->classname, "ui_transporter", 14) ||
 		!strncmp(ent->classname, "ui_holodeck", 11)
 		) {
-		if(ent->flags & FL_LOCKED) 
+		if(ent->flags & FL_LOCKED)  {
 			ent->flags ^= FL_LOCKED;
+		}
+	} else {
+		LUA_DEBUG("INFO - entity.Unlock - entity is not valid");
+		LUA_DEBUG("END - entity.Unlock");
+		lua_pushboolean(L, qfalse);
+		return 1;
 	}
+
+	LUA_DEBUG("END - entity.Unlock");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
@@ -910,16 +996,18 @@ static int Entity_IsLocked(lua_State *L) {
 	lent_t *lent;
 	gentity_t *ent;
 
-	lent = Lua_GetEntity(L, 1);
+	LUA_DEBUG("BEGIN - entity.IsLocked");
 
+	lent = Lua_GetEntity(L, 1);
 	if(lent == NULL || lent->e == NULL) {
-		lua_pushnil(L);
+		LUA_DEBUG("ERROR - entity.IsLocked - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
 	ent = lent->e;
-
 	lua_pushboolean(L, (int)(ent->flags & FL_LOCKED));
+	LUA_DEBUG("END - entity.IsLocked");
 	return 1;
 }
 
@@ -929,18 +1017,20 @@ static int Entity_GetParm(lua_State *L) {
 	int parm;
 	char *res = NULL;
 
+	LUA_DEBUG("BEGIN - entity.GetParm");
+
 	lent = Lua_GetEntity(L, 1);
-	
-	if(!lent || !lent->e) {
+	if(lent == NULL|| lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetParm");
 		lua_pushnil(L);
 		return 1;
 	}
 
 	ent = lent->e;
-
 	parm = luaL_checkint(L, 2);
 
-	if(!parm || parm < 0 || parm > 4) {
+	if(parm < 1 || parm > 4) {
+		LUA_DEBUG("ERROR - entity.GetParm - parm out of range");
 		lua_pushnil(L);
 		return 1;
 	}
@@ -958,13 +1048,18 @@ static int Entity_GetParm(lua_State *L) {
 		case 4:
 			res = ent->luaParm4;
 			break;
+		default:
+			res = NULL;
+			break;
 	}
 
-	if(!res) {
+	if(res == NULL) {
+		LUA_DEBUG("ERROR - entity.GetParm - res NULL");
 		lua_pushnil(L);
 	} else {
 		lua_pushstring(L, res);
 	}
+	LUA_DEBUG("END - entity.GetParm");
 	return 1;
 }
 
@@ -975,19 +1070,29 @@ static int Entity_SetParm(lua_State *L) {
 	char *parms;
 	char *s = NULL;
 
-	lent = Lua_GetEntity(L, 1);
+	LUA_DEBUG("BEGIN - entity.SetParm");
 
-	if(!lent || !lent->e) return 1;
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL|| lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetParm - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
 
 	ent = lent->e;
-
 	parm = luaL_checkint(L, 2);
-
-	if(!parm || parm < 0 || parm > 4) return 1;
+	if(parm < 1 || parm > 4) {
+		LUA_DEBUG("ERROR - entity.SetParm - parm out of range");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
 
 	parms = (char *)luaL_checkstring(L, 3);
-
-	if(!parms) return 1;
+	if(!parms) {
+		LUA_DEBUG("ERROR - entity.SetParm - parms NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
 
 	switch(parm) {
 		case 1:
@@ -1013,21 +1118,29 @@ static int Entity_SetParm(lua_State *L) {
 			// it does not fit in so alloc a new string
 			s = G_NewString(parms);
 		}
-	} else 
+	} else {
 		s = G_NewString(parms);
+	}
+
+	LUA_DEBUG("END - entity.SetParm");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetActivator(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.GetActivator");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) {
+	if(lent == NULL|| lent->e == NULL) {
 		lua_pushnil(L);
+		LUA_DEBUG("ERROR - entity.GetActivator - entity NULL");
 		return 1;
 	}
-	Lua_PushEntity(L, lent->e->activator);
 
+	Lua_PushEntity(L, lent->e->activator);
+	LUA_DEBUG("END - entity.GetActivator");
 	return 1;
 }
 
@@ -1035,28 +1148,41 @@ static int Entity_SetActivator(lua_State *L) {
 	lent_t *lent;
 	lent_t *activator;
 
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
-		return 1;
-	activator = Lua_GetEntity(L, 2);
-	if(!activator || activator->e)
-		lent->e->activator = NULL;
-	else
-		lent->e->activator = activator->e;
+	LUA_DEBUG("BEGIN - entity.SetActivator");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetActivator - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+
+	activator = Lua_GetEntity(L, 2);
+	if(!activator || activator->e) {
+		lent->e->activator = NULL;
+	} else {
+		lent->e->activator = activator->e;
+	}
+
+	LUA_DEBUG("END - entity.SetActivator");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetAngle(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.GetAngle");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetAngle - entity NUL");
 		lua_pushnumber(L, 0);
 		return 1;
 	}
-	lua_pushnumber(L, lent->e->angle);
 
+	lua_pushnumber(L, lent->e->angle);
+	LUA_DEBUG("END - entity.GetAngle");
 	return 1;
 }
 
@@ -1064,12 +1190,19 @@ static int Entity_SetAngle(lua_State *L) {
 	lent_t *lent;
 	float angle;
 
+	LUA_DEBUG("BEGIN - entity.SetAngle");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetAngle - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
+	}
 	angle = (float)luaL_checknumber(L, 2);
 	lent->e->angle = angle;
 
+	LUA_DEBUG("END - entity.SetAngle");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
@@ -1077,13 +1210,17 @@ static int Entity_GetApos1(lua_State *L) {
 	lent_t *lent;
 	vec3_t null = { 0, 0, 0 };
 
+	LUA_DEBUG("BEGIN - entity.GetApos1");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetApos1 - entity NULL");
 		Lua_PushVector(L, null);
 		return 1;
 	}
 	Lua_PushVector(L, lent->e->apos1);
 
+	LUA_DEBUG("END - entity.GetApos1");
 	return 1;
 }
 
@@ -1091,27 +1228,37 @@ static int Entity_GetApos2(lua_State *L) {
 	lent_t *lent;
 	vec3_t null = { 0, 0, 0 };
 
+	LUA_DEBUG("BEGIN - entity.GetApos2");
+
 	lent = Lua_GetEntity(L, 1);
 	if(!lent || !lent->e) {
+		LUA_DEBUG("ERROR - entity.GetApos2 - entity NULL");
 		Lua_PushVector(L, null);
 		return 1;
 	}
 	Lua_PushVector(L, lent->e->apos2);
 
+	LUA_DEBUG("END - entity.GetApos2");
 	return 1;
 }
 
 static int Entity_SetApos1(lua_State *L) {
 	lent_t *lent;
 	vec_t *vec;
+
+	LUA_DEBUG("BEGIN - entity.SetApos1");
 	
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetApos1 - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
+	}
 	vec = Lua_GetVector(L, 2);
-
 	VectorCopy(vec, lent->e->apos1);
 
+	LUA_DEBUG("END - entity.SetApos1");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
@@ -1119,96 +1266,143 @@ static int Entity_SetApos2(lua_State *L) {
 	lent_t *lent;
 	vec_t *vec;
 	
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
-		return 1;
-	vec = Lua_GetVector(L, 2);
+	LUA_DEBUG("BEGIN - entity.SetApos2");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetApos2 - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+	vec = Lua_GetVector(L, 2);
 	VectorCopy(vec, lent->e->apos2);
 
+	LUA_DEBUG("END - entity.SetApos2");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetBluename(lua_State *L) {
 	lent_t *lent;
 
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
-		lua_pushnil(L);
-	else
-		lua_pushstring(L, lent->e->bluename);
+	LUA_DEBUG("BEGIN - entity.GetBluename");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL|| lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetBluename - entity NULL");
+		lua_pushnil(L);
+		return 1;
+	} else {
+		lua_pushstring(L, lent->e->bluename);
+	}
+
+	LUA_DEBUG("END - entity.GetBluename");
 	return 1;
 }
 
 static int Entity_SetBluename(lua_State *L) {
 	lent_t	*lent;
 
+	LUA_DEBUG("BEGIN - entity.SetBluename");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetBluename - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
+	}
 	lent->e->bluename = (char *)luaL_checkstring(L, 2);
 
+	LUA_DEBUG("END - entity.SetBluename");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetBluesound(lua_State *L) {
 	lent_t *lent;
 
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) 
-		lua_pushnil(L);
-	else
-		lua_pushstring(L, lent->e->bluesound);
+	LUA_DEBUG("BEGIN - entity.GetBluesound");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetBluesound - entity NULL");
+		lua_pushnil(L);
+		return 1;
+	} else {
+		lua_pushstring(L, lent->e->bluesound);
+	}
+
+	LUA_DEBUG("END - entity.GetBluesound");
 	return 1;
 }
 
 static int Entity_SetBluesound(lua_State *L) {
 	lent_t	*lent;
 
+	LUA_DEBUG("BEGIN - entity.SetBluesound");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetBluesound - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
+	}
 	lent->e->bluesound = (char *)luaL_checkstring(L, 2);;
 
+	LUA_DEBUG("END - entity.SetBluesound");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetBooleanstate(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.GetBooleanstate");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetBooleanstate - entity NULL");
 		lua_pushboolean(L, 0);
 		return 1;
 	}
 	lua_pushboolean(L, (int)lent->e->booleanstate);
 
+	LUA_DEBUG("END - entity.GetBooleanstate");
 	return 1;
 }
 
 static int Entity_SetBooleanstate(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.SetBooleanstate");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetBooleanstate - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
+	}
 	lent->e->booleanstate = (qboolean)lua_toboolean(L, 2);
 
+	lua_pushboolean(L, qtrue);
+	LUA_DEBUG("END - entity.SetBooleanstate");
 	return 1;
 }
 
 static int Entity_GetClipmask(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.GetClipmask");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetClipmask - entity NULL");
 		lua_pushinteger(L, 0);
 		return 1;
 	}
 	lua_pushinteger(L, lent->e->clipmask);
 
+	LUA_DEBUG("END - entity.GetClipmask");
 	return 1;
 }
 
@@ -1216,26 +1410,36 @@ static int Entity_SetClipmask(lua_State *L) {
 	lent_t *lent;
 	int mask;
 
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
-		return 1;
-	mask = (int)luaL_checknumber(L, 2);
+	LUA_DEBUG("BEGIN - entity.SetClipmask");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetClipmask - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+	mask = (int)luaL_checknumber(L, 2);
 	lent->e->clipmask = mask;
 
+	LUA_DEBUG("END - entity.SetClipmask");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetCount(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.SetClipmask");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetClipmask - entity NULL");
 		lua_pushinteger(L, 0);
 		return 1;
 	}
 	lua_pushinteger(L, lent->e->count);
 
+	LUA_DEBUG("END - entity.SetClipmask");
 	return 1;
 }
 
@@ -1243,26 +1447,36 @@ static int Entity_SetCount(lua_State *L) {
 	lent_t *lent;
 	int		count;
 
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
-		return 1;
-	count = (int)luaL_checknumber(L, 2);
+	LUA_DEBUG("BEGIN - entity.SetCount");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetCount - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+	count = (int)luaL_checknumber(L, 2);
 	lent->e->count = count;
 
+	LUA_DEBUG("END - entity.SetCount");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetDamage(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.GetDamage");
+
 	lent = Lua_GetEntity(L, 1);
 	if(!lent || !lent->e) {
+		LUA_DEBUG("ERROR - entity.GetDamage - entity NULL");
 		lua_pushinteger(L, 0);
 		return 1;
 	}
 	lua_pushinteger(L, lent->e->damage);
 
+	LUA_DEBUG("END - entity.GetDamage");
 	return 1;
 }
 
@@ -1270,26 +1484,37 @@ static int Entity_SetDamage(lua_State *L) {
 	lent_t *lent;
 	int		damage;
 
+	LUA_DEBUG("BEGIN - entity.SetDamage");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetDamage - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
+	}
 	damage = (int)luaL_checknumber(L, 2);
 
 	lent->e->damage = damage;
 
+	LUA_DEBUG("END - entity.SetDamage");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetDistance(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.GetDistance");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetDistance - entity NULL");
 		lua_pushnumber(L, 0);
 		return 1;
 	}
 	lua_pushnumber(L, lent->e->distance);
 
+	LUA_DEBUG("END - entity.GetDistance");
 	return 1;
 }
 
@@ -1297,26 +1522,36 @@ static int Entity_SetDistance(lua_State *L) {
 	lent_t *lent;
 	float	distance;
 
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || ! lent->e)
-		return 1;
-	distance = (float)luaL_checknumber(L, 2);
+	LUA_DEBUG("BEGIN - entity.SetDistance");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetDistance - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+	distance = (float)luaL_checknumber(L, 2);
 	lent->e->distance = distance;
 
+	LUA_DEBUG("END - entity.SetDistance");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetEnemy(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.GetEnemy");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetEnemy - entity NULL");
 		lua_pushnil(L);
 		return 1;
 	}
 	Lua_PushEntity(L, lent->e->enemy);
 
+	LUA_DEBUG("END - entity.GetEnemy");
 	return 1;
 }
 
@@ -1324,34 +1559,45 @@ static int Entity_SetEnemy(lua_State *L) {
 	lent_t *lent;
 	lent_t *enemy;
 
+	LUA_DEBUG("BEGIN - entity.SetEnemy");
+
 	lent = Lua_GetEntity(L, 1);
 	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetEnemy - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
+	
 	if(lua_isnil(L, 2)) {
 		lent->e->enemy = NULL;
 	} else {
 		enemy = Lua_GetEntity(L, 2);
-		if(!enemy || !enemy->e) {
+		if(enemy == NULL || enemy->e == NULL) {
 			lent->e->enemy = NULL;
 		} else {
 			lent->e->enemy = enemy->e;
 		}
 	}
 
+	LUA_DEBUG("END - entity.SetEnemy");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetEventTime(lua_State *L) {
 	lent_t *lent;
 
+	LUA_DEBUG("BEGIN - entity.GetEventTime");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetEventTime - entity NULL");
 		lua_pushinteger(L, 0);
 		return 1;
 	}
 	lua_pushinteger(L, lent->e->eventTime);
 
+	LUA_DEBUG("END - entity.GetEventTime");
 	return 1;
 }
 
@@ -1359,48 +1605,73 @@ static int Entity_SetEventTime(lua_State *L) {
 	lent_t *lent;
 	int		eTime;
 
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) 
-		return 1;
-	eTime = (int)luaL_checknumber(L, 2);
+	LUA_DEBUG("BEGIN - entity.SetEventTime");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetEventTime - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+	eTime = (int)luaL_checknumber(L, 2);
 	lent->e->eventTime = eTime;
 
+	LUA_DEBUG("END - entity.SetEventTime");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetFalsename(lua_State *L) {
 	lent_t *lent;
 
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) 
-		lua_pushnil(L);
-	else
-		lua_pushstring(L, lent->e->falsename);
+	LUA_DEBUG("BEGIN - entity.GetFalsename");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		lua_pushnil(L);
+		LUA_DEBUG("ERROR - entity.GetFalsename - entity NULL");
+		return 1;
+	} else {
+		lua_pushstring(L, lent->e->falsename);
+	}
+
+	LUA_DEBUG("END - entity.GetFalsename");
 	return 1;
 }
 
 static int Entity_SetFalsename(lua_State *L) {
 	lent_t	*lent;
 
+	LUA_DEBUG("BEGIN - entity.SetFalsename");
+
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetFalsename - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
+	}
 	lent->e->falsename = (char *)luaL_checkstring(L, 2);
 
+	LUA_DEBUG("END - entity.SetFalsename");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 static int Entity_GetTruename(lua_State *L) {
 	lent_t *lent;
 
-	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e) 
-		lua_pushnil(L);
-	else
-		lua_pushstring(L, lent->e->truename);
+	LUA_DEBUG("BEGIN - entity.GetTruename");
 
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetTruename - entity NULL");
+		lua_pushnil(L);
+		return 1;
+	} else {
+		lua_pushstring(L, lent->e->truename);
+	}
+
+	LUA_DEBUG("END - entity.GetTruename");
 	return 1;
 }
 
