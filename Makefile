@@ -2054,8 +2054,6 @@ CGLUAOBJ = \
   $(B)/$(BASEGAME)/cgame/ltable.o \
   $(B)/$(BASEGAME)/cgame/ltablib.o \
   $(B)/$(BASEGAME)/cgame/ltm.o \
-  $(B)/$(BASEGAME)/cgame/lua.o \
-  $(B)/$(BASEGAME)/cgame/luac.o \
   $(B)/$(BASEGAME)/cgame/lundump.o \
   $(B)/$(BASEGAME)/cgame/lvm.o \
   $(B)/$(BASEGAME)/cgame/lzio.o
@@ -2197,8 +2195,6 @@ GLUAOBJ = \
   $(B)/$(BASEGAME)/game/ltable.o \
   $(B)/$(BASEGAME)/game/ltablib.o \
   $(B)/$(BASEGAME)/game/ltm.o \
-  $(B)/$(BASEGAME)/game/lua.o \
-  $(B)/$(BASEGAME)/game/luac.o \
   $(B)/$(BASEGAME)/game/lundump.o \
   $(B)/$(BASEGAME)/game/lvm.o \
   $(B)/$(BASEGAME)/game/lzio.o

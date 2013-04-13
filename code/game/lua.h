@@ -1,5 +1,5 @@
 /*
-** $Id: lua.h,v 1.276 2010/10/26 19:32:19 roberto Exp $
+** $Id: lua.h,v 1.285 2013/03/15 13:04:22 roberto Exp $
 ** Lua - A Scripting Language
 ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
 ** See Copyright Notice at the end of this file
@@ -18,12 +18,12 @@
 
 #define LUA_VERSION_MAJOR	"5"
 #define LUA_VERSION_MINOR	"2"
-#define LUA_VERSION_RELEASE	"0" " (alpha)"
+#define LUA_VERSION_NUM		502
+#define LUA_VERSION_RELEASE	"2"
 
 #define LUA_VERSION	"Lua " LUA_VERSION_MAJOR "." LUA_VERSION_MINOR
 #define LUA_RELEASE	LUA_VERSION "." LUA_VERSION_RELEASE
-#define LUA_VERSION_NUM	502
-#define LUA_COPYRIGHT	LUA_RELEASE "  Copyright (C) 1994-2010 Lua.org, PUC-Rio"
+#define LUA_COPYRIGHT	LUA_RELEASE "  Copyright (C) 1994-2013 Lua.org, PUC-Rio"
 #define LUA_AUTHORS	"R. Ierusalimschy, L. H. de Figueiredo, W. Celes"
 
 
@@ -118,6 +118,11 @@ typedef LUA_UNSIGNED lua_Unsigned;
 #include LUA_USER_H
 #endif
 
+
+/*
+** RCS ident string
+*/
+extern const char lua_ident[];
 
 
 /*
@@ -215,10 +220,12 @@ LUA_API int   (lua_pushthread) (lua_State *L);
 /*
 ** get functions (Lua -> stack)
 */
+LUA_API void  (lua_getglobal) (lua_State *L, const char *var);
 LUA_API void  (lua_gettable) (lua_State *L, int idx);
 LUA_API void  (lua_getfield) (lua_State *L, int idx, const char *k);
 LUA_API void  (lua_rawget) (lua_State *L, int idx);
 LUA_API void  (lua_rawgeti) (lua_State *L, int idx, int n);
+LUA_API void  (lua_rawgetp) (lua_State *L, int idx, const void *p);
 LUA_API void  (lua_createtable) (lua_State *L, int narr, int nrec);
 LUA_API void *(lua_newuserdata) (lua_State *L, size_t sz);
 LUA_API int   (lua_getmetatable) (lua_State *L, int objindex);
@@ -228,10 +235,12 @@ LUA_API void  (lua_getuservalue) (lua_State *L, int idx);
 /*
 ** set functions (stack -> Lua)
 */
+LUA_API void  (lua_setglobal) (lua_State *L, const char *var);
 LUA_API void  (lua_settable) (lua_State *L, int idx);
 LUA_API void  (lua_setfield) (lua_State *L, int idx, const char *k);
 LUA_API void  (lua_rawset) (lua_State *L, int idx);
 LUA_API void  (lua_rawseti) (lua_State *L, int idx, int n);
+LUA_API void  (lua_rawsetp) (lua_State *L, int idx, const void *p);
 LUA_API int   (lua_setmetatable) (lua_State *L, int objindex);
 LUA_API void  (lua_setuservalue) (lua_State *L, int idx);
 
@@ -250,7 +259,8 @@ LUA_API int   (lua_pcallk) (lua_State *L, int nargs, int nresults, int errfunc,
 #define lua_pcall(L,n,r,f)	lua_pcallk(L, (n), (r), (f), 0, NULL)
 
 LUA_API int   (lua_load) (lua_State *L, lua_Reader reader, void *dt,
-                                        const char *chunkname);
+                                        const char *chunkname,
+                                        const char *mode);
 
 LUA_API int (lua_dump) (lua_State *L, lua_Writer writer, void *data);
 
@@ -261,7 +271,7 @@ LUA_API int (lua_dump) (lua_State *L, lua_Writer writer, void *data);
 LUA_API int  (lua_yieldk) (lua_State *L, int nresults, int ctx,
                            lua_CFunction k);
 #define lua_yield(L,n)		lua_yieldk(L, (n), 0, NULL)
-LUA_API int  (lua_resume) (lua_State *L, int narg);
+LUA_API int  (lua_resume) (lua_State *L, lua_State *from, int narg);
 LUA_API int  (lua_status) (lua_State *L);
 
 /*
@@ -313,13 +323,6 @@ LUA_API void      (lua_setallocf) (lua_State *L, lua_Alloc f, void *ud);
 #define lua_pop(L,n)		lua_settop(L, -(n)-1)
 
 #define lua_newtable(L)		lua_createtable(L, 0, 0)
-
-#define lua_setglobal(L,s)  \
-	(lua_pushglobaltable(L), lua_pushvalue(L, -2), \
-	 lua_setfield(L, -2, (s)), lua_pop(L, 2))
-
-#define lua_getglobal(L,s) \
-	(lua_pushglobaltable(L), lua_getfield(L, -1, (s)), lua_remove(L, -2))
 
 #define lua_register(L,n,f) (lua_pushcfunction(L, (f)), lua_setglobal(L, (n)))
 
@@ -415,7 +418,7 @@ struct lua_Debug {
 
 
 /******************************************************************************
-* Copyright (C) 1994-2010 Lua.org, PUC-Rio.  All rights reserved.
+* Copyright (C) 1994-2013 Lua.org, PUC-Rio.
 *
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the

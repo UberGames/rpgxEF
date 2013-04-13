@@ -118,7 +118,7 @@ qboolean CG_LuaInit()
 }
 
 qboolean CG_LuaResume(lvm_t *vm, lua_State *T, char *func, int nargs) {
-	int res = lua_resume(T, nargs);
+	int res = lua_resume(T, NULL, nargs);
 
 	if(res == LUA_ERRRUN) {
 		LUA_LOG("Lua: %s error running lua script: %s\n", func, lua_tostring(T, -1));

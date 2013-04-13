@@ -1,5 +1,5 @@
 /*
-** $Id: lcorolib.c,v 1.2 2010/07/02 11:38:13 roberto Exp $
+** $Id: lcorolib.c,v 1.5 2013/02/21 13:44:53 roberto Exp $
 ** Coroutine Library
 ** See Copyright Notice in lua.h
 */
@@ -28,7 +28,7 @@ static int auxresume (lua_State *L, lua_State *co, int narg) {
     return -1;  /* error flag */
   }
   lua_xmove(L, co, narg);
-  status = lua_resume(co, narg);
+  status = lua_resume(co, L, narg);
   if (status == LUA_OK || status == LUA_YIELD) {
     int nres = lua_gettop(co);
     if (!lua_checkstack(L, nres + 1)) {
@@ -73,15 +73,16 @@ static int luaB_auxwrap (lua_State *L) {
       lua_insert(L, -2);
       lua_concat(L, 2);
     }
-    lua_error(L);  /* propagate error */
+    return lua_error(L);  /* propagate error */
   }
   return r;
 }
 
 
 static int luaB_cocreate (lua_State *L) {
-  lua_State *NL = lua_newthread(L);
+  lua_State *NL;
   luaL_checktype(L, 1, LUA_TFUNCTION);
+  NL = lua_newthread(L);
   lua_pushvalue(L, 1);  /* move function to top */
   lua_xmove(L, NL, 1);  /* move function from L to NL */
   return 1;
