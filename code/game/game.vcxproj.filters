@@ -252,12 +252,6 @@
     <ClCompile Include="lzio.c">
       <Filter>Source Files\lua</Filter>
     </ClCompile>
-    <ClCompile Include="lua.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="luac.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
     <ClCompile Include="g_cinematic.c">
       <Filter>Source Files</Filter>
     </ClCompile>
