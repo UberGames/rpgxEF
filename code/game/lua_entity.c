@@ -390,14 +390,18 @@ static int Entity_Print(lua_State * L)
 	char	buf[MAX_STRING_CHARS];
 	int		n = lua_gettop(L);
 
+	LUA_DEBUG("BEGIN - entity.Print");
+
 	lent = Lua_GetEntity(L, 1);
 
 	if(lent == NULL || lent->e == NULL) {
-		return luaL_error(L, "\'Print\' must be called on an client entity.");
+		LUA_DEBUG("ERROR - entity.Print - entity NULL");
+		return 1;
 	}
 
 	if(lent->e->client == NULL) {
-		return luaL_error(L, "\'Print\' must be called on an client entity.");
+		LUA_DEBUG("ERROR - entity.Print - entity is not a client");
+		return 1;
 	}
 
 	memset(buf, 0, sizeof(buf));
@@ -413,7 +417,8 @@ static int Entity_Print(lua_State * L)
 		s = lua_tostring(L, -1);
 
 		if(s == NULL) {
-			return luaL_error(L, "\'tostring\' must return a string to \'print\'");
+			LUA_DEBUG("ERROR - entity.Print - string NULL");
+			return 1;
 		}
 
 		Q_strcat(buf, sizeof(buf), s);
@@ -422,6 +427,7 @@ static int Entity_Print(lua_State * L)
 	}
 
 	trap_SendServerCommand(lent->e - g_entities, va("print \"%s\n\"", buf));
+	LUA_DEBUG("END - entity.Print");
 	return 1;
 }
 
@@ -432,14 +438,18 @@ static int Entity_CenterPrint(lua_State * L)
 	char	buf[MAX_STRING_CHARS];
 	int		n = lua_gettop(L);
 
+	LUA_DEBUG("BEGIN - entity.CenterPrint");
+
 	lent = Lua_GetEntity(L, 1);
 
 	if(lent == NULL || lent->e == NULL) {
-		return luaL_error(L, "\'CenterPrint\' must be used with a client entity");
+		LUA_DEBUG("ERROR - entity.CenterPrint - entity NULL");
+		return 1;
 	}
 
 	if(lent->e->client == NULL) {
-		return luaL_error(L, "\'CenterPrint\' must be used with a client entity");
+		LUA_DEBUG("ERROR - entity.CenterPrint - entity is not a client");
+		return 1;
 	}
 
 	memset(buf, 0, sizeof(buf));
@@ -454,8 +464,10 @@ static int Entity_CenterPrint(lua_State * L)
 		lua_call(L, 1, 1);
 		s = lua_tostring(L, -1);
 
-		if(s == NULL)
-			return luaL_error(L, "\'tostring\' must return a string to \'print\'");
+		if(s == NULL) {
+			LUA_DEBUG("ERROR - entity.CenterPrint - string NULL");
+			return 1;
+		}
 
 		Q_strcat(buf, sizeof(buf), s);
 
@@ -463,7 +475,7 @@ static int Entity_CenterPrint(lua_State * L)
 	}
 
 	trap_SendServerCommand(lent->e - g_entities, va("cp \"" S_COLOR_WHITE "%s\n\"", buf));
-
+	LUA_DEBUG("END - entity.CenterPrint");
 	return 1;
 }
 
@@ -475,16 +487,31 @@ static int Entity_SetKeyValue(lua_State * L) {
 	char*	key = NULL;
 	char*	value = NULL;
 	
+	LUA_DEBUG("BEGIN - entity.SetKeyValue");
+
 	lent = Lua_GetEntity(L, 1);
 	key = (char *)luaL_checkstring(L, 2);
 	value = (char *)luaL_checkstring(L, 3);
 
-	if(lent == NULL || lent->e == NULL || key == NULL || value == NULL) {
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetKeyValue - entity NULL");
+		return 1;
+	}
+
+	if(key == NULL) {
+		LUA_DEBUG("ERROR - entity.SetKeyValue - key NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+
+	if(value == NULL) {
+		LUA_DEBUG("ERROR - entity.SetKeyValue - key NULL");
 		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
 	lua_pushboolean(L, G_ParseField(key, value, lent->e));
+	LUA_DEBUG("END - entity.SetKeyValue");
 	return 1;
 }
 
@@ -494,13 +521,18 @@ static int Entity_GetClassName(lua_State * L)
 {
 	lent_t* lent = NULL;
 
+	LUA_DEBUG("BEGIN - entity.GetClassname");
+
 	lent = Lua_GetEntity(L, 1);
+
 	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetKeyValue - entity NULL");
 		lua_pushnil(L);
 	} else {
 		lua_pushstring(L, lent->e->classname);
 	}
 
+	LUA_DEBUG("END - entity.SetKeyValue");
 	return 1;
 }
 
