@@ -1644,6 +1644,10 @@ void SP_target_turbolift ( gentity_t *self )
 	char			mapRoute[MAX_QPATH];
 	char			serverInfo[MAX_TOKEN_CHARS];
 
+	if(self == NULL) {
+		return;
+	}
+
 	//cache the moving sounds
 	G_SpawnString( "soundLoop", "sound/movers/plats/turbomove.wav", &loopSound );
 	G_SpawnString( "soundEnd", "sound/movers/plats/turbostop.wav", &endSound );

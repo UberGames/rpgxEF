@@ -110,7 +110,7 @@ static int Mover_AsTrain(lua_State * L)
 		if(!targ) return 1;
 	} else {
 		tlent = Lua_GetEntity(L, 2);
-		if(!tlent || tlent->e) return 1;
+		if(!tlent || tlent->e == NULL) return 1;
 		targ = tlent->e;
 	}
 

@@ -1098,11 +1098,13 @@ void laser_arm_start (gentity_t *base)
 {
 	vec3_t	armAngles;
 	vec3_t	headAngles;
+	gentity_t *arm;
+	gentity_t *head;
 
 	base->think = 0;
 	/* We're the base, spawn the arm and head */
-	gentity_t *arm = G_Spawn();
-	gentity_t *head = G_Spawn();
+	arm = G_Spawn();
+	head = G_Spawn();
 
 	VectorCopy( base->s.angles, armAngles );
 	VectorCopy( base->s.angles, headAngles );

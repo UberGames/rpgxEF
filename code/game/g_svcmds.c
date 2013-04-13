@@ -607,10 +607,12 @@ void	Svcmd_EntityList_f (void) {
 	gentity_t	*check;
 	char		arg[MAX_QPATH*4];
 	int			length = 0;
+	qboolean	args = qfalse;
 
 	if(trap_Argc() > 1) {
 		trap_Argv(1, arg, sizeof(arg));
 		length = strlen(arg);
+		args = qtrue;
 	}
 
 	check = g_entities+1;
@@ -618,7 +620,7 @@ void	Svcmd_EntityList_f (void) {
 		if ( !check->inuse ) {
 			continue;
 		}
-		if(!arg[0]) {
+		if(args == qfalse) {
 			if ( check->classname && Q_stricmpn(check->classname, "noclass", 7) && Q_stricmpn(check->classname, "bodyque", 7) ) {
 				G_Printf("%3i:", e);
 				switch ( check->s.eType ) {

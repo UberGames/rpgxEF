@@ -1561,7 +1561,7 @@ static gender_t	G_ParseAnimationFileSex( const char *filename) {
 	char			*text_p;
 	int				len;
 	char			*token;
-	char			text[20000];
+	char			text[20000]; // TODO move to heap?
 	fileHandle_t	f;
 	char			animfile[MAX_QPATH];
 
@@ -1703,7 +1703,7 @@ char* BG_RegisterRace( const char *name ) {
 qboolean BG_ParseRankNames( char* fileName, rankNames_t rankNames[] ) {
 	fileHandle_t	f;
 	int				file_len;
-	char			charText[20000];
+	char			charText[20000]; // TODO move to heap?
 	char*			textPtr;
 	char*			token;
 	int				i = 0;
@@ -1762,6 +1762,7 @@ qboolean BG_ParseRankNames( char* fileName, rankNames_t rankNames[] ) {
 		/* If we hit an open brace (ie, assuming we hit the start of a new rank cell) */
 		if ( !Q_stricmpn( token, "{", 1 ) ) {
 			while ( 1 ) {
+				
 				token = COM_Parse( &textPtr );
 				if( !token[0] ) {
 					break;

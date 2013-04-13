@@ -78,17 +78,31 @@ static int Entity_MMBRefit(lua_State * L)
 // returns a target entity of ent
 static int Entity_GetTarget(lua_State * L)
 {
-	lent_t     *lent;
-	gentity_t      *t = NULL;
+	lent_t*		lent = NULL;
+	gentity_t*	t = NULL;
+
+	LUA_DEBUG("BEGIN - entity.GetTarget");
 
 	lent = Lua_GetEntity(L, 1);
-	t = G_PickTarget(lent->e->target);
-	if(!lent || !lent->e || !t) {
+	
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetTarget - entity NULL");
+
 		lua_pushnil(L);
 		return 1;
 	}
+
+	t = G_PickTarget(lent->e->target);
+	if(t == NULL) {
+		LUA_DEBUG("ERROR - entity.GetTarget - target NULL");
+
+		lua_pushnil(L);
+		return 1;
+	}
+
 	Lua_PushEntity(L, t);
 
+	LUA_DEBUG("END - entity.GetTarget");
 	return 1;
 }
 
@@ -97,16 +111,24 @@ static int Entity_GetTarget(lua_State * L)
 // This is the only failsafe way to find brush entities as the 
 // entity number is different when you load a map local or join a server.
 static int Entity_FindBModel(lua_State *L) {
-	gentity_t	*ent;
+	gentity_t*	ent = NULL;
 	int			bmodel;
+	char		tmp[MAX_QPATH];
+
+	LUA_DEBUG("BEGIN - entity.FindBModel");
 
 	bmodel = luaL_checkint(L, 1);
-	ent = G_Find(NULL, FOFS(model), va("*%i", bmodel));
-	if(!ent)
-		lua_pushnil(L);
-	else
-		Lua_PushEntity(L, ent);
+	sprintf(tmp, "*%d", bmodel);
+	ent = G_Find(NULL, FOFS(model), tmp);
 
+	if(ent == NULL) {
+		LUA_DEBUG("ERROR - entity.FindBModel - entity NULL");
+		lua_pushnil(L);
+	} else {
+		Lua_PushEntity(L, ent);
+	}
+
+	LUA_DEBUG("END - entity.FindBModel");
 	return 1;
 }
 
@@ -114,16 +136,22 @@ static int Entity_FindBModel(lua_State *L) {
 // Returns the entity with the entity number entnum.
 static int Entity_FindNumber(lua_State * L)
 {
-	int			 entnum;
-	gentity_t	*ent;
+	int			entnum;
+	gentity_t*	ent = NULL;
+
+	LUA_DEBUG("BEGIN - entity.FindNumber");
 
 	entnum = luaL_checknumber(L, 1);
 	ent = &g_entities[entnum];
-	if(!ent || !ent->inuse)
+	
+	if(ent == NULL || ent->inuse == qfalse) {
+		LUA_DEBUG("ERROR - entity.FindNumber - entity NULL");
 		lua_pushnil(L);
-	else
+	} else {
 		Lua_PushEntity(L, ent);
+	}
 
+	LUA_DEBUG("END - entity.FindNumber");
 	return 1;
 }
 
@@ -131,14 +159,20 @@ static int Entity_FindNumber(lua_State * L)
 // Returns the first entity found that has a targetname of targetname.
 static int Entity_Find(lua_State * L)
 {
-	gentity_t      *t = NULL;
+	gentity_t* t = NULL;
+
+	LUA_DEBUG("BEGIN - entity.Find");
 
 	t = G_Find(t, FOFS(targetname), (char *)luaL_checkstring(L, 1));
-	if(!t)
-		lua_pushnil(L);
-	else
-		Lua_PushEntity(L, t);
 
+	if(t == NULL) {
+		LUA_DEBUG("ERROR - entity.Find - target NULL");
+		lua_pushnil(L);
+	} else {
+		Lua_PushEntity(L, t);
+	}
+
+	LUA_DEBUG("END - entity.Find");
 	return 1;
 }
 
@@ -149,7 +183,7 @@ static int Entity_Find(lua_State * L)
 static int Entity_FindMMB(lua_State * L)
 {
 	gentity_t		*t = NULL, *MMB = NULL;
-	vec_t			*vec, *origin;
+	vec_t			*vec = NULL, *origin = NULL;
 	
 	vec = Lua_GetVector(L, 2);
 
@@ -158,53 +192,81 @@ static int Entity_FindMMB(lua_State * L)
 		if(vec[0] == origin[0] && vec[1] == origin[1] && vec[2] == origin[2]){
 			t = MMB;
 			break;
-		}else{
+		} else {
 			continue;
 		}
 	}
-	if(!t)
+	if(t == NULL) {
 		lua_pushnil(L);
-	else
+	} else {
 		Lua_PushEntity(L, t);
+	}
 
 	return 1;
 }
 
 // entity.Use(entity ent)
 // Uses ent.
+// returns succes or fail
 static int Entity_Use(lua_State * L)
 {
-	lent_t     *lent;
+	lent_t* lent = NULL;
+
+	LUA_DEBUG("BEGIN - entity.Use");
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(!lent || !lent->e || !lent->e->use) return 1;
+	if(lent == NULL || lent->e == NULL || lent->e->use == NULL) {
+		LUA_DEBUG("ERROR - entity.Use - entity NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
 
-	if(lent->e->luaUse)
+	if(lent->e->luaUse != NULL) {
+		LUA_DEBUG("INFO - entity.Use - calling entity->luaUse");
 		LuaHook_G_EntityUse(lent->e->luaUse, lent->e-g_entities, lent->e-g_entities, lent->e-g_entities);
+	}
 	lent->e->use(lent->e, NULL, lent->e);
 
+	lua_pushboolean(L, qtrue);
+	LUA_DEBUG("END - entity.Use");
 	return 1;
 }
 
 // entity.Teleport(entity client, entity target)
 // Teleports client to target's position
+// returns success or fail
 static int Entity_Teleport(lua_State * L)
 {
-	lent_t     *lent;
-	lent_t     *target;
+	lent_t* lent = NULL;;
+	lent_t* target = NULL;
 
+	LUA_DEBUG("BEGIN - entity.Teleport");
 
 	lent = Lua_GetEntity(L, 1);
 	target = Lua_GetEntity(L, 2);
 
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.Teleport - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
-	if(!target || !target->e)
-		return 1;
+	}
 
-	if(lent->e->client)
+	if(target  == NULL || target->e == NULL) {
+		LUA_DEBUG("ERROR - entity.Teleport - target NULL");
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+
+	if(lent->e->client != NULL) {
+		LUA_DEBUG("INFO - entity.Teleport - calling TeleportPlayer");
 		TeleportPlayer(lent->e, target->e->s.origin, target->e->s.angles, TP_NORMAL);
+		lua_pushboolean(L, qtrue);
+	} else {
+		lua_pushboolean(L, qfalse);
+	}
+
+	LUA_DEBUG("END - entity.Teleport");
 	return 1;
 }
 
@@ -213,15 +275,21 @@ static int Entity_Teleport(lua_State * L)
 // Checks if an entity is a rocket.
 static int Entity_IsRocket(lua_State * L)
 {
-	lent_t     *lent;
-	qboolean    rocket = qfalse;
+	lent_t*		lent = NULL;
+	qboolean	rocket = qfalse;
 
 	lent = Lua_GetEntity(L, 1);
-	if(lent->e && !Q_stricmp(lent->e->classname, "rocket"))
+
+	if(lent == NULL || lent->e == NULL) {
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+
+	if(!Q_stricmp(lent->e->classname, "rocket")) {
 		rocket = qtrue;
+	}
 
-	lua_pushboolean(L, (int)rocket);
-
+	lua_pushboolean(L, rocket);
 	return 1;
 }
 
@@ -229,15 +297,21 @@ static int Entity_IsRocket(lua_State * L)
 // Checks if an entity is a grenade.
 static int Entity_IsGrenade(lua_State * L)
 {
-	lent_t     *lent;
-	qboolean    grenade = qfalse;
+	lent_t*		lent = NULL;
+	qboolean	grenade = qfalse;
 
 	lent = Lua_GetEntity(L, 1);
-	if(Q_stricmp(lent->e->classname, "grenade"))
+
+	if(lent == NULL || lent->e == NULL) {
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
+
+	if(!Q_stricmp(lent->e->classname, "grenade")) {
 		grenade = qtrue;
+	}
 
 	lua_pushboolean(L, grenade);
-
 	return 1;
 }
 
@@ -246,11 +320,16 @@ static int Entity_IsGrenade(lua_State * L)
 // If no new entity can be spawned nil is returned.
 static int Entity_Spawn(lua_State * L)
 {
-	gentity_t *ent;
+	gentity_t* ent = NULL;
 
 	ent = G_Spawn();
-	Lua_PushEntity(L, ent);
 
+	if(ent == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	Lua_PushEntity(L, ent);
 	return 1;
 }
 
@@ -258,13 +337,14 @@ static int Entity_Spawn(lua_State * L)
 // returns the entities index number
 static int Entity_GetNumber(lua_State * L)
 {
-	lent_t     *lent;
+	lent_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
 		lua_pushinteger(L, -1);
-	else
+	} else {
 		lua_pushinteger(L, lent->e - g_entities);
+	}
 
 	return 1;
 }
@@ -273,17 +353,16 @@ static int Entity_GetNumber(lua_State * L)
 // Checks if an entity is a client
 static int Entity_IsClient(lua_State * L)
 {
-	lent_t     *lent;
+	lent_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
 	
-	if(!lent || !lent->e) {
+	if(lent  == NULL || lent->e == NULL) {
 		lua_pushboolean(L, 0);
 		return 1;
 	}
 
 	lua_pushboolean(L, lent->e->client != NULL);
-
 	return 1;
 }
 
@@ -291,33 +370,35 @@ static int Entity_IsClient(lua_State * L)
 // Returns the display name of a client
 static int Entity_GetClientName(lua_State * L)
 {
-	lent_t     *lent;
+	lent_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(!lent || !lent->e || !lent->e->classname) {
+	if(lent == NULL || lent->e == NULL || lent->e->classname == NULL) {
 		lua_pushnil(L);
 		return 1;
 	}
 
 	lua_pushstring(L, lent->e->client->pers.netname);
-
 	return 1;
 }
 
 static int Entity_Print(lua_State * L)
 {
-	lent_t     *lent;
-	int             i;
-	char            buf[MAX_STRING_CHARS];
-	int             n = lua_gettop(L);
+	lent_t*	lent = NULL;
+	int		i;
+	char	buf[MAX_STRING_CHARS];
+	int		n = lua_gettop(L);
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(!lent|| !lent->e) return 1;
+	if(lent == NULL || lent->e == NULL) {
+		return luaL_error(L, "\'Print\' must be called on an client entity.");
+	}
 
-	if(!lent->e->client)
-		return luaL_error(L, "\'Print\' must be used with a client entity");
+	if(lent->e->client == NULL) {
+		return luaL_error(L, "\'Print\' must be called on an client entity.");
+	}
 
 	memset(buf, 0, sizeof(buf));
 
@@ -331,8 +412,9 @@ static int Entity_Print(lua_State * L)
 		lua_call(L, 1, 1);
 		s = lua_tostring(L, -1);
 
-		if(s == NULL)
+		if(s == NULL) {
 			return luaL_error(L, "\'tostring\' must return a string to \'print\'");
+		}
 
 		Q_strcat(buf, sizeof(buf), s);
 
@@ -340,23 +422,25 @@ static int Entity_Print(lua_State * L)
 	}
 
 	trap_SendServerCommand(lent->e - g_entities, va("print \"%s\n\"", buf));
-
 	return 1;
 }
 
 static int Entity_CenterPrint(lua_State * L)
 {
-	lent_t     *lent;
-	int             i;
-	char            buf[MAX_STRING_CHARS];
-	int             n = lua_gettop(L);
+	lent_t	*lent = NULL;
+	int		i;
+	char	buf[MAX_STRING_CHARS];
+	int		n = lua_gettop(L);
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(!lent || !lent->e) return 1;
-
-	if(!lent->e->client)
+	if(lent == NULL || lent->e == NULL) {
 		return luaL_error(L, "\'CenterPrint\' must be used with a client entity");
+	}
+
+	if(lent->e->client == NULL) {
+		return luaL_error(L, "\'CenterPrint\' must be used with a client entity");
+	}
 
 	memset(buf, 0, sizeof(buf));
 
@@ -387,14 +471,15 @@ extern qboolean G_ParseField(const char *key, const char *value, gentity_t *ent)
 // entity.SetKeyValue(entity ent, string key, string value)
 // Sets a key of an entity to a value
 static int Entity_SetKeyValue(lua_State * L) {
-	lent_t		*lent;
-	char		*key, *value;
+	lent_t* lent = NULL;
+	char*	key = NULL;
+	char*	value = NULL;
 	
 	lent = Lua_GetEntity(L, 1);
 	key = (char *)luaL_checkstring(L, 2);
 	value = (char *)luaL_checkstring(L, 3);
 
-	if(!lent || !lent->e || !key[0] || !value[0]) {
+	if(lent == NULL || lent->e == NULL || key == NULL || value == NULL) {
 		lua_pushboolean(L, qfalse);
 		return 1;
 	}
@@ -407,28 +492,33 @@ static int Entity_SetKeyValue(lua_State * L) {
 // Returns the classname of an entity
 static int Entity_GetClassName(lua_State * L)
 {
-	lent_t     *lent;
+	lent_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
 		lua_pushnil(L);
-	else
+	} else {
 		lua_pushstring(L, lent->e->classname);
+	}
 
 	return 1;
 }
 
 // entity.SetClassname(entity ent, string name)
 // Sets the Classname of an entity to name
+// Returns success or fail
 static int Entity_SetClassName(lua_State * L)
 {
-	lent_t     *lent;
+	lent_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		lua_pushboolean(L, qfalse);
 		return 1;
+	}
+	
 	lent->e->classname = (char *)luaL_checkstring(L, 2);
-
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
@@ -436,32 +526,40 @@ static int Entity_SetClassName(lua_State * L)
 // Returns the targetname of an entity
 static int Entity_GetTargetName(lua_State * L)
 {
-	lent_t     *lent;
+	lent_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
 		lua_pushnil(L);
-	else
+	} else {
 		lua_pushstring(L, lent->e->targetname);
+	}
 
 	return 1;
 }
 
 // entity.Rotate(entity ent, vector dir)
 // Rotates an entity in the specified directions
+// Returns success or fail
 static int Entity_Rotate(lua_State * L)
 {
-	lent_t     *lent;
-	vec_t          *vec;
+	lent_t*	lent = NULL;
+	vec_t*	vec = NULL;
 
 	lent = Lua_GetEntity(L, 1);
 	vec = Lua_GetVector(L, 2);
+
+	if(lent == NULL || lent->e == NULL || vec == NULL) {
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
 
 	lent->e->s.apos.trType = TR_LINEAR;
 	lent->e->s.apos.trDelta[0] = vec[0];
 	lent->e->s.apos.trDelta[1] = vec[1];
 	lent->e->s.apos.trDelta[2] = vec[2];
 
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
@@ -475,14 +573,19 @@ static int Entity_GC(lua_State * L)
 // Prints an entity as string
 static int Entity_ToString(lua_State * L)
 {
-	lent_t     *lent;
-	gentity_t      *gent;
-	char            buf[MAX_STRING_CHARS];
+	lent_t*		lent = NULL;
+	gentity_t*	gent = NULL;
+	char		buf[MAX_STRING_CHARS];
 
 	lent = Lua_GetEntity(L, 1);
+
+	if(lent == NULL || lent->e == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
+
 	gent = lent->e;
-	Com_sprintf(buf, sizeof(buf), "entity: class=%s name=%s id=%i pointer=%p\n", gent->classname, gent->targetname, gent - g_entities,
-				gent);
+	Com_sprintf(buf, sizeof(buf), "entity: class=%s name=%s id=%i pointer=%p\n", gent->classname, gent->targetname, gent-g_entities, gent);
 	lua_pushstring(L, buf);
 
 	return 1;
@@ -497,46 +600,57 @@ static void ent_delay(gentity_t *ent) {
 // entity.DelayedCallSpawn(entity ent, integer delay)
 // Calls the game logic spawn function for the class of ent after a delay 	of delay milliseconds.
 static int Entity_DelayedCallSpawn(lua_State *L) {
-	lent_t *lent;
+	lent_t*	lent = NULL;
 	int		delay;
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(!lent || !lent->e)
+	if(lent == NULL || lent->e == NULL) {
+		lua_pushboolean(L, qfalse);
 		return 1;
+	}
 
-	if(!Q_stricmp(lent->e->classname, "target_selfdestruct"))
+	if(!Q_stricmp(lent->e->classname, "target_selfdestruct")) {
+		lua_pushboolean(L, qfalse);
 		return 1; //we will not selfdestruct this way
+	}
 
 	delay = luaL_checkint(L, 2);
 
-	if(!delay)
+	if(!delay) {
 		delay = FRAMETIME;
+	}
 
 	lent->e->nextthink = delay;
 	lent->e->think = ent_delay;
-
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 // entity.CallSpawn(entity ent)
 // Calls the game logic spawn function for the class of ent.
 static int Entity_CallSpawn(lua_State *L) {
-	lent_t *lent;
+	lent_t* lent = NULL;
 	qboolean r = qfalse;
-	gentity_t *e = NULL;
+	gentity_t* e = NULL;
 
 	LUA_DEBUG("Entity_CallSpawn - start");
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(lent)
+	if(lent != NULL) {
 		e = lent->e;
+	} else {
+		lua_pushboolean(L, qfalse);
+		return 1;
+	}
 
-	if(!Q_stricmp(lent->e->classname, "target_selfdestruct"))
+	if(!Q_stricmp(lent->e->classname, "target_selfdestruct")) {
+		lua_pushboolean(L, qfalse);
 		return 1; //we will not selfdestruct this way
+	}
 
-	if(e) {
+	if(e != NULL) {
 		LUA_DEBUG("Entity_CallSpawn - G_CallSpawn");
 		trap_UnlinkEntity(e);
 		r = G_CallSpawn(e);
@@ -546,7 +660,7 @@ static int Entity_CallSpawn(lua_State *L) {
 		LUA_DEBUG("Entity_CallSpawn - NULL entity");
 	}
 	
-	lua_pushboolean(L, 0);
+	lua_pushboolean(L, qfalse);
 	return 1;
 }
 
@@ -766,7 +880,10 @@ static int Entity_IsLocked(lua_State *L) {
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(!lent || lent->e) return 1;
+	if(lent == NULL || lent->e == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
 
 	ent = lent->e;
 
@@ -1176,8 +1293,9 @@ static int Entity_SetEnemy(lua_State *L) {
 	lent_t *enemy;
 
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || lent->e)
+	if(lent == NULL || lent->e == NULL) {
 		return 1;
+	}
 	if(lua_isnil(L, 2)) {
 		lent->e->enemy = NULL;
 	} else {
@@ -1782,7 +1900,7 @@ static int Entity_GetModel(lua_State *L) {
 	lent_t	*lent;
 
 	lent = Lua_GetEntity(L, 1);
-	if(!lent || lent->e) 
+	if(lent == NULL || lent->e == NULL) 
 		lua_pushnil(L);
 	else
 		lua_pushstring(L, lent->e->model);
