@@ -1,5 +1,5 @@
 /*
-** $Id: luaconf.h,v 1.151 2010/11/12 15:48:30 roberto Exp $
+** $Id: luaconf.h,v 1.176 2013/03/16 21:10:18 roberto Exp $
 ** Configuration file for Lua
 ** See Copyright Notice in lua.h
 */
@@ -29,12 +29,13 @@
 #endif
 
 
-#if !defined(LUA_ANSI) && defined(_WIN32)
-#define LUA_WIN
+#if !defined(LUA_ANSI) && defined(_WIN32) && !defined(_WIN32_WCE)
+#define LUA_WIN		/* enable goodies for regular Windows platforms */
 #endif
 
 #if defined(LUA_WIN)
 #define LUA_DL_DLL
+#define LUA_USE_AFORMAT		/* assume 'printf' handles 'aA' specifiers */
 #endif
 
 
@@ -43,12 +44,18 @@
 #define LUA_USE_POSIX
 #define LUA_USE_DLOPEN		/* needs an extra library: -ldl */
 #define LUA_USE_READLINE	/* needs some extra libraries */
+#define LUA_USE_STRTODHEX	/* assume 'strtod' handles hex formats */
+#define LUA_USE_AFORMAT		/* assume 'printf' handles 'aA' specifiers */
+#define LUA_USE_LONGLONG	/* assume support for long long */
 #endif
 
 #if defined(LUA_USE_MACOSX)
 #define LUA_USE_POSIX
 #define LUA_USE_DLOPEN		/* does not need -ldl */
 #define LUA_USE_READLINE	/* needs an extra library: -lreadline */
+#define LUA_USE_STRTODHEX	/* assume 'strtod' handles hex formats */
+#define LUA_USE_AFORMAT		/* assume 'printf' handles 'aA' specifiers */
+#define LUA_USE_LONGLONG	/* assume support for long long */
 #endif
 
 
@@ -63,6 +70,7 @@
 #define LUA_USE_ISATTY
 #define LUA_USE_POPEN
 #define LUA_USE_ULONGJMP
+#define LUA_USE_GMTIME_R
 #endif
 
 
@@ -166,13 +174,8 @@
 ** give a warning about it. To avoid these warnings, change to the
 ** default definition.
 */
-#if defined(luaall_c)		/* { */
-#define LUAI_FUNC	static
-#define LUAI_DDEC	static
-#define LUAI_DDEF	static
-
-#elif defined(__GNUC__) && ((__GNUC__*100 + __GNUC_MINOR__) >= 302) && \
-      defined(__ELF__)
+#if defined(__GNUC__) && ((__GNUC__*100 + __GNUC_MINOR__) >= 302) && \
+    defined(__ELF__)		/* { */
 #define LUAI_FUNC	__attribute__((visibility("hidden"))) extern
 #define LUAI_DDEC	LUAI_FUNC
 #define LUAI_DDEF	/* empty */
@@ -202,10 +205,15 @@
 
 
 /*
-@@ luai_writestring defines how 'print' prints its results.
+@@ luai_writestring/luai_writeline define how 'print' prints its results.
+** They are only used in libraries and the stand-alone program. (The #if
+** avoids including 'stdio.h' everywhere.)
 */
+#if defined(LUA_LIB) || defined(lua_c)
 #include <stdio.h>
 #define luai_writestring(s,l)	fwrite((s), sizeof(char), (l), stdout)
+#define luai_writeline()	(luai_writestring("\n", 1), fflush(stdout))
+#endif
 
 /*
 @@ luai_writestringerror defines how to print error messages.
@@ -215,6 +223,13 @@
 	(fprintf(stderr, (s), (p)), fflush(stderr))
 
 
+/*
+@@ LUAI_MAXSHORTLEN is the maximum length for short strings, that is,
+** strings that are internalized. (Cannot be smaller than reserved words
+** or tags for metamethods, as these strings must be internalized;
+** #("function") = 8, #("__newindex") = 10.)
+*/
+#define LUAI_MAXSHORTLEN        40
 
 
 
@@ -238,6 +253,12 @@
 #define LUA_COMPAT_UNPACK
 
 /*
+@@ LUA_COMPAT_LOADERS controls the presence of table 'package.loaders'.
+** You can replace it with 'package.searchers'.
+*/
+#define LUA_COMPAT_LOADERS
+
+/*
 @@ macro 'lua_cpcall' emulates deprecated function lua_cpcall.
 ** You can call your C function directly (with light C functions).
 */
@@ -252,6 +273,12 @@
 ** You can rewrite 'log10(x)' as 'log(x, 10)'.
 */
 #define LUA_COMPAT_LOG10
+
+/*
+@@ LUA_COMPAT_LOADSTRING defines the function 'loadstring' in the base
+** library. You can rewrite 'loadstring(s)' as 'load(s)'.
+*/
+#define LUA_COMPAT_LOADSTRING
 
 /*
 @@ LUA_COMPAT_MAXN defines the function 'maxn' in the table library.
@@ -371,13 +398,32 @@
 @@ LUA_NUMBER_FMT is the format for writing numbers.
 @@ lua_number2str converts a number to a string.
 @@ LUAI_MAXNUMBER2STR is maximum size of previous conversion.
-@@ lua_str2number converts a string to a number.
 */
 #define LUA_NUMBER_SCAN		"%lf"
 #define LUA_NUMBER_FMT		"%.14g"
 #define lua_number2str(s,n)	sprintf((s), LUA_NUMBER_FMT, (n))
 #define LUAI_MAXNUMBER2STR	32 /* 16 digits, sign, point, and \0 */
+
+
+/*
+@@ l_mathop allows the addition of an 'l' or 'f' to all math operations
+*/
+#define l_mathop(x)		(x)
+
+
+/*
+@@ lua_str2number converts a decimal numeric string to a number.
+@@ lua_strx2number converts an hexadecimal numeric string to a number.
+** In C99, 'strtod' does both conversions. C89, however, has no function
+** to convert floating hexadecimal strings to numbers. For these
+** systems, you can leave 'lua_strx2number' undefined and Lua will
+** provide its own implementation.
+*/
 #define lua_str2number(s,p)	strtod((s), (p))
+
+#if defined(LUA_USE_STRTODHEX)
+#define lua_strx2number(s,p)	strtod((s), (p))
+#endif
 
 
 /*
@@ -385,10 +431,10 @@
 */
 
 /* the following operations need the math library */
-#if defined(lobject_c) || defined(lvm_c) || defined(luaall_c)
+#if defined(lobject_c) || defined(lvm_c)
 #include <math.h>
-#define luai_nummod(L,a,b)	((a) - floor((a)/(b))*(b))
-#define luai_numpow(L,a,b)	(pow(a,b))
+#define luai_nummod(L,a,b)	((a) - l_mathop(floor)((a)/(b))*(b))
+#define luai_numpow(L,a,b)	(l_mathop(pow)(a,b))
 #endif
 
 /* these are quite standard operations */
@@ -420,40 +466,72 @@
 #define LUA_UNSIGNED	unsigned LUA_INT32
 
 
-#if defined(LUA_CORE)		/* { */
-
-#if defined(LUA_NUMBER_DOUBLE) && !defined(LUA_ANSI)	/* { */
-
-/* On a Microsoft compiler on a Pentium, use assembler to avoid clashes
-   with a DirectX idiosyncrasy */
-#if defined(_MSC_VER) && defined(M_IX86)		/* { */
-
-#define MS_ASMTRICK
-
-#else				/* }{ */
-/* the next definition uses a trick that should work on any machine
-   using IEEE754 with a 32-bit integer type */
-
-#define LUA_IEEE754TRICK
 
 /*
-@@ LUA_IEEEENDIAN is the endianness of doubles in your machine
-@@ (0 for little endian, 1 for big endian); if not defined, Lua will
-@@ check it dynamically.
+** Some tricks with doubles
 */
-/* check for known architectures */
-#if defined(__i386__) || defined(__i386) || defined(i386) || \
-    defined (__x86_64)
-#define LUA_IEEEENDIAN	0
-#elif defined(__POWERPC__) || defined(__ppc__)
-#define LUA_IEEEENDIAN	1
-#endif
 
-#endif				/* } */
+#if defined(LUA_NUMBER_DOUBLE) && !defined(LUA_ANSI)	/* { */
+/*
+** The next definitions activate some tricks to speed up the
+** conversion from doubles to integer types, mainly to LUA_UNSIGNED.
+**
+@@ LUA_MSASMTRICK uses Microsoft assembler to avoid clashes with a
+** DirectX idiosyncrasy.
+**
+@@ LUA_IEEE754TRICK uses a trick that should work on any machine
+** using IEEE754 with a 32-bit integer type.
+**
+@@ LUA_IEEELL extends the trick to LUA_INTEGER; should only be
+** defined when LUA_INTEGER is a 32-bit integer.
+**
+@@ LUA_IEEEENDIAN is the endianness of doubles in your machine
+** (0 for little endian, 1 for big endian); if not defined, Lua will
+** check it dynamically for LUA_IEEE754TRICK (but not for LUA_NANTRICK).
+**
+@@ LUA_NANTRICK controls the use of a trick to pack all types into
+** a single double value, using NaN values to represent non-number
+** values. The trick only works on 32-bit machines (ints and pointers
+** are 32-bit values) with numbers represented as IEEE 754-2008 doubles
+** with conventional endianess (12345678 or 87654321), in CPUs that do
+** not produce signaling NaN values (all NaNs are quiet).
+*/
 
-#endif			/* } */
+/* Microsoft compiler on a Pentium (32 bit) ? */
+#if defined(LUA_WIN) && defined(_MSC_VER) && defined(_M_IX86)	/* { */
 
-#endif			/* } */
+#define LUA_MSASMTRICK
+#define LUA_IEEEENDIAN		0
+#define LUA_NANTRICK
+
+
+/* pentium 32 bits? */
+#elif defined(__i386__) || defined(__i386) || defined(__X86__) /* }{ */
+
+#define LUA_IEEE754TRICK
+#define LUA_IEEELL
+#define LUA_IEEEENDIAN		0
+#define LUA_NANTRICK
+
+/* pentium 64 bits? */
+#elif defined(__x86_64)						/* }{ */
+
+#define LUA_IEEE754TRICK
+#define LUA_IEEEENDIAN		0
+
+#elif defined(__POWERPC__) || defined(__ppc__)			/* }{ */
+
+#define LUA_IEEE754TRICK
+#define LUA_IEEEENDIAN		1
+
+#else								/* }{ */
+
+/* assume IEEE754 and a 32-bit integer type */
+#define LUA_IEEE754TRICK
+
+#endif								/* } */
+
+#endif							/* } */
 
 /* }================================================================== */
 

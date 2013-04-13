@@ -1019,7 +1019,7 @@ static void WP_FireTR116Bullet( gentity_t *ent, vec3_t start, vec3_t dir ) {
  * @param alt_fire was this alt fire mode?
  * TODO rename me?
  */
-static void WP_FireTetrionDisruptor( gentity_t *ent, qboolean alt_fire )
+static void WP_FireTR116( gentity_t *ent, qboolean alt_fire )
 /* (RPG-X: J2J MOdified to make it look and feel like tr116 */
 /* RPG-X: TiM - Modified even furthur */
 {
@@ -1746,7 +1746,7 @@ void FireWeapon( gentity_t *ent, qboolean alt_fire )
 		WP_FireGrenade( ent, alt_fire );
 		break;
 	case WP_7:
-		WP_FireTetrionDisruptor( ent, alt_fire );
+		WP_FireTR116( ent, alt_fire );
 		break;
 	case WP_13:
 		WP_SprayVoyagerHypo( ent, alt_fire );
