@@ -431,6 +431,64 @@ static void list_remove(list_p list, char end) {
 	}
 }
 
+/**
+ * Function for completely destroying an item in the list at a given index.
+ *
+ *	\param list pointer to a list
+ *	\param idx index of the element to remove
+ */
+static void list_remove_at(list_p list, int idx) {
+	container_p cont;
+	list_iter_p iter;
+	lnode_p target = NULL;
+	int i;
+
+	if(idx < 0 || idx >= list->length || list->length == 0) {
+		return;
+	}
+
+	iter = list_iterator(list, LIST_FRONT);
+	for(cont = list_next(iter), i = 0; cont != NULL; cont = list_next(iter), i++) {
+		if(i == idx) {
+			target = iter->current;
+			break;
+		}
+	}
+	destroy_iterator(iter);
+
+	if(target == NULL) {
+		return;
+	}
+
+	if(list->length == 1) {
+		list->first = list->last = NULL;
+		list->length--;
+
+		free(target);
+	} else {
+		target->prev->next = target->next;
+		target->next->prev = target->prev;
+
+		if(target == list->first) {
+			list->first = target->next;
+		}
+		if(target == list->last) {
+			list->last = target->prev;
+		}
+		list->length--;
+
+		free(target);
+	}
+
+	if(cont != NULL) {
+		if(cont->pointer == 0 && cont->data != NULL) {
+			list->destructor(cont->data);
+		}
+
+		free(cont);
+	}
+}
+
 void destroy_list(list_p list) {
 	lnode_p cur = list->first;
 	lnode_p next;
@@ -524,6 +582,7 @@ list_p create_list() {
 	list->prepend_ptr = list_prepend_ptr;
 	list->prev = list_prev;
 	list->remove = list_remove;
+	list->removeAt = list_remove_at;
 
 	return list;
 }
@@ -550,5 +609,6 @@ void list_init(struct list * l, void (*destructor)(void*)) {
 	l->prepend_ptr = list_prepend_ptr;
 	l->prev = list_prev;
 	l->remove = list_remove;
+	l->removeAt = list_remove_at;
 }
 
