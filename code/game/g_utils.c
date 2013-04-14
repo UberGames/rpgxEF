@@ -821,8 +821,8 @@ int G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDama
 		}
 
 		if(ignore != NULL) {
-			iter = list_iterator(ignore, LIST_FRONT);
-			for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+			iter = ignore->iterator(ignore, LIST_FRONT);
+			for(c = ignore->next(iter); c != NULL; c = ignore->next(iter)) {
 				t = c->data;
 
 				if(t == NULL) {
@@ -863,7 +863,7 @@ int G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDama
 		}
 		
 		/* ok, we are within the radius, add us to the incoming list */
-		list_append_ptr(ent_list, ent, LT_DATA);
+		ent_list->append_ptr(ent_list, ent, LT_DATA);
 	}
 	/*  we are done, return how many we found */
 	return ent_list->length;
@@ -914,8 +914,8 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
 		}
 
 		if(ignore != NULL) {
-			iter = list_iterator(ignore, LIST_FRONT);
-			for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+			iter = ignore->iterator(ignore, LIST_FRONT);
+			for(c = ignore->next(iter); c != NULL; c = ignore->next(iter)) {
 				t = c->data;
 
 				if(t == NULL) {
@@ -934,8 +934,8 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
 			continue;
 		}
 
-		iter = list_iterator(classnames, LIST_FRONT);
-		for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+		iter = classnames->iterator(classnames, LIST_FRONT);
+		for(c = classnames->next(iter); c != NULL; c = classnames->next(iter)) {
 			if(!strcmp(ent->classname, (char*)c->data)) {
 				valid = qtrue;
 				break;
@@ -969,7 +969,7 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
 		}
 		
 		/* ok, we are within the radius, add us to the incoming list */
-		list_append_ptr(ent_list, ent, LT_DATA);
+		ent_list->append_ptr(ent_list, ent, LT_DATA);
 
 		valid = qfalse;
 	}
@@ -1007,8 +1007,8 @@ gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, list_p 
 	list_init(&entList, free);
 	G_RadiusList(origin, radius, ignore, takeDamage, &entList);
 
-	iter = list_iterator(&entList, LIST_FRONT);
-	for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+	iter = entList.iterator(&entList, LIST_FRONT);
+	for(c = entList.next(iter); c != NULL; c = entList.next(iter)) {
 		t = c->data;
 
 		if(t == NULL) {
@@ -1039,7 +1039,7 @@ gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, list_p 
 		}
 	}
 	destroy_iterator(iter);
-	list_clear(&entList);
+	entList.clear(&entList);
 
 	return nearest;
 }
@@ -1072,8 +1072,8 @@ gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore ) {
 	list_init(&entList, free);
 	G_RadiusList(origin, radius, ignore, qtrue, &entList);
 	
-	iter = list_iterator(&entList, LIST_FRONT);
-	for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+	iter = entList.iterator(&entList, LIST_FRONT);
+	for(c = entList.next(iter); c != NULL; c = entList.next(iter)) {
 		t = c->data;
 
 		if(t == NULL) {
@@ -1092,7 +1092,7 @@ gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore ) {
 		}
 	}
 	destroy_iterator(iter);
-	list_clear(&entList);
+	entList.clear(&entList);
 
 	return nearest;
 }
@@ -1109,7 +1109,7 @@ int G_GetEntityByTargetname(const char *targetname, list_p entities) {
 		if(!&g_entities[i]) continue;
 		t = &g_entities[i];
 		if(t->targetname && !Q_strncmp(t->targetname, targetname, strlen(targetname))) {
-			list_append_ptr(entities, t, LT_DATA);
+			entities->append_ptr(entities, t, LT_DATA);
 		}
 	}
 
@@ -1128,7 +1128,7 @@ int G_GetEntityByTarget(const char *target, list_p entities) {
 		if(!&g_entities[i]) continue;
 		t = &g_entities[i];
 		if(t->target && !Q_strncmp(t->target, target, strlen(target))) {
-			list_append_ptr(entities, t, LT_DATA);
+			entities->append_ptr(entities, t, LT_DATA);
 		}
 	}
 
@@ -1147,7 +1147,7 @@ int G_GetEntityByBmodel(char *bmodel, list_p entities) {
 		if(!&g_entities[i]) continue;
 		t = &g_entities[i];
 		if(t->model && !Q_strncmp(t->model, bmodel, strlen(bmodel))) {
-			list_append_ptr(entities, t, LT_DATA);
+			entities->append_ptr(entities, t, LT_DATA);
 		}
 	}
 

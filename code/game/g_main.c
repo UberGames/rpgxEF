@@ -960,7 +960,7 @@ static void G_LoadTimedMessages(void) {
 				continue;
 			}
 
-			list_append(level.timedMessages, token, LT_STRING, strlen(token)+1);
+			level.timedMessages->append(level.timedMessages, token, LT_STRING, strlen(token)+1);
 		} else {
 			if(token[0] == '}') {
 				break;

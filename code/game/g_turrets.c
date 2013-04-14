@@ -557,15 +557,15 @@ void turret_base_think (gentity_t *self)
 		list_init(&ignore, free);
 
 		if(lastEnemy && lastEnemy->lastEnemy) {
-			list_append_ptr(&ignore, lastEnemy->lastEnemy, LT_DATA);
+			ignore.append_ptr(&ignore, lastEnemy->lastEnemy, LT_DATA);
 			G_RadiusList( self->r.currentOrigin, self->random, &ignore, qtrue, &entity_list );
 		} else {
 			G_RadiusList( self->r.currentOrigin, self->random, NULL, qtrue, &entity_list );
 		}
-		list_clear(&ignore);
+		ignore.clear(&ignore);
 
-		iter = list_iterator(&entity_list, LIST_FRONT);
-		for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+		iter = entity_list.iterator(&entity_list, LIST_FRONT);
+		for(c = entity_list.next(iter); c != NULL; c = entity_list.next(iter)) {
 			target = c->data;
 
 			if(target == NULL) {
@@ -616,7 +616,7 @@ void turret_base_think (gentity_t *self)
 			}
 		}
 		destroy_iterator(iter);
-		list_clear(&entity_list);
+		entity_list.clear(&entity_list);
 	}
 
 	if ( self->enemy )
