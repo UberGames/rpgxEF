@@ -118,6 +118,7 @@ struct list{
 	container_p (*poll)(list_p list); /*<! poll */
 	container_p (*pop)(list_p list); /*<! pop */
 	void (*remove)(list_p list, char end); /*!< remove an element from the list */
+	void (*removeAt)(list_p list, int idx); /*!< remove an element at a specified index */
 };
 
 /** 
