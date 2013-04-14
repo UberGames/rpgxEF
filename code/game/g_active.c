@@ -510,13 +510,13 @@ static char *TimedMessage( void ){
 	}
 
 	if(iterTimedMessages == NULL) {
-		iterTimedMessages = list_iterator(level.timedMessages, LIST_FRONT);
+		iterTimedMessages = level.timedMessages->iterator(level.timedMessages, LIST_FRONT);
 		if(iterTimedMessages == NULL) { // something went wrong
 			return "^1RPG-X ERROR: No messages to display";
 		}
 	}
 
-	c = list_cycl_next(iterTimedMessages);
+	c = level.timedMessages->cycl_next(iterTimedMessages);
 	message = c->data;
 
 	return message;

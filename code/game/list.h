@@ -82,6 +82,16 @@ struct linked_node {
 typedef struct linked_node* lnode_p;
 
 /**
+ * Type for a pointer to a list iterator.
+ */
+typedef struct list_iter * list_iter_p;
+
+/**
+ *	Type for a pointer to a list.
+ */
+typedef struct list * list_p;
+
+/**
  * Struct describing a list.
  */
 struct list{
@@ -89,26 +99,36 @@ struct list{
 	lnode_p first;				/*!< first element of the list */
 	lnode_p last;				/*!< last element of the list */
 	void (*destructor)(void*);	/*!< pointer to destructor for data. Default is free. */
+	list_iter_p (*iterator)(list_p list, char init);	/*!< creates a new list iterator */
+	int (*add_ptr)(list_p list, void* data, dataType_t type, char end); /*!< add a pointer to the list */
+	int (*append_ptr)(list_p list, void* data, dataType_t type); /*!< append a pointer to the list */
+	int (*prepend_ptr)(list_p list, void* data, dataType_t type); /*!< prepend a pointer to the list */
+	int (*add)(list_p list, void* data, dataType_t type, size_t size, char end); /*!< add data to the list */
+	int (*append)(list_p list, void* data, dataType_t type, size_t size); /*!< append data to the list */
+	int (*prepend)(list_p list, void* data, dataType_t type, size_t size); /*!< prepend data to the list */
+	container_p (*at)(list_p list, int idx); /*!< get container at given index */
+	void (*clear)(list_p list); /*!< clear the list */
+	container_p (*current)(list_iter_p iter); /*!< get the current element for the iterator */
+	container_p (*cycl_next)(list_iter_p iter); /*!< get the next element for the iterator (cyclic access) */
+	container_p (*cycl_prev)(list_iter_p iter); /*!< get the previous element for the iterator (cyclic acccess) */
+	container_p (*front)(list_p list); /*!< get the first element of the list */
+	container_p (*end)(list_p list); /*!< get the last element of the list */
+	container_p (*next)(list_iter_p iter); /*!< get the next element for the iterator */
+	container_p (*prev)(list_iter_p iter); /*!< get the previous element for the iterator */
+	container_p (*poll)(list_p list); /*<! poll */
+	container_p (*pop)(list_p list); /*<! pop */
+	void (*remove)(list_p list, char end); /*!< remove an element from the list */
+	void (*removeAt)(list_p list, int idx); /*!< remove an element at a specified index */
 };
-
-/**
- *	Type for a pointer to a list.
- */
-typedef struct list * list_p;
 
 /** 
  * Struct describing a list iterator.
  */
-struct list_iter{
+struct list_iter {
 	list_p	list;			/*!< the list */
 	lnode_p current;		/*!< current node */
 	char started;			/*!< has iteration started */
 };
-
-/**
- * Type for a pointer to a list iterator.
- */
-typedef struct list_iter * list_iter_p;
 
 /** 
  * Create a linked_list object. This pointer is created on the heap and must be
@@ -117,137 +137,6 @@ typedef struct list_iter * list_iter_p;
  *	\return A new list allocated on the heap.
  */
 list_p create_list(void);
-
-/** 
- * Create a list_iter object for the linked_list list. The flag init can be
- * either LIST_FRONT or LIST_BACK and indicates whether to start the iterator from the first
- * or last item in the list 
- *
- *	\param list pointer to a list
- *	\param init indicator where to start from
- *	\return A new list iterator.
- *
- */
-list_iter_p list_iterator(list_p list, char init);
-
-/** 
- * Add a pointer to an item with the given value and type to the list.
- * Returns the length of the list if succesfull else returns 0.
- *
- *	\param list pointer to a list
- *	\param data pointer to data
- *	\param type type of the data
- *	\param end indicator where to insert
- *	\return Count of elements in the list
- */
-int list_add_ptr(list_p list, void* data, dataType_t type, char end);
-
-/**
- * Add a pointer to an item with the given calue, type, and size to the end of the list.
- * Returns the length of the list if successfull else returns 0.
- *
- *	\param list pointer to a list
- *	\param data pointer to data
- *	\param type type of data
- *	\return Count of elements in list
- */
-int list_append_ptr(list_p list, void* data, dataType_t type);
-
-/**
- * Add a pointer to an item with the given calue, type, and size to the front of the list.
- * Returns the length of the list if successfull else returns 0.
- *
- *	\param list pointer to a list
- *	\param data pointer to data
- *	\param type type of data
- *	\return Count of elements in list
- */
-int list_prepend_ptr(list_p list, void* data, dataType_t type);
-
-/** 
- * Add an item with the given value, type, and size to the list.
- * The data is copied by value, so the original pointer must be freed if it
- * was allocated on the heap. 
- * Returns the length of the list if succesfull else returns 0.
- *
- *	\param list pointer to a list
- *	\param data pointer to data
- *	\param type type of data
- *	\param size size of data
- *	\param end indicator where to add the data
- *	\return Count of elements in the list
- */
-int list_add(list_p list, void* data, dataType_t type, size_t size, char end);
-
-/**
- * Add an item with the given calue, type, and size to the end of the list.
- * The data is copied by value, so the original pointer must be freed if it
- * was allocated on the heap.
- * Returns the length of the list if successfull else returns 0.
- *
- *	\param list pointer to a list
- *	\param data pointer to data
- *	\param type type of data
- *	\param size size of data
- *	\return Count of elements in the list
- */
-int list_append(list_p list, void* data, dataType_t type, size_t size);
-
-/**
- * Add an item with the given calue, type, and size to the front of the list.
- * The data is copied by value, so the original pointer must be freed if it
- * was allocated on the heap.
- * Returns the length of the list if successfull else returns 0.
- *
- *	\param list pointer to a list
- *	\param data pointer to data
- *	\param type type of data
- *	\param size size of data
- *	\return Count of elements in the list
- */
-int list_prepend(list_p list, void* data, dataType_t type, size_t size);
-
-/**
- * Gets the data stored in the first item of the list or NULL if the list is empty 
- *
- *	\param list pointer to a list
- *	\return container for the first element of the list
- */
-container_p list_first(list_p list);
-/**
- * Gets the data stored in the last item of the list or NULL if the list is empty 
- *
- *	\param list pointer to a list
- *	\return container for the last element of the list
- */
-container_p list_last(list_p list);
-
-/**
- * Removes the last item in the list (LIFO order) and returns the data stored
- * there. The data returned must be freed later in order to remain memory safe. 
- *
- *	\param list pointer to a list
- *	\return container for the last element of the list
- */
-container_p list_pop(list_p list);
-/**
- * Removes the first item in the list (FIFO order) and returns the data stored
- * there. The data return must be freed later in order to remain memory safe. 
- *
- *	\param list pointer to a list
- *	\return container for the first element of the list
- */
-container_p list_poll(list_p list);
-/**
- * Convenience function for completely destroying an item in the list. If the end
- * flag is LIST_FRONT, an item will be polled from the front of the list and its data
- * freed. If the end flag is set to LIST_BACK, an item will be popped off the end of
- * the list and the data freed. 
- *
- *	\param list pointer to a list
- *	\param end indicator where to remove
- */
-void list_remove(list_p list, char end);
 
 /**
  * Completely free the data associated with the list. 
@@ -264,73 +153,11 @@ void destroy_list(list_p list);
 void destroy_iterator(list_iter_p iter);
 
 /**
- * Return the data held by the current item pointed to by the iterator 
- *
- *	\param list pointer to a iterator
- *	\return container for the current element
- */
-container_p list_current(list_iter_p list);
-
-/**
- * Advances the iterator to the next item in the list and returns the data
- * stored there. 
- *
- *	\param list pointer to a iterator
- *	\return container of the next element
- */
-container_p list_next(list_iter_p list);
-
-/**
- * Advances the iterator to the previous item in the list and returns the data
- * stored there. 
- *
- *	\param list pointer to a iterator
- *	\return container of the previous element
- */
-container_p list_prev(list_iter_p list);
-
-/**
- * Advances the iterator to the next item in the list and returns the data
- * stored there. If the end of the list is reached it continues with the first 
- * element of the list.
- *
- *	\param list pointer to a iterator
- *	\return container of the next element
- */
-container_p list_cycl_next(list_iter_p list);
-
-/**
- * Advances the iterator to the previous item in the list and returns the data
- * stored there. If the start of the list is reached it continues with the last 
- * element of the list.
- *
- *	\param list pointer to a iterator
- *	\return container of the previous element
- */
-container_p list_cycl_prev(list_iter_p list);
-
-/**
- *	Remove all elements.
- *
- *	\param list pointer to a list
- */
-void list_clear(list_p list);
-
-/**
  * Initialize list. For use on lists that are NOT allocated on the heap.
  *
  *	\param l a list
  *	\param destructor pointer to destructor function
  */
 void list_init(struct list * l, void (*destructor)(void*));
-
-/**
- * Get the element at the given index.
- *
- * \param list a list
- * \param idx index
- * \return element at given index or NULL if index is out of bounds
- */
-container_p list_at(list_p list, int idx);
 
 #endif

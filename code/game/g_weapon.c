@@ -116,18 +116,18 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 	/* prepare lists */
 	list_init(&classnames, free);
 	list_init(&validEnts, free);
-	list_append(&classnames, "func_breakable", LT_STRING, strlen("func_breakable")+1);
-	list_append(&classnames, "misc_model_breakable", LT_STRING, strlen("misc_model_breakable")+1);
+	classnames.append(&classnames, "func_breakable", LT_STRING, strlen("func_breakable")+1);
+	classnames.append(&classnames, "misc_model_breakable", LT_STRING, strlen("misc_model_breakable")+1);
 
 	/* find all vlaid entities in range */
 	count = G_RadiusListOfTypes(&classnames, ent->r.currentOrigin, 512, NULL, &validEnts);
-	list_clear(&classnames);
+	classnames.clear(&classnames);
 	//G_Printf("Found %d possible candidates\n", count);
 	if(count) {
 		trace_t tr;
 
-		iter = list_iterator(&validEnts, LIST_FRONT);
-		for(cont = list_next(iter); cont != NULL; cont = list_next(iter)) {
+		iter = validEnts.iterator(&validEnts, LIST_FRONT);
+		for(cont = validEnts.next(iter); cont != NULL; cont = validEnts.next(iter)) {
 			e = cont->data;
 
 			// TODO: fix problems with small distance
@@ -161,7 +161,7 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 	}
 
 	if(nearest == NULL || nearest->inuse == qfalse) {
-		list_clear(&validEnts);
+		validEnts.clear(&validEnts);
 		return;
 	}
 
@@ -179,7 +179,7 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 		G_Repair(ent, nearest, HYPERSPANNER_RATE * modifier);
 	}
 
-	list_clear(&validEnts);
+	validEnts.clear(&validEnts);
 }
 
 /*
