@@ -22,22 +22,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "list.h"
 #include <string.h>
 
-list_p create_list() {
-	list_p list = (list_p)malloc(sizeof(struct list));
-
-	if(list == NULL) {
-		return NULL;
-	}
-
-	list->length = 0;
-	list->first = NULL;
-	list->last = NULL;
-	list->destructor = free;
-
-	return list;
-}
-
-list_iter_p list_iterator(list_p list, char init) {
+/** 
+ * Create a list_iter object for the linked_list list. The flag init can be
+ * either LIST_FRONT or LIST_BACK and indicates whether to start the iterator from the first
+ * or last item in the list 
+ *
+ *	\param list pointer to a list
+ *	\param init indicator where to start from
+ *	\return A new list iterator.
+ *
+ */
+static list_iter_p list_iterator(list_p list, char init) {
 	list_iter_p iter = (list_iter_p)malloc(sizeof(struct list_iter));
 
 	if(iter == NULL) {
@@ -58,7 +53,20 @@ list_iter_p list_iterator(list_p list, char init) {
 	return iter;
 }
 
-int list_add(list_p list, void* data, dataType_t type, size_t size, char end) {
+/** 
+ * Add an item with the given value, type, and size to the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap. 
+ * Returns the length of the list if succesfull else returns 0.
+ *
+ *	\param list pointer to a list
+ *	\param data pointer to data
+ *	\param type type of data
+ *	\param size size of data
+ *	\param end indicator where to add the data
+ *	\return Count of elements in the list
+ */
+static int list_add(list_p list, void* data, dataType_t type, size_t size, char end) {
 	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
 
 	node->cont = (container_p)malloc(sizeof(container));
@@ -101,15 +109,49 @@ int list_add(list_p list, void* data, dataType_t type, size_t size, char end) {
 	return list->length;
 }
 
-int list_append(list_p list, void* data, dataType_t type, size_t size) {
+/**
+ * Add an item with the given calue, type, and size to the end of the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap.
+ * Returns the length of the list if successfull else returns 0.
+ *
+ *	\param list pointer to a list
+ *	\param data pointer to data
+ *	\param type type of data
+ *	\param size size of data
+ *	\return Count of elements in the list
+ */
+static int list_append(list_p list, void* data, dataType_t type, size_t size) {
 	return list_add(list, data, type, size, LIST_BACK);
 }
 
-int list_prepend(list_p list, void* data, dataType_t type, size_t size) {
+/**
+ * Add an item with the given calue, type, and size to the front of the list.
+ * The data is copied by value, so the original pointer must be freed if it
+ * was allocated on the heap.
+ * Returns the length of the list if successfull else returns 0.
+ *
+ *	\param list pointer to a list
+ *	\param data pointer to data
+ *	\param type type of data
+ *	\param size size of data
+ *	\return Count of elements in the list
+ */
+static int list_prepend(list_p list, void* data, dataType_t type, size_t size) {
 	return list_add(list, data, type, size, LIST_FRONT);
 }
 
-int list_add_ptr(list_p list, void* data, dataType_t type, char end) {
+/** 
+ * Add a pointer to an item with the given value and type to the list.
+ * Returns the length of the list if succesfull else returns 0.
+ *
+ *	\param list pointer to a list
+ *	\param data pointer to data
+ *	\param type type of the data
+ *	\param end indicator where to insert
+ *	\return Count of elements in the list
+ */
+static int list_add_ptr(list_p list, void* data, dataType_t type, char end) {
 	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
 
 	node->cont = (container_p)malloc(sizeof(container));
@@ -148,15 +190,39 @@ int list_add_ptr(list_p list, void* data, dataType_t type, char end) {
 	return list->length;
 }
 
-int list_append_ptr(list_p list, void* data, dataType_t type) {
+/**
+ * Add a pointer to an item with the given calue, type, and size to the end of the list.
+ * Returns the length of the list if successfull else returns 0.
+ *
+ *	\param list pointer to a list
+ *	\param data pointer to data
+ *	\param type type of data
+ *	\return Count of elements in list
+ */
+static int list_append_ptr(list_p list, void* data, dataType_t type) {
 	return list_add_ptr(list, data, type, LIST_BACK);
 }
 
-int list_prepend_ptr(list_p list, void* data, dataType_t type) {
+/**
+ * Add a pointer to an item with the given calue, type, and size to the front of the list.
+ * Returns the length of the list if successfull else returns 0.
+ *
+ *	\param list pointer to a list
+ *	\param data pointer to data
+ *	\param type type of data
+ *	\return Count of elements in list
+ */
+static int list_prepend_ptr(list_p list, void* data, dataType_t type) {
 	return list_add_ptr(list, data, type, LIST_FRONT);
 }
 
-container_p list_current(list_iter_p iter){
+/**
+ * Return the data held by the current item pointed to by the iterator 
+ *
+ *	\param list pointer to a iterator
+ *	\return container for the current element
+ */
+static container_p list_current(list_iter_p iter){
 	if(iter->started && iter->current != NULL) {
 		return iter->current->cont;
 	}
@@ -164,7 +230,14 @@ container_p list_current(list_iter_p iter){
 	return NULL;
 }
 
-container_p list_next(list_iter_p iter) {
+/**
+ * Advances the iterator to the next item in the list and returns the data
+ * stored there. 
+ *
+ *	\param list pointer to a iterator
+ *	\return container of the next element
+ */
+static container_p list_next(list_iter_p iter) {
 	if(!iter->started && iter->current != NULL) {
 		iter->started = 1;
 		return iter->current->cont;
@@ -178,7 +251,15 @@ container_p list_next(list_iter_p iter) {
 	return NULL;
 }
 
-container_p list_cycl_next(list_iter_p iter) {
+/**
+ * Advances the iterator to the next item in the list and returns the data
+ * stored there. If the end of the list is reached it continues with the first 
+ * element of the list.
+ *
+ *	\param list pointer to a iterator
+ *	\return container of the next element
+ */
+static container_p list_cycl_next(list_iter_p iter) {
 	if(!iter->started && iter->current != NULL) {
 		iter->started = 1;
 		return iter->current->cont;
@@ -193,7 +274,14 @@ container_p list_cycl_next(list_iter_p iter) {
 	return NULL;
 }
 
-container_p list_prev(list_iter_p iter) {
+/**
+ * Advances the iterator to the previous item in the list and returns the data
+ * stored there. 
+ *
+ *	\param list pointer to a iterator
+ *	\return container of the previous element
+ */
+static container_p list_prev(list_iter_p iter) {
 	if(!iter->started&&iter->current!=NULL) {
 		iter->started = 1;
 		return iter->current->cont;
@@ -205,7 +293,15 @@ container_p list_prev(list_iter_p iter) {
 	return NULL;
 }
 
-container_p list_cycl_prev(list_iter_p iter){
+/**
+ * Advances the iterator to the previous item in the list and returns the data
+ * stored there. If the start of the list is reached it continues with the last 
+ * element of the list.
+ *
+ *	\param list pointer to a iterator
+ *	\return container of the previous element
+ */
+static container_p list_cycl_prev(list_iter_p iter){
 	if(!iter->started && iter->current != NULL) {
 		iter->started =1 ;
 		return iter->current->cont;
@@ -222,15 +318,34 @@ container_p list_cycl_prev(list_iter_p iter){
 	return NULL;
 }
 
-container_p list_first(list_p list) {
+/**
+ * Gets the data stored in the first item of the list or NULL if the list is empty 
+ *
+ *	\param list pointer to a list
+ *	\return container for the first element of the list
+ */
+static container_p list_first(list_p list) {
 	return list->first->cont;
 }
 
-container_p list_last(list_p list) {
+/**
+ * Gets the data stored in the last item of the list or NULL if the list is empty 
+ *
+ *	\param list pointer to a list
+ *	\return container for the last element of the list
+ */
+static container_p list_last(list_p list) {
 	return list->last->cont;
 }
 
-container_p list_pop(list_p list) {
+/**
+ * Removes the last item in the list (LIFO order) and returns the data stored
+ * there. The data returned must be freed later in order to remain memory safe. 
+ *
+ *	\param list pointer to a list
+ *	\return container for the last element of the list
+ */
+static container_p list_pop(list_p list) {
 	container_p cont;
 	lnode_p last = list->last;
 
@@ -255,7 +370,14 @@ container_p list_pop(list_p list) {
 	return cont;
 }
 
-container_p list_poll(list_p list){
+/**
+ * Removes the first item in the list (FIFO order) and returns the data stored
+ * there. The data return must be freed later in order to remain memory safe. 
+ *
+ *	\param list pointer to a list
+ *	\return container for the first element of the list
+ */
+static container_p list_poll(list_p list){
 	container_p cont;
 	lnode_p first = list->first;
 
@@ -280,7 +402,16 @@ container_p list_poll(list_p list){
 	return cont;
 }
 
-void list_remove(list_p list, char end) {
+/**
+ * Convenience function for completely destroying an item in the list. If the end
+ * flag is LIST_FRONT, an item will be polled from the front of the list and its data
+ * freed. If the end flag is set to LIST_BACK, an item will be popped off the end of
+ * the list and the data freed. 
+ *
+ *	\param list pointer to a list
+ *	\param end indicator where to remove
+ */
+static void list_remove(list_p list, char end) {
 	container_p cont;
 
 	if(end == LIST_FRONT) {
@@ -318,7 +449,12 @@ void destroy_list(list_p list) {
 	free(list);
 }
 
-void list_clear(list_p list) {
+/**
+ *	Remove all elements.
+ *
+ *	\param list pointer to a list
+ */
+static void list_clear(list_p list) {
 	while(list->length > 0) {
 		list_remove(list, LIST_BACK);
 	}
@@ -332,12 +468,14 @@ void destroy_iterator(list_iter_p iter) {
 	free(iter);
 }
 
-void list_init(struct list * l, void (*destructor)(void*)) {
-	memset(l, 0, sizeof(struct list));
-	l->destructor = destructor;
-}
-
-container_p list_at(list_p list, int idx) {
+/**
+ * Get the element at the given index.
+ *
+ * \param list a list
+ * \param idx index
+ * \return element at given index or NULL if index is out of bounds
+ */
+static container_p list_at(list_p list, int idx) {
 	list_iter_p iter;
 	container_p c = NULL;
 	int i;
@@ -354,5 +492,63 @@ container_p list_at(list_p list, int idx) {
 	}
 
 	return c;
+}
+
+list_p create_list() {
+	list_p list = (list_p)malloc(sizeof(struct list));
+
+	if(list == NULL) {
+		return NULL;
+	}
+
+	list->length = 0;
+	list->first = NULL;
+	list->last = NULL;
+	list->destructor = free;
+	list->add = list_add;
+	list->add_ptr = list_add_ptr;
+	list->append = list_append;
+	list->append_ptr = list_append_ptr;
+	list->at = list_at;
+	list->clear = list_clear;
+	list->current = list_current;
+	list->cycl_next = list_cycl_next;
+	list->cycl_prev = list_cycl_prev;
+	list->end = list_first;
+	list->front = list_last;
+	list->iterator = list_iterator;
+	list->next = list_next;
+	list->poll = list_poll;
+	list->pop = list_pop;
+	list->prepend = list_prepend;
+	list->prepend_ptr = list_prepend_ptr;
+	list->prev = list_prev;
+	list->remove = list_remove;
+
+	return list;
+}
+
+void list_init(struct list * l, void (*destructor)(void*)) {
+	memset(l, 0, sizeof(struct list));
+	l->destructor = destructor;
+	l->add = list_add;
+	l->add_ptr = list_add_ptr;
+	l->append = list_append;
+	l->append_ptr = list_append_ptr;
+	l->at = list_at;
+	l->clear = list_clear;
+	l->current = list_current;
+	l->cycl_next = list_cycl_next;
+	l->cycl_prev = list_cycl_prev;
+	l->end = list_first;
+	l->front = list_last;
+	l->iterator = list_iterator;
+	l->next = list_next;
+	l->poll = list_poll;
+	l->pop = list_pop;
+	l->prepend = list_prepend;
+	l->prepend_ptr = list_prepend_ptr;
+	l->prev = list_prev;
+	l->remove = list_remove;
 }
 

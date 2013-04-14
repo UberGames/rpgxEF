@@ -6339,8 +6339,8 @@ static void Cmd_getEntByTarget_f(gentity_t *ent) {
 	list_init(&entities, free);
 	G_GetEntityByTarget(arg, &entities);
 
-	iter = list_iterator(&entities, LIST_FRONT);
-	for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+	iter = entities.iterator(&entities, LIST_FRONT);
+	for(c = entities.next(iter); c != NULL; c = entities.next(iter)) {
 		t = c->data;
 
 		if(t == NULL) {
@@ -6354,7 +6354,7 @@ static void Cmd_getEntByTarget_f(gentity_t *ent) {
 		G_PrintfClient(ent, "ENT %i: %s\n\"", t->s.number, t->classname);
 	}
 	destroy_iterator(iter);
-	list_clear(&entities);
+	entities.clear(&entities);
 }
 
 /*
@@ -7380,12 +7380,12 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 
 	list_init(&entities, free);
 	list_init(&ignore, free);
-	list_append_ptr(&ignore, ent, LT_DATA);
+	ignore.append_ptr(&ignore, ent, LT_DATA);
 	G_RadiusList(ent->r.currentOrigin, radius, &ignore, takeDamage, &entities);
-	list_clear(&ignore);
+	ignore.clear(&ignore);
 
-	iter = list_iterator(&entities, LIST_FRONT);
-	for(c = list_next(iter); c != NULL; c = list_next(iter)) {
+	iter = entities.iterator(&entities, LIST_FRONT);
+	for(c = entities.next(iter); c != NULL; c = entities.next(iter)) {
 		t = c->data;
 
 		if(t == NULL) {
@@ -7401,7 +7401,7 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 		}
 	}
 	destroy_iterator(iter);
-	list_clear(&entities);
+	entities.clear(&entities);
 }
 
 // CCAM
@@ -7445,19 +7445,20 @@ void addShaderToList(list_p list, char *shader) {
 		return;
 	}
 
-	i = list_iterator(list, LIST_FRONT);
+	i = list->iterator(list, LIST_FRONT);
 	if(i == NULL) {
 		return;
 	}
 
-	for(c = list_next(i)->data; c != NULL; c = list_next(i)->data) {
+	for(c = list->next(i); c != NULL; c = list->next(i)) {
 		t = c->data;
 		if(!strcmp(shader, t)) {
 			return;
 		}
 	}
+	destroy_iterator(i);
 
-	list_append(list, s, LT_STRING, strlen(s)+1);
+	list->append(list, s, LT_STRING, strlen(s)+1);
 }
 
 extern target_alert_Shaders_s alertShaders;
@@ -7514,14 +7515,14 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 		}
 	}
 
-	iter = list_iterator(shaders, LIST_FRONT);
+	iter = shaders->iterator(shaders, LIST_FRONT);
 	if(iter == NULL) {
 		trap_FS_FCloseFile(f);
 		destroy_list(shaders);
 		return;
 	}
 
-	for(c = list_next(iter)->data; c != NULL; c = list_next(iter)->data) {
+	for(c = shaders->next(iter); c != NULL; c = shaders->next(iter)) {
 		s = c->data;
 		G_Printf("\t%s\n", s);
 		if(first) {
@@ -7536,6 +7537,7 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 		}
 	}
 	trap_FS_Write("\n\"END\"", 6, f);
+	destroy_iterator(iter);
 
 	G_Printf("Done.\n");
 
