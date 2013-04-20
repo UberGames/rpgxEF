@@ -372,7 +372,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_dmgFlags,				"rpg_dmgFlags",					"63",						CVAR_ARCHIVE,											0, qfalse },
 	{ &rpg_noweapons,				"rpg_noWeapons",				"0",						CVAR_LATCH | CVAR_ARCHIVE,								0, qfalse },
 	{ &rpg_welcomemessage,			"rpg_welcomeMessage",			"Welcome to the RPG-X Mod", CVAR_LATCH | CVAR_ARCHIVE,								0, qfalse },
-	{ &rpg_timedmessagetime,		"rpg_timedMessageTime",			"5",						CVAR_ARCHIVE,											0, qfalse }, //TiM : LATCH Not necessary here.
+	{ &rpg_timedmessagetime,		"rpg_timedMessageTime",			"0",						CVAR_ARCHIVE,											0, qfalse }, //TiM : LATCH Not necessary here.
 	{ &rpg_forcekillradius,			"rpg_forceKillRadius",			"0",						CVAR_ARCHIVE | CVAR_NORESTART,							0, qtrue  },
 	{ &rpg_forcekillradiuswaittime, "rpg_forceKillRadiusWaitTime",	"45000",					CVAR_LATCH | CVAR_ARCHIVE,								0, qfalse },
 	{ &rpg_chatarearange,			"rpg_chatAreaRange",			"200",						CVAR_ARCHIVE | CVAR_NORESTART,							0, qtrue  },	//Not latched (ie doesnt need server restart)
