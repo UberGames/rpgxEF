@@ -2010,34 +2010,14 @@ typedef struct {
 typedef struct
 {
 												//TiM :
-	int					beamTime;								//!< Time the beam was initialized. 4 seconds after this, the player will teleport, 8 seconds later the effect will reset
+	int					beamTime;				//!< Time the beam was initialized. 4 seconds after this, the player will teleport, 8 seconds later the effect will reset
 
 	transVecData_t		currentCoord;			//!< If they are beaming, have the active variables placed here
 	transVecData_t		storedCoord[TPT_MAX];	//!< Any separate beam data (ie, tricorder, portable beam etc) is kept here till needed.
 
-	int					LastClick;								//!< Last click (in level time) when feature was used (used to prevent accidents)
-	qboolean			beamed;							//!< Once we've called the teleport, make this true.  Or else we'll teleport on every clock cycle >.<
+	int					LastClick;				//!< Last click (in level time) when feature was used (used to prevent accidents)
+	qboolean			beamed;					//!< Once we've called the teleport, make this true.  Or else we'll teleport on every clock cycle >.<
 } RPGX_SiteTOSiteData;
-
-/*typedef struct
-{
-	int	beamTime;								//TiM - Time the beam was initialized. 4 seconds after this, the player will teleport, 8 seconds later the effect will reset
-
-	vec3_t	currentCoord, TransCoordRot;		//If they are beaming, have the active variables placed here
-
-	vec3_t TransCoord, TransCoordRot;			//Transporter Coordinate and rotation values
-	int	beamer;									//TiM - Client num to reference the array where the necessary beam data is
-	int LastClick;								//Last click (in level time) when feature was used (used to prevent accidents)
-	qboolean Used;								//False for first use
-
-	//same again but for personal transporter
-	vec3_t pTransCoord, pTransCoordRot;
-	qboolean pActivated;
-	qboolean pUsed;
-
-	qboolean	beamed;							//Once we've called the teleport, make this true.  Or else we'll teleport on every clock cycle >.<
-}
-RPGX_SiteTOSiteData;*/
 
 extern RPGX_SiteTOSiteData TransDat[];
 
@@ -2183,14 +2163,14 @@ void QDECL G_ClearClientLog(int client);
 void G_InitTransport( int clientNum, vec3_t origin, vec3_t angles );
 
 /** \struct clInitStatus_t
-*
-*/
+ *
+ */
 typedef struct
 {
-	char	model[MAX_QPATH];
-	team_t	team;
-	pclass_t pClass;
-	qboolean initialized;
+	char	model[MAX_QPATH];	/*!< player model */
+	team_t	team;				/*!< player team  */
+	pclass_t pClass;			/*!< player class */
+	qboolean initialized;		/*!< initialized? */
 } clInitStatus_t;
 
 //
@@ -2339,7 +2319,7 @@ void Svcmd_AbortPodium_f( void );
  *
  *	\todo Remove? We don't support bots.
  */
-void		G_InitBots( qboolean restart );
+void G_InitBots( qboolean restart );
 
 /**
  *	Get bot info by number.
@@ -2348,7 +2328,7 @@ void		G_InitBots( qboolean restart );
  *
  * \todo Remove? We don't support bots.
  */
-char*		G_GetBotInfoByNumber( int num );
+char* G_GetBotInfoByNumber( int num );
 
 /**
  *	Get bot info by name.
@@ -2357,14 +2337,14 @@ char*		G_GetBotInfoByNumber( int num );
  *
  *	\todo Remove? We don't support bots.
  */
-char*		G_GetBotInfoByName( const char* name );
+char* G_GetBotInfoByName( const char* name );
 
 /**
  *	Check bot spawn queue and spawn bots if they are allowed.
  *
  *	\todo Remove? We don't support bots.
  */
-void		G_CheckBotSpawn( void );
+void G_CheckBotSpawn( void );
 
 /**
  *	Add a bot to the bot spawn queue.
@@ -2373,7 +2353,7 @@ void		G_CheckBotSpawn( void );
  *
  *	\todo Remove? We don't support bots.
  */
-void		G_QueueBotBegin( int clientNum );
+void G_QueueBotBegin( int clientNum );
 
 /**
  *	Try to connect a bot to the game.
@@ -2383,28 +2363,28 @@ void		G_QueueBotBegin( int clientNum );
  *
  *	\todo Remove? We don't support bots.
  */
-qboolean	G_BotConnect( int clientNum, qboolean restart );
+qboolean G_BotConnect( int clientNum, qboolean restart );
 
 /**
  *	Server command. Add bot.
  *
  *	\todo Remove? We don't support bots.
  */
-void		Svcmd_AddBot_f( void );
+void Svcmd_AddBot_f( void );
 
 /**
  *	Server command. Bot list.
  *
  *	\todo Remove? We don't support bots.
  */
-void		Svcmd_BotList_f( void );
+void Svcmd_BotList_f( void );
 
 /**
  *	???
  *
  *	\todo Remove? We don't support bots.
  */
-void		BotInterbreedEndMatch( void );
+void BotInterbreedEndMatch( void );
 
 // ai_main.c
 
@@ -2424,11 +2404,47 @@ typedef struct bot_settings_s
 	char	pclass[MAX_FILEPATH];			/*!< class */
 } bot_settings_t;
 
+/**
+ * Setup bot AI.
+ *
+ * \param restart Determines if this is a map restart.
+ */
 int BotAISetup( int restart );
+
+/**
+ * Shutdown bot AI.
+ *
+ * \param restart Determines if this is a map restart.
+ */
 int BotAIShutdown( int restart );
+
+/**
+ * Load map in bot lib.
+ *
+ * \param restart Determines if this is a map restart.
+ */
 int BotAILoadMap( int restart );
+
+/**
+ * Setup bot AI for client.
+ *
+ * \param client client number
+ * \param settings bot settings
+ */
 int BotAISetupClient( int client, bot_settings_t* settings );
+
+/**
+ * Shutdown bot client.
+ *
+ * \param client client number
+ */
 int BotAIShutdownClient( int client );
+
+/**
+ * Star frame.
+ *
+ * \param time current time
+ */
 int BotAIStartFrame( int time );
 
 
@@ -2443,35 +2459,35 @@ int BotAIStartFrame( int time );
  *	\param radomseed a random seed
  *	\param restart is this a map restart?
  */
-void		LuaHook_G_InitGame(int leveltime, int randomseed, int restart);
+void LuaHook_G_InitGame(int leveltime, int randomseed, int restart);
 
 /**
  *	Lua hook for Shutdown event.
  *
  *	\param restart is this a map restart?
  */
-void		LuaHook_G_Shutdown(int restart);
+void LuaHook_G_Shutdown(int restart);
 
 /**
  *	Lua hook for RunFrame event.
  *
  *	\param leveltime the level time
  */
-void		LuaHook_G_RunFrame(int leveltime);
+void LuaHook_G_RunFrame(int leveltime);
 
 /**
  * Lua hook for G_Print function.
  *
  *	\param text text to be printed
  */
-void		LuaHook_G_Print(char* text);
+void LuaHook_G_Print(char* text);
 /**
  * Lua hook for G_ClientPrint function.
  *
  *	\param text text to be printed
  *	\param entnum entity index for client the text gets send to
  */
-void		LuaHook_G_ClientPrint(char* text, int entnum);
+void LuaHook_G_ClientPrint(char* text, int entnum);
 
 /**
  * Lua hook for entity think function function.
@@ -2480,7 +2496,7 @@ void		LuaHook_G_ClientPrint(char* text, int entnum);
  *	\param entnum entity index of entity the think function was called on
  *	\return success or fail
  */
-qboolean	LuaHook_G_EntityThink(char* function, int entnum);
+qboolean LuaHook_G_EntityThink(char* function, int entnum);
 
 /**
  * Lua hook for entity touch function function.
@@ -2490,21 +2506,107 @@ qboolean	LuaHook_G_EntityThink(char* function, int entnum);
  *	\param othernum entiy index of touching entity
  *	\return success or fail
  */
-qboolean	LuaHook_G_EntityTouch(char* function, int entnum, int othernum);
-qboolean	LuaHook_G_EntityUse(char* function, int entnum, int othernum, int activatornum);
-qboolean	LuaHook_G_EntityHurt(char* function, int entnum, int inflictornum, int attackernum);
-qboolean	LuaHook_G_EntityDie(char* function, int entnum, int inflictornum, int attackernum, int dmg, int mod);
-qboolean	LuaHook_G_EntityFree(char* function, int entnum);
-qboolean	LuaHook_G_EntityTrigger(char* function, int entnum, int othernum);
-qboolean	LuaHook_G_EntitySpawn(char* function, int entnum);
-qboolean	LuaHook_G_EntityReached(char* function, int entnum);
-qboolean	LuaHook_G_EntityReachedAngular(char* function, int entnum);
-void		G_LuaNumThreads(void);
-void		G_LuaCollectGarbage(void);
+qboolean LuaHook_G_EntityTouch(char* function, int entnum, int othernum);
 
-void		G_LuaStatus(gentity_t* ent);
-qboolean	G_LuaInit(void);
-void		G_LuaShutdown(void);
+/**
+ * Lua hook for entity use function.
+ *
+ * \param function name of function to call
+ * \param entnum entity index of entity the use function was called on
+ * \param othernum entity index of other entity
+ * \param activatornum entity index of activating entity
+ */
+qboolean LuaHook_G_EntityUse(char* function, int entnum, int othernum, int activatornum);
+
+/**
+ * Lua hook for entity hurt function.
+ *
+ * \param function name of function to call
+ * \param entnum entity index of entity the hurt function was called on
+ * \param inflictornum entity index of inflictor
+ * \param attackernum entity index of attacker
+ */
+qboolean LuaHook_G_EntityHurt(char* function, int entnum, int inflictornum, int attackernum);
+
+/**
+ * Lua hook for entity die function.
+ *
+ * \param function name of function to call
+ * \param entnum entity index of entity the die function was called on
+ * \param inflictornum entity index of inflictor
+ * \param attackernum entity index of attacker
+ * \param dmg ammount of damage
+ * \param mod means of death
+ */
+qboolean LuaHook_G_EntityDie(char* function, int entnum, int inflictornum, int attackernum, int dmg, int mod);
+
+/**
+ * Lua hook for entity free function.
+ *
+ * \param function name of function to call
+ * \param entnum entity index of entity the free function was called on
+ */
+qboolean LuaHook_G_EntityFree(char* function, int entnum);
+
+/**
+ * Lua hook for entity trigger function.
+ *
+ * \param function name of function to call
+ * \param entnum entity index of entity the trigger function was called on
+ * \param othernum entity index of triggering entity
+ */
+qboolean LuaHook_G_EntityTrigger(char* function, int entnum, int othernum);
+
+/**
+ * Lua hook for entity spawn function.
+ *
+ * \param function name of function to call
+ * \param entnum entity index of entity the spawn function was called on
+ */
+qboolean LuaHook_G_EntitySpawn(char* function, int entnum);
+
+/**
+ * Lua hook for entity reached function.
+ *
+ * \param function name of function to call
+ * \param entnum entity index of entity the reached function was called on
+ */
+qboolean LuaHook_G_EntityReached(char* function, int entnum);
+
+/**
+ * Lua hook for entity reached angular function.
+ *
+ * \param function name of function to call
+ * \param entnum entity index of entity the reached angular function was called on
+ */
+qboolean LuaHook_G_EntityReachedAngular(char* function, int entnum);
+
+/**
+ * Output information about lua threads.
+ */
+void G_LuaNumThreads(void);
+
+/**
+ * Collect garbage in lua.
+ */
+void G_LuaCollectGarbage(void);
+
+/**
+ * Show lua status information.
+ *
+ * \param ent client
+ */
+void G_LuaStatus(gentity_t* ent);
+
+/**
+ * Initialize lua.
+ */
+qboolean G_LuaInit(void);
+
+/**
+ * Shutdown lua.
+ */
+void G_LuaShutdown(void);
 
 extern vmCvar_t g_debugLua;
 extern vmCvar_t lua_allowedModules;
@@ -2739,42 +2841,53 @@ extern vmCvar_t rpg_spEasterEggs;
 //extern int lastTimedMessage; //The last timed message that was displayed
 //TiM - since we'll only use this in g_active, why not reduce its scope to make things easier. :)
 
-void	trap_Printf( const char* fmt );
+/**
+ * Call G_PRINT in the engine.
+ * \param fmt format string.
+ */
+void trap_Printf( const char* fmt );
+
 /**
 *	Calls Com_error in the engine
 *	\param fmt error desription
 */
-void	trap_Error( const char* fmt );
+void trap_Error( const char* fmt );
+
 /**
 *	Get milliseconds since engine start
 *	\return milliseconds since engine start
 */
-int		trap_Milliseconds( void );
+int trap_Milliseconds( void );
+
 /**
 *	Get count of arguments for the current client game command
 *	\return count of arguments
 */
-int		trap_Argc( void );
+int trap_Argc( void );
+
 /**
 *	Get a n of the current client game command
 *	\param n argument to get
 *	\param buffer buffer to store the argument in
 *	\param bufferLength size of the buffer
 */
-void	trap_Argv( int n, char* buffer, int bufferLength );
+void trap_Argv( int n, char* buffer, int bufferLength );
+
 /**
 *	Get all args of the current client game command
 *	\param buffer buffer to store the arguments in
 *	\param bufferLength size of the buffer
 */
-void	trap_Args( char* buffer, int bufferLength );
+void trap_Args( char* buffer, int bufferLength );
+
 /**
 *	Opens a file
 *	\param qpath path and filename
 *	\param f filehandle to use
 *	\param mode mode to use
 */
-int		trap_FS_FOpenFile( const char* qpath, fileHandle_t* f, fsMode_t mode );
+int trap_FS_FOpenFile( const char* qpath, fileHandle_t* f, fsMode_t mode );
+
 /**
 *	Read a opened file
 *	\param buffer buffer to read to
@@ -2783,7 +2896,8 @@ int		trap_FS_FOpenFile( const char* qpath, fileHandle_t* f, fsMode_t mode );
 *
 *	You have to open the file first.
 */
-void	trap_FS_Read( void* buffer, int len, fileHandle_t f );
+void trap_FS_Read( void* buffer, int len, fileHandle_t f );
+
 /**
 *	Write to a file
 *	\param buffer text to write
@@ -2792,12 +2906,14 @@ void	trap_FS_Read( void* buffer, int len, fileHandle_t f );
 *	
 *	You have to open the file first.
 */
-void	trap_FS_Write( const void* buffer, int len, fileHandle_t f );
+void trap_FS_Write( const void* buffer, int len, fileHandle_t f );
+
 /**
 *	Close a file
 *	\param f filehandle for file to close
 */
-void	trap_FS_FCloseFile( fileHandle_t f );
+void trap_FS_FCloseFile( fileHandle_t f );
+
 /**
 *	Get a list of files in a path
 *	\param path path to get the list for
@@ -2806,13 +2922,15 @@ void	trap_FS_FCloseFile( fileHandle_t f );
 *	\param bufsize size of the buffer
 *	\return number of files in the list
 */
-int		trap_FS_GetFileList( const char* path, const char* extension, char* listbuf, int bufsize );
+int trap_FS_GetFileList( const char* path, const char* extension, char* listbuf, int bufsize );
+
 /**
 *	Sends a console command to execute to the client console
 *	\param exec_when when to exec (e.g. EXEC_APPEND)
 *	\param text the command to execute
 */
-void	trap_SendConsoleCommand( int exec_when, const char *text );
+void trap_SendConsoleCommand( int exec_when, const char *text );
+
 /**
 *	Register a cvar
 *	\param cvar representation of the cvar in the vm
@@ -2820,32 +2938,37 @@ void	trap_SendConsoleCommand( int exec_when, const char *text );
 *	\param value default value for the cvar
 *	\param flags additional options for the cvar (e.g. CVAR_ARCHIVE)
 */
-void	trap_Cvar_Register( vmCvar_t* cvar, const char* var_name, const char* value, int flags );
+void trap_Cvar_Register( vmCvar_t* cvar, const char* var_name, const char* value, int flags );
+
 /**
 *	\brief Update a cvar.
 *
 *	Tells the server/engine that a cvar in the vm has changed.
 *	\param cvar cvar to update
 */
-void	trap_Cvar_Update( vmCvar_t* cvar );
+void trap_Cvar_Update( vmCvar_t* cvar );
+
 /**
 *	Set the cvar to a value.
 *	\param var_name name of the cvar to set
 *	\param value new value for the cvar
 */
-void	trap_Cvar_Set( const char* var_name, const char* value );
+void trap_Cvar_Set( const char* var_name, const char* value );
+
 /**
 *	Get the integer value for an cvar
 *	\param var_name name of the cvar
 */
-int		trap_Cvar_VariableIntegerValue( const char* var_name );
+int trap_Cvar_VariableIntegerValue( const char* var_name );
+
 /**
 *	Get the value of the cvar as string
 *	\param var_name name of the cvar
 *	\param buffer to store the value
 *	\param bufsize size of the buffer
 */
-void	trap_Cvar_VariableStringBuffer( const char* var_name, char* buffer, int bufsize );
+void trap_Cvar_VariableStringBuffer( const char* var_name, char* buffer, int bufsize );
+
 /**
 *	Send some information of the current game/map to the server
 *	\param pointer to level.entities which is g_entities
@@ -2854,13 +2977,15 @@ void	trap_Cvar_VariableStringBuffer( const char* var_name, char* buffer, int buf
 *	\param gameClients level.clients[0].ps
 *	\param sizeOfGameClient size of level.clients[0]
 */
-void	trap_LocateGameData( gentity_t* gEnts, int numGEntities, int sizeofGEntity_t, playerState_t* gameClients, int sizeofGameClient );
+void trap_LocateGameData( gentity_t* gEnts, int numGEntities, int sizeofGEntity_t, playerState_t* gameClients, int sizeofGameClient );
+
 /**
 *	Drop a client from server.
 *	\param clientNum client number of client to drop
 *	\param test reason for client drop
 */
-void	trap_DropClient( int clientNum, const char* reason );
+void trap_DropClient( int clientNum, const char* reason );
+
 /**
 *	\brief Send a server command to the client
 *	\param clientNum client number of client
@@ -2868,39 +2993,45 @@ void	trap_DropClient( int clientNum, const char* reason );
 *
 *	A value of -1 for clientNum will send the command to all clients.
 */
-void	trap_SendServerCommand( int clientNum, const char* text );
+void trap_SendServerCommand( int clientNum, const char* text );
+
 /**
 *	Set a configstring
 *	\param num CS_...
 *	\param string set cofig string to this
 */
-void	trap_SetConfigstring( int num, const char* string );
+void trap_SetConfigstring( int num, const char* string );
+
 /**
 *	Get a configstring
 *	\param num CS_...
 *	\param buffer buffer to store config string in
 *	\param bufferSize size of buffer
 */
-void	trap_GetConfigstring( int num, char* buffer, int bufferSize );
+void trap_GetConfigstring( int num, char* buffer, int bufferSize );
+
 /**
 *	Get the userinfo for a client
 *	\param num client number
 *	\param buffer buffer to store config string in
 *	\param size of buffer
 */
-void	trap_GetUserinfo( int num, char* buffer, int bufferSize );
+void trap_GetUserinfo( int num, char* buffer, int bufferSize );
+
 /**
 *	Set the userinfo for a client
 *	\param num client number
 *	\param buffer string the contains new userinfo
 */
-void	trap_SetUserinfo( int num, const char* buffer );
+void trap_SetUserinfo( int num, const char* buffer );
+
 /**
 *	Get server info.
 *	\param buffer buffer to store the info in
 *	\param bufferSize size of buffer
 */
-void	trap_GetServerinfo( char* buffer, int bufferSize );
+void trap_GetServerinfo( char* buffer, int bufferSize );
+
 /**
 *	\brief Set the brush model for a entity.
 *	\param ent entity to the the model on
@@ -2909,7 +3040,8 @@ void	trap_GetServerinfo( char* buffer, int bufferSize );
 *	The normal case is trap_SetBrushModel(ent, ent->model).
 *	Brush models always have names of *<int>.
 */
-void	trap_SetBrushModel( gentity_t* ent, const char* name );
+void trap_SetBrushModel( gentity_t* ent, const char* name );
+
 /**
 *	\brief Do a trace on the server
 *	\param results trace_t to store the results in
@@ -2924,35 +3056,43 @@ void	trap_SetBrushModel( gentity_t* ent, const char* name );
 *	from start to end and checks whether it colides with anything that matches the contentmask.
 *	The entities that math the passEntityNum will be ingnored.
 */
-void	trap_Trace( trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
+void trap_Trace( trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
+
 /**
 *	\param point the point
 *	\param passEntityNum ingore this
 *
 *	Works similar to a trace but only check a single point.
 */
-int			trap_PointContents( const vec3_t point, int passEntityNum );
-qboolean	trap_InPVS( const vec3_t p1, const vec3_t p2 );
-qboolean	trap_InPVSIgnorePortals( const vec3_t p1, const vec3_t p2 );
+int trap_PointContents( const vec3_t point, int passEntityNum );
+
+qboolean trap_InPVS( const vec3_t p1, const vec3_t p2 );
+
+qboolean trap_InPVSIgnorePortals( const vec3_t p1, const vec3_t p2 );
+
 /**
 *	Adjust the state of a area portal used for doors etc
 *	\param ent entity that effects the areaportal (area portal is inide the entities bounds)
 *	\param open open or close it?
 */
-void	trap_AdjustAreaPortalState( gentity_t* ent, qboolean open );
+void trap_AdjustAreaPortalState( gentity_t* ent, qboolean open );
+
 /**
 *	Checks if two areas are connected.
 */
 qboolean trap_AreasConnected( int area1, int area2 );
+
 /**
 *	Link an entity.
 *	This results in shared values beeing avaible on both game and client side.
 */
-void	trap_LinkEntity( gentity_t* ent );
+void trap_LinkEntity( gentity_t* ent );
+
 /**
 *	Unlinks an entity.
 */
-void	trap_UnlinkEntity( gentity_t* ent );
+void trap_UnlinkEntity( gentity_t* ent );
+
 /**
 *	\brief Get a list of all entities in a box.
 *	\param entityList list where entitynums will be stored
@@ -2960,27 +3100,49 @@ void	trap_UnlinkEntity( gentity_t* ent );
 *
 *	The size of the box is defined by mins and maxs.
 */
-int		trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int* entityList, int maxcount );
+int trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int* entityList, int maxcount );
+
 /**
 *	Checks if a entity is in contact with a defined box.
 */
 qboolean trap_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t* ent );
+
 /**
 *	Allocates a free client for a bot.
 */
-int		trap_BotAllocateClient( void );
+int trap_BotAllocateClient( void );
+
 /**
 *	Free the client that was used for a bot.
 */
-void	trap_BotFreeClient( int clientNum );
+void trap_BotFreeClient( int clientNum );
+
 /**
 *	Get the last command a user did.
 */
-void		trap_GetUsercmd( int clientNum, usercmd_t* cmd );
-qboolean	trap_GetEntityToken( char* buffer, int bufferSize );
+void trap_GetUsercmd( int clientNum, usercmd_t* cmd );
 
-int		trap_DebugPolygonCreate(int color, int numPoints, vec3_t* points);
-void	trap_DebugPolygonDelete(int id);
+/**
+ * Get entity token.
+ */
+qboolean trap_GetEntityToken( char* buffer, int bufferSize );
+
+/**
+ * Create a debug polygon.
+ *
+ * \param color color of the polygon
+ * \param numPoints number of points the polygon has
+ * \param points points of the polygon
+ * \return Polgon id
+ */
+int trap_DebugPolygonCreate(int color, int numPoints, vec3_t* points);
+
+/**
+ * Deletes a debug polygon.
+ *
+ * \param id id of polygon to delete
+ */
+void trap_DebugPolygonDelete(int id);
 
 int		trap_BotLibSetup( void );
 int		trap_BotLibShutdown( void );

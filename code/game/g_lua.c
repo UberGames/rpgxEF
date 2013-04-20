@@ -385,7 +385,7 @@ void G_LuaShutdown()
 
 void G_LuaStatus(gentity_t * ent)
 {
-	int             i, cnt = 0;
+	int i, cnt = 0;
 
 	for(i = 0; i < NUM_VMS; i++)
 		if(lVM[i])
