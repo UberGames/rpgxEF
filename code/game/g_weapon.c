@@ -34,10 +34,10 @@ extern vmCvar_t	rpg_photonAltDamage;
 #define PHASER_ALT_RADIUS		80 			 /* RPG-X: TiM - Increased to a near instant kill */
 
 /* Compression Rifle */
-#define	CRIFLE_DAMAGE			rpg_rifleDamage.integer
+#define	CRIFLE_DAMAGE				rpg_rifleDamage.integer
 #define CRIFLE_MAIN_SPLASH_RADIUS	64
 #define CRIFLE_MAIN_SPLASH_DMG		0
-#define CRIFLE_ALTDAMAGE		rpg_rifleAltDamage.integer
+#define CRIFLE_ALTDAMAGE			rpg_rifleAltDamage.integer
 #define CRIFLE_ALT_SPLASH_RADIUS	32
 #define CRIFLE_ALT_SPLASH_DMG		0 
 
@@ -58,8 +58,8 @@ extern vmCvar_t	rpg_photonAltDamage;
 #define QUANTUM_SPLASH_DAM		rpg_photonDamage.integer
 #define QUANTUM_SPLASH_RAD		160
 #define QUANTUM_ALT_DAMAGE		rpg_photonAltDamage.integer	
-#define QUANTUM_ALT_SPLASH_DAM		rpg_photonAltDamage.integer
-#define QUANTUM_ALT_SPLASH_RAD		80
+#define QUANTUM_ALT_SPLASH_DAM	rpg_photonAltDamage.integer
+#define QUANTUM_ALT_SPLASH_RAD	80
 
 void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
 	int i;
