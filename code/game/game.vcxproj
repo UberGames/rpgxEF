@@ -490,6 +490,7 @@
     <ClInclude Include="be_ai_move.h" />
     <ClInclude Include="be_ai_weap.h" />
     <ClInclude Include="be_ea.h" />
+    <ClInclude Include="bg_lex.h" />
     <ClInclude Include="bg_lib.h" />
     <ClInclude Include="bg_local.h" />
     <ClInclude Include="bg_public.h" />
