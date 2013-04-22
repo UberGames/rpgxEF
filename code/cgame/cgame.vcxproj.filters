@@ -143,6 +143,9 @@
     <ClCompile Include="lua_refent.c">
       <Filter>Source Files\lua</Filter>
     </ClCompile>
+    <ClCompile Include="list.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\bg_local.h">
@@ -179,6 +182,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cg_lua.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

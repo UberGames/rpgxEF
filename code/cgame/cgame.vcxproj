@@ -459,6 +459,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS</PreprocessorDefinitions>
       <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BrowseInformation>
     </ClCompile>
+    <ClCompile Include="list.c" />
     <ClCompile Include="lua_cent.c" />
     <ClCompile Include="lua_cfx.c" />
     <ClCompile Include="lua_refent.c" />
@@ -475,6 +476,7 @@
     <ClInclude Include="fx_local.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\game\surfaceflags.h" />
+    <ClInclude Include="list.h" />
     <ClInclude Include="tr_types.h" />
   </ItemGroup>
   <ItemGroup>
