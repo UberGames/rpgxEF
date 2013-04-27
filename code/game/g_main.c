@@ -3,6 +3,7 @@
 
 #include "g_local.h"
 #include "g_groups.h"
+#include "bg_lex.h"
 
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[] );
@@ -910,11 +911,10 @@ void SP_target_location (gentity_t *ent);
 
 static void G_LoadTimedMessages(void) {
 	fileHandle_t	f;
+	bgLex*			lexer;
 	char*			buffer;
-	char*			textPtr;
-	char*			token;
 	int				len;
-	int				i;
+	int i = 0;
 
 	len = trap_FS_FOpenFile("timedmessages.cfg", &f, FS_READ);
 	if(!len) return;
@@ -935,43 +935,23 @@ static void G_LoadTimedMessages(void) {
 	}
 
 	trap_FS_Read(buffer, len, f);
+	
+	lexer = bgLex_create(buffer);
 
-	textPtr = buffer;
-	COM_BeginParseSession();
-	token = COM_Parse(&textPtr);
-	if(token[0] != '{') {
-		G_Printf("G_LoadTimedMessages -  timedmessages.cfg not beginning with '{'\n");
-		trap_FS_FCloseFile(f);
-		free(buffer);
-		return;
-	}
-
-	for(i = 0; i < 10; i++) {
-		token = COM_Parse(&textPtr);
-
-		if(!token[0]) {
-			break;
+	while(bgLex_lex(lexer)) {
+		if(lexer->morphem.type == LMT_STRING) {
+			char tmp[BIG_INFO_STRING];
+			Com_sprintf(tmp, BIG_INFO_STRING, "%s\0", lexer->morphem.data.str);
+			G_Printf("%s --> len = %d\n", tmp, strlen(tmp));
+			level.timedMessages->append(level.timedMessages, tmp, LT_STRING, strlen(tmp));
 		}
 
-		if(!strcmp(token, "message")) {
-			if(COM_ParseString(&textPtr, &token)) {
-				G_Printf("G_LoadTimedMessages -  invalid value '%s'\n", token);
-				SkipRestOfLine(&textPtr);
-				continue;
-			}
-
-			level.timedMessages->append(level.timedMessages, token, LT_STRING, strlen(token)+1);
-		} else {
-			if(token[0] == '}') {
-				break;
-			}
-
-			G_Printf("G_LoadTimedMessages -  invalid token '%s'\n", token);
-			SkipRestOfLine(&textPtr);
-			continue;
+		if(lexer->morphem.type == LMT_SYMBOL) {
+			G_Printf(S_COLOR_MAGENTA "Symbol: %d\n", lexer->morphem.data.symbol);
 		}
 	}
 
+	bgLex_destroy(lexer);
 	trap_FS_FCloseFile(f);
 	free(buffer);
 }

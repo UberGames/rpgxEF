@@ -17,7 +17,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 %%
 \"[^\"]*\" {
 	yyextra->type = LMT_STRING;
-	yyextra->data.string = yytext;
+	strncpy(yyextra->data.str, yytext, BIG_INFO_STRING);
 	yyextra->column += strlen(yytext);
 	return 1;
 }

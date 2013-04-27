@@ -852,7 +852,7 @@ YY_RULE_SETUP
 #line 18 "bg_lex.lex"
 {
 	yyextra->type = LMT_STRING;
-	yyextra->data.string = yytext;
+	strncpy(yyextra->data.str, yytext, BIG_INFO_STRING);
 	yyextra->column += strlen(yytext);
 	return 1;
 }

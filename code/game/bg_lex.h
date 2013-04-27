@@ -91,17 +91,20 @@ typedef enum {
   LMT_IGNORE
 } bgLexMorphemType;
 
-typedef struct bgLexMorphem_s bgLexMorphem;
-struct bgLexMorphem_s {
-  bgLexMorphemType type;
-  union {
-    char* string;
+typedef struct bgLexMorphemData_s bgLexMorphemData;
+struct bgLexMorphemData_s {
+	char str[BIG_INFO_STRING];
     bgLexSymbol symbol;
     int numInteger;
     double numDouble;
     vec3_t vector3;
-    vec4_t vector4;
-  } data;
+    vec4_t vector4;	
+};
+
+typedef struct bgLexMorphem_s bgLexMorphem;
+struct bgLexMorphem_s {
+  bgLexMorphemType type;
+  bgLexMorphemData data;
   int line;
   int column;
 };
