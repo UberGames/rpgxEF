@@ -11,6 +11,7 @@ DOUBLE {DIGIT}+"."?{DIGIT}*
 KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 
 %option reentrant
+%option noyywrap
 %option extra-type="bgLexMorphem*"
 
 %%
