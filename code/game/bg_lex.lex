@@ -3,6 +3,7 @@
 #include "bg_lex.h"
 
 #define YY_FATAL_ERROR(msg) bgLexFatalError(msg, yyscanner)
+#define UNUSED(x) ((void)(x))
 }
 
 DIGIT [0-9]
@@ -16,8 +17,11 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 
 %%
 \"[^\"]*\" {
+	char *s = yytext; s++;
 	yyextra->type = LMT_STRING;
-	strncpy(yyextra->data.str, yytext, BIG_INFO_STRING);
+	yyextra->data.str = malloc(strlen(yytext) - 1);
+	memset(yyextra->data.str, 0, strlen(yytext) - 1);
+	strncpy(yyextra->data.str, s, strlen(yytext) - 2);
 	yyextra->column += strlen(yytext);
 	return 1;
 }
@@ -373,9 +377,20 @@ int main(int argc, char* argv[]) {
 bgLex* bgLex_create(char* data) {
 	bgLex* l = malloc(sizeof(bgLex));
 
+	/* HACK HACK HACK ... get rid of some compiler warnings */
+	UNUSED(yyunput);
+	UNUSED(input);
+
 	if(l != NULL) {
-		yylex_init_extra(&l->morphem, &l->lex);
-		l->buf = yy_scan_string(data, l->lex);
+		l->morphem = malloc(sizeof(bgLexMorphemData));
+
+		if(l->morphem == NULL) {
+			free(l);
+			return NULL;
+		}
+
+		yylex_init_extra(l->morphem, &l->lex);
+		l->buf = yy_scan_string(data,l->lex);
 	}
 
 	return l;
@@ -394,10 +409,17 @@ void bgLex_destroy(bgLex* lex) {
 		yylex_destroy(lex->lex);
 	}
 
+	if(lex->morphem != NULL) {
+		free(lex->morphem);
+	}
+
 	free(lex);
 }
 
 int bgLex_lex(bgLex* lex) {
+	if(lex->morphem->data.str != NULL) {
+		free(lex->morphem->data.str);
+	}
 	return yylex(lex->lex);
 }
 

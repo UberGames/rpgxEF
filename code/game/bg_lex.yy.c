@@ -3,10 +3,11 @@
 #include "bg_lex.h"
 
 #define YY_FATAL_ERROR(msg) bgLexFatalError(msg, yyscanner)
+#define UNUSED(x) ((void)(x))
 
 
 
-#line 10 "lex.yy.c"
+#line 11 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -537,7 +538,7 @@ static yyconst flex_int16_t yy_chk[233] =
 #define YY_RESTORE_YY_MORE_OFFSET
 #line 1 "bg_lex.lex"
 
-#line 541 "lex.yy.c"
+#line 542 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -761,9 +762,9 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 17 "bg_lex.lex"
+#line 18 "bg_lex.lex"
 
-#line 767 "lex.yy.c"
+#line 768 "lex.yy.c"
 
 	if ( !yyg->yy_init )
 		{
@@ -849,17 +850,20 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 18 "bg_lex.lex"
+#line 19 "bg_lex.lex"
 {
+	char *s = yytext; s++;
 	yyextra->type = LMT_STRING;
-	strncpy(yyextra->data.str, yytext, BIG_INFO_STRING);
+	yyextra->data.str = malloc(strlen(yytext) - 1);
+	memset(yyextra->data.str, 0, strlen(yytext) - 1);
+	strncpy(yyextra->data.str, s, strlen(yytext) - 2);
 	yyextra->column += strlen(yytext);
 	return 1;
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 24 "bg_lex.lex"
+#line 28 "bg_lex.lex"
 {
 	yyextra->type = LMT_INT;
 	yyextra->data.numInteger = atoi(yytext);
@@ -869,7 +873,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 30 "bg_lex.lex"
+#line 34 "bg_lex.lex"
 {
 	yyextra->type = LMT_DOUBLE;
 	yyextra->data.numDouble = atof(yytext);
@@ -879,7 +883,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 36 "bg_lex.lex"
+#line 40 "bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = bgLex_textToSymbol(yytext);
@@ -889,7 +893,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 42 "bg_lex.lex"
+#line 46 "bg_lex.lex"
 {
 	double a, b, c;
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
@@ -903,7 +907,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 53 "bg_lex.lex"
+#line 57 "bg_lex.lex"
 {
 	double a, b, c;
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
@@ -917,7 +921,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 63 "bg_lex.lex"
+#line 67 "bg_lex.lex"
 {
 	double a, b, c;
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
@@ -931,7 +935,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 73 "bg_lex.lex"
+#line 77 "bg_lex.lex"
 {
 	double a, b, c;
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
@@ -945,7 +949,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 83 "bg_lex.lex"
+#line 87 "bg_lex.lex"
 {
 	double a, b, c;
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
@@ -959,7 +963,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 93 "bg_lex.lex"
+#line 97 "bg_lex.lex"
 {
 	double a, b, c;
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
@@ -973,7 +977,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 103 "bg_lex.lex"
+#line 107 "bg_lex.lex"
 {
 	double a, b, c;
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
@@ -987,7 +991,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 113 "bg_lex.lex"
+#line 117 "bg_lex.lex"
 {
 	double a, b, c;
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
@@ -1001,7 +1005,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 123 "bg_lex.lex"
+#line 127 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1016,7 +1020,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 134 "bg_lex.lex"
+#line 138 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1031,7 +1035,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 145 "bg_lex.lex"
+#line 149 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1046,7 +1050,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 156 "bg_lex.lex"
+#line 160 "bg_lex.lex"
 { 
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1061,7 +1065,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 167 "bg_lex.lex"
+#line 171 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1076,7 +1080,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 178 "bg_lex.lex"
+#line 182 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1091,7 +1095,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 189 "bg_lex.lex"
+#line 193 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1106,7 +1110,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 200 "bg_lex.lex"
+#line 204 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1121,7 +1125,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 211 "bg_lex.lex"
+#line 215 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1136,7 +1140,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 222 "bg_lex.lex"
+#line 226 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1151,7 +1155,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 233 "bg_lex.lex"
+#line 237 "bg_lex.lex"
 { 
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1166,7 +1170,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 244 "bg_lex.lex"
+#line 248 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1181,7 +1185,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 255 "bg_lex.lex"
+#line 259 "bg_lex.lex"
 { 
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1196,7 +1200,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 266 "bg_lex.lex"
+#line 270 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1211,7 +1215,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 277 "bg_lex.lex"
+#line 281 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1226,7 +1230,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 288 "bg_lex.lex"
+#line 292 "bg_lex.lex"
 {
 	double a, b, c, d;
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
@@ -1241,7 +1245,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 299 "bg_lex.lex"
+#line 303 "bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACEC;
@@ -1251,7 +1255,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 305 "bg_lex.lex"
+#line 309 "bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACEC;
@@ -1261,7 +1265,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 311 "bg_lex.lex"
+#line 315 "bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACE;
@@ -1271,7 +1275,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 317 "bg_lex.lex"
+#line 321 "bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACE;
@@ -1281,7 +1285,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 323 "bg_lex.lex"
+#line 327 "bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACESQ;
@@ -1291,7 +1295,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 329 "bg_lex.lex"
+#line 333 "bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACESQ;
@@ -1301,7 +1305,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 335 "bg_lex.lex"
+#line 339 "bg_lex.lex"
 {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
@@ -1311,7 +1315,7 @@ YY_RULE_SETUP
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-#line 340 "bg_lex.lex"
+#line 344 "bg_lex.lex"
 {
 	yyextra->line++;
 	yyextra->type = LMT_IGNORE;
@@ -1320,7 +1324,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 345 "bg_lex.lex"
+#line 349 "bg_lex.lex"
 {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
@@ -1329,10 +1333,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 350 "bg_lex.lex"
+#line 354 "bg_lex.lex"
 ECHO;
 	YY_BREAK
-#line 1336 "lex.yy.c"
+#line 1340 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2487,7 +2491,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 350 "bg_lex.lex"
+#line 354 "bg_lex.lex"
 
 
 
@@ -2515,8 +2519,19 @@ int main(int argc, char* argv[]) {
 bgLex* bgLex_create(char* data) {
 	bgLex* l = malloc(sizeof(bgLex));
 
+	/* HACK HACK HACK ... get rid of some compiler warnings */
+	UNUSED(yyunput);
+	UNUSED(input);
+
 	if(l != NULL) {
-		yylex_init_extra(&l->morphem,&l->lex);
+		l->morphem = malloc(sizeof(bgLexMorphemData));
+
+		if(l->morphem == NULL) {
+			free(l);
+			return NULL;
+		}
+
+		yylex_init_extra(l->morphem,&l->lex);
 		l->buf = yy_scan_string(data,l->lex);
 	}
 
@@ -2536,10 +2551,17 @@ void bgLex_destroy(bgLex* lex) {
 		yylex_destroy(lex->lex);
 	}
 
+	if(lex->morphem != NULL) {
+		free(lex->morphem);
+	}
+
 	free(lex);
 }
 
 int bgLex_lex(bgLex* lex) {
+	if(lex->morphem->data.str != NULL) {
+		free(lex->morphem->data.str);
+	}
 	return yylex(lex->lex);
 }
 

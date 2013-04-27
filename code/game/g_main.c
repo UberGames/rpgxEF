@@ -914,7 +914,6 @@ static void G_LoadTimedMessages(void) {
 	bgLex*			lexer;
 	char*			buffer;
 	int				len;
-	int i = 0;
 
 	len = trap_FS_FOpenFile("timedmessages.cfg", &f, FS_READ);
 	if(!len) return;
@@ -928,7 +927,8 @@ static void G_LoadTimedMessages(void) {
 	memset(buffer, 0, len+1);
 
 	level.timedMessages = create_list();
-	if(!level.timedMessages) {
+	if(level.timedMessages == NULL) {
+		G_Printf(S_COLOR_RED "ERROR: Could not create list for timed messages.\n");
 		trap_FS_FCloseFile(f);
 		free(buffer);
 		return;
@@ -939,15 +939,14 @@ static void G_LoadTimedMessages(void) {
 	lexer = bgLex_create(buffer);
 
 	while(bgLex_lex(lexer)) {
-		if(lexer->morphem.type == LMT_STRING) {
-			char tmp[BIG_INFO_STRING];
-			Com_sprintf(tmp, BIG_INFO_STRING, "%s\0", lexer->morphem.data.str);
-			G_Printf("%s --> len = %d\n", tmp, strlen(tmp));
-			level.timedMessages->append(level.timedMessages, tmp, LT_STRING, strlen(tmp));
+		if(lexer->morphem->type == LMT_IGNORE) {
+			continue;
 		}
 
-		if(lexer->morphem.type == LMT_SYMBOL) {
-			G_Printf(S_COLOR_MAGENTA "Symbol: %d\n", lexer->morphem.data.symbol);
+		if(lexer->morphem->type == LMT_STRING) {
+			level.timedMessages->append(level.timedMessages, lexer->morphem->data.str, LT_STRING, strlen(lexer->morphem->data.str));
+		} else {
+			G_Printf(S_COLOR_YELLOW "WARNING: Unexpected token in timedmessages.cfg:%d:%d!\n", lexer->morphem->line, lexer->morphem->column);
 		}
 	}
 
