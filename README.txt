@@ -115,6 +115,7 @@ Prerequisites:
  * libSDL - Simple Direct Layer libraries
  * libmad - MPEG Audio Decoder (also known as MAD sometimes).
  * libvorbis, libogg, libvorbisfile - OGG Vorbis audio decoder
+ * flex - A lexer generator
 Optional:
  * OpenAL - OpenAL sound libraries
  * libcurl - FTP/HTTP download support.
@@ -179,28 +180,8 @@ the Windows executables are compiled on Linux and not on Windows.
 Compiling rpgxEF on Windows is not officaly supported anyway you can
 still compile it on Windows either with mingw or Microsoft Visual Studio
 
-MSVC:
-- Open up the project (project files can be found in code\win32\msvc\)
-- You need to compile the libmad library from:
-  http://sourceforge.net/projects/mad
-  so that you have a .lib file you can link against
-- If you compile and it complains about a missing dinput.h you need the
-- DirectX SDK
-- If you want to have OpenAL you need the OpenAL SDK, too.
-- Back to your MSVC environment:
-  look at the renderer and botlib subproject and modify the preprocessor
-  definitions in a way so that ELITEFORCE and XTRA are defined
-- Same goes to the main quake3 subproject, also add the define:
-  USE_CODEC_MP3=1 and USE_OPENAL=1;USE_OPENAL_DLOPEN=1 (the last two ones
-  only when you want OpenAL support).
-- Add all include and library directories to the compiler/linker like
-  OpenAL include/library dir, MAD include/library dir, etc...
-- You may need to specify additional libraries in the linker dependencies
-  like user32.lib Advapi32.lib ole32.lib etc...
-- Build.
-
 mingw:
-Works very similar to linux. You may need to find some and even compile
+Works very similar to linux. You may need to find and even compile
 some of the dependencies yourself.
 
 Good luck!
