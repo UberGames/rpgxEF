@@ -417,10 +417,21 @@ void bgLex_destroy(bgLex* lex) {
 }
 
 int bgLex_lex(bgLex* lex) {
+	int res;
+
 	if(lex->morphem->data.str != NULL) {
 		free(lex->morphem->data.str);
 	}
-	return yylex(lex->lex);
+
+	/* skip LMT_IGNORE */
+	while(1) {
+		res = yylex(lex->lex);
+		if(lex->morphem->type != LMT_IGNORE) {
+			break;
+		}
+	}
+
+	return res;
 }
 
 bgLexSymbol bgLex_textToSymbol(char* text) {

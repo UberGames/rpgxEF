@@ -935,8 +935,14 @@ static void G_LoadTimedMessages(void) {
 	}
 
 	trap_FS_Read(buffer, len, f);
+	trap_FS_FCloseFile(f);
 	
 	lexer = bgLex_create(buffer);
+
+	if(lexer == NULL) {
+		G_Printf(S_COLOR_RED "ERROR: Could not create new bgLex to lex timed messages.\n");
+		free(buffer);
+	}
 
 	while(bgLex_lex(lexer)) {
 		if(lexer->morphem->type == LMT_IGNORE) {
@@ -949,9 +955,9 @@ static void G_LoadTimedMessages(void) {
 			G_Printf(S_COLOR_YELLOW "WARNING: Unexpected token in timedmessages.cfg:%d:%d!\n", lexer->morphem->line, lexer->morphem->column);
 		}
 	}
+	G_Printf("Loaded %d timed messages.\n", level.timedMessages->length);
 
 	bgLex_destroy(lexer);
-	trap_FS_FCloseFile(f);
 	free(buffer);
 }
 
@@ -1095,9 +1101,11 @@ static void G_LoadServerChangeFile(void) {
 
 	file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
-	if(!file_len)
+	if(!file_len) {
 		return;
+	}
 
+	// TODO dynamic buffer size
 	buffer = (char *)malloc(32000 * sizeof(char));
 	if(!buffer) {
 		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", 32000 * sizeof(char) );
