@@ -1,4 +1,3 @@
-#line 2 "bg_lex.yy.c"
 #line 2 "bg_lex.lex"
 #include "q_shared.h"
 #include "bg_lex.h"
@@ -7,7 +6,7 @@
 
 
 
-#line 11 "bg_lex.yy.c"
+#line 10 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -538,7 +537,7 @@ static yyconst flex_int16_t yy_chk[233] =
 #define YY_RESTORE_YY_MORE_OFFSET
 #line 1 "bg_lex.lex"
 
-#line 542 "bg_lex.yy.c"
+#line 541 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -764,7 +763,7 @@ YY_DECL
 
 #line 17 "bg_lex.lex"
 
-#line 768 "bg_lex.yy.c"
+#line 767 "lex.yy.c"
 
 	if ( !yyg->yy_init )
 		{
@@ -893,7 +892,7 @@ YY_RULE_SETUP
 #line 42 "bg_lex.lex"
 {
 	double a, b, c;
-	sscanf(yytext, "{ %f %f %f }", &a, &b, &c);
+	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
 	yyextra->data.vector3[2] = c;
@@ -907,7 +906,7 @@ YY_RULE_SETUP
 #line 53 "bg_lex.lex"
 {
 	double a, b, c;
-	sscanf(yytext, "{ %f %f %f }", &a, &b, &c);
+	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
 	yyextra->data.vector3[2] = c;
@@ -921,7 +920,7 @@ YY_RULE_SETUP
 #line 63 "bg_lex.lex"
 {
 	double a, b, c;
-	sscanf(yytext, "{ %f %f %f }", &a, &b, &c);
+	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
 	yyextra->data.vector3[2] = c;
@@ -935,7 +934,7 @@ YY_RULE_SETUP
 #line 73 "bg_lex.lex"
 {
 	double a, b, c;
-	sscanf(yytext, "{ %f %f %f }", &a, &b, &c);
+	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
 	yyextra->data.vector3[2] = c;
@@ -949,7 +948,7 @@ YY_RULE_SETUP
 #line 83 "bg_lex.lex"
 {
 	double a, b, c;
-	sscanf(yytext, "{ %f %f %f }", &a, &b, &c);
+	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
 	yyextra->data.vector3[2] = c;
@@ -963,7 +962,7 @@ YY_RULE_SETUP
 #line 93 "bg_lex.lex"
 {
 	double a, b, c;
-	sscanf(yytext, "{ %f %f %f }", &a, &b, &c);
+	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
 	yyextra->data.vector3[2] = c;
@@ -977,7 +976,7 @@ YY_RULE_SETUP
 #line 103 "bg_lex.lex"
 {
 	double a, b, c;
-	sscanf(yytext, "{ %f %f %f }", &a, &b, &c);
+	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
 	yyextra->data.vector3[2] = c;
@@ -991,7 +990,7 @@ YY_RULE_SETUP
 #line 113 "bg_lex.lex"
 {
 	double a, b, c;
-	sscanf(yytext, "{ %f %f %f }", &a, &b, &c);
+	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
 	yyextra->data.vector3[2] = c;
@@ -1005,7 +1004,7 @@ YY_RULE_SETUP
 #line 123 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1020,7 +1019,7 @@ YY_RULE_SETUP
 #line 134 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1035,7 +1034,7 @@ YY_RULE_SETUP
 #line 145 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1050,7 +1049,7 @@ YY_RULE_SETUP
 #line 156 "bg_lex.lex"
 { 
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1065,7 +1064,7 @@ YY_RULE_SETUP
 #line 167 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1080,7 +1079,7 @@ YY_RULE_SETUP
 #line 178 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1095,7 +1094,7 @@ YY_RULE_SETUP
 #line 189 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1110,7 +1109,7 @@ YY_RULE_SETUP
 #line 200 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1125,7 +1124,7 @@ YY_RULE_SETUP
 #line 211 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1140,7 +1139,7 @@ YY_RULE_SETUP
 #line 222 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1155,7 +1154,7 @@ YY_RULE_SETUP
 #line 233 "bg_lex.lex"
 { 
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1170,7 +1169,7 @@ YY_RULE_SETUP
 #line 244 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1185,7 +1184,7 @@ YY_RULE_SETUP
 #line 255 "bg_lex.lex"
 { 
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1200,7 +1199,7 @@ YY_RULE_SETUP
 #line 266 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1215,7 +1214,7 @@ YY_RULE_SETUP
 #line 277 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1230,7 +1229,7 @@ YY_RULE_SETUP
 #line 288 "bg_lex.lex"
 {
 	double a, b, c, d;
-	sscanf(yytext, "{ %f %f %f %f }", &a, &b, &c, &d);
+	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
 	yyextra->data.vector4[2] = c;
@@ -1247,7 +1246,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACEC;
 	yyextra->column++;
-	return;
+	return 1;
 }
 	YY_BREAK
 case 30:
@@ -1333,7 +1332,7 @@ YY_RULE_SETUP
 #line 350 "bg_lex.lex"
 ECHO;
 	YY_BREAK
-#line 1337 "bg_lex.yy.c"
+#line 1336 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
