@@ -384,7 +384,7 @@ ifneq (,$(findstring "$(PLATFORM)", "linux" "gnu_kfreebsd" "kfreebsd-gnu"))
 
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC -fvisibility=hidden
-  SHLIBLDFLAGS=-shared $(LDFLAGS) -pthread
+  SHLIBLDFLAGS=-shared $(LDFLAGS) -pthread /usr/lib/libfl.a
 
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
@@ -506,7 +506,7 @@ ifeq ($(PLATFORM),darwin)
 
   SHLIBEXT=dylib
   SHLIBCFLAGS=-fPIC -fno-common
-  SHLIBLDFLAGS=-dynamiclib $(LDFLAGS) -Wl,-U,_com_altivec -pthread
+  SHLIBLDFLAGS=-dynamiclib $(LDFLAGS) -Wl,-U,_com_altivec -pthread /usr/lib/libfl.a
 
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
@@ -571,7 +571,7 @@ ifeq ($(PLATFORM),mingw32)
 
   SHLIBEXT=dll
   SHLIBCFLAGS=
-  SHLIBLDFLAGS=-shared $(LDFLAGS)
+  SHLIBLDFLAGS=-shared $(LDFLAGS) /usr/lib/libfl.a
 
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
@@ -664,7 +664,7 @@ ifeq ($(PLATFORM),freebsd)
 
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC
-  SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread
+  SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread lib/libfl.a
 
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
@@ -736,7 +736,7 @@ ifeq ($(PLATFORM),openbsd)
   SHLIBEXT=so
   SHLIBNAME=.$(SHLIBEXT)
   SHLIBCFLAGS=-fPIC
-  SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread
+  SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread /lib/flex/libfl.a
 
   ifeq ($(VM_USE_SQL), 1)
     SHLIBCFLAGS+=-DSQL
@@ -781,7 +781,7 @@ ifeq ($(PLATFORM),netbsd)
   LIBS=-lm
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC
-  SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread
+  SHLIBLDFLAGS=-shared $(LDFLAGS) -lpthread /lib/libfl.a
   THREAD_LIBS=-lpthread
 
   ifeq ($(VM_USE_SQL), 1)
@@ -904,7 +904,7 @@ else # ifeq sunos
 
   SHLIBEXT=so
   SHLIBCFLAGS=-fPIC
-  SHLIBLDFLAGS=-shared
+  SHLIBLDFLAGS=-shared /usr/lib/libfl.a
 
 endif #Linux
 endif #darwin
@@ -2063,6 +2063,7 @@ Q3CGOBJ_ = \
   $(B)/$(BASEGAME)/cgame/bg_misc.o \
   $(B)/$(BASEGAME)/cgame/bg_pmove.o \
   $(B)/$(BASEGAME)/cgame/bg_slidemove.o \
+  $(B)/$(BASEGAME)/cgame/bg_lex.yy.o \
   $(B)/$(BASEGAME)/cgame/cg_consolecmds.o \
   $(B)/$(BASEGAME)/cgame/cg_draw.o \
   $(B)/$(BASEGAME)/cgame/cg_drawtools.o \
@@ -2211,6 +2212,7 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/bg_pmove.o \
   $(B)/$(BASEGAME)/game/bg_slidemove.o \
   $(B)/$(BASEGAME)/game/bg_oums.o \
+  $(B)/$(BASEGAME)/game/bg_lex.yy.o \
   $(B)/$(BASEGAME)/game/g_active.o \
   $(B)/$(BASEGAME)/game/g_arenas.o \
   $(B)/$(BASEGAME)/game/g_bot.o \
