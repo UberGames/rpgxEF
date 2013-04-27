@@ -279,6 +279,9 @@
     <ClCompile Include="sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bg_lex.yy.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ai_chat.h">
@@ -474,6 +477,9 @@
   <ItemGroup>
     <None Include="game.def">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="bg_lex.lex">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

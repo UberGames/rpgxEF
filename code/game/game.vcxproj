@@ -199,6 +199,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="bg_lex.yy.c" />
     <ClCompile Include="bg_lib.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
@@ -541,6 +542,7 @@
     <ClInclude Include="syn.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bg_lex.lex" />
     <None Include="game.def" />
     <CustomBuildStep Include="g_syscalls.asm">
       <FileType>Document</FileType>
