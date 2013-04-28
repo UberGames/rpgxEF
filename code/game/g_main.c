@@ -942,6 +942,7 @@ static void G_LoadTimedMessages(void) {
 	if(lexer == NULL) {
 		G_Printf(S_COLOR_RED "ERROR: Could not create new bgLex to lex timed messages.\n");
 		free(buffer);
+		return;
 	}
 
 	while(bgLex_lex(lexer)) {
