@@ -946,10 +946,6 @@ static void G_LoadTimedMessages(void) {
 	}
 
 	while(bgLex_lex(lexer)) {
-		if(lexer->morphem->type == LMT_IGNORE) {
-			continue;
-		}
-
 		if(lexer->morphem->type == LMT_STRING) {
 			level.timedMessages->append(level.timedMessages, lexer->morphem->data.str, LT_STRING, strlen(lexer->morphem->data.str));
 		} else {
@@ -1296,13 +1292,13 @@ static void G_LoadLocationsFile( void )
 	char			mapRoute[MAX_QPATH];
 	char			*serverInfo;
 	fileHandle_t	f;
+	bgLex*			lex;
 	char			*buffer;
 	int				file_len;
-	char			*textPtr, *token;
 	vec3_t			origin, angles;
 	gentity_t		*ent;
 	char			*desc;
-	int				rest;
+	int				rest = 0;
 
 	serverInfo = (char *)malloc(MAX_INFO_STRING * sizeof(char));
 	if(!serverInfo) {
@@ -1346,173 +1342,142 @@ static void G_LoadLocationsFile( void )
 
 	G_Printf( "Locations file %s located. Proceeding to load scan data.\n", fileRoute ); //GSIO01: why did this say "Usables file ..."? lol ;)
 
-	COM_BeginParseSession();
-	textPtr = buffer;
+	lex = bgLex_create(buffer);
+	if(lex == NULL) {
+		G_Printf(S_COLOR_RED "ERROR: Could not create bgLex to lex locations file.\n");
+		free(buffer);
+		return;
+	}
 
-	while( 1 )
-	{
-		token = COM_Parse( &textPtr );
-		if ( !token[0] )
-			break;
+	if(bgLex_lex(lex) != LMT_SYMBOL) {
+		G_Printf(S_COLOR_RED "ERROR: Expected locations file to begin with 'LocationsList' or 'LocationsList2'.\n");
+		free(buffer);
+		bgLex_destroy(lex);
+		return;
+	}
 
-		if(!Q_strncmp( token, "LocationsList2", 19 )) { // new style locations list with restricted locations
-			token = COM_Parse( &textPtr );
-			if ( Q_strncmp( token, "{", 1 ) != 0 )
-			{
-				G_Printf( S_COLOR_RED "ERROR: LocationsList2 had no opening brace ( { )!\n" );
-				continue;
+	if(lex->morphem->data.symbol == LSYM_LOCATIONS_LIST || lex->morphem->data.symbol == LSYM_LOCATIONS_LIST_2) {
+		if(bgLex_lex(lex) == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_OBRACEC) {
+			if(!bgLex_lex(lex)) {
+				G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
+				free(buffer);
+				bgLex_destroy(lex);
+				return;
+			}
+		} else {
+			G_Printf(S_COLOR_YELLOW "WARNING: LocationsList2 had no opening brace '{'!\n");
+		}
+
+		while(1) {
+			if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_CBRACEC) {
+				break;
 			}
 
-			//expected format is "<origin> <angle> <int> <string>"
-			while ( Q_strncmp( token, "}", 1 ) )
-			{
-				if ( !token[0] )
-					break;
-
-				//Parse origin
-				if ( COM_ParseVec3( &textPtr, origin ) )
-				{
-					G_Printf( S_COLOR_RED "Invalid origin entry in %s!\n", fileRoute );
-					free(buffer);
-					return;
-				}
-
-				//Parse angles
-				if ( COM_ParseVec3( &textPtr, angles ) )
-				{
-					G_Printf( S_COLOR_RED "Invalid origin entry in %s!\n", fileRoute );
-					free(buffer);
-					return;
-				}
-
-				//Pars restriction value
-				if( COM_ParseInt( &textPtr, &rest ) )
-				{
-					G_Printf( S_COLOR_RED "Invalid restriction entry in %s!\n", fileRoute );
-					free(buffer);
-					return;
-				}
-
-				//Parse Location string
-				token = COM_ParseExt( &textPtr, qfalse );
-				if ( !token[0] )
-				{
-					G_Printf( S_COLOR_RED "Invalid string desc entry in %s!\n", fileRoute );
-					free(buffer);
-					return;
-				}
-
-				desc = token;
-
-				//create a new entity
-				ent = G_Spawn();
-				if ( !ent )
-				{
-					G_Printf( S_COLOR_RED "Couldn't create entity in %s!\n", fileRoute );
-					free(buffer);
-					return;
-				}
-
-				ent->classname = "target_location";
-
-				//copy position data
-				VectorCopy( origin, ent->s.origin );
-				VectorCopy( angles, ent->s.angles );
-
-				//copy string
-				ent->message = G_NewString( desc );
-
-				//copy desc into target as well
-				ent->target = ent->targetname = G_NewString( desc );
-
-				// copy restriction value
-				ent->sound1to2 = rest;
-
-				//initiate it as a location ent
-				SP_target_location( ent );
-
-				//reset the ent
-				ent = NULL;
-
-				//--
-				token = COM_Parse( &textPtr );
-			}
-		} else if ( !Q_strncmp( token, "LocationsList", 18 ) ) // old stly locations file
-		{
-			token = COM_Parse( &textPtr );
-			if ( Q_strncmp( token, "{", 1 ) != 0 )
-			{
-				G_Printf( S_COLOR_RED "ERROR: LocationsList had no opening brace ( { )!\n" );
-				continue;
+			if(lex->morphem->type == LMT_VECTOR3) {
+				VectorCopy(lex->morphem->data.vector3, origin);
+			} else {
+				G_Printf(S_COLOR_RED "ERROR: Expected vector at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				free(buffer);
+				bgLex_destroy(lex);
+				return;
 			}
 
-			//expected format is "<origin> <angle> <string>"
-			while ( Q_strncmp( token, "}", 1 ) )
+			if(bgLex_lex(lex) == LMT_VECTOR3) {
+				VectorCopy(lex->morphem->data.vector3, angles);
+			} else {
+				G_Printf(S_COLOR_RED "ERROR: Expected vector at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				free(buffer);
+				bgLex_destroy(lex);
+				return;
+			}
+
+			if(bgLex_lex(lex) == LMT_STRING) {
+				int result;
+
+				desc = G_NewString(lex->morphem->data.str);
+
+				if((result = bgLex_lex(lex)) == LMT_STRING) {
+					rest = atoi(desc);
+					desc = G_NewString(lex->morphem->data.str);
+
+					if(!bgLex_lex(lex)) {
+						G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
+						free(buffer);
+						bgLex_destroy(lex);
+						return;
+					}
+				} else {
+					if(!result) {
+						G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
+						free(buffer);
+						bgLex_destroy(lex);
+						return;
+					}
+				}
+			} else {
+				G_Printf(S_COLOR_RED "ERROR: Expected string at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				free(buffer);
+				bgLex_destroy(lex);
+				return;
+			}
+
+			//create a new entity
+			ent = G_Spawn();
+			if ( !ent )
 			{
-				if ( !token[0] )
-					break;
+				G_Printf( S_COLOR_RED "Couldn't create entity in %s!\n", fileRoute );
+				free(buffer);
+				bgLex_destroy(lex);
+				return;
+			}
 
-				//Parse origin
-				if ( COM_ParseVec3( &textPtr, origin ) )
-				{
-					G_Printf( S_COLOR_RED "Invalid origin entry in %s!\n", fileRoute );
+			ent->classname = "target_location";
+
+			//copy position data
+			VectorCopy( origin, ent->s.origin );
+			VectorCopy( angles, ent->s.angles );
+
+			//copy string
+			ent->message = G_NewString( desc );
+
+			//copy desc into target as well
+			ent->target = ent->targetname = G_NewString( desc );
+
+			// copy restriction value
+			ent->sound1to2 = rest;
+
+			//initiate it as a location ent
+			SP_target_location( ent );
+
+			//reset the ent
+			ent = NULL;
+			rest = 0;
+
+			if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_SEMICOLON) {
+				if(!bgLex_lex(lex)) {
+					G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
 					free(buffer);
+					bgLex_destroy(lex);
 					return;
 				}
-
-				//Parse angles
-				if ( COM_ParseVec3( &textPtr, angles ) )
-				{
-					G_Printf( S_COLOR_RED "Invalid origin entry in %s!\n", fileRoute );
-					free(buffer);
-					return;
-				}
-
-				//Parse Location string
-				token = COM_ParseExt( &textPtr, qfalse );
-				if ( !token[0] )
-				{
-					G_Printf( S_COLOR_RED "Invalid string desc entry in %s!\n", fileRoute );
-					free(buffer);
-					return;
-				}
-
-				desc = token;
-
-				//create a new entity
-				ent = G_Spawn();
-				if ( !ent )
-				{
-					G_Printf( S_COLOR_RED "Couldn't create entity in %s!\n", fileRoute );
-					free(buffer);
-					return;
-				}
-
-				ent->classname = "target_location";
-
-				//copy position data
-				VectorCopy( origin, ent->s.origin );
-				VectorCopy( angles, ent->s.angles );
-
-				//copy string
-				ent->message = G_NewString( desc );
-
-				//copy desc into target as well
-				ent->target = ent->targetname = G_NewString( desc );
-
-				//initiate it as a location ent
-				SP_target_location( ent );
-
-				//reset the ent
-				ent = NULL;
-
-				//--
-				token = COM_Parse( &textPtr );
+			} else {
+				G_Printf(S_COLOR_YELLOW "WARNING: Missing ';' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 			}
 		}
+	} else {
+		G_Printf(S_COLOR_RED "ERROR: Unexpected token at %s:%d:%d. ", fileRoute, lex->morphem->line, lex->morphem->column);
+		G_Printf(S_COLOR_RED "Expected 'LocationsList' or 'LocationsList2'.\n");
+		free(buffer);
+		bgLex_destroy(lex);
+		return;
+	}
+
+	if(lex->morphem->type != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_CBRACEC) {
+		G_Printf(S_COLOR_YELLOW "WARNING: Missing closing brace '}'!\n");
 	}
 
 	free(buffer);
+	bgLex_destroy(lex);
 }
 
 #define MAX_GROUP_FILE_SIZE	5000

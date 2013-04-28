@@ -3,6 +3,11 @@
 
 #include "q_shared.h"
 
+#define LEX_DEBUG
+#ifdef LEX_DEBUG
+extern char *yyget_text (void* yyscanner);
+#endif
+
 typedef enum {
 	LSYM_OBRACE,		/* ( */
 	LSYM_OBRACEC,		/* { */
@@ -77,6 +82,7 @@ typedef enum {
 	LSYM_BOLT_MODEL,
 	LSYM_BOLT_SHADER,
 	LSYM_ADMIRAL_RANK,
+	LSYM_SEMICOLON,
 
 	LSYM_UNKNOWN
 } bgLexSymbol;

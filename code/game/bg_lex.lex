@@ -7,8 +7,8 @@
 }
 
 DIGIT [0-9]
-INT {DIGIT}+
-DOUBLE {DIGIT}+"."?{DIGIT}*
+INT "-"?{DIGIT}+
+DOUBLE "-"?{DIGIT}+"."?{DIGIT}*
 KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 
 %option reentrant
@@ -117,6 +117,87 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c;
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
+	yyextra->data.vector3[0] = a;
+	yyextra->data.vector3[1] = b;
+	yyextra->data.vector3[2] = c;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR3;
+	return LMT_VECTOR3;
+}
+"{"" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
+	double a, b, c;
+	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
+	yyextra->data.vector3[0] = a;
+	yyextra->data.vector3[1] = b;
+	yyextra->data.vector3[2] = c;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR3;
+	return LMT_VECTOR3;
+}
+
+"{"" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c;
+	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
+	yyextra->data.vector3[0] = a;
+	yyextra->data.vector3[1] = b;
+	yyextra->data.vector3[2] = c;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR3;
+	return LMT_VECTOR3;
+}
+"{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
+	double a, b, c;
+	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
+	yyextra->data.vector3[0] = a;
+	yyextra->data.vector3[1] = b;
+	yyextra->data.vector3[2] = c;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR3;
+	return LMT_VECTOR3;
+}
+"{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c;
+	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
+	yyextra->data.vector3[0] = a;
+	yyextra->data.vector3[1] = b;
+	yyextra->data.vector3[2] = c;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR3;
+	return LMT_VECTOR3;
+}
+"{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
+	double a, b, c;
+	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
+	yyextra->data.vector3[0] = a;
+	yyextra->data.vector3[1] = b;
+	yyextra->data.vector3[2] = c;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR3;
+	return LMT_VECTOR3;
+}
+"{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c;
+	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
+	yyextra->data.vector3[0] = a;
+	yyextra->data.vector3[1] = b;
+	yyextra->data.vector3[2] = c;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR3;
+	return LMT_VECTOR3;
+}
+"{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
+	double a, b, c;
+	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
+	yyextra->data.vector3[0] = a;
+	yyextra->data.vector3[1] = b;
+	yyextra->data.vector3[2] = c;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR3;
+	return LMT_VECTOR3;
+}
+"{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c;
+	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
 	yyextra->data.vector3[2] = c;
@@ -300,6 +381,182 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->type = LMT_VECTOR4;
 	return LMT_VECTOR4;
 }
+"{"" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" { 
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" { 
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "+"}" { 
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
+"{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
+	double a, b, c, d;
+	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
+	yyextra->data.vector4[0] = a;
+	yyextra->data.vector4[1] = b;
+	yyextra->data.vector4[2] = c;
+	yyextra->data.vector4[3] = d;
+	yyextra->column += strlen(yytext);
+	yyextra->type = LMT_VECTOR4;
+	return LMT_VECTOR4;
+}
 "{" {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACEC;
@@ -336,20 +593,27 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->column++;
 	return LMT_SYMBOL;
 }
+";" {
+	yyextra->type = LMT_SYMBOL;
+	yyextra->data.symbol = LSYM_SEMICOLON;
+	yyextra->column++;
+	return LMT_SYMBOL;
+}
 [ \t] {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
-	return LMT_SYMBOL;
+	return LMT_IGNORE;
 }
 \n {
 	yyextra->line++;
+	yyextra->column = 0;
 	yyextra->type = LMT_IGNORE;
-	return LMT_SYMBOL;
+	return LMT_IGNORE;
 }
 . {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
-	return LMT_SYMBOL;
+	return LMT_IGNORE;
 }
 %%
 
@@ -388,6 +652,9 @@ bgLex* bgLex_create(char* data) {
 			free(l);
 			return NULL;
 		}
+
+		l->morphem->line = 0;
+		l->morphem->column = 0;
 
 		yylex_init_extra(l->morphem, &l->lex);
 		l->buf = yy_scan_string(data,l->lex);
