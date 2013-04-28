@@ -3382,6 +3382,14 @@ bgLexSymbol bgLex_textToSymbol(char* text) {
 		return LSYM_ADMIRAL_RANK;
 	}
 
+	if(strcmp("true", text) == 0) {
+		return LSYM_TRUE;
+	}
+
+	if(strcmp("false", text) == 0) {
+		return LSYM_FALSE;
+	}
+
 	return LSYM_UNKNOWN;
 }
 
