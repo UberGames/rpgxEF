@@ -23,25 +23,25 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	memset(yyextra->data.str, 0, strlen(yytext) - 1);
 	strncpy(yyextra->data.str, s, strlen(yytext) - 2);
 	yyextra->column += strlen(yytext);
-	return 1;
+	return LMT_STRING;
 }
 {INT} {
 	yyextra->type = LMT_INT;
 	yyextra->data.numInteger = atoi(yytext);
 	yyextra->column += strlen(yytext);
-	return 1;
+	return LMT_INT;
 }
 {DOUBLE} {
 	yyextra->type = LMT_DOUBLE;
 	yyextra->data.numDouble = atof(yytext);
 	yyextra->column += strlen(yytext);
-	return 1;
+	return LMT_DOUBLE;
 }
 {KEYWORD} {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = bgLex_textToSymbol(yytext);
 	yyextra->column += strlen(yytext);
-	return 1;
+	return LMT_SYMBOL;
 }
 "{"" "+{INT}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c;
@@ -51,7 +51,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 
 "{"" "+{INT}" "+{INT}" "+{DOUBLE}" "+"}" {
@@ -62,7 +62,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c;
@@ -72,7 +72,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c;
@@ -82,7 +82,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c;
@@ -92,7 +92,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c;
@@ -102,7 +102,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c;
@@ -112,7 +112,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c;
@@ -122,7 +122,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 "{"" "+{INT}" "+{INT}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c, d;
@@ -133,7 +133,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{INT}" "+{INT}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
@@ -144,7 +144,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{INT}" "+{INT}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c, d;
@@ -155,7 +155,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{INT}" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+"}" { 
 	double a, b, c, d;
@@ -166,7 +166,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c, d;
@@ -177,7 +177,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
@@ -188,7 +188,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c, d;
@@ -199,7 +199,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
@@ -210,7 +210,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c, d;
@@ -221,7 +221,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
@@ -232,7 +232,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+{INT}" "+"}" { 
 	double a, b, c, d;
@@ -243,7 +243,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
@@ -254,7 +254,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+{INT}" "+"}" { 
 	double a, b, c, d;
@@ -265,7 +265,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
@@ -276,7 +276,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;;
+	return LMT_VECTOR4;
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c, d;
@@ -287,7 +287,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
@@ -298,58 +298,58 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 "{" {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACEC;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 "}" {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACEC;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 "(" {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACE;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 ")" {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACE;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 "[" {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACESQ;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 "]" {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACESQ;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 [ \t] {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
-	return 1;
+	return LMT_SYMBOL;
 }
 \n {
 	yyextra->line++;
 	yyextra->type = LMT_IGNORE;
-	return 1;
+	return LMT_SYMBOL;
 }
 . {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
-	return 1;
+	return LMT_SYMBOL;
 }
 %%
 

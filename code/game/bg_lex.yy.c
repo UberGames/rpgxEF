@@ -858,7 +858,7 @@ YY_RULE_SETUP
 	memset(yyextra->data.str, 0, strlen(yytext) - 1);
 	strncpy(yyextra->data.str, s, strlen(yytext) - 2);
 	yyextra->column += strlen(yytext);
-	return 1;
+	return LMT_STRING;
 }
 	YY_BREAK
 case 2:
@@ -868,7 +868,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_INT;
 	yyextra->data.numInteger = atoi(yytext);
 	yyextra->column += strlen(yytext);
-	return 1;
+	return LMT_INT;
 }
 	YY_BREAK
 case 3:
@@ -878,7 +878,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_DOUBLE;
 	yyextra->data.numDouble = atof(yytext);
 	yyextra->column += strlen(yytext);
-	return 1;
+	return LMT_DOUBLE;
 }
 	YY_BREAK
 case 4:
@@ -888,7 +888,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = bgLex_textToSymbol(yytext);
 	yyextra->column += strlen(yytext);
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 5:
@@ -902,7 +902,7 @@ YY_RULE_SETUP
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 	YY_BREAK
 case 6:
@@ -916,7 +916,7 @@ YY_RULE_SETUP
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 	YY_BREAK
 case 7:
@@ -930,7 +930,7 @@ YY_RULE_SETUP
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 	YY_BREAK
 case 8:
@@ -944,7 +944,7 @@ YY_RULE_SETUP
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 	YY_BREAK
 case 9:
@@ -958,7 +958,7 @@ YY_RULE_SETUP
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 	YY_BREAK
 case 10:
@@ -972,7 +972,7 @@ YY_RULE_SETUP
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 	YY_BREAK
 case 11:
@@ -986,7 +986,7 @@ YY_RULE_SETUP
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 	YY_BREAK
 case 12:
@@ -1000,7 +1000,7 @@ YY_RULE_SETUP
 	yyextra->data.vector3[2] = c;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR3;
-	return 1;
+	return LMT_VECTOR3;
 }
 	YY_BREAK
 case 13:
@@ -1015,7 +1015,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 14:
@@ -1030,7 +1030,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 15:
@@ -1045,7 +1045,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 16:
@@ -1060,7 +1060,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 17:
@@ -1075,7 +1075,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 18:
@@ -1090,7 +1090,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 19:
@@ -1105,7 +1105,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 20:
@@ -1120,7 +1120,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 21:
@@ -1135,7 +1135,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 22:
@@ -1150,7 +1150,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 23:
@@ -1165,7 +1165,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 24:
@@ -1180,7 +1180,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 25:
@@ -1195,7 +1195,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 26:
@@ -1210,7 +1210,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 27:
@@ -1225,7 +1225,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 28:
@@ -1240,7 +1240,7 @@ YY_RULE_SETUP
 	yyextra->data.vector4[3] = d;
 	yyextra->column += strlen(yytext);
 	yyextra->type = LMT_VECTOR4;
-	return 1;
+	return LMT_VECTOR4;
 }
 	YY_BREAK
 case 29:
@@ -1250,7 +1250,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACEC;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 30:
@@ -1260,7 +1260,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACEC;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 31:
@@ -1270,7 +1270,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACE;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 32:
@@ -1280,7 +1280,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACE;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 33:
@@ -1290,7 +1290,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACESQ;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 34:
@@ -1300,7 +1300,7 @@ YY_RULE_SETUP
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACESQ;
 	yyextra->column++;
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 35:
@@ -1309,7 +1309,7 @@ YY_RULE_SETUP
 {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 36:
@@ -1319,7 +1319,7 @@ YY_RULE_SETUP
 {
 	yyextra->line++;
 	yyextra->type = LMT_IGNORE;
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 37:
@@ -1328,7 +1328,7 @@ YY_RULE_SETUP
 {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
-	return 1;
+	return LMT_SYMBOL;
 }
 	YY_BREAK
 case 38:
