@@ -1091,12 +1091,9 @@ static void G_LoadHolodeckFile(void) {
 static void G_LoadServerChangeFile(void) {
 	char			fileRoute[MAX_QPATH];
 	fileHandle_t	f;
+	bgLex*			lex;
 	char*			buffer;
 	int				file_len;
-	char*			txtPtr;
-	char*			token;
-	int				cnt = 0;
-	int				i = 0;
 
 	BG_LanguageFilename("serverchange", "cfg", fileRoute);
 
@@ -1130,56 +1127,75 @@ static void G_LoadServerChangeFile(void) {
 
 	G_Printf("Loading ServerChangeConfig '%s'.\n", fileRoute);
 
-	COM_BeginParseSession();
-	txtPtr = buffer;
+	lex = bgLex_create(buffer);
+	if(lex == NULL) {
+		G_Printf(S_COLOR_RED "ERROR: Could not create bgLex to lex ServerChangeConfig.\n");
+		free(buffer);
+		return;
+	}
 
-	while(1) {
-		token = COM_Parse(&txtPtr);
-		if(!token[0]) break;
+	if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_SERVER_CHANGE_CONFIG) {
+		G_Printf(S_COLOR_RED "ERROR: Expected 'ServerChangeConfig' at beginning of %s.\n", fileRoute);
+		free(buffer);
+		bgLex_destroy(lex);
+		return;
+	}
+	if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_OBRACEC) {
+		G_Printf(S_COLOR_RED "ERROR: Missing '{' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+		free(buffer);
+		bgLex_destroy(lex);
+		return;
+	}
 
-		if(!Q_stricmp(token, "ServerChangeConfig")) {
-			token = COM_Parse( &txtPtr );
-			if ( Q_strncmp( token, "{", 1 ) != 0 )
-			{
-				G_Printf( S_COLOR_RED "ERROR: ServerChangeConfig had no opening brace ( { )!\n" );
-				continue;
+	while(bgLex_lex(lex)) {
+		if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_CBRACEC) {
+			break;
+		}
+
+		if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_SERVER) {
+			if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_OBRACESQ) {
+				G_Printf(S_COLOR_RED "ERROR: Missing '[' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				free(buffer);
+				bgLex_destroy(lex);
+				return;
 			}
 
-			while(Q_strncmp(token, "}", 1)) {
-				token = COM_Parse(&txtPtr);
-				if(!token[0]) break;
-
-				if(!Q_stricmp(token, "Server")) {
-					token = COM_Parse(&txtPtr);
-					if ( Q_strncmp( token, "[", 1 ) != 0 )
-					{
-						G_Printf( S_COLOR_RED "ERROR: Server had no opening brace ( [ )!\n" );
-						continue;
-					}
-
-					token = COM_Parse(&txtPtr);
-					while(Q_strncmp(token, "]", 1)) {
-						if(!token[0]) break;
-
-						if(cnt > 12) break;
-
-						if(cnt % 2 == 0)
-							Q_strncpyz(level.srvChangeData.ip[i], token, sizeof(level.srvChangeData.ip[i]));
-						else
-							Q_strncpyz(level.srvChangeData.name[i], token, sizeof(level.srvChangeData.name[i]));
-
-						cnt++;
-						if(cnt % 2 == 0)
-							i++;
-
-						token = COM_Parse(&txtPtr);
-					}
-				}
+			if(bgLex_lex(lex) == LMT_STRING) {
+				strncpy(level.srvChangeData.ip[level.srvChangeData.count], lex->morphem->data.str, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
+			} else {
+				G_Printf(S_COLOR_RED "ERROR: Unexpected token at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				free(buffer);
+				bgLex_destroy(lex);
+				return;
 			}
+
+			if(bgLex_lex(lex) == LMT_STRING) {
+				strncpy(level.srvChangeData.name[level.srvChangeData.count], lex->morphem->data.str, sizeof(level.srvChangeData.name[level.srvChangeData.count]));
+			} else {
+				G_Printf(S_COLOR_RED "ERROR: Unexpected token at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				free(buffer);
+				bgLex_destroy(lex);
+				memset(level.srvChangeData.ip[level.srvChangeData.count], 0, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
+				return;
+			}
+
+			level.srvChangeData.count++;
+
+			if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_CBRACESQ) {
+				G_Printf(S_COLOR_RED "ERROR: Missing ']' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				free(buffer);
+				bgLex_destroy(lex);
+				return;
+			}
+		} else {
+			G_Printf(S_COLOR_RED "ERROR: Unexpected token at %d:%d. Expected '}' or 'Server'\n", lex->morphem->line, lex->morphem->column);
+			free(buffer);
+			bgLex_destroy(lex);
+			return;
 		}
 	}
 
-	level.srvChangeData.count = i;
+	bgLex_destroy(lex);
 	free(buffer);
 }
 
