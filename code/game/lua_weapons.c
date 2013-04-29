@@ -4,6 +4,11 @@
 
 #ifdef G_LUA
 
+/***
+A module for everything converning weapons. Documentation under way.
+@module weapons
+*/
+
 #include "g_weapon.h"
 
 static int weapon_GetForward(lua_State *L) {

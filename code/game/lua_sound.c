@@ -4,6 +4,11 @@
 
 #ifdef G_LUA
 
+/***
+A documentation to play sounds. Documentation under work.
+@module sound
+*/
+
 // sound.PlaySound(entity ent, string sound, integer chan)
 // * ent the entity the sound will be played on
 // * sound the sound file which will be played
