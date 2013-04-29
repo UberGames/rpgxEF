@@ -6,6 +6,12 @@
 extern qboolean G_CallSpawn(gentity_t *ent);
 
 #ifdef G_LUA
+
+/***
+Module to access entity functions and manage enities. Documentation under work.
+@module entiy
+*/
+
 // entity.MMBRefit()
 // this is just a function called from lua
 // it should be called before any other model work
