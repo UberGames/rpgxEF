@@ -3,8 +3,17 @@
 #include "g_lua.h"
 
 #ifdef G_LUA
-// game.Print(string text)
-// Prints text to the server console
+
+/***
+This module provides access to some of the servers functionality.
+@module game
+*/
+
+/***
+Prints text to the servers console.
+@function Print
+@param test Text to print.
+*/
 static int Game_Print(lua_State *L) {
 	int		i;
 	char	buf[MAX_STRING_CHARS];
@@ -42,9 +51,12 @@ static int Game_Print(lua_State *L) {
 	return 0;
 }
 
-// game.CenterPrint(integer clientNum, string text)
-// Prints text to the center of the screen of the client with client number clientNum. 
-// If clientNum is -1 the text gets printed for all clients.
+/***
+Prints text to the center of the screen of the client with client number clientNum. If clientNum is -1 the text gets printed for all clients.
+@function CenterPrint
+@param clientNum Client number.
+@param text Text to print.
+*/
 static int Game_CenterPrint(lua_State *L) {
 	int			i;
 	char		buf[MAX_STRING_CHARS];
@@ -86,9 +98,12 @@ static int Game_CenterPrint(lua_State *L) {
 	return 1;
 }
 
-// game.ClientPrint(integer clientNum, string text)
-// Prints text to the clients console that has the client number clientNum. 
-// If clientNum is -1 the text gets printed to all clients consoles.
+/***
+Prints text to the clients console that has the client number clientNum. If clientNum is -1 the text gets printed to all clients consoles.
+@function ClientPrint
+@param clientNum Client number.
+@param text Text to print.
+*/
 static int Game_ClientPrint(lua_State *L) {
 	int			i;
 	char		buf[MAX_STRING_CHARS];
@@ -136,9 +151,12 @@ static int Game_ClientPrint(lua_State *L) {
 	return 1;
 }
 
-// game.MessagePrint(integer clientNum, string text)
-// Prints text to the lower right corner of the screen of the client with client number clientNum. 
-// If clientNum is -1 the text gets printed for all clients.
+/***
+Prints text to the lower right corner of the screen of the client with client number clientNum. If clientNum is -1 the text gets printed for all clients.
+@functiton MessagePrint
+@param clientNum Client number.
+@param text Text tp print.
+*/
 static int Game_MessagePrint(lua_State *L) {
 	int			i;
 	char		buf[MAX_STRING_CHARS];
@@ -179,10 +197,12 @@ static int Game_MessagePrint(lua_State *L) {
 	return 1;
 }
 
-// game.SetGlobal(string name, value)
-// Sets a global Lua variable which is called name to value. 
-// Creates a new global variable if a variable of name does not exist. 
-// value can be of any type.
+/***
+Sets a global Lua variable which is called name to value. Creates a new global variable if a variable of name does not exist. Value can be of any type.
+@function SetGlobal
+@param name Name of global variable.
+@param value New value for global variable.
+*/
 static int Game_SetGlobal(lua_State *L) {
 	char *name;
 
@@ -204,9 +224,12 @@ static int Game_SetGlobal(lua_State *L) {
 	return 0;
 }
 
-// game.GetGlobal(string name)
-// Returns the value of the global variable name. 
-// Returns nil if the variable does not exist.
+/***
+Returns the value of the global variable name. Returns nil if the variable does not exist.
+@function GetGlobal
+@param name Name of Global variable.
+@return value of Global variable.
+*/
 static int Game_GetGlobal(lua_State *L) {
 	char *name;
 
@@ -330,8 +353,11 @@ static int Game_Alert(lua_State *L) {
 	return 0;
 }
 
-// game.LevelTime()
-// Returns the current level time in milliseconds.
+/***
+Get the current level time in milliseconds. Level time is the time since level start.
+@function LevelTime
+@return Level time in milliseconds.
+*/
 static int Game_Leveltime(lua_State * L)
 {
 	LUA_DEBUG("BEGIN - game.Leveltime");
@@ -343,6 +369,19 @@ static int Game_Leveltime(lua_State * L)
 	return 1;
 }
 
+/***
+Damage and player or entity.
+@function Damage
+@param target Target entity.
+@param inflictor Inflicting entity. Can be nil.
+@param attacker Attacking entity. Can be nil.
+@param direction Direction of knockback. Can be nil.
+@param point Point where the damage is inflicted. Can be nil.
+@param damage Ammount of damage.
+@param dflags Damage flags.
+@param mod Means of death.
+@return Success or fail.
+*/
 static int Game_Damage(lua_State *L) {
 	lent_t *lent;
 	gentity_t *targ = NULL, *inflictor = NULL, *attacker = NULL;
@@ -387,6 +426,13 @@ static int Game_Damage(lua_State *L) {
 	return 1;
 }
 
+/***
+Repair an entity.
+@function Repair
+@param target Target entity.
+@param rate Repair rate.
+@return Success or fail.
+*/
 static int Game_Repair(lua_State *L) {
 	lent_t *lent;
 	float rate;

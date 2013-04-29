@@ -8,6 +8,11 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+/***
+A module implementing vectors. Documentation under work.
+@module vector
+*/
+
 // vector.New()
 // Allocates and returns a new vector (0|0|0).
 static int Vector_New(lua_State *L) {

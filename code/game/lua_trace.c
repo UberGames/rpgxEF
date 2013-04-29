@@ -3,6 +3,12 @@
 #include "g_lua.h"
 
 #ifdef G_LUA
+
+/***
+A module allowing to do traces. Documentation under work.
+@module trace
+*/
+
 static int Trace_GC(lua_State * L)
 {
 

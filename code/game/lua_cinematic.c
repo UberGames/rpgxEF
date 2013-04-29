@@ -5,6 +5,11 @@
 
 #ifdef G_LUA
 
+/***
+A library for cinematics. Not finished and therfore not further documented.
+@module cinematic
+*/
+
 // cinematic.Activate(entity ent, entity target)
 // Activates Camera on ent and points it at target.
 static int Cinematic_Activate(lua_State *L) {
