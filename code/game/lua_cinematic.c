@@ -61,11 +61,11 @@ static int Cinematic_DeactivateGlobal(lua_State *L) {
 }
 
 static const luaL_Reg lib_cinematic[] = {
-	{"Activate", Cinematic_Activate},
-	{"Deactivate", Cinematic_Deactivate},
-	{"ActivateGlobal", Cinematic_ActivateGlobal},
-	{"DeactivateGlobal", Cinematic_DeactivateGlobal},
-	{NULL, NULL}
+	{ "Activate",			Cinematic_Activate			},
+	{ "Deactivate",			Cinematic_Deactivate		},
+	{ "ActivateGlobal",		Cinematic_ActivateGlobal	},
+	{ "DeactivateGlobal",	Cinematic_DeactivateGlobal	},
+	{ NULL,					NULL						}
 };
 
 int Luaopen_Cinematic(lua_State *L) {

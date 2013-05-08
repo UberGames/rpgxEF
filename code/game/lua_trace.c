@@ -160,23 +160,23 @@ static int Trace_GetEntity(lua_State *L) {
 }
 
 static const luaL_Reg lib_trace[] = {
-	{"DoTrace", Trace_DoTrace},
-	{"FreeTrace", Trace_FreeTrace},
-	{NULL, NULL}
+	{ "DoTrace",	Trace_DoTrace	},
+	{ "FreeTrace",	Trace_FreeTrace	},
+	{ NULL,			NULL			}
 };
 
 static const luaL_Reg Trace_meta[] = {
-	{"__gc", Trace_GC},
-	{"__tostring", Trace_ToString},
-	{"GetAllsolid", Trace_GetAllsolid},
-	{"GetStartsolid", Trace_GetStartsolid},
-	{"GetFraction", Trace_GetFraction},
-	{"GetEndpos", Trace_GetEndpos},
-	{"GetSurfaceFlags", Trace_GetSurfaceFlags},
-	{"GetContents", Trace_GetContents},
-	{"GetEntityNum", Trace_GetEntityNum},
-	{"GetEntity", Trace_GetEntity},
-	{NULL, NULL}
+	{ "__gc",				Trace_GC				},
+	{ "__tostring",			Trace_ToString			},
+	{ "GetAllsolid",		Trace_GetAllsolid		},
+	{ "GetStartsolid",		Trace_GetStartsolid		},
+	{ "GetFraction",		Trace_GetFraction		},
+	{ "GetEndpos",			Trace_GetEndpos			},
+	{ "GetSurfaceFlags",	Trace_GetSurfaceFlags	},
+	{ "GetContents",		Trace_GetContents		},
+	{ "GetEntityNum",		Trace_GetEntityNum		},
+	{ "GetEntity",			Trace_GetEntity			},
+	{ NULL,					NULL					}
 };
 
 int Luaopen_Trace(lua_State *L) {

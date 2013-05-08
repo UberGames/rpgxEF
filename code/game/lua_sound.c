@@ -34,8 +34,8 @@ static int Sound_PlaySound(lua_State *L) {
 }
 
 static const luaL_Reg lib_sound[] = {
-	{"PlaySound", Sound_PlaySound},
-	{NULL, NULL}
+	{ "PlaySound",	Sound_PlaySound	},
+	{ NULL,			NULL			}
 };
 
 int Luaopen_Sound(lua_State *L) {

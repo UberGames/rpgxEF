@@ -420,16 +420,16 @@ static int Mover_ToPosition(lua_State * L)
 }
 
 static const luaL_Reg lib_mover[] = {
-	{"Halt", Mover_Halt},
-	{"HaltAngles", Mover_HaltAngles},
-	{"AsTrain", Mover_AsTrain},
-	{"SetPosition", Mover_SetPosition},
-	{"SetOrigin", Mover_SetPosition},
-	{"ToPosition", Mover_ToPosition},
-	{"SetAngles", Mover_SetAngles},
-	{"SetAngles2", Mover_SetAngles2},
-	{"ToAngles", Mover_ToAngles},
-	{NULL, NULL}
+	{ "Halt",			Mover_Halt			},
+	{ "HaltAngles",		Mover_HaltAngles	},
+	{ "AsTrain",		Mover_AsTrain		},
+	{ "SetPosition",	Mover_SetPosition	},
+	{ "SetOrigin",		Mover_SetPosition	},
+	{ "ToPosition",		Mover_ToPosition	},
+	{ "SetAngles",		Mover_SetAngles		},
+	{ "SetAngles2",		Mover_SetAngles2	},
+	{ "ToAngles",		Mover_ToAngles		},
+	{ NULL,				NULL				}
 };
 
 int Luaopen_Mover(lua_State *L) {

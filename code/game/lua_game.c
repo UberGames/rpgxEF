@@ -456,21 +456,21 @@ static int Game_Repair(lua_State *L) {
 }
 
 static const luaL_Reg lib_game[] = {
-	{"Damage", Game_Damage},
-	{"Repair", Game_Repair},
-	{"Print", Game_Print},
-	{"MessagePrint", Game_MessagePrint},
-	{"CenterPrint", Game_CenterPrint},
-	{"ClientPrint", Game_ClientPrint},
-	{"GetTime", Game_Leveltime},
+	{ "Damage",			Game_Damage			},
+	{ "Repair",			Game_Repair			},
+	{ "Print",			Game_Print			},
+	{ "MessagePrint",	Game_MessagePrint	},
+	{ "CenterPrint",	Game_CenterPrint	},
+	{ "ClientPrint",	Game_ClientPrint	},
+	{ "GetTime",		Game_Leveltime		},
 
-	{"AlertSetup", Game_AlertSetup},
-	{"AlertAddShader", Game_AlertAddShader},
-	{"Alert", Game_Alert},
+	{ "AlertSetup",		Game_AlertSetup		},
+	{ "AlertAddShader", Game_AlertAddShader	},
+	{ "Alert",			Game_Alert			},
 
-	{"SetGlobal", Game_SetGlobal},
-	{"GetGlobal", Game_GetGlobal},
-	{NULL, NULL}
+	{ "SetGlobal",		Game_SetGlobal		},
+	{ "GetGlobal",		Game_GetGlobal		},
+	{ NULL,				NULL				}
 };
 
 int Luaopen_Game(lua_State *L) {
