@@ -106,12 +106,12 @@ static int weapon_Damage(lua_State *L) {
 }
 
 static const luaL_Reg lib_weapons[] = {
-	{"GetForward", weapon_GetForward},
-	{"GetRight", weapon_GetRight},
-	{"GetUp", weapon_GetUp},
-	{"GetMuzzle", weapon_GetMuzzle},
-	{"Damage", weapon_Damage},
-	{NULL, NULL}
+	{ "GetForward",	weapon_GetForward	},
+	{ "GetRight",	weapon_GetRight		},
+	{ "GetUp",		weapon_GetUp		},
+	{ "GetMuzzle",	weapon_GetMuzzle	},
+	{ "Damage",		weapon_Damage		},
+	{ NULL,			NULL				}
 };
 
 int Luaopen_Weapons(lua_State *L) {

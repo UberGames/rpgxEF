@@ -375,33 +375,33 @@ static int Vector_ToString(lua_State *L) {
 }
 
 static const luaL_Reg vector_ctor[] = {
-	{"New", Vector_New},
-	{"Construct", Vector_Construct},
-	{"RotatePointAround", Vector_RotatePointAround},
-	{"Perpendicular", Vector_Perpendicular},
-	{"VecToAngles", Vector_VecToAngles },
-	{"AngleVectors", Vector_AngleVectors },
-	{NULL, NULL}
+	{ "New",					Vector_New			 },
+	{ "Construct",			Vector_Construct		 },
+	{ "RotatePointAround",	Vector_RotatePointAround },
+	{ "Perpendicular",		Vector_Perpendicular	 },
+	{ "VecToAngles",		Vector_VecToAngles		 },
+	{ "AngleVectors",		Vector_AngleVectors		 },
+	{ NULL,					NULL					 }
 };
 
 static const luaL_Reg vector_meta[] = {
-	{"__index", Vector_Index},
-	{"__newindex", Vector_NewIndex},
-	{"__add", Vector_AddOperator},
-	{"__sub", Vector_SubOperator},
-	{"__mul", Vector_DotOperator},
-	{"__unm", Vector_NegateOperator},
-	{"__gc", Vector_GC},
-	{"__tostring", Vector_ToString},
-	{"Set", Vector_Set},
-	{"Length", Vector_Length},
-	{"Normalize", Vector_Normalize},
-	{"NormalizeFast", Vector_NormalizeFast},
-	{"Add", Vector_Add},
-	{"Subtract", Vector_Subtract},
-	{"Scale", Vector_Scale},
-	{"Clear", Vector_Clear},
-	{NULL, NULL}
+	{ "__index",			Vector_Index		},
+	{ "__newindex",		Vector_NewIndex			},
+	{ "__add",			Vector_AddOperator		},
+	{ "__sub",			Vector_SubOperator		},
+	{ "__mul",			Vector_DotOperator		},
+	{ "__unm",			Vector_NegateOperator	},
+	{ "__gc",			Vector_GC				},
+	{ "__tostring",		Vector_ToString			},
+	{ "Set",				Vector_Set			},
+	{ "Length",			Vector_Length			},
+	{ "Normalize",		Vector_Normalize		},
+	{ "NormalizeFast",	Vector_NormalizeFast	},
+	{ "Add",				Vector_Add			},
+	{ "Subtract",		Vector_Subtract			},	
+	{ "Scale",			Vector_Scale			},
+	{ "Clear",			Vector_Clear			},
+	{NULL,				NULL					}
 };
 
 int Luaopen_Vector(lua_State *L) {

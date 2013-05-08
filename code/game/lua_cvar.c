@@ -104,11 +104,11 @@ static int Cvar_rpg_phaserdmg(lua_State *L) {
 }
 
 static const luaL_Reg lib_cvar[] = {
-	{"Integer", Cvar_Integer},
-	{"Value", Cvar_Value},
-	{"String", Cvar_String},
-	{"rpg_phaserdmg", Cvar_rpg_phaserdmg}, // cvar does not exist anymore ... modified function to return the correct information for convinience
-	{NULL, NULL}
+	{ "Integer",		Cvar_Integer		},
+	{ "Value",			Cvar_Value			},
+	{ "String",			Cvar_String			},
+	{ "rpg_phaserdmg",	Cvar_rpg_phaserdmg	}, // cvar does not exist anymore ... modified function to return the correct information for convinience
+	{ NULL,				NULL}
 };
 
 int Luaopen_Cvar(lua_State *L) {
