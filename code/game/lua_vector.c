@@ -9,12 +9,15 @@
 #include "lualib.h"
 
 /***
-A module implementing vectors. Documentation under work.
+A module implementing vectors.
 @module vector
 */
 
-// vector.New()
-// Allocates and returns a new vector (0|0|0).
+/***
+Create a new vector.
+@function New
+@return A new vector with x = y = z = 0.
+*/
 static int Vector_New(lua_State *L) {
 	vec_t *v;
 
@@ -25,11 +28,17 @@ static int Vector_New(lua_State *L) {
 
 	VectorClear(v);
 
-	return 1;
+	return 0;
 }
 
-// vector.Construct(float x, float y, float z)
-// Allocates and returns a new vector (x|y|z).
+/***
+Create a new vector with the given values.
+@function Construct
+@param x X value.
+@param y Y value.
+@param z Z value.
+@return A new vector with given values for x, y, and z.
+*/
 static int Vector_Construct(lua_State *L) {
 	vec_t *v;
 
@@ -42,11 +51,16 @@ static int Vector_Construct(lua_State *L) {
 	v[1] = luaL_optnumber(L, 2, 0);
 	v[2] = luaL_optnumber(L, 3, 0);
 
-	return 1;
+	return 0;
 }
 
-// vector.Set(vector v, float x, float y, float z)
-// Set the vector v to the specified values.
+/***
+Set vector to given values.
+@function Set
+@param x New x value.
+@param y New y value.
+@param z New z value.
+*/
 static int Vector_Set(lua_State *L) {
 	vec_t *v;
 
@@ -56,11 +70,13 @@ static int Vector_Set(lua_State *L) {
 	v[0] = luaL_optnumber(L, 3, 0);
 	v[0] = luaL_optnumber(L, 4, 0);
 
-	return 1;
+	return 0;
 }
 
-// vector.Clear(vector vec)
-// Clears vector v by setting it to (0|0|0).
+/***
+Clears the vector which means x = y = z = 0.
+@function Clear
+*/
 static int Vector_Clear(lua_State * L)
 {
 	vec_t          *a;
@@ -69,53 +85,74 @@ static int Vector_Clear(lua_State * L)
 
 	VectorClear(a);
 
-	return 1;
+	return 0;
 }
 
-// vector.Vector_Add(vector a, vector b, vector c)
-// Adds a and b together and stores the result in c.
+/***
+Add vector b to vector a and return the result.
+@function Add
+@param a Vector.
+@param b Vector.
+@return Result.
+*/
 static int Vector_Add(lua_State *L) {
-	vec_t	*a, *b, *c;
+	vec_t	*a, *b;
+	vec3_t	c;
 
 	a = Lua_GetVector(L, 1);
 	b = Lua_GetVector(L, 2);
-	c = Lua_GetVector(L, 3);
 
 	VectorAdd(a, b, c);
 
-	return 1;
+	Lua_PushVector(L, c);
+	return 0;
 }
 
-// vector.Vector_subtract(vector a, vector b, vector c)
-// Subtracts b from a and stores the result in c.
+/***
+Substract vector b from vector a and return the result.
+@function Subtract
+@param a Vector.
+@param b Vector.
+@return Result.
+*/
 static int Vector_Subtract(lua_State *L) {
-	vec_t	*a, *b, *c;
+	vec_t	*a, *b;
+	vec3_t	c;
 
 	a = Lua_GetVector(L, 1);
 	b = Lua_GetVector(L, 2);
-	c = Lua_GetVector(L, 3);
 
 	VectorSubtract(a, b, c);
 
-	return 1;
+	Lua_PushVector(L, c);
+	return 0;
 }
 
-// vector.Scale(vector a, float b, vector c)
-// Scales a vector by the value of b and stores the result in c.
+/***
+Scale vector a by value b and return the result.
+@function Scale.
+@param a Vector.
+@param b Scaling factor.
+@return Result.
+*/
 static int Vector_Scale(lua_State *L) {
-	vec_t *a, b, *c;
+	vec_t *a, b;
+	vec3_t c;
 
 	a = Lua_GetVector(L, 1);
 	b = luaL_checknumber(L, 2);
-	c = Lua_GetVector(L, 3);
 
 	VectorScale(a,b,c);
 
-	return 1;
+	Lua_PushVector(L, c);
+	return 0;
 }
 
-// vector.Length(vector a)
-// Returns the length of a.
+/***
+Get the length of the vector.
+@function Length
+@return Length of given vector.
+*/
 static int Vector_Length(lua_State *L) {
 	vec_t	*a;
 	vec_t	len;
@@ -125,11 +162,14 @@ static int Vector_Length(lua_State *L) {
 	len = VectorLength(a);
 	lua_pushnumber(L, len);
 
-	return 1;
+	return 0;
 }
 
-// vector.Normalize(vector a)
-// Normalizes a
+/***
+Normalize a vector.
+@function Normalize
+@return Vector length.
+*/
 static int Vector_Normalize(lua_State *L) {
 	vec_t	*a;
 	vec_t	len;
@@ -139,11 +179,14 @@ static int Vector_Normalize(lua_State *L) {
 	len = VectorNormalize(a);
 	lua_pushnumber(L, len);
 
-	return 1;
+	return 0;
 }
 
-// vector.NormalizeFast(vector vec)
-// Normalzes the vector (faster method)
+/***
+Normalize a vector (fast method).
+@function NormalizeFast
+@return Vector length.
+*/
 static int Vector_NormalizeFast(lua_State *L) {
 	vec_t *a;
 
@@ -151,15 +194,17 @@ static int Vector_NormalizeFast(lua_State *L) {
 
 	VectorNormalizeFast(a);
 
-	return 1;
+	return 0;
 }
 
-// vector.RotateAroundPoint(vector dest, vector dir, vector point, float degrees)
-// Rotates point around a given vector.
-// * dir vector around which to rotate (must be normalized)
-// * point point to be rotated
-// * degrees how many degrees to rotate the point by
-// * dest point after rotation
+/***
+Rotates point around a given vector.
+@function RotatePointAround
+@param dir Vector to rotate around (must be normalized).
+@param point Point to be rotated.
+@param degrees How many degrees to rotate.
+@param dest Point after rotation.
+*/
 static int Vector_RotatePointAround(lua_State *L) {
 	vec_t	*dst, *dir, *point;
 	vec_t	degrees;
@@ -171,13 +216,15 @@ static int Vector_RotatePointAround(lua_State *L) {
 
 	RotatePointAroundVector(dst, dir, point, degrees);
 
-	return 1;
+	return 0;
 }
 
-// vector.Perpendicular(vector dest, vector src)
-// Finds a vector perpendicular to the source vector. 
-// * src source vector 
-// * dest a vector that is perpendicular to src (the result is stored here)
+/***
+Finds a vector perpendicular to the source vector. 
+@function Perpendicular
+@param src Source vector. 
+@param dest A vector that is perpendicular to src (the result is stored here)
+*/
 static int Vector_Perpendicular(lua_State *L) {
 	vec_t	*dst, *src;
 
@@ -186,10 +233,15 @@ static int Vector_Perpendicular(lua_State *L) {
 
 	PerpendicularVector(dst, src);
 
-	return 1;
+	return 0;
 }
 
-//What does this do?
+/***
+Convert a vector to angles.
+@function VecToAngles
+@param vector Vector.
+@param angles Vector the results are stored in.
+*/
 static int Vector_VecToAngles(lua_State *L) {
 	vec_t *v, *t;
 	
@@ -198,10 +250,17 @@ static int Vector_VecToAngles(lua_State *L) {
 
 	vectoangles(v, t);
 
-	return 1;
+	return 0;
 } 
 
-//What does this do?
+/***
+Calculate forward, right, and up vectors from given angles.
+@function AngleVectors
+@param angles Angles.
+@param fwd Vector to store forward.
+@param right Vector to store right.
+@param up Vector to store up.
+*/
 static int Vector_AngleVectors(lua_State *L) {
 	vec_t *v, *fwd, *right, *up; 
 
@@ -212,7 +271,7 @@ static int Vector_AngleVectors(lua_State *L) {
 
 	AngleVectors(v, fwd, right, up);
 
-	return 1;
+	return 0;
 }
 
 static int Vector_Index(lua_State *L) {
@@ -229,7 +288,7 @@ static int Vector_Index(lua_State *L) {
 		default: lua_pushnil(L); break;
 	}
 
-	return 1;
+	return 0;
 }
 
 static int Vector_NewIndex(lua_State *L) {
@@ -318,14 +377,6 @@ static int Vector_ToString(lua_State *L) {
 static const luaL_Reg vector_ctor[] = {
 	{"New", Vector_New},
 	{"Construct", Vector_Construct},
-	{"Set", Vector_Set},
-	{"Clear", Vector_Clear},
-	{"Add", Vector_Add},
-	{"Subtract", Vector_Subtract},
-	{"Scale", Vector_Scale},
-	{"Length", Vector_Length},
-	{"Normalize", Vector_Normalize},
-	{"NormalizeFast", Vector_NormalizeFast},
 	{"RotatePointAround", Vector_RotatePointAround},
 	{"Perpendicular", Vector_Perpendicular},
 	{"VecToAngles", Vector_VecToAngles },
@@ -342,6 +393,14 @@ static const luaL_Reg vector_meta[] = {
 	{"__unm", Vector_NegateOperator},
 	{"__gc", Vector_GC},
 	{"__tostring", Vector_ToString},
+	{"Set", Vector_Set},
+	{"Length", Vector_Length},
+	{"Normalize", Vector_Normalize},
+	{"NormalizeFast", Vector_NormalizeFast},
+	{"Add", Vector_Add},
+	{"Subtract", Vector_Subtract},
+	{"Scale", Vector_Scale},
+	{"Clear", Vector_Clear},
 	{NULL, NULL}
 };
 
