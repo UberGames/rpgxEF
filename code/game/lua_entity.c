@@ -8,16 +8,17 @@ extern qboolean G_CallSpawn(gentity_t *ent);
 #ifdef G_LUA
 
 /***
-Module to access entity functions and manage enities. Documentation under work.
+Module to access entity functions and manage enities.
 @module entiy
 */
 
-// entity.MMBRefit()
-// this is just a function called from lua
-// it should be called before any other model work
-// this will loop trough all misc_model_breakables and checks their model-string against those listed here
-// if it finds a match it will apply the associated splashDamage, splashRadius and s.powerups (material of chunks) to the entity
-// this is the only failsafe way i can think of to do these kind of refit
+/***
+This is just a function called from lua it should be called before any other model work
+this will loop trough all misc_model_breakables and checks their model-string against those listed here
+if it finds a match it will apply the associated splashDamage, splashRadius and s.powerups (material of chunks) to the entity
+this is the only failsafe way i can think of to do these kind of refit
+@function MMBRefit
+*/
 static int Entity_MMBRefit(lua_State * L)
 {
 	gentity_t		*MMB;
@@ -36,10 +37,11 @@ static int Entity_MMBRefit(lua_State * L)
 		|| !Q_stricmp( arg2, "stasis1" ) || !Q_stricmp( arg2, "stasis2" ) || !Q_stricmp( arg2, "stasis3" )
 		|| !Q_stricmp( arg2, "tour/deck01" ) || !Q_stricmp( arg2, "tour/deck02" ) || !Q_stricmp( arg2, "tour/deck03" ) || !Q_stricmp( arg2, "tour/deck04" ) || !Q_stricmp( arg2, "tour/deck05" ) || !Q_stricmp( arg2, "tour/deck08" ) || !Q_stricmp( arg2, "tour/deck09" ) || !Q_stricmp( arg2, "tour/deck10" ) || !Q_stricmp( arg2, "tour/deck11" ) || !Q_stricmp( arg2, "tour/deck15" )
 		|| !Q_stricmp( arg2, "tutorial" )
-		|| !Q_stricmp( arg2, "voy1" ) || !Q_stricmp( arg2, "voy13" ) || !Q_stricmp( arg2, "voy14" ) || !Q_stricmp( arg2, "voy15" ) || !Q_stricmp( arg2, "voy16" ) || !Q_stricmp( arg2, "voy17" ) || !Q_stricmp( arg2, "voy2" ) || !Q_stricmp( arg2, "voy20" ) || !Q_stricmp( arg2, "voy3" ) || !Q_stricmp( arg2, "voy4" ) || !Q_stricmp( arg2, "voy5" ) || !Q_stricmp( arg2, "voy6" ) || !Q_stricmp( arg2, "voy7" ) || !Q_stricmp( arg2, "voy8" ) || !Q_stricmp( arg2, "voy9" ) )
-		MMB = NULL; //init MMB here to do sth pointless
-	else
-		return 1; //we are not on one of the supported maps
+		|| !Q_stricmp( arg2, "voy1" ) || !Q_stricmp( arg2, "voy13" ) || !Q_stricmp( arg2, "voy14" ) || !Q_stricmp( arg2, "voy15" ) || !Q_stricmp( arg2, "voy16" ) || !Q_stricmp( arg2, "voy17" ) || !Q_stricmp( arg2, "voy2" ) || !Q_stricmp( arg2, "voy20" ) || !Q_stricmp( arg2, "voy3" ) || !Q_stricmp( arg2, "voy4" ) || !Q_stricmp( arg2, "voy5" ) || !Q_stricmp( arg2, "voy6" ) || !Q_stricmp( arg2, "voy7" ) || !Q_stricmp( arg2, "voy8" ) || !Q_stricmp( arg2, "voy9" ) ) {
+			MMB = NULL; //init MMB here to do sth pointless
+	} else {
+		return 0; //we are not on one of the supported maps
+	}
 
 	while((MMB = G_Find(MMB, FOFS(classname), "misc_model_breakable" )) != NULL  ){//loop while you find these
 		//borg maps
@@ -76,12 +78,15 @@ static int Entity_MMBRefit(lua_State * L)
 		}else continue;//we are not looking for this kind of MMB
 	}
 
-	return 1;
+	return 0;
 }
 
 
-// entity.GetTarget(entity ent)
-// returns a target entity of ent
+/***
+Returns a target entity of ent.
+@function GetTarget
+@return Target of the entity.
+*/
 static int Entity_GetTarget(lua_State * L)
 {
 	lent_t*		lent = NULL;
@@ -107,15 +112,17 @@ static int Entity_GetTarget(lua_State * L)
 	}
 
 	Lua_PushEntity(L, t);
-
 	LUA_DEBUG("END - entity.GetTarget");
 	return 1;
 }
 
-// entity.FindBModel(integer bmodelnum)
-// Returns the entity with the brush model bmodelnumber. 
-// This is the only failsafe way to find brush entities as the 
-// entity number is different when you load a map local or join a server.
+/***
+Returns the entity with the brush model bmodelnumber. 
+This is the only failsafe way to find brush entities as the 
+entity number is different when you load a map local or join a server.
+@function FindBModel
+@param number Number of the brush model.
+*/
 static int Entity_FindBModel(lua_State *L) {
 	gentity_t*	ent = NULL;
 	int			bmodel;
@@ -138,8 +145,12 @@ static int Entity_FindBModel(lua_State *L) {
 	return 1;
 }
 
-// entity.FindNumber(integer entnum)
-// Returns the entity with the entity number entnum.
+/***
+Returns the entity with the entity number entnum.
+@function FindNumber
+@param number Entity number.
+@return Entity for the given entity number.
+*/
 static int Entity_FindNumber(lua_State * L)
 {
 	int			entnum;
@@ -161,8 +172,12 @@ static int Entity_FindNumber(lua_State * L)
 	return 1;
 }
 
-// entity.Find(string targetname)
-// Returns the first entity found that has a targetname of targetname.
+/***
+Returns the first entity found that has a targetname of targetname.
+@function Find
+@param targetname
+@return First entity found that has the given targetname.
+*/
 static int Entity_Find(lua_State * L)
 {
 	gentity_t* t = NULL;
@@ -182,16 +197,25 @@ static int Entity_Find(lua_State * L)
 	return 1;
 }
 
-// entity.FindMMB(vector origin)
-// Returns the misc_model_breakable entity that has a matching MMB->s.origin.
-// Requires vector as input.
-// You can get the s.origin ingame as an admin/developer by pointing at the MMB ingame and using the /getorigin-command.
+/***
+Returns the misc_model_breakable entity that has a matching MMB->s.origin.
+Requires vector as input.
+You can get the s.origin ingame as an admin/developer by pointing at the MMB ingame and using the /getorigin-command.
+@function FindMMB
+@param vector Origin of misc_model_breakable.
+@return Matching entity.
+*/
 static int Entity_FindMMB(lua_State * L)
 {
 	gentity_t		*t = NULL, *MMB = NULL;
 	vec_t			*vec = NULL, *origin = NULL;
 	
 	vec = Lua_GetVector(L, 2);
+
+	if(vec == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
 
 	while((MMB = G_Find(MMB, FOFS(classname), "misc_model_breakable")) != NULL){
 		origin = MMB->s.origin;
@@ -211,9 +235,12 @@ static int Entity_FindMMB(lua_State * L)
 	return 1;
 }
 
-// entity.Use(entity ent)
-// Uses ent.
-// returns succes or fail
+/***
+Uses the given entity.
+@function Use
+@param ent Entity to use.
+@return Success or failure.
+*/
 static int Entity_Use(lua_State * L)
 {
 	lent_t* lent = NULL;

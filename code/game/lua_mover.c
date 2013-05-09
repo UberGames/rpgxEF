@@ -12,6 +12,7 @@ A module for entity movement, especially for mover entities such as doors.
 Stops translational movement on ent immediately.
 @function Halt
 @param ent Entity or entity number.
+@return Success or failure.
 */
 static int Mover_Halt(lua_State *L) {
 	lent_t		*lent;
@@ -20,12 +21,21 @@ static int Mover_Halt(lua_State *L) {
 	
 	if(lua_isnumber(L, 1)) {
 		id =  luaL_checkint(L, 1);
-		if(id < 0 || id > MAX_GENTITIES - 1) return 1;
+		if(id < 0 || id > MAX_GENTITIES - 1) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = &g_entities[id];
-		if(!ent) return 1;
+		if(ent == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 	} else {
 		lent = Lua_GetEntity(L, 1);
-		if(!lent || !lent->e) return 1;
+		if(lent == NULL || lent->e == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = lent->e;
 	}
 
@@ -39,13 +49,15 @@ static int Mover_Halt(lua_State *L) {
 	ent->nextTrain = NULL;
 	trap_LinkEntity(ent);
 	LUA_DEBUG("Mover_Halt - return: halted ent");
-	return 0;
+	lua_pushboolean(L, qtrue);
+	return 1;
 }
 
 /***
 Stops rotational movement on ent immediately.
 @function HaltAngles
 @param ent Entity or entity number.
+@return Success or failure.
 */
 static int Mover_HaltAngles(lua_State * L)
 {
@@ -55,12 +67,21 @@ static int Mover_HaltAngles(lua_State * L)
 
 	if(lua_isnumber(L, 1)) {
 		id = luaL_checkint(L, 1);
-		if(id < 0 || id > MAX_GENTITIES - 1) return 1;
+		if(id < 0 || id > MAX_GENTITIES - 1) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = &g_entities[id];
-		if(!ent) return 1;
+		if(ent) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 	} else {
 		lent = Lua_GetEntity(L, 1);
-		if(!lent || !lent->e) return 1;
+		if(lent == NULL || lent->e == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = lent->e;
 	}
 
@@ -73,7 +94,9 @@ static int Mover_HaltAngles(lua_State * L)
 		trap_LinkEntity(ent);
 		LUA_DEBUG("Mover_HaltAngles - return: halted ent");
 	}
-	return 0;
+
+	lua_pushboolean(L, qtrue);
+	return 1;
 }
 
 extern void Reached_Train(gentity_t *ent);
@@ -86,6 +109,7 @@ Moves an entity like a func_train entity. Targets have to be path_corner entitie
 @param mover Entity to move.
 @param target path_corner entity to move to.
 @param speed Speed to move with to the first path_corner.
+@return Success or failure.
  */
 static int Mover_AsTrain(lua_State * L)
 {
@@ -100,31 +124,50 @@ static int Mover_AsTrain(lua_State * L)
 
 	if(lua_isnumber(L, 1)) {
 		id = luaL_checkint(L, 1);
-		if(id < 0 || id > MAX_GENTITIES - 1) return 1;
+		if(id < 0 || id > MAX_GENTITIES - 1) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = &g_entities[id];
-		if(!ent) return 1;
+		if(ent == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 	} else {
 		lent = Lua_GetEntity(L, 1);
-		if(!lent || !lent->e) return 1;
+		if(lent == NULL || lent->e == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = lent->e;
 	}
 	if(luaL_checkint(L, 2)) {
 		tid = luaL_checkint(L, 2);
-		if(tid < 0 || tid > MAX_GENTITIES - 1) return 1;
+		if(tid < 0 || tid > MAX_GENTITIES - 1) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		targ = &g_entities[tid];
-		if(!targ) return 1;
+		if(targ == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 	} else {
 		tlent = Lua_GetEntity(L, 2);
-		if(!tlent || tlent->e == NULL) return 1;
+		if(!tlent || tlent->e == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		targ = tlent->e;
 	}
 
 	LUA_DEBUG("Mover_AsTrain - start: ent=%d target=%d speed=%f", ent->s.number, targ->s.number, speed);
 
-	if(!ent || !targ)
+	if(ent == NULL || targ == NULL)
 	{
 		LUA_DEBUG("Mover_AsTrain - return: ent or/and target missing");
-		return 0;
+		lua_pushboolean(L, qfalse);
+		return 1;
 	}
 	if(speed < 1)
 	{
@@ -157,7 +200,8 @@ static int Mover_AsTrain(lua_State * L)
 	{
 		G_SetOrigin(ent, ent->pos2);
 		LUA_DEBUG("Mover_AsTrain - return: snapped to target, length too small length=%f", length);
-		return 0;
+		lua_pushboolean(L, qtrue);
+		return 1;
 	}
 
 	ent->s.pos.trDuration = length * 1000 / speed;
@@ -167,7 +211,8 @@ static int Mover_AsTrain(lua_State * L)
 	SetMoverState(ent, MOVER_1TO2, level.time);
 
 	LUA_DEBUG("Mover_AsTrain - return: moving to target, length=%f duration=%d", length, ent->s.pos.trDuration);
-	return 0;
+	lua_pushboolean(L, qtrue);
+	return 1;
 }
 
 /***
@@ -177,12 +222,14 @@ Sets the angles of ent to the specified values. Values are sorted Pitch (around 
 @param y Pitch.
 @param z Yaw.
 @param x Roll.
+@return Success or failure.
 */
 /***
 Sets the angles of ent to the specified value.
 @function SetAngles
 @param ent Entity or entity number.
 @param agles Vector containing the new angles.
+@return Success or failure.
 */
 static int Mover_SetAngles(lua_State * L)
 {
@@ -194,12 +241,21 @@ static int Mover_SetAngles(lua_State * L)
 
 	if(lua_isnumber(L, 1)) {
 		id = luaL_checkint(L, 1);
-		if(id < 0 || id > MAX_GENTITIES - 1) return 1;
+		if(id < 0 || id > MAX_GENTITIES - 1) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = &g_entities[id];
-		if(!ent) return 1;
+		if(ent == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 	} else {
 		lent = Lua_GetEntity(L, 1);
-		if(!lent || !lent->e) return 1;
+		if(lent == NULL || lent->e == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = lent->e;
 	}
 
@@ -222,7 +278,8 @@ static int Mover_SetAngles(lua_State * L)
 		trap_LinkEntity(ent);
 		LUA_DEBUG("Mover_SetAngles - return: moved");
 	}
-	return 0;
+	lua_pushboolean(L, qtrue);
+	return 1;
 }
 
 /***
@@ -232,11 +289,13 @@ Sets the angles of ent to the specified values. Values are sorted Pitch (around 
 @param y Pitch.
 @param z Yaw.
 @param x Roll.
+@return Success or failure.
 */
 /***
 Sets the angles of ent to the specified value.
 @function SetAngles2
 @param vec Vector containing the new angles.
+@return Success or failure.
 */
 static int Mover_SetAngles2(lua_State * L)
 {
@@ -248,12 +307,21 @@ static int Mover_SetAngles2(lua_State * L)
 
 	if(lua_isnumber(L, 1)) {
 		id = luaL_checkint(L, 1);
-		if(id < 0 || id > MAX_GENTITIES - 1) return 1;
+		if(id < 0 || id > MAX_GENTITIES - 1) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = &g_entities[id];
-		if(!ent) return 1;
+		if(ent == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 	} else {
 		lent = Lua_GetEntity(L, 1);
-		if(!lent || !lent->e) return 1;
+		if(lent == NULL || lent->e == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = lent->e;
 	}
 
@@ -275,7 +343,8 @@ static int Mover_SetAngles2(lua_State * L)
 		trap_LinkEntity(ent);
 		LUA_DEBUG("Mover_SetAngles2 - return: moved");
 	}
-	return 0;
+	lua_pushboolean(L, qtrue);
+	return 1;
 }
 
 /***
@@ -285,12 +354,14 @@ Set the position of ent to the specified value.
 @param x X coordinates.
 @param y Y coordinates.
 @param z Z coordinates.
+@return Success or failure.
 */
 /***
 Set the position of ent to the specified value.
 @function SetPosition
 @param ent Entity or entity number.
 @param vec Vector containing the new position.
+@return Success or failure.
 */
 static int Mover_SetPosition(lua_State * L)
 {
@@ -302,12 +373,22 @@ static int Mover_SetPosition(lua_State * L)
 
 	if(lua_isnumber(L, 1)) {
 		id = luaL_checkint(L, 1);
-		if(id < 0 || id > MAX_GENTITIES - 1) return 1;
+		if(id < 0 || id > MAX_GENTITIES - 1) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = &g_entities[id];
-		if(!ent) return 1;
+		if(ent == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 	} else {
 		lent = Lua_GetEntity(L, 1);
-		if(!lent || !lent->e) return 1;
+		if(lent == NULL || lent->e == NULL)
+		{
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = lent->e;
 	}
 
@@ -329,7 +410,8 @@ static int Mover_SetPosition(lua_State * L)
 		trap_LinkEntity(ent);
 		LUA_DEBUG("Mover_SetPosition - return: moved");
 	}
-	return 0;
+	lua_pushboolean(L, qtrue);
+	return 1;
 }
 
 static void SetTrajectoryLinear(trajectory_t * tr, const float speed, const vec3_t endPosition)
@@ -354,6 +436,7 @@ Rotates ent with a given speed (in degrees per second) to the specified values. 
 @param y Pitch.
 @param z Yaw.
 @param x Roll.
+@return Succes or failure.
 */
 /***
 Rotates ent with a given speed (in degrees per second) to the specified values. 
@@ -361,6 +444,7 @@ Rotates ent with a given speed (in degrees per second) to the specified values.
 @param ent Entity or entity number.
 @param speed Speed to rotate with.
 @param vec Vector conataining target angles.
+@return Success or failure.
 */
 static int Mover_ToAngles(lua_State * L)
 {
@@ -373,12 +457,21 @@ static int Mover_ToAngles(lua_State * L)
 
 	if(lua_isnumber(L, 1)) {
 		id = luaL_checkint(L, 1);
-		if(id < 0 || id > MAX_GENTITIES - 1) return 1;
+		if(id < 0 || id > MAX_GENTITIES - 1) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = &g_entities[id];
-		if(!ent) return 1;
+		if(ent == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 	} else {
 		lent = Lua_GetEntity(L, 1);
-		if(!lent || !lent->e) return 1;
+		if(lent == NULL || lent->e == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = lent->e;
 	}
 
@@ -405,7 +498,8 @@ static int Mover_ToAngles(lua_State * L)
 		trap_LinkEntity(ent);
 		LUA_DEBUG("Mover_ToAngles - return: moving");
 	}
-	return 0;
+	lua_pushboolean(L, qtrue);
+	return 1;
 }
 
 /***
@@ -416,6 +510,7 @@ Moves ent with a given speed to the specified values. Can also be stowed in a ve
 @param x X coordinates.
 @param y Y coordinates.
 @param z Z coordinates.
+@return Success or failure.
 */
 static int Mover_ToPosition(lua_State * L)
 {
@@ -428,12 +523,21 @@ static int Mover_ToPosition(lua_State * L)
 
 	if(lua_isnumber(L, 1)) {
 		id = luaL_checkint(L, 1);
-		if(id < 0 ||id > MAX_GENTITIES - 1) return 1;
+		if(id < 0 ||id > MAX_GENTITIES - 1) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = &g_entities[id];
-		if(!ent) return 1;
+		if(ent == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 	} else {
 		lent = Lua_GetEntity(L,1);
-		if(!lent || !lent->e) return 1;
+		if(lent == NULL || lent->e == NULL) {
+			lua_pushboolean(L, qfalse);
+			return 1;
+		}
 		ent = lent->e;
 	}
 
@@ -461,7 +565,8 @@ static int Mover_ToPosition(lua_State * L)
 		trap_LinkEntity(ent);
 		LUA_DEBUG("Mover_ToPosition - return: moving");
 	}
-	return 0;
+	lua_pushboolean(L, qtrue);
+	return 1;
 }
 
 static const luaL_Reg lib_mover[] = {
