@@ -5,14 +5,17 @@
 #ifdef G_LUA
 
 /***
-A documentation to play sounds. Documentation under work.
+A documentation to play sounds.
 @module sound
 */
 
-// sound.PlaySound(entity ent, string sound, integer chan)
-// * ent the entity the sound will be played on
-// * sound the sound file which will be played
-// * chan the sound channel the sound will be played on
+/***
+Play a sound on a given entity.
+@function PlaySound
+@param ent The entity the sound will be played on
+@param sound The sound file which will be played
+@param chan The sound channel the sound will be played on
+*/
 static int Sound_PlaySound(lua_State *L) {
 	char	*sound;
 	int		snd;

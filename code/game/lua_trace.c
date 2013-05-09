@@ -37,14 +37,16 @@ static int Trace_ToString(lua_State * L)
 	return 1;
 }
 
-// trace.DoTrace(vector start, vector mins, vector maxs, vector end, float passEnt, float contents)
-// Does a trace.
-// * start start-point of trace
-// * mins minimal distance of trace (nil if unused)
-// * maxs maximal distance of trace (nil if unused)
-// * end end-point of trace
-// * passEnt Number of ents to pass
-// * contents ????????
+/***
+Does a trace.
+@function DoTrace
+@param start start-point of the trace.
+@param mins minimal distance of trace (nil if unused)
+@param maxs maximal distance of trace (nil if unused)
+@param end end-point of trace
+@param passEnt Number of ents to pass
+@param contents Set content flags.
+*/
 static int Trace_DoTrace(lua_State *L) {
 	trace_t *tr;
 	vec_t *start, *end, *mins = NULL, *maxs = NULL;
@@ -73,8 +75,11 @@ static int Trace_DoTrace(lua_State *L) {
 	return 1;
 }
 
-// trace.FreeTrace(trace tr)
-// Ends trace-process for tr.
+/***
+Frees all memory that was allocated for this trace.
+@function FreeTrace
+@param trace The trace.
+*/
 static int Trace_FreeTrace(lua_State *L) {
 	ltrace_t *tr;
 
@@ -85,6 +90,11 @@ static int Trace_FreeTrace(lua_State *L) {
 	return 1;
 }
 
+/***
+Check whether the trace has gone only trough solid content (e.g. only inside a wall).
+@function GetAllsolid
+@return Whether trace was all solid.
+*/
 static int Trace_GetAllsolid(lua_State *L) {
 	ltrace_t *tr;
 
@@ -94,6 +104,11 @@ static int Trace_GetAllsolid(lua_State *L) {
 	return 1;
 }
 
+/***
+Check whether the trace has started in solid contents.
+@function GetStartsolid
+@return Whether trace started solid.
+*/
 static int Trace_GetStartsolid(lua_State *L) {
 	ltrace_t *tr;
 
@@ -103,6 +118,11 @@ static int Trace_GetStartsolid(lua_State *L) {
 	return 1;
 }
 
+/***
+Get fraction of trace.
+@function GetFraction
+@return Fraction.
+*/
 static int Trace_GetFraction(lua_State *L) {
 	ltrace_t *tr;
 
@@ -112,6 +132,11 @@ static int Trace_GetFraction(lua_State *L) {
 	return 1;
 }
 
+/***
+Get end position of the trace.
+@function GetEndpos
+@return End position of the trace.
+*/
 static int Trace_GetEndpos(lua_State *L) {
 	ltrace_t *tr;
 
@@ -121,6 +146,11 @@ static int Trace_GetEndpos(lua_State *L) {
 	return 1;
 }
 
+/***
+Get the surface flags for the face the trace hit.
+@function GetSurfaceFlags
+@return Surface flags.
+*/
 static int Trace_GetSurfaceFlags(lua_State *L) {
 	ltrace_t *tr;
 
@@ -130,6 +160,11 @@ static int Trace_GetSurfaceFlags(lua_State *L) {
 	return 1;
 }
 
+/***
+Get content flags for the trace.
+@function GetContents
+@return Content flags.
+*/
 static int Trace_GetContents(lua_State *L) {
 	ltrace_t *tr;
 
@@ -139,6 +174,11 @@ static int Trace_GetContents(lua_State *L) {
 	return 1;
 }
 
+/***
+Get entity number for entity the trace hit.
+@function GetEntityNum
+@return Entity number.
+*/
 static int Trace_GetEntityNum(lua_State *L) {
 	ltrace_t *tr;
 
@@ -148,6 +188,11 @@ static int Trace_GetEntityNum(lua_State *L) {
 	return 1;
 }
 
+/***
+Get entity the trace hit.
+@function GetEntity
+@return entity the trace hit.
+*/
 static int Trace_GetEntity(lua_State *L) {
 	ltrace_t *tr;
 	gentity_t *ent;

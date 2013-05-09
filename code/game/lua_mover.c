@@ -4,12 +4,15 @@
 
 #ifdef G_LUA
 /***
-A module for entity movement, especially for mover entities such as doors. Documentation under work.
+A module for entity movement, especially for mover entities such as doors.
 @module mover
 */
 
-// mover.Halt(entity ent)
-// Stops translational movement on ent immediately.
+/***
+Stops translational movement on ent immediately.
+@function Halt
+@param ent Entity or entity number.
+*/
 static int Mover_Halt(lua_State *L) {
 	lent_t		*lent;
 	gentity_t	*ent = NULL;
@@ -39,8 +42,11 @@ static int Mover_Halt(lua_State *L) {
 	return 0;
 }
 
-// mover.HaltAngles(entity ent)
-// Stops rotational movement on ent immediately.
+/***
+Stops rotational movement on ent immediately.
+@function HaltAngles
+@param ent Entity or entity number.
+*/
 static int Mover_HaltAngles(lua_State * L)
 {
 	lent_t			*lent;
@@ -74,19 +80,13 @@ extern void Reached_Train(gentity_t *ent);
 extern void Think_SetupTrainTargets(gentity_t *ent);
 extern void SetMoverState(gentity_t *ent, moverState_t moverState, int time);
 
-/* This is an example for a parseable comment that describes a lua function. */
-/*
- * \function mover.AsTrain(entity mover, entity target, float speed)
- * \param entity mover entity to move.
- * \param entity target path_corner entity to move to.
- * \param float speed Speed to move with to the first path_corner.
- * \desc Moves an entity like a func_train entity. Targets have to be path_corner entities.
+/***
+Moves an entity like a func_train entity. Targets have to be path_corner entities.
+@function AsTrain
+@param mover Entity to move.
+@param target path_corner entity to move to.
+@param speed Speed to move with to the first path_corner.
  */
-// mover.AsTrain(entity mover, entity target, float speed)
-// Moves an entity like a func_train entity. Targets have to be path_corner entities.
-// * ent the entity to move
-// * target the first path_corner to move to
-// * speed speed to move to first path_corner with
 static int Mover_AsTrain(lua_State * L)
 {
 	lent_t			*lent, *tlent;
@@ -170,11 +170,20 @@ static int Mover_AsTrain(lua_State * L)
 	return 0;
 }
 
-// mover.SetAngles(entity ent, vector angles) or 
-// mover.SetAngles(entity ent, float y, float z, float x)
-// Sets the angles of ent to the specified value(s). 
-// Values are sorted Pitch (around Y-Axis), Yaw (around Z-Axis) and 
-// Roll (around X-Axis). These can also be stowed in a vector angles.
+/***
+Sets the angles of ent to the specified values. Values are sorted Pitch (around Y-Axis), Yaw (around Z-Axis) and Roll (around X-Axis). These can also be stowed in a vector angles.
+@function SetAngles
+@param ent Entity or entity number.
+@param y Pitch.
+@param z Yaw.
+@param x Roll.
+*/
+/***
+Sets the angles of ent to the specified value.
+@function SetAngles
+@param ent Entity or entity number.
+@param agles Vector containing the new angles.
+*/
 static int Mover_SetAngles(lua_State * L)
 {
 	vec3_t          newAngles;
@@ -216,11 +225,19 @@ static int Mover_SetAngles(lua_State * L)
 	return 0;
 }
 
-// mover.SetAngles2(entity ent, vector angles) or 
-// mover.SetAngles2(entity ent, float y, float z, float x)
-// Sets the angles of ent to the specified value(s). 
-// Values are sorted Pitch (around Y-Axis), Yaw (around Z-Axis) and 
-// Roll (around X-Axis). These can also be stowed in a vector angles.
+/***
+Sets the angles of ent to the specified values. Values are sorted Pitch (around Y-Axis), Yaw (around Z-Axis) and Roll (around X-Axis). These can also be stowed in a vector angles.
+@function SetAngles2
+@param ent Entity or entity number.
+@param y Pitch.
+@param z Yaw.
+@param x Roll.
+*/
+/***
+Sets the angles of ent to the specified value.
+@function SetAngles2
+@param vec Vector containing the new angles.
+*/
 static int Mover_SetAngles2(lua_State * L)
 {
 	vec3_t          newAngles;
@@ -261,9 +278,20 @@ static int Mover_SetAngles2(lua_State * L)
 	return 0;
 }
 
-// mover.SetPosition(entity ent, vector pos) or 
-// mover.SetPosition(entity ent, float x, float y, float z)
-// Set the position of ent to the specified value(s). Can also be stowed in a vector pos.
+/***
+Set the position of ent to the specified value.
+@function SetPosition
+@param ent Entity or entity number.
+@param x X coordinates.
+@param y Y coordinates.
+@param z Z coordinates.
+*/
+/***
+Set the position of ent to the specified value.
+@function SetPosition
+@param ent Entity or entity number.
+@param vec Vector containing the new position.
+*/
 static int Mover_SetPosition(lua_State * L)
 {
 	vec3_t          newOrigin;
@@ -318,11 +346,22 @@ static void SetTrajectoryLinear(trajectory_t * tr, const float speed, const vec3
 	tr->trType = TR_LINEAR_STOP;
 }
 
-// mover.ToAngles(entity ent, float speed, vector angles) or 
-// mover.ToAngles(entity ent, float speed, float y, float z, float x)
-// Rotates ent with speed speed (in degrees per second) to the specified value(s). 
-// Values are sorted Pitch (around Y-Axis), Yaw (around Z-Axis) and 
-// Roll (around X-Axis). These can also be stowed in a vector angles.
+/***
+Rotates ent with a given speed (in degrees per second) to the specified values. Values are sorted Pitch (around Y-Axis), Yaw (around Z-Axis) and Roll (around X-Axis). These can also be stowed in a vector angles.
+@function ToAngles
+@param ent Entity or entity number.
+@param speed Speed to rotate with.
+@param y Pitch.
+@param z Yaw.
+@param x Roll.
+*/
+/***
+Rotates ent with a given speed (in degrees per second) to the specified values. 
+@function ToAngles
+@param ent Entity or entity number.
+@param speed Speed to rotate with.
+@param vec Vector conataining target angles.
+*/
 static int Mover_ToAngles(lua_State * L)
 {
 	vec3_t          newAngles;
@@ -369,9 +408,15 @@ static int Mover_ToAngles(lua_State * L)
 	return 0;
 }
 
-// mover.ToPosition(entity ent, vector pos) or 
-// mover.ToPosition(entity ent, float x, float y, float z)
-// Moves ent with speed speed to the specified value(s). Can also be stowed in a vector pos.
+/***
+Moves ent with a given speed to the specified values. Can also be stowed in a vector pos.
+@function ToPosition
+@param ent Entity or entity number.
+@param speed Speed to move with.
+@param x X coordinates.
+@param y Y coordinates.
+@param z Z coordinates.
+*/
 static int Mover_ToPosition(lua_State * L)
 {
 	vec3_t          newOrigin;
