@@ -266,9 +266,12 @@ static int Entity_Use(lua_State * L)
 	return 1;
 }
 
-// entity.Teleport(entity client, entity target)
-// Teleports client to target's position
-// returns success or fail
+/***
+Teleports client to target's position
+@function Teleport
+@param target Target entity to teleport to.
+@return Success or failure.
+*/
 static int Entity_Teleport(lua_State * L)
 {
 	lent_t* lent = NULL;;
@@ -304,8 +307,11 @@ static int Entity_Teleport(lua_State * L)
 }
 
 
-// entity.IsRocket(entity ent)
-// Checks if an entity is a rocket.
+/***
+Checks if an entity is a rocket.
+@function IsRocket
+@return True if entity is a rocket else false.
+*/
 static int Entity_IsRocket(lua_State * L)
 {
 	lent_t*		lent = NULL;
@@ -326,8 +332,11 @@ static int Entity_IsRocket(lua_State * L)
 	return 1;
 }
 
-// entity.IsGrenade(entity ent)
-// Checks if an entity is a grenade.
+/***
+Checks if an entity is a grenade.
+@function IsGrenade
+@return true if entity is a grenade else false.
+*/
 static int Entity_IsGrenade(lua_State * L)
 {
 	lent_t*		lent = NULL;
@@ -348,9 +357,11 @@ static int Entity_IsGrenade(lua_State * L)
 	return 1;
 }
 
-// entity.Spawn()
-// Tries to spawn a new entity and returns it. 
-// If no new entity can be spawned nil is returned.
+/***
+Tries to spawn a new entity and returns it. If no new entity can be spawned nil is returned.
+@function Spawn
+@return New entity or nil if failure.
+*/
 static int Entity_Spawn(lua_State * L)
 {
 	gentity_t* ent = NULL;
@@ -366,8 +377,11 @@ static int Entity_Spawn(lua_State * L)
 	return 1;
 }
 
-// entity.GetNumber(entity ent)
-// returns the entities index number
+/***
+Returns the entities index number.
+@function GetNumber
+@return Index number for entity.
+*/
 static int Entity_GetNumber(lua_State * L)
 {
 	lent_t* lent = NULL;
@@ -382,8 +396,11 @@ static int Entity_GetNumber(lua_State * L)
 	return 1;
 }
 
-// entity.IsClient(entity ent)
-// Checks if an entity is a client
+/***
+Checks if an entity is a client
+@function IsClient
+@return true if entity is a client else return false.
+*/
 static int Entity_IsClient(lua_State * L)
 {
 	lent_t* lent = NULL;
@@ -399,15 +416,18 @@ static int Entity_IsClient(lua_State * L)
 	return 1;
 }
 
-// entity.GetClientName(entity ent)
-// Returns the display name of a client
+/***
+Returns the display name of a client.
+@function GetClientName
+@return Display name of a client or nil if entity is not a client.
+*/
 static int Entity_GetClientName(lua_State * L)
 {
 	lent_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
 
-	if(lent == NULL || lent->e == NULL || lent->e->classname == NULL) {
+	if(lent == NULL || lent->e == NULL || lent->e->classname == NULL || lent->e->client == NULL) {
 		lua_pushnil(L);
 		return 1;
 	}
@@ -429,11 +449,13 @@ static int Entity_Print(lua_State * L)
 
 	if(lent == NULL || lent->e == NULL) {
 		LUA_DEBUG("ERROR - entity.Print - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
 	if(lent->e->client == NULL) {
 		LUA_DEBUG("ERROR - entity.Print - entity is not a client");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
@@ -451,6 +473,7 @@ static int Entity_Print(lua_State * L)
 
 		if(s == NULL) {
 			LUA_DEBUG("ERROR - entity.Print - string NULL");
+			lua_pushboolean(L, qfalse);
 			return 1;
 		}
 
@@ -461,6 +484,7 @@ static int Entity_Print(lua_State * L)
 
 	trap_SendServerCommand(lent->e - g_entities, va("print \"%s\n\"", buf));
 	LUA_DEBUG("END - entity.Print");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
@@ -477,11 +501,13 @@ static int Entity_CenterPrint(lua_State * L)
 
 	if(lent == NULL || lent->e == NULL) {
 		LUA_DEBUG("ERROR - entity.CenterPrint - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
 	if(lent->e->client == NULL) {
 		LUA_DEBUG("ERROR - entity.CenterPrint - entity is not a client");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
@@ -499,6 +525,7 @@ static int Entity_CenterPrint(lua_State * L)
 
 		if(s == NULL) {
 			LUA_DEBUG("ERROR - entity.CenterPrint - string NULL");
+			lua_pushboolean(L, qfalse);
 			return 1;
 		}
 
@@ -509,12 +536,18 @@ static int Entity_CenterPrint(lua_State * L)
 
 	trap_SendServerCommand(lent->e - g_entities, va("cp \"" S_COLOR_WHITE "%s\n\"", buf));
 	LUA_DEBUG("END - entity.CenterPrint");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
 extern qboolean G_ParseField(const char *key, const char *value, gentity_t *ent);
-// entity.SetKeyValue(entity ent, string key, string value)
-// Sets a key of an entity to a value
+/***
+Sets a key of an entity to a value.
+@function SetKeyValue
+@param key Key to set.
+@param value Value to set.
+@return Success or failure.
+*/
 static int Entity_SetKeyValue(lua_State * L) {
 	lent_t* lent = NULL;
 	char*	key = NULL;
@@ -528,6 +561,7 @@ static int Entity_SetKeyValue(lua_State * L) {
 
 	if(lent == NULL || lent->e == NULL) {
 		LUA_DEBUG("ERROR - entity.SetKeyValue - entity NULL");
+		lua_pushboolean(L, qfalse);
 		return 1;
 	}
 
@@ -545,11 +579,15 @@ static int Entity_SetKeyValue(lua_State * L) {
 
 	lua_pushboolean(L, G_ParseField(key, value, lent->e));
 	LUA_DEBUG("END - entity.SetKeyValue");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
-// entity.GetClassname(entity ent)
-// Returns the classname of an entity
+/***
+Returns the classname of an entity.
+@function GetClassName
+@return Classname of the entity (or nil).
+*/
 static int Entity_GetClassName(lua_State * L)
 {
 	lent_t* lent = NULL;
@@ -569,9 +607,11 @@ static int Entity_GetClassName(lua_State * L)
 	return 1;
 }
 
-// entity.SetClassname(entity ent, string name)
-// Sets the Classname of an entity to name
-// Returns success or fail
+/***
+Sets the Classname of an entity to name
+@param name New classname.
+@return Success or failure.
+*/
 static int Entity_SetClassName(lua_State * L)
 {
 	lent_t* lent = NULL;
@@ -591,8 +631,11 @@ static int Entity_SetClassName(lua_State * L)
 	return 1;
 }
 
-// entity.GetTargetname(entity ent)
-// Returns the targetname of an entity
+/***
+Returns the targetname of an entity.
+@function GetTargetName
+@return The targetname of an entity.
+*/
 static int Entity_GetTargetName(lua_State * L)
 {
 	lent_t* lent = NULL;
@@ -611,9 +654,12 @@ static int Entity_GetTargetName(lua_State * L)
 	return 1;
 }
 
-// entity.Rotate(entity ent, vector dir)
-// Rotates an entity in the specified directions
-// Returns success or fail
+/***
+Rotates an entity in the specified directions.
+@function Rotate
+@param dir Directions.
+@return Success or failure.
+*/
 static int Entity_Rotate(lua_State * L)
 {
 	lent_t*	lent = NULL;
@@ -652,8 +698,11 @@ static int Entity_GC(lua_State * L)
 	return 0;
 }
 
-// entity.ToString(entity)
-// Prints an entity as string
+/***
+Prints an entity as string also return said string.
+@function ToString
+@return Entity string.
+*/
 static int Entity_ToString(lua_State * L)
 {
 	lent_t*		lent = NULL;
@@ -684,8 +733,13 @@ static void ent_delay(gentity_t *ent) {
 	G_CallSpawn(ent);
 }
 
-// entity.DelayedCallSpawn(entity ent, integer delay)
-// Calls the game logic spawn function for the class of ent after a delay 	of delay milliseconds.
+/***
+Calls the game logic spawn function for the class of ent after a given delay in milliseconds.
+@function DelayedCallSpawn
+@param ent Entity.
+@param delay Delay in milliseconds.
+@return Success or failure.
+*/
 static int Entity_DelayedCallSpawn(lua_State *L) {
 	lent_t*	lent = NULL;
 	int		delay;
@@ -719,8 +773,12 @@ static int Entity_DelayedCallSpawn(lua_State *L) {
 	return 1;
 }
 
-// entity.CallSpawn(entity ent)
-// Calls the game logic spawn function for the class of ent.
+/***
+Calls the game logic spawn function for the class of ent.
+@function CallSpawn
+@param ent Entity.
+@return Success or failure.
+*/
 static int Entity_CallSpawn(lua_State *L) {
 	lent_t* lent = NULL;
 	qboolean r = qfalse;
@@ -751,8 +809,13 @@ static int Entity_CallSpawn(lua_State *L) {
 	return 1;
 }
 
-// entity.RemoveUnnamedSpawns()
-// Removes all spawn points from the map, that don't have a targetname.
+/***
+Removes all spawn points from the map, that don't have a targetname. 
+Note that every map has to have at least one spawnpoint.
+If this command removes all spawn points you'll have to spawn at least one new spawn point.
+@function RemoveUnnamedSpawns
+@return Count of removed spawn points.
+*/
 extern field_t fields[];
 static int Entity_RemoveUnnamedSpawns(lua_State *L) {
 	gentity_t *ent;
@@ -776,8 +839,13 @@ static int Entity_RemoveUnnamedSpawns(lua_State *L) {
 	return 1;
 }
 
-// entity.RemoveSpawns()
-// Removes all spawn points from the map.
+/***
+Removes all spawn points from the map.
+Note that every map has to have at least one spawnpoint.
+If this command removes all spawn points you'll have to spawn at least one new spawn point.
+@function RemoveSpawns
+@return Count of removed spawn points.
+*/
 static int Entity_RemoveSpawns(lua_State *L) {
 	gentity_t *ent;
 	int cnt = 0, i;
@@ -799,8 +867,11 @@ static int Entity_RemoveSpawns(lua_State *L) {
 	return 1;
 }
 
-// entity.RemoveType(string classname)
-// Removes all entities of type classname from the map.
+/***
+Removes all entities with the given classname from the map.
+@function RemoveType
+@return Count of removed entities (-1 indicates an error).
+*/
 static int Entity_RemoveType(lua_State *L) {
 	int i, cnt = 0;
 	char *classname;
@@ -826,8 +897,12 @@ static int Entity_RemoveType(lua_State *L) {
 	return 1;
 }
 
-// entity.Remove(entity ent)
-// Removes an entity if it is not protected
+/***
+Removes an entity if it is not protected.
+@function Remove
+@param ent Entity.
+@return Success or failure.
+*/
 static int Entity_Remove(lua_State *L) {
 	lent_t *lent;
 
@@ -861,15 +936,22 @@ static int Entity_Remove(lua_State *L) {
 	return 1;
 }
 
-// entity.SetupTrigger(entity ent, float x, float y, float z) or 
-// entity.SetupTrigger(entity ent, vector size)
-// Does some setup for entities spawned by script that are to be used as trigger.
-// * ent the entity
-// * x length along the X-Axis
-// * y length along the Y-Axis
-// * z length along the Z-axis
-// * Can also be stowed in a vector size
-// Returns succcess or fail
+/***
+Does some setup for entities spawned by script that are to be used as trigger.
+@function SetupTrigger
+@param ent Entity.
+@param x Length along the X-Axis.
+@param y Length along the Y-Axis.
+@param z Length along the Z-axis.
+@return Succcess or failure.
+*/
+/***
+Does some setup for entities spawned by script that are to be used as trigger.
+@function SetupTrigger
+@param ent Entity.
+@param vec Vector containing sizing information.
+@return Succcess or failure.
+*/
 static int Entity_SetupTrigger(lua_State *L) {
 	lent_t *lent;
 	gentity_t *e;
@@ -906,11 +988,15 @@ static int Entity_SetupTrigger(lua_State *L) {
 	e->tmpEntity = qtrue;
 
 	LUA_DEBUG("END - entity.SetupTrigger");
+	lua_pushboolean(L, qtrue);
 	return 1;
 }
 
-// entity.GetOrigin(entity ent)
-// Returns the origin of an entity as vector
+/***
+Returns the origin of an entity as vector.
+@function GetOrigin
+@return Origin (or nil on failure).
+*/
 static int Entity_GetOrigin(lua_State *L) {
 	lent_t *lent;
 	vec3_t	origin;
@@ -935,9 +1021,11 @@ static int Entity_GetOrigin(lua_State *L) {
 	return 1;
 }
 
-// ent.Lock(entity ent)
-// Looks the entity ent. Works with anything that can be locked (doors, turbolifts, usables, ...).
-// Returns success or fail
+/***
+Looks the entity ent. Works with anything that can be locked (doors, turbolifts, usables, ...).
+@function Lock
+@return Success or failure.
+*/
 static int Entity_Lock(lua_State *L) {
 	lent_t *lent;
 	gentity_t *ent;
@@ -983,9 +1071,11 @@ static int Entity_Lock(lua_State *L) {
 	return 1;
 }
 
-// ent.Unlock(entity ent)
-// Unlooks the entity ent. Works with anything that can be locked (doors, turbolifts, usables, ...).
-// Returns success or fail
+/***
+Unlooks the entity ent. Works with anything that can be locked (doors, turbolifts, usables, ...).
+@function Unlock
+@return Success or failure.
+*/
 static int Entity_Unlock(lua_State *L) {
 	lent_t *lent;
 	gentity_t *ent;
@@ -1025,6 +1115,11 @@ static int Entity_Unlock(lua_State *L) {
 	return 1;
 }
 
+/***
+Check if the entity is locked.
+@function IsLocked
+@return Whether the entity is locked or not.
+*/
 static int Entity_IsLocked(lua_State *L) {
 	lent_t *lent;
 	gentity_t *ent;
@@ -1044,6 +1139,12 @@ static int Entity_IsLocked(lua_State *L) {
 	return 1;
 }
 
+/***
+Get a luaParm from the entity.
+@function GetParm
+@param index Parameter index.
+@return Value of luaParm or nil.
+*/
 static int Entity_GetParm(lua_State *L) {
 	lent_t *lent;
 	gentity_t *ent;
