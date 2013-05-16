@@ -500,7 +500,7 @@ This is the only way control passes into the module.
 This MUST be the very first function compiled into the .q3vm file
 ================
 */
-Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
+Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, /*@unused@*/ int arg3, /*@unused@*/ int arg4, /*@unused@*/ int arg5, /*@unused@*/ int arg6 ) {
 	switch ( command ) {
 	case GAME_INIT:
 		G_InitGame( arg0, arg1, arg2 );
@@ -509,7 +509,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 		G_ShutdownGame( arg0 );
 		return 0;
 	case GAME_CLIENT_CONNECT:
-		return (size_t)G_Client_Connect( arg0, (qboolean)arg1, (qboolean)arg2 );
+		return (intptr_t)G_Client_Connect( arg0, (qboolean)arg1, (qboolean)arg2 );
 	case GAME_CLIENT_THINK:
 		ClientThink( arg0 );
 		return 0;
@@ -532,7 +532,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 		//RPG-X : TiM - plagiarised Red's logic from SFEFMOD here lol
 		return ConsoleCommand();
 	case BOTAI_START_FRAME:
-		return BotAIStartFrame( arg0 );
+		return (intptr_t)BotAIStartFrame( arg0 );
 	}
 
 	return -1;
