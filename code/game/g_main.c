@@ -1100,9 +1100,9 @@ static void G_LoadServerChangeFile(void) {
 	}
 
 	// TODO dynamic buffer size
-	buffer = (char *)malloc(32000 * sizeof(char));
+	buffer = (char *)malloc((file_len + 1) * sizeof(char));
 	if(!buffer) {
-		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", 32000 * sizeof(char) );
+		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", (file_len + 1) * sizeof(char) );
 		trap_FS_FCloseFile(f);
 		return;
 	}
