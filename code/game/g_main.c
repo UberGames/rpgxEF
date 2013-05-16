@@ -482,7 +482,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_developer,					"g_developer", 					"0", 						CVAR_ARCHIVE, 											0, qfalse }
 };
 
-static int	gameCvarTableSize = sizeof( gameCvarTable ) / sizeof( gameCvarTable[0] );
+static int	gameCvarTableSize = (int)(sizeof( gameCvarTable ) / sizeof( gameCvarTable[0] ));
 
 static void G_InitGame( int levelTime, int randomSeed, int restart );
 static void G_RunFrame( int levelTime );
@@ -490,7 +490,7 @@ void G_ShutdownGame( int restart );
 static void CheckExitRules( void );
 
 //=============================
-//** begin code
+// begin code
 
 /*
 ================
