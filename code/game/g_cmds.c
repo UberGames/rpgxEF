@@ -852,6 +852,11 @@ qboolean SetClass( gentity_t *ent, char *s, char *teamName, qboolean SaveToCvar 
 	//
 	// see what change is requested
 	//
+
+	if(s == NULL) {
+		return qfalse;
+	}
+
 	client = ent->client;
 
 	sess = &client->sess;
