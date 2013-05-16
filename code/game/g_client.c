@@ -3,13 +3,13 @@
 #include "g_local.h"
 #include "g_groups.h"
 #include "g_main.h"
+#include "g_cmds.h"
 
 reconData_t	g_reconData[MAX_RECON_NAMES]; //!< recon data for a limited ammount of clients
 int			g_reconNum;
 
 extern char* BG_RegisterRace( const char *name );
 extern void SetPlayerClassCvar(gentity_t *ent);
-extern void SetClass( gentity_t *ent, char *s, char *teamName, qboolean SaveToCvar );
 extern void BroadcastClassChange( gclient_t *client, pclass_t oldPClass );
 
 //RPG-X: TiM

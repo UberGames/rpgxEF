@@ -4,6 +4,7 @@
 #include "g_local.h"
 #include "g_sql.h"
 #include "g_main.h"
+#include "g_cmds.h"
 
 //#include <windows.h>
 
@@ -836,7 +837,7 @@ static char* ClassForValueName ( pclass_t pclass ) {
 SetClass
 =================
 */
-qboolean SetClass( gentity_t *ent, char *s, char *teamName, qboolean SaveToCvar ) {
+qboolean SetClass( gentity_t *ent, char *s, /*@null@*/ char *teamName, qboolean SaveToCvar ) {
 	int					pclass, oldPClass;
 	gclient_t			*client;
 	int					clientNum;
