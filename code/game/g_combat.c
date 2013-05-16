@@ -4,8 +4,8 @@
 
 #include "g_local.h"
 #include "g_breakable.h" //RPG-X | GSIO01 | 09/05/2009: needed by G_Repair
+#include "g_main.h"
 
-extern int	numKilled;
 extern void SetClass( gentity_t *ent, char *s, char *teamName, qboolean SaveToCvar );
 
 

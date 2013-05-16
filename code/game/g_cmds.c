@@ -3,6 +3,7 @@
 
 #include "g_local.h"
 #include "g_sql.h"
+#include "g_main.h"
 
 //#include <windows.h>
 
@@ -13,9 +14,7 @@ extern void G_CheckReplaceQueen( int clientNum );
 extern qboolean	PlaceDecoy( gentity_t *ent );
 extern qboolean G_CallSpawn(gentity_t *ent);
 
-extern int	numKilled;
 extern clInitStatus_t clientInitialStatus[];
-extern qboolean levelExiting;
 
 void DeathmatchScoreboardMessage( gentity_t *ent ) {
 	char		entry[1024];

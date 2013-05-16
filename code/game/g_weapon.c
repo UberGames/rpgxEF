@@ -13,18 +13,6 @@ extern void G_MissileImpact( gentity_t *ent, trace_t *trace);
 
 #define DMG_VAR		(flrandom(0.8,1.2))
 
-
-/* Weapon damages are located up here for easy access... */
-extern vmCvar_t	rpg_rifleDamage;
-extern vmCvar_t	rpg_rifleAltDamage;
-extern vmCvar_t	rpg_phaserDamage;
-extern vmCvar_t	rpg_disruptorDamage;
-extern vmCvar_t	rpg_grenadeDamage;
-extern vmCvar_t	rpg_grenadeAltDamage;
-extern vmCvar_t	rpg_tr116Damage;
-extern vmCvar_t	rpg_photonDamage;
-extern vmCvar_t	rpg_photonAltDamage;
-
 /* Phaser */
 /* I'll keep this comment just because it's funny lol :D */
 /* RPG-X: TiM - Increased to a standard 0.5 second 

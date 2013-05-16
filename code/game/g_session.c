@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
+#include "g_main.h"
 
 
 /*
@@ -12,8 +13,6 @@ Session data is the only data that stays persistant across level loads
 and tournament restarts.
 =======================================================================
 */
-
-extern int	numKilled;
 
 /*
 ================

@@ -4,6 +4,7 @@
 #include "g_local.h"
 #include "g_groups.h"
 #include "bg_lex.h"
+#include "g_main.h"
 
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[] );
@@ -13,11 +14,10 @@ int RPGEntityCount; //Global entity count varible
 
 level_locals_t	level;
 extern char	races[256];	//this is evil!
-extern qboolean levelExiting;
 
 group_list_t	group_list[MAX_GROUP_MEMBERS];
 int 			group_count;
-int numKilled;
+int				numKilled;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -29,7 +29,7 @@ typedef struct {
 } cvarTable_t;
 
 gentity_t	g_entities[MAX_GENTITIES];
-gclient_t	g_clients[MAX_CLIENTS];
+static gclient_t	g_clients[MAX_CLIENTS];
 
 rankNames_t g_rankNames[MAX_RANKS];
 
@@ -57,10 +57,8 @@ vmCvar_t	g_adaptRespawn;
 vmCvar_t	g_motd;
 vmCvar_t	g_synchronousClients;
 vmCvar_t	g_restarted;
-vmCvar_t	g_log;
-vmCvar_t	g_logSync;
-vmCvar_t	g_podiumDist;
-vmCvar_t	g_podiumDrop;
+static vmCvar_t	g_log;
+static vmCvar_t	g_logSync;
 vmCvar_t	g_allowVote;
 vmCvar_t	g_banIPs;
 vmCvar_t	g_filterBan;
@@ -70,7 +68,6 @@ vmCvar_t	g_debugRight;
 vmCvar_t	g_debugUp;
 vmCvar_t	g_language;
 vmCvar_t	g_holoIntro;
-vmCvar_t	g_intermissionTime;
 vmCvar_t	g_team_group_red;
 vmCvar_t	g_team_group_blue;
 vmCvar_t	g_random_skin_limit;
@@ -165,17 +162,11 @@ vmCvar_t    rpg_photonSpeed;     //RPG-X | Marcin | 05/12/2008
 vmCvar_t    rpg_altPhotonSpeed;  //RPG-X | Marcin | 06/12/2008
 
 // Weapon delays
-//! Fire delay for Compression Rifle
 vmCvar_t    rpg_rifleDelay;      //RPG-X | Marcin | 06/12/2008
-//! Fire delay for Disruptor
 vmCvar_t    rpg_disruptorDelay;  //RPG-X | Marcin | 06/12/2008
-//! Fire delay for photon burst primary fire
 vmCvar_t    rpg_photonDelay;     //RPG-X | Marcin | 06/12/2008
-//! Fire delay for photon burst secondary fire
 vmCvar_t    rpg_altPhotonDelay;  //RPG-X | Marcin | 06/12/2008
-//! Fire delay for TR116
 vmCvar_t	rpg_TR116Delay;		 //RPG-X | Marcin | 30/12/2008
-//! Fire delay for Tricorder alt fire
 vmCvar_t	rpg_altTricorderDelay;	 //RPG-X | GSIO01 | 14/05/2009
 
 // Weapon Damage
@@ -321,7 +312,6 @@ static cvarTable_t		gameCvarTable[] = {
 	// change anytime vars
 	{ &g_dmflags,					"dmflags",						"0",						CVAR_SERVERINFO | CVAR_ARCHIVE,							0, qtrue  },
 	{ &g_synchronousClients,		"g_synchronousClients",			"0",						CVAR_SYSTEMINFO,										0, qfalse },
-	{ &g_intermissionTime,			"g_intermissionTime",			"20",						CVAR_ARCHIVE,											0, qtrue  },
 	{ &g_log,						"g_log",						"",							CVAR_ARCHIVE,											0, qfalse },
 	{ &g_logSync,					"g_logSync",					"0",						CVAR_ARCHIVE,											0, qfalse },
 	{ &g_password,					"g_password",					"",							CVAR_USERINFO,											0, qfalse },
@@ -342,8 +332,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_debugDamage,				"g_debugDamage",				"0",						0,														0, qfalse },
 	{ &g_debugAlloc,				"g_debugAlloc",					"0",						0,														0, qfalse },
 	{ &g_motd,						"g_motd",						"",							0,														0, qfalse },
-	{ &g_podiumDist,				"g_podiumDist",					"80",						0,														0, qfalse },
-	{ &g_podiumDrop,				"g_podiumDrop",					"70",						0,														0, qfalse },
 	{ &g_allowVote,					"g_allowVote",					"1",						CVAR_SERVERINFO,										0, qfalse },
 #if 0
 	{ &g_debugForward,				"g_debugForward",				"0",						0,														0, qfalse },
@@ -1195,7 +1183,7 @@ static void G_LoadServerChangeFile(void) {
 	free(buffer);
 }
 
-mapChangeData_t mapChangeData;
+static mapChangeData_t mapChangeData;
 
 static void G_LoadMapChangeFile(void) {
 	char			fileRoute[MAX_QPATH];
@@ -2082,7 +2070,7 @@ SortRanks
 
 =============
 */
-int QDECL SortRanks( const void *a, const void *b ) {
+static int QDECL SortRanks( const void *a, const void *b ) {
 	gclient_t	*ca, *cb;
 
 	ca = &level.clients[*(int *)a];
@@ -2414,7 +2402,7 @@ void G_Client_BeginIntermission( void ) {
 }
 
 
-void G_ClearObjectives( void )
+static void G_ClearObjectives( void )
 {
 	gentity_t *tent;
 
@@ -2614,7 +2602,6 @@ Advances the non-player objects in the world
 extern void SetClass( gentity_t *ent, char *s, char *teamName, qboolean SaveToCvar );
 void DragCheck( void );								//RPG-X: J2J - Added to rid warning.
 void CheckHealthInfoMessage( void );
-extern qboolean levelExiting;
 void G_RunFrame( int levelTime ) {
 	int			i;
 	gentity_t	*ent;

@@ -3,6 +3,7 @@
 // g_bot.c
 
 #include "g_local.h"
+#include "g_main.h"
 
 
 static int		g_numBots;
@@ -31,7 +32,6 @@ vmCvar_t bot_minplayers;
 extern gentity_t	*podium1;
 extern gentity_t	*podium2;
 extern gentity_t	*podium3;
-extern int	numKilled;
 
 
 /*

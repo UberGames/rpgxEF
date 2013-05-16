@@ -43,7 +43,7 @@ extern vmCvar_t				rpg_altTricorderDelay;
 #define PHOTON_DELAY        rpg_photonDelay.integer
 #define ALT_PHOTON_DELAY    rpg_altPhotonDelay.integer
 #define TR116_DELAY			rpg_TR116Delay.integer
-#define ALT_TRICORDER_DELAY		rpg_altTricorderDelay.integer
+#define ALT_TRICORDER_DELAY	rpg_altTricorderDelay.integer
 #else
 #define RIFLE_DELAY      250
 #define DISRUPTOR_DELAY  700

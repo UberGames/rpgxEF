@@ -2,6 +2,7 @@
 //
 #include "g_local.h"
 #include "g_groups.h"
+#include "g_main.h"
 
 reconData_t	g_reconData[MAX_RECON_NAMES]; //!< recon data for a limited ammount of clients
 int			g_reconNum;
@@ -15,7 +16,6 @@ extern void BroadcastClassChange( gclient_t *client, pclass_t oldPClass );
 extern char* correlateRanks( const char* strArg, int intArg );
 extern pclass_t ValueNameForClass ( /*gentity_t *ent,*/ char* s );
 
-extern qboolean levelExiting;
 // g_client.c -- client functions that don't happen every frame
 
 void G_Client_StoreClientInitialStatus( gentity_t *ent );

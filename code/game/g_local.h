@@ -2750,6 +2750,31 @@ extern  vmCvar_t    rpg_disruptorSpeed;  //RPG-X | Marcin | 04/12/2008
 extern  vmCvar_t    rpg_photonSpeed;     //RPG-X | Marcin | 05/12/2008
 extern  vmCvar_t    rpg_altPhotonSpeed;  //RPG-X | Marcin | 06/12/2008
 
+// Weapon Delays
+//! Fire delay for Compression Rifle
+extern  vmCvar_t    rpg_rifleDelay;      //RPG-X | Marcin | 06/12/2008
+//! Fire delay for Disruptor
+extern  vmCvar_t    rpg_disruptorDelay;  //RPG-X | Marcin | 06/12/2008
+//! Fire delay for photon burst primary fire
+extern  vmCvar_t    rpg_photonDelay;     //RPG-X | Marcin | 06/12/2008
+//! Fire delay for photon burst secondary fire
+extern  vmCvar_t    rpg_altPhotonDelay;  //RPG-X | Marcin | 06/12/2008
+//! Fire delay for TR116
+extern  vmCvar_t	rpg_TR116Delay;		 //RPG-X | Marcin | 30/12/2008
+//! Fire delay for Tricorder alt fire
+extern  vmCvar_t	rpg_altTricorderDelay;	 //RPG-X | GSIO01 | 14/05/2009
+
+// Weapon Damage
+extern  vmCvar_t	rpg_rifleDamage;
+extern  vmCvar_t	rpg_rifleAltDamage;
+extern  vmCvar_t	rpg_phaserDamage;
+extern  vmCvar_t	rpg_disruptorDamage;
+extern  vmCvar_t	rpg_grenadeDamage;
+extern  vmCvar_t	rpg_grenadeAltDamage;
+extern  vmCvar_t	rpg_tr116Damage;
+extern  vmCvar_t	rpg_photonDamage;
+extern  vmCvar_t	rpg_photonAltDamage;
+
 // Motd
 extern	vmCvar_t	rpg_motdFile;		 //RPG-X | Marcin | 23/12/2008
 
