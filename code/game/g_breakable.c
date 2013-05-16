@@ -375,6 +375,7 @@ If repaired by either target_repair (not yet implemented) or hyperspanner (not y
 
 -----KEYS-----
 "model"	- path to the arbitrary .md3 file to display
+"model2" - custom damage model to use. If not set model + _d1 is used for example the damage model for circuit.md3 would be circuit_d1.md3.
 "health" - how much health to have - default is zero (not breakable)  If you don't set the SOLID flag, but give it health, it can be shot but will not block NPCs or players from moving
 "targetname" - when used, dies and displays damagemodel, if any (if not, removes itself)
 "target" - What to use when it dies
@@ -424,7 +425,6 @@ set size better?
 multiple damage models?
 don't throw chunks on pain, or throw level 1 chunks only on pains?
 custom explosion effect/sound?
-custom dmodel using model2?
 */
 /**
 *	Spawnfunction for misc_model_breakable entity.
@@ -460,15 +460,22 @@ void SP_misc_model_breakable( gentity_t *ent )
 		ent->die = breakable_die;
 	}
 
-	len = strlen( ent->model ) - 4;
-	strncpy( damageModel, ent->model, len );
-	damageModel[len] = 0;	//chop extension
+
+	if(!ent->model2) {
+		len = strlen( ent->model ) - 4;
+		strncpy( damageModel, ent->model, len );
+		damageModel[len] = 0;	//chop extension
+	}
 	
 	if (ent->takedamage) {
 		//Dead/damaged model
 		if( !(ent->spawnflags & 8) ) {	//no dmodel
-			strcat( damageModel, "_d1.md3" );
-			eState->modelindex2 = G_ModelIndex( damageModel );
+			if(ent->model2) {
+				eState->modelindex2 = G_ModelIndex( ent->model2 );
+			} else {
+				strcat( damageModel, "_d1.md3" );
+				eState->modelindex2 = G_ModelIndex( damageModel );
+			}
 		}
 	}
 
