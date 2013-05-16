@@ -2735,11 +2735,13 @@ void G_RunFrame( int levelTime ) {
 			client->pressedUse = qfalse;
 		}
 
-		if (g_classData[client->sess.sessionClass].isn00b)
+		if (g_classData[client->sess.sessionClass].isn00b == qtrue)
 		{
-			if ((client->n00bTime != -1) && (client->n00bTime <= level.time) && client->origClass[0] != 0)
+			if ((client->n00bTime != -1) && (client->n00bTime <= level.time) && client->origClass)
 			{
-				SetClass( ent, client->origClass, NULL, qtrue );
+				if(!SetClass( ent, client->origClass, NULL, qtrue )) {
+					DEVELOPER(G_Printf(S_COLOR_YELLOW "G_RunFrame - Warning: SetClass failed!\n"););
+				}
 			}
 		}
 	}
