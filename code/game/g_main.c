@@ -5,6 +5,7 @@
 #include "g_groups.h"
 #include "bg_lex.h"
 #include "g_main.h"
+#include "g_cmds.h"
 
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[] );
@@ -2599,7 +2600,6 @@ Advances the non-player objects in the world
 ================
 */
 
-extern void SetClass( gentity_t *ent, char *s, char *teamName, qboolean SaveToCvar );
 void DragCheck( void );								//RPG-X: J2J - Added to rid warning.
 void CheckHealthInfoMessage( void );
 void G_RunFrame( int levelTime ) {
@@ -2737,7 +2737,7 @@ void G_RunFrame( int levelTime ) {
 
 		if (g_classData[client->sess.sessionClass].isn00b)
 		{
-			if ((client->n00bTime != -1) && (client->n00bTime <= level.time)&&client->origClass[0])
+			if ((client->n00bTime != -1) && (client->n00bTime <= level.time) && client->origClass[0] != 0)
 			{
 				SetClass( ent, client->origClass, NULL, qtrue );
 			}
