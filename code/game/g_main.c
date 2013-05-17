@@ -2363,7 +2363,7 @@ void G_Client_BeginIntermission( void ) {
 	else
 		doingLevelshot = qfalse;
 
-	if ( level.intermissiontime && level.intermissiontime != -1 ) {
+	if ( level.intermissiontime != 0 && level.intermissiontime != -1 ) {
 		return;		// already active
 	}
 
@@ -2405,7 +2405,7 @@ void G_Client_BeginIntermission( void ) {
 
 static void G_ClearObjectives( void )
 {
-	/*@temp@*/ gentity_t *tent;
+	gentity_t *tent;
 
 	tent = G_TempEntity( vec3_origin, EV_OBJECTIVE_COMPLETE );
 	//Be sure to send the event to everyone
