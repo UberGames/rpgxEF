@@ -2405,7 +2405,7 @@ void G_Client_BeginIntermission( void ) {
 
 static void G_ClearObjectives( void )
 {
-	/*@shared@*/ gentity_t *tent;
+	/*@temp@*/ gentity_t *tent;
 
 	tent = G_TempEntity( vec3_origin, EV_OBJECTIVE_COMPLETE );
 	//Be sure to send the event to everyone
@@ -2521,9 +2521,8 @@ static void CheckVote( void ) {
 		trap_SendServerCommand( -1, "print \"Vote failed.\n\"" );
 	} else {
 		if ( level.voteYes > level.numVotingClients/2 ) {
-			char message[1024];
-
 			// execute the command, then remove the vote
+			char message[1024] = "";
 			trap_SendServerCommand( -1, "print \"Vote passed.\n\"" );
 			Com_sprintf(message, 1024, "%s\n", level.voteString);
 			trap_SendConsoleCommand( EXEC_APPEND, message );
@@ -2551,7 +2550,7 @@ static void CheckCvars( void ) {
 
 	if ( g_password.modificationCount != lastMod ) {
 		lastMod = g_password.modificationCount;
-		if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) ) {
+		if ( g_password.string[0] != 0 && Q_stricmp( g_password.string, "none" ) != 0 ) {
 			trap_Cvar_Set( "g_needpass", "1" );
 		} else {
 			trap_Cvar_Set( "g_needpass", "0" );
