@@ -2568,6 +2568,10 @@ Runs thinking code for this frame if necessary
 void G_RunThink (gentity_t *ent) {
 	float	thinktime;
 
+	if(ent == NULL) {
+		return;
+	}
+
 	thinktime = ent->nextthink;
 	if (thinktime <= 0) {
 		return;
@@ -2577,13 +2581,13 @@ void G_RunThink (gentity_t *ent) {
 	}
 
 	ent->nextthink = 0;
-	if (!ent->think) {
+	if (ent->think == NULL) {
 		G_Error ( "NULL ent->think");
 		return;
 	}
 
 	#ifdef G_LUA
-	if(ent->luaThink && !ent->client)
+	if(ent->luaThink != NULL && ent->client == NULL)
 	{
 		LuaHook_G_EntityThink(ent->luaThink, ent->s.number);
 	}
@@ -2600,7 +2604,6 @@ Advances the non-player objects in the world
 ================
 */
 
-void DragCheck( void );								//RPG-X: J2J - Added to rid warning.
 void CheckHealthInfoMessage( void );
 void G_RunFrame( int levelTime ) {
 	int			i;
@@ -2731,15 +2734,15 @@ void G_RunFrame( int levelTime ) {
 
 		client = ent->client;
 
-		if (!(client->pers.cmd.buttons & BUTTON_USE)) {
+		if ((client->pers.cmd.buttons & BUTTON_USE) == 0) {
 			client->pressedUse = qfalse;
 		}
 
 		if (g_classData[client->sess.sessionClass].isn00b == qtrue)
 		{
-			if ((client->n00bTime != -1) && (client->n00bTime <= level.time) && client->origClass)
+			if ((client->n00bTime != -1) && (client->n00bTime <= level.time) && client->origClass[0] != 0)
 			{
-				if(!SetClass( ent, client->origClass, NULL, qtrue )) {
+				if(SetClass( ent, client->origClass, NULL, qtrue ) == qfalse) {
 					DEVELOPER(G_Printf(S_COLOR_YELLOW "G_RunFrame - Warning: SetClass failed!\n"););
 				}
 			}

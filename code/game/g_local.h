@@ -2618,7 +2618,7 @@ extern vmCvar_t g_developer;
 // Prevents a single statement from beeing executed if developer isn't set
 #define DEVELOPER(X) if(g_developer.integer != 0) { \
 						X\
-					 } else
+					 }
 
 
 #include "g_team.h" // teamplay specific stuff

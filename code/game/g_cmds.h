@@ -4,5 +4,6 @@
 #include "g_local.h"
 
 qboolean SetClass( gentity_t *ent, char *s, /*@null@*/ char *teamName, qboolean SaveToCvar );
+void DragCheck( void );
 
 #endif
