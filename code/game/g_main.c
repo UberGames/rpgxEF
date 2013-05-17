@@ -2405,7 +2405,7 @@ void G_Client_BeginIntermission( void ) {
 
 static void G_ClearObjectives( void )
 {
-	gentity_t *tent;
+	/*@shared@*/ gentity_t *tent;
 
 	tent = G_TempEntity( vec3_origin, EV_OBJECTIVE_COMPLETE );
 	//Be sure to send the event to everyone
@@ -2438,14 +2438,12 @@ void ExitLevel (void) {
 			RemoveTournamentLoser();
 			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
 			level.restarted = qtrue;
-			level.changemap = NULL;
 			level.intermissiontime = 0;
 		}
 		return;
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, "vstr nextmap\n" );
-	level.changemap = NULL;
 	level.intermissiontime = 0;
 
 	// we need to do this here before chaning to CON_CONNECTING
@@ -2516,16 +2514,19 @@ CheckVote
 ==================
 */
 static void CheckVote( void ) {
-	if ( !level.voteTime ) {
+	if ( level.voteTime == 0 ) {
 		return;
 	}
 	if ( level.time - level.voteTime >= VOTE_TIME ) {
 		trap_SendServerCommand( -1, "print \"Vote failed.\n\"" );
 	} else {
 		if ( level.voteYes > level.numVotingClients/2 ) {
+			char message[1024];
+
 			// execute the command, then remove the vote
 			trap_SendServerCommand( -1, "print \"Vote passed.\n\"" );
-			trap_SendConsoleCommand( EXEC_APPEND, va("%s\n", level.voteString ) );
+			Com_sprintf(message, 1024, "%s\n", level.voteString);
+			trap_SendConsoleCommand( EXEC_APPEND, message );
 		} else if ( level.voteNo >= level.numVotingClients/2 ) {
 			// same behavior as a timeout
 			trap_SendServerCommand( -1, "print \"Vote failed.\n\"" );
@@ -2550,7 +2551,7 @@ static void CheckCvars( void ) {
 
 	if ( g_password.modificationCount != lastMod ) {
 		lastMod = g_password.modificationCount;
-		if ( *g_password.string && Q_stricmp( g_password.string, "none" ) ) {
+		if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) ) {
 			trap_Cvar_Set( "g_needpass", "1" );
 		} else {
 			trap_Cvar_Set( "g_needpass", "0" );
@@ -2566,7 +2567,7 @@ Runs thinking code for this frame if necessary
 =============
 */
 void G_RunThink (gentity_t *ent) {
-	float	thinktime;
+	int thinktime;
 
 	if(ent == NULL) {
 		return;
@@ -2738,7 +2739,7 @@ void G_RunFrame( int levelTime ) {
 			client->pressedUse = qfalse;
 		}
 
-		if (g_classData[client->sess.sessionClass].isn00b == qtrue)
+		if (g_classData[client->sess.sessionClass].isn00b != 0)
 		{
 			if ((client->n00bTime != -1) && (client->n00bTime <= level.time) && client->origClass[0] != 0)
 			{

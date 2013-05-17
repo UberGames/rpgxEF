@@ -2366,7 +2366,6 @@ void G_Client_Disconnect( int clientNum ) {
 	{
 		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
 		level.restarted = qtrue;
-		level.changemap = NULL;
 		level.intermissiontime = 0;
 	}
 

@@ -577,7 +577,7 @@ void LuaHook_G_Print(char *text)
 	}
 }
 
-qboolean LuaHook_G_EntityThink(char *function, int entnum)
+void LuaHook_G_EntityThink(char *function, int entnum)
 {
 	int         i;
 	lvm_t       *vm;
@@ -618,10 +618,9 @@ qboolean LuaHook_G_EntityThink(char *function, int entnum)
 			}
 		}
 	}
-	return qfalse;
 }
 
-qboolean LuaHook_G_EntityTouch(char *function, int entnum, int othernum)
+void LuaHook_G_EntityTouch(char *function, int entnum, int othernum)
 {
 	int         i;
 	lvm_t       *vm;
@@ -672,10 +671,9 @@ qboolean LuaHook_G_EntityTouch(char *function, int entnum, int othernum)
 			}
 		}
 	}
-	return qfalse;
 }
 
-qboolean LuaHook_G_EntityUse(char *function, int entnum, int othernum, int activatornum)
+void LuaHook_G_EntityUse(char *function, int entnum, int othernum, int activatornum)
 {
 	int         i;
 	lvm_t       *vm;
@@ -736,10 +734,9 @@ qboolean LuaHook_G_EntityUse(char *function, int entnum, int othernum, int activ
 			}
 		}
 	}
-	return qfalse;
 }
 
-qboolean LuaHook_G_EntityHurt(char *function, int entnum, int inflictornum, int attackernum)
+void LuaHook_G_EntityHurt(char *function, int entnum, int inflictornum, int attackernum)
 {
 	int         i;
 	lvm_t       *vm;
@@ -801,10 +798,9 @@ qboolean LuaHook_G_EntityHurt(char *function, int entnum, int inflictornum, int 
 			}
 		}
 	}
-	return qfalse;
 }
 
-qboolean LuaHook_G_EntityDie(char *function, int entnum, int inflictornum, int attackernum, int dmg, int mod)
+void LuaHook_G_EntityDie(char *function, int entnum, int inflictornum, int attackernum, int dmg, int mod)
 {
 	int             i;
 	lvm_t			*vm;
@@ -870,10 +866,9 @@ qboolean LuaHook_G_EntityDie(char *function, int entnum, int inflictornum, int a
 			}
 		}
 	}
-	return qfalse;
 }
 
-qboolean LuaHook_G_EntityFree(char *function, int entnum)
+void LuaHook_G_EntityFree(char *function, int entnum)
 {
 	int         i;
 	lvm_t       *vm;
@@ -913,10 +908,9 @@ qboolean LuaHook_G_EntityFree(char *function, int entnum)
 			}
 		}
 	}
-	return qfalse;
 }
 
-qboolean LuaHook_G_EntityReached(char *function, int entnum) {
+void LuaHook_G_EntityReached(char *function, int entnum) {
 	int			i;
 	lvm_t		*vm;
 	lua_State	*t;
@@ -951,10 +945,9 @@ qboolean LuaHook_G_EntityReached(char *function, int entnum) {
 			}
 		}
 	}
-	return qfalse;
 }
 
-qboolean LuaHook_G_EntityReachedAngular(char *function, int entnum) {
+void LuaHook_G_EntityReachedAngular(char *function, int entnum) {
 	int			i;
 	lvm_t		*vm;
 	lua_State	*t;
@@ -989,10 +982,9 @@ qboolean LuaHook_G_EntityReachedAngular(char *function, int entnum) {
 			}
 		}
 	}
-	return qfalse;
 }
 
-qboolean LuaHook_G_EntityTrigger(char *function, int entnum, int othernum)
+void LuaHook_G_EntityTrigger(char *function, int entnum, int othernum)
 {
 	int         i;
 	lvm_t       *vm;
@@ -1043,10 +1035,9 @@ qboolean LuaHook_G_EntityTrigger(char *function, int entnum, int othernum)
 			}
 		}
 	}
-	return qfalse;
 }
 
-qboolean LuaHook_G_EntitySpawn(char *function, int entnum)
+void LuaHook_G_EntitySpawn(char *function, int entnum)
 {
 	int         i;
 	lvm_t       *vm;
@@ -1086,7 +1077,6 @@ qboolean LuaHook_G_EntitySpawn(char *function, int entnum)
 			}
 		}
 	}
-	return qfalse;
 }
 
 void G_LuaNumThreads(void) {

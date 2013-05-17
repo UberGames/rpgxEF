@@ -700,7 +700,6 @@ typedef struct {
 	// intermission state
 	int					intermissionQueued;		/*!< Intermission was qualified, but wait INTERMISSION_DELAY_TIME before actually going there so the last frag can be watched.  Disable future kills during this delay */
 	int					intermissiontime;		/*!< Time the intermission was started */
-	char*				changemap;				/*!< ??? */
 	qboolean			readyToExit;			/*!< Determines whether at least one client wants to exit */
 	int					exitTime;				/*!< Exit time */
 	vec3_t				intermission_origin;	/*!< Origin of the camera for intermission. Also used for spectator spawns. */
@@ -2496,7 +2495,7 @@ void LuaHook_G_ClientPrint(char* text, int entnum);
  *	\param entnum entity index of entity the think function was called on
  *	\return success or fail
  */
-qboolean LuaHook_G_EntityThink(char* function, int entnum);
+void LuaHook_G_EntityThink(char* function, int entnum);
 
 /**
  * Lua hook for entity touch function function.
@@ -2506,7 +2505,7 @@ qboolean LuaHook_G_EntityThink(char* function, int entnum);
  *	\param othernum entiy index of touching entity
  *	\return success or fail
  */
-qboolean LuaHook_G_EntityTouch(char* function, int entnum, int othernum);
+void LuaHook_G_EntityTouch(char* function, int entnum, int othernum);
 
 /**
  * Lua hook for entity use function.
@@ -2516,7 +2515,7 @@ qboolean LuaHook_G_EntityTouch(char* function, int entnum, int othernum);
  * \param othernum entity index of other entity
  * \param activatornum entity index of activating entity
  */
-qboolean LuaHook_G_EntityUse(char* function, int entnum, int othernum, int activatornum);
+void LuaHook_G_EntityUse(char* function, int entnum, int othernum, int activatornum);
 
 /**
  * Lua hook for entity hurt function.
@@ -2526,7 +2525,7 @@ qboolean LuaHook_G_EntityUse(char* function, int entnum, int othernum, int activ
  * \param inflictornum entity index of inflictor
  * \param attackernum entity index of attacker
  */
-qboolean LuaHook_G_EntityHurt(char* function, int entnum, int inflictornum, int attackernum);
+void LuaHook_G_EntityHurt(char* function, int entnum, int inflictornum, int attackernum);
 
 /**
  * Lua hook for entity die function.
@@ -2538,7 +2537,7 @@ qboolean LuaHook_G_EntityHurt(char* function, int entnum, int inflictornum, int 
  * \param dmg ammount of damage
  * \param mod means of death
  */
-qboolean LuaHook_G_EntityDie(char* function, int entnum, int inflictornum, int attackernum, int dmg, int mod);
+void LuaHook_G_EntityDie(char* function, int entnum, int inflictornum, int attackernum, int dmg, int mod);
 
 /**
  * Lua hook for entity free function.
@@ -2546,7 +2545,7 @@ qboolean LuaHook_G_EntityDie(char* function, int entnum, int inflictornum, int a
  * \param function name of function to call
  * \param entnum entity index of entity the free function was called on
  */
-qboolean LuaHook_G_EntityFree(char* function, int entnum);
+void LuaHook_G_EntityFree(char* function, int entnum);
 
 /**
  * Lua hook for entity trigger function.
@@ -2555,7 +2554,7 @@ qboolean LuaHook_G_EntityFree(char* function, int entnum);
  * \param entnum entity index of entity the trigger function was called on
  * \param othernum entity index of triggering entity
  */
-qboolean LuaHook_G_EntityTrigger(char* function, int entnum, int othernum);
+void LuaHook_G_EntityTrigger(char* function, int entnum, int othernum);
 
 /**
  * Lua hook for entity spawn function.
@@ -2563,7 +2562,7 @@ qboolean LuaHook_G_EntityTrigger(char* function, int entnum, int othernum);
  * \param function name of function to call
  * \param entnum entity index of entity the spawn function was called on
  */
-qboolean LuaHook_G_EntitySpawn(char* function, int entnum);
+void LuaHook_G_EntitySpawn(char* function, int entnum);
 
 /**
  * Lua hook for entity reached function.
@@ -2571,7 +2570,7 @@ qboolean LuaHook_G_EntitySpawn(char* function, int entnum);
  * \param function name of function to call
  * \param entnum entity index of entity the reached function was called on
  */
-qboolean LuaHook_G_EntityReached(char* function, int entnum);
+void LuaHook_G_EntityReached(char* function, int entnum);
 
 /**
  * Lua hook for entity reached angular function.
@@ -2579,7 +2578,7 @@ qboolean LuaHook_G_EntityReached(char* function, int entnum);
  * \param function name of function to call
  * \param entnum entity index of entity the reached angular function was called on
  */
-qboolean LuaHook_G_EntityReachedAngular(char* function, int entnum);
+void LuaHook_G_EntityReachedAngular(char* function, int entnum);
 
 /**
  * Output information about lua threads.
