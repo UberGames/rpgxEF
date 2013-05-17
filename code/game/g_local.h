@@ -1135,7 +1135,7 @@ void G_InitGentity( gentity_t* ent );
  *
  * \return a new entity or NULL
  */
-gentity_t* G_Spawn (void);
+/*@shared@*/ gentity_t* G_Spawn (void);
 
 /**
  * \brief Spawn an temporary entity.
@@ -1149,7 +1149,7 @@ gentity_t* G_Spawn (void);
  *
  * \return the temporary entity
  */
-gentity_t* G_TempEntity( vec3_t origin, int event );
+/*@shared@*/ gentity_t* G_TempEntity( vec3_t origin, int event );
 
 /**
  * \brief Makes an entity to play a non looping sound.

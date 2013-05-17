@@ -509,7 +509,7 @@ void G_InitGentity( gentity_t *e ) {
 	e->r.ownerNum = ENTITYNUM_NONE;
 }
 
-/*@shared@*/ gentity_t *G_Spawn( void ) {
+gentity_t *G_Spawn( void ) {
 	int			i, force;
 	gentity_t	*e;
 	/* RPG-X: RedTechie - Get rid of tripmines first */
@@ -610,7 +610,7 @@ void G_FreeEntity( gentity_t *ed ) {
 	ed->inuse = qfalse;
 }
 
-/*@shared@*/ gentity_t *G_TempEntity( vec3_t origin, int event ) {
+gentity_t *G_TempEntity( vec3_t origin, int event ) {
 	gentity_t		*e;
 	vec3_t		snapped;
 
