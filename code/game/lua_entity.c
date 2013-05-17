@@ -274,7 +274,7 @@ Teleports client to target's position
 */
 static int Entity_Teleport(lua_State * L)
 {
-	lent_t* lent = NULL;;
+	lent_t* lent = NULL;
 	lent_t* target = NULL;
 
 	LUA_DEBUG("BEGIN - entity.Teleport");
