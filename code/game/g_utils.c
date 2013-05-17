@@ -610,7 +610,7 @@ void G_FreeEntity( gentity_t *ed ) {
 	ed->inuse = qfalse;
 }
 
-/*@shared@*/ gentity_t *G_TempEntity( vec3_t origin, int event ) {
+/*@temp@*/ gentity_t *G_TempEntity( vec3_t origin, int event ) {
 	gentity_t		*e;
 	vec3_t		snapped;
 
