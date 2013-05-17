@@ -473,6 +473,12 @@
     <ClInclude Include="bg_lex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="g_main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="g_cmds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">

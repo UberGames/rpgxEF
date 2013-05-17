@@ -1,10 +1,10 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 
+#include "g_main.h"
 #include "g_local.h"
 #include "g_groups.h"
 #include "bg_lex.h"
-#include "g_main.h"
 #include "g_cmds.h"
 
 extern void BG_LoadItemNames(void);

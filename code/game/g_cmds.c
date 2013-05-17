@@ -1,10 +1,10 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 
+#include "g_cmds.h"
 #include "g_local.h"
 #include "g_sql.h"
 #include "g_main.h"
-#include "g_cmds.h"
 
 //#include <windows.h>
 
