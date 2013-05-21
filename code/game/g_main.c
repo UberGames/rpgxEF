@@ -2166,7 +2166,7 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 				// decide if this should be auto-followed
 				if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 					level.numPlayingClients++;
-					if ( !(g_entities[i].r.svFlags & SVF_BOT) ) {
+					if ( (g_entities[i].r.svFlags & SVF_BOT) == 0 ) {
 						level.numVotingClients++;
 					}
 					if ( level.follow1 == -1 ) {
@@ -2308,7 +2308,7 @@ void FindIntermissionPoint( void ) {
 
 	// find the intermission spot
 	ent = G_Find (NULL, FOFS(classname), "info_player_intermission");
-	if ( !ent ) {	// the map creator forgot to put in an intermission point...
+	if ( ent == NULL ) {	// the map creator forgot to put in an intermission point...
 		G_Client_SelectSpawnPoint ( vec3_origin, level.intermission_origin, level.intermission_angle );
 	} else {
 		VectorCopy (ent->s.origin, level.intermission_origin);
