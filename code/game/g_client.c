@@ -227,7 +227,7 @@ Chooses a player start, deathmatch start, etc
 /**
 *	Chooses a player start, deathmatch start, etc
 */
-gentity_t* /*@alt void@*/ G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) {
+/*@alt void@*/ gentity_t* G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) {
 	gentity_t	*spot;
 	gentity_t	*nearestSpot;
 
