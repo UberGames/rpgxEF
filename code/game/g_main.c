@@ -1952,7 +1952,7 @@ void G_ShutdownGame( int restart ) {
 #if 0	// kef -- Pat sez this is causing some trouble these days
 	G_LogWeaponOutput();
 #endif
-	if ( level.logFile ) {
+	if ( level.logFile != 0) {
 		G_LogPrintf("ShutdownGame:\n" );
 		G_LogPrintf("------------------------------------------------------------\n" );
 		trap_FS_FCloseFile( level.logFile );
@@ -1961,7 +1961,7 @@ void G_ShutdownGame( int restart ) {
 	// write all the client session data so we can get it back
 	G_WriteSessionData();
 
-	if ( trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
+	if ( trap_Cvar_VariableIntegerValue( "bot_enable" ) != 0 ) {
 		BotAIShutdown( restart );
 	}
 
@@ -1987,8 +1987,10 @@ void QDECL Com_Error ( int errlevel, const char *error, ... ) {
 	va_list		argptr;
 	char		text[1024];
 
+	UNUSED(errlevel);
+
 	va_start (argptr, error);
-	vsprintf (text, error, argptr);
+	vsnprintf(text, sizeof(text), error, argptr);
 	va_end (argptr);
 
 	G_Error( "%s", text);
@@ -1999,7 +2001,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 	char		text[1024];
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	vsnprintf(text, sizeof(text), msg, argptr);
 	va_end (argptr);
 
 	G_Printf ("%s", text);
@@ -2179,7 +2181,7 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 		}
 	}
 
-	qsort( level.sortedClients, level.numConnectedClients,
+	qsort( level.sortedClients, (size_t)level.numConnectedClients,
 		sizeof(level.sortedClients[0]), SortRanks );
 
 	// set the rank value for all clients that are connected and not spectators
@@ -2241,7 +2243,7 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 	}
 
 	// if we are at the intermission, send the new info to everyone
-	if ( level.intermissiontime ) {
+	if ( level.intermissiontime != 0 ) {
 		SendScoreboardMessageToAllClients();
 	}
 }
@@ -2607,7 +2609,7 @@ Advances the non-player objects in the world
 void CheckHealthInfoMessage( void );
 void G_RunFrame( int levelTime ) {
 	int			i;
-	/*@dependent@*/ gentity_t	*ent;
+	gentity_t	*ent;
 	gclient_t	*client;
 	playerState_t *ps;
 	entityState_t *es;
@@ -2638,7 +2640,7 @@ void G_RunFrame( int levelTime ) {
 
 		// clear events that are too old
 		if ( level.time - ent->eventTime > EVENT_VALID_MSEC ) {
-			if ( es->event ) {
+			if ( es->event != 0 ) {
 				es->event = 0;
 				if ( ent->client ) {
 					ps->externalEvent = 0;
@@ -2670,7 +2672,7 @@ void G_RunFrame( int levelTime ) {
 
 		if ( !ent->client )
 		{
-			if ( es->eFlags & EF_ANIM_ONCE )
+			if ( (es->eFlags & EF_ANIM_ONCE) == EF_ANIM_ONCE )
 			{//this must be capped render-side
 				es->frame++;
 			}

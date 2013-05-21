@@ -213,6 +213,10 @@ void Sys_PumpEvents( void );
 
 #endif
 
+#if !defined(UNUSED)
+#define UNUSED(x)	((void)(x))
+#endif
+
 #define SOUND_DIR		"sound/weapons/"
 
 //=============================================================
@@ -749,7 +753,7 @@ float	LittleFloat (float l);
 
 
 void	Swap_Init (void);
-char	* QDECL va(char *format, ...) __attribute__ ((format (printf, 1, 2)));
+/*@shared@*/ char	* QDECL va(char *format, ...) __attribute__ ((format (printf, 1, 2)));
 
 //=============================================
 

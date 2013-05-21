@@ -976,7 +976,7 @@ varargs versions of all text functions.
 FIXME: make this buffer size safe someday
 ============
 */
-/*@shared@*/ char * QDECL va( char *format, ... ) {
+char * QDECL va( char *format, ... ) {
 	va_list		argptr;
 	static char		string[2][32000];	/* in case va is called by nested functions */
 	static int		index = 0;
