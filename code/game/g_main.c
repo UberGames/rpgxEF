@@ -29,7 +29,7 @@ typedef struct {
 	qboolean	trackChange;	// track this variable, and announce if changed
 } cvarTable_t;
 
-/*@shared@*/ gentity_t g_entities[MAX_GENTITIES];
+gentity_t g_entities[MAX_GENTITIES];
 static gclient_t	g_clients[MAX_CLIENTS];
 
 rankNames_t g_rankNames[MAX_RANKS];
