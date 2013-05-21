@@ -1803,8 +1803,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	level.num_entities = MAX_CLIENTS;
 
 	// let the server system know where the entites are
-	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
-		&level.clients[0].ps, sizeof( level.clients[0] ) );
+	trap_LocateGameData( level.gentities, level.num_entities, (int)sizeof( gentity_t ),
+		&level.clients[0].ps, (int)sizeof( level.clients[0] ) );
 
 	// reserve some spots for dead player bodies
 	G_Client_InitBodyQue();
@@ -1839,17 +1839,17 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	G_Printf ("-----------------------------------\n");
 
-	if( g_gametype.integer == GT_SINGLE_PLAYER || trap_Cvar_VariableIntegerValue( "com_buildScript" ) ) {
+	if( g_gametype.integer == GT_SINGLE_PLAYER || trap_Cvar_VariableIntegerValue( "com_buildScript" ) != 0) {
 		G_ModelIndex( SP_PODIUM_MODEL );
 		G_SoundIndex( "sound/player/gurp1.wav" );
 		G_SoundIndex( "sound/player/gurp2.wav" );
 	}
-	if (g_gametype.integer >= GT_TEAM || trap_Cvar_VariableIntegerValue( "com_buildScript" ) )
+	if (g_gametype.integer >= GT_TEAM || trap_Cvar_VariableIntegerValue( "com_buildScript" ) != 0)
 	{
 		G_ModelIndex( TEAM_PODIUM_MODEL );
 	}
 
-	if ( trap_Cvar_VariableIntegerValue( "bot_enable" ) ) {
+	if ( trap_Cvar_VariableIntegerValue( "bot_enable" ) != 0 ) {
 		BotAISetup( restart );
 		BotAILoadMap( restart );
 		G_InitBots( (qboolean)restart );
@@ -1898,7 +1898,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	LuaHook_G_InitGame(levelTime, randomSeed, restart);
 	#endif
 
-	if(dev_showTriggers.integer && !restart) {
+	if(dev_showTriggers.integer != 0 && restart == 0) {
 		gentity_t *t;
 		t = G_Spawn();
 		if(t) {
