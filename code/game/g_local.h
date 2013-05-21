@@ -1064,7 +1064,7 @@ qboolean G_MoveBox (gentity_t* ent);
  *
  * \return an matching entity or NULL
  */
-gentity_t* G_Find (gentity_t* from, int fieldofs, const char* match);
+/*@shared@*/ gentity_t* G_Find (/*@null@*/ gentity_t* from, size_t fieldofs, const char* match);
 
 /**
  * \brief Pick a target.
@@ -1075,7 +1075,7 @@ gentity_t* G_Find (gentity_t* from, int fieldofs, const char* match);
  *
  * \return an entity or NULL
  */
-gentity_t* G_PickTarget (char* targetname);
+/*@shared@*/ gentity_t* G_PickTarget (char* targetname);
 
 /**
  * \brief Use all of the given entity's targets.

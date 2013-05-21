@@ -148,7 +148,7 @@ void G_TeamCommand( team_t team, char *cmd ) {
 	}
 }
 
-gentity_t *G_Find (gentity_t *from, int fieldofs, const char *match)
+gentity_t *G_Find (gentity_t *from, size_t fieldofs, const char *match)
 {
 	char	*s;
 
