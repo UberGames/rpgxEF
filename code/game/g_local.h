@@ -2624,7 +2624,7 @@ extern vmCvar_t g_developer;
 
 
 extern	level_locals_t	level;
-extern	gentity_t		g_entities[MAX_GENTITIES];
+extern /*@shared@*/	gentity_t		g_entities[MAX_GENTITIES];
 
 #define FOFS(x) ((size_t)&(((gentity_t *)0)->x))
 
