@@ -645,9 +645,9 @@ struct srvChangeData_s {
 *	Contains important informations about the current leve and information needed for game logic.
 */
 typedef struct {
-	struct gclient_s*	clients;	/*!< level clients */
+	/*@shared@*/ struct gclient_s*	clients;	/*!< level clients */
 
-	struct gentity_s*	gentities;			/*! level gentities */
+	/*@shared@*/ struct gentity_s*	gentities;			/*! level gentities */
 	int					gentitySize;		/*! size of gentity */
 	int					num_entities;		/*!< current number of entities, <= MAX_GENTITIES */
 
