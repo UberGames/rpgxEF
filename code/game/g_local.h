@@ -923,7 +923,7 @@ void RespawnItem( gentity_t* ent );
  * \param angle Direction to toss to.
  * \return The entity for the item.
  */
-gentity_t* Drop_Item( gentity_t* ent, gitem_t* item, float angle );
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* Drop_Item( gentity_t* ent, gitem_t* item, float angle );
 
 /**
  * Sets the clipping size and plants the object on the floor.
@@ -1064,7 +1064,7 @@ qboolean G_MoveBox (gentity_t* ent);
  *
  * \return an matching entity or NULL
  */
-/*@shared@*/ gentity_t* G_Find (/*@null@*/ gentity_t* from, size_t fieldofs, const char* match);
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* G_Find (/*@null@*/ gentity_t* from, size_t fieldofs, const char* match);
 
 /**
  * \brief Pick a target.
@@ -1075,7 +1075,7 @@ qboolean G_MoveBox (gentity_t* ent);
  *
  * \return an entity or NULL
  */
-/*@shared@*/ gentity_t* G_PickTarget (char* targetname);
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* G_PickTarget (char* targetname);
 
 /**
  * \brief Use all of the given entity's targets.
@@ -1135,7 +1135,7 @@ void G_InitGentity( gentity_t* ent );
  *
  * \return a new entity or NULL
  */
-/*@shared@*/ gentity_t* G_Spawn (void);
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* G_Spawn (void);
 
 /**
  * \brief Spawn an temporary entity.
@@ -1149,7 +1149,7 @@ void G_InitGentity( gentity_t* ent );
  *
  * \return the temporary entity
  */
-/*@shared@*/ gentity_t* G_TempEntity( vec3_t origin, int event );
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* G_TempEntity( vec3_t origin, int event );
 
 /**
  * \brief Makes an entity to play a non looping sound.
@@ -1295,7 +1295,7 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
  * \param takeDamage Only return entities that match this value for takeDamage.
  * \return Nearest entity found.
  */
-gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, float radius, list_p ignore, qboolean takeDamage);
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, float radius, list_p ignore, qboolean takeDamage);
 
 /**
  * Get the nearest player orund an origin.
@@ -1305,7 +1305,7 @@ gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, float radius, list_p 
  * \param ignore List of entities to ignore.
  * \return Nearest player.
  */
-gentity_t* G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore );
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore );
 
 /**
  * \author Ubergames - GSIO01
@@ -1465,7 +1465,7 @@ void G_Missile_Run( gentity_t* ent );
  * \param start Start point.
  * \param aimdir Direction.
  */
-gentity_t*	fire_plasma (gentity_t* self, vec3_t start, vec3_t aimdir);
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* fire_plasma (gentity_t* self, vec3_t start, vec3_t aimdir);
 
 /**
  * Fire torpedo projectile.
@@ -1474,7 +1474,7 @@ gentity_t*	fire_plasma (gentity_t* self, vec3_t start, vec3_t aimdir);
  * \param start Start point.
  * \param aimdir Direction.
  */
-gentity_t*	fire_quantum (gentity_t* self, vec3_t start, vec3_t aimdir);
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* fire_quantum (gentity_t* self, vec3_t start, vec3_t aimdir);
 
 /**
  * Fire grenade.
@@ -1483,7 +1483,7 @@ gentity_t*	fire_quantum (gentity_t* self, vec3_t start, vec3_t aimdir);
  * \param start Start point.
  * \param aimdir Direction.
  */
-gentity_t*	fire_grenade (gentity_t* self, vec3_t start, vec3_t aimdir);
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* fire_grenade (gentity_t* self, vec3_t start, vec3_t aimdir);
 
 /**
  * Fire a rocket.
@@ -1492,7 +1492,7 @@ gentity_t*	fire_grenade (gentity_t* self, vec3_t start, vec3_t aimdir);
  * \param start Start point.
  * \param dir Direction.
  */
-gentity_t*	fire_rocket (gentity_t* self, vec3_t start, vec3_t dir);
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* fire_rocket (gentity_t* self, vec3_t start, vec3_t dir);
 
 /**
  * Fire a compression rifle projectile.
@@ -1501,7 +1501,7 @@ gentity_t*	fire_rocket (gentity_t* self, vec3_t start, vec3_t dir);
  * \param start Start point.
  * \param dir Direction.
  */
-gentity_t*	fire_comprifle (gentity_t* self, vec3_t start, vec3_t dir);
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* fire_comprifle (gentity_t* self, vec3_t start, vec3_t dir);
 
 //
 // g_mover.c
@@ -1633,7 +1633,7 @@ void G_Client_SetViewAngle( gentity_t* ent, vec3_t angle );
  * \param origin Origin.
  * \param angles Angles.
  */
-gentity_t* G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
 
 /**
  * Respawn client.
@@ -2043,7 +2043,7 @@ extern RPGX_DragData DragDat[];
  * 
  * \return a random spawn point
  */
-gentity_t* SelectRandomSpawnPoint( void );		//Added so it can be used in main.
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t* SelectRandomSpawnPoint( void );		//Added so it can be used in main.
 
 //RPG-X Misc Sounds:
 //extern sfxHandle_t n00bsnd;
@@ -2227,7 +2227,7 @@ void ThrowWeapon( gentity_t* ent, char* txt );
  *	\param flags Entity flags to use.
  *	\param Optional message for PADD dropping.
  */
-gentity_t *DropWeapon( gentity_t* ent, gitem_t* item, float angle, int flags, char* txt );
+/*@shared@*/ /*@null@*/ /*@out@*/ gentity_t *DropWeapon( gentity_t* ent, gitem_t* item, float angle, int flags, char* txt );
 
 //
 // g_mem.c
@@ -2624,7 +2624,7 @@ extern vmCvar_t g_developer;
 
 
 extern	level_locals_t	level;
-extern /*@shared@*/	gentity_t		g_entities[MAX_GENTITIES];
+extern  gentity_t		g_entities[MAX_GENTITIES];
 
 #define FOFS(x) ((size_t)&(((gentity_t *)0)->x))
 
