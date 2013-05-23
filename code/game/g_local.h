@@ -2458,7 +2458,7 @@ int BotAIStartFrame( int time );
  *	\param radomseed a random seed
  *	\param restart is this a map restart?
  */
-void LuaHook_G_InitGame(int leveltime, int randomseed, int restart);
+void LuaHook_G_InitGame(int leveltime, unsigned int randomseed, int restart);
 
 /**
  *	Lua hook for Shutdown event.

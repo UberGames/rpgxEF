@@ -456,7 +456,7 @@ lvm_t       *G_LuaGetVM(lua_State * L)
 	return NULL;
 }
 
-void LuaHook_G_InitGame(int levelTime, int randomSeed, int restart)
+void LuaHook_G_InitGame(int levelTime, unsigned int randomSeed, int restart)
 {
 	int             i;
 	lvm_t	       *vm;

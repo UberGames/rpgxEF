@@ -473,7 +473,7 @@ static cvarTable_t		gameCvarTable[] = {
 
 static int	gameCvarTableSize = (int)(sizeof( gameCvarTable ) / sizeof( gameCvarTable[0] ));
 
-static void G_InitGame( int levelTime, int randomSeed, int restart );
+static void G_InitGame( int levelTime, unsigned int randomSeed, int restart );
 static void G_RunFrame( int levelTime );
 void G_ShutdownGame( int restart );
 static void CheckExitRules( void );
@@ -1658,12 +1658,12 @@ static void Dev_ShowTriggers(gentity_t *ent) {
 
 	for(i = 0; i < MAX_GENTITIES; i++) {
 		if((tar = &g_entities[i]) == NULL) continue;
-		if(!Q_stricmpn(tar->classname, "trigger_", 8)) {
-			if(!Q_stricmp(tar->classname, "trigger_always")) continue;
-			if(tar->r.svFlags & SVF_NOCLIENT)
+		if(Q_stricmpn(tar->classname, "trigger_", 8) == 0) {
+			if(Q_stricmp(tar->classname, "trigger_always") == 0) continue;
+			if(tar->r.svFlags & SVF_NOCLIENT != 0)
 				tar->r.svFlags ^= SVF_NOCLIENT;
 			trap_LinkEntity(ent);
-			if(!Q_stricmpn(tar->classname, "trigger_push", 13))
+			if(Q_stricmpn(tar->classname, "trigger_push", 13) == 0)
 				G_AddEvent(tar, EV_TRIGGER_SHOW, 1);
 			else
 				G_AddEvent(tar, EV_TRIGGER_SHOW, 0);
