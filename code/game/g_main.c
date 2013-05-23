@@ -1660,7 +1660,7 @@ static void Dev_ShowTriggers(gentity_t *ent) {
 		if((tar = &g_entities[i]) == NULL) continue;
 		if(Q_stricmpn(tar->classname, "trigger_", 8) == 0) {
 			if(Q_stricmp(tar->classname, "trigger_always") == 0) continue;
-			if(tar->r.svFlags & SVF_NOCLIENT != 0)
+			if((tar->r.svFlags & SVF_NOCLIENT) != 0)
 				tar->r.svFlags ^= SVF_NOCLIENT;
 			trap_LinkEntity(ent);
 			if(Q_stricmpn(tar->classname, "trigger_push", 13) == 0)
