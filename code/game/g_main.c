@@ -2410,6 +2410,11 @@ static void G_ClearObjectives( void )
 	gentity_t *tent;
 
 	tent = G_TempEntity( vec3_origin, EV_OBJECTIVE_COMPLETE );
+
+	if(tent == NULL) {
+		return;
+	}
+
 	//Be sure to send the event to everyone
 	tent->r.svFlags |= SVF_BROADCAST;
 	tent->s.eventParm = 0;//tells it to clear all
