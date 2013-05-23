@@ -1681,7 +1681,7 @@ extern int lastKillTime[];
 extern int LastFKRadius[];					//(RPG-X J2J) added so array can be initialised to 0 first.
 extern RPGX_SiteTOSiteData TransDat[];		//(RPG-X J2J) added for tricorder transporter
 extern RPGX_DragData DragDat[];
-void G_InitGame( int levelTime, int randomSeed, int restart ) {
+void G_InitGame( int levelTime, unsigned int randomSeed, int restart ) {
 	int					i;
 	char				fileName[MAX_QPATH];
 	float				messageTime;
@@ -1755,18 +1755,19 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	level.snd_fry = G_SoundIndex("sound/player/fry.wav");	// FIXME standing in lava / slime
 
-	if ( g_gametype.integer != GT_SINGLE_PLAYER && g_log.string[0] ) {
-		if ( g_logSync.integer ) {
+	if ( g_gametype.integer != GT_SINGLE_PLAYER && g_log.string[0] != 0 ) {
+		if ( g_logSync.integer != 0 ) {
 			trap_FS_FOpenFile( g_log.string, &level.logFile, FS_APPEND_SYNC );
 		} else {
 			trap_FS_FOpenFile( g_log.string, &level.logFile, FS_APPEND );
 		}
-		if ( !level.logFile ) {
+		if ( level.logFile == 0 ) {
 			G_Printf( "WARNING: Couldn't open logfile: %s\n", g_log.string );
 		} else {
 			char	serverinfo[MAX_INFO_STRING];
 
-			trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
+			memset(serverinfo, 0, sizeof(serverinfo));
+			trap_GetServerinfo( serverinfo, (int)sizeof( serverinfo ) );
 
 			G_LogPrintf("------------------------------------------------------------\n" );
 			G_LogPrintf("InitGame: %s\n", serverinfo );
@@ -2276,8 +2277,15 @@ void SendScoreboardMessageToAllClients( void ) {
 }
 
 void MoveClientToIntermission( gentity_t *ent ) {
-	entityState_t *es = &ent->s;
-	playerState_t *ps = &ent->client->ps;
+	entityState_t* es;
+	playerState_t* ps;
+
+	if(ent == NULL || ent->client == NULL) {
+		return;
+	}
+
+	ps = &ent->client->ps;
+	es = &ent->s;
 
 	// take out of follow mode if needed
 	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW ) {
@@ -2636,7 +2644,7 @@ void G_RunFrame( int levelTime ) {
 	//
 	ent = &g_entities[0];
 	for (i=0 ; i<level.num_entities ; i++, ent++) {
-		if ( !ent->inuse ) {
+		if ( ent == NULL || ent->client == NULL || ent->inuse == qfalse ) {
 			continue;
 		}
 

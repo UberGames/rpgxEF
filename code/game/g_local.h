@@ -210,7 +210,7 @@ struct gentity_s {
 	// EXPECTS THE FIELDS IN THAT ORDER!
 	//================================
 
-	/*@null@*/ struct gclient_s	*client;	// NULL if not a client
+	/*@shared@*/ /*@null@*/ struct gclient_s	*client;	// NULL if not a client
 
 	qboolean	inuse;
 

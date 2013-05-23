@@ -115,7 +115,7 @@ void trap_SetUserinfo( int num, const char *buffer ) {
 	syscall( G_SET_USERINFO, num, buffer );
 }
 
-void trap_GetServerinfo( char *buffer, int bufferSize ) {
+void trap_GetServerinfo( char *buffer, size_t bufferSize ) {
 	syscall( G_GET_SERVERINFO, buffer, bufferSize );
 }
 
