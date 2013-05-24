@@ -725,10 +725,10 @@ typedef struct {
 
 	int					numBrushEnts;							/*!< number of entities in the level that use brushmodels */
 
-	/*@shared@*/ /*@null@*/ list_p	safezones;								/*!< self destruct safezones list */
-	/*@shared@*/ /*@null@*/ list_p	locations;								/*!< level locations list */
-	/*@shared@*/ /*@null@*/ list_p	timedMessages;				/*!< timed messages list */
-	/*@shared@*/ /*@null@*/ list_iter_p iterTimedMessages;
+	/*@null@*/ list_p	safezones;								/*!< self destruct safezones list */
+	/*@null@*/ list_p	locations;								/*!< level locations list */
+	/*@null@*/ list_p	timedMessages;				/*!< timed messages list */
+	/*@null@*/ list_iter_p iterTimedMessages;
 
 	// other stuff
 	srvChangeData_t		srvChangeData;							/*!< Server change data */
