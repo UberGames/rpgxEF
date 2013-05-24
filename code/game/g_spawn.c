@@ -512,7 +512,7 @@ Builds a copy of the string, translating \n to real linefeeds
 so message texts can be multi-line
 =============
 */
-/*@shared@*/ /*@null@*/ char *G_NewString( /*@null@*/ const char *string ) {
+char *G_NewString( const char *string ) {
 	char	*newb, *new_p;
 	int		i,l;
 

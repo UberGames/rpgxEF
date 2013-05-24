@@ -793,7 +793,7 @@ void		G_SpawnEntitiesFromString( void );
  * \param string String to copy.
  * \return Copy of the string.
  */
-char*		G_NewString( const char* string );
+/*@shared@*/ /*@null@*/ char* G_NewString( /*@null@*/ const char* string );
 
 //
 // g_cmds.c
@@ -2237,7 +2237,7 @@ void ThrowWeapon( gentity_t* ent, char* txt );
  *
  * \param size Amount of memory to allocate.
  */
-void* G_Alloc( int size );
+/*@shared@*/ /*@null@*/ void* G_Alloc( int size );
 
 /**
  * Init memory pool.
