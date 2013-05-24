@@ -496,7 +496,7 @@ currently in it....
 ==================
 */
 
-list_iter_p iterTimedMessages;
+/*@null@*/ list_iter_p iterTimedMessages;
 
 /**
 *	\author Ubergames
