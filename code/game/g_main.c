@@ -640,7 +640,7 @@ static qboolean G_LoadClassData( char* fileName )
 	fileHandle_t	f = 0;
 	qboolean		classValid=qfalse;
 	int				classIndex=0;
-	int				weapon;
+	unsigned		weapon;
 	int				i;
 
 	//Init the storage place
