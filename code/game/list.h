@@ -98,7 +98,7 @@ struct list{
 	int length;					/*!< count of elements in the list */
 	lnode_p first;				/*!< first element of the list */
 	lnode_p last;				/*!< last element of the list */
-	void (*destructor)(/*@only@*/ /*@out@*/ /*@null@*/ void*);	/*!< pointer to destructor for data. Default is free. */
+	void (*destructor)(/*@out@*/ /*@null@*/ void*);	/*!< pointer to destructor for data. Default is free. */
 	/*@shared@*/ /*@null@*/ list_iter_p (*iterator)(list_p list, char init);	/*!< creates a new list iterator */
 	int (*add_ptr)(list_p list, void* data, dataType_t type, char end); /*!< add a pointer to the list */
 	int (*append_ptr)(list_p list, void* data, dataType_t type); /*!< append a pointer to the list */
@@ -143,14 +143,14 @@ struct list_iter {
  *
  *	\param list pointer to a list
  */
-void destroy_list(/*@only@*/ /*@out@*/ /*@null@*/ list_p list);
+void destroy_list(/*@out@*/ /*@null@*/ list_p list);
 
 /**
  * Destroy a list iterator if allocated.
  *
  *	\param list pointer to a iterator
  */
-void destroy_iterator(/*@only@*/ /*@out@*/ /*@null@*/list_iter_p iter);
+void destroy_iterator(/*@out@*/ /*@null@*/list_iter_p iter);
 
 /**
  * Initialize list. For use on lists that are NOT allocated on the heap.
