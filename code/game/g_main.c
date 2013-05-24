@@ -1524,14 +1524,15 @@ All but the last will have the teamchain field set to the next one
 ================
 */
 static void G_FindTeams( void ) {
-	/*@shared@*/ gentity_t* e;
-	/*@shared@*/ gentity_t* e2;
+	gentity_t* e;
+	gentity_t* e2;
 	int		i, j;
 	int		c, c2;
 
 	c = 0;
 	c2 = 0;
-	for ( i=1, e=g_entities+i ; i < level.num_entities ; i++,e++ ){
+	e=g_entities+i;
+	for ( i=1; i < level.num_entities ; i++,e++ ){
 		if (!e->inuse)
 			continue;
 		if (!e->team)
