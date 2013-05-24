@@ -6,6 +6,7 @@
 #include "g_groups.h"
 #include "bg_lex.h"
 #include "g_cmds.h"
+#include "bg_misc.h"
 
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[] );
@@ -632,14 +633,14 @@ and transfer to clients
 **************************/
 static qboolean G_LoadClassData( char* fileName )
 {
-	char			*buffer;
-	char			*textPtr, *token;
-	int			fileLen;
-	fileHandle_t		f;
+	char			*buffer = NULL;
+	char			*textPtr = NULL, *token = NULL;
+	int				fileLen;
+	fileHandle_t	f = 0;
 	qboolean		classValid=qfalse;
-	int			classIndex=0;
-	int			weapon;
-	int			i;
+	int				classIndex=0;
+	int				weapon;
+	int				i;
 
 	//Init the storage place
 	memset( &g_classData, 0, sizeof ( g_classData ) );
@@ -895,25 +896,26 @@ static qboolean G_LoadClassData( char* fileName )
 	}
 }
 
-void BG_LanguageFilename(char *baseName,char *baseExtension,char *finalName);
 void SP_target_location (gentity_t *ent);
 
 static void G_LoadTimedMessages(void) {
-	fileHandle_t	f;
-	bgLex*			lexer;
-	char*			buffer;
+	fileHandle_t	f = 0;
+	bgLex*			lexer = NULL;
+	char*			buffer = NULL;
 	int				len;
 
 	len = trap_FS_FOpenFile("timedmessages.cfg", &f, FS_READ);
-	if(!len) return;
+	if(len == 0) {
+		return;
+	}
 
 	buffer = (char *)malloc(sizeof(char) * (len+1));
-	if(!buffer) {
+	if(buffer == NULL) {
 		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i byte.\n", (len+1) * sizeof(char) );
 		trap_FS_FCloseFile(f);
 		return;
 	}
-	memset(buffer, 0, len+1);
+	memset(buffer, 0, (size_t)((len + 1) * sizeof(char)));
 
 	level.timedMessages = create_list();
 	if(level.timedMessages == NULL) {
@@ -934,7 +936,7 @@ static void G_LoadTimedMessages(void) {
 		return;
 	}
 
-	while(bgLex_lex(lexer)) {
+	while(bgLex_lex(lexer) != 0) {
 		if(lexer->morphem->type == LMT_STRING) {
 			level.timedMessages->append(level.timedMessages, lexer->morphem->data.str, LT_STRING, strlen(lexer->morphem->data.str));
 		} else {
@@ -951,12 +953,16 @@ holoData_t holoData;
 static void G_LoadHolodeckFile(void) {
 	char			fileRoute[MAX_QPATH];
 	char			mapRoute[MAX_QPATH];
-	char			*info;
-	fileHandle_t		f;
-	char			*buffer;
-	int			file_len;
-	char			*txtPtr, *token;
-	int			numProgs = 0;
+	char*			info = NULL;
+	fileHandle_t	f = 0;
+	char*			buffer = NULL;
+	int				file_len;
+	char*			txtPtr = NULL;
+	char*			token = NULL;
+	int				numProgs = 0;
+
+	memset(fileRoute, 0, sizeof(fileRoute));
+	memset(mapRoute, 0, sizeof(mapRoute));
 
 	info = (char *)malloc(MAX_INFO_STRING * sizeof(char));
 	if(!info) {

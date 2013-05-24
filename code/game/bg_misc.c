@@ -3,6 +3,7 @@
  * bg_misc.c -- both games misc functions, all completely stateless
  */
 
+#include "bg_misc.h"
 #include "q_shared.h"
 #include "bg_public.h"
 

@@ -940,22 +940,22 @@ G_Client_UserinfoChanged
 */
 void G_Client_UserinfoChanged( int clientNum ) {
 	gentity_t *ent;
-	int		i;
-	char	*s;
-	char	model[MAX_QPATH];
-	char	oldname[MAX_STRING_CHARS];
-	gclient_t	*client;
-	char	userinfo[MAX_INFO_STRING];
-	qboolean	reset;
-	float	weight, height;
-	char	age[MAX_NAME_LENGTH];
-	char	race[MAX_NAME_LENGTH];
-	int	modelOffset;
-	qboolean	changeName = qtrue; //TiM : For the name filter
-	char	sHeight[10];
-	char	sWeight[10];
-	clientPersistant_t *pers;
-	clientSession_t *sess;
+	int					i;
+	char*				s;
+	char				model[MAX_QPATH];
+	char				oldname[MAX_STRING_CHARS];
+	gclient_t*			client;
+	char				userinfo[MAX_INFO_STRING];
+	qboolean			reset;
+	float				weight, height;
+	char				age[MAX_NAME_LENGTH];
+	char				race[MAX_NAME_LENGTH];
+	int					modelOffset;
+	qboolean			changeName = qtrue; //TiM : For the name filter
+	char				sHeight[10];
+	char				sWeight[10];
+	clientPersistant_t*	pers = NULL;
+	clientSession_t*	sess = NULL;
 
 	model[0] = 0;
 
@@ -1006,7 +1006,7 @@ void G_Client_UserinfoChanged( int clientNum ) {
 			Q_CleanStr( activeName );
 
 			if ( g_entities[i].client->ps.clientNum != client->ps.clientNum
-				&& !Q_stricmp( newName, activeName ) )
+				&& Q_stricmp( newName, activeName ) == 0 )
 			{
 				trap_SendServerCommand( ent-g_entities, " print \"Unable to change name. A player already has that name on this server.\n\" ");
 				changeName = qfalse;
@@ -1036,8 +1036,9 @@ void G_Client_UserinfoChanged( int clientNum ) {
 	}
 
 	pers->pms_height = atof( Info_ValueForKey( userinfo, "height" ) );
-	if ( !pers->pms_height )
+	if ( pers->pms_height == 0 ) {
 		pers->pms_height = 1.0f;
+	}
 
 	pers->maxHealth = atoi( Info_ValueForKey( userinfo, "handicap" ) );
 	if ( pers->maxHealth < 1 || pers->maxHealth > 100 ) {
