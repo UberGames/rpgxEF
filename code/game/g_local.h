@@ -241,9 +241,9 @@ struct gentity_s {
 	int			sound2to1;			//!< soundindex of sound to play when moving from Pos2 to Pos1
 	int			soundPos2;			//!< soundindex of sound to play when reaching Pos2
 	int			soundLoop;			//!< soundindex for looped sounds
-	gentity_t*	parent;			//!< parent of this entity
-	gentity_t*	nextTrain;			//!< next path_corner of a func_train
-	gentity_t*	prevTrain;			//!< previous path_corner of a func_train
+	/*@shared@*/ /*@null@*/ gentity_t*	parent;			//!< parent of this entity
+	/*@shared@*/ /*@null@*/ gentity_t*	nextTrain;			//!< next path_corner of a func_train
+	/*@shared@*/ /*@null@*/ gentity_t*	prevTrain;			//!< previous path_corner of a func_train
 	vec3_t		pos1;				//!< start position for binary movers
 	vec3_t		pos2;				//!< end position for binary movers
 	vec3_t		apos1;				//!< angular start position for movers
@@ -258,7 +258,7 @@ struct gentity_s {
 	char*		paintarget;		//!< target to use if entity takes damage
 	char*		targetname;		//!< targetname that identyfies the entity
 	char*		team;				//!< for teamchains
-	gentity_t*	target_ent;		//!< target of turrets etc
+	/*@shared@*/ /*@null@*/ gentity_t*	target_ent;		//!< target of turrets etc
 
 	float		speed;				//!< moving speed etc
 	vec3_t		movedir;			//!< moving direction
@@ -291,11 +291,11 @@ struct gentity_s {
 	int			count;				//!< used for counting, check whether an entity is allowed to use
 									//!< and other various things
 
-	gentity_t*	lastEnemy;			//!< last enemy of the entity (turrets etc)
-	gentity_t*	enemy;				//!< current enemy of the entity (turrets etc)
-	gentity_t*	activator;			//!< entity that activated/used this entity
-	gentity_t*	teamchain;			//!< next entity in team
-	gentity_t*	teammaster;		//!< master of the team
+	/*@shared@*/ /*@null@*/ gentity_t*	lastEnemy;			//!< last enemy of the entity (turrets etc)
+	/*@shared@*/ /*@null@*/ gentity_t*	enemy;				//!< current enemy of the entity (turrets etc)
+	/*@shared@*/ /*@null@*/ gentity_t*	activator;			//!< entity that activated/used this entity
+	/*@shared@*/ /*@null@*/ gentity_t*	teamchain;			//!< next entity in team
+	/*@shared@*/ /*@null@*/ gentity_t*	teammaster;		//!< master of the team
 
 	int			watertype;
 	int			waterlevel;
@@ -309,7 +309,7 @@ struct gentity_s {
 	float		wait;				//!< how long to wait
 	float		random;
 
-	gitem_t*	item;				//!< for bonus items
+	/*@shared@*/ /*@null@*/ gitem_t*	item;				//!< for bonus items
 
 	qboolean	botDelayBegin;
 
@@ -327,7 +327,7 @@ struct gentity_s {
 	//RPG-X: TiM : Additional Params for map ents
 	char*		targetname2;	// GSIO01 | 08/05/2009
 
-	gentity_t*	touched;		// GSIO01 | 08/05/2009 repairing breakables
+	/*@shared@*/ /*@null@*/ gentity_t*	touched;		// GSIO01 | 08/05/2009 repairing breakables
 	
 	//GSIO01 | 10/05/2009 | ok these are for target_alert:
 	char*		bluename;
