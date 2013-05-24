@@ -963,6 +963,7 @@ static void G_LoadHolodeckFile(void) {
 		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i byte.\n", MAX_INFO_STRING * sizeof(char) );
 		return;
 	}
+	memset(info, 0, sizeof(info));
 
 	//get the map name out of the server data
 	trap_GetServerinfo( info, MAX_INFO_STRING * sizeof(char) );
@@ -976,17 +977,20 @@ static void G_LoadHolodeckFile(void) {
 
 	free(info);
 
-	if ( !file_len ) return;
+	if ( file_len == 0) {
+		return;
+	}
 
 	buffer = (char *)malloc(32000 * sizeof(char));
-	if(!buffer) {
+	if(buffer == NULL) {
 		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", 32000 * sizeof(char) );
 		trap_FS_FCloseFile(f);
 		return;
 	}
+	memset(buffer, 0, sizeof(buffer));
 
 	trap_FS_Read( buffer, file_len, f );
-	if ( !buffer[0] )
+	if ( buffer[0] == 0 )
 	{
 		G_Printf( S_COLOR_RED "ERROR: Couldn't read in file: %s!\n", fileRoute );
 		trap_FS_FCloseFile( f );
@@ -1004,21 +1008,25 @@ static void G_LoadHolodeckFile(void) {
 
 	while(1) {
 		token = COM_Parse(&txtPtr);
-		if(!token[0]) break;
+		if(token == NULL || token[0] == 0) {
+			break;
+		}
 
-		if(!Q_stricmpn(token, "HolodeckData", 12)) {
+		if(Q_stricmpn(token, "HolodeckData", 12) == 0) {
 			token = COM_Parse(&txtPtr);
-			if(Q_stricmpn(token, "{", 1)) {
+			if(Q_stricmpn(token, "{", 1) != 0) {
 				G_Printf( S_COLOR_RED "ERROR: HolodeckData had no opening brace ( { )!\n");
 				continue;
 			}
-			while(Q_stricmpn(token, "}", 1)) {
+			while(Q_stricmpn(token, "}", 1) != 0) {
 				token = COM_Parse(&txtPtr);
-				if(!token[0]) break;
+				if(token == NULL || token[0] == 0) {
+					break;
+				}
 
-				if(!Q_stricmpn(token, "Program", 7)) {
+				if(Q_stricmpn(token, "Program", 7) == 0) {
 					token = COM_Parse(&txtPtr);
-					if(Q_stricmpn(token, "[", 1)) {
+					if(Q_stricmpn(token, "[", 1) != 0) {
 						G_Printf( S_COLOR_RED "ERROR: Program had no opening brace ( [ )!\n");
 						continue;
 					}
@@ -1030,7 +1038,9 @@ static void G_LoadHolodeckFile(void) {
 					// <string> - desc2
 					// <string> - image
 					while(Q_stricmpn(token, "]", 1)) {
-						if(!token[0]) break;
+						if(token == NULL || token[0] == 0) {
+							break;
+						}
 
 						if(numProgs >= 5) {
 							free(buffer);
@@ -1075,16 +1085,17 @@ static void G_LoadHolodeckFile(void) {
 
 static void G_LoadServerChangeFile(void) {
 	char			fileRoute[MAX_QPATH];
-	fileHandle_t	f;
+	fileHandle_t	f = 0;
 	bgLex*			lex;
 	char*			buffer;
 	int				file_len;
 
+	memset(fileRoute, 0, sizeof(fileRoute));
 	BG_LanguageFilename("serverchange", "cfg", fileRoute);
 
 	file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
-	if(!file_len) {
+	if(file_len == 0) {
 		return;
 	}
 
@@ -1095,9 +1106,10 @@ static void G_LoadServerChangeFile(void) {
 		trap_FS_FCloseFile(f);
 		return;
 	}
+	memset(buffer, 0, sizeof(buffer));
 
 	trap_FS_Read(buffer, file_len, f);
-	if ( !buffer[0] )
+	if ( buffer[0] == 0 )
 	{
 		G_Printf( S_COLOR_RED "ERROR: Couldn't read in file: %s!\n", fileRoute );
 		trap_FS_FCloseFile( f );
@@ -1132,7 +1144,7 @@ static void G_LoadServerChangeFile(void) {
 		return;
 	}
 
-	while(bgLex_lex(lex)) {
+	while(bgLex_lex(lex) != 0) {
 		if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_CBRACEC) {
 			break;
 		}
