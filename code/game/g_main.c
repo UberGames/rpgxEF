@@ -1500,7 +1500,7 @@ char *G_searchGroupList(const char *name)
 	}
 
 	// did we find this group in the list?
-	if (i == group_count)
+	if (i == group_count || text_p == NULL)
 	{
 		Com_sprintf(races, sizeof(races), "unknown");
 	}
