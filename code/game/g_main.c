@@ -770,8 +770,12 @@ static qboolean G_LoadClassData( char* fileName )
 						{
 							weapon = GetIDForString( WeaponTable, token );
 
-							if ( weapon >= 0 ) {
+							if ( weapon > 0 ) {
 								g_classData[classIndex].weaponsFlags |= ( 1 << weapon );
+								continue;
+							}
+							if ( weapon == 0) {
+								g_classData[classIndex].weaponsFlags |= 1;
 								continue;
 							}
 						}
