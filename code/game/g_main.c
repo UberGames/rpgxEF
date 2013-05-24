@@ -22,12 +22,12 @@ int 			group_count;
 int				numKilled;
 
 typedef struct {
-	vmCvar_t	*vmCvar;
-	char		*cvarName;
-	char		*defaultString;
-	int			cvarFlags;
-	int			modificationCount;  // for tracking changes
-	qboolean	trackChange;	// track this variable, and announce if changed
+	/*@shared@*/ vmCvar_t	*vmCvar;
+	char*		 cvarName;
+	char*		 defaultString;
+	int			 cvarFlags;
+	int			 modificationCount;  // for tracking changes
+	qboolean	 trackChange;	// track this variable, and announce if changed
 } cvarTable_t;
 
 gentity_t g_entities[MAX_GENTITIES];
@@ -493,7 +493,7 @@ This MUST be the very first function compiled into the .q3vm file
 Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, /*@unused@*/ int arg3, /*@unused@*/ int arg4, /*@unused@*/ int arg5, /*@unused@*/ int arg6 ) {
 	switch ( command ) {
 	case GAME_INIT:
-		G_InitGame( arg0, arg1, arg2 );
+		G_InitGame( arg0, (unsigned)arg1, arg2 );
 		return 0;
 	case GAME_SHUTDOWN:
 		G_ShutdownGame( arg0 );
@@ -520,7 +520,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, /*@unused@*
 		return 0;
 	case GAME_CONSOLE_COMMAND:
 		//RPG-X : TiM - plagiarised Red's logic from SFEFMOD here lol
-		return ConsoleCommand();
+		return (intptr_t)ConsoleCommand();
 	case BOTAI_START_FRAME:
 		return (intptr_t)BotAIStartFrame( arg0 );
 	}
@@ -533,7 +533,7 @@ void QDECL G_PrintfClientAll(const char *fmt, ...) {
 	char	text[1024];
 
 	va_start (argptr, fmt);
-	vsprintf (text, fmt, argptr);
+	vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end	 (argptr);
 
 	trap_SendServerCommand(-1, va("print \"%s\n\"", text));
@@ -544,7 +544,7 @@ void QDECL G_PrintfClient(gentity_t *ent, const char *fmt, ...) {
 	char		text[1024];
 
 	va_start (argptr, fmt);
-	vsprintf (text, fmt, argptr);
+	vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end	 (argptr);
 
 	#ifdef G_LUA
@@ -559,10 +559,10 @@ void QDECL G_Printf( const char *fmt, ... ) {
 	char		text[1024];
 
 	va_start (argptr, fmt);
-	vsprintf (text, fmt, argptr);
+	vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-	if(trap_Cvar_VariableIntegerValue("developer")) {
+	if(trap_Cvar_VariableIntegerValue("developer") != 0) {
 
 	}
 
@@ -579,7 +579,7 @@ void QDECL G_Error( const char *fmt, ... ) {
 	char		text[1024];
 
 	va_start (argptr, fmt);
-	vsprintf (text, fmt, argptr);
+	vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
 	#ifdef G_LUA
@@ -640,7 +640,7 @@ static qboolean G_LoadClassData( char* fileName )
 	fileHandle_t	f = 0;
 	qboolean		classValid=qfalse;
 	int				classIndex=0;
-	int				weapon;
+	unsigned		weapon;
 	int				i;
 
 	//Init the storage place

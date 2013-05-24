@@ -1748,7 +1748,7 @@ void G_Client_LocationsMessage( gentity_t *ent );
  * \param firstTime Indicate whether this was the first connect.
  * \param isBot Indicate if bot or player.
  */
-char* G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot );
+/*@shared@*/ char* G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot );
 
 /**
  * Clients user info changed.
@@ -2963,7 +2963,7 @@ void trap_SendConsoleCommand( int exec_when, const char *text );
 *	\param value default value for the cvar
 *	\param flags additional options for the cvar (e.g. CVAR_ARCHIVE)
 */
-void trap_Cvar_Register( vmCvar_t* cvar, const char* var_name, const char* value, int flags );
+void trap_Cvar_Register( /*@null@*/ vmCvar_t* cvar, const char* var_name, const char* value, int flags );
 
 /**
 *	\brief Update a cvar.

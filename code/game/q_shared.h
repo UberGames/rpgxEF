@@ -1214,7 +1214,7 @@ String ID Tables (imported from single player by RPG-X: J2J)
 
 typedef struct stringID_table_s
 {
-	char	*name;
+	/*@null@*/ char* name;
 	int		id;
 } stringID_table_t;
 
