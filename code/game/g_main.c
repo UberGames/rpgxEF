@@ -1953,8 +1953,6 @@ void G_InitGame( int levelTime, unsigned int randomSeed, int restart ) {
 
 }
 
-extern list_iter_p iterTimedMessages; /* list iterator for timed messages */
-
 void G_ShutdownGame( int restart ) {
 	G_Printf ("==== ShutdownGame ====\n");
 
@@ -1983,7 +1981,7 @@ void G_ShutdownGame( int restart ) {
 		destroy_list(level.timedMessages);
 	}
 
-	destroy_iterator(iterTimedMessages);
+	destroy_iterator(level.iterTimedMessages);
 
 #ifdef SQL
 	G_Sql_Shutdown();

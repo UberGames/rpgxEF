@@ -496,8 +496,6 @@ currently in it....
 ==================
 */
 
-/*@null@*/ list_iter_p iterTimedMessages;
-
 /**
 *	\author Ubergames
 */
@@ -509,14 +507,14 @@ static char *TimedMessage( void ){
 		return "^1RPG-X ERROR: No messages to display";
 	}
 
-	if(iterTimedMessages == NULL) {
-		iterTimedMessages = level.timedMessages->iterator(level.timedMessages, LIST_FRONT);
-		if(iterTimedMessages == NULL) { // something went wrong
+	if(level.iterTimedMessages == NULL) {
+		level.iterTimedMessages = level.timedMessages->iterator(level.timedMessages, LIST_FRONT);
+		if(level.iterTimedMessages == NULL) { // something went wrong
 			return "^1RPG-X ERROR: No messages to display";
 		}
 	}
 
-	c = level.timedMessages->cycl_next(iterTimedMessages);
+	c = level.timedMessages->cycl_next(level.iterTimedMessages);
 	message = c->data;
 
 	return message;
