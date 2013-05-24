@@ -98,9 +98,9 @@ void spark_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_spark( gentity_t	*ent )
 {
-	if (ent->wait == 0)
+	if (ent->wait == 0.0)
 	{
-		ent->wait = 2000;
+		ent->wait = 2000.0;
 	}
 
 	SnapVector(ent->s.origin);
@@ -164,7 +164,7 @@ void steam_think( gentity_t *ent )
 			if ( trace.entityNum < ENTITYNUM_WORLD )
 			{
 				gentity_t *victim = &g_entities[trace.entityNum];
-				if ( victim && victim->takedamage )
+				if ( (victim != NULL) && victim->takedamage )
 				{
 					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
 				}

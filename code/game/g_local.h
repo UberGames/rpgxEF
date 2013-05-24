@@ -1391,7 +1391,7 @@ qboolean CanDamage (gentity_t* targ, vec3_t origin);
  * DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
  * DAMAGE_NO_PROTECTION		kills godmode, armor, everything
  */
-void G_Damage (gentity_t* targ, gentity_t* inflictor, gentity_t* attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
+void G_Damage (gentity_t* targ, /*@null@*/ gentity_t* inflictor, /*@null@*/ gentity_t* attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
 
 /**
  * Damage all entities around an origin in a specified radius.
