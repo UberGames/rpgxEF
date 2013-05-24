@@ -22,7 +22,7 @@ int 			group_count;
 int				numKilled;
 
 typedef struct {
-	/*@shared@*/ vmCvar_t	*vmCvar;
+	/*@shared@*/ /*@null@*/ vmCvar_t	*vmCvar;
 	char*		 cvarName;
 	char*		 defaultString;
 	int			 cvarFlags;
