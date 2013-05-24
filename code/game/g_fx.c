@@ -31,7 +31,7 @@ void spark_think( gentity_t *ent )
 }
 
 //T3h TiM-zor was here
-void spark_use( gentity_t* self, gentity_t*, gentity_t* ) {
+void spark_use( gentity_t* self, gentity_t* other, gentity_t* activator) {
 	
 	if ( self->count != 0) {
 		self->think = NULL;
@@ -49,7 +49,7 @@ void spark_use( gentity_t* self, gentity_t*, gentity_t* ) {
 void spark_link( gentity_t *ent )
 {
 
-	ent->s.time2 = ent->wait;
+	ent->s.time2 = (int)ent->wait;
 	if ( ent->target )
 	{
 		// try to use the target to orient me.
@@ -62,7 +62,7 @@ void spark_link( gentity_t *ent )
 		{
 			Com_Printf("spark_link: target specified but not found: %s\n", ent->target );
 
-			ent->think = 0;
+			ent->think = NULL;
 			ent->nextthink = -1;
 
 			return;
