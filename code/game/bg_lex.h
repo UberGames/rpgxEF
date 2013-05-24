@@ -125,7 +125,7 @@ struct bgLex_s {
 };
 
 bgLex* bgLex_create(char* data);
-void bgLex_destroy(bgLex* lex);
+void bgLex_destroy(/*@only@*/ /*@out@*/ /*@null@*/ bgLex* lex);
 int bgLex_lex(bgLex* lex);
 bgLexSymbol bgLex_textToSymbol(char* text);
 void bgLexFatalError(const char* msg, void* lex); 

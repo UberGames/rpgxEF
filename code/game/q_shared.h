@@ -674,7 +674,7 @@ void Parse1DMatrix (char **buf_p, int x, float *m);
 void Parse2DMatrix (char **buf_p, int y, int x, float *m);
 void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m);
 
-void	QDECL Com_sprintf (char *dest, size_t size, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
+void QDECL Com_sprintf (/*@null@*/ char *dest, size_t size, /*@null@*/ const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
 
 
 // mode parm for FS_FOpenFile
@@ -712,11 +712,11 @@ int		Q_stricmpn (/*@null@*/ const char *s1, /*@null@*/ const char *s2, int n);
  * if no longer needed). Returns NULL if no token is found. Make sure
  * to adjust str for the next call yourself as this function won't do that.
  */
-/*@shared@*/ /*@null@*/ char*	Q_strtok(/*@null@*/ char* str, /*@null@*/ const char *tok, int size);
+/*@shared@*/ /*@null@*/ char* Q_strtok(/*@null@*/ char* str, /*@null@*/ const char *tok, size_t size);
 
 // buffer size safe library replacements
-void	Q_strncpyz( /*@null@*/ char *dest, /*@null@*/ const char *src, int destsize );
-void	Q_strcat( /*@null@*/ char *dest, int size, /*@null@*/ const char *src );
+void	Q_strncpyz( /*@null@*/ char *dest, /*@null@*/ const char *src, size_t destsize );
+void	Q_strcat( /*@null@*/ char *dest, size_t size, /*@null@*/ const char *src );
 
 // strlen that discounts Quake color sequences
 int Q_PrintStrlen( /*@null@*/ const char *string );

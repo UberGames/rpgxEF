@@ -1477,6 +1477,7 @@ char *G_searchGroupList(const char *name)
 	int		i;
 	char	mod_name[200];
 
+	memset (mod_name, 0, sizeof(mod_name));
 	memset (races, 0, sizeof(races));
 	memset (text, 0, sizeof(text));
 
@@ -1491,7 +1492,7 @@ char *G_searchGroupList(const char *name)
 	// find the name in the group list
 	for (i=0; i<group_count; i++)
 	{
-		if (!Q_stricmp(mod_name, group_list[i].name))
+		if (Q_stricmp(mod_name, group_list[i].name) == 0)
 		{
 			text_p = group_list[i].text;
 			break;
@@ -1536,9 +1537,9 @@ static void G_FindTeams( void ) {
 			continue;
 		if (!e->team)
 			continue;
-		if (e->flags & FL_TEAMSLAVE)
+		if ((e->flags & FL_TEAMSLAVE) != 0)
 			continue;
-		if ( e->classname && Q_stricmp( "func_door", e->classname ) != 0 )
+		if ( (e->classname != NULL) && Q_stricmp( "func_door", e->classname ) != 0 )
 		{//not a door
 			if ( Q_stricmp( "1", e->team ) == 0 || Q_stricmp( "2", e->team ) == 0 )
 			{//is trying to tell us it belongs to the TEAM_RED or TEAM_BLUE
@@ -1554,9 +1555,9 @@ static void G_FindTeams( void ) {
 				continue;
 			if (!e2->team)
 				continue;
-			if (e2->flags & FL_TEAMSLAVE)
+			if ((e2->flags & FL_TEAMSLAVE) != 0)
 				continue;
-			if (!strcmp(e->team, e2->team))
+			if (strcmp(e->team, e2->team) == 0)
 			{
 				c2++;
 				e2->teamchain = e->teamchain;
