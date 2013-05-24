@@ -699,12 +699,12 @@ int Q_isupper( int c );
 int Q_isalpha( int c );
 
 // portable case insensitive compare
-int		Q_stricmp (const char *s1, const char *s2);
-int		Q_strncmp (const char *s1, const char *s2, int n);
-int		Q_stricmpn (const char *s1, const char *s2, int n);
-char*	Q_strlwr( char *s1 );
-char*	Q_strupr( char *s1 );
-char*	Q_strrchr( const char* string, int c );
+int		Q_stricmp (/*@null@*/ const char *s1, /*@null@*/ const char *s2);
+int		Q_strncmp (/*@null@*/ const char *s1, /*@null@*/ const char *s2, int n);
+int		Q_stricmpn (/*@null@*/ const char *s1, /*@null@*/ const char *s2, int n);
+/*@shared@*/ /*@null@*/ char*	Q_strlwr( /*@null@*/ char *s1 );
+/*@shared@*/ /*@null@*/ char*	Q_strupr( /*@null@*/ char *s1 );
+/*@shared@*/ /*@null@*/ char*	Q_strrchr( /*@null@*/ const char* string, int c );
 /**
  * Goes through a given str searching for one of the given tokens.
  * If it finds one it returns a new string containing everything
@@ -712,16 +712,16 @@ char*	Q_strrchr( const char* string, int c );
  * if no longer needed). Returns NULL if no token is found. Make sure
  * to adjust str for the next call yourself as this function won't do that.
  */
-char*	Q_strtok(char* str, const char *tok, int size);
+/*@shared@*/ /*@null@*/ char*	Q_strtok(/*@null@*/ char* str, /*@null@*/ const char *tok, int size);
 
 // buffer size safe library replacements
-void	Q_strncpyz( char *dest, const char *src, int destsize );
-void	Q_strcat( char *dest, int size, const char *src );
+void	Q_strncpyz( /*@null@*/ char *dest, /*@null@*/ const char *src, int destsize );
+void	Q_strcat( /*@null@*/ char *dest, int size, /*@null@*/ const char *src );
 
 // strlen that discounts Quake color sequences
-int Q_PrintStrlen( const char *string );
+int Q_PrintStrlen( /*@null@*/ const char *string );
 // removes color sequences from string
-char *Q_CleanStr( char *string );
+/*@shared@*/ /*@null@*/ char *Q_CleanStr( /*@null@*/ char *string );
 
 //=============================================
 
