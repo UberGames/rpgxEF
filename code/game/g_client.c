@@ -1514,8 +1514,6 @@ static void G_SendHoloData(int clientNum) {
 	holoTent->nextthink = level.time + 2500;
 }
 
-extern mapChangeData_t mapChangeData;
-
 //! Think function for temporal entity that transmits the server change data and map change data for transporter UI
 void transTent_think(gentity_t *ent) {
 	char temp[MAX_STRING_CHARS];

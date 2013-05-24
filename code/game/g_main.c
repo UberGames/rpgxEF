@@ -1184,8 +1184,8 @@ static void G_LoadServerChangeFile(void) {
 	free(buffer);
 }
 
-static mapChangeData_t mapChangeData;
 
+mapChangeData_t mapChangeData;
 static void G_LoadMapChangeFile(void) {
 	char			fileRoute[MAX_QPATH];
 	fileHandle_t	f = 0;
