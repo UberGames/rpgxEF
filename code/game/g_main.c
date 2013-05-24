@@ -1188,29 +1188,32 @@ static mapChangeData_t mapChangeData;
 
 static void G_LoadMapChangeFile(void) {
 	char			fileRoute[MAX_QPATH];
-	fileHandle_t		f;
-	char			*buffer;
-	int			file_len;
-	char			*txtPtr, *token;
-	int			cnt = 0;
-	int			i = 0;
+	fileHandle_t	f = 0;
+	char*			buffer;
+	int				file_len;
+	char*			txtPtr, *token;
+	int				cnt = 0;
+	int				i = 0;
 
+	memset(fileRoute, 0, sizeof(fileRoute));
 	BG_LanguageFilename("mapchange", "cfg", fileRoute);
 
 	file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
-	if(!file_len)
+	if(file_len == 0) {
 		return;
+	}
 
 	buffer = (char *)malloc(32000 * sizeof(char));
-	if(!buffer) {
+	if(buffer == NULL) {
 		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", 32000 * sizeof(char) );
 		trap_FS_FCloseFile(f);
 		return;
 	}
+	memset(buffer, 0, sizeof(buffer));
 
 	trap_FS_Read(buffer, file_len, f);
-	if ( !buffer[0] )
+	if ( buffer[0] == 0 )
 	{
 		G_Printf( S_COLOR_RED "ERROR: Couldn't read in file: %s!\n", fileRoute );
 		trap_FS_FCloseFile( f );
@@ -1226,11 +1229,13 @@ static void G_LoadMapChangeFile(void) {
 	COM_BeginParseSession();
 	txtPtr = buffer;
 
-	while(1) {
+	while(qtrue) {
 		token = COM_Parse(&txtPtr);
-		if(!token[0]) break;
+		if(token[0] == 0) {
+			break;
+		}
 
-		if(!Q_stricmp(token, "MapChangeConfig")) {
+		if(Q_stricmp(token, "MapChangeConfig") == 0) {
 			token = COM_Parse( &txtPtr );
 			if ( Q_strncmp( token, "{", 1 ) != 0 )
 			{
@@ -1238,11 +1243,13 @@ static void G_LoadMapChangeFile(void) {
 				continue;
 			}
 
-			while(Q_strncmp(token, "}", 1)) {
+			while(Q_strncmp(token, "}", 1) != 0) {
 				token = COM_Parse(&txtPtr);
-				if(!token[0]) break;
+				if(token[0] == 0) {
+					break;
+				}
 
-				if(!Q_stricmp(token, "Map")) {
+				if(Q_stricmp(token, "Map") == 0) {
 					token = COM_Parse(&txtPtr);
 					if ( Q_strncmp( token, "[", 1 ) != 0 )
 					{
@@ -1251,8 +1258,10 @@ static void G_LoadMapChangeFile(void) {
 					}
 
 					token = COM_Parse(&txtPtr);
-					while(Q_strncmp(token, "]", 1)) {
-						if(!token[0]) break;
+					while(Q_strncmp(token, "]", 1) != 0) {
+						if(token[0] == 0) {
+							break;
+						}
 
 						if(cnt > 12) break;
 
@@ -1781,7 +1790,7 @@ void G_InitGame( int levelTime, unsigned int randomSeed, int restart ) {
 			char	serverinfo[MAX_INFO_STRING];
 
 			memset(serverinfo, 0, sizeof(serverinfo));
-			trap_GetServerinfo( serverinfo, (int)sizeof( serverinfo ) );
+			trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
 
 			G_LogPrintf("------------------------------------------------------------\n" );
 			G_LogPrintf("InitGame: %s\n", serverinfo );

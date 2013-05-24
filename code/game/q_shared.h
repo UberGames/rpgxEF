@@ -641,14 +641,14 @@ void UnVectorShort(vec3_t vect);
 
 float Com_Clamp( float min, float max, float value );
 
-char	*COM_SkipPath( char *pathname );
-void	COM_StripExtension( const char *in, char *out );
-void	COM_DefaultExtension( char *path, int maxSize, const char *extension );
+/*@shared@*/ /*@null@*/ char *COM_SkipPath(/*@null@*/  char *pathname );
+void	COM_StripExtension(/*@null@*/  const char *in, /*@null@*/ char *out );
+void	COM_DefaultExtension( /*@null@*/ char *path, int maxSize, const /*@null@*/ char *extension );
 
 void	COM_BeginParseSession( void );
 int		COM_GetCurrentParseLine( void );
-char	*COM_Parse( char **data_p );
-char	*COM_ParseExt( char **data_p, qboolean allowLineBreak );
+/*@shared@*/ /*@null@*/ char *COM_Parse( char **data_p );
+/*@shared@*/ /*@null@*/ char *COM_ParseExt( char **data_p, qboolean allowLineBreak );
 //int		COM_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] );
 
 //RPG-X: Parsing helping functions
