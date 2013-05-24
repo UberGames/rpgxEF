@@ -1231,7 +1231,7 @@ static void G_LoadMapChangeFile(void) {
 
 	while(qtrue) {
 		token = COM_Parse(&txtPtr);
-		if(token[0] == 0) {
+		if(token == NULL || token[0] == 0) {
 			break;
 		}
 
@@ -1245,7 +1245,7 @@ static void G_LoadMapChangeFile(void) {
 
 			while(Q_strncmp(token, "}", 1) != 0) {
 				token = COM_Parse(&txtPtr);
-				if(token[0] == 0) {
+				if(token == NULL || token[0] == 0) {
 					break;
 				}
 
@@ -1259,7 +1259,7 @@ static void G_LoadMapChangeFile(void) {
 
 					token = COM_Parse(&txtPtr);
 					while(Q_strncmp(token, "]", 1) != 0) {
-						if(token[0] == 0) {
+						if(token == NULL || token[0] == 0) {
 							break;
 						}
 
