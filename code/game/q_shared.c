@@ -738,7 +738,7 @@ char* Q_strrchr( const char* string, int c )
 	return sp;
 }
 
-char* Q_strtok(char* str, const char *tok, int size) {
+char* Q_strtok(char* str, const char *tok, size_t size) {
 	char *ptr;
 	char *result;
 	int i, l;
@@ -774,13 +774,13 @@ Q_strncpyz
 Safe strncpy that ensures a trailing zero
 =============
 */
-void Q_strncpyz( char *dest, const char *src, int destsize ) {
+void Q_strncpyz( char *dest, const char *src, size_t destsize ) {
 
-	if ( !dest ) {
+	if ( dest == NULL ) {
 		Com_Error( ERR_FATAL, "Q_strncpyz: NULL dest. src was %s", src );
 		return;
 	}
-	if ( !src ) {
+	if ( src == NULL ) {
 		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src. dest was %s", dest );
 		return;
 	}
@@ -879,7 +879,7 @@ char *Q_strupr( char *s1 ) {
 }
 
 /* never goes past bounds or leaves without a terminating 0 */
-void Q_strcat( char *dest, int size, const char *src ) {
+void Q_strcat( char *dest, size_t size, const char *src ) {
 	int		l1;
 
 	l1 = strlen( dest );
@@ -938,7 +938,7 @@ char *Q_CleanStr( char *string ) {
 	return string;
 }
 
-void QDECL Com_sprintf( char *dest, int size, const char *fmt, ...) {
+void QDECL Com_sprintf( char *dest, size_t size, const char *fmt, ...) {
 	int			len;
 	va_list		argptr;
 	char		*bigbuffer;
