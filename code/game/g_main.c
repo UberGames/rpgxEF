@@ -1280,7 +1280,7 @@ static void G_LoadLocationsFile( void )
 	char			fileRoute[MAX_QPATH];
 	char			mapRoute[MAX_QPATH];
 	char			*serverInfo;
-	fileHandle_t	f;
+	fileHandle_t	f = 0;
 	bgLex*			lex;
 	char			*buffer;
 	int				file_len;
@@ -1289,14 +1289,18 @@ static void G_LoadLocationsFile( void )
 	char			*desc;
 	int				rest = 0;
 
+	memset(fileRoute, 0, sizeof(fileRoute));
+	memset(mapRoute, 0, sizeof(mapRoute));
+	
 	serverInfo = (char *)malloc(MAX_INFO_STRING * sizeof(char));
 	if(!serverInfo) {
 		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", MAX_INFO_STRING * sizeof(char));
 		return;
 	}
+	memset(serverInfo, 0, sizeof(serverInfo));
 
 	//get the map name out of the server data
-	trap_GetServerinfo( serverInfo, MAX_INFO_STRING * sizeof(char) );
+	trap_GetServerinfo( serverInfo, (size_t)(MAX_INFO_STRING * sizeof(char)) );
 
 	//setup the file route
 	Com_sprintf( mapRoute, sizeof( mapRoute ), "maps/%s", Info_ValueForKey( serverInfo, "mapname" ) );
@@ -1307,8 +1311,9 @@ static void G_LoadLocationsFile( void )
 
 	free(serverInfo);
 
-	if ( !file_len )
+	if (file_len == 0) {
 		return;
+	}
 
 	buffer = (char *)malloc((file_len+1) * sizeof(char));
 	if(!buffer) {
@@ -1316,9 +1321,10 @@ static void G_LoadLocationsFile( void )
 		trap_FS_FCloseFile(f);
 		return;
 	}
+	memset(buffer, 0, sizeof(buffer));
 
 	trap_FS_Read( buffer, file_len, f );
-	if ( !buffer[0] )
+	if ( buffer[0] == 0 )
 	{
 		G_Printf( S_COLOR_RED "ERROR: Couldn't read in file: %s!\n", fileRoute );
 		trap_FS_FCloseFile( f );
@@ -1347,7 +1353,7 @@ static void G_LoadLocationsFile( void )
 
 	if(lex->morphem->data.symbol == LSYM_LOCATIONS_LIST || lex->morphem->data.symbol == LSYM_LOCATIONS_LIST_2) {
 		if(bgLex_lex(lex) == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_OBRACEC) {
-			if(!bgLex_lex(lex)) {
+			if(bgLex_lex(lex) == 0) {
 				G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
 				free(buffer);
 				bgLex_destroy(lex);
@@ -1357,7 +1363,7 @@ static void G_LoadLocationsFile( void )
 			G_Printf(S_COLOR_YELLOW "WARNING: LocationsList2 had no opening brace '{'!\n");
 		}
 
-		while(1) {
+		while(qtrue) {
 			if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_CBRACEC) {
 				break;
 			}
@@ -1385,11 +1391,17 @@ static void G_LoadLocationsFile( void )
 
 				desc = G_NewString(lex->morphem->data.str);
 
+				if(desc == NULL) {
+					free(buffer);
+					bgLex_destroy(lex);
+					return;
+				}
+
 				if((result = bgLex_lex(lex)) == LMT_STRING) {
 					rest = atoi(desc);
 					desc = G_NewString(lex->morphem->data.str);
 
-					if(!bgLex_lex(lex)) {
+					if(bgLex_lex(lex) == 0) {
 						G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
 						free(buffer);
 						bgLex_destroy(lex);

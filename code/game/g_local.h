@@ -3054,7 +3054,7 @@ void trap_SetUserinfo( int num, const char* buffer );
 *	\param buffer buffer to store the info in
 *	\param bufferSize size of buffer
 */
-void trap_GetServerinfo( char* buffer, int bufferSize );
+void trap_GetServerinfo( char* buffer, size_t bufferSize );
 
 /**
 *	\brief Set the brush model for a entity.
