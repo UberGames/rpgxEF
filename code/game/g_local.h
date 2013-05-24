@@ -3081,7 +3081,7 @@ void trap_SetBrushModel( gentity_t* ent, const char* name );
 *	from start to end and checks whether it colides with anything that matches the contentmask.
 *	The entities that math the passEntityNum will be ingnored.
 */
-void trap_Trace( trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
+void trap_Trace( trace_t* results, const vec3_t start, /*@null@*/ const vec3_t mins, /*@null@*/ const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask );
 
 /**
 *	\param point the point

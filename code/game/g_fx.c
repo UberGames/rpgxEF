@@ -80,17 +80,17 @@ void spark_link( gentity_t *ent )
 	//TiM : for optional length in other functions
 	ent->s.time = 10000;
 
-	if ( !( ent->spawnflags & 1 ) ) {
+	if ( ( ent->spawnflags & 1 ) == 0) {
 		G_AddEvent( ent, EV_FX_SPARK, 0 );
 		ent->count = 1;
 
 		ent->think = spark_think;	
-		ent->nextthink = level.time + 10000.0;
+		ent->nextthink = level.time + 10000;
 	}
 	else {
 		ent->count = 0;
 
-		ent->think = 0;	
+		ent->think = NULL;	
 		ent->nextthink = -1;
 	}
 }
@@ -98,7 +98,7 @@ void spark_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_spark( gentity_t	*ent )
 {
-	if (!ent->wait)
+	if (ent->wait == 0)
 	{
 		ent->wait = 2000;
 	}
@@ -141,15 +141,17 @@ void steam_think( gentity_t *ent )
 	if(ent->targetname) //toggleable effect needs to be updated more often
 		ent->nextthink = level.time + 1000;
 	else
-		ent->nextthink = level.time + 10000.0; // send a refresh message every 10 seconds
+		ent->nextthink = level.time + 10000; // send a refresh message every 10 seconds
 
 
 	// FIXME: This may be a bit weird for steam bursts*/
 	// If a fool gets in the bolt path, zap 'em
-	if ( ent->damage ) 
+	if ( ent->damage == 0) 
 	{
 		vec3_t	start, temp;
 		trace_t	trace;
+
+		memset(&trace, 0, sizeof(trace));
 
 		VectorSubtract( ent->s.origin2, ent->r.currentOrigin, temp );
 		VectorNormalize( temp );
