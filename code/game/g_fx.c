@@ -98,7 +98,7 @@ void spark_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_spark( gentity_t	*ent )
 {
-	if (ent->wait == 0.0)
+	if (ent->wait <= 0)
 	{
 		ent->wait = 2000.0;
 	}
