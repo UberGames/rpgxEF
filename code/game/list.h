@@ -98,25 +98,25 @@ struct list{
 	int length;					/*!< count of elements in the list */
 	lnode_p first;				/*!< first element of the list */
 	lnode_p last;				/*!< last element of the list */
-	void (*destructor)(void*);	/*!< pointer to destructor for data. Default is free. */
-	list_iter_p (*iterator)(list_p list, char init);	/*!< creates a new list iterator */
+	void (*destructor)(/*@only@*/ /*@out@*/ /*@null@*/ void*);	/*!< pointer to destructor for data. Default is free. */
+	/*@shared@*/ /*@null@*/ list_iter_p (*iterator)(list_p list, char init);	/*!< creates a new list iterator */
 	int (*add_ptr)(list_p list, void* data, dataType_t type, char end); /*!< add a pointer to the list */
 	int (*append_ptr)(list_p list, void* data, dataType_t type); /*!< append a pointer to the list */
 	int (*prepend_ptr)(list_p list, void* data, dataType_t type); /*!< prepend a pointer to the list */
 	int (*add)(list_p list, void* data, dataType_t type, size_t size, char end); /*!< add data to the list */
 	int (*append)(list_p list, void* data, dataType_t type, size_t size); /*!< append data to the list */
 	int (*prepend)(list_p list, void* data, dataType_t type, size_t size); /*!< prepend data to the list */
-	container_p (*at)(list_p list, int idx); /*!< get container at given index */
+	/*@shared@*/ /*@null@*/ container_p (*at)(list_p list, int idx); /*!< get container at given index */
 	void (*clear)(list_p list); /*!< clear the list */
-	container_p (*current)(list_iter_p iter); /*!< get the current element for the iterator */
-	container_p (*cycl_next)(list_iter_p iter); /*!< get the next element for the iterator (cyclic access) */
-	container_p (*cycl_prev)(list_iter_p iter); /*!< get the previous element for the iterator (cyclic acccess) */
-	container_p (*front)(list_p list); /*!< get the first element of the list */
-	container_p (*end)(list_p list); /*!< get the last element of the list */
-	container_p (*next)(list_iter_p iter); /*!< get the next element for the iterator */
-	container_p (*prev)(list_iter_p iter); /*!< get the previous element for the iterator */
-	container_p (*poll)(list_p list); /*<! poll */
-	container_p (*pop)(list_p list); /*<! pop */
+	/*@shared@*/ /*@null@*/ container_p (*current)(list_iter_p iter); /*!< get the current element for the iterator */
+	/*@shared@*/ /*@null@*/ container_p (*cycl_next)(list_iter_p iter); /*!< get the next element for the iterator (cyclic access) */
+	/*@shared@*/ /*@null@*/ container_p (*cycl_prev)(list_iter_p iter); /*!< get the previous element for the iterator (cyclic acccess) */
+	/*@shared@*/ /*@null@*/ container_p (*front)(list_p list); /*!< get the first element of the list */
+	/*@shared@*/ /*@null@*/ container_p (*end)(list_p list); /*!< get the last element of the list */
+	/*@shared@*/ /*@null@*/ container_p (*next)(list_iter_p iter); /*!< get the next element for the iterator */
+	/*@shared@*/ /*@null@*/ container_p (*prev)(list_iter_p iter); /*!< get the previous element for the iterator */
+	/*@shared@*/ /*@null@*/ container_p (*poll)(list_p list); /*<! poll */
+	/*@shared@*/ /*@null@*/ container_p (*pop)(list_p list); /*<! pop */
 	void (*remove)(list_p list, char end); /*!< remove an element from the list */
 	void (*removeAt)(list_p list, int idx); /*!< remove an element at a specified index */
 };
@@ -136,21 +136,21 @@ struct list_iter {
  *
  *	\return A new list allocated on the heap.
  */
-list_p create_list(void);
+/*@shared@*/ /*@null@*/ list_p create_list(void);
 
 /**
  * Completely free the data associated with the list. 
  *
  *	\param list pointer to a list
  */
-void destroy_list(list_p list);
+void destroy_list(/*@only@*/ /*@out@*/ /*@null@*/ list_p list);
 
 /**
  * Destroy a list iterator if allocated.
  *
  *	\param list pointer to a iterator
  */
-void destroy_iterator(list_iter_p iter);
+void destroy_iterator(/*@only@*/ /*@out@*/ /*@null@*/list_iter_p iter);
 
 /**
  * Initialize list. For use on lists that are NOT allocated on the heap.
@@ -158,6 +158,6 @@ void destroy_iterator(list_iter_p iter);
  *	\param l a list
  *	\param destructor pointer to destructor function
  */
-void list_init(struct list * l, void (*destructor)(void*));
+void list_init(struct list * l, /*@null@*/ void (*destructor)(void*));
 
 #endif

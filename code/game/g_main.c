@@ -633,8 +633,9 @@ and transfer to clients
 **************************/
 static qboolean G_LoadClassData( char* fileName )
 {
-	char			*buffer = NULL;
-	char			*textPtr = NULL, *token = NULL;
+	char*			buffer = NULL;
+	char*			textPtr = NULL;
+	char*			token = NULL;
 	int				fileLen;
 	fileHandle_t	f = 0;
 	qboolean		classValid=qfalse;
@@ -647,18 +648,18 @@ static qboolean G_LoadClassData( char* fileName )
 
 	fileLen = trap_FS_FOpenFile( fileName, &f, FS_READ );
 
-	if ( !f ) {
+	if ( f == 0 ) {
 		G_Printf( S_COLOR_RED "ERROR: File %s not found.\n", fileName );
 		return qfalse;
 	}
 
 	buffer = (char *)malloc((fileLen+1) * sizeof(char));
-
-	if(!buffer) {
+	if(buffer == NULL) {
 		G_Printf( S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", (fileLen+1) * sizeof(char) );
 		trap_FS_FCloseFile( f );
 		return qfalse;
 	}
+	memset(buffer, 0, sizeof(buffer));
 
 	trap_FS_Read( buffer, fileLen, f );
 	buffer[fileLen] = 0;
@@ -670,36 +671,32 @@ static qboolean G_LoadClassData( char* fileName )
 
 	token = COM_Parse( &textPtr );
 
-	if ( !token[0] ) {
+	if ( token == NULL || token[0] == 0 ) {
 		G_Printf( S_COLOR_RED "ERROR: No data was found when going to parse the file!\n" );
 		free(buffer);
 		return qfalse;
 	}
 
-	if ( Q_stricmpn( token, "{", 1 ) ) {
+	if ( Q_stricmpn( token, "{", 1 ) != 0 ) {
 		G_Printf( S_COLOR_RED "ERROR: File did not start with a '{' symbol!\n" );
 		free(buffer);
 		return qfalse;
 	}
 
-	while ( 1 )
-	{
-		if ( classIndex >= MAX_CLASSES )
+	while ( qtrue ) {
+		if ( classIndex >= MAX_CLASSES ) {
 			break;
+		}
 
-		if ( !Q_stricmpn( token, "{", 1 ) )
-		{
-			while ( 1 )
-			{
+		if ( Q_stricmpn( token, "{", 1 ) == 0 ) {
+			while ( qtrue ) {
 				token = COM_Parse( &textPtr );
-				if (!token[0]) {
+				if (token == NULL || token[0] == 0) {
 					break;
 				}
 
-				if ( !Q_stricmpn( token, "consoleName", 11 ) )
-				{
-					if ( COM_ParseString( &textPtr, &token ) )
-					{
+				if ( Q_stricmpn( token, "consoleName", 11 ) == 0 ) {
+					if ( COM_ParseString( &textPtr, &token ) ) {
 						G_Printf( S_COLOR_RED "ERROR: Invalid class console name in class index: %i.\n", classIndex );
 						SkipBracedSection( &textPtr );
 						continue;
@@ -711,10 +708,8 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "formalName", 11 ) )
-				{
-					if ( COM_ParseString( &textPtr, &token ) )
-					{
+				if ( Q_stricmpn( token, "formalName", 11 ) == 0 ) {
+					if ( COM_ParseString( &textPtr, &token ) ) {
 						G_Printf( S_COLOR_RED "ERROR: Invalid class formal name in class index: %i.\n", classIndex );
 						SkipBracedSection( &textPtr );
 						continue;
@@ -726,10 +721,8 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "message", 7 ) )
-				{
-					if ( COM_ParseString( &textPtr, &token ) )
-					{
+				if ( Q_stricmpn( token, "message", 7 ) == 0 ) {
+					if ( COM_ParseString( &textPtr, &token ) ) {
 						G_Printf( S_COLOR_RED "ERROR: Invalid class message in class index: %i.\n", classIndex );
 						continue;
 					}
@@ -738,10 +731,8 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "modelSkin", 9 ) )
-				{
-					if ( COM_ParseString( &textPtr, &token ) )
-					{
+				if ( Q_stricmpn( token, "modelSkin", 9 ) == 0 ) {
+					if ( COM_ParseString( &textPtr, &token ) ) {
 						G_Printf( S_COLOR_RED "ERROR: Invalid class skin color in class index: %i.\n", classIndex );
 						continue;
 					}
@@ -750,37 +741,36 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "weapons", 7) )
-				{
+				if ( Q_stricmpn( token, "weapons", 7) == 0 ) {
 					token = COM_Parse( &textPtr );
 
-					if ( Q_stricmpn( token, "{", 1 ) )
-					{
+					if ( Q_stricmpn( token, "{", 1 ) != 0 )	{
 						G_Printf( S_COLOR_RED "No opening bracket found for weapons field in class: %i.\n", classIndex );
 						SkipRestOfLine( &textPtr );
 						continue;
 					}
 
 					//sub loop
-					while ( 1 )
-					{
+					while ( qtrue ) {
 						token = COM_Parse( &textPtr );
 
-						if ( !token[0] )
+						if ( token == NULL || token[0] == 0 ) {
 							break;
+						}
 
-						if ( !Q_stricmpn( token, "|", 1 ) )
+						if ( Q_stricmpn( token, "|", 1 ) == 0) {
 							continue;
+						}
 
-						if ( !Q_stricmpn( token, "}", 1 ) )
+						if ( Q_stricmpn( token, "}", 1 ) == 0 ) {
 							break;
+						}
 
-						if( !Q_stricmpn( token, "WP_", 3 ) )
+						if( Q_stricmpn( token, "WP_", 3 ) == 0 )
 						{
 							weapon = GetIDForString( WeaponTable, token );
 
-							if ( weapon >= 0 )
-							{
+							if ( weapon >= 0 ) {
 								g_classData[classIndex].weaponsFlags |= ( 1 << weapon );
 								continue;
 							}
@@ -790,10 +780,8 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "admin", 5 ) )
-				{
-					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isAdmin ) )
-					{
+				if ( Q_stricmpn( token, "admin", 5 ) == 0 ) {
+					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isAdmin ) ) {
 						G_Printf( S_COLOR_RED "ERROR: Class admin check for class %i was invalid.\n", classIndex );
 						continue;
 					}
@@ -801,10 +789,8 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "marine", 6 ) )
-				{
-					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isMarine ) )
-					{
+				if ( Q_stricmpn( token, "marine", 6 ) == 0 ) {
+					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isMarine ) ) {
 						G_Printf( S_COLOR_RED "ERROR: Class marine check for class %i was invalid.\n", classIndex );
 						continue;
 					}
@@ -812,10 +798,8 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "medical", 7 ) )
-				{
-					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isMedical ) )
-					{
+				if ( Q_stricmpn( token, "medical", 7 ) == 0) {
+					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isMedical ) ) {
 						G_Printf( S_COLOR_RED "ERROR: Class medic check for class %i was invalid.\n", classIndex );
 						continue;
 					}
@@ -823,20 +807,16 @@ static qboolean G_LoadClassData( char* fileName )
 					continue;
 				}
 
-				if( !Q_stricmpn( token, "isBorg", 6 ) )
-				{
-					if( COM_ParseInt( &textPtr, &g_classData[classIndex].isBorg ) )
-					{
+				if( Q_stricmpn( token, "isBorg", 6 ) == 0 )	{
+					if( COM_ParseInt( &textPtr, &g_classData[classIndex].isBorg ) )	{
 						G_Printf( S_COLOR_RED "ERROR: Class borg check for class %i was invalid.\n", classIndex );
 						continue;
 					}
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "n00b", 4 ) )
-				{
-					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isn00b ) )
-					{
+				if ( Q_stricmpn( token, "n00b", 4 ) == 0 ) {
+					if ( COM_ParseInt( &textPtr, &g_classData[classIndex].isn00b ) ) {
 						G_Printf( S_COLOR_RED "ERROR: Class n00b check for class %i was invalid.\n", classIndex );
 						continue;
 					}
@@ -845,33 +825,29 @@ static qboolean G_LoadClassData( char* fileName )
 				}
 
 				//skip the client-side specific entries since they interfere with the parsing
-				if ( !Q_stricmpn( token, "radarColor", 10 )
-					|| !Q_stricmpn( token, "iconColor", 9 )
-					|| !Q_stricmpn( token, "hasRanks", 8 )
-					|| !Q_stricmpn( token, "noShow", 6 )
-					)
-				{
+				if ( (Q_stricmpn( token, "radarColor", 10 ) == 0)
+					|| (Q_stricmpn( token, "iconColor", 9 ) == 0)
+					|| (Q_stricmpn( token, "hasRanks", 8 ) == 0)
+					|| (Q_stricmpn( token, "noShow", 6 ) == 0)
+					) {
 					SkipRestOfLine( &textPtr );
 					continue;
 				}
 
-				if ( !Q_stricmpn( token, "}", 1 ) )
-				{
+				if ( Q_stricmpn( token, "}", 1 ) == 0 ) {
 					break;
 				}
 			}
 
 
-			if ( classValid )
-			{
+			if ( classValid ) {
 				classIndex++;
 				classValid = qfalse;
 			}
 		}
 
 		token = COM_Parse( &textPtr );
-		if (!token[0])
-		{
+		if (token == NULL || token[0] == 0) {
 			break;
 		}
 	}
@@ -879,18 +855,14 @@ static qboolean G_LoadClassData( char* fileName )
 	free(buffer);
 
 	//build ourselves custom CVARs for each class
-	for ( i=0; g_classData[i].consoleName[0] && i < MAX_CLASSES; i++ )
-	{
+	for ( i=0; (g_classData[i].consoleName[0] != 0) && (i < MAX_CLASSES); i++ ) {
 		trap_Cvar_Register( NULL, va("rpg_%sPass", g_classData[i].consoleName ), g_classData[i].consoleName, CVAR_ARCHIVE );
 		trap_Cvar_Register( NULL, va("rpg_%sFlags", g_classData[i].consoleName ), va("%i", g_classData[i].weaponsFlags), CVAR_ARCHIVE );
 	}
 
-	if ( classIndex > 0 )
-	{
+	if ( classIndex > 0 ) {
 		return qtrue;
-	}
-	else
-	{
+	} else {
 		G_Printf( S_COLOR_RED "ERROR: No valid classes were found.\n");
 		return qfalse;
 	}
@@ -1012,7 +984,7 @@ static void G_LoadHolodeckFile(void) {
 	COM_BeginParseSession();
 	txtPtr = buffer;
 
-	while(1) {
+	while(qtrue) {
 		token = COM_Parse(&txtPtr);
 		if(token == NULL || token[0] == 0) {
 			break;
@@ -1043,7 +1015,7 @@ static void G_LoadHolodeckFile(void) {
 					// <string> - desc1
 					// <string> - desc2
 					// <string> - image
-					while(Q_stricmpn(token, "]", 1)) {
+					while(Q_stricmpn(token, "]", 1) != 0) {
 						if(token == NULL || token[0] == 0) {
 							break;
 						}
