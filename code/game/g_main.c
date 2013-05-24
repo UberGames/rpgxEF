@@ -1524,8 +1524,8 @@ All but the last will have the teamchain field set to the next one
 ================
 */
 static void G_FindTeams( void ) {
-	gentity_t* e;
-	gentity_t* e2;
+	/*@shared@*/ /*@null@*/ gentity_t* e;
+	/*@shared@*/ /*@null@*/ gentity_t* e2;
 	int		i, j;
 	int		c, c2;
 

@@ -214,15 +214,15 @@ struct gentity_s {
 
 	qboolean	inuse;
 
-	char*		classname;			//!< set in QuakeEd
+	/*@shared@*/ /*@null@*/ char*		classname;			//!< set in QuakeEd
 	int			spawnflags;			//!< set in QuakeEd
 
 	qboolean	neverFree;			//!< if true, FreeEntity will only unlink bodyque uses this
 
 	int			flags;				//!< FL_* variables
 
-	char*		model;				//!< the model or brushmodel the entities uses
-	char*		model2;			//!< an alternate model
+	/*@shared@*/ /*@null@*/ char*		model;				//!< the model or brushmodel the entities uses
+	/*@shared@*/ /*@null@*/ char*		model2;			//!< an alternate model
 	int			freetime;			//!< level.time when the object was freed
 
 	int			eventTime;			//!< events will be cleared EVENT_VALID_MSEC after set
@@ -249,28 +249,28 @@ struct gentity_s {
 	vec3_t		apos1;				//!< angular start position for movers
 	vec3_t		apos2;				//!< angular end position for movers
 
-	char*		message;			//!< message for target_print
+	/*@shared@*/ /*@null@*/ char*		message;			//!< message for target_print
 
 	int			timestamp;			//!< body queue sinking, etc
 
 	float		angle;				//!< set in editor, -1 = up, -2 = down
-	char*		target;			//!< target of the entity
-	char*		paintarget;		//!< target to use if entity takes damage
-	char*		targetname;		//!< targetname that identyfies the entity
-	char*		team;				//!< for teamchains
+	/*@shared@*/ /*@null@*/ char*		target;			//!< target of the entity
+	/*@shared@*/ /*@null@*/ char*		paintarget;		//!< target to use if entity takes damage
+	/*@shared@*/ /*@null@*/ char*		targetname;		//!< targetname that identyfies the entity
+	/*@shared@*/ /*@null@*/ char*		team;				//!< for teamchains
 	/*@shared@*/ /*@null@*/ gentity_t*	target_ent;		//!< target of turrets etc
 
 	float		speed;				//!< moving speed etc
 	vec3_t		movedir;			//!< moving direction
 
 	int			nextthink;			//!< next level.time the entities think functions gets called
-	void		(*think)(gentity_t *self);	//!< think function
-	void		(*reached)(gentity_t *self);	//!< movers call this when hitting endpoint
-	void		(*blocked)(gentity_t *self, gentity_t *other); //!< movers call this when blocked
-	void		(*touch)(gentity_t *self, gentity_t *other, trace_t *trace); //!< touch function for triggers
-	void		(*use)(gentity_t *self, gentity_t *other, gentity_t *activator); //!< function that gets called if the entity is used
-	void		(*pain)(gentity_t *self, gentity_t *attacker, int damage); //!< function that gets called if entity gets damged
-	void		(*die)(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod); //!< function that gets called if entity dies
+	/*@shared@*/ /*@null@*/ void		(*think)(gentity_t *self);	//!< think function
+	/*@shared@*/ /*@null@*/ void		(*reached)(gentity_t *self);	//!< movers call this when hitting endpoint
+	/*@shared@*/ /*@null@*/ void		(*blocked)(gentity_t *self, gentity_t *other); //!< movers call this when blocked
+	/*@shared@*/ /*@null@*/ void		(*touch)(gentity_t *self, gentity_t *other, trace_t *trace); //!< touch function for triggers
+	/*@shared@*/ /*@null@*/ void		(*use)(gentity_t *self, gentity_t *other, gentity_t *activator); //!< function that gets called if the entity is used
+	/*@shared@*/ /*@null@*/ void		(*pain)(gentity_t *self, gentity_t *attacker, int damage); //!< function that gets called if entity gets damged
+	/*@shared@*/ /*@null@*/ void		(*die)(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod); //!< function that gets called if entity dies
 
 	int			pain_debounce_time;
 	int			fly_sound_debounce_time;	// wind tunnel
@@ -313,11 +313,11 @@ struct gentity_s {
 
 	qboolean	botDelayBegin;
 
-	char*		swapname;			//RPG-X Modification | Phenix | 13/06/2004
-	char*		truename;
-	char*		falsename;
-	char*		truetarget;
-	char*		falsetarget;
+	/*@shared@*/ /*@null@*/ char*		swapname;			//RPG-X Modification | Phenix | 13/06/2004
+	/*@shared@*/ /*@null@*/ char*		truename;
+	/*@shared@*/ /*@null@*/ char*		falsename;
+	/*@shared@*/ /*@null@*/ char*		truetarget;
+	/*@shared@*/ /*@null@*/ char*		falsetarget;
 	qboolean	booleanstate;	
 
 	float		distance;		// VALKYRIE: for rotating doors
@@ -325,16 +325,16 @@ struct gentity_s {
 	int			n00bCount;	//RPG-X | Phenix | 06/04/2004 | For when people kill
 
 	//RPG-X: TiM : Additional Params for map ents
-	char*		targetname2;	// GSIO01 | 08/05/2009
+	/*@shared@*/ /*@null@*/ char*		targetname2;	// GSIO01 | 08/05/2009
 
 	/*@shared@*/ /*@null@*/ gentity_t*	touched;		// GSIO01 | 08/05/2009 repairing breakables
 	
 	//GSIO01 | 10/05/2009 | ok these are for target_alert:
-	char*		bluename;
-	char*		greensound;
-	char*		yellowsound;
-	char*		redsound;
-	char*		bluesound;
+	/*@shared@*/ /*@null@*/ char*		bluename;
+	/*@shared@*/ /*@null@*/ char*		greensound;
+	/*@shared@*/ /*@null@*/ char*		yellowsound;
+	/*@shared@*/ /*@null@*/ char*		redsound;
+	/*@shared@*/ /*@null@*/ char*		bluesound;
 
 	char		*targetShaderName;		//!< shader to remap for shader remapping
 	char		*targetShaderNewName;	//!< shader to remap to for shader remapping
@@ -344,20 +344,20 @@ struct gentity_s {
 #ifdef G_LUA
 	// for lua hooks
 	// pointers to lua functions
-	char*		luaTouch;
-	char*		luaUse;
-	char*		luaThink;
-	char*		luaHurt;
-	char*		luaDie;
-	char*		luaFree;
-	char*		luaTrigger;
-	char*		luaReached;
-	char*		luaReachedAngular;
-	char*		luaSpawn;
-	char*		luaParm1;
-	char*		luaParm2;
-	char*		luaParm3;
-	char*		luaParm4;
+	/*@shared@*/ /*@null@*/ char*		luaTouch;
+	/*@shared@*/ /*@null@*/ char*		luaUse;
+	/*@shared@*/ /*@null@*/ char*		luaThink;
+	/*@shared@*/ /*@null@*/ char*		luaHurt;
+	/*@shared@*/ /*@null@*/ char*		luaDie;
+	/*@shared@*/ /*@null@*/ char*		luaFree;
+	/*@shared@*/ /*@null@*/ char*		luaTrigger;
+	/*@shared@*/ /*@null@*/ char*		luaReached;
+	/*@shared@*/ /*@null@*/ char*		luaReachedAngular;
+	/*@shared@*/ /*@null@*/ char*		luaSpawn;
+	/*@shared@*/ /*@null@*/ char*		luaParm1;
+	/*@shared@*/ /*@null@*/ char*		luaParm2;
+	/*@shared@*/ /*@null@*/ char*		luaParm3;
+	/*@shared@*/ /*@null@*/ char*		luaParm4;
 	qboolean	luaEntity;
 #endif
 
