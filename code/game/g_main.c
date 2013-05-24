@@ -768,14 +768,11 @@ static qboolean G_LoadClassData( char* fileName )
 
 						if( Q_stricmpn( token, "WP_", 3 ) == 0 )
 						{
-							weapon = GetIDForString( WeaponTable, token );
+							int t = GetIDForString( WeaponTable, token );
 
-							if ( weapon > 0 ) {
+							if ( t >= 0 ) {
+								weapon = (unsigned)t;
 								g_classData[classIndex].weaponsFlags |= ( 1 << weapon );
-								continue;
-							}
-							if ( weapon == 0) {
-								g_classData[classIndex].weaponsFlags |= 1;
 								continue;
 							}
 						}
