@@ -4,6 +4,7 @@
 #include "g_groups.h"
 #include "g_main.h"
 #include "g_cmds.h"
+#include "g_main.h"
 
 reconData_t	g_reconData[MAX_RECON_NAMES]; //!< recon data for a limited ammount of clients
 int			g_reconNum;
