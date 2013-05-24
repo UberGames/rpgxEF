@@ -31,7 +31,7 @@ void spark_think( gentity_t *ent )
 }
 
 //T3h TiM-zor was here
-void spark_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
+void spark_use( gentity_t* self, gentity_t*, gentity_t* ) {
 	
 	if ( self->count != 0) {
 		self->think = NULL;
