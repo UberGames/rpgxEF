@@ -494,6 +494,7 @@
     <ClInclude Include="bg_lex.h" />
     <ClInclude Include="bg_lib.h" />
     <ClInclude Include="bg_local.h" />
+    <ClInclude Include="bg_misc.h" />
     <ClInclude Include="bg_public.h" />
     <ClInclude Include="botlib.h" />
     <ClInclude Include="chars.h" />

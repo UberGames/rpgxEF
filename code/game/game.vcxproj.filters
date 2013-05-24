@@ -479,6 +479,9 @@
     <ClInclude Include="g_cmds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bg_misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">
