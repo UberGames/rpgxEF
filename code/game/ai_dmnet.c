@@ -203,7 +203,7 @@ int BotNearbyGoal(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range) {
 		trap_BotGoalName(goal.number, buf, sizeof(buf));
 		BotAI_Print(PRT_MESSAGE, "%1.1f: new nearby goal %s\n", trap_AAS_Time(), buf);
 	}
-	//*/
+	*/
 	return ret;
 }
 
@@ -277,7 +277,7 @@ int BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal) {
 			trap_BotGetTopGoal(bs->gs, goal);
 			trap_BotGoalName(goal->number, buf, sizeof(buf));
 			BotAI_Print(PRT_MESSAGE, "%1.1f: new long term goal %s\n", trap_AAS_Time(), buf);
-			//*/
+			*/
 			bs->ltg_time = trap_AAS_Time() + 20;
 		}
 		else {//the bot gets sorta stuck with all the avoid timings, shouldn't happen though

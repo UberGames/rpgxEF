@@ -2356,7 +2356,7 @@ static void PM_Footsteps( void ) {
 				}
 			}
 			return;
-		}//******************************************************************
+		}/******************************************************************/
 		 else {
 			// airborne leaves position in cycle intact, but doesn't advance
 			 if ( pm->waterlevel > 2 ) { //TiM: swimming is more hardcore now //1

@@ -96,7 +96,7 @@ typedef struct bsp_trace_s
 	int				contents;	// contents on other side of surface hit
 	int				ent;		// number of entity hit
 } bsp_trace_t;
-//*/
+*/
 
 //!entity info
 typedef struct aas_entityinfo_s

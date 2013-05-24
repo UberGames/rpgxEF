@@ -27,22 +27,22 @@ void spark_think( gentity_t *ent )
 	if(ent->targetname) //toggleable effect needs to be updated more often
 		ent->nextthink = level.time + 1000;
 	else
-		ent->nextthink = level.time + 10000.0; // send a refresh message every 10 seconds
+		ent->nextthink = level.time + 10000; // send a refresh message every 10 seconds
 }
 
 //T3h TiM-zor was here
 void spark_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
 	
-	if ( self->count ) {
-		self->think = 0;
+	if ( self->count != 0) {
+		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else {
 		self->think = spark_think;	
-		self->nextthink = level.time + 10000.0;
+		self->nextthink = level.time + 10000;
+		self->count = 1;
 	}
-
-	self->count = !(self->count);
 }
 
 //------------------------------------------
@@ -484,7 +484,7 @@ void SP_fx_drip( gentity_t	*ent )
 
 //TiM - RPG-X FX Funcs
 //Most of these were copied from EF SP, and then modified for compatibility with the EF MP engine
-//***********************************************************************************
+/***********************************************************************************/
 
 /*QUAKED fx_fountain (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
 -----DESCRIPTION-----
