@@ -674,7 +674,7 @@ void Parse1DMatrix (char **buf_p, int x, float *m);
 void Parse2DMatrix (char **buf_p, int y, int x, float *m);
 void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m);
 
-void QDECL Com_sprintf (/*@null@*/ char *dest, size_t size, /*@null@*/ const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
+void QDECL Com_sprintf (/*@null@*/ char *dest, size_t size, const /*@null@*/ char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
 
 
 // mode parm for FS_FOpenFile
