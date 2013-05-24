@@ -1396,7 +1396,7 @@ static void G_LoadLocationsFile( void )
 						return;
 					}
 				} else {
-					if(!result) {
+					if(result == 0) {
 						G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
 						free(buffer);
 						bgLex_destroy(lex);
@@ -1420,7 +1420,7 @@ static void G_LoadLocationsFile( void )
 				return;
 			}
 
-			ent->classname = "target_location";
+			ent->classname = G_NewString("target_location");
 
 			//copy position data
 			VectorCopy( origin, ent->s.origin );
@@ -1443,7 +1443,7 @@ static void G_LoadLocationsFile( void )
 			rest = 0;
 
 			if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_SEMICOLON) {
-				if(!bgLex_lex(lex)) {
+				if(bgLex_lex(lex) == 0) {
 					G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
 					free(buffer);
 					bgLex_destroy(lex);

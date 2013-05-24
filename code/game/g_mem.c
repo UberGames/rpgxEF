@@ -13,7 +13,7 @@
 static char		memoryPool[POOLSIZE];
 static int		allocPoint;
 
-void *G_Alloc( int size ) {
+/*@shared@*/ /*@null@*/ void *G_Alloc( int size ) {
 	char	*p;
 
 	if ( g_debugAlloc.integer ) {
