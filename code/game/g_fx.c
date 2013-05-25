@@ -183,7 +183,7 @@ void steam_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 	if ( self->count != 0 )
 	{
-		self->think = 0;
+		self->think = NULL;
 		self->nextthink = -1;
 		self->count = 0;
 	}
@@ -208,13 +208,13 @@ void steam_link( gentity_t *ent )
 
 	if (target == NULL)
 	{
-		if(target != NULL) {
+		if(ent->target != NULL) {
 			Com_Printf("steam_link: unable to find target %s\n", ent->target );
 		} else {
 			Com_Printf("steam_link: unable to find target\n");
 		}
 
-		ent->think = 0;
+		ent->think = NULL;
 		ent->nextthink = -1;
 
 		return;
@@ -239,17 +239,21 @@ void steam_link( gentity_t *ent )
 	trap_LinkEntity( ent );
 
 	// this actually creates the continuously-spawning steam jet
-	if(!ent->targetname || !(ent->spawnflags & STEAM_STARTOFF))
+	if((ent->targetname == NULL) || ((ent->spawnflags & STEAM_STARTOFF) == 0)) {
 		G_AddEvent( ent, EV_FX_STEAM, 0 );
+	}
+
 	ent->think = steam_think;
-	if(ent->targetname && !(ent->spawnflags & STEAM_STARTOFF)) // toggleable steam needs to be updated more often
+	
+	if((ent->targetname != NULL) && ((ent->spawnflags & STEAM_STARTOFF) == 0)) { // toggleable steam needs to be updated more often
 		ent->nextthink = level.time + 1000;
-	else
+	} else {
 		ent->nextthink = level.time + 10000;
+	}
 
 	// This is used as the toggle switch
-	if(ent->targetname) {
-		ent->count = !(ent->spawnflags & STEAM_STARTOFF);
+	if(ent->targetname != 0) {
+		ent->count = (int)(!(ent->spawnflags & STEAM_STARTOFF));
 	}
 }
 
