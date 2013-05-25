@@ -177,20 +177,22 @@ void steam_think( gentity_t *ent )
 //------------------------------------------
 void steam_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	if(self->count == STEAM_UNLINKED)
+	if(self->count == STEAM_UNLINKED) {
 		return;
-	if ( self->count )
+	}
+
+	if ( self->count != 0 )
 	{
 		self->think = 0;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else
 	{
 		self->think = steam_think;
 		self->nextthink = level.time + 100;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -204,9 +206,13 @@ void steam_link( gentity_t *ent )
 		target = G_Find (target, FOFS(targetname), ent->target);
 	}
 
-	if (!target)
+	if (target == NULL)
 	{
-		Com_Printf("steam_link: unable to find target %s\n", ent->target );
+		if(target != NULL) {
+			Com_Printf("steam_link: unable to find target %s\n", ent->target );
+		} else {
+			Com_Printf("steam_link: unable to find target\n");
+		}
 
 		ent->think = 0;
 		ent->nextthink = -1;
