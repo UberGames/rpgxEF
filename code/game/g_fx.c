@@ -1109,15 +1109,15 @@ void fx_torpedo_link(gentity_t *ent) {
 	VectorCopy(dir, ent->s.angles);
 	trap_LinkEntity(ent);
 
-	ent->wait = ent->wait ? (ent->wait * 1000) : 0;
+	ent->wait = (ent->wait <= 0.0f) ? (ent->wait * 1000.0) : 0.0f;
 	
-	if(!ent->count) {
+	if(ent->count == 0) {
 		ent->count = -1;
 	} 
 
 	ent->damage = ent->count;
 
-	if(ent->spawnflags & 4) {
+	if((ent->spawnflags & 4) != 0) {
 		ent->flags |= FL_LOCKED;
 	}
 
@@ -1137,10 +1137,10 @@ void SP_fx_torpedo(gentity_t *ent) {
 	}
 
 	G_SpawnString("noise", "sound/rpg_runabout/torp.wav", &sound);
-	ent->s.time = !(ent->spawnflags & 2) ? G_SoundIndex(sound) : G_SoundIndex("NULL");
+	ent->s.time = ((ent->spawnflags & 2) == 0) ? G_SoundIndex(sound) : G_SoundIndex("NULL");
 
 	G_SpawnString("soundNoAmmo", "sound/movers/switches/voyneg.mp3", &sound);
-	ent->n00bCount = !(ent->spawnflags & 2) ? G_SoundIndex(sound) : G_SoundIndex("NULL");
+	ent->n00bCount = ((ent->spawnflags & 2) == 0) ? G_SoundIndex(sound) : G_SoundIndex("NULL");
 
 	ent->think = fx_torpedo_link;
 	ent->nextthink = level.time + 1000;
@@ -1160,52 +1160,58 @@ If you want to use a bunch of fires use fx_fire.
 */
 void particleFire_think(gentity_t *ent) {
 	G_AddEvent(ent, EV_FX_PARTICLEFIRE, ent->count);
-	if (ent->targetname) {
+	if (ent->targetname != NULL && ent->targetname[0] != 0) {
 		ent->nextthink = level.time + 1000; 
 	} else {
 		ent->nextthink = level.time + 10000;
 	}
 }
 
-void particleFire_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void particleFire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
+	if ( self->count != 0 )
 	{
 		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else
 	{
 		self->think = particleFire_think;
 		self->nextthink = level.time + 200;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 void SP_fx_particleFire(gentity_t *ent) {
 	int size;
 	G_SpawnInt("size", "10", &size);
-	if(!size)
+	if(size == 0) {
 		ent->count = 10;
-	else
+	} else {
 		ent->count = size;
+	}
 
-	if (ent->targetname)
+	if (ent->targetname != NULL && ent->targetname[0] != 0) {
 		ent->s.time2 = 1000; 
-	else
+	} else {
 		ent->s.time2 = 10000;
+	}
 
 	trap_LinkEntity(ent);
 	
-	if (ent->targetname)
+	if (ent->targetname != NULL && ent->targetname[0] != 0)
 	{
 		ent->use = particleFire_use;
 	}
 
-	ent->count = !(ent->spawnflags & 1);
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 )
 	{
 		ent->think = particleFire_think;
 		ent->nextthink = level.time + 2000;
