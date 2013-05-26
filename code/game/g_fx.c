@@ -944,19 +944,19 @@ A phaser effect for use as a ship's weapon.
 */
 #define PHASER_FX_UNLINKED 999
 
-void phaser_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+void phaser_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator) {
 	if(ent->count == PHASER_FX_UNLINKED) return;
 
-	if(!Q_stricmp(ent->swapname, activator->target)) {
+	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
 	} else {
-		if(ent->flags & FL_LOCKED){
+		if((ent->flags & FL_LOCKED) != 0){
 			trap_SendServerCommand(activator-g_entities, va("print \"^1Phasers are offline.\n\""));
 			G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount);
 			return;
 		}
 
-		if(ent->spawnflags & 2)
+		if((ent->spawnflags & 2) != 0)
 		{ 
 			G_AddEvent(ent, EV_FX_DISRUPTOR, 0);
 		}
@@ -970,9 +970,12 @@ void phaser_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
 void phaser_link(gentity_t *ent) {
 	gentity_t *target = NULL;
-	target = G_Find(target, FOFS(targetname), ent->target);
+	
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find(target, FOFS(targetname), ent->target);
+	}
 
-	if(!target) {
+	if(target == 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Enity-Error] Could not find target %s for fx_phaser at %s!\n", ent->target, vtos(ent->r.currentOrigin)););
 		G_FreeEntity(ent);
 		return;
@@ -986,12 +989,12 @@ void phaser_link(gentity_t *ent) {
 }
 
 void SP_fx_phaser(gentity_t *ent) {
-	float	scale;
-	char	*sound;
-	int		impact;
+	float	scale = 0.0f;
+	char	*sound = NULL;
+	int		impact = 0;
 	ent->count = PHASER_FX_UNLINKED;
 
-	if(!ent->target) {
+	if(ent->target == NULL || ent->target[0] == 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_phaser at %s without target!\n", vtos(ent->r.currentOrigin)););
 		return;
 	}
@@ -1002,24 +1005,24 @@ void SP_fx_phaser(gentity_t *ent) {
 	ent->s.angles[1] = scale * 1000;
 	G_SpawnString("customSnd", "sound/pos_b/phaser.wav", &sound);
 	
-	if(!(ent->spawnflags & 1)) {
+	if((ent->spawnflags & 1) == 0) {
 		ent->s.time = G_SoundIndex(sound);
 	} else {
 		ent->s.time = G_SoundIndex("NULL");
 	}
 
-	if(ent->wait) {
-		ent->s.time2 = ent->wait * 1000;
+	if(ent->wait <= 0.0f) {
+		ent->s.time2 = (int)(ent->wait * 1000.0f);
 	} else {
 		ent->s.time2 = 3000;
 	}
 
-	if(ent->spawnflags & 4) {
+	if((ent->spawnflags & 4) != 0) {
 		ent->flags |= FL_LOCKED;
 	}
 
-	G_SpawnInt("impact", "0", & impact);
-	ent->s.angles[2] = impact;
+	G_SpawnInt("impact", "0", &impact);
+	ent->s.angles[2] = (float)impact;
 	ent->think = phaser_link;
 	ent->nextthink = level.time + 1000;
 	trap_LinkEntity(ent);
