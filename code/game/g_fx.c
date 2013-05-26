@@ -973,9 +973,13 @@ void phaser_link(gentity_t *ent) {
 	
 	if(ent->target != NULL && ent->target[0] != 0) {
 		target = G_Find(target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] phaser_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
 	}
 
-	if(target == 0) {
+	if(target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Enity-Error] Could not find target %s for fx_phaser at %s!\n", ent->target, vtos(ent->r.currentOrigin)););
 		G_FreeEntity(ent);
 		return;
