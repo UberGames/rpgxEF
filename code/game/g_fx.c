@@ -4,7 +4,6 @@
 #include "g_spawn.h"
 
 #define SPARK_STARTOFF		1
-
 /*QUAKED fx_spark (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
 -----DESCRIPTION-----
 Emits sparks at the specified point in the specified direction.
@@ -79,7 +78,7 @@ void spark_link( gentity_t *ent )
 	//TiM : for optional length in other functions
 	ent->s.time = 10000;
 
-	if ( ( ent->spawnflags & 1 ) == 0) {
+	if ( ( ent->spawnflags & SPARK_STARTOFF ) == 0) {
 		G_AddEvent( ent, EV_FX_SPARK, 0 );
 		ent->count = 1;
 
@@ -113,7 +112,6 @@ void SP_fx_spark( gentity_t	*ent )
 	trap_LinkEntity( ent );
 }
 
-
 /*QUAKED fx_steam (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF 
 -----DESCRIPTION-----
 Emits steam at the specified point in the specified direction. Will point at a target if one is specified.
@@ -130,7 +128,6 @@ which means it sends 10 times the information that an untoggleable steam will se
 */
 
 #define STEAM_STARTOFF		1
-#define STEAM_BURSTS		2
 #define STEAM_UNLINKED		999
 
 //------------------------------------------
@@ -296,8 +293,10 @@ which means it sends 10 times the information that an untoggleable steam will se
 */
 
 
-#define BOLT_SPARKS		(1<<0)
-#define BOLT_BORG		(1<<1)
+#define BOLT_SPARKS		1
+#define BOLT_BORG		2
+#define BOLT_TAPER		4
+#define BOLT_SMOOTH		8
 
 //------------------------------------------
 void bolt_think( gentity_t *ent )
@@ -515,6 +514,7 @@ Use with caution as this refreshes 10 times a second.
 "targetname" - name of entity when used turns this ent on/off
 "target" - link to an info_notnull entity or similar to position where the end point of this FX is
 */
+#define FOUNTAIN_STARTOFF 1
 
 void fountain_think( gentity_t *ent ) 
 {
@@ -563,7 +563,7 @@ void SP_fx_fountain ( gentity_t *ent ) {
 	ent->use = fountain_use;
 
 	//on and/or off state
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & FOUNTAIN_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
