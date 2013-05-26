@@ -751,7 +751,7 @@ typedef struct {
  * \param[out] out The result.
  * \return Success or fail.
  */
-qboolean G_SpawnString( const char* key, const char* defaultString, char** out );
+qboolean G_SpawnString( const char* key, const char* defaultString, /*@out@*/ char** out );
 
 /**
  * \brief Get a float for a custom entity key.
