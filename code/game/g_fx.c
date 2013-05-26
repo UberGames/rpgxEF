@@ -768,20 +768,20 @@ void smoke_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void smoke_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void smoke_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
+	if ( self->count != 0 )
 	{
 		self->think = 0;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else
 	{
 		self->think = smoke_think;
 		self->nextthink = level.time + 10000;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -793,8 +793,11 @@ void smoke_link( gentity_t *ent )
 	gentity_t	*target = NULL;
 	vec3_t		dir;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
-	if (target)
+	if((ent->target != NULL) && (ent->target[0] != 0)) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	}
+
+	if (target != NULL)
 	{
 		VectorSubtract( target->s.origin, ent->s.origin, dir );
 		VectorNormalize( dir );
@@ -804,18 +807,18 @@ void smoke_link( gentity_t *ent )
 	else
 	{
 		//Hard code to be directly up
-		VectorSet( dir, 0, 0, 10 );
+		VectorSet( dir, 0.0f, 0.0f, 10.0f );
 		VectorNormalize( dir );
 		vectoangles( dir, ent->s.angles2 );
 		VectorShort(ent->s.angles2);
 	}
 
-	if (ent->targetname)
+	if ((ent->targetname != NULL) && (ent->targetname[0] != 0))
 	{
 		ent->use = smoke_use;
 	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
+	if ((ent->targetname == NULL) || ((ent->spawnflags & 1) == 0) )
 	{
 		ent->think = smoke_think;
 		ent->nextthink = level.time + 200;
@@ -823,7 +826,7 @@ void smoke_link( gentity_t *ent )
 	}
 	else
 	{
-		ent->think = 0;
+		ent->think = NULL;
 		ent->nextthink = -1;
 		ent->count = 0;
 	}
