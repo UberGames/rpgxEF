@@ -25,10 +25,11 @@ which means it sends 10 times the information that an untoggleable steam will se
 void spark_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_SPARK, 0 );
-	if(ent->targetname) //toggleable effect needs to be updated more often
+	if(ent->targetname != NULL && ent->targetname[0] != 0) { //toggleable effect needs to be updated more often
 		ent->nextthink = level.time + 1000;
-	else
+	} else {
 		ent->nextthink = level.time + 10000; // send a refresh message every 10 seconds
+	}
 }
 
 //T3h TiM-zor was here
@@ -310,20 +311,21 @@ void bolt_think( gentity_t *ent )
 	trace_t	trace;
 
 	G_AddEvent( ent, EV_FX_BOLT, ent->spawnflags );
-	ent->s.time2 = ent->wait;
-	if(ent->targetname) //toggleable effect needs to be updated more often
+	ent->s.time2 = (int)ent->wait;
+	if(ent->targetname != NULL && ent->targetname[0] != 0) { //toggleable effect needs to be updated more often
 		ent->nextthink = level.time + 1000;
-	else
-		ent->nextthink = level.time + 10000.0; // send a refresh message every 10 seconds
-
+	} else {
+		ent->nextthink = level.time + 10000; // send a refresh message every 10 seconds
+	}
 
 	// If a fool gets in the bolt path, zap 'em
-	if ( ent->damage ) 
+	if ( ent->damage != 0 ) 
 	{
 		VectorSubtract( ent->s.origin2, ent->r.currentOrigin, temp );
 		VectorNormalize( temp );
 		VectorMA( ent->r.currentOrigin, 1, temp, start );
 
+		memset(&trace, 0, sizeof(trace_t));
 		trap_Trace( &trace, start, NULL, NULL, ent->s.origin2, -1, MASK_SHOT );//ignore
 
 		if ( trace.fraction < 1.0 )
@@ -331,7 +333,7 @@ void bolt_think( gentity_t *ent )
 			if ( trace.entityNum < ENTITYNUM_WORLD )
 			{
 				gentity_t *victim = &g_entities[trace.entityNum];
-				if ( victim && victim->takedamage )
+				if ( (victim != NULL) && (victim->takedamage == qtrue) )
 				{
 					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_PHASER_ALT );
 				}
