@@ -345,20 +345,20 @@ void bolt_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void bolt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
-	if ( self->count )
+	if ( self->count != 0 )
 	{
-		self->think = 0;
+		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else
 	{
 		self->think = bolt_think;
 		self->nextthink = level.time + 200;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -367,12 +367,14 @@ void bolt_link( gentity_t *ent )
 	gentity_t	*target = NULL;
 	vec3_t		dir;
 
-	if (ent->target)
+	if (ent->target != NULL && ent->target[0] != 0)
 	{
 		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		return;
 	}
 
-	if (!target)
+	if (target == NULL)
 	{
 		Com_Printf("bolt_link: unable to find target %s\n", ent->target );
 
