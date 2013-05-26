@@ -253,7 +253,7 @@ void steam_link( gentity_t *ent )
 	}
 
 	// This is used as the toggle switch
-	if(ent->targetname != 0) {
+	if(ent->targetname != NULL && ent->targetname[0] != 0) {
 		if((ent->spawnflags & STEAM_STARTOFF) == 0) {
 			ent->count = 1;
 		} else {

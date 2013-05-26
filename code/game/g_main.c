@@ -1996,11 +1996,9 @@ void G_ShutdownGame( int restart ) {
 #ifndef GAME_HARD_LINKED
 // this is only here so the functions in q_shared.c and bg_*.c can link
 
-void QDECL Com_Error ( int errlevel, const char *error, ... ) {
+void QDECL Com_Error ( /*@unused@*/ int errlevel, const char *error, ... ) {
 	va_list		argptr;
 	char		text[1024];
-
-	UNUSED(errlevel);
 
 	va_start (argptr, error);
 	vsnprintf(text, sizeof(text), error, argptr);
