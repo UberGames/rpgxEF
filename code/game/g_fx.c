@@ -1058,11 +1058,11 @@ void fx_torpedo_think(gentity_t *ent) {
 	ent->use = fx_torpedo_use;
 }
 
-void fx_torpedo_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(!Q_stricmp(ent->swapname, activator->target)) {
+void fx_torpedo_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator) {
+	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
 	} else {
-		if(ent->flags & FL_LOCKED){
+		if((ent->flags & FL_LOCKED) != 0){
 			trap_SendServerCommand(activator-g_entities, va("print \"^1Torpedo launcher is offline.\n\""));
 			G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount);
 			return;
@@ -1079,7 +1079,7 @@ void fx_torpedo_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		}
 	
 		G_AddEvent(ent, EV_FX_TORPEDO, ent->spawnflags);
-		ent->use = 0;
+		ent->use = NULL;
 		ent->think = fx_torpedo_think;
 		ent->nextthink = level.time + ent->wait;
 	}
@@ -1089,8 +1089,15 @@ void fx_torpedo_link(gentity_t *ent) {
 	vec3_t dir;
 	gentity_t *target = NULL;
 
-	target = G_Find(target, FOFS(targetname), ent->target);
-	if(!target) {
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find(target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_torpedo_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
+	
+	if(target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Could not find target %s for fx_torpedo at %s!\n", ent->target, vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;

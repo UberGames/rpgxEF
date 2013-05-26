@@ -761,7 +761,7 @@ qboolean G_SpawnString( const char* key, const char* defaultString, /*@out@*/ ch
  * \param[out] out The result.
  * \return Success or fail.
  */
-qboolean G_SpawnFloat( const char* key, const char* defaultString, float* out );
+qboolean G_SpawnFloat( const char* key, const char* defaultString, /*@out@*/ float* out );
 
 /**
  * \brief Get a int for a custom entity key.
@@ -771,7 +771,7 @@ qboolean G_SpawnFloat( const char* key, const char* defaultString, float* out );
  * \param[out] out The result.
  * \return Success or fail.
  */
-qboolean G_SpawnInt( const char* key, const char* defaultString, int* out );
+qboolean G_SpawnInt( const char* key, const char* defaultString, /*@out@*/ int* out );
 
 /**
  * \brief Get a vector for a custom entity key.
@@ -781,7 +781,7 @@ qboolean G_SpawnInt( const char* key, const char* defaultString, int* out );
  * \param[out] out The result.
  * \return Success or fail.
  */
-qboolean	G_SpawnVector( const char* key, const char* defaultString, float* out );
+qboolean	G_SpawnVector( const char* key, const char* defaultString, /*@out@*/ float* out );
 
 /**
  * \brief Spawn all entities from the entity string.
