@@ -60,13 +60,10 @@ void spark_link( gentity_t *ent )
 
 		target = G_Find (target, FOFS(targetname), ent->target);
 
-		if (!target)
+		if (target != NULL)
 		{
-			Com_Printf("spark_link: target specified but not found: %s\n", ent->target );
-
-			ent->think = NULL;
-			ent->nextthink = -1;
-
+			G_Printf(S_COLOR_RED "spark_link: target specified but not found: %s\n", ent->target );
+			G_FreeEntity(ent);
 			return;
 		}
 		
@@ -211,14 +208,12 @@ void steam_link( gentity_t *ent )
 	if (target == NULL)
 	{
 		if(ent->target != NULL) {
-			Com_Printf("steam_link: unable to find target %s\n", ent->target );
+			G_Printf(S_COLOR_RED "steam_link: unable to find target %s\n", ent->target );
 		} else {
-			Com_Printf("steam_link: unable to find target\n");
+			G_Printf(S_COLOR_RED "steam_link: unable to find target\n");
 		}
 
-		ent->think = NULL;
-		ent->nextthink = -1;
-
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -371,16 +366,14 @@ void bolt_link( gentity_t *ent )
 	{
 		target = G_Find (target, FOFS(targetname), ent->target);
 	} else {
+		G_Printf("bolt_link: ent->target is NULL\n");
 		return;
 	}
 
 	if (target == NULL)
 	{
-		Com_Printf("bolt_link: unable to find target %s\n", ent->target );
-
-		ent->think = 0;
-		ent->nextthink = -1;
-
+		G_Printf("bolt_link: unable to find target %s\n", ent->target );
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -391,13 +384,13 @@ void bolt_link( gentity_t *ent )
 	VectorCopy( target->s.origin, ent->s.origin2 );
 	SnapVector(ent->s.origin2);
 
-	if ( ent->targetname )
+	if ( ent->targetname != NULL && ent->targetname[0] != 0 )
 	{
 		ent->use = bolt_use;
 	}
 
 	G_AddEvent( ent, EV_FX_BOLT, ent->spawnflags );
-	ent->s.time2 = ent->wait;
+	ent->s.time2 = (int)ent->wait;
 	ent->think = bolt_think;	
 	ent->nextthink = level.time + 10000;
 	trap_LinkEntity( ent );
@@ -419,7 +412,7 @@ void SP_fx_bolt( gentity_t *ent )
 	ent->s.angles2[0] = ent->speed;
 	ent->s.angles2[1] = ent->random;
 
-	if (ent->target)
+	if (ent->target != NULL && ent->target[0] != 0)
 	{
 		ent->think = bolt_link;
 		ent->nextthink = level.time + 100;
@@ -529,34 +522,35 @@ void fountain_think( gentity_t *ent )
 	ent->nextthink = level.time + 100;	
 }
 
-void fountain_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void fountain_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
-	if ( self->count )
+	if ( self->count != 0 )
 	{
-		self->think = 0;
+		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else
 	{
 		self->think = fountain_think;
 		self->nextthink = level.time + 100;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 void SP_fx_fountain ( gentity_t *ent ) {
 	gentity_t	*target = NULL;
 
-	if ( ent->target[0] ) {
+	if ( ent->target != NULL && ent->target[0] != 0 ) {
 		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		G_Printf(S_COLOR_RED "fx_fountain: ent->target is NULL\n");
+		return;
 	}
 
 	if ( !target ) {
-		Com_Printf( S_COLOR_RED "Unable to find target point: %s\n", ent->target );
-
-		ent->think = 0;
-		ent->nextthink = 0;
+		G_Printf( S_COLOR_RED "Unable to find target point: %s\n", ent->target );
+		G_FreeEntity(ent);
 		return;
 	}
 
