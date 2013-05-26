@@ -626,12 +626,12 @@ void surface_explosion_link( gentity_t *ent )
 	}
 	else
 	{
-		VectorSet(normal, 0, 0, 1);
+		VectorSet(normal, 0.0, 0.0, 1.0);
 	}
 
 	VectorCopy( normal, ent->s.origin2 );
 
-	ent->think = 0;
+	ent->think = NULL;
 	ent->nextthink = -1;
 	ent->use = surface_explosion_use;
 
@@ -641,7 +641,7 @@ void surface_explosion_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_surface_explosion( gentity_t *ent )
 {
-	if ( !(ent->spawnflags&4) ){
+	if ( (ent->spawnflags & 4) == 0 ){
 		G_SpawnInt( "damage", "50", &ent->splashDamage );
 		G_SpawnFloat( "radius", "20", &ent->distance ); // was: ent->radius
 		ent->splashRadius = 160;
@@ -688,7 +688,7 @@ none
 //"count" - Number of chunks to spew (default 5)
 //"speed" - How fast a chunk will move when it get's spewed (default 175)
 //------------------------------------------
-void blow_chunks_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void blow_chunks_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	self->r.svFlags |= SVF_BROADCAST;
 	G_AddEvent( self, EV_FX_CHUNKS, 0 );
@@ -699,14 +699,21 @@ void blow_chunks_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
-	ent->think = 0;
+	ent->think = NULL;
 	ent->nextthink = -1;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		G_Printf(S_COLOR_RED "blow_chunks_link: ent->target is NULL\n");
+		G_FreeEntity(ent);
+		return;
+	}
 
-	if ( !target )
+	if ( target == NULL )
 	{
-		Com_Printf("blow_chunks_link: unable to find target %s\n", ent->target );
+		G_Printf(S_COLOR_RED "blow_chunks_link: unable to find target %s\n", ent->target );
+		G_FreeEntity(ent);
 		return;
 	}
 
