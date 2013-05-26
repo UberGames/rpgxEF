@@ -626,7 +626,7 @@ void surface_explosion_link( gentity_t *ent )
 	}
 	else
 	{
-		VectorSet(normal, 0.0, 0.0, 1.0);
+		VectorSet(normal, 0.0f, 0.0f, 1.0f);
 	}
 
 	VectorCopy( normal, ent->s.origin2 );
@@ -725,10 +725,16 @@ void blow_chunks_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_blow_chunks( gentity_t *ent )
 {
-	if(!ent->distance) // check for spawnTEnt
-		G_SpawnFloat( "radius", "65", &ent->distance ); // was:  ent->radius
-	if(!ent->s.powerups) // check for spawnTEnt
-		G_SpawnInt( "material", "1", &ent->s.powerups );
+	G_SpawnFloat( "radius", "65", &ent->distance );
+	G_SpawnInt( "material", "1", &ent->s.powerups );
+
+	if(ent->distance <= 0.0f) {
+		ent->distance = 65.0f;
+	}
+
+	if(ent->s.powerups == 0) {
+		ent->s.powerups = 1;
+	}
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 
@@ -739,8 +745,6 @@ void SP_fx_blow_chunks( gentity_t *ent )
 
 	ent->think = blow_chunks_link;
 	ent->nextthink = 1000;
-
-	trap_LinkEntity( ent );
 }
 
 /*QUAKED fx_smoke (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
