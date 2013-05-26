@@ -569,12 +569,12 @@ void SP_fx_fountain ( gentity_t *ent ) {
 		ent->count = 0;
 	}
 
-	if ( ent->count ) {
+	if ( ent->count != 0 ) {
 		ent->think = fountain_think;
 		ent->nextthink = level.time + 100;
 	}
 	else {
-		ent->think = 0;
+		ent->think = NULL;
 		ent->nextthink= -1;
 	}
 
@@ -599,12 +599,14 @@ Creates a triggerable explosion aimed at a specific point.  Always oriented towa
 */
 
 //------------------------------------------
-void surface_explosion_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void surface_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 
 	G_AddEvent( self, EV_FX_SURFACE_EXPLOSION, 0 );
-	if ( self->splashDamage )
-		G_RadiusDamage( self->r.currentOrigin, self, self->splashDamage, self->splashRadius, self, DAMAGE_RADIUS|DAMAGE_ALL_TEAMS, MOD_EXPLOSION );
+
+	if ( self->splashDamage != 0 ) {
+		G_RadiusDamage( self->r.currentOrigin, self, (float)self->splashDamage, (float)self->splashRadius, self, DAMAGE_RADIUS|DAMAGE_ALL_TEAMS, MOD_EXPLOSION );
+	}
 }
 
 //------------------------------------------
@@ -612,10 +614,12 @@ void surface_explosion_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	vec3_t		normal;
+	
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	}
 
-	target = G_Find (target, FOFS(targetname), ent->target);
-
-	if ( target )
+	if ( target != NULL )
 	{
 		VectorSubtract( target->s.origin, ent->s.origin, normal );
 		VectorNormalize( normal );
