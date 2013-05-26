@@ -772,7 +772,7 @@ void smoke_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gen
 {
 	if ( self->count != 0 )
 	{
-		self->think = 0;
+		self->think = NULL;
 		self->nextthink = -1;
 		self->count = 0;
 	}
@@ -865,13 +865,13 @@ Creates a triggerable explosion aimed at a specific point
 */
 
 //------------------------------------------
-void electrical_explosion_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void electrical_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	G_AddEvent( self, EV_FX_ELECTRICAL_EXPLOSION, 0 );
 
-	if ( self->splashDamage )
+	if ( self->splashDamage != 0 )
 	{
-		G_RadiusDamage( self->s.origin, self, self->splashDamage, self->splashRadius, self, 0, MOD_EXPLOSION );
+		G_RadiusDamage( self->s.origin, self, (float)self->splashDamage, (float)self->splashRadius, self, 0, MOD_EXPLOSION );
 	}
 }
 
@@ -881,9 +881,11 @@ void electrical_explosion_link( gentity_t *ent )
 	gentity_t	*target = NULL;
 	vec3_t		normal;
 
-	target = G_Find( target, FOFS(targetname), ent->target );
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find( target, FOFS(targetname), ent->target );
+	}
 
-	if ( target )
+	if ( target != NULL )
 	{
 		VectorSubtract( target->s.pos.trBase, ent->s.origin, normal );
 		VectorNormalize( normal );
@@ -891,12 +893,12 @@ void electrical_explosion_link( gentity_t *ent )
 	else
 	{
 		// No target so just shoot up
-		VectorSet( normal, 0, 0, 1 );
+		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 
 	VectorCopy( normal, ent->s.origin2 );
 
-	ent->think = 0;
+	ent->think = NULL;
 	ent->nextthink = -1;
 
 	trap_LinkEntity( ent );
@@ -905,7 +907,7 @@ void electrical_explosion_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_electrical_explosion( gentity_t *ent )
 {
-	if ( !(ent->spawnflags&4) )
+	if ( (ent->spawnflags & 4) == 0 )
 	{
 		G_SpawnInt( "damage", "20", &ent->splashDamage );
 		G_SpawnFloat( "radius", "50", &ent->distance ); // was: ent->radius
