@@ -61,7 +61,7 @@ void spark_link( gentity_t *ent )
 
 		if (target == NULL)
 		{
-			G_Printf(S_COLOR_RED "spark_link: target specified but not found: %s\n", ent->target );
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Enitiy-Error] spark_link: target specified but not found: %s\n", ent->target););
 			G_FreeEntity(ent);
 			return;
 		}
@@ -205,9 +205,9 @@ void steam_link( gentity_t *ent )
 	if (target == NULL)
 	{
 		if(ent->target != NULL) {
-			G_Printf(S_COLOR_RED "steam_link: unable to find target %s\n", ent->target );
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] steam_link: unable to find target %s\n", ent->target););
 		} else {
-			G_Printf(S_COLOR_RED "steam_link: unable to find target\n");
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] steam_link: unable to find target\n"););
 		}
 
 		G_FreeEntity(ent);
@@ -365,13 +365,14 @@ void bolt_link( gentity_t *ent )
 	{
 		target = G_Find (target, FOFS(targetname), ent->target);
 	} else {
-		G_Printf("bolt_link: ent->target is NULL\n");
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] bolt_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
 		return;
 	}
 
 	if (target == NULL)
 	{
-		G_Printf("bolt_link: unable to find target %s\n", ent->target );
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] bolt_link: unable to find target %s\n", ent->target););
 		G_FreeEntity(ent);
 		return;
 	}
@@ -544,12 +545,13 @@ void SP_fx_fountain ( gentity_t *ent ) {
 	if ( ent->target != NULL && ent->target[0] != 0 ) {
 		target = G_Find (target, FOFS(targetname), ent->target);
 	} else {
-		G_Printf(S_COLOR_RED "fx_fountain: ent->target is NULL\n");
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_fountain: ent->target is NULL\n"););
+		G_FreeEntity(ent);
 		return;
 	}
 
-	if ( !target ) {
-		G_Printf( S_COLOR_RED "Unable to find target point: %s\n", ent->target );
+	if ( target == NULL ) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_fountain: Unable to find target point: %s\n", ent->target););
 		G_FreeEntity(ent);
 		return;
 	}
@@ -705,14 +707,14 @@ void blow_chunks_link( gentity_t *ent )
 	if(ent->target != NULL && ent->target[0] != 0) {
 		target = G_Find (target, FOFS(targetname), ent->target);
 	} else {
-		G_Printf(S_COLOR_RED "blow_chunks_link: ent->target is NULL\n");
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] blow_chunks_link: ent->target is NULL\n"););
 		G_FreeEntity(ent);
 		return;
 	}
 
 	if ( target == NULL )
 	{
-		G_Printf(S_COLOR_RED "blow_chunks_link: unable to find target %s\n", ent->target );
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] blow_chunks_link: unable to find target %s\n", ent->target););
 		G_FreeEntity(ent);
 		return;
 	}
@@ -1512,13 +1514,10 @@ void forge_bolt_link( gentity_t *ent )
 
 	target = G_Find (target, FOFS(targetname), ent->target);
 
-	if (!target)
+	if (target == NULL)
 	{
-		Com_Printf("forge_bolt_link: unable to find target %s\n", ent->target );
-
-		ent->think = NULL;
-		ent->nextthink = -1;
-
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] forge_bolt_link: unable to find target %s\n", ent->target););
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -1654,13 +1653,10 @@ void plasma_link( gentity_t *ent )
 	gentity_t	*target = NULL;
 
 	target = G_Find (target, FOFS(targetname), ent->target);
-	if (!target)
+	if (target == NULL)
 	{
-		Com_Printf("plasma_link: unable to find target %s\n", ent->target );
-
-		ent->think = NULL;
-		ent->nextthink = -1;
-
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] plasma_link: unable to find target %s\n", ent->target););
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -1794,12 +1790,10 @@ void stream_link( gentity_t *ent )
 	gentity_t	*target = NULL;
 
 	target = G_Find (target, FOFS(targetname), ent->target);
-	if (!target)
+	if (target == NULL)
 	{
-		Com_Printf("stream_link: unable to find target %s\n", ent->target );
-
-		ent->think = NULL;
-		ent->nextthink = -1;
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] stream_link: unable to find target %s\n", ent->target););
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -1883,13 +1877,10 @@ void transporter_stream_link( gentity_t *ent )
 
 	target = G_Find (target, FOFS(targetname), ent->target);
 
-	if (!target)
+	if (target == NULL)
 	{
-		Com_Printf( "transporter_stream_link: unable to find target %s\n", ent->target );
-
-		ent->think = NULL;
-		ent->nextthink = -1;
-
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] transporter_stream_link: unable to find target %s\n", ent->target););
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -1959,9 +1950,9 @@ void explosion_trail_link( gentity_t *ent )
 
 	target = G_Find (target, FOFS(targetname), ent->target);
 
-	if ( !target )
+	if (target == NULL)
 	{
-		Com_Printf("explosion_trail_link: unable to find target %s\n", ent->target );
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] explosion_trail_link: unable to find target %s\n", ent->target););
 		return;
 	}
 
@@ -2036,13 +2027,10 @@ void borg_energy_beam_link( gentity_t *ent )
 
 	target = G_Find (target, FOFS(targetname), ent->target);
 
-	if (!target)
+	if (target == NULL)
 	{
-		Com_Printf( "borg_energy_beam_link: unable to find target %s\n", ent->target );
-
-		ent->think = NULL;
-		ent->nextthink = -1;
-
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] borg_energy_beam_link: unable to find target %s\n", ent->target););
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -2148,13 +2136,10 @@ void shimmery_thing_link( gentity_t *ent )
 
 	target = G_Find (target, FOFS(targetname), ent->target);
 
-	if (!target)
+	if(target == NULL)
 	{
-		Com_Printf( "shimmery_thing_link: unable to find target %s\n", ent->target );
-
-		ent->think = NULL;
-		ent->nextthink = -1;
-
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] shimmery_thing_link: unable to find target %s\n", ent->target););
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -2259,13 +2244,10 @@ void borg_bolt_link( gentity_t *ent )
 
 	target = G_Find (target, FOFS(targetname), ent->target);
 
-	if (!target)
+	if (target == NULL)
 	{
-		Com_Printf("borg_bolt_link: unable to find target %s\n", ent->target );
-
-		ent->think = NULL;
-		ent->nextthink = -1;
-
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entiy-Error] borg_bolt_link: unable to find target %s\n", ent->target););
+		G_FreeEntity(ent);
 		return;
 	}
 	VectorCopy( target->s.origin, ent->s.origin2 );
@@ -2274,9 +2256,9 @@ void borg_bolt_link( gentity_t *ent )
 	{
 	target2 = G_Find (target2, FOFS(targetname), ent->message);
 
-	if (!target2)
+	if (target2 == NULL)
 	{
-		Com_Printf("borg_bolt_link: unable to find target2 %s falling back to using ent's origin\n", ent->target );
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Warning] borg_bolt_link: unable to find target2 %s falling back to using ent's origin\n", ent->target););
 	}
 	else
 	{
