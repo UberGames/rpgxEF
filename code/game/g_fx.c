@@ -50,7 +50,7 @@ void spark_link( gentity_t *ent )
 {
 
 	ent->s.time2 = (int)ent->wait;
-	if ( ent->target )
+	if ( ent->target != NULL && ent->target[0] != 0 )
 	{
 		// try to use the target to orient me.
 		gentity_t	*target = NULL;
@@ -138,11 +138,11 @@ which means it sends 10 times the information that an untoggleable steam will se
 void steam_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_STEAM, 0 );
-	if(ent->targetname) //toggleable effect needs to be updated more often
+	if(ent->targetname != NULL && ent->targetname[0] != 0) { //toggleable effect needs to be updated more often
 		ent->nextthink = level.time + 1000;
-	else
+	} else {
 		ent->nextthink = level.time + 10000; // send a refresh message every 10 seconds
-
+	}
 
 	// FIXME: This may be a bit weird for steam bursts*/
 	// If a fool gets in the bolt path, zap 'em
@@ -201,7 +201,7 @@ void steam_link( gentity_t *ent )
 	gentity_t	*target = NULL;
 	vec3_t		dir;
 
-	if (ent->target)
+	if (ent->target != NULL && ent->target[0] != 0)
 	{
 		target = G_Find (target, FOFS(targetname), ent->target);
 	}
@@ -229,10 +229,11 @@ void steam_link( gentity_t *ent )
 	VectorCopy( target->s.origin, ent->s.origin2 );
 	SnapVector(ent->s.origin2);
 
-	if(ent->targetname) // toggleable steam needs to be updated more often
+	if(ent->targetname != NULL && ent->targetname[0] != 0) { // toggleable steam needs to be updated more often
 		ent->s.time = 1000;
-	else
+	} else {
 		ent->s.time = 10000;
+	}
 	
 	ent->use = steam_use;
 
@@ -253,7 +254,11 @@ void steam_link( gentity_t *ent )
 
 	// This is used as the toggle switch
 	if(ent->targetname != 0) {
-		ent->count = (int)(!(ent->spawnflags & STEAM_STARTOFF));
+		if((ent->spawnflags & STEAM_STARTOFF) == 0) {
+			ent->count = 1;
+		} else {
+			ent->count = 0;
+		}
 	}
 }
 
