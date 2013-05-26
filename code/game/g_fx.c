@@ -1,6 +1,7 @@
 // This file contains game side effects that the designers can place throughout the maps
 
 #include "g_local.h"
+#include "g_spawn.h"
 
 #define SPARK_STARTOFF		1
 
@@ -31,7 +32,7 @@ void spark_think( gentity_t *ent )
 }
 
 //T3h TiM-zor was here
-void spark_use( gentity_t* self, gentity_t* other, gentity_t* activator) {
+void spark_use( gentity_t* self, /*@unused@*/ gentity_t* other, /*@unused@*/ gentity_t* activator) {
 	
 	if ( self->count != 0) {
 		self->think = NULL;
@@ -175,7 +176,7 @@ void steam_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void steam_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void steam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
 	if(self->count == STEAM_UNLINKED) {
 		return;

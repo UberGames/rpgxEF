@@ -3,6 +3,7 @@
 #include "g_local.h"
 #include "list.h"
 #include "bg_misc.h"
+#include "g_spawn.h"
 
 //#include <windows.h> //TiM : WTF?
 
