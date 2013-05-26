@@ -60,7 +60,7 @@ void spark_link( gentity_t *ent )
 
 		target = G_Find (target, FOFS(targetname), ent->target);
 
-		if (target != NULL)
+		if (target == NULL)
 		{
 			G_Printf(S_COLOR_RED "spark_link: target specified but not found: %s\n", ent->target );
 			G_FreeEntity(ent);
@@ -563,7 +563,11 @@ void SP_fx_fountain ( gentity_t *ent ) {
 	ent->use = fountain_use;
 
 	//on and/or off state
-	ent->count = !( ent->spawnflags & 1 );
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
 	if ( ent->count ) {
 		ent->think = fountain_think;
