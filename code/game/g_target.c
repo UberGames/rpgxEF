@@ -82,9 +82,10 @@ void SP_target_give( gentity_t *ent )
 		}
 
 		if( Q_stricmpn( token, "WP_", 3 ) == 0) {
-			weapon = GetIDForString( WeaponTable, token );
+			int i = GetIDForString( WeaponTable, token );
 
-			if ( weapon >= 0 ) {
+			if ( i >= 0 ) {
+				weapon = (unsigned)i;
 				ent->s.time |= (1<<weapon);
 			}
 		}
