@@ -1858,11 +1858,6 @@ void MoveClientToIntermission (gentity_t* client);
 void DeathmatchScoreboardMessage (gentity_t* client);
 
 //
-// g_fx.c
-//
-void SP_fx_spark( gentity_t* ent );
-
-//
 // g_main.c
 //
 /**

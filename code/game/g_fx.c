@@ -21,7 +21,7 @@ which means it sends 10 times the information that an untoggleable steam will se
 */
 
 //------------------------------------------
-void spark_think( gentity_t *ent )
+static void spark_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_SPARK, 0 );
 	if(ent->targetname != NULL && ent->targetname[0] != 0) { //toggleable effect needs to be updated more often
@@ -32,7 +32,7 @@ void spark_think( gentity_t *ent )
 }
 
 //T3h TiM-zor was here
-void spark_use( gentity_t* self, /*@unused@*/ gentity_t* other, /*@unused@*/ gentity_t* activator) {
+static void spark_use( gentity_t* self, /*@unused@*/ gentity_t* other, /*@unused@*/ gentity_t* activator) {
 	
 	if ( self->count != 0) {
 		self->think = NULL;
@@ -47,7 +47,7 @@ void spark_use( gentity_t* self, /*@unused@*/ gentity_t* other, /*@unused@*/ gen
 }
 
 //------------------------------------------
-void spark_link( gentity_t *ent )
+static void spark_link( gentity_t *ent )
 {
 
 	ent->s.time2 = (int)ent->wait;
@@ -131,7 +131,7 @@ which means it sends 10 times the information that an untoggleable steam will se
 #define STEAM_UNLINKED		999
 
 //------------------------------------------
-void steam_think( gentity_t *ent )
+static void steam_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_STEAM, 0 );
 	if(ent->targetname != NULL && ent->targetname[0] != 0) { //toggleable effect needs to be updated more often
@@ -171,7 +171,7 @@ void steam_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void steam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
+static void steam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
 	if(self->count == STEAM_UNLINKED) {
 		return;
@@ -192,7 +192,7 @@ void steam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gen
 }
 
 //------------------------------------------
-void steam_link( gentity_t *ent )
+static void steam_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	vec3_t		dir;
@@ -299,7 +299,7 @@ which means it sends 10 times the information that an untoggleable steam will se
 #define BOLT_SMOOTH		8
 
 //------------------------------------------
-void bolt_think( gentity_t *ent )
+static void bolt_think( gentity_t *ent )
 {
 	vec3_t	start, temp;
 	trace_t	trace;
@@ -339,7 +339,7 @@ void bolt_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
+static void bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
 	if ( self->count != 0 )
 	{
@@ -356,7 +356,7 @@ void bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gent
 }
 
 //------------------------------------------
-void bolt_link( gentity_t *ent )
+static void bolt_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	vec3_t		dir;
@@ -436,7 +436,7 @@ none
 
 */
 
-void transporter_link( gentity_t *ent )
+static void transporter_link( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_TRANSPORTER_PAD, 0 );
 }
@@ -470,9 +470,10 @@ which means it sends 10 times the information that an untoggleable steam will se
 "damage" - type of drips. 0 = water, 1 = oil, 2 = green
 "random" - (0...1) degree of drippiness. 0 = one drip, 1 = Niagara Falls
 */
+#define DRIP_STARTOFF 1
 
 //------------------------------------------
-void drip_think( gentity_t *ent )
+static void drip_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_DRIP, 0 );
 	ent->nextthink = level.time + 10000; // send a refresh message every 10 seconds
@@ -517,13 +518,13 @@ Use with caution as this refreshes 10 times a second.
 */
 #define FOUNTAIN_STARTOFF 1
 
-void fountain_think( gentity_t *ent ) 
+static void fountain_think( gentity_t *ent ) 
 {
 	G_AddEvent( ent, EV_FX_GARDEN_FOUNTAIN_SPURT, 0 );
 	ent->nextthink = level.time + 100;	
 }
 
-void fountain_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
+static void fountain_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
 	if ( self->count != 0 )
 	{
@@ -601,7 +602,7 @@ Creates a triggerable explosion aimed at a specific point.  Always oriented towa
 */
 
 //------------------------------------------
-void surface_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void surface_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 
 	G_AddEvent( self, EV_FX_SURFACE_EXPLOSION, 0 );
@@ -612,7 +613,7 @@ void surface_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@u
 }
 
 //------------------------------------------
-void surface_explosion_link( gentity_t *ent )
+static void surface_explosion_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	vec3_t		normal;
@@ -690,14 +691,14 @@ none
 //"count" - Number of chunks to spew (default 5)
 //"speed" - How fast a chunk will move when it get's spewed (default 175)
 //------------------------------------------
-void blow_chunks_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void blow_chunks_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	self->r.svFlags |= SVF_BROADCAST;
 	G_AddEvent( self, EV_FX_CHUNKS, 0 );
 }
 
 //------------------------------------------
-void blow_chunks_link( gentity_t *ent )
+static void blow_chunks_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
@@ -761,16 +762,17 @@ Emits cloud of thick black smoke from specified point.
 "targetname" - fires only when used
 "radius" - size of the smoke puffs (default 16.0)
 */
+#define SMOKE_STARTOFF 1
 
 //------------------------------------------
-void smoke_think( gentity_t *ent )
+static void smoke_think( gentity_t *ent )
 {
 	ent->nextthink = level.time + 10000;
 	G_AddEvent( ent, EV_FX_SMOKE, 0 );
 }
 
 //------------------------------------------
-void smoke_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void smoke_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0 )
 	{
@@ -787,7 +789,7 @@ void smoke_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gen
 }
 
 //------------------------------------------
-void smoke_link( gentity_t *ent )
+static void smoke_link( gentity_t *ent )
 {
 	// this link func is used because the target ent may not have spawned in yet, this
 	//	will give it a bit of extra time for that to happen.
@@ -820,7 +822,7 @@ void smoke_link( gentity_t *ent )
 		ent->use = smoke_use;
 	}
 
-	if ((ent->targetname == NULL) || ((ent->spawnflags & 1) == 0) )
+	if ((ent->targetname == NULL) || ((ent->spawnflags & SMOKE_STARTOFF) == 0) )
 	{
 		ent->think = smoke_think;
 		ent->nextthink = level.time + 200;
@@ -865,9 +867,10 @@ Creates a triggerable explosion aimed at a specific point
 "radius" - blast radius (default 50)
 "targetname" - explodes each time it's used
 */
+#define ELEC_EXP_NODAMAGE 4
 
 //------------------------------------------
-void electrical_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void electrical_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	G_AddEvent( self, EV_FX_ELECTRICAL_EXPLOSION, 0 );
 
@@ -878,7 +881,7 @@ void electrical_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *other, /
 }
 
 //------------------------------------------
-void electrical_explosion_link( gentity_t *ent )
+static void electrical_explosion_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	vec3_t		normal;
@@ -944,9 +947,12 @@ A phaser effect for use as a ship's weapon.
 "delay" - delay the effect, but not the sound. Can be used to adjust the timing between effect and customSnd
 "impact" - set to 1 if you want an impact to be drawn
 */
+#define PHASER_FX_NOSOUND 1
+#define PHASER_FX_DISRUPTOR 2
+#define PHASER_FX_LOCKED 4
 #define PHASER_FX_UNLINKED 999
 
-void phaser_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator) {
+static void phaser_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator) {
 	if(ent->count == PHASER_FX_UNLINKED) return;
 
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
@@ -958,7 +964,7 @@ void phaser_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activa
 			return;
 		}
 
-		if((ent->spawnflags & 2) != 0)
+		if((ent->spawnflags & PHASER_FX_DISRUPTOR) != 0)
 		{ 
 			G_AddEvent(ent, EV_FX_DISRUPTOR, 0);
 		}
@@ -970,7 +976,7 @@ void phaser_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activa
 
 }
 
-void phaser_link(gentity_t *ent) {
+static void phaser_link(gentity_t *ent) {
 	gentity_t *target = NULL;
 	
 	if(ent->target != NULL && ent->target[0] != 0) {
@@ -1011,7 +1017,7 @@ void SP_fx_phaser(gentity_t *ent) {
 	ent->s.angles[1] = scale * 1000;
 	G_SpawnString("customSnd", "sound/pos_b/phaser.wav", &sound);
 	
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & PHASER_FX_NOSOUND) == 0) {
 		ent->s.time = G_SoundIndex(sound);
 	} else {
 		ent->s.time = G_SoundIndex("NULL");
@@ -1023,7 +1029,7 @@ void SP_fx_phaser(gentity_t *ent) {
 		ent->s.time2 = 3000;
 	}
 
-	if((ent->spawnflags & 4) != 0) {
+	if((ent->spawnflags & PHASER_FX_LOCKED) != 0) {
 		ent->flags |= FL_LOCKED;
 	}
 
@@ -1754,6 +1760,7 @@ void stream_think( gentity_t *ent )
 		VectorNormalize( temp );
 		VectorMA( ent->r.currentOrigin, 1, temp, start );
 
+		memset(&trace, 0, sizeof(trace_t));
 		trap_Trace( &trace, start, NULL, NULL, ent->s.origin2, -1, MASK_SHOT );//ignore
 
 		if ( trace.fraction < 1.0 )
@@ -1942,7 +1949,7 @@ none
 */
 
 //------------------------------------------
-void explosion_trail_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void explosion_trail_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	G_AddEvent( self, EV_FX_EXPLOSION_TRAIL, 0 );
 }
@@ -2080,10 +2087,7 @@ void SP_fx_borg_energy_beam( gentity_t *ent )
 
 	G_SpawnFloat( "radius", "30", &ent->distance );
 	G_SpawnFloat( "speed", "100", &ent->speed );
-	if (!ent->startRGBA) {
-		ent->startRGBA[1] = 255;
-		ent->startRGBA[3] = 128;
-	}
+	G_SpawnVector4("startRGBA", "0 255 0 128", ent->startRGBA);
 
 	// Convert from range of 0-255 to 0-1
 	for (t=0; t < 4; t++) {
