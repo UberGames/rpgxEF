@@ -784,6 +784,16 @@ qboolean G_SpawnInt( const char* key, const char* defaultString, /*@out@*/ int* 
 qboolean	G_SpawnVector( const char* key, const char* defaultString, /*@out@*/ float* out );
 
 /**
+ * \brief Get a vector for a custom entity key.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
+qboolean	G_SpawnVector4( const char* key, const char* defaultString, /*@out@*/ float* out );
+
+/**
  * \brief Spawn all entities from the entity string.
  */
 void		G_SpawnEntitiesFromString( void );

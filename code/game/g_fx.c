@@ -1470,7 +1470,7 @@ Emits freaky orange bolts, sending pulses down the length of the beam if desired
 void forge_bolt_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_FORGE_BOLT, ent->spawnflags & 2 );
-	ent->nextthink = level.time + (ent->wait + crandom() * ent->wait * 0.25) * 1000;
+	ent->nextthink = (int)(level.time + (ent->wait + crandom() * ent->wait * 0.25) * 1000);
 
 	// If a fool gets in the bolt path, zap 'em
 	if ( ent->damage != 0 ) 
@@ -1482,6 +1482,7 @@ void forge_bolt_think( gentity_t *ent )
 		VectorNormalize( temp );
 		VectorMA( ent->r.currentOrigin, 1, temp, start );
 
+		memset(&trace, 0, sizeof(trace_t));
 		trap_Trace( &trace, start, NULL, NULL, ent->s.origin2, -1, MASK_SHOT );//ignore
 
 		if ( trace.fraction < 1.0 )
@@ -1579,7 +1580,7 @@ void SP_fx_forge_bolt( gentity_t *ent )
 	}
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	ent->wait = level.time + 1000;
+	ent->wait = (float)(level.time + 1000);
 
 	if (ent->target != NULL && ent->target[0] != 0)	{
 		ent->think = forge_bolt_link;
@@ -1622,7 +1623,8 @@ void plasma_think( gentity_t *ent )
 		VectorSubtract( ent->s.origin2, ent->r.currentOrigin, temp );
 		VectorNormalize( temp );
 		VectorMA( ent->r.currentOrigin, 1, temp, start );
-
+		
+		memset(&trace, 0, sizeof(trace_t));
 		trap_Trace( &trace, start, NULL, NULL, ent->s.origin2, -1, MASK_SHOT );//ignore
 
 		if ( trace.fraction < 1.0 )
@@ -1630,7 +1632,7 @@ void plasma_think( gentity_t *ent )
 			if ( trace.entityNum < ENTITYNUM_WORLD )
 			{
 				gentity_t *victim = &g_entities[trace.entityNum];
-				if ( victim && victim->takedamage )
+				if ( victim != NULL && victim->takedamage == qtrue )
 				{
 					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
 				}
@@ -1695,17 +1697,8 @@ void SP_fx_plasma( gentity_t *ent )
 {
 	int t;
 
-	if (!ent->startRGBA) {
-		ent->startRGBA[0] = 100;
-		ent->startRGBA[1] = 180;
-		ent->startRGBA[2] = 255;
-		ent->startRGBA[3] = 255;
-	}
-
-	if (!ent->finalRGBA) {
-		ent->finalRGBA[2] = 180;
-	}
-
+	G_SpawnVector4("startRGBA", "100 180 255 255", ent->startRGBA); 
+	G_SpawnVector4("finalRGBA", "0 0 180 0", ent->finalRGBA);
 	G_SpawnInt( "damage", "0", &ent->damage );
 
 	// Convert from range of 0-255 to 0-1
