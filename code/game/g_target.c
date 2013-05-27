@@ -57,7 +57,7 @@ void SP_target_give( gentity_t *ent )
 	G_SpawnString( "items", "", &items );
 
 	if(strcmp(items, "") == 0 && ent->target != NULL) { // spawnTEnt
-		items = G_NewString(ent->target);G
+		items = G_NewString(ent->target);
 	}
 
 	if(items == NULL) {
