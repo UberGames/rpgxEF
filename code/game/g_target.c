@@ -49,15 +49,15 @@ void Use_Target_Give( gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *
 //FIXME: Make the text parsed on load time. saves on resources!!
 void SP_target_give( gentity_t *ent ) 
 {
-	char	*items;
-	char	*textPtr;
-	char	*token;
-	int		weapon;
+	char*		items;
+	char*		textPtr;
+	char*		token;
+	unsigned	weapon;
 
 	G_SpawnString( "items", "", &items );
 
 	if(strcmp(items, "") == 0 && ent->target != NULL) { // spawnTEnt
-		items = ent->target;
+		items = G_NewString(ent->target);G
 	}
 
 	if(items == NULL) {
@@ -70,21 +70,21 @@ void SP_target_give( gentity_t *ent )
 
 	COM_BeginParseSession();
 
-	while ( 1 ) 
+	while (qtrue) 
 	{
 		token = COM_Parse( &textPtr );
-		if ( !token[0] )
+		if ( token == NULL || token[0] == 0 ) {
 			break;
+		}
 
-		if ( !Q_stricmpn( token, "|", 1 ) )
+		if ( Q_stricmpn( token, "|", 1 ) == 0 ) {
 			continue;
+		}
 
-		if( !Q_stricmpn( token, "WP_", 3 ) ) 
-		{
+		if( Q_stricmpn( token, "WP_", 3 ) == 0) {
 			weapon = GetIDForString( WeaponTable, token );
 
-			if ( weapon >= 0 ) 
-			{
+			if ( weapon >= 0 ) {
 				ent->s.time |= (1<<weapon);
 			}
 		}
