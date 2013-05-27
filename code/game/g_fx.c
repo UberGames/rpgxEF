@@ -1111,7 +1111,7 @@ void fx_torpedo_link(gentity_t *ent) {
 	VectorCopy(dir, ent->s.angles);
 	trap_LinkEntity(ent);
 
-	ent->wait = (ent->wait <= 0.0f) ? (ent->wait * 1000.0) : 0.0f;
+	ent->wait = (ent->wait <= 0.0f) ? (ent->wait * 1000.0f) : 0.0f;
 	
 	if(ent->count == 0) {
 		ent->count = -1;
@@ -1123,7 +1123,7 @@ void fx_torpedo_link(gentity_t *ent) {
 		ent->flags |= FL_LOCKED;
 	}
 
-	ent->s.angles2[0] = ent->speed ? ent->speed : 2.5;
+	ent->s.angles2[0] = (ent->speed <= 0.0f) ? ent->speed : 2.5f;
 
 	ent->use = fx_torpedo_use;
 	ent->nextthink = -1;
@@ -1132,7 +1132,7 @@ void fx_torpedo_link(gentity_t *ent) {
 void SP_fx_torpedo(gentity_t *ent) {
 	char	*sound;
 
-	if(!ent->target) {
+	if(ent->target == NULL || ent->target[0] == 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_torpedo at %s without target\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
@@ -1240,53 +1240,59 @@ A fire affect based on the adminguns fire effect.
 */
 void fire_think(gentity_t *ent) {
 	G_AddEvent(ent, EV_FX_FIRE, 1);
-	if (ent->targetname) {
+	if (ent->targetname != NULL && ent->targetname[0] != 0) {
 		ent->nextthink = level.time + 1000; 
 	} else {
 		ent->nextthink = level.time + 10000;
 	}
 }
 
-void fire_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void fire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
+	if ( self->count != 0 )
 	{
 		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else
 	{
 		self->think = fire_think;
 		self->nextthink = level.time + 200;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 void SP_fx_fire(gentity_t *ent) {
 	int size;
-	G_SpawnInt("size", "64", &size);
-	if(!size)
-		ent->s.time = 64;
-	else
-		ent->s.time = size;
-	ent->s.angles2[2] = 1;
 
-	if (ent->targetname)
+	G_SpawnInt("size", "64", &size);
+	if(size == 0) {
+		ent->s.time = 64;
+	} else {
+		ent->s.time = size;
+	}
+	ent->s.angles2[2] = 1.0f;
+
+	if (ent->targetname != NULL && ent->targetname[0] != 0) {
 		ent->s.time2 = 1000; 
-	else
+	} else {
 		ent->s.time2 = 10000;
+	}
 
 	trap_LinkEntity(ent);
 
-	if (ent->targetname)
-	{
+	if (ent->targetname != NULL && ent->targetname[0] != 0)	{
 		ent->use = fire_use;
 	}
 
-	ent->count = !(ent->spawnflags & 1);
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 )
 	{
 		ent->think = fire_think;
 		ent->nextthink = level.time + 2000;
