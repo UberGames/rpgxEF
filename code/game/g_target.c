@@ -21,7 +21,7 @@ none
 EG "WP_5 | WP_14" etc
 (Don't forget the spaces!)
 */
-void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
+void Use_Target_Give( gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator ) {
 	unsigned		i;
 	playerState_t*	ps;
 
@@ -33,14 +33,15 @@ void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 
 	for ( i=0; i < MAX_WEAPONS; i++ )
 	{
-		if ( (unsigned int)(ent->s.time) & (1 << i) )
+		if ( ((unsigned int)(ent->s.time) & (1 << i)) != 0 )
 		{
 			ps->stats[STAT_WEAPONS] ^= ( 1 << i );
 
-			if ( ps->stats[STAT_WEAPONS] & ( 1 << i ) )
+			if ( (ps->stats[STAT_WEAPONS] & ( 1 << i )) != 0 ) {
 				ps->ammo[i] = 1;
-			else
+			} else {
 				ps->ammo[i] = 0;
+			}
 			continue;
 		}
 	}
@@ -55,8 +56,15 @@ void SP_target_give( gentity_t *ent )
 
 	G_SpawnString( "items", "", &items );
 
-	if(!items[0] && ent->target) // spawnTEnt
-		items = G_NewString(ent->target);
+	if(strcmp(items, "") == 0 && ent->target != NULL) { // spawnTEnt
+		items = ent->target;
+	}
+
+	if(items == NULL) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] SP_target_give: items and ent->terget are NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
 
 	textPtr = items;
 
