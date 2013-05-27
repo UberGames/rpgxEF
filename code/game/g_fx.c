@@ -1326,45 +1326,47 @@ void cooking_steam_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void cooking_steam_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void cooking_steam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
+	if ( self->count != 0 )
 	{
 		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else
 	{
 		self->think = cooking_steam_think;
 		self->nextthink = level.time + 200;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
 void SP_fx_cooking_steam( gentity_t	*ent )
 {
-	if (!ent->distance) ent->distance = 3.0;
+	if (ent->distance <= 0.0f) {
+		ent->distance = 3.0f;
+	}
 
 	ent->s.angles[0] = ent->distance;
 
 	trap_LinkEntity( ent );
 
-	if (ent->targetname)
-	{
+	if (ent->targetname != NULL && ent->targetname[0] != 0)	{
 		ent->use = cooking_steam_use;
 	}
 
-	ent->count = !(ent->spawnflags & 1);
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
-	{
+	if (ent->targetname == NULL || ent->targetname[0] != 0 || (ent->spawnflags & 1) == 0 ) {
 		ent->think = cooking_steam_think;
 		ent->nextthink = level.time + 2000;
-	}
-	else
-	{
+	} else 	{
 		ent->think = NULL;
 		ent->nextthink = -1;
 	}
@@ -1392,39 +1394,40 @@ void electric_fire_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void electric_fire_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void electric_fire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
+	if ( self->count != 0 )
 	{
 		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else
 	{
 		self->think = electric_fire_think;
 		self->nextthink = level.time + 200;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 
 //------------------------------------------
 void SP_fx_electricfire( gentity_t	*ent )
 {
-	if (ent->targetname)
-	{
+	if (ent->targetname != NULL && ent->targetname[0] != 0)	{
 		ent->use = electric_fire_use;
 	}
 
-	ent->count = !(ent->spawnflags & 1);
-
-	if (!ent->targetname || !(ent->spawnflags & 1) )
-	{ent->think = electric_fire_think;
-	ent->nextthink = level.time + 500;
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
 	}
-	else
-	{
+
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
+		ent->think = electric_fire_think;
+		ent->nextthink = level.time + 500;
+	} else {
 		ent->think = NULL;
 		ent->nextthink = -1;
 	}
@@ -1470,7 +1473,7 @@ void forge_bolt_think( gentity_t *ent )
 	ent->nextthink = level.time + (ent->wait + crandom() * ent->wait * 0.25) * 1000;
 
 	// If a fool gets in the bolt path, zap 'em
-	if ( ent->damage ) 
+	if ( ent->damage != 0 ) 
 	{
 		vec3_t	start, temp;
 		trace_t	trace;
@@ -1486,7 +1489,7 @@ void forge_bolt_think( gentity_t *ent )
 			if ( trace.entityNum < ENTITYNUM_WORLD )
 			{
 				gentity_t *victim = &g_entities[trace.entityNum];
-				if ( victim && victim->takedamage )
+				if ( victim != NULL && victim->takedamage == qtrue )
 				{
 					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
 				}
@@ -1496,20 +1499,20 @@ void forge_bolt_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void forge_bolt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void forge_bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
-	if ( self->count )
+	if ( self->count != 0 )
 	{
 		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 0;
 	}
 	else
 	{
 		self->think = forge_bolt_think;
 		self->nextthink = level.time + 200;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -1518,10 +1521,15 @@ void forge_bolt_link( gentity_t *ent )
 	gentity_t	*target = NULL;
 	vec3_t		dir;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] forge_bolt_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
 
-	if (target == NULL)
-	{
+	if (target == NULL)	{
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] forge_bolt_link: unable to find target %s\n", ent->target););
 		G_FreeEntity(ent);
 		return;
@@ -1533,21 +1541,21 @@ void forge_bolt_link( gentity_t *ent )
 	
 	VectorCopy( target->s.origin, ent->s.origin2 );
 
-	if ( ent->targetname )
-	{
+	if ( ent->targetname != NULL && ent->targetname[0] != 0 ) {
 		ent->use = forge_bolt_use;
 	}
 
 	// This is used as the toggle switch
-	ent->count = !(ent->spawnflags & 1);
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
-	{
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
 		ent->think = forge_bolt_think;	
 		ent->nextthink = level.time + 1000;
-	}
-	else
-	{
+	} else {
 		ent->think = NULL;
 		ent->nextthink = -1;
 	}
@@ -1563,12 +1571,9 @@ void SP_fx_forge_bolt( gentity_t *ent )
 	G_SpawnFloat( "radius", "3.0", &ent->distance );
 
 	// See if effect is supposed to be delayed
-	if ( ent->spawnflags & 2 )
-	{
+	if ( (ent->spawnflags & 2) != 0 ) {
 		G_SpawnFloat( "wait", "2.0", &ent->wait );
-	}
-	else
-	{
+	} else {
 		// Effect is continuous
 		ent->wait = 0.1f;
 	}
@@ -1576,8 +1581,7 @@ void SP_fx_forge_bolt( gentity_t *ent )
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	ent->wait = level.time + 1000;
 
-	if (ent->target)
-	{
+	if (ent->target != NULL && ent->target[0] != 0)	{
 		ent->think = forge_bolt_link;
 		ent->nextthink = level.time + 100;
 		return;
@@ -1611,8 +1615,7 @@ void plasma_think( gentity_t *ent )
 	ent->nextthink = level.time + 100;
 
 	// If a fool gets in the plasma cone, fry 'em
-	if ( ent->damage ) 
-	{
+	if ( ent->damage != 0 ) {
 		vec3_t	start, temp;
 		trace_t	trace;
 
@@ -1637,20 +1640,17 @@ void plasma_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void plasma_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void plasma_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
-	{
+	if ( self->count != 0 )	{
 		self->think = NULL;	
 		self->nextthink = -1;
-	}
-	else
-	{
+		self->count = 0;
+	} else {
 		self->think = plasma_think;	
 		self->nextthink = level.time + 200;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -1658,7 +1658,14 @@ void plasma_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] plasma_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
+
 	if (target == NULL)
 	{
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] plasma_link: unable to find target %s\n", ent->target););
@@ -1666,18 +1673,14 @@ void plasma_link( gentity_t *ent )
 		return;
 	}
 
-	if (ent->targetname)
-	{
+	if (ent->targetname != NULL && ent->targetname[0] != 0 ) {
 		ent->use = plasma_use;
 	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
-	{
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
 		ent->think = plasma_think;	
 		ent->nextthink = level.time + 200;
-	}
-	else
-	{
+	} else {
 		ent->think = NULL;
 		ent->nextthink = -1;
 	}
@@ -1692,34 +1695,35 @@ void SP_fx_plasma( gentity_t *ent )
 {
 	int t;
 
-	if (!ent->startRGBA)
-	{
+	if (!ent->startRGBA) {
 		ent->startRGBA[0] = 100;
 		ent->startRGBA[1] = 180;
 		ent->startRGBA[2] = 255;
 		ent->startRGBA[3] = 255;
 	}
 
-	if (!ent->finalRGBA)
-	{
+	if (!ent->finalRGBA) {
 		ent->finalRGBA[2] = 180;
 	}
 
 	G_SpawnInt( "damage", "0", &ent->damage );
 
 	// Convert from range of 0-255 to 0-1
-	for (t=0; t < 3; t++)
-	{
-		ent->startRGBA[t] = ent->startRGBA[t] / 255;
-		ent->finalRGBA[t] = ent->finalRGBA[t] / 255;
+	for (t=0; t < 3; t++) {
+		ent->startRGBA[t] = ent->startRGBA[t] / 255.0f;
+		ent->finalRGBA[t] = ent->finalRGBA[t] / 255.0f;
 	}
-		ent->startRGBA[3] = ent->s.weapon;
-		ent->finalRGBA[3] = ent->s.powerups;
+		ent->startRGBA[3] = (float)ent->s.weapon;
+		ent->finalRGBA[3] = (float)ent->s.powerups;
 	
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 
 	// This is used as the toggle switch
-	ent->count = !(ent->spawnflags & 1);
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 	
 	trap_LinkEntity( ent );
 
@@ -1748,7 +1752,7 @@ void stream_think( gentity_t *ent )
 	ent->nextthink = level.time + 150;
 
 	// If a fool gets in the bolt path, zap 'em
-	if ( ent->damage ) 
+	if ( ent->damage != 0) 
 	{
 		vec3_t	start, temp;
 		trace_t	trace;
@@ -1774,20 +1778,17 @@ void stream_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void stream_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void stream_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
-	{
+	if ( self->count != 0 )	{
 		self->think = stream_think;
 		self->nextthink = level.time + 200;
-	}
-	else
-	{
+		self->count = 0;
+	} else {
 		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -1795,9 +1796,15 @@ void stream_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
-	if (target == NULL)
-	{
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] stream_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
+
+	if (target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] stream_link: unable to find target %s\n", ent->target););
 		G_FreeEntity(ent);
 		return;
@@ -1805,13 +1812,10 @@ void stream_link( gentity_t *ent )
 
 	VectorCopy( target->s.origin, ent->s.origin2 );
 	
-	if (!ent->targetname || !(ent->spawnflags & 1) )
-	{
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
 		ent->think = stream_think;
 		ent->nextthink = level.time + 200;
-	}
-	else if ( ent->spawnflags & 1 )
-	{
+	} else if ( (ent->spawnflags & 1) != 0 ) {
 		ent->think = NULL;
 		ent->nextthink = -1;
 	}
@@ -1824,12 +1828,15 @@ void SP_fx_stream( gentity_t *ent )
 {
 	G_SpawnInt( "damage", "0", &ent->damage );
 
-	if (ent->targetname)
-	{
+	if (ent->targetname != NULL && ent->targetname[0] != 0) {
 		ent->use = stream_use;
 	}
 
-	ent->count = !(ent->spawnflags & 1);
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 
@@ -1860,20 +1867,17 @@ void transporter_stream_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void transporter_stream_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void transporter_stream_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
-	{
+	if ( self->count != 0) {
 		self->think = transporter_stream_think;
 		self->nextthink = level.time + 200;
-	}
-	else
-	{
+		self->count = 0;
+	} else {
 		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -1881,29 +1885,34 @@ void transporter_stream_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] transporter_stream_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
 
-	if (target == NULL)
-	{
+	if (target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] transporter_stream_link: unable to find target %s\n", ent->target););
 		G_FreeEntity(ent);
 		return;
 	}
 
-	if (ent->targetname)
-	{
+	if (ent->targetname != NULL && ent->targetname[0] != 0)	{
 		ent->use = transporter_stream_use;
 	}
 
-	ent->count = !(ent->spawnflags & 1);
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
-	{
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 )	{
 		ent->think = transporter_stream_think;
 		ent->nextthink = level.time + 200;
-	}
-	else
-	{
+	} else {
 		ent->think = NULL;
 		ent->nextthink = -1;
 	}
@@ -1911,7 +1920,6 @@ void transporter_stream_link( gentity_t *ent )
 	VectorCopy( target->s.origin, ent->s.origin2 );
 
 	trap_LinkEntity( ent );
-
 }
 
 //------------------------------------------
@@ -1954,11 +1962,17 @@ void explosion_trail_link( gentity_t *ent )
 	ent->think = NULL;
 	ent->nextthink = -1;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] explosion_trail_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
 
-	if (target == NULL)
-	{
+	if (target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] explosion_trail_link: unable to find target %s\n", ent->target););
+		G_FreeEntity(ent);
 		return;
 	}
 
@@ -2010,20 +2024,17 @@ void borg_energy_beam_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void borg_energy_beam_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void borg_energy_beam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
-	{
+	if ( self->count != 0 )	{
 		self->think = borg_energy_beam_think;
 		self->nextthink = level.time + 200;
-	}
-	else
-	{
+		self->count = 0;
+	} else {
 		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -2031,29 +2042,34 @@ void borg_energy_beam_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] borg_energy_beam_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
 
-	if (target == NULL)
-	{
+	if (target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] borg_energy_beam_link: unable to find target %s\n", ent->target););
 		G_FreeEntity(ent);
 		return;
 	}
 
-	if (ent->targetname)
-	{
+	if (ent->targetname != NULL && ent->targetname[0] != 0) {
 		ent->use = borg_energy_beam_use;
 	}
 
-	ent->count = !(ent->spawnflags & 1);
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
-	{
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
 		ent->think = borg_energy_beam_think;
 		ent->nextthink = level.time + 200;
-	}
-	else
-	{
+	} else {
 		ent->think = NULL;
 		ent->nextthink = -1;
 	}
@@ -2061,9 +2077,7 @@ void borg_energy_beam_link( gentity_t *ent )
 	VectorCopy( target->s.origin, ent->s.origin2 );
 	VectorCopy( target->s.origin, ent->pos1 );
 
-
 	trap_LinkEntity( ent );
-
 }
 
 //------------------------------------------
@@ -2073,15 +2087,13 @@ void SP_fx_borg_energy_beam( gentity_t *ent )
 
 	G_SpawnFloat( "radius", "30", &ent->distance );
 	G_SpawnFloat( "speed", "100", &ent->speed );
-	if (!ent->startRGBA)
-	{
+	if (!ent->startRGBA) {
 		ent->startRGBA[1] = 255;
 		ent->startRGBA[3] = 128;
 	}
 
 	// Convert from range of 0-255 to 0-1
-	for (t=0; t < 4; t++)
-	{
+	for (t=0; t < 4; t++) {
 		ent->startRGBA[t] = ent->startRGBA[t] / 255;
 	}
 
@@ -2112,27 +2124,25 @@ Creates a shimmering cone or cylinder of colored light that stretches between tw
 void shimmery_thing_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_SHIMMERY_THING, 0 );
-	if ( ent->wait >= 0 )
+	if ( ent->wait >= 0-0f ) {
 		ent->nextthink = level.time + ent->wait;
-	else
+	} else {
 		ent->nextthink = -1;
+	}
 }
 
 //------------------------------------------
-void shimmery_thing_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+void shimmery_thing_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
-	if ( self->count )
-	{
+	if ( self->count != 0 ) {
 		self->think = shimmery_thing_think;
 		self->nextthink = level.time + 200;
-	}
-	else
-	{
+		self->count = 0;
+	} else {
 		self->think = NULL;
 		self->nextthink = -1;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -2140,30 +2150,38 @@ void shimmery_thing_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] shimmery_thing_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
 
-	if(target == NULL)
-	{
+	if(target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] shimmery_thing_link: unable to find target %s\n", ent->target););
 		G_FreeEntity(ent);
 		return;
 	}
 
-	if (ent->targetname)
-	{
+	if (ent->targetname != NULL && ent->targetname[0] != 0)	{
 		ent->use = shimmery_thing_use;
 	}
 
-	ent->count = !(ent->spawnflags & 1);
-	if (ent->spawnflags & 2) ent->s.angles[2] = 2;
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
-	{
+	if((ent->spawnflags & 2) != 0) {
+		ent->s.angles[2] = 2.0f;
+	}
+
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
 		ent->think = shimmery_thing_think;
 		ent->nextthink = level.time + 200;
-	}
-	else
-	{
+	} else {
 		ent->think = NULL;
 		ent->nextthink = -1;
 	}
@@ -2171,19 +2189,18 @@ void shimmery_thing_link( gentity_t *ent )
 	VectorCopy( target->s.origin, ent->s.origin2 );
 
 	trap_LinkEntity( ent );
-
 }
 
 //------------------------------------------
 void SP_fx_shimmery_thing( gentity_t *ent )
 {
 	G_SpawnFloat( "radius", "10", &ent->s.angles[1] );
-	if ( !ent->wait ) {
-		ent->wait = 2000;
+	if ( ent->wait <= 0.0f ) {
+		ent->wait = 2000.0f;
 	}
 
-	if ( ent->spawnflags & 4 ) { // backwards capability for sp, keep -1 in definitions for unity
-		ent->wait = -1;
+	if ( (ent->spawnflags & 4) != 0 ) { // backwards capability for sp, keep -1 in definitions for unity
+		ent->wait = -1.0f;
 	}
 
 	ent->think = shimmery_thing_link;
@@ -2212,34 +2229,28 @@ NO_PROXIMITY_FX - Will deactivate proximity-fx associated with this. Check it if
 //------------------------------------------
 void borg_bolt_think( gentity_t *ent )
 {
-	if (ent->spawnflags & 2)
-	{
+	if ((ent->spawnflags & 2) != 0)	{
 		G_AddEvent( ent, EV_FX_BORG_BOLT, 0 );
 		ent->nextthink = level.time + 100 + random() * 25;
-	}
-	else
-	{
+	} else {
 		G_AddEvent( ent, EV_FX_BORG_BOLT, 1 );
 		ent->nextthink = level.time + 50;
 	}
 }
 
 //------------------------------------------
-void borg_bolt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void borg_bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
 
-	if ( self->count )
-	{
+	if ( self->count != 0) {
 		self->think = NULL;
 		self->nextthink = -1;
-	}
-	else
-	{
+		self->count = 0;
+	} else {
 		self->think = borg_bolt_think;
 		self->nextthink = level.time + 200;
+		self->count = 1;
 	}
-	
-	self->count = !self->count;
 }
 
 //------------------------------------------
@@ -2248,45 +2259,46 @@ void borg_bolt_link( gentity_t *ent )
 	gentity_t	*target = NULL;
 	gentity_t	*target2 = NULL;
 
-	target = G_Find (target, FOFS(targetname), ent->target);
+	if(ent->target != NULL && ent->target[0] != 0) {
+		target = G_Find (target, FOFS(targetname), ent->target);
+	} else {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] borg_bolt_link: ent->target is NULL\n"););
+		G_FreeEntity(ent);
+		return;
+	}
 
-	if (target == NULL)
-	{
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entiy-Error] borg_bolt_link: unable to find target %s\n", ent->target););
+	if (target == NULL)	{
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] borg_bolt_link: unable to find target %s\n", ent->target););
 		G_FreeEntity(ent);
 		return;
 	}
 	VectorCopy( target->s.origin, ent->s.origin2 );
 
-	if (ent->message)
-	{
-	target2 = G_Find (target2, FOFS(targetname), ent->message);
+	if (ent->message != NULL && ent->message[0] != 0) {
+		target2 = G_Find (target2, FOFS(targetname), ent->message);
 
-	if (target2 == NULL)
-	{
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Warning] borg_bolt_link: unable to find target2 %s falling back to using ent's origin\n", ent->target););
-	}
-	else
-	{
-		VectorCopy( target2->s.origin, ent->s.origin );
-	}
+		if (target2 == NULL) {
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Warning] borg_bolt_link: unable to find target2 %s falling back to using ent's origin\n", ent->target););
+		} else {
+			VectorCopy( target2->s.origin, ent->s.origin );
+		}
 	}
 
-	if ( ent->targetname )
-	{
+	if ( ent->targetname != NULL && ent->targetname[0] != 0 ) {
 		ent->use = borg_bolt_use;
 	}
 
 	// This is used as the toggle switch
-	ent->count = !(ent->spawnflags & 1);
+	if((ent->spawnflags & 1) == 0) {
+		ent->count = 1;
+	} else {
+		ent->count = 0;
+	}
 
-	if (!ent->targetname || !(ent->spawnflags & 1) )
-	{
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
 		ent->think = borg_bolt_think;	
 		ent->nextthink = level.time + 1000;
-	}
-	else
-	{
+	} else {
 		ent->think = NULL;
 		ent->nextthink = -1;
 	}
