@@ -49,7 +49,7 @@ void Use_Target_Give( gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *
 //FIXME: Make the text parsed on load time. saves on resources!!
 void SP_target_give( gentity_t *ent ) 
 {
-	char*		items;
+	/*@shared@*/ char*		items;
 	char*		textPtr;
 	char*		token;
 	unsigned	weapon;
