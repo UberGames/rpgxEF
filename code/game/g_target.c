@@ -22,12 +22,14 @@ EG "WP_5 | WP_14" etc
 (Don't forget the spaces!)
 */
 void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
-	int			i;
-	playerState_t *ps = &activator->client->ps;
+	unsigned		i;
+	playerState_t*	ps;
 
-	if ( !activator || !activator->client ) {
+	if ( activator == NULL || activator->client == NULL ) {
 		return;
 	}
+
+	ps = &activator->client->ps;
 
 	for ( i=0; i < MAX_WEAPONS; i++ )
 	{
