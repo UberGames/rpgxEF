@@ -1059,14 +1059,18 @@ Torpedos can be limited and can be set to any value within their maximum range b
 "count" - ammount of torpedos that can be fired (defaults to -1 = infinite)
 "speed" - a speed modifier (default: 2.5)
 */
-void fx_torpedo_use(gentity_t* ent, gentity_t*other, gentity_t *activator);
+#define TORPEDO_FX_QUANTUM 1
+#define TORPEDO_FX_NOSOUND 2
+#define TORPEDO_FX_LOCKED 4
 
-void fx_torpedo_think(gentity_t *ent) {
+static void fx_torpedo_use(gentity_t* ent, gentity_t*other, gentity_t *activator);
+
+static void fx_torpedo_think(gentity_t *ent) {
 	ent->nextthink = -1;
 	ent->use = fx_torpedo_use;
 }
 
-void fx_torpedo_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator) {
+static void fx_torpedo_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator) {
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
 	} else {
@@ -1093,7 +1097,7 @@ void fx_torpedo_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *ac
 	}
 }
 
-void fx_torpedo_link(gentity_t *ent) {
+static void fx_torpedo_link(gentity_t *ent) {
 	vec3_t dir;
 	gentity_t *target = NULL;
 
@@ -1166,7 +1170,9 @@ If you want to use a bunch of fires use fx_fire.
 "targetname" - toggles effect on/off whenver used, requires 10x more thinks
 "size" - how big the fire shoud be (default: 10)
 */
-void particleFire_think(gentity_t *ent) {
+#define PARTICLE_FIRE_STARTOFF 1
+
+static void particleFire_think(gentity_t *ent) {
 	G_AddEvent(ent, EV_FX_PARTICLEFIRE, ent->count);
 	if (ent->targetname != NULL && ent->targetname[0] != 0) {
 		ent->nextthink = level.time + 1000; 
@@ -1175,7 +1181,7 @@ void particleFire_think(gentity_t *ent) {
 	}
 }
 
-void particleFire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void particleFire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0 )
 	{
@@ -1213,13 +1219,13 @@ void SP_fx_particleFire(gentity_t *ent) {
 		ent->use = particleFire_use;
 	}
 
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & PARTICLE_FIRE_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 )
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & PARTICLE_FIRE_STARTOFF) == 0 )
 	{
 		ent->think = particleFire_think;
 		ent->nextthink = level.time + 2000;
@@ -1244,7 +1250,9 @@ A fire affect based on the adminguns fire effect.
 "size" - how big the fire shoud be (default: 64)
 "angles" - fires angles (default: 0 0 0 = UP)
 */
-void fire_think(gentity_t *ent) {
+#define FIRE_FX_STARTOFF 1
+
+static void fire_think(gentity_t *ent) {
 	G_AddEvent(ent, EV_FX_FIRE, 1);
 	if (ent->targetname != NULL && ent->targetname[0] != 0) {
 		ent->nextthink = level.time + 1000; 
@@ -1253,7 +1261,7 @@ void fire_think(gentity_t *ent) {
 	}
 }
 
-void fire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void fire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0 )
 	{
@@ -1292,13 +1300,13 @@ void SP_fx_fire(gentity_t *ent) {
 		ent->use = fire_use;
 	}
 
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & FIRE_FX_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 )
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & FIRE_FX_STARTOFF) == 0 )
 	{
 		ent->think = fire_think;
 		ent->nextthink = level.time + 2000;
@@ -1323,16 +1331,17 @@ Emits slowly moving steam puffs that rise up from the specified point
 "targetname" - toggles effect on/off whenver used
 "distance" - smoke puff size ( default 3.0 )
 */
+#define COOCKING_STEAM_STARTOFF 1
 
 //------------------------------------------
-void cooking_steam_think( gentity_t *ent )
+static void cooking_steam_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_COOKING_STEAM, 0 );
 	ent->nextthink = level.time + 100;
 }
 
 //------------------------------------------
-void cooking_steam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void cooking_steam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0 )
 	{
@@ -1363,13 +1372,13 @@ void SP_fx_cooking_steam( gentity_t	*ent )
 		ent->use = cooking_steam_use;
 	}
 
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & COOCKING_STEAM_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] != 0 || (ent->spawnflags & 1) == 0 ) {
+	if (ent->targetname == NULL || ent->targetname[0] != 0 || (ent->spawnflags & COOCKING_STEAM_STARTOFF) == 0 ) {
 		ent->think = cooking_steam_think;
 		ent->nextthink = level.time + 2000;
 	} else 	{
@@ -1391,16 +1400,17 @@ Spawns smoke puffs.
 -----KEYS-----
 "targetname" - toggles effect on/off whenver used
 */
+#define ELEC_FIRE_STARTOFF 1
 
 //------------------------------------------
-void electric_fire_think( gentity_t *ent )
+static void electric_fire_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_ELECFIRE, 0 );
 	ent->nextthink = level.time + (750 + (random() * 300));
 }
 
 //------------------------------------------
-void electric_fire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void electric_fire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0 )
 	{
@@ -1424,13 +1434,13 @@ void SP_fx_electricfire( gentity_t	*ent )
 		ent->use = electric_fire_use;
 	}
 
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & ELEC_FIRE_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & ELEC_FIRE_STARTOFF) == 0 ) {
 		ent->think = electric_fire_think;
 		ent->nextthink = level.time + 500;
 	} else {
@@ -1471,11 +1481,17 @@ Emits freaky orange bolts, sending pulses down the length of the beam if desired
 "random" - bolt chaos (0.1 = too calm, 0.4 = default, 1.0 or higher = pretty wicked)
 "radius" - radius of the bolt (3.0 = default) 
 */
+#define FORGE_BOLT_STARTOFF 1
+#define FORGE_BOLT_DELAYED 2
+#define FORGE_BOLT_SPARKS 4
+#define FORGE_BOLT_PULSE 8
+#define FORGE_BOLT_TAPER 16
+#define FORGE_BOLT_SMOOTH 32
 
 //------------------------------------------
-void forge_bolt_think( gentity_t *ent )
+static void forge_bolt_think( gentity_t *ent )
 {
-	G_AddEvent( ent, EV_FX_FORGE_BOLT, ent->spawnflags & 2 );
+	G_AddEvent( ent, EV_FX_FORGE_BOLT, ent->spawnflags & FORGE_BOLT_DELAYED );
 	ent->nextthink = (int)(level.time + (ent->wait + crandom() * ent->wait * 0.25) * 1000);
 
 	// If a fool gets in the bolt path, zap 'em
@@ -1506,7 +1522,7 @@ void forge_bolt_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void forge_bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
+static void forge_bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
 	if ( self->count != 0 )
 	{
@@ -1523,7 +1539,7 @@ void forge_bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*
 }
 
 //------------------------------------------
-void forge_bolt_link( gentity_t *ent )
+static void forge_bolt_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	vec3_t		dir;
@@ -1553,13 +1569,13 @@ void forge_bolt_link( gentity_t *ent )
 	}
 
 	// This is used as the toggle switch
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & FORGE_BOLT_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & FORGE_BOLT_STARTOFF) == 0 ) {
 		ent->think = forge_bolt_think;	
 		ent->nextthink = level.time + 1000;
 	} else {
@@ -1578,7 +1594,7 @@ void SP_fx_forge_bolt( gentity_t *ent )
 	G_SpawnFloat( "radius", "3.0", &ent->distance );
 
 	// See if effect is supposed to be delayed
-	if ( (ent->spawnflags & 2) != 0 ) {
+	if ( (ent->spawnflags & FORGE_BOLT_DELAYED) != 0 ) {
 		G_SpawnFloat( "wait", "2.0", &ent->wait );
 	} else {
 		// Effect is continuous
@@ -1614,9 +1630,10 @@ Emits plasma jet directed from the specified point to the specified point. Jet s
 	(default  0 0 180 0) Blue
 "damage" - damage PER FRAME, default zero
 */
+#define PLASMA_FX_STARTOFF 1
 
 //------------------------------------------
-void plasma_think( gentity_t *ent )
+static void plasma_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_PLASMA, 0 );
 	ent->nextthink = level.time + 100;
@@ -1648,7 +1665,7 @@ void plasma_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void plasma_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void plasma_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0 )	{
 		self->think = NULL;	
@@ -1662,7 +1679,7 @@ void plasma_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ ge
 }
 
 //------------------------------------------
-void plasma_link( gentity_t *ent )
+static void plasma_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
@@ -1685,7 +1702,7 @@ void plasma_link( gentity_t *ent )
 		ent->use = plasma_use;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & PLASMA_FX_STARTOFF) == 0 ) {
 		ent->think = plasma_think;	
 		ent->nextthink = level.time + 200;
 	} else {
@@ -1718,7 +1735,7 @@ void SP_fx_plasma( gentity_t *ent )
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 
 	// This is used as the toggle switch
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & PLASMA_FX_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
@@ -1743,9 +1760,10 @@ Creates streaming particles that travel between two points--for Stasis level. ON
 "target" - (required) End point for particle stream.
 "targetname" - toggle effect on/off each time used.
 */
+#define ENERGY_STREAM_STARTOFF 1
 
 //------------------------------------------
-void stream_think( gentity_t *ent )
+static void stream_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_STREAM, 0 );
 	ent->nextthink = level.time + 150;
@@ -1768,7 +1786,7 @@ void stream_think( gentity_t *ent )
 			if ( trace.entityNum < ENTITYNUM_WORLD )
 			{
 				gentity_t *victim = &g_entities[trace.entityNum];
-				if ( victim && victim->takedamage )
+				if ( victim != NULL && victim->takedamage == qtrue )
 				{
 					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
 				}
@@ -1778,7 +1796,7 @@ void stream_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void stream_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void stream_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0 )	{
 		self->think = stream_think;
@@ -1792,7 +1810,7 @@ void stream_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ ge
 }
 
 //------------------------------------------
-void stream_link( gentity_t *ent )
+static void stream_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
@@ -1812,7 +1830,7 @@ void stream_link( gentity_t *ent )
 
 	VectorCopy( target->s.origin, ent->s.origin2 );
 	
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & ENERGY_STREAM_STARTOFF) == 0 ) {
 		ent->think = stream_think;
 		ent->nextthink = level.time + 200;
 	} else if ( (ent->spawnflags & 1) != 0 ) {
@@ -1832,7 +1850,7 @@ void SP_fx_stream( gentity_t *ent )
 		ent->use = stream_use;
 	}
 
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & ENERGY_STREAM_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
@@ -1858,16 +1876,17 @@ Creates streaming particles that travel between two points--for forge level.
 "target" - (required) End point for particle stream.
 "targetname" - fires only when used
 */
+#define TRANSPORTER_STREAM_STARTOFF 1
 
 //------------------------------------------
-void transporter_stream_think( gentity_t *ent )
+static void transporter_stream_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_TRANSPORTER_STREAM, 0 );
 	ent->nextthink = level.time + 150;
 }
 
 //------------------------------------------
-void transporter_stream_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void transporter_stream_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0) {
 		self->think = transporter_stream_think;
@@ -1881,7 +1900,7 @@ void transporter_stream_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@
 }
 
 //------------------------------------------
-void transporter_stream_link( gentity_t *ent )
+static void transporter_stream_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
@@ -1909,7 +1928,7 @@ void transporter_stream_link( gentity_t *ent )
 		ent->count = 0;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 )	{
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & TRANSPORTER_STREAM_STARTOFF) == 0 )	{
 		ent->think = transporter_stream_think;
 		ent->nextthink = level.time + 200;
 	} else {
@@ -1949,13 +1968,13 @@ none
 */
 
 //------------------------------------------
-void explosion_trail_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void explosion_trail_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	G_AddEvent( self, EV_FX_EXPLOSION_TRAIL, 0 );
 }
 
 //------------------------------------------
-void explosion_trail_link( gentity_t *ent )
+static void explosion_trail_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
@@ -2015,16 +2034,18 @@ A borg tracing beam that either carves out a cone or swings like a pendulum, swe
 "target" - (required) End point for trace beam, should be placed at the very center of the trace area.
 "targetname" - fires only when used
 */
+#define BORG_ENERGY_BEAM_STARTOFF 1
+#define BORG_ENERGY_BEAM_CONE 2
 
 //------------------------------------------
-void borg_energy_beam_think( gentity_t *ent )
+static void borg_energy_beam_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_BORG_ENERGY_BEAM, 0 );
 	ent->nextthink = level.time + 100;
 }
 
 //------------------------------------------
-void borg_energy_beam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void borg_energy_beam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0 )	{
 		self->think = borg_energy_beam_think;
@@ -2038,7 +2059,7 @@ void borg_energy_beam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@un
 }
 
 //------------------------------------------
-void borg_energy_beam_link( gentity_t *ent )
+static void borg_energy_beam_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
@@ -2066,7 +2087,7 @@ void borg_energy_beam_link( gentity_t *ent )
 		ent->count = 0;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & BORG_ENERGY_BEAM_STARTOFF) == 0 ) {
 		ent->think = borg_energy_beam_think;
 		ent->nextthink = level.time + 200;
 	} else {
@@ -2116,9 +2137,11 @@ Creates a shimmering cone or cylinder of colored light that stretches between tw
 "targetname" - fires only when used
 "wait" - how long in ms to stay on before turning itself off ( default 2 seconds (2000 ms), -1 to disable auto shut off )
 */
+#define SHIMMERY_THING_STARTOFF 1
+#define SHIMMERY_THING_TAPER 2
 
 //------------------------------------------
-void shimmery_thing_think( gentity_t *ent )
+static void shimmery_thing_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_SHIMMERY_THING, 0 );
 	if ( ent->wait >= 0.0f ) {
@@ -2129,7 +2152,7 @@ void shimmery_thing_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void shimmery_thing_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
+static void shimmery_thing_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator)
 {
 	if ( self->count != 0 ) {
 		self->think = shimmery_thing_think;
@@ -2143,7 +2166,7 @@ void shimmery_thing_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unus
 }
 
 //------------------------------------------
-void shimmery_thing_link( gentity_t *ent )
+static void shimmery_thing_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 
@@ -2165,17 +2188,17 @@ void shimmery_thing_link( gentity_t *ent )
 		ent->use = shimmery_thing_use;
 	}
 
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & SHIMMERY_THING_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
 	}
 
-	if((ent->spawnflags & 2) != 0) {
+	if((ent->spawnflags & SHIMMERY_THING_TAPER) != 0) {
 		ent->s.angles[2] = 2.0f;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & SHIMMERY_THING_STARTOFF) == 0 ) {
 		ent->think = shimmery_thing_think;
 		ent->nextthink = level.time + 200;
 	} else {
@@ -2223,10 +2246,13 @@ NO_PROXIMITY_FX - Will deactivate proximity-fx associated with this. Check it if
 "targetname" - toggles effect on/off each time it's used
 */
 
+#define BORG_BOLT_FX_STARTOFF 1
+#define BORG_BOLT_FX_NO_PROXIMITY_FX 2
+
 //------------------------------------------
-void borg_bolt_think( gentity_t *ent )
+static void borg_bolt_think( gentity_t *ent )
 {
-	if ((ent->spawnflags & 2) != 0)	{
+	if ((ent->spawnflags & BORG_BOLT_FX_NO_PROXIMITY_FX) != 0)	{
 		G_AddEvent( ent, EV_FX_BORG_BOLT, 0 );
 		ent->nextthink = level.time + 100 + random() * 25;
 	} else {
@@ -2236,7 +2262,7 @@ void borg_bolt_think( gentity_t *ent )
 }
 
 //------------------------------------------
-void borg_bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
+static void borg_bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
 {
 
 	if ( self->count != 0) {
@@ -2251,7 +2277,7 @@ void borg_bolt_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/
 }
 
 //------------------------------------------
-void borg_bolt_link( gentity_t *ent )
+static void borg_bolt_link( gentity_t *ent )
 {
 	gentity_t	*target = NULL;
 	gentity_t	*target2 = NULL;
@@ -2286,13 +2312,13 @@ void borg_bolt_link( gentity_t *ent )
 	}
 
 	// This is used as the toggle switch
-	if((ent->spawnflags & 1) == 0) {
+	if((ent->spawnflags & BORG_BOLT_FX_STARTOFF) == 0) {
 		ent->count = 1;
 	} else {
 		ent->count = 0;
 	}
 
-	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & 1) == 0 ) {
+	if (ent->targetname == NULL || ent->targetname[0] == 0 || (ent->spawnflags & BORG_BOLT_FX_STARTOFF) == 0 ) {
 		ent->think = borg_bolt_think;	
 		ent->nextthink = level.time + 1000;
 	} else {
