@@ -271,7 +271,7 @@ void SP_target_speaker( gentity_t *ent ) {
 		return;
 	}
 
-	if(!ent->count) { // not by spawnTEnt/*.spawn
+	if(!ent->count) { // not by spawnTEnt\*.spawn
 		// force all client reletive sounds to be "activator" speakers that
 		// play on the entity that activates it
 		if ( s[0] == '*' ) {
