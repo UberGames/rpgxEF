@@ -2124,7 +2124,7 @@ Creates a shimmering cone or cylinder of colored light that stretches between tw
 void shimmery_thing_think( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_SHIMMERY_THING, 0 );
-	if ( ent->wait >= 0-0f ) {
+	if ( ent->wait >= 0.0f ) {
 		ent->nextthink = level.time + ent->wait;
 	} else {
 		ent->nextthink = -1;
