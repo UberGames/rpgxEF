@@ -1096,7 +1096,7 @@ qboolean G_MoveBox (gentity_t* ent);
  * \param ent the entity
  * \param activator the initiator of the function call
  */
-void G_UseTargets (gentity_t* ent, gentity_t* activator);
+void G_UseTargets (gentity_t* ent, /*@null@*/ gentity_t* activator);
 
 /**
  * \brief Use all targets of the given entity.
