@@ -146,7 +146,7 @@ When used fires it'd target after a delay of 'wait' seconds
 "luaUse" - lua function to call at the beginning of the delay
 luaThink - lua function to call at end of delay
 */
-static void Think_Target_Delay( gentity_t *ent ) {
+static void Think_Target_Delay( /*@shared@*/ gentity_t *ent ) {
 #ifdef G_LUA
 	if(ent->luaTrigger != NULL) {
 		if(ent->activator != NULL) {
@@ -163,7 +163,7 @@ static void Think_Target_Delay( gentity_t *ent ) {
 	}
 }
 
-static void Use_Target_Delay( /*@unused@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
+static void Use_Target_Delay( /*@shared@*/  gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
 	ent->nextthink = (int)(level.time + ( ent->wait + ent->random * crandom() ) * 1000);
 	ent->think = Think_Target_Delay;
 	ent->activator = activator;
@@ -199,7 +199,7 @@ By default every client get's the message however this can be limited via spawnf
 -----KEYS-----
 "message"	text to print
 */
-static void Use_Target_Print (/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
+static void Use_Target_Print (/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 	if ( activator != NULL && activator->client != NULL && ( ent->spawnflags & 4 ) != 0 && ent->message != NULL) {
 		trap_SendServerCommand( activator-g_entities, va("servermsg %s", ent->message ));
 		return;
@@ -340,7 +340,7 @@ When triggered, fires a laser.  You can either set a target or a direction.
 "targetname" - when used will toggle on/off
 "target" - point to fire laser at
 */
-static void target_laser_think (gentity_t *self) {
+static void target_laser_think (/*@shared@*/ gentity_t *self) {
 	vec3_t	end;
 	trace_t	tr;
 	vec3_t	point;
@@ -380,7 +380,7 @@ static void target_laser_on (/*@shared@*/ gentity_t *self)
 	target_laser_think (self);
 }
 
-static void target_laser_off (gentity_t *self)
+static void target_laser_off (/*@shared@*/ gentity_t *self)
 {
 	trap_UnlinkEntity( self );
 	self->nextthink = 0;
@@ -399,7 +399,7 @@ static void target_laser_use (/*@shared@*/ gentity_t *self, /*@shared@*/  /*@unu
 	}
 }
 
-static void target_laser_start (gentity_t *self)
+static void target_laser_start (/*@shared@*/ gentity_t *self)
 {
 	gentity_t *ent = NULL;
 
@@ -435,7 +435,7 @@ static void target_laser_start (gentity_t *self)
 	}
 }
 
-void SP_target_laser (gentity_t *self)
+void SP_target_laser (/*@shared@*/ gentity_t *self)
 {
 	// let everything else get spawned before we start firing
 	self->think = target_laser_start;
@@ -445,7 +445,7 @@ void SP_target_laser (gentity_t *self)
 
 //==========================================================
 
-static void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
+static void target_teleporter_use( /*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
 	gentity_t	*dest = NULL;
 	vec3_t		destPoint;
 	vec3_t		tracePoint;
@@ -523,7 +523,11 @@ The activator will be instantly teleported away.
 */
 void SP_target_teleporter( gentity_t *self ) {
 	if (self->targetname == NULL) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] untargeted %s at %s\n", self->classname, vtos(self->s.origin)););
+		if(self->classname != NULL) {
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] untargeted %s at %s\n", self->classname, vtos(self->s.origin)););
+		} else {
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] entity is untargeted\n"););
+		}
 		G_FreeEntity(self);
 		return;
 	}
