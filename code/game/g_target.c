@@ -1201,7 +1201,7 @@ static void target_turbolift_endMove ( /*@shared@*/ gentity_t *ent )
 	// check for shader remaps
 	if(rpg_calcLiftTravelDuration.integer != 0 || level.overrideCalcLiftTravelDuration != 0) {
 		if((ent->truename != NULL && otherLift->truename != NULL) || (ent->falsename != NULL && otherLift->falsename != NULL)) {
-			f = level.time * 0.001f;
+			f = (float)(level.time * 0.001f);
 			AddRemap(ent->targetShaderName, ent->targetShaderName, f);
 			AddRemap(otherLift->targetShaderName, otherLift->targetShaderName, f);
 		}
@@ -1257,7 +1257,7 @@ static void TeleportPlayers ( gentity_t* ent, gentity_t* targetLift, int numEnts
 	}
 }
 
-static void target_turbolift_TeleportPlayers ( gentity_t *ent )
+static void target_turbolift_TeleportPlayers (/*@shared@*/ gentity_t *ent )
 {
 	gentity_t	*targetLift;
 	vec3_t		mins, maxs;
@@ -1343,7 +1343,7 @@ static void target_turbolift_TeleportPlayers ( gentity_t *ent )
 	free(targetLiftTouch);
 }
 
-static void target_turbolift_startSoundEnd(gentity_t *ent) {
+static void target_turbolift_startSoundEnd(/*@shared@*/ gentity_t *ent) {
 	ent->nextthink = -1;
 	
 	if(ent->parent != NULL) {
@@ -1354,7 +1354,7 @@ static void target_turbolift_startSoundEnd(gentity_t *ent) {
 	}
 }
 
-static void target_turbolift_startMove ( gentity_t *ent )
+static void target_turbolift_startMove (/*@shared@*/ gentity_t *ent )
 {
 	gentity_t*	lights=NULL;
 	gentity_t*	otherLift=NULL;
@@ -1377,6 +1377,11 @@ static void target_turbolift_startMove ( gentity_t *ent )
 		if(ent->sound2to1 != 0) {
 			if( rpg_liftDurationModifier.value * 1000 * time >= ent->distance * 1000 ) {
 				tent = G_Spawn();
+
+				if(tent == NULL) {
+					return;
+				}
+
 				tent->think = target_turbolift_startSoundEnd;
 				tent->nextthink = level.time + (ent->distance * 1000);
 				tent->parent = ent;
@@ -1395,40 +1400,46 @@ static void target_turbolift_startMove ( gentity_t *ent )
 	//show flashy bits
 	//find any usables parented to the lift ent, and use them
 	{
-		while ( ( lights = G_Find( lights, FOFS( targetname ), ent->target ) ) != NULL )
-		{
-			if ( !Q_stricmp( lights->classname, "func_usable" ) )
+		if(ent->target != NULL) {
+			while ( ( lights = G_Find( lights, FOFS( targetname ), ent->target ) ) != NULL )
 			{
-				if(!rpg_calcLiftTravelDuration.integer) {
-					lights->use( lights, lights, ent );
+				if ( Q_stricmp( lights->classname, "func_usable" ) == 0 )
+				{
+					if(rpg_calcLiftTravelDuration.integer == 0) {
+						lights->use( lights, lights, ent );
 #ifdef G_LUA
-					if(lights->luaUse)
-						LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
-#endif
-				}
-				else {
-					if ( time2 < 0 && lights->targetname2 ) {
-						if(!Q_stricmp(lights->targetname2, va("%s_dn", ent->target))) {
-							lights->use(lights, lights, ent );
-#ifdef G_LUA
-							if(lights->luaUse)
-								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
-#endif
-						}
-					} else if ( time2 > 0 && lights->targetname2 ) {
-						if(!Q_stricmp(lights->targetname2, va("%s_up", ent->target))) {
-							lights->use(lights, lights, ent );
-#ifdef G_LUA
-							if(lights->luaUse)
-								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
-#endif
-						}
-					} else {
-						lights->use( lights, lights, ent);
-#ifdef G_LUA
-						if(lights->luaUse)
+						if(lights->luaUse != NULL) {
 							LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+						}
 #endif
+					}
+					else {
+						if ( time2 < 0 && lights->targetname2 != NULL ) {
+							if(Q_stricmp(lights->targetname2, va("%s_dn", ent->target)) == 0) {
+								lights->use(lights, lights, ent );
+#ifdef G_LUA
+								if(lights->luaUse != NULL) {
+									LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+								}
+#endif
+							}
+						} else if ( time2 > 0 && lights->targetname2 ) {
+							if(Q_stricmp(lights->targetname2, va("%s_up", ent->target)) == 0) {
+								lights->use(lights, lights, ent );
+#ifdef G_LUA
+								if(lights->luaUse != NULL) {
+									LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+								}
+#endif
+							}
+						} else {
+							lights->use( lights, lights, ent);
+#ifdef G_LUA
+							if(lights->luaUse != NULL) {
+								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+							}
+#endif
+						}
 					}
 				}
 			}

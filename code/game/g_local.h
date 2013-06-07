@@ -3381,7 +3381,7 @@ struct holoData_s {
 /**
 *	Builds the config string for shader remapping.
 */
-const char* BuildShaderStateConfig(void);
+const /*@shared@*/ char* BuildShaderStateConfig(void);
 
 typedef struct luaAlertState_s luaAlertState_t;
 struct luaAlertState_s {

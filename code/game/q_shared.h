@@ -631,7 +631,7 @@ void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
 int	PlaneTypeForNormal (vec3_t normal);
 
 void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
-void AngleVectors( const vec3_t angles, /*@out@*/ vec3_t forward, /*@out@*/ vec3_t right, /*@out@*/ vec3_t up);
+void AngleVectors( const vec3_t angles, /*@null@*/ /*@out@*/ vec3_t forward, /*@null@*/ /*@out@*/ vec3_t right, /*@null@*/ /*@out@*/ vec3_t up);
 void PerpendicularVector( vec3_t dst, const vec3_t src );
 void VectorShort(vec3_t vect);
 void UnVectorShort(vec3_t vect);
