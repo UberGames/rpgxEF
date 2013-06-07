@@ -3396,10 +3396,10 @@ luaAlertState_t* luaAlertState;
 
 /* alert shaders */
 typedef struct {
-	char*	greenShaders[10];
-	char*	redShaders[10];
-	char*	yellowShaders[10];
-	char*	blueShaders[10];
+	/*@null@*/ char*	greenShaders[10];
+	/*@null@*/ char*	redShaders[10];
+	/*@null@*/ char*	yellowShaders[10];
+	/*@null@*/ char*	blueShaders[10];
 	int		numShaders;
 } target_alert_Shaders_s;
 

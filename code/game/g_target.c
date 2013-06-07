@@ -2024,7 +2024,7 @@ void target_alert_remapShaders(int target_condition) {
 
 }
 
-void target_alert_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
+void target_alert_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 
 	gentity_t *healthEnt;
 
@@ -2303,8 +2303,8 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 	Q_strncpyz(buffer, ent->message, strlen(ent->message));
 	txtPtr = buffer;
 	token = COM_Parse(&txtPtr);
-	while(1) {
-		if(token[0] == 0) {
+	while(qtrue) {
+		if(token == NULL || token[0] == 0) {
 			break;
 		}
 		alertShaders.greenShaders[alertShaders.numShaders] = G_NewString(token);
@@ -2321,7 +2321,7 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 		txtPtr = buffer;
 		token = COM_Parse(&txtPtr);
 		while(1) {
-			if(token[0] == 0) {
+			if(token == NULL || token[0] == 0) {
 				break;
 			}
 			alertShaders.redShaders[currentNum] = G_NewString(token);
@@ -2344,8 +2344,8 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 		Q_strncpyz(buffer, ent->model2, strlen(ent->model2));
 		txtPtr = buffer;
 		token = COM_Parse(&txtPtr);
-		while(1) {
-			if(token[0] == 0) {
+		while(qtrue) {
+			if(token == NULL || token[0] == 0) {
 				break;
 			}
 			alertShaders.blueShaders[currentNum] = G_NewString(token);
@@ -2368,8 +2368,8 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 		Q_strncpyz(buffer, ent->team, strlen(ent->team));
 		txtPtr = buffer;
 		token = COM_Parse(&txtPtr);
-		while(1) {
-			if(token[0] == 0) { 
+		while(qtrue) {
+			if(token == NULL || token[0] == 0) { 
 				break;
 			}
 			alertShaders.yellowShaders[currentNum] = G_NewString(token);
@@ -2421,10 +2421,11 @@ void SP_target_alert(gentity_t *ent) {
 			return;
 	}
 
-	if(!ent->wait)
+	if(ent->wait <= 0.0f) {
 		ent->wait = 1000;
-	else
+	} else {
 		ent->wait *= 1000;
+	}
 
 	ent->use = target_alert_use;
 
