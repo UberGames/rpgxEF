@@ -1990,7 +1990,7 @@ void target_alert_remapShaders(int target_condition) {
 	case 1: // yellow
 		for(i = 0; i < alertShaders.numShaders; i++) {
 			f = (float)(level.time * 0.001f);
-			if(alertShaders.greenShaders == NULL || alertShaders.greenShaders[i] == NULL || alertShaders.yellowShaders[i] == NULL) {
+			if(alertShaders.greenShaders == NULL || alertShaders.greenShaders[i] == NULL || alertShaders.yellowShaders == NULL || alertShaders.yellowShaders[i] == NULL) {
 				break;
 			}
 			AddRemap(alertShaders.greenShaders[i], alertShaders.yellowShaders[i], f);
@@ -2000,7 +2000,7 @@ void target_alert_remapShaders(int target_condition) {
 	case 2: // red
 		for(i = 0; i < alertShaders.numShaders; i++) {
 			f = (float)(level.time * 0.001f);
-			if(alertShaders.greenShaders == NULL || alertShaders.greenShaders[i] == NULL || alertShaders.redShaders[i] == NULL) {
+			if(alertShaders.greenShaders == NULL || alertShaders.greenShaders[i] == NULL || alertShaders.redShaders == NULL || alertShaders.redShaders[i] == NULL) {
 				break;
 			}
 			AddRemap(alertShaders.greenShaders[i], alertShaders.redShaders[i], f);
@@ -2010,7 +2010,7 @@ void target_alert_remapShaders(int target_condition) {
 	case 3: // blue
 		for(i = 0; i < alertShaders.numShaders; i++) {
 			f = (float)(level.time * 0.001f);
-			if(alertShaders.greenShaders == NULL || alertShaders.greenShaders[i] == NULL || alertShaders.blueShaders[i] == NULL) {
+			if(alertShaders.greenShaders == NULL || alertShaders.greenShaders[i] == NULL || alertShaders.blueShaders == NULL || alertShaders.blueShaders[i] == NULL) {
 				break;
 			}
 			AddRemap(alertShaders.greenShaders[i], alertShaders.blueShaders[i], f);
