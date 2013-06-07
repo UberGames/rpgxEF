@@ -264,13 +264,13 @@ struct gentity_s {
 	vec3_t		movedir;			//!< moving direction
 
 	int			nextthink;			//!< next level.time the entities think functions gets called
-	/*@shared@*/ /*@null@*/ void		(*think)(gentity_t *self);	//!< think function
-	/*@shared@*/ /*@null@*/ void		(*reached)(gentity_t *self);	//!< movers call this when hitting endpoint
-	/*@shared@*/ /*@null@*/ void		(*blocked)(gentity_t *self, gentity_t *other); //!< movers call this when blocked
-	/*@shared@*/ /*@null@*/ void		(*touch)(gentity_t *self, gentity_t *other, trace_t *trace); //!< touch function for triggers
-	/*@shared@*/ /*@null@*/ void		(*use)(gentity_t *self, gentity_t *other, gentity_t *activator); //!< function that gets called if the entity is used
-	/*@shared@*/ /*@null@*/ void		(*pain)(gentity_t *self, gentity_t *attacker, int damage); //!< function that gets called if entity gets damged
-	/*@shared@*/ /*@null@*/ void		(*die)(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod); //!< function that gets called if entity dies
+	/*@shared@*/ /*@null@*/ void		(*think)(/*@shared@*/ gentity_t *self);	//!< think function
+	/*@shared@*/ /*@null@*/ void		(*reached)(/*@shared@*/ gentity_t *self);	//!< movers call this when hitting endpoint
+	/*@shared@*/ /*@null@*/ void		(*blocked)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *other); //!< movers call this when blocked
+	/*@shared@*/ /*@null@*/ void		(*touch)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *other, /*@shared@*/ trace_t *trace); //!< touch function for triggers
+	/*@shared@*/ /*@null@*/ void		(*use)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator); //!< function that gets called if the entity is used
+	/*@shared@*/ /*@null@*/ void		(*pain)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *attacker, int damage); //!< function that gets called if entity gets damged
+	/*@shared@*/ /*@null@*/ void		(*die)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *inflictor, /*@shared@*/ gentity_t *attacker, int damage, int mod); //!< function that gets called if entity dies
 
 	int			pain_debounce_time;
 	int			fly_sound_debounce_time;	// wind tunnel
