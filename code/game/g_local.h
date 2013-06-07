@@ -1110,7 +1110,7 @@ void G_UseTargets (gentity_t* ent, /*@null@*/ gentity_t* activator);
  * \param activator the activator
  * \param target target to match
  */
-void G_UseTargets2( gentity_t* ent, gentity_t* activator, char* target );
+void G_UseTargets2( /*@shared@*/ gentity_t* ent, /*@shared@*/ /*@null@*/ gentity_t* activator, /*@null@*/ char* target );
 
 /**
  * \brief Converts angles to move directions.

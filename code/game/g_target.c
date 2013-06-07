@@ -619,7 +619,7 @@ none
 -----KEYS-----
 "targetanme" - the activator calling this will be telefragged if client
 */
-static void target_kill_use( /*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
+static void target_kill_use( /*@shared@*/ /*@unused@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
 	if(activator != NULL) {
 		G_Damage ( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 	}
@@ -633,7 +633,7 @@ void SP_target_kill( gentity_t *self ) {
 	trap_LinkEntity(self);
 }
 
-static void target_location_linkup(/*@shared@*/ gentity_t *ent)
+static void target_location_linkup(/*@shared@*/ /*@out@*/ gentity_t *ent)
 {
 	int i;
 	int n;
@@ -720,7 +720,7 @@ none
 "target" will be fired once count hit's 0
 */
 
-static void target_counter_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator )
+static void target_counter_use( /*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator )
 {
 	if ( self->count == 0 ) {
 		return;
@@ -770,7 +770,7 @@ none
 */
 
 // Remove this?
-static void target_objective_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@*/ gentity_t *activator )
+static void target_objective_use( /*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ /*@unused@*/ gentity_t *activator )
 {
 	gentity_t *tent = NULL;
 
@@ -824,7 +824,7 @@ Acts as an if statement. When fired normaly if true it fires one target, if fals
 "falsetarget" - this will be fired if the boolean is false then the targetname is recieved
 */
 
-static void target_boolean_use (gentity_t *self, gentity_t *other, gentity_t *activator) {
+static void target_boolean_use (/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 
 	if ((self == NULL) || (other == NULL) || (activator == NULL)) {
 		return;
@@ -913,12 +913,16 @@ This changes the servers gravity to the ammount set.
 "gravity" - gravity value (default = g_gravity default = 800)
 */
 
-void target_gravity_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
+void target_gravity_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) 
 {
 	//CIf spawn flag 1 is set, change gravity to specific user
-	if((self->spawnflags & 1) && activator && activator->client)
+	if((self->spawnflags & 1) && activator != NULL && activator->client != NULL)
 	{
-		activator->client->ps.gravity = atoi(self->targetname2);
+		if(self->targetname2 != NULL) {
+			activator->client->ps.gravity = atoi(self->targetname2);
+		} else { // fallback to g_gravity if targetname2 is NULL for some reason
+			activator->client->ps.gravity = g_gravity.integer;
+		}
 		activator->client->SpecialGrav = qtrue;
 	}
 	//resyncing players grav to map grav.
