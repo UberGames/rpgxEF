@@ -1160,32 +1160,36 @@ static void target_turbolift_endMove ( /*@shared@*/ gentity_t *ent )
 					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
 #ifdef G_LUA
-						if(lights->luaUse)
+						if(lights->luaUse != NULL) {
 							LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+						}
 #endif
 					}
 					else {
-						if(ent->s.eventParm < 0 && lights->targetname2) {
+						if(ent->s.eventParm < 0 && lights->targetname2 != NULL) {
 							if(Q_stricmp(lights->targetname2, va("%s_dn", otherLift->target)) == 0) {
 								lights->use(lights, lights, ent);
 #ifdef G_LUA
-								if(lights->luaUse)
+								if(lights->luaUse != NULL) {
 									LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+								}
 #endif
 							}
-						} else if(ent->s.eventParm && lights->targetname2) {
+						} else if(ent->s.eventParm && lights->targetname2 != NULL) {
 							if(Q_stricmp(lights->targetname2, va("%s_up", otherLift->target)) == 0) {
 								lights->use(lights, lights, ent);
 #ifdef G_LUA
-								if(lights->luaUse)
+								if(lights->luaUse != NULL) {
 									LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+								}
 #endif
 							}
 						} else {
 							lights->use(lights, lights, ent);
 #ifdef G_LUA
-							if(lights->luaUse)
+							if(lights->luaUse != NULL) {
 								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+							}
 #endif
 						}
 					}
