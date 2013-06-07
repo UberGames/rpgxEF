@@ -948,8 +948,9 @@ void SP_target_gravity (gentity_t *self) {
 		G_SpawnString("gravity", "800", &temp);
 		self->targetname2 = G_NewString(temp);
 	}
-	if(self->count) // support for SP
+	if(self->count != 0) { // support for SP
 		self->targetname2 = G_NewString(va("%i", self->count));
+	}
 	self->use = target_gravity_use;
 
 	// don't need to send this to clients
@@ -971,9 +972,9 @@ none
 
 //move this to FX and do a redirect in spawn?
 
-void target_shake_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
+void target_shake_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ /*@unused@*/ gentity_t *activator) 
 {
-	trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%f %i", self->distance/*was self->intensity*/, ( (int)(level.time - level.startTime) + (int)( self->wait*1000 ) ) ) );
+	trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%f %i", self->distance, ( (int)(level.time - level.startTime) + (int)( self->wait*1000 ) ) ) );
 }
 
 void SP_target_shake (gentity_t *self) {
@@ -999,7 +1000,9 @@ none
 void target_evosuit_use (gentity_t *self, gentity_t *other, gentity_t *activator) 
 {
 
-	if(!activator || !activator->client) return;
+	if(activator == NULL || activator->client == NULL) { 
+		return;
+	}
 
 	activator->flags ^= FL_EVOSUIT;
 	if (!(activator->flags & FL_EVOSUIT))
