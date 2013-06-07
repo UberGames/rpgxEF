@@ -1493,13 +1493,13 @@ static void target_turbolift_startMove (/*@shared@*/ gentity_t *ent )
 	}
 
 	// check for shader remaps
-	if(rpg_calcLiftTravelDuration.integer || level.overrideCalcLiftTravelDuration) {
-		if(time2 < 0 && ent->truename && otherLift->truename) {
-			f = level.time * 0.001;
+	if(rpg_calcLiftTravelDuration.integer != 0|| level.overrideCalcLiftTravelDuration != 0) {
+		if(time2 < 0 && ent->truename != NULL && otherLift->truename != NULL) {
+			f = (float)(level.time * 0.001f);
 			AddRemap(ent->targetShaderName, ent->truename, f);
 			AddRemap(otherLift->targetShaderName, otherLift->truename, f);
-		} else if(time2 >  0 && ent->falsename && otherLift->falsename) {
-			f = level.time * 0.001;
+		} else if(time2 >  0 && ent->falsename != NULL && otherLift->falsename != NULL) {
+			f = (float)(level.time * 0.001f);
 			AddRemap(ent->targetShaderName, ent->falsename, f);
 			AddRemap(otherLift->targetShaderName, otherLift->falsename, f);
 		}
@@ -1507,7 +1507,7 @@ static void target_turbolift_startMove (/*@shared@*/ gentity_t *ent )
 	}
 
 	if(rpg_calcLiftTravelDuration.integer) {
-		ent->s.eventParm = time2;
+		ent->s.eventParm = (int)time2;
 		time *= rpg_liftDurationModifier.value;
 		time *= 1000;
 		ent->s.time2 = level.time + time;
@@ -1525,37 +1525,41 @@ static void target_turbolift_startMove (/*@shared@*/ gentity_t *ent )
 	}
 }
 
-static void target_turbolift_shutDoors ( gentity_t *ent )
+static void target_turbolift_shutDoors (/*@shared@*/  gentity_t *ent )
 {
 	gentity_t* door=NULL;
 	gentity_t* otherLift=NULL;
 
 	otherLift = &g_entities[ent->count];
-	if ( !otherLift )
+	if ( otherLift == NULL )
 	{
 		target_turbolift_unlock( ent );
 		return;
 	}
 
-	while ( ( door = G_Find( door, FOFS( targetname ), ent->target )) != NULL  )
-	{
-		if ( !Q_stricmp( door->classname, "func_door" ) )
+	if(ent->target != NULL) {
+		while ( ( door = G_Find( door, FOFS( targetname ), ent->target )) != NULL  )
 		{
-			if ( door->moverState != MOVER_POS1 ) {
-				ent->nextthink = level.time + 500;
-				return;
+			if ( Q_stricmp( door->classname, "func_door" ) == 0 )
+			{
+				if ( door->moverState != MOVER_POS1 ) {
+					ent->nextthink = level.time + 500;
+					return;
+				}
 			}
 		}
 	}
 
 	door = NULL;
-	while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
-	{
-		if ( !Q_stricmp( door->classname, "func_door" ) )
+	if(otherLift->target != NULL) {
+		while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
 		{
-			if ( door->moverState != MOVER_POS1 ) {
-				ent->nextthink = level.time + 500;
-				return;
+			if ( Q_stricmp( door->classname, "func_door" ) == 0 )
+			{
+				if ( door->moverState != MOVER_POS1 ) {
+					ent->nextthink = level.time + 500;
+					return;
+				}
 			}
 		}
 	}
@@ -1565,14 +1569,14 @@ static void target_turbolift_shutDoors ( gentity_t *ent )
 	ent->nextthink = level.time + FRAMETIME;
 }
 
-void target_turbolift_start ( gentity_t *self )
+void target_turbolift_start (/*@shared@*/  gentity_t *self )
 {
 	gentity_t* otherLift;
 
 	//get target deck number lift entity
 	otherLift = &g_entities[self->count];
 
-	if ( !otherLift )
+	if ( otherLift == NULL)
 	{
 		target_turbolift_unlock( self );
 		return;
@@ -1583,27 +1587,31 @@ void target_turbolift_start ( gentity_t *self )
 	{
 		gentity_t *door=NULL;
 
-		while ( ( door = G_Find( door, FOFS( targetname ), self->target )) != NULL  )
-		{
-			if ( !Q_stricmp( door->classname, "func_door" ) )
+		if(self->target != NULL) {
+			while ( ( door = G_Find( door, FOFS( targetname ), self->target )) != NULL  )
 			{
-				door->flags |= FL_CLAMPED;
-				if ( door->moverState != MOVER_POS1 )
+				if ( Q_stricmp( door->classname, "func_door" ) == 0 )
 				{
-					door->nextthink = level.time;
+					door->flags |= FL_CLAMPED;
+					if ( door->moverState != MOVER_POS1 )
+					{
+						door->nextthink = level.time;
+					}
 				}
 			}
 		}
 
 		door = NULL;
-		while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
-		{
-			if ( !Q_stricmp( door->classname, "func_door" ) )
+		if(otherLift->target != NULL) {
+			while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
 			{
-				door->flags |= FL_CLAMPED;
-				if ( door->moverState != MOVER_POS1 )
+				if ( !Q_stricmp( door->classname, "func_door" ) )
 				{
-					door->nextthink = level.time;
+					door->flags |= FL_CLAMPED;
+					if ( door->moverState != MOVER_POS1 )
+					{
+						door->nextthink = level.time;
+					}
 				}
 			}
 		}
