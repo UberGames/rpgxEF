@@ -1506,7 +1506,7 @@ static void target_turbolift_startMove (/*@shared@*/ gentity_t *ent )
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());	
 	}
 
-	if(rpg_calcLiftTravelDuration.integer) {
+	if(rpg_calcLiftTravelDuration.integer != 0) {
 		ent->s.eventParm = (int)time2;
 		time *= rpg_liftDurationModifier.value;
 		time *= 1000;
@@ -1569,7 +1569,7 @@ static void target_turbolift_shutDoors (/*@shared@*/  gentity_t *ent )
 	ent->nextthink = level.time + FRAMETIME;
 }
 
-void target_turbolift_start (/*@shared@*/  gentity_t *self )
+void target_turbolift_start ( gentity_t *self )
 {
 	gentity_t* otherLift;
 
@@ -1605,7 +1605,7 @@ void target_turbolift_start (/*@shared@*/  gentity_t *self )
 		if(otherLift->target != NULL) {
 			while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
 			{
-				if ( !Q_stricmp( door->classname, "func_door" ) )
+				if ( Q_stricmp( door->classname, "func_door" ) == 0 )
 				{
 					door->flags |= FL_CLAMPED;
 					if ( door->moverState != MOVER_POS1 )
@@ -1622,15 +1622,17 @@ void target_turbolift_start (/*@shared@*/  gentity_t *self )
 	self->nextthink = level.time + 500;
 }
 
-static void target_turbolift_use( gentity_t *self, gentity_t *other, gentity_t *activator)
+static void target_turbolift_use(/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator)
 {
-	if(!Q_stricmp(self->swapname, activator->target)) {
-		if(self->soundPos1)
+	if(Q_stricmp(self->swapname, activator->target) == 0) {
+		if(self->soundPos1 != 0)
 			G_AddEvent(self, EV_GENERAL_SOUND, self->soundPos1);
 		self->flags ^= FL_LOCKED;
 	}
 
-	if(self->flags & FL_LOCKED) return;
+	if((self->flags & FL_LOCKED) != 0) {
+		return;
+	}
 
 	if ( self->count > 0 )
 	{
@@ -1758,13 +1760,14 @@ void SP_target_turbolift ( gentity_t *self )
 	self->sound2to1					= G_SoundIndex( startSound );
 	self->soundPos1					= G_SoundIndex( deactSound );
 
-	if(self->spawnflags & 512)
+	if((self->spawnflags & 512) != 0) {
 		self->flags ^= FL_LOCKED;
+	}
 
 	//get deck num
 	G_SpawnInt( "deck", "0", &i );
 	//kill the ent if it isn't valid
-	if ( i <= 0 && !(self->tmpEntity))
+	if ( i <= 0 && self->tmpEntity == qfalse)
 	{
 		DEVELOPER(G_Printf( S_COLOR_YELLOW "[Entity-Error] A turbolift entity does not have a valid deck number!\n" ););
 		G_FreeEntity( self );

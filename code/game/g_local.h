@@ -1571,7 +1571,7 @@ void TransportPlayer( gentity_t* player, vec3_t origin, vec3_t angles, int speed
  * \param ent The turbolift.
  * \author Ubergames - TiM
  */
-void target_turbolift_start( gentity_t* ent );
+void target_turbolift_start( /*@shared@*/ gentity_t* ent );
 
 //
 // g_weapon.c
