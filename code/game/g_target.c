@@ -163,7 +163,7 @@ static void Think_Target_Delay( gentity_t *ent ) {
 	}
 }
 
-static void Use_Target_Delay( gentity_t *ent, /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
+static void Use_Target_Delay( /*@unused@*/ gentity_t *ent, /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
 	ent->nextthink = (int)(level.time + ( ent->wait + ent->random * crandom() ) * 1000);
 	ent->think = Think_Target_Delay;
 	ent->activator = activator;
@@ -896,7 +896,7 @@ void SP_target_boolean (gentity_t *self) {
 This changes the servers gravity to the ammount set.
 
 -----SPAWNFLAGS-----
-1: PLAYER_ONLY - If select this will only change the gravity for teh actiator. TiM: an actiator eh?
+1: PLAYER_ONLY - If select this will only change the gravity for the activator. TiM: an actiator eh?
 2: MAP_GRAV - Will reset player to the current global gravity.
 
 -----KEYS-----
