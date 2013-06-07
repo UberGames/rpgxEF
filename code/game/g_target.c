@@ -997,7 +997,7 @@ none
 "targetanme" - entity needs to be used
 */
 
-void target_evosuit_use (/*@shared@*/ /*@null@*/ gentity_t *self, /*@shared@*/ /*@null@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) 
+void target_evosuit_use (/*@shared@*/ /*@unused@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) 
 {
 
 	if(activator == NULL || activator->client == NULL) { 
@@ -1082,7 +1082,7 @@ static void target_turbolift_unlock ( gentity_t *ent )
 }
 
 
-static void target_turbolift_endMove ( gentity_t *ent )
+static void target_turbolift_endMove ( /*@shared@*/ gentity_t *ent )
 {
 	gentity_t* lights=NULL;
 	gentity_t* otherLift=NULL;
@@ -1109,37 +1109,41 @@ static void target_turbolift_endMove ( gentity_t *ent )
 		if(ent->target != NULL) {
 			while ( ( lights = G_Find( lights, FOFS( targetname ), ent->target ) ) != NULL )
 			{
-				if ( !Q_stricmp( lights->classname, "func_usable" ) )
+				if ( Q_stricmp( lights->classname, "func_usable" ) == 0 )
 				{	
-					if(!rpg_calcLiftTravelDuration.integer) {
+					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
 	#ifdef G_LUA
-						if(lights->luaUse)
+						if(lights->luaUse != NULL) {
 							LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+						}
 	#endif
 					}
 					else {
-						if(ent->s.eventParm < 0 && lights->targetname2) {
-							if(!Q_stricmp(lights->targetname2, va("%s_dn", ent->target))) {
+						if(ent->s.eventParm < 0 && lights->targetname2 != NULL) {
+							if(Q_stricmp(lights->targetname2, va("%s_dn", ent->target)) == 0) {
 								lights->use(lights, lights, ent);
 	#ifdef G_LUA
-								if(lights->luaUse)
+								if(lights->luaUse != NULL) {
 									LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+								}
 	#endif
 							}
-						} else if(ent->s.eventParm > 0 && lights->targetname2) {
-							if(!Q_stricmp(lights->targetname2, va("%s_up", ent->target))) {
+						} else if(ent->s.eventParm > 0 && lights->targetname2 != NULL) {
+							if(Q_stricmp(lights->targetname2, va("%s_up", ent->target)) == 0) {
 								lights->use(lights, lights, ent);
 	#ifdef G_LUA
-								if(lights->luaUse)
+								if(lights->luaUse != NULL) {
 									LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+								}
 	#endif
 							}
 						} else {
 							lights->use(lights, lights, ent);
 	#ifdef G_LUA
-							if(lights->luaUse)
+							if(lights->luaUse != NULL) {
 								LuaHook_G_EntityUse(lights->luaUse, lights-g_entities, ent-g_entities, ent-g_entities);
+							}
 	#endif
 						}
 					}
