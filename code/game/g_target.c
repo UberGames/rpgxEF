@@ -1032,7 +1032,7 @@ void SP_target_evosuit (gentity_t *self) {
 //
 //==================================================================================
 
-static void target_turbolift_unlock ( gentity_t *ent )
+static void target_turbolift_unlock ( /*@shared@*/ gentity_t *ent )
 {
 	gentity_t* otherLift;
 
@@ -1175,7 +1175,7 @@ static void target_turbolift_endMove ( /*@shared@*/ gentity_t *ent )
 								}
 #endif
 							}
-						} else if(ent->s.eventParm && lights->targetname2 != NULL) {
+						} else if(ent->s.eventParm != 0 && lights->targetname2 != NULL) {
 							if(Q_stricmp(lights->targetname2, va("%s_up", otherLift->target)) == 0) {
 								lights->use(lights, lights, ent);
 #ifdef G_LUA
@@ -1201,7 +1201,7 @@ static void target_turbolift_endMove ( /*@shared@*/ gentity_t *ent )
 	// check for shader remaps
 	if(rpg_calcLiftTravelDuration.integer != 0 || level.overrideCalcLiftTravelDuration != 0) {
 		if((ent->truename != NULL && otherLift->truename != NULL) || (ent->falsename != NULL && otherLift->falsename != NULL)) {
-			f = level.time * 0.001;
+			f = level.time * 0.001f;
 			AddRemap(ent->targetShaderName, ent->targetShaderName, f);
 			AddRemap(otherLift->targetShaderName, otherLift->targetShaderName, f);
 		}
@@ -1278,10 +1278,11 @@ static void target_turbolift_TeleportPlayers ( gentity_t *ent )
 	}
 
 	liftTouch = (int *)malloc(MAX_GENTITIES * sizeof(int));
-	if(!liftTouch) {
+	if(liftTouch == NULL) {
 		target_turbolift_unlock( ent );
 		return;
 	}
+	memset(liftTouch, 0, sizeof(int) * MAX_GENTITIES);
 
 	//scan the turbo region for players
 	//in the current lift
@@ -1298,11 +1299,12 @@ static void target_turbolift_TeleportPlayers ( gentity_t *ent )
 	}
 
 	targetLiftTouch = (int *)malloc(MAX_GENTITIES * sizeof(int));
-	if(!targetLiftTouch) {
+	if(targetLiftTouch == NULL) {
 		target_turbolift_unlock( ent );
 		free(liftTouch);
 		return;
 	}
+	memset(targetLiftTouch, 0, sizeof(int) * MAX_GENTITIES);
 
 	//the target lift
 	{
@@ -1323,8 +1325,8 @@ static void target_turbolift_TeleportPlayers ( gentity_t *ent )
 	//TiM - Teleport the main players
 	TeleportPlayers( ent, targetLift, liftNumEnts, liftTouch );
 
-	if(rpg_calcLiftTravelDuration.integer) {
-		time = targetLift->health - ent->health;
+	if(rpg_calcLiftTravelDuration.integer != 0) {
+		time = (float)(targetLift->health - ent->health);
 		if(time < 0)
 			time *= -1;
 		time *= rpg_liftDurationModifier.value;
@@ -1343,8 +1345,13 @@ static void target_turbolift_TeleportPlayers ( gentity_t *ent )
 
 static void target_turbolift_startSoundEnd(gentity_t *ent) {
 	ent->nextthink = -1;
-	ent->parent->r.svFlags &= ~SVF_NOCLIENT;
-	ent->touched->r.svFlags &= ~SVF_NOCLIENT;
+	
+	if(ent->parent != NULL) {
+		ent->parent->r.svFlags &= ~SVF_NOCLIENT;
+	}
+	if(ent->touched != NULL) {
+		ent->touched->r.svFlags &= ~SVF_NOCLIENT;
+	}
 }
 
 static void target_turbolift_startMove ( gentity_t *ent )
@@ -1356,18 +1363,18 @@ static void target_turbolift_startMove ( gentity_t *ent )
 	float f = 0;
 
 	otherLift = &g_entities[ent->count];
-	if ( !otherLift )
+	if ( otherLift == NULL )
 	{
 		target_turbolift_unlock( ent );
 		return;
 	}	
 
 	//play move sound
-	if( rpg_calcLiftTravelDuration.integer ) {
-		time = time2 = ent->health - otherLift->health;
+	if( rpg_calcLiftTravelDuration.integer != 0 ) {
+		time = time2 = (float)(ent->health - otherLift->health);
 		if(time < 0)
 			time *= -1;
-		if(ent->sound2to1) {
+		if(ent->sound2to1 != 0) {
 			if( rpg_liftDurationModifier.value * 1000 * time >= ent->distance * 1000 ) {
 				tent = G_Spawn();
 				tent->think = target_turbolift_startSoundEnd;
