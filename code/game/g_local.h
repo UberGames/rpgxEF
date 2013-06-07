@@ -1086,7 +1086,7 @@ qboolean G_MoveBox (gentity_t* ent);
  *
  * \return an entity or NULL
  */
-/*@shared@*/ /*@null@*/  gentity_t* G_PickTarget (char* targetname);
+/*@shared@*/ /*@null@*/  gentity_t* G_PickTarget (/*@null@*/ char* targetname);
 
 /**
  * \brief Use all of the given entity's targets.

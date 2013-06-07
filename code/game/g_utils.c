@@ -175,7 +175,7 @@ gentity_t *G_Find (gentity_t *from, size_t fieldofs, const char *match)
 /** Maximum number of possible choices for G_PickTarget. */
 #define MAXCHOICES 	32
 
-gentity_t *G_PickTarget (/*@null@*/ char *targetname)
+gentity_t *G_PickTarget (char *targetname)
 {
 	gentity_t	*ent = NULL;
 	int		num_choices = 0;

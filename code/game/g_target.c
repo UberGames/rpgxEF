@@ -435,7 +435,7 @@ static void target_laser_start (/*@shared@*/ gentity_t *self)
 	}
 }
 
-void SP_target_laser (/*@shared@*/ gentity_t *self)
+void SP_target_laser (gentity_t *self)
 {
 	// let everything else get spawned before we start firing
 	self->think = target_laser_start;
@@ -558,7 +558,7 @@ It is also a nice function-caller via luaUse.
 "luaUse" - lua function to call on use
 */
 
-static void target_relay_use (gentity_t *self, /*@unused@*/ gentity_t *other, gentity_t *activator) {
+static void target_relay_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 	if ( ( self->spawnflags & 1 ) != 0 && activator != NULL && activator->client != NULL 
 		&& activator->client->sess.sessionTeam != TEAM_RED ) {
 			return;
