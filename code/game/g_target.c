@@ -1886,7 +1886,7 @@ Locks/Unlocks a door.
 "lockMsg" - message printed if door gets locked
 "unlockMsg" - message printed if door gets unlocked
 */
-void target_doorLock_use(gentity_t *ent, gentity_t *other, gentity_t* activator) {
+void target_doorLock_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t* activator) {
 	gentity_t	*target = NULL;
 
 	if(ent->target == NULL) {
@@ -1989,24 +1989,24 @@ void target_alert_remapShaders(int target_condition) {
 	switch(target_condition) {
 	case 1: // yellow
 		for(i = 0; i < alertShaders.numShaders; i++) {
-			f = level.time * 0.001;
-			if(!alertShaders.greenShaders[i] || !alertShaders.yellowShaders[i]) break;
+			f = (float)(level.time * 0.001f);
+			if(alertShaders.greenShaders[i] == 0 || alertShaders.yellowShaders[i] == 0) break;
 			AddRemap(alertShaders.greenShaders[i], alertShaders.yellowShaders[i], f);
 		}
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 		break;
 	case 2: // red
 		for(i = 0; i < alertShaders.numShaders; i++) {
-			f = level.time * 0.001;
-			if(!alertShaders.greenShaders[i] || !alertShaders.redShaders[i]) break;
+			f = (float)(level.time * 0.001f);
+			if(alertShaders.greenShaders[i] == 0 || alertShaders.redShaders[i] == 0) break;
 			AddRemap(alertShaders.greenShaders[i], alertShaders.redShaders[i], f);
 		}
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 		break;
 	case 3: // blue
 		for(i = 0; i < alertShaders.numShaders; i++) {
-			f = level.time * 0.001;
-			if(!alertShaders.greenShaders[i] || !alertShaders.blueShaders[i]) break;
+			f = (float)(level.time * 0.001f);
+			if(alertShaders.greenShaders[i] == 0 || alertShaders.blueShaders[i] == 0) break;
 			AddRemap(alertShaders.greenShaders[i], alertShaders.blueShaders[i], f);
 		}
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
@@ -2014,8 +2014,8 @@ void target_alert_remapShaders(int target_condition) {
 	case 0: // green
 	default:
 		for(i = 0; i < alertShaders.numShaders; i++) {
-			f = level.time * 0.001;
-			if(!alertShaders.greenShaders[i]) break;
+			f = (float)(level.time * 0.001f);
+			if(alertShaders.greenShaders[i] == 0) break;
 			AddRemap(alertShaders.greenShaders[i], alertShaders.greenShaders[i], f);
 		}
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
@@ -2024,7 +2024,7 @@ void target_alert_remapShaders(int target_condition) {
 
 }
 
-void target_alert_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+void target_alert_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 
 	gentity_t *healthEnt;
 

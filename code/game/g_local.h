@@ -3038,7 +3038,7 @@ void trap_SetConfigstring( int num, /*@null@*/ const char* string );
 *	\param buffer buffer to store config string in
 *	\param bufferSize size of buffer
 */
-void trap_GetConfigstring( int num, char* buffer, int bufferSize );
+void trap_GetConfigstring( int num, char* buffer, size_t bufferSize );
 
 /**
 *	Get the userinfo for a client
