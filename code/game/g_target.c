@@ -2313,6 +2313,9 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 		if(token == NULL || token[0] == 0) {
 			break;
 		}
+		if(alertShaders.greenShaders == NULL) {
+			return;
+		}
 		alertShaders.greenShaders[alertShaders.numShaders] = G_NewString(token);
 		alertShaders.numShaders++;
 		if(alertShaders.numShaders > 9) {
@@ -2329,6 +2332,9 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 		while(1) {
 			if(token == NULL || token[0] == 0) {
 				break;
+			}
+			if(alertShaders.redShaders == NULL) {
+				return;
 			}
 			alertShaders.redShaders[currentNum] = G_NewString(token);
 			currentNum++;
@@ -2354,6 +2360,9 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 			if(token == NULL || token[0] == 0) {
 				break;
 			}
+			if(alertShaders.blueShaders == NULL) {
+				return;
+			}
 			alertShaders.blueShaders[currentNum] = G_NewString(token);
 			currentNum++;
 			if(currentNum > 9) {
@@ -2377,6 +2386,9 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 		while(qtrue) {
 			if(token == NULL || token[0] == 0) { 
 				break;
+			}
+			if(alertShaders.yellowShaders == NULL) {
+				return;
 			}
 			alertShaders.yellowShaders[currentNum] = G_NewString(token);
 			currentNum++;
