@@ -633,7 +633,7 @@ void SP_target_kill( gentity_t *self ) {
 	trap_LinkEntity(self);
 }
 
-static void target_location_linkup(/*@shared@*/ /*@out@*/ gentity_t *ent)
+static void target_location_linkup(/*@shared@*/ gentity_t *ent)
 {
 	int i;
 	int n;
@@ -916,7 +916,7 @@ This changes the servers gravity to the ammount set.
 void target_gravity_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) 
 {
 	//CIf spawn flag 1 is set, change gravity to specific user
-	if((self->spawnflags & 1) && activator != NULL && activator->client != NULL)
+	if((self->spawnflags & 1) != 0 && activator != NULL && activator->client != NULL)
 	{
 		if(self->targetname2 != NULL) {
 			activator->client->ps.gravity = atoi(self->targetname2);
@@ -926,7 +926,7 @@ void target_gravity_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/
 		activator->client->SpecialGrav = qtrue;
 	}
 	//resyncing players grav to map grav.
-	else if((self->spawnflags & 2) && activator && activator->client)
+	else if((self->spawnflags & 2) != 0 && activator != NULL && activator->client != NULL)
 	{
 		activator->client->ps.gravity = g_gravity.integer;
 		activator->client->SpecialGrav = qfalse;
@@ -934,7 +934,11 @@ void target_gravity_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/
 	//Else change gravity for all clients
 	else
 	{
-		trap_Cvar_Set( "g_gravity", self->targetname2 );
+		if(self->targetname2 == NULL) { // fallback
+			trap_Cvar_Set( "g_gravity", va("%d", g_gravity.integer));
+		} else {
+			trap_Cvar_Set( "g_gravity", self->targetname2 );
+		}
 	}
 }
 
