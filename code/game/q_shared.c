@@ -58,7 +58,7 @@ void COM_StripExtension( const char *in, char *out ) {
 COM_DefaultExtension
 ==================
 */
-void COM_DefaultExtension (char *path, int maxSize, const char *extension ) {
+void COM_DefaultExtension (char *path, size_t maxSize, const char *extension ) {
 	char	oldPath[MAX_QPATH];
 	char    *src;
 

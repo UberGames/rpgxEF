@@ -115,7 +115,7 @@ if path doesn't have an extension, then append
  the specified one (which should include the .)
 ==================
 */
-void COM_DefaultExtension( char *path, size_t maxSize, const char *extension ) {
+void COM_DefaultExtension( char *path, int maxSize, const char *extension ) {
 	const char *dot = strrchr(path, '.'), *slash;
 	if (dot && (!(slash = strrchr(path, '/')) || slash < dot))
 		return;
