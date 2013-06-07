@@ -580,14 +580,16 @@ static void target_relay_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unus
 			if((self->spawnflags & 8) != 0) {
 				ent->use(ent, self, self);
 #ifdef G_LUA
-				if(ent->luaUse != NULL)
+				if(self->luaUse != NULL) {
 					LuaHook_G_EntityUse(self->luaUse, self->s.number, self->s.number, self->s.number);
+				}
 #endif
 			} else {
 				ent->use( ent, self, activator );
 #ifdef G_LUA
-				if(ent->luaUse != NULL)
+				if(self->luaUse != NULL) {
 					LuaHook_G_EntityUse(self->luaUse, self->s.number, other->s.number, self->s.number);
+				}
 #endif
 			}
 		}
@@ -617,7 +619,7 @@ none
 -----KEYS-----
 "targetanme" - the activator calling this will be telefragged if client
 */
-static void target_kill_use( gentity_t *self, /*@unused@*/ gentity_t *other, gentity_t *activator ) {
+static void target_kill_use( /*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
 	if(activator != NULL) {
 		G_Damage ( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 	}
@@ -631,7 +633,7 @@ void SP_target_kill( gentity_t *self ) {
 	trap_LinkEntity(self);
 }
 
-static void target_location_linkup(gentity_t *ent)
+static void target_location_linkup(/*@shared@*/ gentity_t *ent)
 {
 	int i;
 	int n;

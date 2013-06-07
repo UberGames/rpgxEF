@@ -706,9 +706,9 @@ typedef struct {
 	vec3_t				intermission_angle;		/*!< Angle of the camera for intermission. Also used for spectator spawns. */
 
 	qboolean			locationLinked;			/*!< target_locations get linked */
-	gentity_t*			locationHead;			/*!< head of the location list */
+	/*@shared@*/ /*@null@*/ gentity_t*			locationHead;			/*!< head of the location list */
 	int					bodyQueIndex;			/*!< dead bodies */
-	gentity_t*			bodyQue[BODY_QUEUE_SIZE]; /*!< body Que */
+	/*@shared@*/ gentity_t*			bodyQue[BODY_QUEUE_SIZE]; /*!< body Que */
 
 	int					numObjectives;			/*! Number of level objectives (unused) */
 
@@ -1401,7 +1401,7 @@ qboolean CanDamage (gentity_t* targ, vec3_t origin);
  * DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
  * DAMAGE_NO_PROTECTION		kills godmode, armor, everything
  */
-void G_Damage (gentity_t* targ, /*@null@*/ gentity_t* inflictor, /*@null@*/ gentity_t* attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod);
+void G_Damage (gentity_t* targ, /*@null@*/ gentity_t* inflictor, /*@null@*/ gentity_t* attacker, /*@null@*/ vec3_t dir, /*@null@*/ vec3_t point, int damage, int dflags, int mod);
 
 /**
  * Damage all entities around an origin in a specified radius.
@@ -3030,7 +3030,7 @@ void trap_SendServerCommand( int clientNum, const char* text );
 *	\param num CS_...
 *	\param string set cofig string to this
 */
-void trap_SetConfigstring( int num, const char* string );
+void trap_SetConfigstring( int num, /*@null@*/ const char* string );
 
 /**
 *	Get a configstring
