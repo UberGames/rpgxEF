@@ -643,7 +643,7 @@ float Com_Clamp( float min, float max, float value );
 
 /*@shared@*/ /*@null@*/ char *COM_SkipPath(/*@null@*/  char *pathname );
 void	COM_StripExtension(/*@null@*/  const char *in, /*@null@*/ char *out );
-void	COM_DefaultExtension( /*@null@*/ char *path, int maxSize, const /*@null@*/ char *extension );
+void	COM_DefaultExtension( /*@null@*/ char *path, size_t maxSize, const /*@null@*/ char *extension );
 
 void	COM_BeginParseSession( void );
 int		COM_GetCurrentParseLine( void );

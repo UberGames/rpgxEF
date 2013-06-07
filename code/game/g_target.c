@@ -21,7 +21,7 @@ none
 EG "WP_5 | WP_14" etc
 (Don't forget the spaces!)
 */
-static void Use_Target_Give( gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator ) {
+static void Use_Target_Give( /*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
 	unsigned		i;
 	playerState_t*	ps;
 
@@ -117,7 +117,7 @@ none
 */
 
 //hmmm... maybe remove this, not sure.
-static void Use_target_remove_powerups( /*@unused@*/ gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator ) {
+static void Use_target_remove_powerups( /*@shared@*/ /*@unused@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/  gentity_t *activator ) {
 	if ( activator == NULL || activator->client == NULL ) {
 		return;
 	}
@@ -163,7 +163,7 @@ static void Think_Target_Delay( gentity_t *ent ) {
 	}
 }
 
-static void Use_Target_Delay( /*@unused@*/ gentity_t *ent, /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
+static void Use_Target_Delay( /*@unused@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
 	ent->nextthink = (int)(level.time + ( ent->wait + ent->random * crandom() ) * 1000);
 	ent->think = Think_Target_Delay;
 	ent->activator = activator;
@@ -199,7 +199,7 @@ By default every client get's the message however this can be limited via spawnf
 -----KEYS-----
 "message"	text to print
 */
-static void Use_Target_Print (gentity_t *ent, gentity_t *other, gentity_t *activator) {
+static void Use_Target_Print (/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 	if ( activator != NULL && activator->client != NULL && ( ent->spawnflags & 4 ) != 0 && ent->message != NULL) {
 		trap_SendServerCommand( activator-g_entities, va("servermsg %s", ent->message ));
 		return;
@@ -253,7 +253,7 @@ Using a target_speaker designed to play it's sound once will play that sound.
 "wait" - Seconds between auto triggerings, default = 0 = don't auto trigger
 "random" - wait variance, default is 0, delay would be wait +/- random
 */
-static void Use_Target_Speaker (gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator) {
+static void Use_Target_Speaker (/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 	if ((ent->spawnflags & 3) != 0) {	// looping sound toggles
 		if (ent->s.loopSound != 0) {
 			ent->s.loopSound = 0;	// turn it off
@@ -303,8 +303,8 @@ void SP_target_speaker( gentity_t *ent ) {
 	// a repeating speaker can be done completely client side
 	ent->s.eType = ET_SPEAKER;
 	ent->s.eventParm = ent->noise_index;
-	ent->s.frame = ent->wait * 10;
-	ent->s.clientNum = ent->random * 10;
+	ent->s.frame = (int)(ent->wait * 10);
+	ent->s.clientNum = (int)(ent->random * 10);
 
 
 	// check for prestarted looping sound
@@ -347,8 +347,8 @@ static void target_laser_think (gentity_t *self) {
 
 	// if pointed at another entity, set movedir to point at it
 	if ( self->enemy != NULL ) {
-		VectorMA (self->enemy->s.origin, 0.5, self->enemy->r.mins, point);
-		VectorMA (point, 0.5, self->enemy->r.maxs, point);
+		VectorMA (self->enemy->s.origin, 0.5f, self->enemy->r.mins, point);
+		VectorMA (point, 0.5f, self->enemy->r.maxs, point);
 		VectorSubtract (point, self->s.origin, self->movedir);
 		VectorNormalize (self->movedir);
 	}
@@ -371,7 +371,7 @@ static void target_laser_think (gentity_t *self) {
 	self->nextthink = level.time + FRAMETIME;
 }
 
-static void target_laser_on (gentity_t *self)
+static void target_laser_on (/*@shared@*/ gentity_t *self)
 {
 	if (self->activator == 0) {
 		self->activator = self;
@@ -386,7 +386,7 @@ static void target_laser_off (gentity_t *self)
 	self->nextthink = 0;
 }
 
-static void target_laser_use (gentity_t *self, gentity_t *other, /*@shared@*/ gentity_t *activator)
+static void target_laser_use (/*@shared@*/ gentity_t *self, /*@shared@*/  /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator)
 {
 	if(activator != NULL) {
 		self->activator = activator;
@@ -408,7 +408,11 @@ static void target_laser_start (gentity_t *self)
 	if (self->target != NULL) {
 		ent = G_Find (NULL, FOFS(targetname), self->target);
 		if (ent == NULL) {
-			DEVELOPER(G_Printf (S_COLOR_YELLOW "[Entity-Error] %s at %s: %s is a bad target\n", self->classname, vtos(self->s.origin), self->target););
+			if(self->classname != NULL && self->target != NULL) {
+				DEVELOPER(G_Printf (S_COLOR_YELLOW "[Entity-Error] %s at %s: %s is a bad target\n", self->classname, vtos(self->s.origin), self->target););
+			} else {
+				DEVELOPER(G_Printf (S_COLOR_YELLOW "[Entity-Error] could not find target\n"););
+			}
 			G_FreeEntity(self);
 			return;
 		}
