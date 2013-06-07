@@ -1990,7 +1990,9 @@ void target_alert_remapShaders(int target_condition) {
 	case 1: // yellow
 		for(i = 0; i < alertShaders.numShaders; i++) {
 			f = (float)(level.time * 0.001f);
-			if(alertShaders.greenShaders[i] == 0 || alertShaders.yellowShaders[i] == 0) break;
+			if(alertShaders.greenShaders == NULL || alertShaders.greenShaders[i] == NULL || alertShaders.yellowShaders[i] == NULL) {
+				break;
+			}
 			AddRemap(alertShaders.greenShaders[i], alertShaders.yellowShaders[i], f);
 		}
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
@@ -1998,7 +2000,9 @@ void target_alert_remapShaders(int target_condition) {
 	case 2: // red
 		for(i = 0; i < alertShaders.numShaders; i++) {
 			f = (float)(level.time * 0.001f);
-			if(alertShaders.greenShaders[i] == 0 || alertShaders.redShaders[i] == 0) break;
+			if(alertShaders.greenShaders == NULL || alertShaders.greenShaders[i] == NULL || alertShaders.redShaders[i] == NULL) {
+				break;
+			}
 			AddRemap(alertShaders.greenShaders[i], alertShaders.redShaders[i], f);
 		}
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
@@ -2006,7 +2010,9 @@ void target_alert_remapShaders(int target_condition) {
 	case 3: // blue
 		for(i = 0; i < alertShaders.numShaders; i++) {
 			f = (float)(level.time * 0.001f);
-			if(alertShaders.greenShaders[i] == 0 || alertShaders.blueShaders[i] == 0) break;
+			if(alertShaders.greenShaders == NULL || alertShaders.greenShaders[i] == NULL || alertShaders.blueShaders[i] == NULL) {
+				break;
+			}
 			AddRemap(alertShaders.greenShaders[i], alertShaders.blueShaders[i], f);
 		}
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
@@ -2015,7 +2021,7 @@ void target_alert_remapShaders(int target_condition) {
 	default:
 		for(i = 0; i < alertShaders.numShaders; i++) {
 			f = (float)(level.time * 0.001f);
-			if(alertShaders.greenShaders[i] == 0) break;
+			if(alertShaders.greenShaders == NULL ||  alertShaders.greenShaders[i] == NULL) break;
 			AddRemap(alertShaders.greenShaders[i], alertShaders.greenShaders[i], f);
 		}
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
