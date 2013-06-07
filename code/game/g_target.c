@@ -1737,7 +1737,7 @@ void SP_target_turbolift ( gentity_t *self )
 	char*			startSound;
 	char*			deactSound;
 	int				len;
-	fileHandle_t	f;
+	fileHandle_t	f = 0;
 	char			fileRoute[MAX_QPATH];
 	char			mapRoute[MAX_QPATH];
 	char			serverInfo[MAX_TOKEN_CHARS];
@@ -1781,12 +1781,13 @@ void SP_target_turbolift ( gentity_t *self )
 	G_SpawnInt( "waitEnd", "1000", &self->sound1to2 );
 
 	G_SpawnInt("override", "0", &i);
-	if(i) {
+	if(i != 0) {
 		level.overrideCalcLiftTravelDuration = i;
 	}
 
-	if(!self->tmpEntity)
+	if(self->tmpEntity == qfalse && self->model != NULL) {
 		trap_SetBrushModel( self, self->model );
+	}
 	self->r.contents = CONTENTS_TRIGGER;		// replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
 	self->s.eType = ET_TURBOLIFT;				//TiM - Client-side sound FX
@@ -1802,13 +1803,17 @@ void SP_target_turbolift ( gentity_t *self )
 	//insert code to worry about deck name later
 	self->use = target_turbolift_use;
 
-	if ( level.numDecks >= MAX_DECKS )
+	if ( level.numDecks >= MAX_DECKS ) {
 		return;
+	}
 
 	//get the map name out of the server data
+	memset(serverInfo, 0, MAX_TOKEN_CHARS * sizeof(char));
 	trap_GetServerinfo( serverInfo, sizeof( serverInfo ) );
 
 	//TiM - Configure the deck number and description into a config string
+	memset(mapRoute, 0, sizeof(char) * MAX_QPATH);
+	memset(fileRoute, 0, sizeof(char) * MAX_QPATH);
 	Com_sprintf( mapRoute, sizeof( mapRoute ), "maps/%s", Info_ValueForKey( serverInfo, "mapname" ) );
 	BG_LanguageFilename( mapRoute, "turbolift", fileRoute );
 
@@ -1839,11 +1844,13 @@ void SP_target_turbolift ( gentity_t *self )
 		if ( !deckFound )
 		{
 			G_SpawnString( "deckName", "Unknown", &deckNamePtr );
+			memset(deckName, 0, sizeof(char) * 57);
 			Q_strncpyz( deckName, deckNamePtr, sizeof( deckName ) );
 
+			memset(infoString, 0, sizeof(char) * MAX_TOKEN_CHARS);
 			trap_GetConfigstring( CS_TURBOLIFT_DATA, infoString, sizeof( infoString ) );
 
-			if ( !infoString[0] )
+			if ( infoString[0] == 0 )
 			{
 				Com_sprintf( infoString, sizeof( infoString ), "d%i\\%i\\n%i\\%s\\", level.numDecks, self->health, level.numDecks, deckName );
 			}
@@ -1881,27 +1888,36 @@ Locks/Unlocks a door.
 */
 void target_doorLock_use(gentity_t *ent, gentity_t *other, gentity_t* activator) {
 	gentity_t	*target = NULL;
-	target = G_Find(NULL, FOFS(targetname2), ent->target);
-	if(!target) 
+
+	if(ent->target == NULL) {
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Target of target_doorlock at %s is NULL!\n", vtos(ent->s.origin)););
 		return;
-	if(!(target->flags & FL_LOCKED)) {
-		if(ent->swapname) {
-			if((ent->spawnflags & 1) && activator && activator->client)
+	}
+
+	target = G_Find(NULL, FOFS(targetname2), ent->target);
+	if(target == NULL) { 
+		return;
+	}
+
+	if((target->flags & FL_LOCKED) == 0) {
+		if(ent->swapname != NULL) {
+			if((ent->spawnflags & 1) != 0 && activator != NULL && activator->client != NULL) {
 				trap_SendServerCommand(activator-g_entities, va("servermsg %s", ent->swapname));
-			else
+			} else {
 				trap_SendServerCommand(-1, va("servermsg %s", ent->swapname));
+			}
 		}
-	}
-	else 
-	{
-		if(ent->truename) {
-			if((ent->spawnflags & 1) && activator && activator->client)
+	} else {
+		if(ent->truename != NULL) {
+			if((ent->spawnflags & 1) != 0 && activator != NULL && activator->client != NULL) {
 				trap_SendServerCommand(activator-g_entities, va("servermsg %s", ent->truename));
-			else
+			} else {
 				trap_SendServerCommand(-1, va("servermsg %s", ent->truename));
+			}
 		}
 	}
-	if(!Q_stricmp(target->classname, "func_door") || !Q_stricmp(target->classname, "func_door_rotating")) {
+
+	if(Q_stricmp(target->classname, "func_door") == 0 || Q_stricmp(target->classname, "func_door_rotating") == 0) {
 		target->flags ^= FL_LOCKED;
 	} else {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Target %s of target_doorlock at %s is not a door!\n", ent->target, vtos(ent->s.origin)););
@@ -1911,11 +1927,13 @@ void target_doorLock_use(gentity_t *ent, gentity_t *other, gentity_t* activator)
 
 void SP_target_doorLock(gentity_t *ent) {
 	char *temp;
-	if(!ent->target) {
+
+	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_doorlock at %s without target!\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
 	}
+
 	G_SpawnString("lockMsg", "", &temp);
 	ent->swapname = G_NewString(temp); // ent->swapnmae = temp or strcpy(...) screws everthing up
 	G_SpawnString("unlockMsg", "", &temp);
