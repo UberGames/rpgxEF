@@ -2032,50 +2032,54 @@ void target_alert_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_alert_use called with NULL activator.\n"););
 		return;
 	}
-	if(!Q_stricmp(activator->target, ent->swapname)) {
+	if(Q_stricmp(activator->target, ent->swapname) == 0) {
 		if(ent->damage == 0) {
-			if(ent->spawnflags & 1) {
-				ent->health = !ent->health;
+			if((ent->spawnflags & 1) != 0) {
+				if(ent->health != 0) {
+					ent->health = 0;
+				} else {
+					ent->health = 1;
+				}
 				ent->target = ent->greensound;
 				G_UseTargets(ent, ent);
 			}
 		} else {
 			switch(ent->damage) {
 			case 1: // yellow
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->yellowsound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				}
 				ent->target = ent->falsetarget;
 				G_UseTargets(ent, ent);
 				break;
 			case 2: // red
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->redsound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				}
 				ent->target = ent->paintarget;
 				G_UseTargets(ent, ent);
 				break;
 			case 3: // blue
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->bluesound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				} 
 				ent->target = ent->targetname2;
 				G_UseTargets(ent, ent);
 				break;
 			}
-			if(!ent->spawnflags) {
+			if(ent->spawnflags == 0) {
 				ent->target = ent->greensound;
 				G_UseTargets(ent, ent);
-			} else if(ent->spawnflags & 2) {
+			} else if((ent->spawnflags & 2) != 0) {
 				ent->health = 0;
 			} else {
-				if(ent->spawnflags) {
+				if(ent->spawnflags != 0) {
 					ent->target = ent->greensound;
 					G_UseTargets(ent, ent);
 					ent->health = 1;
@@ -2086,50 +2090,54 @@ void target_alert_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other
 			G_UseTargets(ent, ent);
 			ent->damage = 0;
 		}
-	} else if(!Q_stricmp(activator->target, ent->truename)) {
+	} else if(Q_stricmp(activator->target, ent->truename) == 0) {
 		if(ent->damage == 1) {
-			if(ent->spawnflags & 1) {
-				ent->health = !ent->health;
+			if((ent->spawnflags & 1) != 0) {
+				if(ent->health != 0) {
+					ent->health = 0;
+				} else {
+					ent->health = 1;
+				}
 				ent->target = ent->yellowsound;
 				G_UseTargets(ent, ent);
 			}
 		} else {
 			switch(ent->damage) {
 			case 0: // green
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->greensound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				}
 				ent->target = ent->truetarget;
 				G_UseTargets(ent, ent);
 				break;
 			case 2: // red
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->redsound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				}
 				ent->target = ent->paintarget;
 				G_UseTargets(ent, ent);
 				break;
 			case 3: // blue
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->bluesound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				}
 				ent->target = ent->targetname2;
 				G_UseTargets(ent, ent);
 				break;
 			}
-			if(!ent->spawnflags) {
+			if(ent->spawnflags == 0) {
 				ent->target = ent->yellowsound;
 				G_UseTargets(ent, ent);
-			} else if(ent->spawnflags & 2) {
+			} else if((ent->spawnflags & 2) != 0) {
 				ent->health = 0;
 			} else {
-				if(ent->spawnflags) {
+				if(ent->spawnflags != 0) {
 					ent->target = ent->yellowsound;
 					G_UseTargets(ent, ent);
 					ent->health = 1;
@@ -2140,50 +2148,54 @@ void target_alert_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other
 			G_UseTargets(ent, ent);
 			ent->damage = 1;
 		}
-	} else if(!Q_stricmp(activator->target, ent->falsename)) {
+	} else if(Q_stricmp(activator->target, ent->falsename) == 0) {
 		if(ent->damage == 2) {
-			if(ent->spawnflags & 1) {
-				ent->health = !ent->health;
+			if((ent->spawnflags & 1) != 0) {
+				if(ent->health != 0) {
+					ent->health = 0;
+				} else {
+					ent->health = 1;
+				}
 				ent->target = ent->redsound;
 				G_UseTargets(ent, ent);
 			}
 		} else {
 			switch(ent->damage) {
 			case 0: // green
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->greensound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				}
 				ent->target = ent->truetarget;
 				G_UseTargets(ent, ent);
 				break;
 			case 1: // ryellow
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->yellowsound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				}
 				ent->target = ent->falsetarget;
 				G_UseTargets(ent, ent);
 				break;
 			case 3: // blue
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->bluesound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				}
 				ent->target = ent->targetname2;
 				G_UseTargets(ent, ent);
 				break;
 			}
-			if(!ent->spawnflags) {
+			if(ent->spawnflags == 0) {
 				ent->target = ent->redsound;
 				G_UseTargets(ent, ent);
-			} else if(ent->spawnflags & 2) {
+			} else if((ent->spawnflags & 2) != 0) {
 				ent->health = 0;
 			} else {
-				if(ent->spawnflags) {
+				if(ent->spawnflags != 0) {
 					ent->target = ent->redsound;
 					G_UseTargets(ent, ent);
 					ent->health = 1;
@@ -2194,50 +2206,54 @@ void target_alert_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other
 			G_UseTargets(ent, ent);
 			ent->damage = 2;
 		}
-	} if(!Q_stricmp(activator->target, ent->bluename)) {
+	} if(Q_stricmp(activator->target, ent->bluename) == 0) {
 		if(ent->damage == 3) {
-			if(ent->spawnflags & 1) {
-				ent->health = !ent->health;
+			if((ent->spawnflags & 1) != 0) {
+				if(ent->health != 0) {
+					ent->health = 0;
+				} else {
+					ent->health = 1;
+				}
 				ent->target = ent->bluesound;
 				G_UseTargets(ent, ent);
 			}
 		} else {
 			switch(ent->damage) {
 			case 0: // green
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->greensound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				} 
 				ent->target = ent->truetarget;
 				G_UseTargets(ent, ent);
 				break;
 			case 1: // yellow
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->yellowsound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				} 
 				ent->target = ent->falsetarget;
 				G_UseTargets(ent, ent);
 				break;
 			case 2: // red
-				if(ent->health) {
+				if(ent->health != 0) {
 					ent->target = ent->redsound;
 					G_UseTargets(ent, ent);
-					ent->health = !ent->health;
+					ent->health = 0;
 				} 
 				ent->target = ent->paintarget;
 				G_UseTargets(ent, ent);
 				break;
 			}
-			if(!ent->spawnflags) {
+			if(ent->spawnflags == 0) {
 				ent->target = ent->bluesound;
 				G_UseTargets(ent, ent);
-			} else if(ent->spawnflags & 2) {
+			} else if((ent->spawnflags & 2) != 0) {
 				ent->health = 0;
 			} else {
-				if(ent->spawnflags) {
+				if(ent->spawnflags != 0) {
 					ent->target = ent->bluesound;
 					G_UseTargets(ent, ent);
 					ent->health = 1;
@@ -2252,22 +2268,24 @@ void target_alert_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other
 
 	//Refresh health ent if it has interconnectivity with target_alert
 	healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
-	if(healthEnt){
-		if(!Q_stricmp(healthEnt->falsename, ent->falsename)){
+	if(healthEnt != NULL){
+		if(Q_stricmp(healthEnt->falsename, ent->falsename) == 0){
 			if(healthEnt->splashDamage == 0 || healthEnt->splashDamage == 1){
-				if(ent->damage == 0)
+				if(ent->damage == 0) {
 					healthEnt->splashDamage = 0;
-				else
+				} else {
 					healthEnt->splashDamage = 1;
+				}
 			}
 		}
 	}
 	// Free activator if no classname <-- alert command
-	if(!activator->classname)
+	if(activator->classname == NULL) {
 		G_FreeEntity(activator);
+	}
 }
 
-void target_alert_parseShaders(gentity_t *ent) {
+void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 	char	buffer[BIG_INFO_STRING];
 	char	*txtPtr;
 	char	*token;
@@ -2278,28 +2296,39 @@ void target_alert_parseShaders(gentity_t *ent) {
 	memset(buffer, 0, sizeof(buffer));
 
 	// condition green shaders
-	if(!ent->message) return;
+	if(ent->message == NULL) {
+		return;
+	}
+
 	Q_strncpyz(buffer, ent->message, strlen(ent->message));
 	txtPtr = buffer;
 	token = COM_Parse(&txtPtr);
 	while(1) {
-		if(!token[0]) break;
+		if(token[0] == 0) {
+			break;
+		}
 		alertShaders.greenShaders[alertShaders.numShaders] = G_NewString(token);
 		alertShaders.numShaders++;
-		if(alertShaders.numShaders > 9) break;
+		if(alertShaders.numShaders > 9) {
+			break;
+		}
 		token = COM_Parse(&txtPtr);
 	}
 
 	// condition red shaders
-	if(ent->model) {
+	if(ent->model != NULL) {
 		Q_strncpyz(buffer, ent->model, strlen(ent->model));
 		txtPtr = buffer;
 		token = COM_Parse(&txtPtr);
 		while(1) {
-			if(!token[0]) break;
+			if(token[0] == 0) {
+				break;
+			}
 			alertShaders.redShaders[currentNum] = G_NewString(token);
 			currentNum++;
-			if(currentNum > 9) break;
+			if(currentNum > 9) { 
+				break;
+			}
 			token = COM_Parse(&txtPtr);
 		}
 
@@ -2311,15 +2340,19 @@ void target_alert_parseShaders(gentity_t *ent) {
 	}
 
 	// condition blue shaders
-	if(ent->model2) {
+	if(ent->model2 != NULL) {
 		Q_strncpyz(buffer, ent->model2, strlen(ent->model2));
 		txtPtr = buffer;
 		token = COM_Parse(&txtPtr);
 		while(1) {
-			if(!token[0]) break;
+			if(token[0] == 0) {
+				break;
+			}
 			alertShaders.blueShaders[currentNum] = G_NewString(token);
 			currentNum++;
-			if(currentNum > 9) break;
+			if(currentNum > 9) {
+				break;
+			}
 			token = COM_Parse(&txtPtr);
 		}
 
@@ -2331,15 +2364,19 @@ void target_alert_parseShaders(gentity_t *ent) {
 	}
 
 	// condition yellow shaders
-	if(ent->team) {
+	if(ent->team != NULL) {
 		Q_strncpyz(buffer, ent->team, strlen(ent->team));
 		txtPtr = buffer;
 		token = COM_Parse(&txtPtr);
 		while(1) {
-			if(!token[0]) break;
+			if(token[0] == 0) { 
+				break;
+			}
 			alertShaders.yellowShaders[currentNum] = G_NewString(token);
 			currentNum++;
-			if(currentNum > 9) break;
+			if(currentNum > 9) {
+				break;
+			}
 			token = COM_Parse(&txtPtr);
 		}
 
