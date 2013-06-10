@@ -2329,7 +2329,7 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 		Q_strncpyz(buffer, ent->model, strlen(ent->model));
 		txtPtr = buffer;
 		token = COM_Parse(&txtPtr);
-		while(1) {
+		while(qtrue) {
 			if(token == NULL || token[0] == 0) {
 				break;
 			}
