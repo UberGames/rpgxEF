@@ -1483,7 +1483,7 @@ typedef struct _tag_menuframework
 typedef struct
 {
 	int type;
-	const char *name;
+	const /*@shared@*/  char *name;
 	int	id;
 	int x, y;
 	int left;
@@ -1675,8 +1675,8 @@ typedef struct
 	int				normaltextEnum3; // Enum from normal menu text
 	int				buttontextEnum3; // Enum from button text
 	int				style;
-	float			*color;	// Normal color
-	float			*color2;	// Highlight color
+	/*@shared@*/ float	*color;	// Normal color
+	/*@shared@*/ float	*color2;	// Highlight color
 	int				focusX;
 	int				focusY;
 	int				focusWidth;
@@ -2401,8 +2401,8 @@ int UI_GetNumSPTiers( void );
 
 void UI_ServerAdvancedOptions(int fromMenu);
 
-char *UI_GetBotInfoByNumber( int num );
-char *UI_GetBotInfoByName( const char *name );
+/*@shared@*/ char *UI_GetBotInfoByNumber( int num );
+/*@shared@*/ char *UI_GetBotInfoByName( const char *name );
 int UI_GetNumBots( void );
 
 void UI_GetBestScore( int level, int *score, int *skill );

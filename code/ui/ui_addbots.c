@@ -62,9 +62,9 @@ static void UI_AddBotsMenu_BotEvent( void* ptr, int event ) {
 		return;
 	}
 
-	addBotsMenuInfo.bots[addBotsMenuInfo.selectedBotNum].color = colorTable[CT_DKGOLD1];
+	addBotsMenuInfo.bots[addBotsMenuInfo.selectedBotNum].color = (float*)colorTable[CT_DKGOLD1];
 	addBotsMenuInfo.selectedBotNum = ((menucommon_s*)ptr)->id - ID_BOTNAME0;
-	addBotsMenuInfo.bots[addBotsMenuInfo.selectedBotNum].color = colorTable[CT_YELLOW];
+	addBotsMenuInfo.bots[addBotsMenuInfo.selectedBotNum].color = (float*)colorTable[CT_YELLOW];
 }
 
 
@@ -73,7 +73,7 @@ static void UI_AddBotsMenu_BotEvent( void* ptr, int event ) {
 UI_AddBotsMenu_BackEvent
 =================
 */
-static void UI_AddBotsMenu_BackEvent( void* ptr, int event ) {
+static void UI_AddBotsMenu_BackEvent( /*@unused@*/ void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -88,7 +88,7 @@ UI_AddBotsMenu_SetBotNames
 */
 static void UI_AddBotsMenu_SetBotNames( void ) {
 	int			n;
-	const char	*info;
+	const /*@shared@*/ char	*info;
 
 	for ( n = 0; n < BOTS_VIEWABLE; n++ ) 
 	{
@@ -104,7 +104,7 @@ static void UI_AddBotsMenu_SetBotNames( void ) {
 UI_AddBotsMenu_UpEvent
 =================
 */
-static void UI_AddBotsMenu_UpEvent( void* ptr, int event ) {
+static void UI_AddBotsMenu_UpEvent( /*@unused@*/ void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -121,7 +121,7 @@ static void UI_AddBotsMenu_UpEvent( void* ptr, int event ) {
 UI_AddBotsMenu_DownEvent
 =================
 */
-static void UI_AddBotsMenu_DownEvent( void* ptr, int event ) {
+static void UI_AddBotsMenu_DownEvent( /*@unused@*/ void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -140,8 +140,10 @@ UI_AddBotsMenu_GetSortedBotNums
 */
 static int QDECL UI_AddBotsMenu_SortCompare( const void *arg1, const void *arg2 ) {
 	int			num1, num2;
-	const char	*info1, *info2;
-	const char	*name1, *name2;
+	const /*@shared@*/ char* info1;
+	const /*@shared@*/ char* info2;
+	const /*@shared@*/ char* name1;
+	const /*@shared@*/ char* name2;
 
 	num1 = *(int *)arg1;
 	num2 = *(int *)arg2;
@@ -163,7 +165,7 @@ static void UI_AddBotsMenu_GetSortedBotNums( void ) {
 		addBotsMenuInfo.sortedBotNums[n] = n;
 	}
 
-	qsort( addBotsMenuInfo.sortedBotNums, addBotsMenuInfo.numBots, sizeof(addBotsMenuInfo.sortedBotNums[0]), UI_AddBotsMenu_SortCompare );
+	qsort( addBotsMenuInfo.sortedBotNums, (size_t)addBotsMenuInfo.numBots, sizeof(addBotsMenuInfo.sortedBotNums[0]), UI_AddBotsMenu_SortCompare );
 }
 
 
@@ -274,7 +276,7 @@ static char* Game_pClassNames2[] =
 UI_AddBotsMenu_FightEvent
 =================
 */
-static void UI_AddBotsMenu_FightEvent( void* ptr, int event ) {
+static void UI_AddBotsMenu_FightEvent( /*@unused@*/ void* ptr, int event ) {
 	const char	*team;
 	const char	*pclass;
 	int			skill;
@@ -314,6 +316,7 @@ static void UI_AddBotsMenu_Init( void )
 	int		count;
 	char	info[MAX_INFO_STRING];
 
+	memset(info, 0, sizeof(char) * MAX_INFO_STRING);
 	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
 	gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );
 	specialties = atoi( Info_ValueForKey( info,"g_pModSpecialties" ) );
