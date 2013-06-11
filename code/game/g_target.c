@@ -2449,7 +2449,9 @@ void SP_target_alert(gentity_t *ent) {
 
 	ent->damage = 0;
 
-	ent->health = !(ent->spawnflags & 2);
+	if((ent->spawnflags & 2) == 0) {
+		ent->health = 1;
+	}
 
 	// don't need to send this to clients
 	ent->r.svFlags &= SVF_NOCLIENT;
@@ -2485,25 +2487,25 @@ Any target_relay, target_delay, or target_boolean using this must have SELF flag
 "bluesnd" - target_speaker with core on sound
 "soundDeactivate" - sound to play if going to warp but core is deactivated/ejected
 */
-void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t* activator);
+void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t* activator);
 
 void target_warp_reactivate(gentity_t *ent) {
 	ent->use = target_warp_use;
 	ent->nextthink = -1;
 }
 
-void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 	int i;
 	qboolean first = qtrue;
 	gentity_t *target;
 
-	if(!activator) {
+	if(activator == 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_warp_use called with NULL activator!\n"););
 		return;
 	}
 
 	// swapWarp
-	if(!Q_stricmp(activator->target, ent->truename)) {
+	if(Q_stricmp(activator->target, ent->truename) == 0) {
 		if(ent->n00bCount) {
 			ent->target = ent->truetarget;
 			G_UseTargets(ent, activator);
@@ -2512,26 +2514,37 @@ void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 			G_UseTargets(ent, activator);
 		}
 		for(i = 0; i < MAX_GENTITIES; i++) {
-			if(!&g_entities[i]) continue;
-			if(Q_stricmp(g_entities[i].classname, "func_train") && !Q_stricmp(g_entities[i].swapname, ent->bluename)) {
+			if(&g_entities[i] == NULL) { 
+				continue;
+			}
+
+			if(Q_stricmp(g_entities[i].classname, "func_train") != 0 && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
 				target = &g_entities[i];
-				if(!target) continue;
-				if(ent->spawnflags & 4) {
+				if(target == NULL) {
+					continue;
+				}
+
+				if((ent->spawnflags & 4) != 0) {
 					target->use(target, ent, ent);
 #ifdef G_LUA
-					if(target->luaUse)
+					if(target->luaUse != NULL) {
 						LuaHook_G_EntityUse(target->luaUse, target-g_entities, ent-g_entities, ent-g_entities);
+					}
 #endif
 				} else {
 					target->use(target, ent, activator);
 #ifdef G_LUA
-					if(target->luaUse)
+					if(target->luaUse != NULL) {
 						LuaHook_G_EntityUse(target->luaUse, target-g_entities, ent-g_entities, activator-g_entities);
+					}
 #endif
 				}
-			} else if(!Q_stricmp(g_entities[i].classname, "func_train") && !Q_stricmp(g_entities[i].swapname, ent->bluename)) {
+			} else if(Q_stricmp(g_entities[i].classname, "func_train") == 0 && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
 				target = &g_entities[i];
-				if(!target) continue;
+				if(target == NULL) {
+					continue;
+				}
+
 				if(target->count == 1) {
 					target->s.solid = 0;
 					target->r.contents = 0;
@@ -2539,7 +2552,8 @@ void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					target->r.svFlags |= SVF_NOCLIENT;
 					target->s.eFlags |= EF_NODRAW;
 					target->count = 0;
-					if(first){
+
+					if(first == qtrue){
 						ent->target = ent->redsound;
 						G_UseTargets(ent, activator);
 						first = qfalse;
@@ -2551,7 +2565,8 @@ void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 					target->s.eFlags &= ~EF_NODRAW;
 					target->clipmask = 0;
 					target->count = 1;
-					if(first) {
+
+					if(first == qtrue) {
 						ent->target = ent->bluesound;
 						G_UseTargets(ent, activator);
 						first = qfalse;
@@ -2559,36 +2574,56 @@ void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 				}
 			}
 		}
-		ent->sound1to2 = !ent->sound1to2;
-	} else if(!Q_stricmp(activator->target, ent->falsename)) { //eject
-		if(ent->n00bCount) {
+
+		if(ent->sound1to2 != 0) {
+			ent->sound1to2 = 0;
+		} else {
+			ent->sound1to2 = 1;
+		}
+	} else if(Q_stricmp(activator->target, ent->falsename) == 0) { //eject
+		if(ent->n00bCount != 0) {
 			ent->target = ent->truetarget;
 			G_UseTargets(ent, activator);
 			ent->n00bCount = 0;
 			ent->target = ent->yellowsound;
 			G_UseTargets(ent, activator);
 		}
-		if(ent->sound2to1) {
+
+		if(ent->sound2to1 != 0) {
 			ent->use = 0;
 			ent->think = target_warp_reactivate;
 			ent->nextthink =  level.time + (ent->wait * 1000);
 		}
+
 		ent->target = ent->falsetarget;
 		G_UseTargets(ent, activator);
-		ent->sound2to1 = !ent->sound2to1;
-	} else if(!Q_stricmp(activator->target, ent->swapname)) { // toggle warp
-		if(ent->sound1to2 && (ent->sound2to1 == 0)) {
+		if(ent->sound2to1 != 0) {
+			ent->sound2to1 = 0;
+		} else {
+			ent->sound2to1 = 1;
+		}
+	} else if(Q_stricmp(activator->target, ent->swapname) == 0) { // toggle warp
+		if((ent->sound1to2 != 0) && (ent->sound2to1 == 0)) {
 			ent->target = ent->truetarget;
 			G_UseTargets(ent, activator);
-			if(ent->n00bCount)
+
+			if(ent->n00bCount != 0) {
 				ent->target = ent->yellowsound;
-			else
+			} else {
 				ent->target = ent->greensound;
+			}
+
 			G_UseTargets(ent, activator);
-			ent->n00bCount = !ent->n00bCount;
+			
+			if(ent->n00bCount != 0) {
+				ent->n00bCount = 0;
+			} else {
+				ent->n00bCount = 1;
+			}
 		} else {
-			if(ent->soundPos1)
+			if(ent->soundPos1 != 0) {
 				G_AddEvent(ent, EV_GENERAL_SOUND, ent->soundPos1);
+			}
 		}
 	}
 }
