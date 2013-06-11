@@ -2487,14 +2487,14 @@ Any target_relay, target_delay, or target_boolean using this must have SELF flag
 "bluesnd" - target_speaker with core on sound
 "soundDeactivate" - sound to play if going to warp but core is deactivated/ejected
 */
-void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t* activator);
+void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator);
 
-void target_warp_reactivate(gentity_t *ent) {
+void target_warp_reactivate(/*@shared@*/ gentity_t *ent) {
 	ent->use = target_warp_use;
 	ent->nextthink = -1;
 }
 
-void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
+void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 	int i;
 	qboolean first = qtrue;
 	gentity_t *target;
@@ -2506,7 +2506,7 @@ void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other,
 
 	// swapWarp
 	if(Q_stricmp(activator->target, ent->truename) == 0) {
-		if(ent->n00bCount) {
+		if(ent->n00bCount != 0) {
 			ent->target = ent->truetarget;
 			G_UseTargets(ent, activator);
 			ent->n00bCount = 0;
@@ -2553,20 +2553,22 @@ void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other,
 					target->s.eFlags |= EF_NODRAW;
 					target->count = 0;
 
-					if(first == qtrue){
+					if(first){
 						ent->target = ent->redsound;
 						G_UseTargets(ent, activator);
 						first = qfalse;
 					}
 				} else {
 					target->clipmask = CONTENTS_BODY;
-					trap_SetBrushModel( target, target->model );
+					if(target->model != NULL) {
+						trap_SetBrushModel( target, target->model );
+					}
 					target->r.svFlags &= ~SVF_NOCLIENT;
 					target->s.eFlags &= ~EF_NODRAW;
 					target->clipmask = 0;
 					target->count = 1;
 
-					if(first == qtrue) {
+					if(first) {
 						ent->target = ent->bluesound;
 						G_UseTargets(ent, activator);
 						first = qfalse;
@@ -2590,7 +2592,7 @@ void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other,
 		}
 
 		if(ent->sound2to1 != 0) {
-			ent->use = 0;
+			ent->use = NULL;
 			ent->think = target_warp_reactivate;
 			ent->nextthink =  level.time + (ent->wait * 1000);
 		}
@@ -2673,17 +2675,23 @@ none
 -----KEYS-----
 "target" - func_usable to de/activate(targetname2).
 */
-void target_deactivate_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+void target_deactivate_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
 	gentity_t *target = NULL;
+
+	if(ent->target == NULL) {
+		return;
+	}
+
 	while((target = G_Find(target, FOFS(targetname2), ent->target)) != NULL) {
-		if(!Q_stricmp(target->classname, "func_usable")) {
+		if(Q_stricmp(target->classname, "func_usable") == 0) {
 			target->flags ^= FL_LOCKED;
 		}
 	}
 }
 
-void SP_target_deactivate(gentity_t *ent) {
-	if(!ent->target) {
+void SP_target_deactivate(/*@shared@*/ gentity_t *ent) {
+
+	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_deactivate at %s without target!\n", vtos(ent->r.currentOrigin)););
 		return;
 	}
@@ -2706,24 +2714,33 @@ Can be toggled by an usable if the usable has NO_ACTIVATOR spawnflag.
 -----KEYS-----
 "serverNum" - server to connect to (rpg_server<serverNum> cvar)
 */
-void target_serverchange_think(gentity_t *ent) {
-	if(!ent->touched || !ent->touched->client) return;
+void target_serverchange_think(/*@shared@*/ gentity_t *ent) {
+	
+	if(ent->touched == NULL || ent->touched->client == NULL) {
+		return;
+	}
+
 	trap_SendServerCommand(ent->touched->client->ps.clientNum, va("cg_connect \"%s\"\n", ent->targetname2));
 	ent->nextthink = -1;
 }
 
-void target_serverchange_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(!activator || !activator->client) {
-		ent->s.time2 = !ent->s.time2;
+void target_serverchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
+	
+	if(activator == NULL || activator->client == NULL) {
+		if(ent->s.time2 != 0) {
+			ent->s.time2 = 0;
+		} else {
+			ent->s.time2 = 1;
+		}
 		return;
 	}
 
-	if(activator->flags & FL_LOCKED)
+	if(activator->flags & FL_LOCKED) {
 		return;
-
+	}
 	activator->flags ^= FL_LOCKED;
 
-	if(rpg_serverchange.integer && ent->s.time2) {
+	if(rpg_serverchange.integer != 0 && ent->s.time2 != 0) {
 		ent->think = target_serverchange_think;
 		ent->nextthink = level.time + 3000;
 		TransDat[ent->client->ps.clientNum].beamTime = level.time + 8000;
@@ -2733,14 +2750,19 @@ void target_serverchange_use(gentity_t *ent, gentity_t *other, gentity_t *activa
 	}
 }
 
-void SP_target_serverchange(gentity_t *ent) {
-	int serverNum;
+void SP_target_serverchange(/*@shared@*/ gentity_t *ent) {
+	int serverNum = 0;
+
 	G_SpawnInt("serverNum", "1", &serverNum);
 	ent->count = serverNum;
-	if(!ent->count)
+
+	if(ent->count == 0) {
 		ent->count = 1;
-	if(ent->spawnflags & 1)
+	}
+
+	if((ent->spawnflags & 1) != 0) {
 		ent->s.time2 = 1;
+	}
 
 	ent->use = target_serverchange_use;
 	trap_LinkEntity(ent);
@@ -2757,7 +2779,7 @@ none
 "target" - map to load (for example: borg2)
 "wait" - time to wait before levelchange (whole numbers only, -1 for instant levelchange, 0 for default = 5)
 */
-void target_levelchange_think(gentity_t *ent) {
+void target_levelchange_think(/*@shared@*/ gentity_t *ent) {
 	if(ent->count > 0) {
 		ent->count--;
 		trap_SendServerCommand(-1, va("servercprint \"Mapchange in %i ...\"", ent->count)); 
@@ -2769,28 +2791,31 @@ void target_levelchange_think(gentity_t *ent) {
 	ent->nextthink = level.time + 1000;
 }
 
-void target_levelchange_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+void target_levelchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ /*@unused@*/ gentity_t *activator) {
 	if(rpg_allowSPLevelChange.integer) {
 		ent->think = target_levelchange_think;
 		ent->nextthink = level.time + 1000;
-		if(ent->count > 0)//This is anoying if there's no delay so let's do this only if there is
+
+		if(ent->count > 0) { //This is anoying if there's no delay so let's do this only if there is
 			trap_SendServerCommand(-1, va("servercprint \"Mapchange in %i ...\"", ent->count)); 
+		}
 	}
 }
 
 void SP_target_levelchange(gentity_t *ent) {
-	if(!ent->target) {
+	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_levelchange without target at %s!\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
 	}
 
-	if(!ent->wait)
+	if(ent->wait <= 0.0f) {
 		ent->count = 5;
-	else if(ent->wait < -1)
+	} else if(ent->wait < -1.0f) {
 		ent->count = -1;
-	else
+	} else {
 		ent->count = (int)ent->wait;
+	}
 
 	ent->use = target_levelchange_use;
 }
@@ -2807,13 +2832,15 @@ none
 none
 */
 
-void SP_target_holodeck(gentity_t *ent) {
+void SP_target_holodeck(/*@shared@*/ gentity_t *ent) {
+#if 1
 	G_FreeEntity(ent);
 	return;
-
+#else 
 	// don't need to send this to clients
 	ent->r.svFlags &= SVF_NOCLIENT;
 	trap_LinkEntity(ent);
+#endif
 }
 
 //RPG-X | Harry Young | 15/10/2011 | MOD START
@@ -2832,35 +2859,38 @@ none
 "falsename" - shader taht is ingame at spawn
 "truename" - shader that will replace it
 */
-void target_shaderremap_think(gentity_t *ent) {
-	float f = 0;
-	if(!ent->spawnflags) {
-		f = level.time * 0.001;
+void target_shaderremap_think(/*@shared@*/ gentity_t *ent) {
+	float f = 0.0f;
+
+	if(ent->spawnflags == 0) {
+		f = level.time * 0.001f;
 		AddRemap(ent->falsename, ent->truename, f);
 		ent->spawnflags = 1;
 		ent->nextthink = -1;
 	} else {
-		f = level.time * 0.001;
+		f = level.time * 0.001f;
 		AddRemap(ent->falsename, ent->falsename, f);
 		ent->spawnflags = 0;
 		ent->nextthink = -1;
 	}
+
 	trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 }
 
-void target_shaderremap_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+void target_shaderremap_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ /*@unused@*/ gentity_t *activator) {
 	ent->think = target_shaderremap_think;
-	ent->nextthink = level.time + 50; /* level.time + one frame */
+	ent->nextthink = level.time + FRAMETIME; /* level.time + one frame */
 }
 
 void SP_target_shaderremap(gentity_t *ent) {
-	if(!ent->falsename) {
+
+	if(ent->falsename == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shaderremap without falsename-shader at %s!\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
 	}
 
-	if(!ent->truename) {
+	if(ent->truename == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shaderremap without truename-shader at %s!\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
@@ -2890,14 +2920,14 @@ Should this thing hit 0 the killing part for everyone outside a target_zone conf
 "damage" - leveltime of countdowns end
 */
 
-void target_selfdestruct_end(gentity_t *ent) {
+void target_selfdestruct_end(/*@shared@*/ gentity_t *ent) {
 	G_FreeEntity(ent);
 	return;
 }
 
-void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if( ent->damage - level.time > 50 ){//I'm still sceptical about a few things here, so I'll leave this in place
-	//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
+void target_selfdestruct_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ /*@unused@*/ gentity_t *activator) {
+	if( ent->damage - level.time > 50 ){ //I'm still sceptical about a few things here, so I'll leave this in place
+		//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
 		trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
 		trap_SendServerCommand(-1, va("selfdestructupdate %i", -1));
@@ -2916,7 +2946,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 
 		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
 		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
-		if(healthEnt && G_Find(healthEnt, FOFS(classname), "target_shiphealth") == NULL ){
+		if(healthEnt != NULL && G_Find(healthEnt, FOFS(classname), "target_shiphealth") == NULL ){
 			healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have just one. makes a lot of stuff easier.
 			healthEnt->use(healthEnt, NULL, NULL);
 		}else{
@@ -2958,8 +2988,10 @@ void target_selfdestruct_think(gentity_t *ent) {
 			//let's be shakey for a sec... I hope lol ^^
 			trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
 		}
-		if(ent->target)
+		if(ent->target != NULL) {
 			G_UseTargets(ent, ent);
+		}
+
 		trap_SendServerCommand(-1, va("selfdestructupdate %i", -1));
 		G_FreeEntity(ent);
 		return;
@@ -2969,7 +3001,7 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	double		ETAmin, ETAsec;
 	float		temp;
 
-	if(level.time < 1000){ //failsafe in case someone spawned this in the radiant
+	if(level.time < 1000.0f){ //failsafe in case someone spawned this in the radiant
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_selfdestruct spawned by level. Removing entity."););
 		G_FreeEntity(ent);
 		return;
@@ -2979,7 +3011,7 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	//There's a little bit of math to do here so let's do that.
 	//convert all times from secs to millisecs if that hasn't been done in an earlier pass.
 
-	if (!ent->splashRadius){
+	if (ent->splashRadius == 0){
 		temp = ent->wait * 1000;
 		ent->wait = temp;
 		temp = ent->count * 1000;
@@ -2999,39 +3031,45 @@ void SP_target_selfdestruct(gentity_t *ent) {
 
 	//time's set so let's let everyone know that we're counting. I'll need to do a language switch here sometime...
 	ETAsec = floor(modf((ent->wait / 60000), &ETAmin)*60);
-	if (ent->spawnflags == 1) 
-		if(ETAsec / 10 < 1) //get leading 0 for secs
+	if(ent->spawnflags == 1) {
+		if(ETAsec / 10.0f < 1.0f) { //get leading 0 for secs
 			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:0%.0f\"", ETAmin, ETAsec ));
-		else
+		} else {
 			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%.0f\"", ETAmin, ETAsec ));
-	else 
-		if(ETAsec / 10 < 1) //get leading 0 for secs
+		}
+	} else { 
+		if(ETAsec / 10.0f < 1.0f) { //get leading 0 for secs
 			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:0%.0f; There will be no ^1further audio warnings.\"", ETAmin, ETAsec ));
-		else
+		} else {
 			trap_SendServerCommand( -1, va("servermsg \"^1Self Destruct in %.0f:%.0f; There will be no ^1further audio warnings.\"", ETAmin, ETAsec ));
+		}
+	}
 	ent->r.svFlags |= SVF_BROADCAST;
 	trap_LinkEntity(ent);
 
 	//Additionally we have some audio files ready to go in english with automatic german counterparts. Play them as well.
-	if (ent->wait == 1200000) {
+	if ((int)(ent->wait) == 1200000) {
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/20-a1.mp3"));
-	} else if (ent->wait == 900000) {
-		if (ent->spawnflags == 1 )
+	} else if ((int)(ent->wait) == 900000) {
+		if (ent->spawnflags == 1) {
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a1.mp3"));
-		else
+		} else {
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/15-a0.mp3"));
-	} else if (ent->wait == 600000) {
+		}
+	} else if ((int)(ent->wait) == 600000) {
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/10-a1.mp3"));
-	} else if (ent->wait == 300000) {
-		if (ent->spawnflags == 1 )
+	} else if ((int)(ent->wait) == 300000) {
+		if (ent->spawnflags == 1) {
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a1.mp3"));
-		else
+		} else {
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/5-a0.mp3"));
+		}
 	} else {
-		if (ent->spawnflags == 1 )
+		if (ent->spawnflags == 1) {
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a1.mp3"));
-		else
+		} else {
 			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/X-a0.mp3"));
+		}
 	}
 
 	// Now all that's left is to plan the next think.
@@ -3040,10 +3078,11 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	ent->think = target_selfdestruct_think;
 	ent->nextthink = ent->damage;
 
-	if(ent->spawnflags == 1)
+	if(ent->spawnflags == 1) {
 		trap_SendServerCommand(-1, va("selfdestructupdate %.0f", ent->wait));
+	}
 
-	ent->wait = 0;
+	ent->wait = 0.0f;
 
 	trap_LinkEntity(ent);
 }
@@ -3077,23 +3116,24 @@ In case of a selfdestruct you will need to enter the targetname to automatically
 To get the correct one use the /safezonelist-command 
 */
 
-void target_safezone_use(gentity_t *ent, gentity_t *other, gentity_t *activator){
+void target_safezone_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ /*@unused@*/ gentity_t *activator){
 	//a client used this, so let's set this thing to active
-	if(ent->n00bCount == 1)
+	if(ent->n00bCount == 1) {
 		ent->n00bCount = 0;
-	else
+	} else {
 		ent->n00bCount = 1;
+	}
 }
 
 void SP_target_zone(gentity_t *ent) {
 
-	if(!ent->targetname || !ent->targetname[0]) {
+	if(ent->targetname == NULL || ent->targetname[0] == 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_zone without targetname at %s, removing entity.\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
 	}
 
-	if(Q_stricmp(ent->classname, "target_zone")){
+	if(Q_stricmp(ent->classname, "target_zone") != 0){
 		ent->count = 1;
 		ent->classname = G_NewString("target_zone");
 	}
@@ -3104,19 +3144,24 @@ void SP_target_zone(gentity_t *ent) {
 		return;
 	}
 
-	if(strcmp(ent->classname, "target_zone")){
+	if(strcmp(ent->classname, "target_zone") != 0){
 		ent->count = 1;
 		//ent->classname = G_NewString("target_zone");
 		strcpy(ent->classname, "target_zone");
 	}
 
-	if(!ent->luaEntity) {
+	if(ent->luaEntity == qfalse && ent->model != NULL) {
 		trap_SetBrushModel(ent, ent->model);
 	}
-	if(ent->count == 1)
+
+	if(ent->count == 1) {
 		ent->use = target_safezone_use;
-	if(ent->count == 1 && ent->spawnflags & 1)
+	}
+
+	if(ent->count == 1 && (ent->spawnflags & 1) != 0) {
 		ent->n00bCount = 1;
+	}
+
 	ent->r.contents = CONTENTS_NONE;
 	ent->r.svFlags |= SVF_NOCLIENT;
 	trap_LinkEntity(ent);
@@ -3225,24 +3270,24 @@ textures/msd/akira //this will be the image you will use for texturing
 For distribution put both files (including their relative paths) in a *.pk3 file.
 */
 
-void target_shiphealth_die(gentity_t *ent){
+void target_shiphealth_die(/*@shared@*/ gentity_t *ent){
 	//we're dying
 	int			n = 0, num;
 	int			entlist[MAX_GENTITIES];
 	gentity_t	*client = NULL, *safezone=NULL;
 
 	while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
-		if(!Q_stricmp(safezone->targetname, ent->targetname))
+		if(Q_stricmp(safezone->targetname, ent->targetname) == 0)
 			safezone->n00bCount = 0;
 	}
 	safezone = NULL;
 	while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
 		// go through all safe zones and tag all safe players
-		if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename)) {
+		if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename) != 0) {
 			num = trap_EntitiesInBox(safezone->r.mins, safezone->r.maxs, entlist, MAX_GENTITIES);
 			for(n = 0; n < num; n++) {
 				if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
-					while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
+					while((client = G_Find( client, FOFS( classname ), "player" )) != NULL){
 						if(client->s.number == entlist[n])
 							client->client->nokilli = 1;
 					}
@@ -3254,14 +3299,17 @@ void target_shiphealth_die(gentity_t *ent){
 	client = NULL;
 
 	//Loop trough all clients on the server.
-	while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
-		if (client->client->nokilli != 1)
+	while((client = G_Find( client, FOFS( classname ), "player" )) != NULL){
+		if (client->client && client->client->nokilli != 1) {
 			G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+		}
 	}
 	//we may go this way once more so clear clients back.
 	client = NULL;
-	while((client = G_Find( client, FOFS( classname ), "player" ))){
-		client->client->nokilli = 0;
+	while((client = G_Find( client, FOFS( classname ), "player" )) != NULL) {
+		if(client->client != NULL) {
+			client->client->nokilli = 0;
+		}
 	}
 	//let's hear it
 	G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
@@ -3271,20 +3319,20 @@ void target_shiphealth_die(gentity_t *ent){
 	ent->nextthink = -1;
 }
 
-void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+void target_shiphealth_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ /*@unused@*/ gentity_t *activator) {
 	double		NSS, NHS, SD, HD, BT;
 	int			n = 0, num;
 	int			entlist[MAX_GENTITIES];
 	gentity_t	*alertEnt, *warpEnt, *turboEnt, *transEnt, *msdzone=NULL, *client=NULL;
 
-	if(ent->damage <= 0){ //failsave
+	if(ent->damage <= 0) { //failsave
 		return;
-	}else{
-		if(ent->splashDamage == 1){ //shields are active so we're just bleeding trough on the hull
-			BT = ((1 - (ent->count * pow(ent->health, -1))) / 10);
+	} else {
+		if(ent->splashDamage == 1) { //shields are active so we're just bleeding trough on the hull
+			BT = ((1.0 - (ent->count * pow(ent->health, -1))) / 10.0);
 			SD = (ent->damage - ceil(ent->damage * BT));
 
-			if(SD > ent->n00bCount){ //we're draining the shields...
+			if(SD > ent->n00bCount) { //we're draining the shields...
 				HD = (ent->damage - ent->n00bCount);
 				NHS = (ent->count - HD);
 				ent->n00bCount = 0;
@@ -3305,15 +3353,16 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	//enough math, let's trigger things
 
 	//go to red alert if we are not, this will also activate the shields
-	if(ent->falsename){
+	if(ent->falsename != NULL) {
 		alertEnt = G_Find(NULL, FOFS(falsename), ent->falsename);
-		if(alertEnt->damage != 2){
+		if(alertEnt->damage != 2) {
 			ent->target = ent->falsename;
 			G_UseTargets(ent, ent);
 		}
-	}else{
-		if(ent->splashDamage == 0)
+	} else {
+		if(ent->splashDamage == 0) {
 			ent->splashDamage = 1;
+		}
 	}
 
 	//time to fire the FX
@@ -3321,9 +3370,9 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	G_UseTargets(ent, ent);
 
 	//disable UI_Transporter if need be.
-	if(ent->bluesound){
+	if(ent->bluesound != NULL){
 		transEnt = G_Find(NULL, FOFS(swapname), ent->bluesound);
-		if (!(transEnt->flags & FL_LOCKED)){
+		if ((transEnt->flags & FL_LOCKED) == 0){
 			if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)){
 				ent->target = ent->bluesound;
 				G_UseTargets(ent, ent);
@@ -3332,9 +3381,9 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	}
 
 	//disable target_turbolift if need be.
-	if(ent->bluename){
+	if(ent->bluename != NULL){
 		turboEnt = G_Find(NULL, FOFS(swapname), ent->bluename);
-		if (!(turboEnt->flags & FL_LOCKED)){
+		if ((turboEnt->flags & FL_LOCKED) == 0){
 			if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)){
 				ent->target = ent->bluename;
 				G_UseTargets(ent, ent);
@@ -3343,10 +3392,10 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	}
 
 	//disable target_warp if need be.
-	if(ent->falsetarget){
+	if(ent->falsetarget != NULL){
 		warpEnt = G_Find(NULL, FOFS(truename), ent->falsetarget);
-		if ((warpEnt->sound1to2) && (warpEnt->sound2to1 == 0)){
-			if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)){
+		if ((warpEnt->sound1to2 != 0) && (warpEnt->sound2to1 == 0)) {
+			if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)) {
 				ent->target = ent->falsetarget;
 				G_UseTargets(ent, ent);
 			}
@@ -3354,7 +3403,7 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	}
 
 	//disable shield-subsystem if need be.
-	if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)){
+	if((ent->count * pow(ent->health, -1)) < flrandom(0.1 , 0.4)) {
 		ent->n00bCount = 0;
 		ent->splashDamage = -1;
 	}
@@ -3365,7 +3414,7 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	//refresh clients HUD Display
 	//first zero out all clients that are connected to this one
 	while((client = G_Find(client, FOFS(classname), "player")) != NULL){
-		if(client->client->myship == ent->s.number)
+		if(client->client != NULL && client->client->myship == ent->s.number)
 			trap_SendServerCommand( client->s.number, va("shiphealthupdate 0 0 0 "));
 	}
 
@@ -3398,7 +3447,7 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 	return;
 }	
 
-void target_shiphealth_think(gentity_t *ent) {
+void target_shiphealth_think(/*@shared@*/ gentity_t *ent) {
 	//this will do the healing each minute
 	int			NSS, NHS;
 	int			n = 0, num;
@@ -3408,36 +3457,39 @@ void target_shiphealth_think(gentity_t *ent) {
 
 	//We have interconnectivity with target_alert here in that at condition green we regenerate twice as fast
 	//so let's find the entity
-	if(ent->falsename)
+	if(ent->falsename != NULL) {
 		alertEnt = G_Find(NULL, FOFS(falsename), ent->falsename);
-	else
+	} else {
 		alertEnt = G_Find(NULL, FOFS(classname), "target_alert");
+	}
 
-	if(!alertEnt){ //failsave in case we don't have a target_alert present
+	if(alertEnt == NULL){ //failsave in case we don't have a target_alert present
 		alertEnt = G_Spawn();
 		alertEnt->damage = 0;
 	}
 
 	// Hull Repair
 	if(ent->count < ent->health){
-		if(alertEnt->damage == 0) //condition green
+		if(alertEnt->damage == 0) { //condition green
 			NHS = (ent->count + (ent->health * ent->angle / 100));
-		else
+		} else {
 			NHS = (ent->count + (ent->health * ent->angle / 200));
+		}
 
-		if(NHS > ent->health)
+		if(NHS > ent->health) {
 			ent->count = ent->health;
-		else
+		} else {
 			ent->count = NHS;
+		}
 	}
 
 	// Shield Repair
 	if(ent->splashDamage != -1){ //skip if shields are toast
 		if(ent->n00bCount < ent->splashRadius){
-			if(alertEnt->damage == 0){ //condition green
+			if(alertEnt != NULL && alertEnt->damage == 0) { //condition green
 				NSS = (ent->n00bCount + (ent->splashRadius * ent->speed / 100));
 				ent->splashDamage = 0;
-			}else{
+			} else {
 				NSS = (ent->n00bCount + (ent->splashRadius * ent->speed / 200));
 				ent->splashDamage = 1;
 			}
@@ -3450,18 +3502,20 @@ void target_shiphealth_think(gentity_t *ent) {
 	}
 
 	//shield reenstatement
-	if(ent->splashDamage == -1){ //else we don't need to run this
-		if((ent->count * pow(ent->health, -1)) > 0.5){
-			if(alertEnt->damage == 0 && !Q_stricmp(alertEnt->classname, "target_alert")) 
+	if(ent->splashDamage == -1) { //else we don't need to run this
+		if((ent->count * pow(ent->health, -1)) > 0.5) {
+			if(alertEnt != NULL && alertEnt->damage == 0 && Q_stricmp(alertEnt->classname, "target_alert") == 0) {
 				ent->splashDamage = 0;
-			else
+			} else {
 				ent->splashDamage = 1;
+			}
 		} else {
 			if((ent->count * pow(ent->health, -1) * flrandom(0, 1)) > 0.75){
-				if(alertEnt->damage == 0 && !Q_stricmp(alertEnt->classname, "target_alert"))
+				if(alertEnt != NULL && alertEnt->damage == 0 && Q_stricmp(alertEnt->classname, "target_alert") == 0) {
 					ent->splashDamage = 0;
-				else
+				} else {
 					ent->splashDamage = 1;
+				}
 			}
 		}
 	}
@@ -3470,14 +3524,14 @@ void target_shiphealth_think(gentity_t *ent) {
 	//refresh clients HUD Display
 	//first zero out all clients that are connected to this one
 	while((client = G_Find(client, FOFS(classname), "player")) != NULL){
-		if(client->client->myship == ent->s.number)
+		if(client->client != NULL && client->client->myship == ent->s.number)
 			trap_SendServerCommand( client->s.number, va("shiphealthupdate 0 0 0 "));
 	}
 
 	client = NULL;
 
 	//now let's loop trough our zones and find the clients to send the info to
-	while ((msdzone = G_Find( msdzone, FOFS( classname ), "target_zone" )) != NULL  ){
+	while ((msdzone = G_Find( msdzone, FOFS( classname ), "target_zone" )) != NULL  ) {
 		// go through all safe zones and tag all safe players
 		if(msdzone->count == 2 && Q_stricmp(msdzone->targetname, ent->paintarget)) {
 			num = trap_EntitiesInBox(msdzone->r.mins, msdzone->r.maxs, entlist, MAX_GENTITIES);
@@ -3500,7 +3554,7 @@ void target_shiphealth_think(gentity_t *ent) {
 
 void SP_target_shiphealth(gentity_t *ent) {
 
-	if(!ent->targetname || !ent->health || !ent->splashRadius || !ent->angle || !ent->speed){
+	if(ent->targetname == NULL || ent->health == NULL || ent->splashRadius == NULL || !ent->angle || !ent->speed){
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shiphealth at %s is missing one or more parameters, removing entity.\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
@@ -3511,13 +3565,14 @@ void SP_target_shiphealth(gentity_t *ent) {
 	ent->n00bCount = ent->splashRadius;
 
 	//now for the shieldindicator I need to know if we have an alertEnt available
-	if(G_Find(NULL, FOFS(classname), "target_alert"))
+	if(G_Find(NULL, FOFS(classname), "target_alert")) {
 		ent->splashDamage = 0;
-	else
+	} else {
 		ent->splashDamage = 1;
+	}
 
 	//let's make sure we have something to return as model
-	if(!ent->model)
+	if(ent->model == NULL)
 		ent->model = "gfx/msd/daedalus";
 
 	ent->think = target_shiphealth_think;
