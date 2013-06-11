@@ -21,7 +21,7 @@ none
 EG "WP_5 | WP_14" etc
 (Don't forget the spaces!)
 */
-static void Use_Target_Give( /*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
+static void Use_Target_Give( /*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ /*@null@*/  gentity_t *other,  /*@null@*/ /*@shared@*/ gentity_t *activator ) {
 	unsigned		i;
 	playerState_t*	ps;
 
@@ -117,7 +117,7 @@ none
 */
 
 //hmmm... maybe remove this, not sure.
-static void Use_target_remove_powerups( /*@shared@*/ /*@unused@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/  gentity_t *activator ) {
+static void Use_target_remove_powerups( /*@shared@*/ /*@unused@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/  /*@null@*/  gentity_t *other, /*@shared@*/  /*@null@*/  gentity_t *activator ) {
 	if ( activator == NULL || activator->client == NULL ) {
 		return;
 	}
@@ -163,7 +163,7 @@ static void Think_Target_Delay( /*@shared@*/ gentity_t *ent ) {
 	}
 }
 
-static void Use_Target_Delay( /*@shared@*/  gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
+static void Use_Target_Delay( /*@shared@*/  gentity_t *ent, /*@shared@*/ /*@unused@*/  /*@null@*/  gentity_t *other, /*@shared@*/  /*@null@*/ gentity_t *activator ) {
 	ent->nextthink = (int)(level.time + ( ent->wait + ent->random * crandom() ) * 1000);
 	ent->think = Think_Target_Delay;
 	ent->activator = activator;
@@ -199,7 +199,7 @@ By default every client get's the message however this can be limited via spawnf
 -----KEYS-----
 "message"	text to print
 */
-static void Use_Target_Print (/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
+static void Use_Target_Print (/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ /*@null@*/ gentity_t *other, /*@shared@*/ /*@null@*/ gentity_t *activator) {
 	if ( activator != NULL && activator->client != NULL && ( ent->spawnflags & 4 ) != 0 && ent->message != NULL) {
 		trap_SendServerCommand( activator-g_entities, va("servermsg %s", ent->message ));
 		return;
@@ -253,7 +253,7 @@ Using a target_speaker designed to play it's sound once will play that sound.
 "wait" - Seconds between auto triggerings, default = 0 = don't auto trigger
 "random" - wait variance, default is 0, delay would be wait +/- random
 */
-static void Use_Target_Speaker (/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
+static void Use_Target_Speaker (/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ /*@null@*/ gentity_t *other, /*@shared@*/ /*@null@*/ gentity_t *activator) {
 	if ((ent->spawnflags & 3) != 0) {	// looping sound toggles
 		if (ent->s.loopSound != 0) {
 			ent->s.loopSound = 0;	// turn it off
