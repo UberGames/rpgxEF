@@ -2866,6 +2866,10 @@ none
 void target_shaderremap_think(/*@shared@*/ gentity_t *ent) {
 	float f = 0.0f;
 
+	if(ent->falsename == NULL || ent->truename == NULL) {
+		return;
+	}
+
 	if(ent->spawnflags == 0) {
 		f = (float)(level.time) * 0.001f;
 		AddRemap(ent->falsename, ent->truename, f);
@@ -2955,16 +2959,17 @@ void target_selfdestruct_think(gentity_t *ent) {
 			healthEnt->use(healthEnt, NULL, NULL);
 		}else{
 			while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
-				if(!Q_stricmp(safezone->targetname, ent->bluename))
+				if(Q_stricmp(safezone->targetname, ent->bluename) == 0)
 					safezone->n00bCount = 0;
 			}
 			safezone = NULL;
 			while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
 				// go through all safe zones and tag all safe players
-				if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename)) {
+				if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename) != 0) {
+					memset(entlist, 0, sizeof(entlist));
 					num = trap_EntitiesInBox(safezone->r.mins, safezone->r.maxs, entlist, MAX_GENTITIES);
 					for(n = 0; n < num; n++) {
-						if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
+						if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client != NULL) {
 							while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
 								if(client->s.number == entlist[n])
 									client->client->nokilli = 1;
@@ -3558,7 +3563,7 @@ void target_shiphealth_think(/*@shared@*/ gentity_t *ent) {
 
 void SP_target_shiphealth(gentity_t *ent) {
 
-	if(ent->targetname == NULL || ent->health == NULL || ent->splashRadius == NULL || !ent->angle || !ent->speed){
+	if(ent->targetname == NULL || ent->health == 0 || ent->splashRadius == 0 || !ent->angle || !ent->speed){
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shiphealth at %s is missing one or more parameters, removing entity.\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;

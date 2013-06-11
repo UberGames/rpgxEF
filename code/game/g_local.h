@@ -268,7 +268,7 @@ struct gentity_s {
 	/*@shared@*/ /*@null@*/ void		(*reached)(/*@shared@*/ gentity_t *self);	//!< movers call this when hitting endpoint
 	/*@shared@*/ /*@null@*/ void		(*blocked)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *other); //!< movers call this when blocked
 	/*@shared@*/ /*@null@*/ void		(*touch)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *other, /*@shared@*/ trace_t *trace); //!< touch function for triggers
-	/*@shared@*/ /*@null@*/ void		(*use)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator); //!< function that gets called if the entity is used
+	/*@shared@*/ /*@null@*/ void		(*use)(/*@shared@*/ gentity_t *self, /*@shared@*/ /*@null@*/ gentity_t *other, /*@shared@*/ /*@null@*/ gentity_t *activator); //!< function that gets called if the entity is used
 	/*@shared@*/ /*@null@*/ void		(*pain)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *attacker, int damage); //!< function that gets called if entity gets damged
 	/*@shared@*/ /*@null@*/ void		(*die)(/*@shared@*/ gentity_t *self, /*@shared@*/ gentity_t *inflictor, /*@shared@*/ gentity_t *attacker, int damage, int mod); //!< function that gets called if entity dies
 
