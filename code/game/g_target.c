@@ -2675,7 +2675,7 @@ none
 -----KEYS-----
 "target" - func_usable to de/activate(targetname2).
 */
-void target_deactivate_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ gentity_t *other, /*@shared@*/ gentity_t *activator) {
+void target_deactivate_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ /*@unused@*/ gentity_t *activator) {
 	gentity_t *target = NULL;
 
 	if(ent->target == NULL) {
@@ -2716,7 +2716,7 @@ Can be toggled by an usable if the usable has NO_ACTIVATOR spawnflag.
 */
 void target_serverchange_think(/*@shared@*/ gentity_t *ent) {
 	
-	if(ent->touched == NULL || ent->touched->client == NULL) {
+	if(ent->touched == NULL || ent->touched->client == NULL || ent->targetname2 == NULL) {
 		return;
 	}
 
@@ -2735,7 +2735,7 @@ void target_serverchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused
 		return;
 	}
 
-	if(activator->flags & FL_LOCKED) {
+	if((activator->flags & FL_LOCKED) != 0) {
 		return;
 	}
 	activator->flags ^= FL_LOCKED;
@@ -2743,7 +2743,7 @@ void target_serverchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused
 	if(rpg_serverchange.integer != 0 && ent->s.time2 != 0) {
 		ent->think = target_serverchange_think;
 		ent->nextthink = level.time + 3000;
-		TransDat[ent->client->ps.clientNum].beamTime = level.time + 8000;
+		TransDat[activator->client->ps.clientNum].beamTime = level.time + 8000;
 		activator->client->ps.powerups[PW_BEAM_OUT] = level.time + 8000;
 		ent->touched = activator;
 		ent->targetname2 = level.srvChangeData.ip[ent->count];
@@ -2780,6 +2780,10 @@ none
 "wait" - time to wait before levelchange (whole numbers only, -1 for instant levelchange, 0 for default = 5)
 */
 void target_levelchange_think(/*@shared@*/ gentity_t *ent) {
+	if(ent->target == NULL) {
+		return;
+	}
+
 	if(ent->count > 0) {
 		ent->count--;
 		trap_SendServerCommand(-1, va("servercprint \"Mapchange in %i ...\"", ent->count)); 
@@ -2792,7 +2796,7 @@ void target_levelchange_think(/*@shared@*/ gentity_t *ent) {
 }
 
 void target_levelchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ /*@unused@*/ gentity_t *activator) {
-	if(rpg_allowSPLevelChange.integer) {
+	if(rpg_allowSPLevelChange.integer != 0) {
 		ent->think = target_levelchange_think;
 		ent->nextthink = level.time + 1000;
 
@@ -2863,12 +2867,12 @@ void target_shaderremap_think(/*@shared@*/ gentity_t *ent) {
 	float f = 0.0f;
 
 	if(ent->spawnflags == 0) {
-		f = level.time * 0.001f;
+		f = (float)(level.time) * 0.001f;
 		AddRemap(ent->falsename, ent->truename, f);
 		ent->spawnflags = 1;
 		ent->nextthink = -1;
 	} else {
-		f = level.time * 0.001f;
+		f = (float)(level.time) * 0.001f;
 		AddRemap(ent->falsename, ent->falsename, f);
 		ent->spawnflags = 0;
 		ent->nextthink = -1;
