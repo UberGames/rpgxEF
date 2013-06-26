@@ -106,6 +106,7 @@
 #else
 	#ifdef _MSC_VER
 		#include <stddef.h>
+		#include <stdint.h>
 	#else
 		#include <stdint.h>
 	#endif
