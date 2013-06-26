@@ -16,14 +16,16 @@ TryUse
 /**
 *	Try and use an entity in the world, directly ahead of us
 */
-static void TryUse( gentity_t *ent )
+static void TryUse( gentity_t* ent )
 {
-	gentity_t	*target;
+	gentity_t* target;
 	trace_t		trace;
 	vec3_t		src, dest, vf;
-	clientSession_t *sess;
+	clientSession_t* sess;
 
-	if(!ent || !ent->client) return;
+	if(ent == NULL || ent->client == NULL) {
+		return;
+	}
 
 	sess = &ent->client->sess;
 
@@ -37,6 +39,7 @@ static void TryUse( gentity_t *ent )
 	VectorMA( src, 134, vf, dest );//128+6
 
 	//Trace ahead to find a valid target
+	memset(&trace, 0, sizeof(trace_t));
 	trap_Trace( &trace, src, vec3_origin, vec3_origin, dest, ent->s.number, MASK_OPAQUE|CONTENTS_BODY|CONTENTS_ITEM|CONTENTS_CORPSE );
 
 	if ( trace.fraction == 1.0f || trace.entityNum < 0 )
@@ -104,11 +107,11 @@ P_DamageFeedback
 *	damage values to that client for pain blends and kicks, and
 *	global pain sound events for all clients.
 */
-static void P_DamageFeedback( gentity_t *player ) {
-	gclient_t	*client;
+static void P_DamageFeedback( gentity_t* player ) {
+	gclient_t* client;
 	float	count;
 	vec3_t	angles;
-	playerState_t *ps;
+	playerState_t* ps;
 
 	client = player->client;
 	ps = &client->ps;
@@ -179,7 +182,7 @@ P_WorldEffects
 *	Check for lava / slime contents and drowning
 */
 static void P_WorldEffects( gentity_t *ent ) {
-	int			waterlevel;
+	int32_t waterlevel;
 
 	if ( ent->client->noclip ) {
 		ent->client->airOutTime = level.time + 12000;	// don't need air
@@ -273,10 +276,10 @@ static void G_SetClientSound( gentity_t *ent )
 ClientImpacts
 ==============
 */
-static void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
-	int		i, j;
+static void ClientImpacts( gentity_t* ent, pmove_t* pm ) {
+	int32_t	i, j;
 	trace_t	trace;
-	gentity_t	*other;
+	gentity_t* other;
 
 	memset( &trace, 0, sizeof( trace ) );
 	for (i=0 ; i<pm->numtouch ; i++) {
@@ -304,15 +307,15 @@ static void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
 }
 
 void G_TouchTriggers( gentity_t *ent ) {
-	int			i, num;
-	int			touch[MAX_GENTITIES];
+	int32_t		i, num;
+	int32_t		touch[MAX_GENTITIES];
 	gentity_t	*hit;
 	trace_t		trace;
 	vec3_t		mins, maxs;
-	static vec3_t	range = { 40, 40, 52 };
+	vec3_t	range = { 40, 40, 52 };
 	playerState_t *ps;
 
-	if ( !ent || !ent->client ) {
+	if ( ent == NULL || ent->client == NULL ) {
 		return;
 	}
 
@@ -389,9 +392,9 @@ void G_TouchTriggers( gentity_t *ent ) {
 SpectatorThink
 =================
 */
-static void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
+static void SpectatorThink( gentity_t* ent, usercmd_t* ucmd ) {
 	pmove_t	pm;
-	gclient_t	*client;
+	gclient_t* client;
 
 	client = ent->client;
 
@@ -446,7 +449,7 @@ static qboolean ClientInactivityTimer( gclient_t *client )
 {
 	usercmd_t *cmd = &client->pers.cmd;
 
-	if ( ! g_inactivity.integer )
+	if ( g_inactivity.integer == 0 )
 	{
 		// give everyone some time, so if the operator sets g_inactivity during
 		// gameplay, everyone isn't kicked
@@ -503,7 +506,7 @@ static char *TimedMessage( void ){
 	char* message;
 	container_p c;
 
-	if(!level.timedMessages->length) {
+	if(level.timedMessages->length == 0) {
 		return "^1RPG-X ERROR: No messages to display";
 	}
 
@@ -529,19 +532,19 @@ ClientTimerActions
 /**
 *	Actions that happen once a second
 */
-static void ClientTimerActions( gentity_t *ent, int msec ) {
-	gclient_t	*client;
-	char		*message;
-	float		messageTime;
+static void ClientTimerActions( gentity_t* ent, int32_t msec ) {
+	gclient_t* client;
+	char* message;
+	float messageTime;
 
 	client = ent->client;
 	client->timeResidual += msec;
 
-	if( rpg_timedmessagetime.value ){
+	if( rpg_timedmessagetime.value > 0.0f ){
 		//Make sure its not less then one //TiM: Well... we can have under 1, just not toooo far under 1
 
-		if(rpg_timedmessagetime.value < 0.2) { //1
-			messageTime = 0.2;
+		if(rpg_timedmessagetime.value < 0.2f) { //1
+			messageTime = 0.2f;
 		}else{
 			messageTime = rpg_timedmessagetime.value;
 		}
@@ -592,7 +595,7 @@ static void ClientTimerActions( gentity_t *ent, int msec ) {
 ClientIntermissionThink
 ====================
 */
-static void ClientIntermissionThink( gclient_t *client ) {
+static void ClientIntermissionThink( gclient_t* client ) {
 	client->ps.eFlags &= ~EF_TALK;
 	client->ps.eFlags &= ~EF_FIRING;
 
@@ -613,9 +616,9 @@ static void ClientIntermissionThink( gclient_t *client ) {
 
 typedef struct detHit_s
 {
-	gentity_t	*detpack;
-	gentity_t	*player;
-	int			time;
+	gentity_t*	detpack;
+	gentity_t*	player;
+	int32_t		time;
 } detHit_t;
 
 #define MAX_DETHITS		32		// never define this to be 0
@@ -623,11 +626,11 @@ typedef struct detHit_s
 static detHit_t	detHits[MAX_DETHITS];
 static qboolean	bDetInit = qfalse;
 
-extern qboolean FinishSpawningDetpack( gentity_t *ent, int itemIndex );
+extern qboolean FinishSpawningDetpack( gentity_t* ent, int32_t itemIndex );
 //-----------------------------------------------------------------------------DECOY TEMP
-extern qboolean FinishSpawningDecoy( gentity_t *ent, int itemIndex );
+extern qboolean FinishSpawningDecoy( gentity_t* ent, int32_t itemIndex );
 //-----------------------------------------------------------------------------DECOY TEMP
-void DetonateDetpack(gentity_t *ent);
+void DetonateDetpack(gentity_t* ent);
 
 #define DETPACK_DAMAGE			750
 #define DETPACK_RADIUS			500
@@ -635,9 +638,9 @@ void DetonateDetpack(gentity_t *ent);
 /**
 *	The detpack has been shot
 */
-void detpack_shot( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath )
+void detpack_shot( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t meansOfDeath )
 {
-	int i = 0;
+	int32_t i = 0;
 	gentity_t *ent = NULL;
 
 	//so we can't be blown up by things we're blowing up
@@ -663,14 +666,19 @@ void detpack_shot( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 /**
 *	Place the detpack
 */
-static qboolean PlaceDetpack(gentity_t *ent)
+static qboolean PlaceDetpack(gentity_t* ent)
 {
-	gentity_t	*detpack = NULL;
-	static gitem_t *detpackItem = NULL;
-	float		detDistance = 80;
-	trace_t		tr;
-	vec3_t		fwd, right, up, end, mins = {-16,-16,-16}, maxs = {16,16,16};
-	playerState_t *ps = &ent->client->ps;
+	gentity_t*		detpack = NULL;
+	static gitem_t* detpackItem = NULL;
+	float			detDistance = 80;
+	trace_t			tr;
+	vec3_t			fwd;
+	vec3_t			right;
+	vec3_t			up;
+	vec3_t			end;
+	vec3_t			mins = {-16,-16,-16};
+	vec3_t			maxs = {16,16,16};
+	playerState_t* ps = &ent->client->ps;
 
 	if (detpackItem == NULL)
 	{
@@ -678,9 +686,9 @@ static qboolean PlaceDetpack(gentity_t *ent)
 	}
 
 	// make sure our detHit info is init'd
-	if (!bDetInit)
+	if (bDetInit == qfalse)
 	{
-		memset(detHits, 0, MAX_DETHITS*sizeof(detHit_t));
+		memset(detHits, 0, MAX_DETHITS * sizeof(detHit_t));
 		bDetInit = qtrue;
 	}
 
@@ -688,6 +696,7 @@ static qboolean PlaceDetpack(gentity_t *ent)
 	AngleVectors (ps->viewangles, fwd, right, up);
 	fwd[2] = 0;
 	VectorMA(ps->origin, detDistance, fwd, end);
+	memset(&tr, 0, sizeof(trace_t));
 	trap_Trace (&tr, ps->origin, mins, maxs, end, ent->s.number, MASK_SHOT );
 	if (tr.fraction > 0.9)
 	{
@@ -696,7 +705,7 @@ static qboolean PlaceDetpack(gentity_t *ent)
 		G_SpawnItem(detpack, detpackItem);
 		detpack->physicsBounce = 0.0f;//detpacks are *not* bouncy
 		VectorMA(ps->origin, detDistance + mins[0], fwd, detpack->s.origin);
-		if ( !FinishSpawningDetpack(detpack, detpackItem - bg_itemlist) )
+		if ( FinishSpawningDetpack(detpack, detpackItem - bg_itemlist) == qfalse )
 		{
 			return qfalse;
 		}
@@ -717,9 +726,9 @@ static qboolean PlaceDetpack(gentity_t *ent)
 /**
 *	Was a player hit by a detpack.
 */
-static qboolean PlayerHitByDet(gentity_t *det, gentity_t *player)
+static qboolean PlayerHitByDet(gentity_t* det, gentity_t* player)
 {
-	int i = 0;
+	int32_t i = 0;
 
 	if (!bDetInit)
 	{
@@ -739,10 +748,11 @@ static qboolean PlayerHitByDet(gentity_t *det, gentity_t *player)
 /**
 *	Addes a player to the detpack hits
 */
-static void AddPlayerToDetHits(gentity_t *det, gentity_t *player)
+static void AddPlayerToDetHits(gentity_t* det, gentity_t* player)
 {
-	int			i = 0;
-	detHit_t	*lastHit = NULL, *curHit = NULL;
+	int32_t		i = 0;
+	detHit_t*	lastHit = NULL;
+	detHit_t*	curHit = NULL;
 
 	for (i = 0; i < MAX_DETHITS; i++)
 	{
@@ -775,9 +785,9 @@ static void AddPlayerToDetHits(gentity_t *det, gentity_t *player)
 /**
 *	Clear the hits for this detpack
 */
-static void ClearThisDetpacksHits(gentity_t *det)
+static void ClearThisDetpacksHits(gentity_t* det)
 {
-	int			i = 0;
+	int32_t	i = 0;
 
 	for (i = 0; i < MAX_DETHITS; i++)
 	{
@@ -790,14 +800,16 @@ static void ClearThisDetpacksHits(gentity_t *det)
 	}
 }
 
-static void DetpackBlammoThink(gentity_t *ent)
+static void DetpackBlammoThink(gentity_t* ent)
 {
-	int i = 0, lifetime = 3000;	// how long (in msec) the shockwave lasts
-	int			knockback = 400;
-	float		curBlastRadius = 50.0*ent->count, radius = 0;
+	int32_t		i = 0;
+	int32_t		lifetime = 3000;	// how long (in msec) the shockwave lasts
+	int32_t		knockback = 400;
+	float		curBlastRadius = 50.0 * ent->count;
+	float		radius = 0;
 	vec3_t		vTemp;
 	trace_t		tr;
-	gentity_t	*pl = NULL;
+	gentity_t*	pl = NULL;
 
 	if (ent->count++ > (lifetime*0.01))
 	{
@@ -818,6 +830,7 @@ static void DetpackBlammoThink(gentity_t *ent)
 			if ( (radius <= curBlastRadius) && !PlayerHitByDet(ent, pl) )
 			{
 				// within the proper radius. do we have LOS to the player?
+				memset(&tr, 0, sizeof(trace_t));
 				trap_Trace (&tr, ent->s.origin, NULL, NULL, pl->s.pos.trBase, ent->s.number, MASK_SHOT );
 				if (tr.entityNum == i)
 				{
@@ -831,7 +844,7 @@ static void DetpackBlammoThink(gentity_t *ent)
 					}
 					if ( !pl->client->ps.pm_time )
 					{
-						int		t;
+						int32_t	t;
 
 						t = knockback * 2;
 						if ( t < 50 ) {
@@ -857,13 +870,14 @@ static void DetpackBlammoThink(gentity_t *ent)
 void DetonateDetpack(gentity_t *ent)
 {
 	// find all detpacks. the one whose parent is ent...blow up
-	gentity_t	*detpack = NULL;
-	char		*classname = BG_FindClassnameForHoldable(HI_DETPACK);
+	gentity_t*	detpack = NULL;
+	char*		classname = BG_FindClassnameForHoldable(HI_DETPACK);
 
-	if (!classname)
+	if (classname == NULL)
 	{
 		return;
 	}
+
 	while ((detpack = G_Find (detpack, FOFS(classname), classname)) != NULL)
 	{
 		if (detpack->parent == ent)
@@ -920,7 +934,7 @@ static qhandle_t	shieldDamageSound=0;
 static qhandle_t	shieldMurderSound=0;
 static qhandle_t	shieldDeactivateSound=0;
 
-void G_Active_ShieldRemove(gentity_t *self)
+void G_Active_ShieldRemove(gentity_t* self)
 {
 	self->think = G_FreeEntity;
 	self->nextthink = level.time + 300;
@@ -939,7 +953,7 @@ void G_Active_ShieldRemove(gentity_t *self)
 *	Does not do much anymore, once, counted down the health of a forcefield and removed
 *	it when healt got equal or below zero.
 */
-void ShieldThink(gentity_t *self)
+void ShieldThink(gentity_t* self)
 {
 	self->s.eFlags &= ~(EF_ITEMPLACEHOLDER | EF_NODRAW);
 	self->nextthink = 0;
@@ -950,7 +964,7 @@ void ShieldThink(gentity_t *self)
 /**
 *	The shield was damaged to below zero health.
 */
-void ShieldDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
+void ShieldDie(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t mod)
 {
 	// Play damaging sound...
 	G_AddEvent(self, EV_GENERAL_SOUND, shieldDamageSound);
@@ -962,7 +976,7 @@ void ShieldDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 /**
 *	The shield had damage done to it.  Make it flicker.
 */
-void ShieldPain(gentity_t *self, gentity_t *attacker, int damage)
+void ShieldPain(gentity_t* self, gentity_t* attacker, int32_t damage)
 {
 	// Set the itemplaceholder flag to indicate the the shield drawing that the shield pain should be drawn.
 	self->s.eFlags |= EF_ITEMPLACEHOLDER;
@@ -979,9 +993,9 @@ void ShieldPain(gentity_t *self, gentity_t *attacker, int damage)
 /**
 *	Try to turn the shield back on after a delay.
 */
-void ShieldGoSolid(gentity_t *self)
+void ShieldGoSolid(gentity_t* self)
 {
-	trace_t		tr;
+	trace_t	tr;
 
 	if (self->health <= 0)
 	{
@@ -989,6 +1003,7 @@ void ShieldGoSolid(gentity_t *self)
 		return;
 	}
 
+	memset(&tr, 0, sizeof(trace_t));
 	trap_Trace (&tr, self->r.currentOrigin, self->r.mins, self->r.maxs, self->r.currentOrigin, self->s.number, CONTENTS_BODY );
 	if(tr.startsolid)
 	{	// gah, we can't activate yet
@@ -1014,7 +1029,7 @@ void ShieldGoSolid(gentity_t *self)
 *	Turn the shield off to allow a friend to pass through.
 */
 //RPG-X J2J EDIT here:
-void ShieldGoNotSolid(gentity_t *self)
+void ShieldGoNotSolid(gentity_t* self)
 {
 	// make the shield non-solid very briefly
 	self->r.contents = CONTENTS_NONE;
@@ -1037,19 +1052,19 @@ void ShieldGoNotSolid(gentity_t *self)
 /**
 *	Somebody (a player) has touched the shield.  See if it is a "friend".
 */
-void ShieldTouch(gentity_t *self, gentity_t *other, trace_t *trace)
+void ShieldTouch(gentity_t* self, gentity_t* other, trace_t* trace)
 {
-	if ( !other || !other->client )
+	if ( other == NULL || other->client == NULL )
 		return;
 
-	if (IsAdmin(other) || (rpg_borgAdapt.integer && rpg_borgMoveThroughFields.integer && IsBorg(other))/*other->client->sess.sessionClass == PC_ADMIN*/ )
+	if (IsAdmin(other) || (rpg_borgAdapt.integer && rpg_borgMoveThroughFields.integer != 0 && IsBorg(other))/*other->client->sess.sessionClass == PC_ADMIN*/ )
 	{
 		ShieldGoNotSolid(self);
 	}
 	//RPG-X:J2J Damage for shields 
 	else
 	{
-		if ( (int)(self->s.angles[PITCH]) == 0 )
+		if ( (int32_t)(self->s.angles[PITCH]) == 0 )
 		{
 			vec3_t	dir;
 
@@ -1127,21 +1142,22 @@ void CreateShield(gentity_t *ent)
 {
 	trace_t		tr;
 	vec3_t		end, posTraceEnd, negTraceEnd, start;
-	int			height, posWidth, negWidth, halfWidth = 0;
+	int32_t		height, posWidth, negWidth, halfWidth = 0;
 	qboolean	xaxis;
-	int			paramData = 0;
+	int32_t		paramData = 0;
 
 	// trace upward to find height of shield
 	VectorCopy(ent->r.currentOrigin, end);
 	end[2] += MAX_SHIELD_HEIGHT;
+	memset(&tr, 0, sizeof(trace_t));
 	trap_Trace (&tr, ent->r.currentOrigin, NULL, NULL, end, ent->s.number, MASK_SHOT );
-	height = (int)(MAX_SHIELD_HEIGHT * tr.fraction);
+	height = (int32_t)(MAX_SHIELD_HEIGHT * tr.fraction);
 
 	// use angles to find the proper axis along which to align the shield
 	VectorCopy(ent->r.currentOrigin, posTraceEnd);
 	VectorCopy(ent->r.currentOrigin, negTraceEnd);
 
-	if ((int)(ent->s.angles[YAW]) == 0) // shield runs along y-axis
+	if ((int32_t)(ent->s.angles[YAW]) == 0) // shield runs along y-axis
 	{	
 		ent->s.eFlags |= EF_SHIELD_BOX_Y;
 		posTraceEnd[1]+=MAX_SHIELD_HALFWIDTH;
@@ -1253,15 +1269,15 @@ void CreateShield(gentity_t *ent)
 /**
 *	Place a forcefield
 */
-static qboolean PlaceShield(gentity_t *playerent)
+static qboolean PlaceShield(gentity_t* playerent)
 {
-	static const gitem_t *shieldItem = NULL;
-	gentity_t	*shield = NULL;
-	trace_t		tr;
-	vec3_t		fwd, pos, dest, mins = {-16,-16, 0}, maxs = {16,16,16};
-	playerState_t *ps = &playerent->client->ps;
+	static const gitem_t*	shieldItem = NULL;
+	gentity_t*				shield = NULL;
+	trace_t					tr;
+	vec3_t					fwd, pos, dest, mins = {-16,-16, 0}, maxs = {16,16,16};
+	playerState_t*			ps = &playerent->client->ps;
 
-	if (shieldAttachSound==0)
+	if (shieldAttachSound == 0)
 	{
 		shieldAttachSound		= G_SoundIndex("sound/weapons/detpacklatch.wav");
 		shieldActivateSound		= G_SoundIndex("sound/movers/forcefield/forcefieldon.wav"); //"sound/movers/forceup.wav"
@@ -1362,13 +1378,13 @@ void DecoyThink(gentity_t *ent)
 *	\author Ubergames - TiM
 */
 void flushDecoys( gentity_t	*ent ) {
-	gentity_t	*decoy = NULL;
-	int			foundDecoys[MAX_GENTITIES] = {ENTITYNUM_NONE};
-	int			lowestTimeStamp;
-	int			orgCount;
-	int			decoyCount=0;
-	int			removeMe;
-	int			i;
+	gentity_t*	decoy = NULL;
+	int32_t		foundDecoys[MAX_GENTITIES] = {ENTITYNUM_NONE};
+	int32_t		lowestTimeStamp;
+	int32_t		orgCount;
+	int32_t		decoyCount=0;
+	int32_t		removeMe;
+	int32_t		i;
 
 	//limit to 10 placed at any one time
 	//see how many there are now
@@ -1433,10 +1449,10 @@ void flushDecoys( gentity_t	*ent ) {
 *	\author TiM
 */
 void Decoy_CheckForSolidity( gentity_t	*ent ) {
-	int			i, num;
-	int			touch[MAX_GENTITIES];
+	int32_t		i, num;
+	int32_t		touch[MAX_GENTITIES];
 	qboolean	canGoSolid=qtrue;
-	gentity_t	*hit;
+	gentity_t*	hit = NULL;
 	vec3_t		mins, maxs;
 
 	VectorAdd( ent->s.origin, ent->r.mins, mins );
@@ -1468,7 +1484,7 @@ void Decoy_CheckForSolidity( gentity_t	*ent ) {
 *	Use function for decoy, removes it if activator is an player and admin
 */
 void DecoyUse ( gentity_t *self, gentity_t *other, gentity_t *activator ) {
-	if ( !activator || !IsAdmin( activator ) || !activator->client )
+	if ( activator == NULL || !IsAdmin( activator ) || activator->client == NULL )
 		return;
 
 	G_FreeEntity( self );
@@ -1484,7 +1500,7 @@ qboolean PlaceDecoy(gentity_t *ent)
 	static gitem_t*	decoyItem = NULL;
 	vec3_t			mins = {-16,-16,-24};
 	char			userinfo[MAX_INFO_STRING];
-	int				i;
+	int32_t			i;
 
 	if (decoyItem == NULL)
 	{
@@ -1497,12 +1513,12 @@ qboolean PlaceDecoy(gentity_t *ent)
 	}
 	//Now check if there is already a decoy with the same eventParm index.  If there is, terminate it
 	{	
-		gentity_t	*oldDecoy;
+		gentity_t* oldDecoy = NULL;
 
 		for ( i = 0; i<level.num_entities; i++ ) {
 			oldDecoy = &g_entities[i];
 
-			if ( !Q_stricmp( oldDecoy->classname, "decoy" ) && oldDecoy->s.eventParm == level.decoyIndex ) {
+			if ( Q_stricmp( oldDecoy->classname, "decoy" ) == 0 && oldDecoy->s.eventParm == level.decoyIndex ) {
 				G_FreeEntity( oldDecoy );
 				break;
 			}
@@ -1633,11 +1649,11 @@ ClientEvents
 *	but any server game effects are handled here
 */
 static void ClientEvents( gentity_t *ent, int oldEventSequence ) {
-	int		i;
-	int		event;
-	gclient_t *client;
-	int		damage;
-	playerState_t *ps;
+	int32_t		i;
+	int32_t		event;
+	gclient_t*	client = NULL;
+	int32_t		damage;
+	playerState_t* ps = NULL;
 
 	client = ent->client;
 	ps = &client->ps;
@@ -1795,12 +1811,12 @@ void BotTestSolid(vec3_t origin);
 
 void ThrowWeapon( gentity_t *ent, char *txt )
 {
-	gclient_t	*client;
-	usercmd_t	*ucmd;
-	gitem_t		*item;
-	gentity_t	*drop;
+	gclient_t*	client = NULL;
+	usercmd_t*	ucmd = NULL;
+	gitem_t*	item = NULL;
+	gentity_t*	drop = NULL;
 	byte i;
-	playerState_t *ps;
+	playerState_t* ps = NULL;
 
 	client = ent->client;
 	ucmd = &ent->client->pers.cmd;
@@ -1850,9 +1866,9 @@ SendPendingPredictableEvents
 ==============
 */
 static void SendPendingPredictableEvents( playerState_t *ps ) {
-	gentity_t *t;
-	int event, seq;
-	int extEvent;
+	gentity_t* t = NULL;
+	int32_t event, seq;
+	int32_t extEvent;
 
 	// if there are still events pending
 	if ( ps->entityEventSequence < ps->eventSequence ) {
@@ -1875,8 +1891,11 @@ static void SendPendingPredictableEvents( playerState_t *ps ) {
 	}
 }
 
-static void ClientCamThink(gentity_t *client) {
-	if(!client->client->cam) return;
+static void ClientCamThink(gentity_t* client) {
+	if(client == NULL || client->client == NULL || client->client->cam == NULL) {
+		return;
+	}
+
 	G_SetOrigin(client, client->client->cam->s.origin);
 	G_Client_SetViewAngle(client, client->client->cam->s.angles);
 	trap_LinkEntity(client);
@@ -1895,12 +1914,12 @@ ClientThink
 * once for each server frame, which makes for smooth demo recording.
 */
 static void ClientThink_real( gentity_t *ent ) {
-	gclient_t	*client;
-	pmove_t	pm;
-	int	oldEventSequence;
-	int	msec;
-	usercmd_t	*ucmd;
-	playerState_t *ps;
+	gclient_t*	client = NULL;
+	pmove_t		pm;
+	int32_t		oldEventSequence;
+	int32_t		msec;
+	usercmd_t*	ucmd = NULL;
+	playerState_t* ps = NULL;
 
 	client = ent->client;
 	ps = &client->ps;
@@ -2196,7 +2215,7 @@ static void ClientThink_real( gentity_t *ent ) {
 }
 
 void ClientThink( int clientNum ) {
-	gentity_t *ent;
+	gentity_t* ent = NULL;
 
 	ent = g_entities + clientNum;
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
@@ -2211,10 +2230,11 @@ void ClientThink( int clientNum ) {
 }
 
 
-void G_RunClient( gentity_t *ent ) {
-	if ( !g_synchronousClients.integer ) {
+void G_RunClient( gentity_t* ent ) {
+	if ( g_synchronousClients.integer == 0 ) {
 		return;
 	}
+
 	ent->client->pers.cmd.serverTime = level.time;
 	ClientThink_real( ent );
 }
@@ -2227,13 +2247,13 @@ SpectatorClientEndFrame
 ==================
 */
 static void SpectatorClientEndFrame( gentity_t *ent ) {
-	gclient_t	*cl;
-	clientSession_t *sess = &ent->client->sess;
-	playerState_t *ps = &ent->client->ps;
+	gclient_t* cl = NULL;
+	clientSession_t* sess = &ent->client->sess;
+	playerState_t* ps = &ent->client->ps;
 
 	// if we are doing a chase cam or a remote view, grab the latest info
 	if ( sess->spectatorState == SPECTATOR_FOLLOW ) {
-		int		clientNum;
+		int32_t	clientNum;
 
 		clientNum = sess->spectatorClient;
 
@@ -2267,7 +2287,7 @@ static void SpectatorClientEndFrame( gentity_t *ent ) {
 }
 
 void ClientEndFrame( gentity_t *ent ) {
-	int			i;
+	int32_t	i;
 	playerState_t *ps = &ent->client->ps;
 
 	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR /*|| (ps->eFlags&EF_ELIMINATED)*/ ) {
