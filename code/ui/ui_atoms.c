@@ -19,7 +19,7 @@ void UI_SecurityCodeSetup ( void );
 /* these are here so the functions in q_shared.c can link */
 #ifndef UI_HARD_LINKED
 
-void QDECL Com_Error( int level, const char *error, ... ) {
+void QDECL Com_Error( int32_t level, const char *error, ... ) {
 	va_list		argptr;
 	char		text[1024];
 

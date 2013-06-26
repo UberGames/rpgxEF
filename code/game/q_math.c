@@ -5,7 +5,7 @@
  */
 #include "q_shared.h"
 
-int nonansicast = 0;
+int32_t nonansicast = 0;
 
 vec3_t	vec3_origin = {0,0,0};
 vec3_t	axisDefault[3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
@@ -188,23 +188,23 @@ vec3_t	bytedirs[NUMVERTEXNORMALS] =
 
 /*==============================================================*/
 
-int		Q_rand( int *seed ) {
+int32_t	Q_rand( int32_t *seed ) {
 	*seed = (69069 * *seed + 1);
 	return *seed;
 }
 
-float	Q_random( int *seed ) {
+float	Q_random( int32_t *seed ) {
 	return ( Q_rand( seed ) & 0xffff ) / (float)0x10000;
 }
 
-float	Q_crandom( int *seed ) {
+float	Q_crandom( int32_t *seed ) {
 	return 2.0 * ( Q_random( seed ) - 0.5 );
 }
 
 
 /*=======================================================*/
 
-signed char ClampChar( int i ) {
+signed char ClampChar( int32_t i ) {
 	if ( i < -128 ) {
 		return -128;
 	}
@@ -214,7 +214,7 @@ signed char ClampChar( int i ) {
 	return i;
 }
 
-signed short ClampShort( int i ) {
+int16_t ClampShort( int32_t i ) {
 	if ( i < (short)0x8000 ) {
 		return (short)0x8000;
 	}
@@ -229,11 +229,11 @@ signed short ClampShort( int i ) {
 /**
 *	Converts a direction vector into a byte
 */
-int DirToByte( vec3_t dir ) {
-	int		i, best;
+int32_t DirToByte( vec3_t dir ) {
+	int32_t		i, best;
 	float	d, bestd;
 
-	if ( !dir ) {
+	if ( dir == NULL ) {
 		return 0;
 	}
 
@@ -255,7 +255,7 @@ int DirToByte( vec3_t dir ) {
 /**
 *	Converts a byte vector into a direction vector
 */
-void ByteToDir( int b, vec3_t dir ) {
+void ByteToDir( int32_t b, vec3_t dir ) {
 	if ( b < 0 || b >= NUMVERTEXNORMALS ) {
 		VectorCopy( vec3_origin, dir );
 		return;
@@ -342,7 +342,7 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point,
 	float	zrot[3][3];
 	float	tmpmat[3][3];
 	float	rot[3][3];
-	int	i;
+	int32_t	i;
 	vec3_t vr, vup, vf;
 	float	rad;
 
@@ -563,7 +563,7 @@ float Q_rsqrt( float number )
 }
 
 float Q_fabs( float f ) {
-	int tmp = * ( int * ) &f;
+	int32_t tmp = * ( int32_t * ) &f;
 	tmp &= 0x7FFFFFFF;
 	return * ( float * ) &tmp;
 }
@@ -619,7 +619,7 @@ void AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 ) {
 
 
 float	AngleMod(float a) {
-	a = (360.0/65536) * ((int)(a*(65536/360.0)) & 65535);
+	a = (360.0/65536) * ((int32_t)(a*(65536/360.0)) & 65535);
 	return a;
 }
 
@@ -633,7 +633,7 @@ float	AngleMod(float a) {
 *
 */
 float AngleNormalize360 ( float angle ) {
-	return (360.0 / 65536) * ((int)(angle * (65536 / 360.0)) & 65535);
+	return (360.0 / 65536) * ((int32_t)(angle * (65536 / 360.0)) & 65535);
 }
 
 
@@ -677,7 +677,7 @@ SetPlaneSignbits
 =================
 */
 void SetPlaneSignbits (cplane_t *out) {
-	int	bits, j;
+	int32_t	bits, j;
 
 	/* for fast box on planeside test */
 	bits = 0;
@@ -697,11 +697,11 @@ BoxOnPlaneSide
 Returns 1, 2, or 1 + 2
 
 // this is the slow, general version
-int BoxOnPlaneSide2 (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
+int32_t BoxOnPlaneSide2 (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 {
-	int		i;
+	32_t		i;
 	float	dist1, dist2;
-	int		sides;
+	int32_t		sides;
 	vec3_t	corners[2];
 
 	for (i=0 ; i<3 ; i++)
@@ -733,10 +733,10 @@ int BoxOnPlaneSide2 (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 #if !(defined __linux__ && defined __i386__ && !defined C_ONLY) || defined (__WIN32__)
 #if defined __LCC__ || defined C_ONLY || !id386 || defined (__WIN32__)
 
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
+int32_t BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 {
 	float	dist1, dist2;
-	int		sides;
+	int32_t		sides;
 
 /* fast axial cases */
 	if (p->type < 3)
@@ -799,10 +799,10 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 #else
 #pragma warning( disable: 4035 )
 
-__declspec( naked ) int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
+__declspec( naked ) int32_t BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *p)
 {
-	static int bops_initialized;
-	static int Ljmptab[8];
+	static int32_t bops_initialized;
+	static int32_t Ljmptab[8];
 
 	__asm {
 
@@ -1039,7 +1039,7 @@ RadiusFromBounds
 =================
 */
 float RadiusFromBounds( const vec3_t mins, const vec3_t maxs ) {
-	int		i;
+	int32_t	i;
 	vec3_t	corner;
 	float	a, b;
 
@@ -1082,7 +1082,7 @@ void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs ) {
 }
 
 
-int VectorCompare( const vec3_t v1, const vec3_t v2 ) {
+int32_t VectorCompare( const vec3_t v1, const vec3_t v2 ) {
 	if (v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2]) {
 		return 0;
 	}
@@ -1220,8 +1220,8 @@ void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out ) {
 }
 
 
-int Q_log2( int val ) {
-	int answer;
+int32_t Q_log2( int32_t val ) {
+	int32_t answer;
 
 	answer = 0;
 	while ( ( val>>=1 ) != 0 ) {
@@ -1237,7 +1237,7 @@ int Q_log2( int val ) {
 PlaneTypeForNormal
 =================
 */
-int	PlaneTypeForNormal (vec3_t normal) {
+int32_t	PlaneTypeForNormal (vec3_t normal) {
 	if ( normal[0] == 1.0 )
 		return PLANE_X;
 	if ( normal[1] == 1.0 )
@@ -1317,8 +1317,8 @@ void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 */
 void PerpendicularVector( vec3_t dst, const vec3_t src )
 {
-	int	pos;
-	int i;
+	int32_t	pos;
+	int32_t i;
 	float minelem = 1.0F;
 	vec3_t tempvec;
 
@@ -1362,7 +1362,7 @@ float flrandom(float min, float max)
 ** irandom
   Returns an integer min <= x <= max (ie inclusive)
 */
-int irandom(int min, int max)
+int32_t irandom(int32_t min, int32_t max)
 {
 	max++; /* so it can round down */
 	return (((rand() & 0x7FFF) * (max - min)) >> 15) + min;
@@ -1389,7 +1389,7 @@ void UnVectorShort(vec3_t vect)
 }
 
 
-float Q_powf( float x, int y )
+float Q_powf( float x, int32_t y )
 {
 	float r = x;
 	for ( y--; y>0; y-- )
@@ -1400,7 +1400,7 @@ float Q_powf( float x, int y )
 /* TiM: Vector-Average.  Good for calculating origins from bounding boxes */
 void VectorAverage( vec3_t mins, vec3_t maxs, vec3_t result ) {
 	vec3_t temp;
-	/*int i;
+	/*int32_t i;
 	for ( i = 0; i < 3; i++ ) {
 		result[i] = ( mins[i] + maxs[i] ) * 0.5;
 	}*/
@@ -1415,26 +1415,26 @@ void init_tonextint(qboolean verbose)
 {
 	float decimal = 0.9;
 
-	nonansicast = (int) decimal;
+	nonansicast = (int32_t) decimal;
 	
 	if(verbose)
 	{
 		if(nonansicast)
-			Com_Printf("Float to int casting behaviour: round to next int\n");
+			Com_Printf("Float to int32_t casting behaviour: round to next int\n");
 		else
-			Com_Printf("Float to int casting behaviour: ISO compliant\n");
+			Com_Printf("Float to int32_t casting behaviour: ISO compliant\n");
 	}
 }
 
 float tonextint(float x)
 {
-	int casted;
+	int32_t casted;
 	float rest;
 
 	if(nonansicast)
-		return (int) x;
+		return (int32_t) x;
 
-	casted = (int) x;
+	casted = (int32_t) x;
 	rest = x - (float) casted;
 
 	if(rest >= 0.5f)
@@ -1461,7 +1461,7 @@ Based off of the atoi code
 unsigned long atoul( const char *string )
 {
 	unsigned long		value;
-	int					c;
+	int32_t					c;
 
 	/* skip whitespace */
 	while ( *string <= ' ' ) {

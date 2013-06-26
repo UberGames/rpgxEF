@@ -265,7 +265,7 @@ typedef int32_t	clipHandle_t;
 
 #define	MAX_NAME_LENGTH		32		// max length of a client name
 
-typedef int	pclass_t;
+typedef int32_t	pclass_t;
 
 // paramters for command buffer stuffing
 typedef enum {
@@ -360,9 +360,9 @@ typedef vec_t vec3_t[3];
 typedef vec_t vec4_t[4];
 typedef vec_t vec5_t[5];
 
-typedef	int	fixed4_t;
-typedef	int	fixed8_t;
-typedef	int	fixed16_t;
+typedef	int32_t	fixed4_t;
+typedef	int32_t	fixed8_t;
+typedef	int32_t	fixed16_t;
 
 #ifndef M_PI
 #define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
@@ -505,19 +505,19 @@ extern	vec3_t	axisDefault[3];
 
 #define	nanmask (255<<23)
 
-#define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
+#define	IS_NAN(x) (((*(int32_t *)&x)&nanmask)==nanmask)
 
 float Q_fabs( float f );
 float Q_rsqrt( float f );		// reciprocal square root
 
 #define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
 
-signed char ClampChar( int i );
-signed short ClampShort( int i );
+signed char ClampChar( int32_t i );
+int16_t ClampShort( int32_t i );
 
 // this isn't a real cheap function to call!
-int DirToByte( vec3_t dir );
-void ByteToDir( int b, vec3_t dir );
+int32_t DirToByte( vec3_t dir );
+void ByteToDir( int32_t b, vec3_t dir );
 
 #if	1
 
@@ -591,17 +591,17 @@ vec_t VectorNormalize2( const vec3_t v, vec3_t out );
 void VectorInverse (vec3_t v);
 void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
 void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
-int Q_log2(int val);
+int32_t Q_log2(int32_t val);
 
-int		Q_rand( int *seed );
-float	Q_random( int *seed );
-float	Q_crandom( int *seed );
+int32_t	Q_rand( int32_t *seed );
+float	Q_random( int32_t *seed );
+float	Q_crandom( int32_t *seed );
 
 #define random()	((rand () & 0x7fff) / ((float)0x7fff))
 #define crandom()	(2.0 * (random() - 0.5))
 
 float	flrandom(float min, float max);
-int		irandom(int min, int max);
+int32_t	irandom(int32_t min, int32_t max);
 
 void vectoangles( const vec3_t value1, /*@out@*/ vec3_t angles);
 void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
@@ -610,7 +610,7 @@ void AxisClear( vec3_t axis[3] );
 void AxisCopy( vec3_t in[3], vec3_t out[3] );
 
 void SetPlaneSignbits( struct cplane_s *out );
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
+int32_t BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
 
 float	AngleMod(float a);
 float	LerpAngle (float from, float to, float frac);
@@ -628,7 +628,7 @@ void RotateAroundDirection( vec3_t axis[3], float yaw );
 void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
 // perpendicular vector could be replaced by this
 
-int	PlaneTypeForNormal (vec3_t normal);
+int32_t	PlaneTypeForNormal (vec3_t normal);
 
 void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
 void AngleVectors( const vec3_t angles, /*@null@*/ /*@out@*/ vec3_t forward, /*@null@*/ /*@out@*/ vec3_t right, /*@null@*/ /*@out@*/ vec3_t up);
@@ -646,20 +646,20 @@ void	COM_StripExtension(/*@null@*/  const char *in, /*@null@*/ char *out );
 void	COM_DefaultExtension( /*@null@*/ char *path, size_t maxSize, const /*@null@*/ char *extension );
 
 void	COM_BeginParseSession( void );
-int		COM_GetCurrentParseLine( void );
+int32_t		COM_GetCurrentParseLine( void );
 /*@shared@*/ /*@null@*/ char *COM_Parse( char **data_p );
 /*@shared@*/ /*@null@*/ char *COM_ParseExt( char **data_p, qboolean allowLineBreak );
-//int		COM_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] );
+//int32_t		COM_ParseInfos( char *buf, int32_t max, char infos[][MAX_INFO_STRING] );
 
 //RPG-X: Parsing helping functions
 qboolean COM_ParseString( char **data, char **s );
-qboolean COM_ParseInt( char **data, int *i);
+qboolean COM_ParseInt( char **data, int32_t *i);
 qboolean COM_ParseFloat( char **data, float *f );
 qboolean COM_ParseVec4( char **data, vec4_t vector );
 qboolean COM_ParseVec3( char **data, vec3_t vector );
 
 //RPG-X - Powers func for view camera
-float Q_powf( float x, int y );
+float Q_powf( float x, int32_t y );
 //TiM: For averaging... and stuff
 void VectorAverage( vec3_t mins, vec3_t maxs, vec3_t result );
 
@@ -670,9 +670,9 @@ void	COM_MatchToken( char**buf_p, char *match );
 void SkipBracedSection (char **program);
 void SkipRestOfLine ( char **data );
 
-void Parse1DMatrix (char **buf_p, int x, float *m);
-void Parse2DMatrix (char **buf_p, int y, int x, float *m);
-void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m);
+void Parse1DMatrix (char **buf_p, int32_t x, float *m);
+void Parse2DMatrix (char **buf_p, int32_t y, int32_t x, float *m);
+void Parse3DMatrix (char **buf_p, int32_t z, int32_t y, int32_t x, float *m);
 
 void QDECL Com_sprintf (/*@null@*/ char *dest, size_t size, /*@null@*/ const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
 
@@ -693,18 +693,18 @@ typedef enum {
 
 //=============================================
 
-int Q_isprint( int c );
-int Q_islower( int c );
-int Q_isupper( int c );
-int Q_isalpha( int c );
+int32_t Q_isprint( int32_t c );
+int32_t Q_islower( int32_t c );
+int32_t Q_isupper( int32_t c );
+int32_t Q_isalpha( int32_t c );
 
 // portable case insensitive compare
-int		Q_stricmp (/*@null@*/ const char *s1, /*@null@*/ const char *s2);
-int		Q_strncmp (/*@null@*/ const char *s1, /*@null@*/ const char *s2, int n);
-int		Q_stricmpn (/*@null@*/ const char *s1, /*@null@*/ const char *s2, int n);
+int32_t	Q_stricmp (/*@null@*/ const char *s1, /*@null@*/ const char *s2);
+int32_t	Q_strncmp (/*@null@*/ const char *s1, /*@null@*/ const char *s2, int32_t n);
+int32_t	Q_stricmpn (/*@null@*/ const char *s1, /*@null@*/ const char *s2, int32_t n);
 /*@shared@*/ /*@null@*/ char*	Q_strlwr( /*@null@*/ char *s1 );
 /*@shared@*/ /*@null@*/ char*	Q_strupr( /*@null@*/ char *s1 );
-/*@shared@*/ /*@null@*/ char*	Q_strrchr( /*@null@*/ const char* string, int c );
+/*@shared@*/ /*@null@*/ char*	Q_strrchr( /*@null@*/ const char* string, int32_t c );
 /**
  * Goes through a given str searching for one of the given tokens.
  * If it finds one it returns a new string containing everything
@@ -719,7 +719,7 @@ void	Q_strncpyz( /*@null@*/ char *dest, /*@null@*/ const char *src, size_t dests
 void	Q_strcat( /*@null@*/ char *dest, size_t size, /*@null@*/ const char *src );
 
 // strlen that discounts Quake color sequences
-int Q_PrintStrlen( /*@null@*/ const char *string );
+int32_t Q_PrintStrlen( /*@null@*/ const char *string );
 // removes color sequences from string
 /*@shared@*/ /*@null@*/ char *Q_CleanStr( /*@null@*/ char *string );
 
@@ -730,8 +730,8 @@ int Q_PrintStrlen( /*@null@*/ const char *string );
 //
 // optimised version for intel stuff...
 //
-short	BigShort(short l);
-int		BigLong (int l);
+int16_t	BigShort(int16_t l);
+int32_t	BigLong (int32_t l);
 float	BigFloat (float l);
 #define LittleShort(l) l
 #define LittleLong(l)  l
@@ -741,10 +741,10 @@ float	BigFloat (float l);
 //
 // standard smart byte-swap stuff...
 //
-short	BigShort(short l);
-short	LittleShort(short l);
-int		BigLong (int l);
-int		LittleLong (int l);
+int16_t	BigShort(int16_t l);
+int16_t	LittleShort(int16_t l);
+int32_t	BigLong (int32_t l);
+int32_t	LittleLong (int32_t l);
 float	BigFloat (float l);
 float	LittleFloat (float l);
 //
@@ -769,7 +769,7 @@ qboolean Info_Validate( const char *s );
 void Info_NextPair( const char **s, char key[MAX_INFO_KEY], char value[MAX_INFO_VALUE] );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void	QDECL Com_Error( int errlevel, const char *error, ... ) __attribute__ ((format(printf, 2, 3)));
+void	QDECL Com_Error( int32_t errlevel, const char *error, ... ) __attribute__ ((format(printf, 2, 3)));
 void	QDECL Com_Printf( const char *msg, ... ) __attribute__ ((format (printf, 1, 2)));
 
 
@@ -809,25 +809,25 @@ typedef struct cvar_s {
 	char		*string;
 	char		*resetString;		// cvar_restart will reset to this value
 	char		*latchedString;		// for CVAR_LATCH vars
-	int			flags;
+	int32_t		flags;
 	qboolean	modified;			// set each time the cvar is changed
-	int			modificationCount;	// incremented each time the cvar is changed
+	int32_t		modificationCount;	// incremented each time the cvar is changed
 	float		value;				// atof( string )
-	int			integer;			// atoi( string )
+	int32_t		integer;			// atoi( string )
 	struct cvar_s *next;
 } cvar_t;
 
 #define	MAX_CVAR_VALUE_STRING	256
 
-typedef int	cvarHandle_t;
+typedef int32_t	cvarHandle_t;
 
 // the modules that run in the virtual machine can't access the cvar_t directly,
 // so they must ask for structured updates
 typedef struct {
 	cvarHandle_t	handle;
-	int			modificationCount;
+	int32_t			modificationCount;
 	float		value;
-	int			integer;
+	int32_t			integer;
 	char		string[MAX_CVAR_VALUE_STRING];
 } vmCvar_t;
 
@@ -867,9 +867,9 @@ typedef struct {
 	float		fraction;	// time completed, 1.0 = didn't hit anything
 	vec3_t		endpos;		// final position
 	cplane_t	plane;		// surface normal at impact, transformed to world space
-	int			surfaceFlags;	// surface hit
-	int			contents;	// contents on other side of surface hit
-	int			entityNum;	// entity the contacted sirface is a part of
+	int32_t			surfaceFlags;	// surface hit
+	int32_t			contents;	// contents on other side of surface hit
+	int32_t			entityNum;	// entity the contacted sirface is a part of
 } trace_t;
 
 // trace->entityNum can also be 0 to (MAX_GENTITIES-1)
@@ -878,8 +878,8 @@ typedef struct {
 
 // markfragments are returned by CM_MarkFragments()
 typedef struct {
-	int		firstPoint;
-	int		numPoints;
+	int32_t		firstPoint;
+	int32_t		numPoints;
 } markFragment_t;
 
 
@@ -923,7 +923,7 @@ typedef enum {
 ========================================================================
 */
 
-#define	ANGLE2SHORT(x)	((int)((x)*65536/360) & 65535)
+#define	ANGLE2SHORT(x)	((int32_t)((x)*65536/360) & 65535)
 #define	SHORT2ANGLE(x)	((x)*(360.0/65536))
 
 #define	SNAPFLAG_RATE_DELAYED	1
@@ -965,9 +965,9 @@ typedef enum {
 #define	MAX_GAMESTATE_CHARS 64000
 
 typedef struct {
-	int			stringOffsets[MAX_CONFIGSTRINGS];
+	int32_t			stringOffsets[MAX_CONFIGSTRINGS];
 	char		stringData[MAX_GAMESTATE_CHARS];
-	int			dataCount;
+	int32_t			dataCount;
 } gameState_t;
 
 //=========================================================
@@ -996,71 +996,71 @@ typedef struct {
 // so if a playerState_t is transmitted, the entityState_t can be fully derived
 // from it.
 typedef struct playerState_s {
-	int			commandTime;	// cmd->serverTime of last executed command
-	int			pm_type;
-	int			bobCycle;		// for view bobbing and footstep generation
-	int			pm_flags;		// ducked, jump_held, etc
-	int			pm_time;
+	int32_t			commandTime;	// cmd->serverTime of last executed command
+	int32_t			pm_type;
+	int32_t			bobCycle;		// for view bobbing and footstep generation
+	int32_t			pm_flags;		// ducked, jump_held, etc
+	int32_t			pm_time;
 
 	vec3_t		origin;
 	vec3_t		velocity;
-	int			weaponTime;
-	int			rechargeTime;		// for the phaser
-	short		useTime;			// use debounce
+	int32_t			weaponTime;
+	int32_t			rechargeTime;		// for the phaser
+	int16_t		useTime;			// use debounce
 
-	int			introTime;			// for the holodoor
+	int32_t			introTime;			// for the holodoor
 
-	int			gravity;
-	int			speed;
-	int			delta_angles[3];	// add to command angles to get view direction
+	int32_t			gravity;
+	int32_t			speed;
+	int32_t			delta_angles[3];	// add to command angles to get view direction
 									// changed by spawns, rotating objects, and teleporters
 
-	int			groundEntityNum;// ENTITYNUM_NONE = in air
+	int32_t			groundEntityNum;// ENTITYNUM_NONE = in air
 
-	int			legsTimer;		// don't change low priority animations until this runs out
-	int			legsAnim;		// mask off ANIM_TOGGLEBIT
+	int32_t			legsTimer;		// don't change low priority animations until this runs out
+	int32_t			legsAnim;		// mask off ANIM_TOGGLEBIT
 
-	int			torsoTimer;		// don't change low priority animations until this runs out
-	int			torsoAnim;		// mask off ANIM_TOGGLEBIT
+	int32_t			torsoTimer;		// don't change low priority animations until this runs out
+	int32_t			torsoAnim;		// mask off ANIM_TOGGLEBIT
 
-	int			movementDir;	// a number 0 to 7 that represents the reletive angle
+	int32_t			movementDir;	// a number 0 to 7 that represents the reletive angle
 								// of movement to the view angle (axial and diagonals)
 								// when at rest, the value will remain unchanged
 								// used to twist the legs during strafing
 
-	int			eFlags;			// copied to entityState_t->eFlags
+	int32_t			eFlags;			// copied to entityState_t->eFlags
 
-	int			eventSequence;	// pmove generated events
-	int			events[MAX_PS_EVENTS];
-	int			eventParms[MAX_PS_EVENTS];
+	int32_t			eventSequence;	// pmove generated events
+	int32_t			events[MAX_PS_EVENTS];
+	int32_t			eventParms[MAX_PS_EVENTS];
 
-	int			externalEvent;	// events set on player from another source
-	int			externalEventParm;
-	int			externalEventTime;
+	int32_t			externalEvent;	// events set on player from another source
+	int32_t			externalEventParm;
+	int32_t			externalEventTime;
 
-	int			clientNum;		// ranges from 0 to MAX_CLIENTS-1
-	int			weapon;			// copied to entityState_t->weapon
-	int			weaponstate;
+	int32_t			clientNum;		// ranges from 0 to MAX_CLIENTS-1
+	int32_t			weapon;			// copied to entityState_t->weapon
+	int32_t			weaponstate;
 
 	vec3_t		viewangles;		// for fixed views
-	int			viewheight;
+	int32_t			viewheight;
 
 	// damage feedback
-	int			damageEvent;	// when it changes, latch the other parms
-	int			damageYaw;
-	int			damagePitch;
-	int			damageCount;
-	int			damageShieldCount;
+	int32_t			damageEvent;	// when it changes, latch the other parms
+	int32_t			damageYaw;
+	int32_t			damagePitch;
+	int32_t			damageCount;
+	int32_t			damageShieldCount;
 
-	int			stats[MAX_STATS];
-	int			persistant[MAX_PERSISTANT];	// stats that aren't cleared on death
-	int			powerups[MAX_POWERUPS];	// level.time that the powerup runs out
-	int			ammo[MAX_WEAPONS];
+	int32_t			stats[MAX_STATS];
+	int32_t			persistant[MAX_PERSISTANT];	// stats that aren't cleared on death
+	int32_t			powerups[MAX_POWERUPS];	// level.time that the powerup runs out
+	int32_t			ammo[MAX_WEAPONS];
 
 	// not communicated over the net at all
-	int			ping;			// server to game info for scoreboard
+	int32_t			ping;			// server to game info for scoreboard
 
-	int			entityEventSequence;
+	int32_t			entityEventSequence;
 
 } playerState_t;
 
@@ -1094,10 +1094,10 @@ typedef struct playerState_s {
 
 // usercmd_t is sent to the server each client frame
 typedef struct usercmd_s {
-	int		serverTime;
+	int32_t		serverTime;
 	byte	buttons;
 	byte	weapon;
-	int		angles[3];
+	int32_t		angles[3];
 	signed char	forwardmove, rightmove, upmove;
 } usercmd_t;
 
@@ -1117,8 +1117,8 @@ typedef enum {
 
 typedef struct {
 	trType_t	trType;
-	int		trTime;
-	int		trDuration;			// if non 0, trTime + trDuration = stop time
+	int32_t		trTime;
+	int32_t		trDuration;			// if non 0, trTime + trDuration = stop time
 	vec3_t	trBase;
 	vec3_t	trDelta;			// velocity, etc
 //	vec3_t	trDelta2;			// Additional vector data.
@@ -1132,15 +1132,15 @@ typedef struct {
 // the structure size is fairly large
 
 typedef struct entityState_s {
-	int		number;			// entity index
-	int		eType;			// entityType_t
-	int		eFlags;
+	int32_t		number;			// entity index
+	int32_t		eType;			// entityType_t
+	int32_t		eFlags;
 
 	trajectory_t	pos;	// for calculating position
 	trajectory_t	apos;	// for calculating angles
 
-	int		time;
-	int		time2;
+	int32_t		time;
+	int32_t		time2;
 
 	vec3_t	origin;
 	vec3_t	origin2;
@@ -1148,33 +1148,33 @@ typedef struct entityState_s {
 	vec3_t	angles;
 	vec3_t	angles2;
 
-	int		otherEntityNum;	// shotgun sources, etc
-	int		otherEntityNum2;
+	int32_t		otherEntityNum;	// shotgun sources, etc
+	int32_t		otherEntityNum2;
 
-	int		groundEntityNum;	// -1 = in air
+	int32_t		groundEntityNum;	// -1 = in air
 
-	int		constantLight;	// r + (g<<8) + (b<<16) + (intensity<<24)
-	int		loopSound;		// constantly loop this sound
+	int32_t		constantLight;	// r + (g<<8) + (b<<16) + (intensity<<24)
+	int32_t		loopSound;		// constantly loop this sound
 
-	int		modelindex;
-	int		modelindex2;
-	int		clientNum;		// 0 to (MAX_CLIENTS - 1), for players and corpses
-	int		frame;
+	int32_t		modelindex;
+	int32_t		modelindex2;
+	int32_t		clientNum;		// 0 to (MAX_CLIENTS - 1), for players and corpses
+	int32_t		frame;
 
-	int		solid;			// for client side prediction, trap_linkentity sets this properly
+	int32_t		solid;			// for client side prediction, trap_linkentity sets this properly
 
-	int		event;			// impulse events -- muzzle flashes, footsteps, etc
-	int		eventParm;
+	int32_t		event;			// impulse events -- muzzle flashes, footsteps, etc
+	int32_t		eventParm;
 
 	// for players
-	int		powerups;		// bit flags
-	int		weapon;			// determines weapon and flash model, etc
-	int		legsAnim;		// mask off ANIM_TOGGLEBIT
-	int		torsoAnim;		// mask off ANIM_TOGGLEBIT
+	int32_t		powerups;		// bit flags
+	int32_t		weapon;			// determines weapon and flash model, etc
+	int32_t		legsAnim;		// mask off ANIM_TOGGLEBIT
+	int32_t		torsoAnim;		// mask off ANIM_TOGGLEBIT
 
 #ifdef MISSION_PACK
-	int		generic1;
-	int		generic2;
+	int32_t		generic1;
+	int32_t		generic2;
 #endif
 } entityState_t;
 
@@ -1215,10 +1215,10 @@ String ID Tables (imported from single player by RPG-X: J2J)
 typedef struct stringID_table_s
 {
 	/*@null@*/ char* name;
-	int		id;
+	int32_t		id;
 } stringID_table_t;
 
-int GetIDForString ( stringID_table_t *table, const char *string );
-const char *GetStringForID( stringID_table_t *table, int id );
+int32_t GetIDForString ( stringID_table_t *table, const char *string );
+const char *GetStringForID( stringID_table_t *table, int32_t id );
 
 #endif	// __Q_SHARED_H

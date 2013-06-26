@@ -91,10 +91,10 @@ void COM_DefaultExtension (char *path, size_t maxSize, const char *extension ) {
  *can't just use function pointers, or dll linkage can
  * mess up when qcommon is included in multiple places
  */
-static short	(*_BigShort) (short l);
-static short	(*_LittleShort) (short l);
-static int		(*_BigLong) (int l);
-static int		(*_LittleLong) (int l);
+static int16_t	(*_BigShort) (int16_t l);
+static int16_t	(*_LittleShort) (int16_t l);
+static int32_t	(*_BigLong) (int32_t l);
+static int32_t	(*_LittleLong) (int32_t l);
 static float	(*_BigFloat) (float l);
 static float	(*_LittleFloat) (float l);
 
@@ -103,8 +103,8 @@ static float	(*_LittleFloat) (float l);
 /*
  * optimised version for intel stuff...
  */
-short	BigShort(short l){return _BigShort(l);}
-int		BigLong (int l) {return _BigLong(l);}
+int16_t BigShort(int16_t l){return _BigShort(l);}
+int32_t	BigLong (int32_t l) {return _BigLong(l);}
 float	BigFloat (float l) {return _BigFloat(l);}
 #define	LittleShort(l) l
 #define LittleLong(l)  l
@@ -123,7 +123,7 @@ float	LittleFloat (float l) {return _LittleFloat(l);}
 #endif
 
 
-short   ShortSwap (short l)
+int16_t ShortSwap (int16_t l)
 {
 	byte    b1,b2;
 
@@ -133,12 +133,12 @@ short   ShortSwap (short l)
 	return (b1<<8) + b2;
 }
 
-short	ShortNoSwap (short l)
+int16_t ShortNoSwap (int16_t l)
 {
 	return l;
 }
 
-int    LongSwap (int l)
+int32_t LongSwap (int32_t l)
 {
 	byte    b1,b2,b3,b4;
 
@@ -147,10 +147,10 @@ int    LongSwap (int l)
 	b3 = (l>>16)&255;
 	b4 = (l>>24)&255;
 
-	return ((int)b1<<24) + ((int)b2<<16) + ((int)b3<<8) + b4;
+	return ((int32_t)b1<<24) + ((int32_t)b2<<16) + ((int32_t)b3<<8) + b4;
 }
 
-int	LongNoSwap (int l)
+int32_t	LongNoSwap (int32_t l)
 {
 	return l;
 }
@@ -225,7 +225,7 @@ void COM_BeginParseSession( void )
 	com_lines = 0;
 }
 
-int COM_GetCurrentParseLine( void )
+int32_t COM_GetCurrentParseLine( void )
 {
 	return com_lines;
 }
@@ -393,7 +393,7 @@ COM_ParseInt
 ===============
 */
 
-qboolean COM_ParseInt( char **data, int *i)
+qboolean COM_ParseInt( char **data, int32_t *i)
 {
 	const char *token;
 	token = COM_ParseExt( data, qfalse );
@@ -643,9 +643,9 @@ void SkipRestOfLine ( char **data ) {
 }
 
 
-void Parse1DMatrix (char **buf_p, int x, float *m) {
+void Parse1DMatrix (char **buf_p, int32_t x, float *m) {
 	char	*token;
-	int		i;
+	int32_t		i;
 
 	COM_MatchToken( buf_p, "(" );
 
@@ -657,8 +657,8 @@ void Parse1DMatrix (char **buf_p, int x, float *m) {
 	COM_MatchToken( buf_p, ")" );
 }
 
-void Parse2DMatrix (char **buf_p, int y, int x, float *m) {
-	int		i;
+void Parse2DMatrix (char **buf_p, int32_t y, int32_t x, float *m) {
+	int32_t		i;
 
 	COM_MatchToken( buf_p, "(" );
 
@@ -669,8 +669,8 @@ void Parse2DMatrix (char **buf_p, int y, int x, float *m) {
 	COM_MatchToken( buf_p, ")" );
 }
 
-void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m) {
-	int		i;
+void Parse3DMatrix (char **buf_p, int32_t z, int32_t y, int32_t x, float *m) {
+	int32_t		i;
 
 	COM_MatchToken( buf_p, "(" );
 
@@ -690,35 +690,35 @@ void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m) {
 ============================================================================
 */
 
-int Q_isprint( int c )
+int32_t Q_isprint( int32_t c )
 {
 	if ( c >= 0x20 && c <= 0x7E )
 		return ( 1 );
 	return ( 0 );
 }
 
-int Q_islower( int c )
+int32_t Q_islower( int32_t c )
 {
 	if (c >= 'a' && c <= 'z')
 		return ( 1 );
 	return ( 0 );
 }
 
-int Q_isupper( int c )
+int32_t Q_isupper( int32_t c )
 {
 	if (c >= 'A' && c <= 'Z')
 		return ( 1 );
 	return ( 0 );
 }
 
-int Q_isalpha( int c )
+int32_t Q_isalpha( int32_t c )
 {
 	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
 		return ( 1 );
 	return ( 0 );
 }
 
-char* Q_strrchr( const char* string, int c )
+char* Q_strrchr( const char* string, int32_t c )
 {
 	char cc = c;
 	char *s;
@@ -793,8 +793,8 @@ void Q_strncpyz( char *dest, const char *src, size_t destsize ) {
     dest[destsize-1] = 0;
 }
                  
-int Q_stricmpn (const char *s1, const char *s2, int n) {
-	int		c1, c2;
+int32_t Q_stricmpn (const char *s1, const char *s2, int32_t n) {
+	int32_t	c1, c2;
 	
 	/* bk001129 - moved in 1.17 fix not in id codebase */
         if ( s1 == NULL ) {
@@ -832,8 +832,8 @@ int Q_stricmpn (const char *s1, const char *s2, int n) {
 	return 0;		/* strings are equal */
 }
 
-int Q_strncmp (const char *s1, const char *s2, int n) {
-	int		c1, c2;
+int32_t Q_strncmp (const char *s1, const char *s2, int32_t n) {
+	int32_t	c1, c2;
 	
 	do {
 		c1 = *s1++;
@@ -851,7 +851,7 @@ int Q_strncmp (const char *s1, const char *s2, int n) {
 	return 0;		/* strings are equal */
 }
 
-int Q_stricmp (const char *s1, const char *s2) {
+int32_t Q_stricmp (const char *s1, const char *s2) {
 	return (s1 && s2) ? Q_stricmpn (s1, s2, 99999) : -1;
 }
 
@@ -890,8 +890,8 @@ void Q_strcat( char *dest, size_t size, const char *src ) {
 }
 
 
-int Q_PrintStrlen( const char *string ) {
-	int			len;
+int32_t Q_PrintStrlen( const char *string ) {
+	int32_t		len;
 	const char	*p;
 
 	if( !string ) {
@@ -1345,9 +1345,9 @@ GetIDForString
 
 #define VALIDSTRING( a )	( ( a != NULL ) && ( a[0] != NULL ) )
 
-int GetIDForString ( stringID_table_t *table, const char *string )
+int32_t GetIDForString ( stringID_table_t *table, const char *string )
 {
-	int	index = 0;
+	int32_t	index = 0;
 
 	while ( ( table[index].name != NULL ) &&
 			( table[index].name[0] != 0 ) )
@@ -1367,9 +1367,9 @@ GetStringForID
 -------------------------
 */
 
-const char *GetStringForID( stringID_table_t *table, int id )
+const char *GetStringForID( stringID_table_t *table, int32_t id )
 {
-	int	index = 0;
+	int32_t	index = 0;
 
 	while ( ( table[index].name != NULL ) &&
 			( table[index].name[0] != 0 )/*VALIDSTRING( table[index].name )*/ )/* RPG-X: RedTechie - Compile errors Fixed */
