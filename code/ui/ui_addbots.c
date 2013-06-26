@@ -140,10 +140,10 @@ UI_AddBotsMenu_GetSortedBotNums
 */
 static int QDECL UI_AddBotsMenu_SortCompare( const void *arg1, const void *arg2 ) {
 	int			num1, num2;
-	const /*@shared@*/ char* info1;
-	const /*@shared@*/ char* info2;
-	const /*@shared@*/ char* name1;
-	const /*@shared@*/ char* name2;
+	const char* info1;
+	const char* info2;
+	const char* name1;
+	const char* name2;
 
 	num1 = *(int *)arg1;
 	num2 = *(int *)arg2;

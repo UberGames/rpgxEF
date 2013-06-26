@@ -221,7 +221,6 @@ void Sys_PumpEvents( void );
 
 //=============================================================
 
-
 typedef unsigned char 		byte;
 
 typedef enum {qfalse, qtrue}	qboolean;
@@ -760,7 +759,7 @@ void	Swap_Init (void);
 //
 // key / value info strings
 //
-char *Info_ValueForKey( /*@out@*/ const char *s, const char *key );
+char *Info_ValueForKey( /*@shared@*/ /*@out@*/ const char *s, const char *key );
 void Info_RemoveKey( char *s, const char *key );
 void Info_RemoveKey_big( char *s, const char *key );
 void Info_SetValueForKey( char *s, const char *key, const char *value );

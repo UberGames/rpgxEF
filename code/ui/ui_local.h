@@ -1458,7 +1458,7 @@ typedef struct _tag_menuframework
 	int cursor_prev;
 
 	int	nitems;
-	void *items[MAX_MENUITEMS];
+	/*@shared@*/ void *items[MAX_MENUITEMS];
 
 	void (*draw) (void);
 	sfxHandle_t (*key) (int key);
@@ -1476,21 +1476,21 @@ typedef struct _tag_menuframework
 	int			titleI;				// The title
 	int			footNoteEnum;		// Footnote text
 
-	void		*displaySpinList;	//if not NULL, display the list from this one (must be typecast as menulist_s when used)
+	/*@shared@*/ void		*displaySpinList;	//if not NULL, display the list from this one (must be typecast as menulist_s when used)
 	qboolean	noNewSelecting;		//used when we want to stop other buttons getting selected. mainly for the spin list, and slider dragging
 } menuframework_s;
 
 typedef struct
 {
 	int type;
-	const /*@shared@*/  char *name;
+	/*@shared@*/ const /*@shared@*/  char *name;
 	int	id;
 	int x, y;
 	int left;
 	int	top;
 	int	right;
 	int	bottom;
-	menuframework_s *parent;
+	/*@shared@*/ menuframework_s *parent;
 	int menuPosition;
 	unsigned flags;
 
@@ -1534,14 +1534,14 @@ typedef struct
 	int				shader;			// Graph shader
 	int				width;			// Graph bitmap width
 	int				height;			// Graph bitmap height
-	char			*thumbName;		// Thumb file name
+	/*@shared@*/ char			*thumbName;		// Thumb file name
 	int				thumbShader;	// THumb shader
 	int				thumbWidth;		// Width of thumb graphic
 	int				thumbHeight;	// Height of thumb graphic
 	int				thumbColor;		// Normal color
 	int				thumbColor2;	// Highlight color
 	int				thumbGraphicWidth;	// Width of visible part of graphic
-	char			*picName;
+	/*@shared@*/ char			*picName;
 	int				picShader;
 	int				picWidth;
 	int				picHeight;
@@ -1579,9 +1579,9 @@ typedef struct
 	int	numitems;
 	int	top;
 		
-	const char		**itemnames;
-	int				*listnames;
-	int				*listshaders;
+	/*@shared@*/ const /*@shared@*/  char		**itemnames;
+	/*@shared@*/ int				*listnames;
+	/*@shared@*/ int				*listshaders;
 
 	int width;
 	int height;
@@ -1636,8 +1636,8 @@ typedef struct
 typedef struct
 {
 	menucommon_s	generic;
-	char*			focuspic;	
-	char*			errorpic;
+	/*@shared@*/ char*			focuspic;	
+	/*@shared@*/ char*			errorpic;
 	qhandle_t		shader;
 	qhandle_t		focusshader;
 
@@ -1648,12 +1648,12 @@ typedef struct
 
 	int				width;
 	int				height;
-	float*			focuscolor;
+	/*@shared@*/ float*			focuscolor;
 
 	int				color;	// Normal color
 	int				color2;	// Highlight color
 
-	char			*textPtr;	//	In case an enum doesn't work
+	/*@shared@*/ char			*textPtr;	//	In case an enum doesn't work
 	int				textEnum;
 	int				textEnum2;	// If there's a second line of text
 	int				textX;
@@ -1667,7 +1667,7 @@ typedef struct
 typedef struct
 {
 	menucommon_s	generic;
-	char*			string;			// A normal string
+	/*@shared@*/ char*			string;			// A normal string
 	int				normaltextEnum;	// Enum from normal menu text
 	int				buttontextEnum;	// Enum from button text
 	int				normaltextEnum2; // Enum from normal menu text
@@ -1691,7 +1691,7 @@ typedef struct
 	int				y;			// Y positon
 	int				width;		// Graphic width
 	int				height;		// Graphic height
-	const char		*file;		// File name of graphic/ text if STRING
+	/*@shared@*/ const /*@shared@*/ char		*file;		// File name of graphic/ text if STRING
 	int				normaltextEnum;	//	Text comes from Menu_Normal_text
 	qhandle_t		graphic;	// Handle of graphic if GRAPHIC
 	int				min;		// 
@@ -1700,7 +1700,7 @@ typedef struct
 	int				inc;
 	int				style;
 	int				color;		// Normal color
-	void			*pointer;		// To an address
+	/*@shared@*/ void			*pointer;		// To an address
 } menugraphics_s;
 
 extern void Mouse_Hide(void);
