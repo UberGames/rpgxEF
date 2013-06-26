@@ -222,14 +222,14 @@ void Sys_PumpEvents( void );
 
 //=============================================================
 
-typedef unsigned char 		byte;
+typedef uint8_t	byte;
 
 typedef enum {qfalse, qtrue}	qboolean;
 
-typedef int		qhandle_t;
-typedef int		sfxHandle_t;
-typedef int		fileHandle_t;
-typedef int		clipHandle_t;
+typedef int32_t	qhandle_t;
+typedef int32_t sfxHandle_t;
+typedef int32_t fileHandle_t;
+typedef int32_t	clipHandle_t;
 
 
 #ifndef NULL
