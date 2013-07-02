@@ -11,88 +11,95 @@
 #endif
 
 
-gentity_t	*podium1;
-gentity_t	*podium2;
-gentity_t	*podium3;
+gentity_t* podium1;
+gentity_t* podium2;
+gentity_t* podium3;
 
-void UpdateTournamentInfo( void ) {
-	int			i = 0, j = 0, k = 0;
-	gentity_t	*player = NULL;
-	int			playerClientNum;
-	int			n;
-	char		msg[AWARDS_MSG_LENGTH], msg2[AWARDS_MSG_LENGTH];
-	int			playerRank=level.numNonSpectatorClients-1, highestTiedRank = 0;
-	gentity_t	*MVP = NULL;
-	int			mvpNum = -1, mvpPoints = 0, winningCaptures = 0, winningPoints = 0;
-	int			winningTeam=0;
-	int			loseCaptures = 0, losePoints = 0;
-	char		*mvpName = "";
-	gclient_t	*cl = NULL;
-	gclient_t	*cl2= NULL;
-	int			secondPlaceTied=0;
+void UpdateTournamentInfo(void) {
+	int32_t		i = 0;
+	int32_t		j = 0;
+	int32_t		k = 0;
+	gentity_t*	player = NULL;
+	int32_t		playerClientNum = 0;
+	int32_t		n = 0;
+	char		msg[AWARDS_MSG_LENGTH];
+	char		msg2[AWARDS_MSG_LENGTH];
+	int32_t		playerRank = level.numNonSpectatorClients - 1;
+	int32_t		highestTiedRank = 0;
+	gentity_t*	MVP = NULL;
+	int32_t		mvpNum = -1;
+	int32_t		mvpPoints = 0;
+	int32_t		winningCaptures = 0;
+	int32_t		winningPoints = 0;
+	int32_t		winningTeam=0;
+	int32_t		loseCaptures = 0;
+	int32_t		losePoints = 0;
+	char*		mvpName = "";
+	gclient_t*	cl = NULL;
+	gclient_t*	cl2= NULL;
+	int32_t		secondPlaceTied=0;
 
 	memset(msg, 0, AWARDS_MSG_LENGTH);
 	memset(msg2, 0, AWARDS_MSG_LENGTH);
 
-	player = NULL;
-
 	// Was there a tie for second place on the podium?
 	cl = &level.clients[level.sortedClients[1]];
 	cl2= &level.clients[level.sortedClients[2]];
-	if (cl->ps.persistant[PERS_SCORE] == cl2->ps.persistant[PERS_SCORE])
-		secondPlaceTied=1;
+	if(cl->ps.persistant[PERS_SCORE] == cl2->ps.persistant[PERS_SCORE]) {
+		secondPlaceTied = 1;
+	}
 
 	winningTeam = level.clients[0].ps.persistant[PERS_RANK]+1;
-	if ( winningTeam != TEAM_BLUE && winningTeam != TEAM_RED )
-	{//tie or not a team game
+	if((winningTeam != TEAM_BLUE) && (winningTeam != TEAM_RED)) {
+		//tie or not a team game
 		winningTeam = 0;
 	}
 
-	if (mvpNum < 0)
-	{//ah, crap no MVP, pick the first player on the winning team
-		for (i = 0; i < level.maxclients; i++ )
-		{
-			if ( !&g_entities[i] ) continue;
-			if ( !(&g_entities[i])->client) continue;
-			if ( g_entities[i].client->ps.persistant[PERS_TEAM] == winningTeam )
-			{
+	if(mvpNum < 0) {
+		//ah, crap no MVP, pick the first player on the winning team
+		for(i = 0; i < level.maxclients; i++) {
+			if((&g_entities[i]) == NULL) { continue; }
+			if((&g_entities[i])->client == NULL) { continue; }
+			if(g_entities[i].client->ps.persistant[PERS_TEAM] == winningTeam ) {
 				mvpNum = i;
 				break;
 			}
 		}
 	}
-	if (mvpNum >= 0)
-	{//still no MVP, so skip it
+
+	if(mvpNum >= 0) {
+		//still no MVP, so skip it
 		MVP = &g_entities[mvpNum];
 		mvpName = MVP->client->pers.netname;
 		mvpPoints = MVP->client->ps.persistant[PERS_SCORE];
 		winningTeam = MVP->client->ps.persistant[PERS_TEAM];
 	}
 
-	if ( winningTeam )
-	{//one of the teams won
+	if(winningTeam != 0)	{
+		//one of the teams won
 		winningCaptures = level.teamScores[winningTeam];
-		if (winningTeam == TEAM_RED)
-			loseCaptures = level.teamScores[TEAM_BLUE];
-		else
-			loseCaptures = level.teamScores[TEAM_RED];
 
-		for (i = 0; i < level.maxclients; i++ )
-		{
-			if ( !&g_entities[i] ) continue;
-			if ( !(&g_entities[i])->client ) continue;
-			if ( g_entities[i].client->ps.persistant[PERS_TEAM] == winningTeam )
+		if(winningTeam == TEAM_RED) {
+			loseCaptures = level.teamScores[TEAM_BLUE];
+		} else {
+			loseCaptures = level.teamScores[TEAM_RED];
+		}
+
+		for(i = 0; i < level.maxclients; i++) {
+			if((&g_entities[i]) == NULL) { continue; }
+			if((&g_entities[i])->client == NULL) { continue; }
+			if(g_entities[i].client->ps.persistant[PERS_TEAM] == winningTeam) {
 				winningPoints += g_entities[i].client->ps.persistant[PERS_SCORE];
-			else
+			} else {
 				losePoints += g_entities[i].client->ps.persistant[PERS_SCORE];
+			}
 		}
 	}
 
-	for (i = 0; i < level.maxclients; i++ )
-	{
+	for(i = 0; i < level.maxclients; i++) {
 		player = &g_entities[i];
-		if ( !player->inuse || (player->r.svFlags & SVF_BOT))
-		{
+
+		if ((player == NULL) || (player->inuse == qfalse) || ((player->r.svFlags & SVF_BOT) != 0)) {
 			continue;
 		}
 		playerClientNum = i;
@@ -100,10 +107,8 @@ void UpdateTournamentInfo( void ) {
 		G_Client_CalculateRanks( qfalse );
 		// put info for the top three players into the msg
 		Com_sprintf(msg, AWARDS_MSG_LENGTH, "awards %d", level.numNonSpectatorClients);
-		for( j = 0; j < level.numNonSpectatorClients; j++ )
-		{
-			if (j > 2)
-			{
+		for(j = 0; j < level.numNonSpectatorClients; j++) {
+			if(j > 2) {
 				break;
 			}
 			n = level.sortedClients[j];
@@ -112,8 +117,7 @@ void UpdateTournamentInfo( void ) {
 		}
 
 		// put this guy's awards into the msg
-		if ( level.clients[playerClientNum].sess.sessionTeam == TEAM_SPECTATOR )
-		{
+		if(level.clients[playerClientNum].sess.sessionTeam == TEAM_SPECTATOR) {
 			strcpy(msg2, msg);
 			Com_sprintf( msg, sizeof(msg), "%s 0", msg2);
 		}
@@ -132,20 +136,17 @@ void UpdateTournamentInfo( void ) {
 		// 10) intermission point
 		// 11) intermission angles
 		//
-		for (k = 0; k < level.numNonSpectatorClients; k++)
-		{
-			if (level.sortedClients[k] == playerClientNum)
-			{
+		for(k = 0; k < level.numNonSpectatorClients; k++) {
+			if(level.sortedClients[k] == playerClientNum) {
 				playerRank = k;
 				break;
 			}
 		}
+
 		highestTiedRank = 0;
-		for (k = playerRank-1; k >= 0; k--)
-		{
+		for(k = playerRank-1; k >= 0; k--) {
 			cl = &level.clients[level.sortedClients[k]];
-			if (cl->ps.persistant[PERS_SCORE] > level.clients[level.sortedClients[playerRank]].ps.persistant[PERS_SCORE])
-			{
+			if (cl->ps.persistant[PERS_SCORE] > level.clients[level.sortedClients[playerRank]].ps.persistant[PERS_SCORE]) {
 				break;
 			}
 			highestTiedRank = k+1;
@@ -160,24 +161,24 @@ void UpdateTournamentInfo( void ) {
 		trap_SendServerCommand(player-g_entities, msg);
 	}
 
-	if (g_gametype.integer == GT_SINGLE_PLAYER)
-	{
+	if(g_gametype.integer == GT_SINGLE_PLAYER) {
 		Com_sprintf( msg, sizeof(msg), "postgame %i", playerRank);
 		trap_SendConsoleCommand( EXEC_APPEND, msg); 
 	}
-
 }
 
 
-static gentity_t *SpawnModelOnVictoryPad( gentity_t *pad, vec3_t offset, gentity_t *ent, int place ) {
-	gentity_t	*body;
-	vec3_t		vec;
-	vec3_t		f, r, u;
-	entityState_t *eState;
-	entityShared_t *eShared;
+static gentity_t* SpawnModelOnVictoryPad(gentity_t* pad, vec3_t offset, gentity_t* ent, int32_t place) {
+	gentity_t*		body;
+	vec3_t			vec;
+	vec3_t			f;
+	vec3_t			r;
+	vec3_t			u;
+	entityState_t*	eState;
+	entityShared_t*	eShared;
 
 	body = G_Spawn();
-	if ( !body ) {
+	if(body == NULL) {
 		G_Printf( S_COLOR_RED "ERROR: out of gentities\n" );
 		return NULL;
 	}
@@ -203,8 +204,9 @@ static gentity_t *SpawnModelOnVictoryPad( gentity_t *pad, vec3_t offset, gentity
 	eState->torsoAnim = BOTH_STAND1;
 
 	// fix up some weapon holding / shooting issues
-	if (eState->weapon==WP_5 || eState->weapon==WP_13 || eState->weapon == WP_0 )
+	if (eState->weapon==WP_5 || eState->weapon==WP_13 || eState->weapon == WP_0 ) {
 		eState->weapon = WP_6;
+	}
 
 	eState->event = 0;
 	eShared->svFlags = ent->r.svFlags;
@@ -236,8 +238,8 @@ static gentity_t *SpawnModelOnVictoryPad( gentity_t *pad, vec3_t offset, gentity
 }
 
 
-static void CelebrateStop( gentity_t *player ) {
-	int		anim;
+static void CelebrateStop(gentity_t* player) {
+	int32_t	anim;
 
 	anim = BOTH_STAND1; //TORSO_STAND
 	player->s.torsoAnim = ( ( player->s.torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
@@ -245,8 +247,8 @@ static void CelebrateStop( gentity_t *player ) {
 
 
 #define	TIMER_GESTURE	(34*66+50)
-extern void	BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
-static void CelebrateStart( gentity_t *player ) 
+extern void	BG_AddPredictableEventToPlayerstate(int32_t newEvent, int32_t eventParm, playerState_t* ps);
+static void CelebrateStart(gentity_t* player) 
 {
 	/*player->s.torsoAnim = ( ( player->s.torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | TORSO_GESTURE;
 	player->nextthink = level.time + TIMER_GESTURE;
@@ -263,10 +265,12 @@ static vec3_t	offsetFirst  = {0, 0, 64};
 static vec3_t	offsetSecond = {-10, 60, 44};
 static vec3_t	offsetThird  = {-19, -60, 35};
 
-static void PodiumPlacementThink( gentity_t *podium ) {
+static void PodiumPlacementThink(gentity_t* podium) {
 	vec3_t		vec;
 	vec3_t		origin;
-	vec3_t		f, r, u;
+	vec3_t		f;
+	vec3_t		r;
+	vec3_t		u;
 
 	podium->nextthink = level.time + 100;
 
@@ -275,7 +279,7 @@ static void PodiumPlacementThink( gentity_t *podium ) {
 	origin[2] -= trap_Cvar_VariableIntegerValue( "g_podiumDrop" );
 	G_SetOrigin( podium, origin );
 
-	if( podium1 ) {
+	if(podium1 != NULL) {
 		VectorSubtract( level.intermission_origin, podium->r.currentOrigin, vec );
 		vectoangles( vec, podium1->s.apos.trBase );
 		podium1->s.apos.trBase[PITCH] = 0;
@@ -289,7 +293,7 @@ static void PodiumPlacementThink( gentity_t *podium ) {
 		G_SetOrigin( podium1, vec );
 	}
 
-	if( podium2 ) {
+	if(podium2 != NULL) {
 		VectorSubtract( level.intermission_origin, podium->r.currentOrigin, vec );
 		vectoangles( vec, podium2->s.apos.trBase );
 		podium2->s.apos.trBase[PITCH] = 0;
@@ -303,7 +307,7 @@ static void PodiumPlacementThink( gentity_t *podium ) {
 		G_SetOrigin( podium2, vec );
 	}
 
-	if( podium3 ) {
+	if(podium3 != NULL) {
 		VectorSubtract( level.intermission_origin, podium->r.currentOrigin, vec );
 		vectoangles( vec, podium3->s.apos.trBase );
 		podium3->s.apos.trBase[PITCH] = 0;
@@ -319,13 +323,13 @@ static void PodiumPlacementThink( gentity_t *podium ) {
 }
 
 
-static gentity_t *SpawnPodium( void ) {
-	gentity_t	*podium;
+static gentity_t* SpawnPodium( void ) {
+	gentity_t*	podium;
 	vec3_t		vec;
 	vec3_t		origin;
 
 	podium = G_Spawn();
-	if ( !podium ) {
+	if(podium == NULL) {
 		return NULL;
 	}
 
@@ -334,10 +338,11 @@ static gentity_t *SpawnPodium( void ) {
 	podium->s.number = podium - g_entities;
 	podium->clipmask = CONTENTS_SOLID;
 	podium->r.contents = CONTENTS_SOLID;
-	if (g_gametype.integer > GT_SINGLE_PLAYER)
+	if(g_gametype.integer > GT_SINGLE_PLAYER) {
 		podium->s.modelindex = G_ModelIndex( TEAM_PODIUM_MODEL );
-	else
+	} else {
 		podium->s.modelindex = G_ModelIndex( SP_PODIUM_MODEL );
+	}
 
 	AngleVectors( level.intermission_angle, vec, NULL, NULL );
 	VectorMA( level.intermission_origin, trap_Cvar_VariableIntegerValue( "g_podiumDist" ), vec, origin );
@@ -354,8 +359,8 @@ static gentity_t *SpawnPodium( void ) {
 }
 
 void SpawnModelsOnVictoryPads( void ) {
-	gentity_t	*player;
-	gentity_t	*podium;
+	gentity_t* player;
+	gentity_t* podium;
 
 	podium1 = NULL;
 	podium2 = NULL;
@@ -367,7 +372,7 @@ void SpawnModelsOnVictoryPads( void ) {
 	player = SpawnModelOnVictoryPad( podium, offsetFirst, &g_entities[level.sortedClients[0]],
 		level.clients[ level.sortedClients[0] ].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG );
 
-	if ( player ) {
+	if (player != NULL) {
 		player->nextthink = level.time + 2000;
 		player->think = CelebrateStart;
 		podium1 = player;
@@ -375,20 +380,19 @@ void SpawnModelsOnVictoryPads( void ) {
 
 	// For non team game types, we want to spawn 3 characters on the victory pad
 	// For team games (GT_TEAM, GT_CTF) we want to have only a single player on the pad
-	if (( g_gametype.integer == GT_FFA ) || (g_gametype.integer == GT_TOURNAMENT) || (g_gametype.integer == GT_SINGLE_PLAYER))
-	{
-		if ( level.numNonSpectatorClients > 1 ) {
+	if(( g_gametype.integer == GT_FFA ) || (g_gametype.integer == GT_TOURNAMENT) || (g_gametype.integer == GT_SINGLE_PLAYER)) {
+		if( level.numNonSpectatorClients > 1 ) {
 			player = SpawnModelOnVictoryPad( podium, offsetSecond, &g_entities[level.sortedClients[1]],
 				level.clients[ level.sortedClients[1] ].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG );
-			if ( player ) {
+			if(player != NULL) {
 				podium2 = player;
 			}
 		}
 
-		if ( level.numNonSpectatorClients > 2 ) {
+		if( level.numNonSpectatorClients > 2 ) {
 			player = SpawnModelOnVictoryPad( podium, offsetThird, &g_entities[level.sortedClients[2]],
 				level.clients[ level.sortedClients[2] ].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG );
-			if ( player ) {
+			if(player  != NULL) {
 				podium3 = player;
 			}
 		}
