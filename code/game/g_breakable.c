@@ -7,15 +7,17 @@
 *	Removes entity entirely blow chunks.
 *	If it is repairable it's not removed but made invisible.
 */
-void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ) 
+void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int32_t damage, int32_t meansOfDeath ) 
 {
-	vec3_t		size, org, dir;
-	gentity_t	*te = NULL;
-	entityState_t *eState = &self->s;
-	entityShared_t *eShared = &self->r;
+	vec3_t			size;
+	vec3_t			org;
+	vec3_t			dir;
+	gentity_t*		te = NULL;
+	entityState_t*	eState = &self->s;
+	entityShared_t*	eShared = &self->r;
 	
 	//RPG-X | GSIO01 | 09/05/2009:
-	if(!(self->spawnflags & 256)) {
+	if((self->spawnflags & 256) == 0) {
 			eState->frame = 0; 
 			self->health = 0;
 	}
@@ -26,30 +28,27 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 
 	self->takedamage = qfalse;
 
-	if( self->target )
+	if( self->target != NULL )
 	{
 		G_UseTargets(self, attacker);
 	}
 
-	if ( !(self->spawnflags & 4) )
-	{//We don't want to stay solid
+	if ((self->spawnflags & 4) == 0) {
+		//We don't want to stay solid
 		eState->solid = 0;
 		eShared->contents = 0;
 		self->clipmask = 0;
-		if(self->spawnflags & 256 && !strcmp(self->classname, "func_breakable")) {
+		if(((self->spawnflags & 256) != 0) && (strcmp(self->classname, "func_breakable") == 0)) {
 			eShared->svFlags |= SVF_NOCLIENT;
 			eState->eFlags |= EF_NODRAW;
 		}
 		trap_LinkEntity(self);	
 	}
 
-	if ( eShared->bmodel )
-	{
+	if ( eShared->bmodel ) {
 		VectorSubtract( eShared->absmax, eShared->absmin, size );
 		VectorMA( eShared->absmin, 0.5, size, org );
-	}
-	else
-	{
+	} else {
 		VectorSubtract( eShared->maxs, eShared->mins, size );
 		VectorCopy( eShared->currentOrigin, org );
 	}
@@ -61,8 +60,7 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 	te->s.powerups = eState->powerups;
 
 	// Ok, we are allowed to explode, so do it now!
-	if ( self->splashDamage > 0 && self->splashRadius > 0 )
-	{
+	if ( (self->splashDamage > 0) && (self->splashRadius > 0) )	{
 		//fixme: what about chain reactions?
 		G_RadiusDamage( org, attacker, self->splashDamage, self->splashRadius, self, DAMAGE_RADIUS|DAMAGE_ALL_TEAMS, MOD_EXPLOSION );
 
@@ -73,39 +71,34 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 		te->s.weapon = WP_8;
 	}
 
-	if ( eShared->bmodel )
-	{
+	if ( eShared->bmodel ) {
 		trap_AdjustAreaPortalState( self, qtrue );
-	}
-	else if ( eState->modelindex2 != -1 && !(self->spawnflags & 8) )
-	{
+	} else if ( (eState->modelindex2 != -1) && ((self->spawnflags & 8) == 0) ) {
 		eState->modelindex = self->s.modelindex2;
 		return;
 	}
 	
-	if(!(self->spawnflags & 256))
+	if((self->spawnflags & 256) == 0) {
 		G_FreeEntity( self );
-	if(self->spawnflags & 256)
+	} else {
 		self->count = 0;
+		}
 }
 
 /**
 *	Called when a breakable takes damage
 */
-void breakable_pain ( gentity_t *self, gentity_t *attacker, int damage )
+void breakable_pain ( gentity_t *self, gentity_t *attacker, int32_t damage )
 {
-	if ( self->pain_debounce_time > level.time )
-	{
+	if ( self->pain_debounce_time > level.time ) {
 		return;
 	}
 
-	if ( self->paintarget )
-	{
+	if ( self->paintarget )	{
 		G_UseTargets2 ( self, self->activator, self->paintarget );
 	}
 
-	if(self->wait == -1)
-	{
+	if(self->wait <= -1.0f) {
 		self->pain = 0;
 		return;
 	}
@@ -126,10 +119,11 @@ void breakable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 */
 void InitBBrush ( gentity_t *ent ) 
 {
-	float		light;
-	vec3_t		color;
-	qboolean	lightSet, colorSet;
-	entityState_t *eState = &ent->s;
+	double			light = 0.0f;
+	vec3_t			color;
+	qboolean		lightSet;
+	qboolean		colorSet;
+	entityState_t*	eState = &ent->s;
 
 	VectorCopy( eState->origin, ent->pos1 );
 	
@@ -139,8 +133,7 @@ void InitBBrush ( gentity_t *ent )
 	
 	// if the "model2" key is set, use a seperate model
 	// for drawing, but clip against the brushes
-	if ( ent->model2 ) 
-	{
+	if ( ent->model2 != NULL ) 	{
 		eState->modelindex2 = G_ModelIndex( ent->model2 );
 	}
 
@@ -196,10 +189,12 @@ void Touch_breakable_trigger(gentity_t *ent, gentity_t *other, trace_t *trace) {
 *	Only gets called if the breakable is repairable.
 */
 void breakable_spawn_trigger(gentity_t *ent) {
-	vec3_t maxs, mins;
-	gentity_t *other;
-	int best, i;
-	entityShared_t *eShared;
+	vec3_t			maxs;
+	vec3_t			mins;
+	gentity_t*		other = NULL;
+	int32_t			best = 0; 
+	int32_t			i = 1;
+	entityShared_t*	eShared = NULL;
 
 	VectorCopy(ent->r.absmin, mins);
 	VectorCopy(ent->r.absmax, maxs);
@@ -212,7 +207,7 @@ void breakable_spawn_trigger(gentity_t *ent) {
 
 	best = 0;
 
-	for(i = 1; i < 3; i++) {
+	for( ; i < 3; i++) {
 		if(maxs[i] - mins[i] < maxs[best] - mins[best])
 			best = i;
 	}
@@ -221,8 +216,7 @@ void breakable_spawn_trigger(gentity_t *ent) {
 	mins[best] -= 48;
 
 	other = G_Spawn();
-
-	if(!other) {
+	if(other == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Unable to spawn trigger for func_breakable at %s!\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
@@ -321,16 +315,13 @@ In the unlikely event that we do have an origin brush this is the code:
 */
 void SP_func_breakable( gentity_t *self ) 
 {
-	if(!(self->spawnflags & 1))
-	{
-		if(!self->health)
-		{
+	if((self->spawnflags & 1) == 0) {
+		if(self->health == 0) {
 			self->health = 10;
 		}
 	}
 
-	if (self->health) 
-	{
+	if (self->health != 0) {
 		self->takedamage = qtrue; //RPG-X - TiM: qtrue
 	}
 
@@ -341,12 +332,11 @@ void SP_func_breakable( gentity_t *self )
 	self->use = breakable_use;
 	self->count = 1; // GSIO01
 
-	if ( self->paintarget )
-	{
+	if ( self->paintarget != NULL ) {
 		self->pain = breakable_pain;
 	}
 
-	if (!self->model) {
+	if (self->model == NULL) {
 		G_Error("func_breakable with NULL model\n");
 	}
 	VectorCopy(self->s.origin, self->pos1);
@@ -431,20 +421,19 @@ custom explosion effect/sound?
 */
 void SP_misc_model_breakable( gentity_t *ent ) 
 {
-	char	damageModel[MAX_QPATH];
-	int		len;
-	entityShared_t *eShared = &ent->r;
-	entityState_t *eState = &ent->s;
+	char			damageModel[MAX_QPATH];
+	int32_t			len = 0;
+	entityShared_t*	eShared = &ent->r;
+	entityState_t*	eState = &ent->s;
 	
 	//Main model
 	eState->modelindex = ent->sound2to1 = G_ModelIndex( ent->model );
 
-	if ( ent->spawnflags & 1 )
-	{//Blocks movement
+	if ( (ent->spawnflags & 1) != 0 ) {
+		//Blocks movement
 		eShared->contents = CONTENTS_BODY;	//Was CONTENTS_SOLID, but only architecture should be this
-	}
-	else if ( ent->health )
-	{//Can only be shot
+	} else if ( ent->health != 0 ) {
+		//Can only be shot
 		eShared->contents = CONTENTS_SHOTCLIP;
 	}
 
@@ -452,8 +441,7 @@ void SP_misc_model_breakable( gentity_t *ent )
 
 	ent->use = breakable_use;	
 
-	if ( ent->health ) 
-	{
+	if ( ent->health != 0 ) {
 		G_SoundIndex("sound/weapons/explosions/cargoexplode.wav");
 		ent->takedamage = qtrue;
 		ent->pain = breakable_pain;
@@ -461,7 +449,7 @@ void SP_misc_model_breakable( gentity_t *ent )
 	}
 
 
-	if(!ent->model2) {
+	if(ent->model2 == NULL) {
 		len = strlen( ent->model ) - 4;
 		strncpy( damageModel, ent->model, len );
 		damageModel[len] = 0;	//chop extension
@@ -469,8 +457,8 @@ void SP_misc_model_breakable( gentity_t *ent )
 	
 	if (ent->takedamage) {
 		//Dead/damaged model
-		if( !(ent->spawnflags & 8) ) {	//no dmodel
-			if(ent->model2) {
+		if( (ent->spawnflags & 8) == 0 ) {	//no dmodel
+			if(ent->model2 != NULL) {
 				eState->modelindex2 = G_ModelIndex( ent->model2 );
 			} else {
 				strcat( damageModel, "_d1.md3" );
@@ -510,14 +498,13 @@ void SP_misc_model_breakable( gentity_t *ent )
 void ammo_use( gentity_t *self, gentity_t *other, gentity_t *activator);
 
 //!give a player ammo for a weapon 
-static int Add_Ammo2 (gentity_t *ent, int weapon, int count)
+static int32_t Add_Ammo2 (gentity_t *ent, int32_t weapon, int32_t count)
 {
 	playerState_t *ps = &ent->client->ps;
 
 	ps->ammo[weapon] += count;
 
-	if ( ps->ammo[weapon] > Max_Weapon(weapon) )
-	{
+	if ( ps->ammo[weapon] > Max_Weapon(weapon) ) {
 		ps->ammo[weapon] = Max_Weapon(weapon);
 		return qfalse;
 	}
@@ -527,7 +514,7 @@ static int Add_Ammo2 (gentity_t *ent, int weapon, int count)
 //!Shuts down a ammo station
 void ammo_shutdown( gentity_t *self )
 {
-	if (!(self->s.eFlags & EF_ANIM_ONCE))
+	if ((self->s.eFlags & EF_ANIM_ONCE) == 0)
 	{
 		self->s.eFlags &= ~ EF_ANIM_ALLFAST;
 		self->s.eFlags |= EF_ANIM_ONCE;
@@ -549,8 +536,8 @@ void ammo_fade_out( gentity_t *ent )
 //! Think function for the ammo station
 void ammo_think( gentity_t *ent )
 {
-	int dif = 0;
-	int	i;
+	int32_t dif = 0;
+	int32_t	i = 0;
 
 	// Still has ammo to give
 	if ( ent->enemy && ent->enemy->client )
@@ -559,40 +546,33 @@ void ammo_think( gentity_t *ent )
 		ent->use = ammo_use;	
 		ent->think = 0;//qvm complains about using NULL
 		ent->nextthink = -1;
-		for ( i = 0; i < WP_NUM_WEAPONS && ent->count > 0; i++ )
-		{//go through all weapons
-			if ( (ent->enemy->client->ps.stats[STAT_WEAPONS]&( 1 << i )) )
-			{//has this weapon
+		for ( ; i < WP_NUM_WEAPONS && ent->count > 0; i++ )	{
+			//go through all weapons
+			
+			if ( (ent->enemy->client->ps.stats[STAT_WEAPONS]&( 1 << i )) ) {
+				//has this weapon
 				dif = Max_Weapon(i) - ent->enemy->client->ps.ammo[i];//needs ammo?
 
-				if (dif > 2 )
-				{
+				if (dif > 2 ) {
 					dif= 2;
-				}
-				else if (dif < 0) 
-				{
+				} else if (dif < 0)	{
 					dif= 0;	
 				}
 
-				if (ent->count < dif)	// Can't give more than count
-				{
+				if (ent->count < dif) {
+					// Can't give more than count
 					dif = ent->count;
 				}
 
 				// Give player ammo 
-				if (Add_Ammo2(ent->enemy,i,dif) && (dif!=0))	
-				{
+				if (Add_Ammo2(ent->enemy,i,dif) && (dif!=0)) {
 					ent->count-=dif;
-					if ( ent->splashDamage )
-					{
+					if ( ent->splashDamage != 0 ) {
 						ent->splashDamage = floor((float)ent->count/10);
 					}
 					ent->use = 0; /*NULL*/
 					ent->think = ammo_think;
 					ent->nextthink = level.time + 10;
-				}
-				else	// User has taken all ammo he can hold
-				{
 				}
 			}
 		}
@@ -610,52 +590,44 @@ void ammo_think( gentity_t *ent )
 //! use function for a ammo station
 void ammo_use( gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-	int dif = 0;
-	int	i;
+	int32_t dif = 0;
+	int32_t	i = 0;
 
-	if (self->think != NULL)
-	{
-		if (self->use != NULL)
-		{
+	if (self->think != NULL) {
+		if (self->use != NULL) {
 			self->think = 0; /*NULL*/
 			self->nextthink = -1;
 		}
-	}
-	else
-	{
-		if ( other && other->client )
-		{
-			for ( i = 0; i < WP_NUM_WEAPONS && dif == 0; i++ )
-			{//go through all weapons
-				if ( (other->client->ps.stats[STAT_WEAPONS]&( 1 << i )) )
-				{//has this weapon
+	} else {
+		if ( other && other->client ) {
+			for ( ; i < WP_NUM_WEAPONS && dif == 0; i++ ) {
+				//go through all weapons
+				
+				if ( (other->client->ps.stats[STAT_WEAPONS]&( 1 << i )) ) {
+					//has this weapon
 					dif = Max_Weapon(i) - other->client->ps.ammo[i];//needs ammo?
 				}
 			}
-		}
-		else
-		{	// Being triggered to be used up
+		} else {	
+			// Being triggered to be used up
 			dif = 1;
 			self->count = 0;
 		}
 
 		// Does player already have full ammo?
-		if ( dif > 0 )
-		{
+		if ( dif > 0 ) {
 			G_Sound(self, G_SoundIndex("sound/player/suitenergy.wav") );
 
-			if ((dif >= self->count) || (self->count<1)) // use it all up?
-			{
+			if ((dif >= self->count) || (self->count<1)) {
+				// use it all up?
 				ammo_shutdown(self);
 			}
-		}	
-		else
-		{
+		} else {
 			G_Sound(self, G_SoundIndex("sound/weapons/noammo.wav") );
 		}
+
 		// Use target when used
-		if (self->spawnflags & 8)
-		{
+		if ((self->spawnflags & 8) != 0) {
 			G_UseTargets( self, activator );	
 		}
 
@@ -699,24 +671,19 @@ none
 */
 void SP_misc_ammo_station( gentity_t *ent )
 {
-	if (!ent->health)
-	{
+	if (ent->health == 0) {
 		ent->health = 60;
 	}
 
-	if ( !ent->count )
-	{
+	if ( ent->count == 0 ) {
 		ent->count = 1000;
 	}
 
 	ent->s.powerups = 3;//material
 
-	if ( ent->team && atoi(ent->team) == 1 )
-	{
+	if ( ent->team != NULL && atoi(ent->team) == 1 ) {
 		ent->s.modelindex = G_ModelIndex( "models/mapobjects/dn/powercell2.md3" );
-	}
-	else
-	{
+	} else {
 		ent->s.modelindex = G_ModelIndex( "models/mapobjects/dn/powercell.md3" );
 	}
 	ent->r.contents = CONTENTS_CORPSE;
@@ -725,8 +692,7 @@ void SP_misc_ammo_station( gentity_t *ent )
 	ent->use = ammo_use;	
 	G_SoundIndex( "sound/player/suitenergy.wav" );
 
-	if ( ent->health ) 
-	{
+	if ( ent->health != 0 )	{
 		ent->takedamage = qtrue;
 		ent->pain = breakable_pain;
 		ent->die  = breakable_die;
@@ -761,11 +727,13 @@ none
 *	if it is damaged.
 */
 void target_repair_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	gentity_t *target;
+	gentity_t* target = ent->lastEnemy;
 
-	target = ent->lastEnemy;
+	if(target == NULL) {
+		return;
+	}
 
-	if(!(target->spawnflags & 256)) {
+	if((target->spawnflags & 256) == 0) {
 		return;
 	}
 
@@ -781,8 +749,9 @@ void target_repair_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	target->takedamage = qtrue;
 	target->use = breakable_use;
 
-	if(target->paintarget)
+	if(target->paintarget != NULL) {
 		target->pain = breakable_pain;
+	}
 
 	target->clipmask = 0;
 	target->count = 1;
@@ -792,14 +761,14 @@ void target_repair_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 *	Link function finishes off spawning of the entity.
 */
 void target_repair_link(gentity_t *ent) {
-	gentity_t *target;
+	gentity_t *target = NULL;
 
 	ent->nextthink = -1;
 
 	target = G_Find(NULL, FOFS(targetname), ent->target);
-	if(!target) {
+	if(target == NULL) {
 		target = G_Find(NULL, FOFS(targetname2), ent->target);
-		if(!target) {
+		if(target == NULL) {
 			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_repair at %s with an unfound target: %s\n", vtos(ent->s.origin), ent->target););
 			return;
 		}
@@ -807,7 +776,7 @@ void target_repair_link(gentity_t *ent) {
 
 	ent->lastEnemy = target;
 
-	if(Q_stricmp(target->classname, "func_breakable")) {
+	if(Q_stricmp(target->classname, "func_breakable") != 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_repair at %s with an invalid target entity %s\n", vtos(ent->s.origin), target->classname););
 		return;
 	}
@@ -819,7 +788,7 @@ void target_repair_link(gentity_t *ent) {
 *	Spawn function of target_repair entity
 */
 void SP_target_repair(gentity_t *ent) {
-	if(!ent->target) {
+	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_repair without target at %s\n", vtos(ent->s.origin)););
 		return;
 	}

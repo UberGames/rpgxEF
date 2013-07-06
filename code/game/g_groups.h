@@ -12,7 +12,6 @@ typedef struct
 
 extern group_list_t	group_list[MAX_GROUP_MEMBERS];
 extern int 	group_count;
-extern char* BG_RegisterRace( const char *name );
 /*@shared@*/ /*@null@*/ extern char *G_searchGroupList(const char *name);
 
 #define MAX_SKINS_FOR_RACE 128

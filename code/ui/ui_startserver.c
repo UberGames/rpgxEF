@@ -8,6 +8,7 @@ START SERVER MENU *****
 =============================================================================
 */
 #include "ui_local.h"
+#include "../game/bg_misc.h"
 
 #define GAMESERVER_SELECT		"menu/art/maps_select"
 #define GAMESERVER_SELECTED		"menu/art/maps_selected"
@@ -4384,7 +4385,6 @@ void UI_ServerAdvancedOptions(int fromMenu)
 
 
 // Giving credit where credit is due - I stole most of this from Jake's code.
-extern char* BG_RegisterRace( const char *name );
 void UI_BuildGroupTable(void)
 {
 	int		howManySkins = 0;

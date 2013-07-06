@@ -6,6 +6,7 @@
 
 #include "g_local.h"
 #include "g_weapon.h"
+#include "g_client.h"
 
 extern void G_MissileImpact( gentity_t *ent, trace_t *trace);
 

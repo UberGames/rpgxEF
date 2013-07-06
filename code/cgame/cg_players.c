@@ -6,6 +6,7 @@
 #include "cg_local.h"
 #include "cg_screenfx.h"
 #include "fx_local.h"
+#include "../game/bg_misc.h"
 //#include "cg_anims.h"				//RPG-X: J2J - Added for animation string table.
 
 const char	*cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
@@ -40,7 +41,6 @@ int timeParam;
 //int beamTimeParam; //RPG-X : TiM - Beaming
 
 int entNum;
-extern char* BG_RegisterRace( const char *name );
 
 /*
 ================

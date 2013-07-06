@@ -404,7 +404,7 @@ void Svcmd_AbortPodium_f( void ) {
 		return;
 	}
 
-	if( podium1 ) {
+	if( podium1 != NULL ) {
 		podium1->nextthink = level.time;
 		podium1->think = CelebrateStop;
 	}

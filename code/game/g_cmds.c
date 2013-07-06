@@ -5,6 +5,7 @@
 #include "g_local.h"
 #include "g_sql.h"
 #include "g_main.h"
+#include "g_client.h"
 
 //#include <windows.h>
 

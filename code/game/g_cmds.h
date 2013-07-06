@@ -5,5 +5,7 @@
 
 qboolean SetClass( gentity_t *ent, char *s, /*@null@*/ char *teamName, qboolean SaveToCvar );
 void DragCheck( void );
+pclass_t ValueNameForClass ( char* s );
+void BroadcastClassChange( gclient_t *client, pclass_t oldPClass );
 
 #endif

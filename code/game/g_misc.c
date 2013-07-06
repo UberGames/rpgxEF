@@ -3,6 +3,7 @@
 // g_misc.c
 
 #include "g_local.h"
+#include "g_client.h"
 
 
 /*QUAKED func_group (0 0 0) ?

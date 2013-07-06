@@ -482,6 +482,9 @@
     <ClInclude Include="bg_misc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="g_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">

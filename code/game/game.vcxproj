@@ -500,6 +500,7 @@
     <ClInclude Include="chars.h" />
     <ClInclude Include="g_breakable.h" />
     <ClInclude Include="g_cinematic.h" />
+    <ClInclude Include="g_client.h" />
     <ClInclude Include="g_cmds.h" />
     <ClInclude Include="g_groups.h" />
     <ClInclude Include="g_local.h" />

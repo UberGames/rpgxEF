@@ -4,6 +4,7 @@
 #include "g_main.h"
 #include "g_local.h"
 #include "g_groups.h"
+#include "g_client.h"
 #include "bg_lex.h"
 #include "g_cmds.h"
 #include "bg_misc.h"

@@ -1,5 +1,6 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
+#include "g_client.h"
 #include "g_local.h"
 #include "g_groups.h"
 #include "g_main.h"
@@ -7,15 +8,7 @@
 #include "g_main.h"
 
 reconData_t	g_reconData[MAX_RECON_NAMES]; //!< recon data for a limited ammount of clients
-int			g_reconNum;
-
-extern char* BG_RegisterRace( const char *name );
-extern void SetPlayerClassCvar(gentity_t *ent);
-extern void BroadcastClassChange( gclient_t *client, pclass_t oldPClass );
-
-//RPG-X: TiM
-extern char* correlateRanks( const char* strArg, int intArg );
-extern pclass_t ValueNameForClass ( /*gentity_t *ent,*/ char* s );
+int32_t		g_reconNum;
 
 // g_client.c -- client functions that don't happen every frame
 
@@ -33,17 +26,15 @@ clInitStatus_t clientInitialStatus[MAX_CLIENTS];
 *	Function that makes transport setup easier
 *	\author Ubergames - TiM
 */
-void G_InitTransport( int clientNum, vec3_t origin, vec3_t angles ) {
-	gentity_t	*tent;
+void G_InitTransport( int32_t clientNum, vec3_t origin, vec3_t angles ) {
+	gentity_t* tent = NULL;
 
 	TransDat[clientNum].beamTime = level.time + 8000;
 	g_entities[clientNum].client->ps.powerups[PW_BEAM_OUT] = level.time + 8000;
 
 	//Transfer stored data to active beamer
-	VectorCopy( origin,
-				TransDat[clientNum].currentCoord.origin );
-	VectorCopy( angles,
-				TransDat[clientNum].currentCoord.angles );
+	VectorCopy( origin, TransDat[clientNum].currentCoord.origin );
+	VectorCopy( angles,	TransDat[clientNum].currentCoord.angles );
 
 	tent = G_TempEntity( g_entities[clientNum].client->ps.origin, EV_PLAYER_TRANSPORT_OUT );
 	tent->s.clientNum = clientNum;
@@ -65,18 +56,18 @@ potential spawning position for deathmatch games.
 *	Spawn function for deathmatch spawnpoint
 */
 void SP_info_player_deathmatch( gentity_t *ent ) {
-	int		i;
+	int32_t i = 0;
 
-	if(strcmp(ent->classname, "info_player_deathmatch")) {
+	if(strcmp(ent->classname, "info_player_deathmatch") != 0) {
 		ent->classname = G_NewString("info_player_deathmatch");
 	}
 
 	G_SpawnInt( "nobots", "0", &i);
-	if ( i ) {
+	if ( i != 0 ) {
 		ent->flags |= FL_NO_BOTS;
 	}
 	G_SpawnInt( "nohumans", "0", &i );
-	if ( i ) {
+	if ( i != 0 ) {
 		ent->flags |= FL_NO_HUMANS;
 	}
 
@@ -98,40 +89,29 @@ none
 /**
 *	Spawn function for intermission entity.
 */
-void SP_info_player_intermission( gentity_t *ent ) {
+void SP_info_player_intermission( gentity_t *ent ) { }
 
-}
-
-
-
-/*
-=======================================================================
-
-  G_Client_SelectSpawnPoint
-
-=======================================================================
-*/
-
-/*
-================
-G_Client_SpotWouldTelefrag
-
-================
-*/
 /**
-*	Check if beaming to a point will result in a teleporter frag.
-*/
-qboolean G_Client_SpotWouldTelefrag( gentity_t *spot ) {
-	int			i, num;
+ * Determine whether spot would telefrag.
+ *
+ * \param spot Spot to check.
+ * \return Whether this spot would telefrag.
+ */
+static qboolean G_Client_SpotWouldTelefrag( gentity_t *spot ) {
+	int32_t		i = 0;
+	int32_t		num = 0;
 	int			touch[MAX_GENTITIES];
-	gentity_t	*hit;
-	vec3_t		mins, maxs;
+	gentity_t*	hit = NULL;
+	vec3_t		mins;
+	vec3_t		maxs;
+
+	memset(touch, 0, sizeof(touch));
 
 	VectorAdd( spot->s.origin, playerMins, mins );
 	VectorAdd( spot->s.origin, playerMaxs, maxs );
 	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
 
-	for (i=0 ; i<num ; i++) {
+	for ( ; i<num ; i++) {
 		hit = &g_entities[touch[i]];
 		if ( hit && hit->client && hit->client->ps.stats[STAT_HEALTH] > 0 ) {
 			return qtrue;
@@ -157,15 +137,12 @@ Find the spot that we DON'T want to use
 /**
 *	Find the spot that we DON'T want to use
 */
-static gentity_t *SelectNearestDeathmatchSpawnPoint( vec3_t from ) {
-	gentity_t	*spot;
+static gentity_t* SelectNearestDeathmatchSpawnPoint( vec3_t from ) {
+	gentity_t*	spot = NULL;
 	vec3_t		delta;
-	float		dist, nearestDist;
-	gentity_t	*nearestSpot;
-
-	nearestDist = 999999;
-	nearestSpot = NULL;
-	spot = NULL;
+	double		dist = 0.0;
+	double		nearestDist = 999999.0;
+	gentity_t*	nearestSpot = NULL;
 
 	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
 
@@ -192,14 +169,13 @@ go to a random point that doesn't telefrag
 /**
 *	go to a random point that doesn't telefrag
 */
-static gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
-	gentity_t	*spot;
-	int			count;
-	int			selection;
-	gentity_t	*spots[MAX_SPAWN_POINTS];
+static gentity_t* SelectRandomDeathmatchSpawnPoint( void ) {
+	gentity_t*	spot = NULL;
+	int32_t		count = 0;
+	int32_t		selection = 0;
+	gentity_t*	spots[MAX_SPAWN_POINTS];
 
-	count = 0;
-	spot = NULL;
+	memset(spots, 0, sizeof(spots));
 
 	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
 		if ( G_Client_SpotWouldTelefrag( spot ) ) {
@@ -209,7 +185,7 @@ static gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 		count++;
 	}
 
-	if ( !count ) {	// no spots that won't telefrag
+	if ( count == 0 ) {	// no spots that won't telefrag
 		return G_Find( NULL, FOFS(classname), "info_player_deathmatch");
 	}
 
@@ -218,21 +194,9 @@ static gentity_t *SelectRandomDeathmatchSpawnPoint( void ) {
 }
 
 
-/*
-===========
-G_Client_SelectSpawnPoint
-
-Chooses a player start, deathmatch start, etc
-============
-*/
-/**
-*	Chooses a player start, deathmatch start, etc
-*/
 gentity_t* G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles ) {
-	gentity_t	*spot;
-	gentity_t	*nearestSpot;
-
-	nearestSpot = SelectNearestDeathmatchSpawnPoint( avoidPoint );
+	gentity_t* spot = NULL;
+	gentity_t* nearestSpot = SelectNearestDeathmatchSpawnPoint( avoidPoint );
 
 	spot = SelectRandomDeathmatchSpawnPoint ( );
 	if ( spot == nearestSpot ) {
@@ -245,7 +209,7 @@ gentity_t* G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t 
 	}
 
 	// find a single player start spot
-	if (!spot) {
+	if (spot == NULL) {
 		G_Error( "Couldn't find a spawn point" );
 		return spot;
 	}
@@ -269,8 +233,8 @@ use normal spawn selection.
 *	Try to find a spawn point marked 'initial', otherwise
 *	use normal spawn selection.
 */
-static gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles ) {
-	gentity_t	*spot;
+static gentity_t* SelectInitialSpawnPoint( vec3_t origin, vec3_t angles ) {
+	gentity_t* spot = NULL;
 
 	spot = NULL;
 	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
@@ -279,7 +243,7 @@ static gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles ) {
 		}
 	}
 
-	if ( !spot || G_Client_SpotWouldTelefrag( spot ) ) {
+	if ( spot == NULL || G_Client_SpotWouldTelefrag( spot ) ) {
 		return G_Client_SelectSpawnPoint( vec3_origin, origin, angles );
 	}
 
@@ -296,7 +260,7 @@ SelectSpectatorSpawnPoint
 
 ============
 */
-static gentity_t *SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles ) {
+static gentity_t* SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles ) {
 	FindIntermissionPoint();
 
 	VectorCopy( level.intermission_origin, origin );
@@ -313,7 +277,7 @@ BODYQUE
 =======================================================================
 */
 
-static int	bodyFadeSound=0;
+static int32_t	bodyFadeSound=0;
 
 
 /*
@@ -322,12 +286,18 @@ G_Client_InitBodyQue
 ===============
 */
 void G_Client_InitBodyQue (void) {
-	int		i;
-	gentity_t	*ent;
+	int32_t		i = 0;
+	gentity_t*	ent = NULL;
 
 	level.bodyQueIndex = 0;
-	for (i=0; i<BODY_QUEUE_SIZE ; i++) {
+	for ( ; i<BODY_QUEUE_SIZE ; i++) {
 		ent = G_Spawn();
+
+		if(ent == NULL) {
+			// TODO print error?
+			return;
+		}
+		
 		ent->classname = "bodyque";
 		ent->neverFree = qtrue;
 		level.bodyQue[i] = ent;
@@ -349,8 +319,7 @@ After sitting around for five seconds, fade out.
 /**
 *	After sitting around for five seconds, fade out.
 */
-void BodyRezOut( gentity_t *ent )
-{
+static void BodyRezOut( gentity_t *ent ) {
 	if ( level.time - ent->timestamp >= 7500 ) {
 		// the body ques are never actually freed, they are just unlinked
 		trap_UnlinkEntity( ent );
@@ -377,15 +346,15 @@ just like the existing corpse to leave behind.
 *	just like the existing corpse to leave behind.
 */
 static void CopyToBodyQue( gentity_t *ent ) {
-	gentity_t		*body;
-	int			contents;
-	entityState_t *eState;
+	gentity_t*		body = NULL;
+	int32_t			contents = 0;
+	entityState_t*	eState = NULL;
 
 	trap_UnlinkEntity (ent);
 
 	// if client is in a nodrop area, don't leave the body
 	contents = trap_PointContents( ent->s.origin, -1 );
-	if ( contents & CONTENTS_NODROP ) {
+	if ( (contents & CONTENTS_NODROP) != 0 ) {
 		ent->s.eFlags &= ~EF_NODRAW;	// Just in case we died from a bottomless pit, reset EF_NODRAW
 		return;
 	}
@@ -445,7 +414,7 @@ static void CopyToBodyQue( gentity_t *ent ) {
 	body->die = body_die;
 
 	// if there shouldn't be a body, don't show one.
-	if (ent->client &&
+	if (ent->client != NULL &&
 			((level.time - ent->client->ps.powerups[PW_DISINTEGRATE]) < 10000 ||
 			(level.time - ent->client->ps.powerups[PW_EXPLODE]) < 10000))
 	{
@@ -460,7 +429,7 @@ static void CopyToBodyQue( gentity_t *ent ) {
 		} else {
 			body->takedamage = qtrue;
 		}
-	}else{
+	} else {
 		body->takedamage = qfalse;
 	}
 
@@ -498,9 +467,9 @@ G_Client_Respawn
 */
 extern char *ClassNameForValue( pclass_t pClass );
 void G_Client_Respawn( gentity_t *ent ) {
-	qboolean	borg = qfalse;
-	gentity_t	*tent;
-	playerState_t *ps;
+	qboolean		borg = qfalse;
+	gentity_t*		tent = NULL;
+	playerState_t*	ps = NULL;
 
 	CopyToBodyQue (ent);
 
@@ -509,10 +478,9 @@ void G_Client_Respawn( gentity_t *ent ) {
 	ps = &ent->client->ps;
 
 	// add a teleportation effect
-	if ( borg )
+	if ( borg ) {
 		tent = G_TempEntity( ps->origin, EV_BORG_TELEPORT );
-	else
-	{
+	} else {
 		tent = G_TempEntity( ps->origin, EV_PLAYER_TRANSPORT_IN );
 		ps->powerups[PW_QUAD] = level.time + 4000;
 	}
@@ -520,7 +488,14 @@ void G_Client_Respawn( gentity_t *ent ) {
 	tent->s.clientNum = ent->s.clientNum;
 }
 
-team_t G_Client_TeamCount( int ignoreClientNum, int team ) {
+/**
+ * Get number of clients in team.
+ *
+ * \param ignoreClientNum Client to ignore.
+ * \param team Team.
+ * \reutrn Number of clients in team.
+ */
+static team_t G_Client_TeamCount( int ignoreClientNum, int team ) {
 	int		i;
 	int		count = 0;
 
@@ -575,38 +550,34 @@ Player Model system :P
 *	HEAVILY modified for the RPG-X
 *	Player Model system
 */
-static void ForceClientSkin(char *model, const char *skin ) {
-	char *p;
-	char *q;
+static void ForceClientSkin(char* model, const char* skin ) {
+	char* p = NULL;
+	char* q = NULL;
 
 	//we expect model to equal 'char/model/skin'
 
 	p = strchr(model, '/');
 
 	//if no slashes at all
-	if ( !p || !p[0] || !p[1] ) {
+	if ( p == NULL || p[0] == 0 || p[1] == 0 ) {
 		//input everything
-		Q_strcat(model, MAX_QPATH, "/");
-		Q_strcat(model, MAX_QPATH, "main");
-		Q_strcat(model, MAX_QPATH, "/");
-		Q_strcat(model, MAX_QPATH, skin);
-	}
-	else { //ie we got a slash (which should be the first of two
+		strncat(model, "/", MAX_QPATH);
+		strncat(model, "main", MAX_QPATH);
+		strncat(model, "/", MAX_QPATH);
+		strncat(model, skin, MAX_QPATH);
+	} else { //ie we got a slash (which should be the first of two
 		p++;
 		q = strchr(p, '/'); //okay, we should get another one if one was already found
-		if (!q || !q[0] || !q[1] ) 
+		if (q == NULL || q[0] == 0 || q[1] == 0 ) 
 		{ //no slashes were found?? >.<
 			//okay, let's assume they specified the .model file, no skin
 			//so just add the skin to the end :P
-			Q_strcat(model, MAX_QPATH, "/");
-			Q_strcat(model, MAX_QPATH, skin);
-		}
-		else 
-		{
+			strncat(model, "/", MAX_QPATH);
+			strncat(model, skin, MAX_QPATH);
+		} else  {
 			q++;
 			*q= '\0';
-			Q_strcat(model, MAX_QPATH, skin);
-			
+			strncat(model, skin, MAX_QPATH);		
 		}
 	}
 }
@@ -616,24 +587,23 @@ static void ForceClientSkin(char *model, const char *skin ) {
 ClientCheckName
 ============
 */
-void ClientCleanName( const char *in, char *out, int outSize ) {
-	int		len, colorlessLen;
-	char	ch;
-	char	*p;
-	int		spaces;
+static void ClientCleanName( const char* in, char* out, int outSize ) {
+	int32_t	len = 0;
+	int32_t colorlessLen = 0;
+	char	ch = 0;
+	char*	p = NULL;
+	int32_t	spaces = 0;
 
 	//save room for trailing null byte
 	outSize--;
 
-	len = 0;
-	colorlessLen = 0;
 	p = out;
 	*p = 0;
 	spaces = 0;
 
 	while( 1 ) {
 		ch = *in++;
-		if( !ch ) {
+		if( ch == 0 ) {
 			break;
 		}
 
@@ -706,12 +676,12 @@ Used to decide if in a CTF game where a race is specified for a given team if a 
 *	Compare a list of races with an incoming race name.
 *	Used to decide if in a CTF game where a race is specified for a given team if a skin is actually already legal.
 */
-static qboolean legalSkin(const char *race_list, const char *race)
+static qboolean legalSkin(const char*race_list, const char* race)
 {
 	char current_race_name[125];
 	const char *s = race_list;
 	const char *max_place = race_list + strlen(race_list);
-	const char *marker;
+	const char *marker = NULL;
 
 	memset(current_race_name, 0, sizeof(current_race_name));
 	// look through the list till it's empty
@@ -725,13 +695,13 @@ static qboolean legalSkin(const char *race_list, const char *race)
 		}
 
 		// copy just that name
-		Q_strncpyz(current_race_name, marker, (s-marker)+1);
+		strncpy(current_race_name, marker, (s-marker)+1);
 
 		// avoid the comma or increment us past the end of the string so we fail the main while loop
 		s++;
 
 		// compare and see if this race is the same as the one we want
-		if (!Q_stricmp(current_race_name, race))
+		if (Q_stricmp(current_race_name, race) == 0)
 		{
 			return qtrue;
 		}
@@ -750,26 +720,29 @@ given a race name, go find all the skins that use it, and randomly select one
 /**
 *	given a race name, go find all the skins that use it, and randomly select one
 */
-static void randomSkin(const char* race, char* model, int current_team, int clientNum)
+static void randomSkin(const char* race, char* model, int32_t current_team, int32_t clientNum)
 {
-	char	**skinsForRace;
-	int		howManySkins = 0;
-	int		i,x;
-	int		temp;
-	int		skin_count_check;
-	char	**skinNamesAlreadyUsed;
-	int		current_skin_count = 0;
-	gentity_t	*ent = NULL;
-	char	*userinfo;
-	char	temp_model[MAX_QPATH];
+	char**		skinsForRace = NULL;
+	int32_t		howManySkins = 0;
+	int32_t		i = 0;
+	int32_t		x = 0;
+	int32_t		temp = 0;
+	int32_t		skin_count_check = 0;
+	char**		skinNamesAlreadyUsed = NULL;
+	int32_t		current_skin_count = 0;
+	gentity_t*	ent = NULL;
+	char*		userinfo = NULL;
+	char		temp_model[MAX_QPATH];
 
-	skinsForRace = (char **)malloc(MAX_SKINS_FOR_RACE * 128 * sizeof(char));
-	if(!skinsForRace) {
+	memset(temp_model, 0, sizeof(temp_model));
+
+	skinsForRace = malloc(MAX_SKINS_FOR_RACE * 128 * sizeof(char));
+	if(skinsForRace == NULL) {
 		G_Error("Was unable to allocate %i bytes.\n", MAX_SKINS_FOR_RACE * 128 * sizeof(char));
 		return;
 	}
-	skinNamesAlreadyUsed = (char **)malloc(16 * 128 * sizeof(char));
-	if(!skinNamesAlreadyUsed) {
+	skinNamesAlreadyUsed = malloc(16 * 128 * sizeof(char));
+	if(skinNamesAlreadyUsed == NULL) {
 		G_Error("Was unable to allocate %i bytes.\n", 16 * 128 * sizeof(char));
 		return;
 	}
@@ -779,17 +752,14 @@ static void randomSkin(const char* race, char* model, int current_team, int clie
 
 	// first up, check to see if we want to select a skin from someone that's already playing on this guys team
 	skin_count_check = g_random_skin_limit.integer;
-	if (skin_count_check)
-	{
+	if (skin_count_check != 0) {
 		// sanity check the skins to compare against count
-		if (skin_count_check > 16)
-		{
+		if (skin_count_check > 16) {
 			skin_count_check = 16;
 		}
 
 		// now construct an array of the names already used
-		for (i=0; i<g_maxclients.integer; i++)
-		{
+		for ( ; i<g_maxclients.integer; i++) {
 			// did we find enough skins to grab a random one from yet?
 			if (current_skin_count == skin_count_check)
 			{
@@ -797,13 +767,13 @@ static void randomSkin(const char* race, char* model, int current_team, int clie
 			}
 
 			ent = g_entities + i;
-			if (!ent->inuse || i == clientNum)
+			if (!ent->inuse || i == clientNum) {
 				continue;
+			}
 
 			// no, so look at the next one, and see if it's in the list we are constructing
 			// same team?
-			if 	(ent->client && ent->client->sess.sessionTeam == current_team)
-			{
+			if 	(ent->client && ent->client->sess.sessionTeam == current_team) {
 				userinfo = (char *)malloc(MAX_INFO_STRING * sizeof(char));
 				if(!userinfo) {
 					G_Error("Was unable to allocate %i bytes.\n", MAX_INFO_STRING * sizeof(char));

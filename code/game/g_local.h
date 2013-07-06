@@ -1612,56 +1612,11 @@ void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to );
 //
 // g_client.c
 //
-/**
- * Get number of clients in team.
- *
- * \param ignoreClientNum Client to ignore.
- * \param team Team.
- * \reutrn Number of clients in team.
- */
-team_t G_Client_TeamCount( int ignoreClientNum, int team );
-
-/**
- * Pick a random team.
- *
- * \param ignoreClientNum Client to ignore.
- * \return Random team.
- */
-team_t G_Client_PickTeam( int ignoreClientNum );
-
-/**
- * Set the clients view angle.
- *
- * \param ent Entity for which to set view angle.
- * \param angle New view angle.
- */
-void G_Client_SetViewAngle( gentity_t* ent, vec3_t angle );
-
-/**
- * Select a spawnpoint.
- *
- * \param avoidPoint Point to avoid.
- * \param origin Origin.
- * \param angles Angles.
- */
-/*@shared@*/ /*@null@*/  gentity_t* G_Client_SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
-
-/**
- * Respawn client.
- *
- * \param ent Client to respawn.
- */
-void G_Client_Respawn(gentity_t *ent);
 
 /**
  * Begin intermission.
  */
 void G_Client_BeginIntermission(void);
-
-/**
- * Init the body que.
- */
-void G_Client_InitBodyQue(void);
 
 /**
  * Spawn client.
@@ -1697,14 +1652,6 @@ void G_Client_AddScore( gentity_t* ent, int score );
  * \param fromExit From exit?
  */
 void G_Client_CalculateRanks( qboolean fromExit );
-
-/**
- * Determine whether spot would telefrag.
- *
- * \param spot Spot to check.
- * \return Whether this spot would telefrag.
- */
-qboolean G_Client_SpotWouldTelefrag( gentity_t* spot );
 
 /**
  * Get weapons for a class.
@@ -2164,9 +2111,6 @@ void QDECL G_ClearClientLog(int client);
 
 /*----------------------------------------------------------------------------------------*/
 
-//TiM - Delayed Transport Beam
-void G_InitTransport( int clientNum, vec3_t origin, vec3_t angles );
-
 /** \struct clInitStatus_t
  *
  */
@@ -2333,7 +2277,7 @@ void G_InitBots( qboolean restart );
  *
  * \todo Remove? We don't support bots.
  */
-char* G_GetBotInfoByNumber( int num );
+char* G_GetBotInfoByNumber( int32_t num );
 
 /**
  *	Get bot info by name.
@@ -2368,7 +2312,7 @@ void G_QueueBotBegin( int clientNum );
  *
  *	\todo Remove? We don't support bots.
  */
-qboolean G_BotConnect( int clientNum, qboolean restart );
+qboolean G_BotConnect( int32_t clientNum, qboolean restart );
 
 /**
  *	Server command. Add bot.

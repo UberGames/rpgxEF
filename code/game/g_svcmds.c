@@ -5,7 +5,6 @@
 
 #include "g_local.h"
 
-
 /*
 ==============================================================================
 
@@ -385,8 +384,6 @@ void G_ProcessIDBans( void )
 Svcmd_BanUser_f
 =================
 */
-extern void ClientCleanName( const char *in, char *out, int outSize );
-
 void Svcmd_BanUser_f( void )
 {
 	char		str[MAX_TOKEN_CHARS];
