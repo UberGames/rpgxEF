@@ -767,15 +767,15 @@ static void randomSkin(const char* race, char* model, int32_t current_team, int3
 			}
 
 			ent = g_entities + i;
-			if (!ent->inuse || i == clientNum) {
+			if (ent == NULL || !ent->inuse || i == clientNum) {
 				continue;
 			}
 
 			// no, so look at the next one, and see if it's in the list we are constructing
 			// same team?
-			if 	(ent->client && ent->client->sess.sessionTeam == current_team) {
-				userinfo = (char *)malloc(MAX_INFO_STRING * sizeof(char));
-				if(!userinfo) {
+			if 	(ent->client != NULL && ent->client->sess.sessionTeam == current_team) {
+				userinfo = malloc(MAX_INFO_STRING * sizeof(char));
+				if(userinfo == NULL) {
 					G_Error("Was unable to allocate %i bytes.\n", MAX_INFO_STRING * sizeof(char));
 					return;
 				}
@@ -786,19 +786,16 @@ static void randomSkin(const char* race, char* model, int32_t current_team, int3
 				free(userinfo);
 
 				// check the name
-				for (x = 0; x< current_skin_count; x++)
-				{
+				for (x = 0; x< current_skin_count; x++)	{
 					// are we the same?
-					if (!Q_stricmp(skinNamesAlreadyUsed[x], temp_model))
-					{
+					if (Q_stricmp(skinNamesAlreadyUsed[x], temp_model) == 0) {
 						// yeah - ok we already got this one
 						break;
 					}
 				}
 
 				// ok, did we match anything?
-				if (x == current_skin_count)
-				{
+				if (x == current_skin_count) {
 					// no - better add this name in
 					Q_strncpyz(skinNamesAlreadyUsed[current_skin_count], temp_model, sizeof(skinNamesAlreadyUsed[current_skin_count]));
 					current_skin_count++;
@@ -807,8 +804,7 @@ static void randomSkin(const char* race, char* model, int32_t current_team, int3
 		}
 
 		// ok, array constructed. Did we get enough?
-		if (current_skin_count >= skin_count_check)
-		{
+		if (current_skin_count >= skin_count_check) {
 			// yeah, we did - so select a skin from one of these then
 			temp = rand() % current_skin_count;
 			Q_strncpyz( model, skinNamesAlreadyUsed[temp], MAX_QPATH );
@@ -820,30 +816,24 @@ static void randomSkin(const char* race, char* model, int32_t current_team, int3
 	}
 
 	// search through each and every skin we can find
-	for (i=0; i<group_count && howManySkins < MAX_SKINS_FOR_RACE; i++)
-	{
+	for (i=0; i<group_count && howManySkins < MAX_SKINS_FOR_RACE; i++){
 
 		// if this models race list contains the race we want, then add it to the list
-		if (legalSkin(group_list[i].text, race))
-		{
+		if (legalSkin(group_list[i].text, race)) {
 			Q_strncpyz( skinsForRace[howManySkins++], group_list[i].name , 128 );
 		}
 	}
 
 	// set model to a random one
-	if (howManySkins)
-	{
+	if (howManySkins > 0) {
 		temp = rand() % howManySkins;
 		Q_strncpyz( model, skinsForRace[temp], MAX_QPATH );
-	}
-	else
-	{
+	} else {
 		model[0] = 0;
 	}
 
 	free(skinsForRace);
 	free(skinNamesAlreadyUsed);
-
 }
 
 /*
@@ -856,9 +846,9 @@ Go away and actually get a random new skin based on a group name
 /**
 *	Go away and actually get a random new skin based on a group name	
 */
-static qboolean getNewSkin(const char *group, char *model, const char *color, const gclient_t *client, int clientNum)
+static qboolean getNewSkin(const char* group, char* model, const char* color, const gclient_t* client, int32_t clientNum)
 {
-	char	*temp_string;
+	char* temp_string = NULL;
 
   	// go away and get what ever races this skin is attached to.
   	// remove blue or red name
@@ -867,8 +857,7 @@ static qboolean getNewSkin(const char *group, char *model, const char *color, co
   	temp_string = G_searchGroupList(model);
 
   	// are any of the races legal for this team race?
-  	if (legalSkin(temp_string, group))
-  	{
+  	if (legalSkin(temp_string, group)) {
   		ForceClientSkin(model, color);
   		return qfalse;
   	}
@@ -878,24 +867,6 @@ static qboolean getNewSkin(const char *group, char *model, const char *color, co
 	return qtrue;
 }
 
-void SetCSTeam( team_t team, char *teamname )
-{
-	if ( teamname == NULL || teamname[0] == 0 )
-	{
-		return;
-	}
-	switch ( team )
-	{
-	case TEAM_BLUE:
-		trap_SetConfigstring( CS_BLUE_GROUP, teamname );
-		break;
-	case TEAM_RED:
-		trap_SetConfigstring( CS_RED_GROUP, teamname );
-		break;
-	default: // make gcc happy
-		break;
-	}
-}
 /*
 ===========
 G_Client_UserinfoChanged
@@ -908,36 +879,46 @@ G_Client_UserinfoChanged
 *	The game can override any of the settings and call trap_SetUserinfo
 *	if desired.
 */
-void G_Client_UserinfoChanged( int clientNum ) {
-	gentity_t *ent;
-	int					i;
-	char*				s;
+void G_Client_UserinfoChanged( int32_t clientNum ) {
+	gentity_t*			ent = NULL;
+	int32_t				i = 0;
+	int32_t				modelOffset = 0;
+	char*				s = NULL;
 	char				model[MAX_QPATH];
 	char				oldname[MAX_STRING_CHARS];
-	gclient_t*			client;
 	char				userinfo[MAX_INFO_STRING];
-	qboolean			reset;
-	float				weight, height;
 	char				age[MAX_NAME_LENGTH];
 	char				race[MAX_NAME_LENGTH];
-	int					modelOffset;
-	qboolean			changeName = qtrue; //TiM : For the name filter
 	char				sHeight[10];
 	char				sWeight[10];
+	double				weight;
+	double				height;
+	gclient_t*			client = NULL;
+	qboolean			reset;
+	qboolean			changeName = qtrue; //TiM : For the name filter
 	clientPersistant_t*	pers = NULL;
 	clientSession_t*	sess = NULL;
 
-	model[0] = 0;
-
 	ent = g_entities + clientNum;
-	if(!ent) return;
+	if(ent == NULL) {
+		return;
+	}
+
+	memset(model, 0, sizeof(model));
+	memset(oldname, 0, sizeof(oldname));
+	memset(userinfo, 0, sizeof(userinfo));
+	memset(age, 0, sizeof(age));
+	memset(race, 0, sizeof(race));
+	memset(sHeight, 0, sizeof(sHeight));
+	memset(sWeight, 0, sizeof(sWeight));
 	client = ent->client;
 	pers = &client->pers;
 	sess = &client->sess;
 
 	//TiM - Exit if this user has had their info clamped
-	if ( ent->flags & FL_CLAMPED )
+	if ( (ent->flags & FL_CLAMPED) != 0 ) {
 		return;
+	}
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
@@ -948,13 +929,13 @@ void G_Client_UserinfoChanged( int clientNum ) {
 
 	// check for local client
 	s = Info_ValueForKey( userinfo, "ip" );
-	if ( !strcmp( s, "localhost" ) ) {
+	if ( strcmp( s, "localhost" ) == 0 ) {
 		pers->localClient = qtrue;
 	}
 
 	// check the item prediction
 	s = Info_ValueForKey( userinfo, "cg_predictItems" );
-	if ( !atoi( s ) ) {
+	if ( atoi( s ) == 0 ) {
 		pers->predictItemPickup = qfalse;
 	} else {
 		pers->predictItemPickup = qtrue;
@@ -964,9 +945,12 @@ void G_Client_UserinfoChanged( int clientNum ) {
 	//TiM: Filter for if a player is already on this server with that name.
 	s = Info_ValueForKey (userinfo, "name");
 	
-	if ( rpg_uniqueNames.integer && !( ent->r.svFlags & SVF_BOT ) ) {
+	if ( (rpg_uniqueNames.integer != 0) && (( ent->r.svFlags & SVF_BOT ) == 0) ) {
 		char newName[36];
 		char activeName[36];
+
+		memset(newName, 0, sizeof(newName));
+		memset(activeName, 0, sizeof(activeName));
 		ClientCleanName( s, newName, sizeof(newName) );
 		Q_CleanStr( newName );
 
@@ -975,9 +959,8 @@ void G_Client_UserinfoChanged( int clientNum ) {
 			Q_strncpyz( activeName, g_entities[i].client->pers.netname, sizeof( activeName ) );
 			Q_CleanStr( activeName );
 
-			if ( g_entities[i].client->ps.clientNum != client->ps.clientNum
-				&& Q_stricmp( newName, activeName ) == 0 )
-			{
+			if ( (g_entities[i].client->ps.clientNum != client->ps.clientNum)
+				&& (Q_stricmp( newName, activeName ) == 0) ) {
 				trap_SendServerCommand( ent-g_entities, " print \"Unable to change name. A player already has that name on this server.\n\" ");
 				changeName = qfalse;
 				break;
@@ -996,9 +979,9 @@ void G_Client_UserinfoChanged( int clientNum ) {
 		}
 
 		if ( pers->connected == CON_CONNECTED ) {
-			if ( strcmp( oldname, pers->netname ) ) {
-				if ( !levelExiting && !level.intermissiontime )
-				{//no need to do this during level changes
+			if ( strcmp( oldname, pers->netname ) != 0) {
+				if ( (!levelExiting) && (level.intermissiontime == 0) )	{
+					//no need to do this during level changes
 					trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " renamed to %s\n\"", oldname, pers->netname) );
 				}
 			}
@@ -1020,24 +1003,20 @@ void G_Client_UserinfoChanged( int clientNum ) {
 	Q_strncpyz( model, Info_ValueForKey (userinfo, "model"), sizeof( model ) );
 
 	// team
-	if ( qtrue ) // WTF? alsways true?
-	{//borg class doesn't need to use team color
-		switch( sess->sessionTeam ) {
-		case TEAM_RED:
+
+	switch( sess->sessionTeam ) {
+	case TEAM_RED: 
+		{
 			// decide if we are going to have to reset a skin cos it's not applicable to a race selected
-			if (g_gametype.integer < GT_TEAM || !Q_stricmp("", g_team_group_red.string))
-			{
+			if ((g_gametype.integer < GT_TEAM) || (Q_stricmp("", g_team_group_red.string) == 0)) {
 				ForceClientSkin(model, "red");
 				break;
-			}
-			// at this point, we are playing CTF and there IS a race specified for this game
-			else
-			{
+			} else {
+				// at this point, we are playing CTF and there IS a race specified for this game
 				reset = getNewSkin(g_team_group_red.string, model, "red", client, clientNum);
 
 				// did we get a model name back?
-				if (!model[0])
-				{
+				if (model[0] == 0) {
 					// no - this almost certainly means we had a bogus race is the g_team_group_team cvar
 					// so reset it to starfleet and try it again
 					Com_Printf("WARNING! - Red Group %s is unknown - resetting Red Group to Allow Any Group\n", g_team_group_red.string);
@@ -1051,10 +1030,9 @@ void G_Client_UserinfoChanged( int clientNum ) {
 					reset = qfalse;
 				}
 
-				if (reset)
-				{
-					if ( !levelExiting )
-					{//no need to do this during level changes
+				if (reset) {
+					if ( !levelExiting ) {
+						//no need to do this during level changes
 						trap_SendServerCommand( -1, va("print \"In-appropriate skin selected for %s on team %s\nSkin selection overridden from skin %s to skin %s\n\"",
 							pers->netname, g_team_group_red.string, Info_ValueForKey (userinfo, "model"), model));
 					}
@@ -1065,22 +1043,20 @@ void G_Client_UserinfoChanged( int clientNum ) {
 				}
 				break;
 			}
-		case TEAM_BLUE:
+		}
+	case TEAM_BLUE: 
+		{
 			// decide if we are going to have to reset a skin cos it's not applicable to a race selected
-			if (g_gametype.integer < GT_TEAM || !Q_stricmp("", g_team_group_blue.string))
-			{
+			if ((g_gametype.integer < GT_TEAM) || (Q_stricmp("", g_team_group_blue.string) == 0)) {
 				ForceClientSkin(model, "blue");
 				break;
-			}
-			// at this point, we are playing CTF and there IS a race specified for this game
-			else
-			{
+			} else {
+				// at this point, we are playing CTF and there IS a race specified for this game
 				// go away and get what ever races this skin is attached to.
 				reset = getNewSkin(g_team_group_blue.string, model, "blue", client, clientNum);
 
 				// did we get a model name back?
-				if (!model[0])
-				{
+				if (model[0] == 0) {
 					// no - this almost certainly means we had a bogus race is the g_team_group_team cvar
 					// so reset it to klingon and try it again
 					Com_Printf("WARNING! - Blue Group %s is unknown - resetting Blue Group to Allow Any Group\n", g_team_group_blue.string);
@@ -1094,10 +1070,9 @@ void G_Client_UserinfoChanged( int clientNum ) {
 					reset = qfalse;
 				}
 
-				if (reset)
-				{
-					if ( !levelExiting )
-					{//no need to do this during level changes
+				if (reset) {
+					if ( !levelExiting ) {
+						//no need to do this during level changes
 						trap_SendServerCommand( -1, va("print \"In-appropriate skin selected for %s on team %s\nSkin selection overridden from skin %s to skin %s\n\"",
 							pers->netname, g_team_group_blue.string, Info_ValueForKey (userinfo, "model"), model));
 					}
@@ -1108,23 +1083,17 @@ void G_Client_UserinfoChanged( int clientNum ) {
 				}
 				break;
 			}
-		default:
-			break;
 		}
-		if ( g_gametype.integer >= GT_TEAM && sess->sessionTeam == TEAM_SPECTATOR ) {
-			// don't ever use a default skin in teamplay, it would just waste memory
-			ForceClientSkin(model, "red");
-		}
-	}
-	else
-	{
-		ForceClientSkin(model, "default");
-		Info_SetValueForKey(userinfo, "model", model);
-		trap_SetUserinfo(clientNum, userinfo);
+	default:
+		break;
 	}
 
-	if ( rpg_rpg.integer != 0 && rpg_forceclasscolor.integer != 0 && g_gametype.integer < GT_TEAM)
-	{
+	if((g_gametype.integer >= GT_TEAM) && (sess->sessionTeam == TEAM_SPECTATOR)) {
+		// don't ever use a default skin in teamplay, it would just waste memory
+		ForceClientSkin(model, "red");
+	}
+
+	if((rpg_rpg.integer != 0) && (rpg_forceclasscolor.integer != 0) && (g_gametype.integer < GT_TEAM)) {
 		ForceClientSkin( model, g_classData[sess->sessionClass].modelSkin );
 	}
 
@@ -1133,8 +1102,7 @@ void G_Client_UserinfoChanged( int clientNum ) {
 	s = Info_ValueForKey( userinfo, "noAdminChat" );
 	if ( atoi( s ) > 0 ) {
 		client->noAdminChat = qtrue;
-	}
-	else {
+	} else {
 		client->noAdminChat = qfalse;
 	}
 
@@ -1149,16 +1117,11 @@ void G_Client_UserinfoChanged( int clientNum ) {
 	//PMS system - lock down the values
 	s = Info_ValueForKey( userinfo, "height" );
 	height = atof( s );
-	if (height > (float)rpg_maxHeight.value ) 
-	{
+	if (height > (float)rpg_maxHeight.value ) {
 		Q_strncpyz( sHeight, rpg_maxHeight.string, sizeof( sHeight ) );
-	}
-	else if (height < (float)rpg_minHeight.value ) 
-	{
+	} else if (height < (float)rpg_minHeight.value ) {
 		Q_strncpyz( sHeight, rpg_minHeight.string, sizeof( sHeight ) );
-	}
-	else
-	{
+	} else {
 		Q_strncpyz( sHeight, s, sizeof( sHeight ) );
 	}
 
@@ -1168,16 +1131,11 @@ void G_Client_UserinfoChanged( int clientNum ) {
 	//PMS system - lock down the values
 	s = Info_ValueForKey( userinfo, "weight" );
 	weight = atof( s );
-	if (weight > (float)rpg_maxWeight.value ) 
-	{
+	if (weight > (float)rpg_maxWeight.value ) {
 		Q_strncpyz( sWeight, rpg_maxWeight.string, sizeof( sWeight ) );
-	}
-	else if (weight < (float)rpg_minWeight.value ) 
-	{
+	} else if (weight < (float)rpg_minWeight.value ) {
 		Q_strncpyz( sWeight, rpg_minWeight.string, sizeof( sWeight ) );
-	}
-	else
-	{
+	} else {
 		Q_strncpyz( sWeight, s, sizeof( sWeight ) );
 	}
 
@@ -1193,7 +1151,7 @@ void G_Client_UserinfoChanged( int clientNum ) {
 	// send over a subset of the userinfo keys so other clients can
 	// print scoreboards, display models, and play custom sounds
 	//FIXME: In future, we'll lock down these PMS values so we can't have overloaded transmission data
-	if ( ent->r.svFlags & SVF_BOT ) {
+	if ( (ent->r.svFlags & SVF_BOT) != 0 ) {
 		s = va("n\\%s\\t\\%i\\p\\%i\\model\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\age\\25\\height\\%s\\weight\\%s\\race\\Bot\\of\\%i\\admin\\0",
 			pers->netname, sess->sessionTeam, sess->sessionClass, model,
 			pers->maxHealth, sess->wins, sess->losses,

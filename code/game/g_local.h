@@ -1708,13 +1708,6 @@ void G_Client_LocationsMessage( gentity_t *ent );
 /*@shared@*/ char* G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot );
 
 /**
- * Clients user info changed.
- *
- * \param clientNum Client num.
- */
-void G_Client_UserinfoChanged( int clientNum );
-
-/**
  * Disconnect client.
  *
  * \param clientNum Client num.

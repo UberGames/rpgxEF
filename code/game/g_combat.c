@@ -6,6 +6,7 @@
 #include "g_breakable.h" //RPG-X | GSIO01 | 09/05/2009: needed by G_Repair
 #include "g_main.h"
 #include "g_cmds.h"
+#include "g_client.h"
 
 
 /*

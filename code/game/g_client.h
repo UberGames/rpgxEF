@@ -43,4 +43,11 @@ void G_InitTransport( int32_t clientNum, vec3_t origin, vec3_t angles );
  */
 team_t G_Client_PickTeam( int ignoreClientNum );
 
+/**
+ * Clients user info changed.
+ *
+ * \param clientNum Client num.
+ */
+void G_Client_UserinfoChanged( int32_t clientNum );
+
 #endif /* _G_CLIENT_H */
