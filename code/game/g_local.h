@@ -741,62 +741,6 @@ typedef struct {
 //
 // g_spawn.c
 //
-/**
- * \brief Get a string for a custom entity key.
- *
- * Spawn string returns a temporary reference, you must copy the string if you want to keep it.
- *
- * \param[in] key Key to get the value for.
- * \param[in] defaultString Default value for this key.
- * \param[out] out The result.
- * \return Success or fail.
- */
-qboolean G_SpawnString( const char* key, const char* defaultString, /*@out@*/ char** out );
-
-/**
- * \brief Get a float for a custom entity key.
- *
- * \param[in] key Key to get the value for.
- * \param[in] defaultString Default value for this key.
- * \param[out] out The result.
- * \return Success or fail.
- */
-qboolean G_SpawnFloat( const char* key, const char* defaultString, /*@out@*/ float* out );
-
-/**
- * \brief Get a int for a custom entity key.
- *
- * \param[in] key Key to get the value for.
- * \param[in] defaultString Default value for this key.
- * \param[out] out The result.
- * \return Success or fail.
- */
-qboolean G_SpawnInt( const char* key, const char* defaultString, /*@out@*/ int* out );
-
-/**
- * \brief Get a vector for a custom entity key.
- *
- * \param[in] key Key to get the value for.
- * \param[in] defaultString Default value for this key.
- * \param[out] out The result.
- * \return Success or fail.
- */
-qboolean	G_SpawnVector( const char* key, const char* defaultString, /*@out@*/ float* out );
-
-/**
- * \brief Get a vector for a custom entity key.
- *
- * \param[in] key Key to get the value for.
- * \param[in] defaultString Default value for this key.
- * \param[out] out The result.
- * \return Success or fail.
- */
-qboolean	G_SpawnVector4( const char* key, const char* defaultString, /*@out@*/ float* out );
-
-/**
- * \brief Spawn all entities from the entity string.
- */
-void		G_SpawnEntitiesFromString( void );
 
 /**
  * \brief Creates a copy of the given string. Allocated on the memory pool.
@@ -1608,17 +1552,6 @@ void G_Weapon_CalcMuzzlePoint ( gentity_t* ent, vec3_t forward, vec3_t right, ve
  * \param to rounded vector
  */
 void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to );
-
-//
-// g_client.c
-//
-
-/**
- * Calculate clients ranks.
- *
- * \param fromExit From exit?
- */
-void G_Client_CalculateRanks( qboolean fromExit );
 
 //
 // g_svcmds.c

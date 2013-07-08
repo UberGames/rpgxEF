@@ -146,4 +146,11 @@ void G_Client_Die (gentity_t* self, gentity_t* inflictor, gentity_t* attacker, i
  */
 void G_Client_AddScore( gentity_t* ent, int score );
 
+/**
+ * Calculate clients ranks.
+ *
+ * \param fromExit From exit?
+ */
+void G_Client_CalculateRanks( qboolean fromExit );
+
 #endif /* _G_CLIENT_H */

@@ -156,5 +156,62 @@ void SP_ui_holodeck(/*@shared@*/ gentity_t *ent);
 // cinematic entities
 void SP_cinematic_camera(/*@shared@*/ gentity_t *ent);
 
+/**
+ * \brief Get a string for a custom entity key.
+ *
+ * Spawn string returns a temporary reference, you must copy the string if you want to keep it.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
+qboolean G_SpawnString( const char* key, const char* defaultString, /*@out@*/ char** out );
+
+/**
+ * \brief Get a float for a custom entity key.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
+qboolean G_SpawnFloat( const char* key, const char* defaultString, /*@out@*/ float* out );
+
+/**
+ * \brief Get a int for a custom entity key.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
+qboolean G_SpawnInt( const char* key, const char* defaultString, /*@out@*/ int* out );
+
+/**
+ * \brief Get a vector for a custom entity key.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
+qboolean G_SpawnVector( const char* key, const char* defaultString, /*@out@*/ float* out );
+
+/**
+ * \brief Get a vector for a custom entity key.
+ *
+ * \param[in] key Key to get the value for.
+ * \param[in] defaultString Default value for this key.
+ * \param[out] out The result.
+ * \return Success or fail.
+ */
+qboolean G_SpawnVector4( const char* key, const char* defaultString, /*@out@*/ float* out );
+
+/**
+ * \brief Spawn all entities from the entity string.
+ */
+void G_SpawnEntitiesFromString( void );
+
 #endif /* _G_SPAWN_H */
 

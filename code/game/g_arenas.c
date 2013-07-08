@@ -5,6 +5,7 @@
 //
 
 #include "g_local.h"
+#include "g_client.h"
 
 #ifndef min
 #define min(a, b)	(a) < (b) ? a : b
