@@ -2458,38 +2458,6 @@ static void G_Client_CheckHealthInfoMessage( void ) {
 	}
 }
 
-//TiM - Modified to work with RPG-X
-void G_Client_CheckClientStatus(void) {
-	int32_t		i = 0;
-	gentity_t*	loc = NULL;
-	gentity_t*	ent = NULL;
-
-	if (level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME) {
-		level.lastTeamLocationTime = level.time;
-
-		for ( ; i < g_maxclients.integer; i++) {
-			ent = g_entities + i;
-			if ((ent != NULL) && (ent->inuse)) {
-				loc = G_Client_GetLocation( ent );
-				if (loc != NULL) {
-					ent->client->pers.teamState.location = loc->health;
-				} else {
-					ent->client->pers.teamState.location = 0;
-				}
-			}
-		}
-
-		for (i = 0; i < g_maxclients.integer; i++) {
-			ent = g_entities + i;
-			if ((ent != NULL) && (ent->inuse)) {
-				G_Client_LocationsMessage( ent );
-			}
-		}
-
-		G_Client_CheckHealthInfoMessage();
-	}
-}
-
 /**
  * Send client location information.
  *
@@ -2542,6 +2510,39 @@ static void G_Client_LocationsMessage( gentity_t *ent ) {
 
 	trap_SendServerCommand( ent-g_entities, va("tinfo %i%s", cnt, string) );
 }
+
+//TiM - Modified to work with RPG-X
+void G_Client_CheckClientStatus(void) {
+	int32_t		i = 0;
+	gentity_t*	loc = NULL;
+	gentity_t*	ent = NULL;
+
+	if (level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME) {
+		level.lastTeamLocationTime = level.time;
+
+		for ( ; i < g_maxclients.integer; i++) {
+			ent = g_entities + i;
+			if ((ent != NULL) && (ent->inuse)) {
+				loc = G_Client_GetLocation( ent );
+				if (loc != NULL) {
+					ent->client->pers.teamState.location = loc->health;
+				} else {
+					ent->client->pers.teamState.location = 0;
+				}
+			}
+		}
+
+		for (i = 0; i < g_maxclients.integer; i++) {
+			ent = g_entities + i;
+			if ((ent != NULL) && (ent->inuse)) {
+				G_Client_LocationsMessage( ent );
+			}
+		}
+
+		G_Client_CheckHealthInfoMessage();
+	}
+}
+
 
 
 
