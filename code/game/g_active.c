@@ -3,6 +3,7 @@
 
 #include "g_local.h"
 #include "g_client.h"
+#include "g_spawn.h"
 
 extern void SP_misc_ammo_station( gentity_t *ent );
 extern void ammo_station_finish_spawning ( gentity_t *self );

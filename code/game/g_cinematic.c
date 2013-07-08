@@ -1,6 +1,7 @@
-#include "g_local.h"
 #include "g_cinematic.h"
+#include "g_local.h"
 #include "g_client.h"
+#include "g_spawn.h"
 
 extern void InitMover( gentity_t *ent );
 

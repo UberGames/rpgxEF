@@ -1,5 +1,6 @@
 #include "g_local.h"
 #include "g_breakable.h"
+#include "g_spawn.h"
 
 /**
 *	\brief A func_breakables health has sunk to or under zero

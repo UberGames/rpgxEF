@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "g_spawn.h"
 
 #define	ARM_ANGLE_RANGE		60
 #define	HEAD_ANGLE_RANGE	90

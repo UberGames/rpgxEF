@@ -5,6 +5,7 @@
   =======================================================*/
 
 #include "g_local.h"
+#include "g_spawn.h"
 
 extern void InitTrigger(gentity_t *self);
 

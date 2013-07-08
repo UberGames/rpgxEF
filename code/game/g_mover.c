@@ -3,6 +3,7 @@
 
 #include "g_local.h"
 #include "g_client.h"
+#include "g_spawn.h"
 
 extern qboolean G_CallSpawn(gentity_t *ent);
 

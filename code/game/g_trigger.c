@@ -3,6 +3,7 @@
  */
 
 #include "g_local.h"
+#include "g_spawn.h"
 #include "g_client.h"
 
 /*these look weired... I'd rather replace them with streight numbers.
