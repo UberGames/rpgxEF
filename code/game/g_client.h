@@ -115,4 +115,11 @@ qboolean G_Client_GetLocationMsg(gentity_t* ent, char* loc, int32_t loclen);
  */
 void G_Client_CheckClientStatus(void);
 
+/**
+ * Client command.
+ *
+ * \param clientNum Client num.
+ */
+void G_Client_Command( int clientNum );
+
 #endif /* _G_CLIENT_H */
