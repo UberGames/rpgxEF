@@ -8,40 +8,6 @@
 #include "g_cmds.h"
 #include "g_client.h"
 
-
-/*
-============
-G_Client_AddScore
-
-Adds score to both the client and his team
-============
-*/
-void G_Client_AddScore( gentity_t *ent, int score ) {
-	if ( !ent )
-	{
-		return;
-	}
-	if ( !ent->client ) {
-		return;
-	}
-
-	if(!ent->client->UpdateScore)
-	{
-		return;
-	}
-
-	ent->client->ps.persistant[PERS_SCORE] += score;
-	//don't add score to team score during elimination
-	if (g_gametype.integer == GT_TEAM)
-	{//this isn't capture score
-		level.teamScores[ ent->client->ps.persistant[PERS_TEAM] ] += score;
-	}
-	G_Client_CalculateRanks( qfalse );
-
-	//RPG-X: RedTechie - Lets enable score updating without this scores will not be updated
-	ent->client->UpdateScore = qfalse;
-}
-
 /*
 ============
 SetScore

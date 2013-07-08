@@ -122,4 +122,28 @@ void G_Client_CheckClientStatus(void);
  */
 void G_Client_Command( int clientNum );
 
+/**
+ * Begin intermission.
+ */
+void G_Client_BeginIntermission(void);
+
+/**
+ * Let the client die.
+ *
+ * \param self Client.
+ * \param inflictor Entity causing death.
+ * \param attacker Entity that made inflicotr cause death.
+ * \param damage ammount of demage
+ * \param mod means of death
+ */
+void G_Client_Die (gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int mod);
+
+/**
+ * Add score for the client.
+ *
+ * \param ent The client.
+ * \param score Ammount of score to add.
+ */
+void G_Client_AddScore( gentity_t* ent, int score );
+
 #endif /* _G_CLIENT_H */

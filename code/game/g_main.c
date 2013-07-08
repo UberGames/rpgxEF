@@ -478,7 +478,6 @@ static int	gameCvarTableSize = (int)(sizeof( gameCvarTable ) / sizeof( gameCvarT
 static void G_InitGame( int levelTime, unsigned int randomSeed, int restart );
 static void G_RunFrame( int levelTime );
 void G_ShutdownGame( int restart );
-static void CheckExitRules( void );
 
 //=============================
 // begin code
@@ -2078,189 +2077,6 @@ static void AdjustTournamentScores( void ) {
 }
 
 
-
-/*
-=============
-SortRanks
-
-=============
-*/
-static int QDECL SortRanks( const void *a, const void *b ) {
-	gclient_t	*ca, *cb;
-
-	ca = &level.clients[*(int *)a];
-	cb = &level.clients[*(int *)b];
-
-	// sort special clients last
-	if ( ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorClient < 0 ) {
-		return 1;
-	}
-	if ( cb->sess.spectatorState == SPECTATOR_SCOREBOARD || cb->sess.spectatorClient < 0  ) {
-		return -1;
-	}
-
-	// then connecting clients
-	if ( ca->pers.connected == CON_CONNECTING ) {
-		return 1;
-	}
-	if ( cb->pers.connected == CON_CONNECTING ) {
-		return -1;
-	}
-
-
-	// then spectators
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR && cb->sess.sessionTeam == TEAM_SPECTATOR ) {
-		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
-			return -1;
-		}
-		if ( ca->sess.spectatorTime > cb->sess.spectatorTime ) {
-			return 1;
-		}
-		return 0;
-	}
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR ) {
-		return 1;
-	}
-	if ( cb->sess.sessionTeam == TEAM_SPECTATOR ) {
-		return -1;
-	}
-
-	// then sort by score & number of times killed
-	if ( ca->ps.persistant[PERS_SCORE]
-		> cb->ps.persistant[PERS_SCORE] ) {
-		return -1;
-	}
-	if ((ca->ps.persistant[PERS_SCORE] == cb->ps.persistant[PERS_SCORE]) &&
-		(ca->ps.persistant[PERS_KILLED] < cb->ps.persistant[PERS_KILLED])   )
-	{	return -1;}
-
-	if ( ca->ps.persistant[PERS_SCORE]
-		< cb->ps.persistant[PERS_SCORE] ) {
-		return 1;
-	}
-	if ((ca->ps.persistant[PERS_SCORE] == cb->ps.persistant[PERS_SCORE]) &&
-		(ca->ps.persistant[PERS_KILLED] > cb->ps.persistant[PERS_KILLED])   )
-	{	return 1;}
-
-	return 0;
-}
-
-/*
-============
-G_Client_CalculateRanks
-
-Recalculates the score ranks of all players
-This will be called on every client connect, begin, disconnect, death,
-and team change.
-
-FIXME: for elimination, the last man standing must be ranked first
-============
-*/
-void G_Client_CalculateRanks( qboolean fromExit ) {
-	int		i;
-	int		rank;
-	int		score;
-	int		newScore;
-	gclient_t	*cl;
-
-	level.follow1 = -1;
-	level.follow2 = -1;
-	level.numConnectedClients = 0;
-	level.numNonSpectatorClients = 0;
-	level.numPlayingClients = 0;
-	level.numVotingClients = 0;		// don't count bots
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		if ( level.clients[i].pers.connected != CON_DISCONNECTED ) {
-			level.sortedClients[level.numConnectedClients] = i;
-			level.numConnectedClients++;
-
-			if ( level.clients[i].sess.sessionTeam != TEAM_SPECTATOR ) {
-				level.numNonSpectatorClients++;
-
-				// decide if this should be auto-followed
-				if ( level.clients[i].pers.connected == CON_CONNECTED ) {
-					level.numPlayingClients++;
-					if ( (g_entities[i].r.svFlags & SVF_BOT) == 0 ) {
-						level.numVotingClients++;
-					}
-					if ( level.follow1 == -1 ) {
-						level.follow1 = i;
-					} else if ( level.follow2 == -1 ) {
-						level.follow2 = i;
-					}
-				}
-			}
-		}
-	}
-
-	qsort( level.sortedClients, (size_t)level.numConnectedClients,
-		sizeof(level.sortedClients[0]), SortRanks );
-
-	// set the rank value for all clients that are connected and not spectators
-	if ( g_gametype.integer >= GT_TEAM ) {
-		// in team games, rank is just the order of the teams, 0=red, 1=blue, 2=tied
-		for ( i = 0;  i < level.numConnectedClients; i++ ) {
-			cl = &level.clients[ level.sortedClients[i] ];
-			if ( level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE] ) {
-				cl->ps.persistant[PERS_RANK] = 2;
-			} else if ( level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE] ) {
-				cl->ps.persistant[PERS_RANK] = 0;
-			} else {
-				cl->ps.persistant[PERS_RANK] = 1;
-			}
-		}
-	} else {
-		rank = -1;
-		score = 0;
-		for ( i = 0;  i < level.numPlayingClients; i++ ) {
-			cl = &level.clients[ level.sortedClients[i] ];
-			newScore = cl->ps.persistant[PERS_SCORE];
-			if ( i == 0 || newScore != score ) {
-				rank = i;
-				// assume we aren't tied until the next client is checked
-				level.clients[ level.sortedClients[i] ].ps.persistant[PERS_RANK] = rank;
-			} else {
-				// we are tied with the previous client
-				level.clients[ level.sortedClients[i-1] ].ps.persistant[PERS_RANK] = rank | RANK_TIED_FLAG;
-				level.clients[ level.sortedClients[i] ].ps.persistant[PERS_RANK] = rank | RANK_TIED_FLAG;
-			}
-			score = newScore;
-			if ( g_gametype.integer == GT_SINGLE_PLAYER && level.numPlayingClients == 1 ) {
-				level.clients[ level.sortedClients[i] ].ps.persistant[PERS_RANK] = rank | RANK_TIED_FLAG;
-			}
-		}
-	}
-
-	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
-	if ( g_gametype.integer >= GT_TEAM ) {
-		trap_SetConfigstring( CS_SCORES1, va("%i", level.teamScores[TEAM_RED] ) );
-		trap_SetConfigstring( CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE] ) );
-	} else {
-		if ( level.numConnectedClients == 0 ) {
-			trap_SetConfigstring( CS_SCORES1, va("%i", SCORE_NOT_PRESENT) );
-			trap_SetConfigstring( CS_SCORES2, va("%i", SCORE_NOT_PRESENT) );
-		} else if ( level.numConnectedClients == 1 ) {
-			trap_SetConfigstring( CS_SCORES1, va("%i", level.clients[ level.sortedClients[0] ].ps.persistant[PERS_SCORE] ) );
-			trap_SetConfigstring( CS_SCORES2, va("%i", SCORE_NOT_PRESENT) );
-		} else {
-			trap_SetConfigstring( CS_SCORES1, va("%i", level.clients[ level.sortedClients[0] ].ps.persistant[PERS_SCORE] ) );
-			trap_SetConfigstring( CS_SCORES2, va("%i", level.clients[ level.sortedClients[1] ].ps.persistant[PERS_SCORE] ) );
-		}
-	}
-
-	// see if it is time to end the level
-	if ( !fromExit )
-	{//not coming this from the CheckExitRules func
-		CheckExitRules();
-	}
-
-	// if we are at the intermission, send the new info to everyone
-	if ( level.intermissiontime != 0 ) {
-		SendScoreboardMessageToAllClients();
-	}
-}
-
-
 /*
 ========================================================================
 
@@ -2484,22 +2300,6 @@ void ExitLevel (void) {
 	}
 
 }
-
-/*
-=================
-CheckExitRules
-
-There will be a delay between the time the exit is qualified for
-and the time everyone is moved to the intermission spot, so you
-can see the last frag.
-=================
-*/
-void CheckExitRules( void ) {
-	//RPG-X: RedTechie - No exit in RPG Your TRAPED! MHAHAHA
-	return;
-}
-
-
 
 /*
 ========================================================================
@@ -2735,9 +2535,6 @@ void G_RunFrame( int levelTime ) {
 
 	// see if it is time to do a tournement restart
 	CheckTournement();
-
-	// see if it is time to end the level
-	CheckExitRules();
 
 	// update to client status?
 	G_Client_CheckClientStatus();

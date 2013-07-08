@@ -1614,30 +1614,6 @@ void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to );
 //
 
 /**
- * Begin intermission.
- */
-void G_Client_BeginIntermission(void);
-
-/**
- * Let the client die.
- *
- * \param self Client.
- * \param inflictor Entity causing death.
- * \param attacker Entity that made inflicotr cause death.
- * \param damage ammount of demage
- * \param mod means of death
- */
-void G_Client_Die (gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int mod);
-
-/**
- * Add score for the client.
- *
- * \param ent The client.
- * \param score Ammount of score to add.
- */
-void G_Client_AddScore( gentity_t* ent, int score );
-
-/**
  * Calculate clients ranks.
  *
  * \param fromExit From exit?
