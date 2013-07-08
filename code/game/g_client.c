@@ -2301,13 +2301,13 @@ G_Client_GetLocation
 Report a location for the player. Uses placed nearby target_location entities
 ============
 */
-gentity_t *G_Client_GetLocation(gentity_t *ent)
-{
-	gentity_t		*eloc, *best;
-	float			bestlen, len;
+static gentity_t* G_Client_GetLocation(gentity_t* ent) {
+	gentity_t*		eloc = NULL;
+	gentity_t*		best = NULL;
+	double			bestlen = 0.0;
+	double			len = 0.0;
 	vec3_t			origin;
 
-	best = NULL;
 	bestlen = 3*8192.0*8192.0;
 
 	VectorCopy( ent->r.currentOrigin, origin );
@@ -2339,23 +2339,25 @@ G_Client_GetLocationMsg
 Report a location for the player. Uses placed nearby target_location entities
 ============
 */
-qboolean G_Client_GetLocationMsg(gentity_t *ent, char *loc, int loclen)
+qboolean G_Client_GetLocationMsg(gentity_t *ent, char *loc, int32_t loclen)
 {
-	gentity_t *best;
+	gentity_t* best = NULL;
 
 	best = G_Client_GetLocation( ent );
 	
-	if (!best)
+	if (best == NULL) {
 		return qfalse;
+	}
 
-	if (best->count) {
+	if (best->count != 0) {
 		if (best->count < 0)
 			best->count = 0;
 		if (best->count > 7)
 			best->count = 7;
 		Com_sprintf(loc, loclen, "%c%c%s" S_COLOR_WHITE, Q_COLOR_ESCAPE, best->count + '0', best->message );
-	} else
+	} else {
 		Com_sprintf(loc, loclen, "%s", best->message);
+	}
 
 	return qtrue;
 }
@@ -2371,53 +2373,57 @@ Format:
 
 ==================
 */
-void G_Client_CheckHealthInfoMessage( void ) 
-{
+static void G_Client_CheckHealthInfoMessage( void ) {
 	char		entry[1024];
 	char		string[1400];
-	int			stringlength;
-	int			i, j, t;
-	gentity_t	*player, *ent;
-	int			sendToCnt, cnt, sentCnt;
-	int			h;
-	int			clients[MAX_CLIENTS];
-	int			sendToClients[MAX_CLIENTS];
+	int32_t		stringlength = 0;
+	int32_t		i = 0;
+	int32_t		j = 0;
+	int32_t		t = 0;
+	int32_t		sendToCnt = 0;
+	int32_t		cnt = 0;
+	int32_t		sentCnt = 0;
+	int32_t		h = 0;
+	int32_t		clients[MAX_CLIENTS];
+	int32_t		sendToClients[MAX_CLIENTS];
+	gentity_t*	player = NULL;
+	gentity_t*	ent = NULL;
+
+	memset(entry, 0, sizeof(entry));
+	memset(string, 0, sizeof(string));
+	memset(clients, 0, sizeof(clients));
+	memset(sendToClients, 0, sizeof(sendToClients));
 
 	//only send this to medics or spectators or adminz
-	for (i = 0, sendToCnt = 0; i < g_maxclients.integer; i++) 
-	{
+	for ( ; i < g_maxclients.integer; i++)  {
 
-		if ( level.clients[i].pers.connected == CON_CONNECTED && level.clients[i].ps.stats[STAT_HEALTH] > 0 &&//make sure they've actually spawned in already
-			(level.clients[i].sess.sessionTeam == TEAM_SPECTATOR || g_classData[level.clients[i].sess.sessionClass].isMedical || g_classData[level.clients[i].sess.sessionClass].isAdmin ) )
-		{
+		if ( (level.clients[i].pers.connected == CON_CONNECTED) && (level.clients[i].ps.stats[STAT_HEALTH] > 0) && //make sure they've actually spawned in already
+			((level.clients[i].sess.sessionTeam == TEAM_SPECTATOR) || (g_classData[level.clients[i].sess.sessionClass].isMedical) || (g_classData[level.clients[i].sess.sessionClass].isAdmin) ) ) {
 			sendToClients[sendToCnt++] = i;
 		}
 	}
 
-	if ( !sendToCnt )
-	{//no-one to send to
+	if ( sendToCnt == 0 ) {
+		//no-one to send to
 		return;
 	}
 
 	//only send those clients whose health has changed this cycle
 	//NB: there's a prob with client 0 in here....
-	for (i = 0, cnt = 0; i < g_maxclients.integer; i++) 
-	{
+	for (i = 0, cnt = 0; i < g_maxclients.integer; i++)  {
 		player = g_entities + i;
-		if ( player->inuse && player->old_health != player->health && ( player->health > 0 || player->old_health > 0 )) 
-		{
+		if ( (player != NULL) && player->inuse && (player->old_health != player->health) && ( (player->health > 0) || (player->old_health > 0) )) {
 			clients[cnt++] = i;
 			player->old_health = player->health;
 		}
 	}
 
-	if ( !cnt )
-	{//no-one relevant changed health
+	if ( cnt == 0 ) {
+		//no-one relevant changed health
 		return;
 	}
 
-	for ( t = 0; t < sendToCnt; t++ )
-	{
+	for ( t = 0; t < sendToCnt; t++ ) {
 		ent = g_entities + sendToClients[t];
 		sentCnt = 0;
 
@@ -2425,12 +2431,10 @@ void G_Client_CheckHealthInfoMessage( void )
 		string[0] = 0;
 		stringlength = 0;
 
-		for (i = 0; i < cnt; i++) 
-		{
+		for (i = 0; i < cnt; i++) {
 			player = g_entities + clients[i];
 
-			if ( ent == player )
-			{//don't send the ent his own health
+			if ( ent == player ) {//don't send the ent his own health
 				continue;
 			}
 
@@ -2448,37 +2452,36 @@ void G_Client_CheckHealthInfoMessage( void )
 			stringlength += j;
 		}
 
-		if ( sentCnt )
-		{
+		if ( sentCnt != 0 ) {
 			trap_SendServerCommand( sendToClients[t], va("hinfo %i%s", sentCnt, string) );
 		}
 	}
 }
 
 //TiM - Modified to work with RPG-X
-void G_Client_CheckClientStatus(void)
-{
-	int i;
-	gentity_t *loc, *ent;
+void G_Client_CheckClientStatus(void) {
+	int32_t		i = 0;
+	gentity_t*	loc = NULL;
+	gentity_t*	ent = NULL;
 
 	if (level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME) {
-
 		level.lastTeamLocationTime = level.time;
 
-		for (i = 0; i < g_maxclients.integer; i++) {
+		for ( ; i < g_maxclients.integer; i++) {
 			ent = g_entities + i;
-			if (ent->inuse) {
+			if ((ent != NULL) && (ent->inuse)) {
 				loc = G_Client_GetLocation( ent );
-				if (loc)
+				if (loc != NULL) {
 					ent->client->pers.teamState.location = loc->health;
-				else
+				} else {
 					ent->client->pers.teamState.location = 0;
+				}
 			}
 		}
 
 		for (i = 0; i < g_maxclients.integer; i++) {
 			ent = g_entities + i;
-			if (ent->inuse) {
+			if ((ent != NULL) && (ent->inuse)) {
 				G_Client_LocationsMessage( ent );
 			}
 		}
@@ -2487,51 +2490,50 @@ void G_Client_CheckClientStatus(void)
 	}
 }
 
-/*
-==================
-G_Client_LocationsMessage
-
-Format:
-	clientNum location health armor weapon powerups
-
-==================
-*/
-void G_Client_LocationsMessage( gentity_t *ent ) {
+/**
+ * Send client location information.
+ *
+ * \param ent The client.
+ */
+static void G_Client_LocationsMessage( gentity_t *ent ) {
 	char		entry[1024];
 	char		string[1400];
-	int			stringlength;
-	int			i, j;
-	gentity_t	*player;
-	int			cnt;
+	int32_t		stringlength = 0;
+	int32_t		i = 0;
+	int32_t		j = 0;
+	int32_t		cnt = 0;
+	gentity_t*	player = NULL;
 	
 	//don't bother sending during intermission?
-	if ( level.intermissiontime )
+	if ( level.intermissiontime != 0 ) {
 		return;
+	}
+
+	memset(entry, 0, sizeof(entry));
+	memset(string, 0, sizeof(string));
 
 	// figure out what client should be on the display
 	// we are limited to 8, but we want to use the top eight players
 	// but in client order (so they don't keep changing position on the overlay)
-	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
+	for ( ; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
 		player = g_entities + level.sortedClients[i];
-		if (player->inuse && player->client->sess.sessionTeam == 
-			ent->client->sess.sessionTeam ) {
+		if ((player != NULL) && (player->inuse) && (player->client->sess.sessionTeam == ent->client->sess.sessionTeam) ) { 
+			// TODO huh? remove?
 		}
 	}
 
 	// send the latest information on all clients
-	string[0] = 0;
-	stringlength = 0;
-
 	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
 		player = g_entities + i;
 		//RPG-X | Phenix | 05/03/2005
-		if (player->inuse) {
+		if ((player != NULL) && player->inuse) {
 			//to counter for the fact we could pwn the server doing this, remove all superfluous data
 
 			Com_sprintf (entry, sizeof(entry), " %i %i ", i, player->client->pers.teamState.location);
 			j = strlen(entry);
-			if (stringlength + j > sizeof(string))
+			if (stringlength + j > sizeof(string)) {
 				break;
+			}
 			strcpy (string + stringlength, entry);
 			stringlength += j;
 			cnt++;

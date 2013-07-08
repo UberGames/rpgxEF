@@ -1645,28 +1645,6 @@ void G_Client_AddScore( gentity_t* ent, int score );
 void G_Client_CalculateRanks( qboolean fromExit );
 
 /**
- *	Get location message for a client.
- * 
- * \param ent The client.
- * \param loc Location char.
- * \param loclen Length of location char.
- * \return Indicates success or fail.
- */
-qboolean G_Client_GetLocationMsg(gentity_t* ent, char* loc, int loclen);
-
-/**
- * Check client statuses.
- */
-void G_Client_CheckClientStatus(void);
-
-/**
- * Send client location information.
- *
- * \param ent The client.
- */
-void G_Client_LocationsMessage( gentity_t *ent );
-
-/**
  * Client command.
  *
  * \param clientNum Client num.

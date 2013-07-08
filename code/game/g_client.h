@@ -100,4 +100,19 @@ void G_Client_Disconnect( int32_t clientNum );
  */
 qboolean IsAdmin( gentity_t* ent );
 
+/**
+ *	Get location message for a client.
+ * 
+ * \param ent The client.
+ * \param loc Location char.
+ * \param loclen Length of location char.
+ * \return Indicates success or fail.
+ */
+qboolean G_Client_GetLocationMsg(gentity_t* ent, char* loc, int32_t loclen);
+
+/**
+ * Check client statuses.
+ */
+void G_Client_CheckClientStatus(void);
+
 #endif /* _G_CLIENT_H */
