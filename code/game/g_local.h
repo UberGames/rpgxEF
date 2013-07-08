@@ -1644,13 +1644,6 @@ void G_Client_AddScore( gentity_t* ent, int score );
  */
 void G_Client_CalculateRanks( qboolean fromExit );
 
-/**
- * Client command.
- *
- * \param clientNum Client num.
- */
-void G_Client_Command( int clientNum );
-
 //
 // g_svcmds.c
 //
