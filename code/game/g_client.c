@@ -1361,7 +1361,7 @@ char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) 
 					}
 
 					if ( (Q_stricmp( client->pers.ip, g_reconData[i].ipAddress ) == 0) 
-							&& (Q_stricmp( client->pers.netname, g_reconData[i].previousName ) != 0 ) {		
+							&& (Q_stricmp( client->pers.netname, g_reconData[i].previousName ) != 0 )) {		
 						trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " (With the previous name of %s" S_COLOR_WHITE ") connected\n\"", client->pers.netname, g_reconData[i].previousName) );
 						nameFound = qtrue;
 						break;
