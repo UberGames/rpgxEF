@@ -3207,7 +3207,6 @@ int		trap_GeneticParentsAndChildSelection(int numranks, float* ranks, int* paren
 \*=================*/
 
 qboolean LineOfSight( gentity_t* ent1, gentity_t* ent2 ); //Phenix
-qboolean IsAdmin( gentity_t* ent );
 qboolean IsBorg( gentity_t* ent ); //GSIO01 | 08/05/2009
 
 //TiM - load usables scan text

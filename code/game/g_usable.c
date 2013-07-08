@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "g_client.h"
 
 extern void InitMover( gentity_t *ent );
 extern gentity_t *G_TestEntityPosition( gentity_t *ent );

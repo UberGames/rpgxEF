@@ -2277,16 +2277,17 @@ RPG-X | Phenix | 21/11/2004
 */
 qboolean IsAdmin( gentity_t *ent)
 {
-	if ( !ent )
+	if ( ent == NULL ) {
 		return qfalse;
+	}
 
-	if ( !ent->client )
+	if ( ent->client == NULL ) {
 		return qfalse;
+	}
 
 	if (( g_classData[ent->client->sess.sessionClass].isAdmin ) ||
 		( ent->client->LoggedAsAdmin == qtrue ) ||
-		( ent->client->LoggedAsDeveloper == qtrue )
-		) {
+		( ent->client->LoggedAsDeveloper == qtrue )) {
 			return qtrue;
 	} else {
 		return qfalse;

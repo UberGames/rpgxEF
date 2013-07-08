@@ -92,4 +92,12 @@ void G_Client_Spawn( gentity_t* ent, int32_t rpgx_spawn, qboolean fromDeath );
  */
 void G_Client_Disconnect( int32_t clientNum );
 
+/**
+ *  Check if player is an admin.
+ *
+ * \param ent the player
+ * \return Whether player is admin.
+ */
+qboolean IsAdmin( gentity_t* ent );
+
 #endif /* _G_CLIENT_H */

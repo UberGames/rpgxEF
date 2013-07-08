@@ -246,7 +246,6 @@ RPG-X: Marcin: a little bit modified - 30/12/2008
 ==================
 */
 extern char *ClassNameForValue( pclass_t pClass );
-extern qboolean IsAdmin( gentity_t *ent);
 void G_Client_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath ) {
 	//---------------------
 	//RPG-X: RedTechie - Check to see if medics revive people and not respawn if true use my fake death insead :)
