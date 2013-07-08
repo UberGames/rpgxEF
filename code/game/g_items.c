@@ -2,6 +2,7 @@
 //
 #include "g_local.h"
 #include "g_client.h"
+#include "g_spawn.h"
 
 /*
 
