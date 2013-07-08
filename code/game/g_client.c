@@ -1191,24 +1191,30 @@ G_Client_Connect
 *	to the server machine, but qfalse on map changes and tournement
 *	restarts.
 */
-char *G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot ) {
-	char		*value;
-	gclient_t	*client;
+char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) {
+	char*		value = NULL;
+	char*		newClass = NULL;
+	char*		newRank = NULL;
+	char		ip[64]; //TiM : Saved the IP data for player recon feature
 	char		userinfo[MAX_INFO_STRING];
-	gentity_t	*ent;
+	gclient_t*	client = NULL;
+	gentity_t*	ent = NULL;
 	vmCvar_t	mapname;
 	vmCvar_t	sv_hostname;
+	int32_t		tmpScore = 0; //Without these, tonnes of proverbial shyte hits the fan if a bot connects O_o
+	int32_t		i = 0;
+	qboolean	changeRank = qfalse;
 	
-	char*		newRank;
-	int			tmpScore = 0; //Without these, tonnes of proverbial shyte hits the fan if a bot connects O_o
-	char*		newClass;
-	int			i;
-	char		ip[64]; //TiM : Saved the IP data for player recon feature
-	
+	ent = &g_entities[ clientNum ];
+	if(ent == NULL) {
+		return "Critical Error: Client entity was NULL";
+	}
+
+	memset(ip, 0, sizeof(ip));
+	memset(userinfo, 0, sizeof(userinfo));
+
 	trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
 	trap_Cvar_Register( &sv_hostname, "sv_hostname", "", CVAR_SERVERINFO | CVAR_ROM );
-
-	ent = &g_entities[ clientNum ];
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
@@ -1225,7 +1231,7 @@ char *G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	if ( !isBot )
 	{
  		value = Info_ValueForKey (userinfo, "password");
-		if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) && strcmp( g_password.string, value) != 0)
+		if ( g_password.string[0] && Q_stricmp( g_password.string, "none" ) != 0 && strcmp( g_password.string, value) != 0)
 		{
 			return "Invalid password";
 		}
@@ -1233,23 +1239,28 @@ char *G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 	//TiM: If need be, chack to see if any other players have the current name...
 	//evil impersonators and the likes
-	if ( rpg_uniqueNames.integer && !isBot ) {
+	if ( rpg_uniqueNames.integer != 0 && !isBot ) {
 		char name[36];
 		char oldName[36];
+
+		memset(name, 0, sizeof(name));
+		memset(oldName, 0, sizeof(oldName));
+
 		//get the name
 		value = Info_ValueForKey( userinfo, "name" );
 		//Clean the data
 		ClientCleanName( value, name, sizeof( name ) );
 		//Now, do a compare with all clients in the server
 		for (i = 0; i < MAX_CLIENTS; i++ ) {
-			if ( !g_entities[i].client || g_entities[i].client->pers.connected != CON_CONNECTED )
+			if ( (g_entities[i].client == NULL) || (g_entities[i].client->pers.connected != CON_CONNECTED) ) {
 				continue;
+			}
 
 			if ( g_entities[i].client->pers.netname[0] ) {
 
 				//local copy the string and work on that, else we risk wrecking other people's names
 				Q_strncpyz( oldName, g_entities[i].client->pers.netname, sizeof( oldName ) );
-				if ( !Q_stricmp( Q_CleanStr(name), Q_CleanStr(oldName) ) && !isBot ) {
+				if ( (Q_stricmp( Q_CleanStr(name), Q_CleanStr(oldName) ) == 0) && !isBot ) {
 					return "There is already a user with that name.";
 				}
 			}
@@ -1287,50 +1298,44 @@ char *G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		if ( isBot ) {
 			client->sess.sessionClass = 0;
 			client->ps.persistant[PERS_SCORE] = 1;
-		}
-		else {
+		} else {
 			newClass = Info_ValueForKey (userinfo, "ui_playerClass" );
 			newRank	= Info_ValueForKey (userinfo, "ui_playerRank" );
 
 			//Com_Printf( S_COLOR_RED "Data: %s %s\n", newClass, newRank );
 
-			if ( newClass[0] ) {
+			if ( newClass[0] != 0 ) {
 				client->sess.sessionClass = ValueNameForClass ( newClass ); //TiM: BOOYEAH! :)
 				//if class doesn't exist, default to 0
-				if ( client->sess.sessionClass < 0 )
+				if ( client->sess.sessionClass < 0 ) {
 					client->sess.sessionClass = 0;
-			}
-			else {
+				}
+			} else {
 				client->sess.sessionClass = 0;
 			}
 
-			{
-				qboolean	changeRank = qfalse;
+			for (i = 0; i < MAX_RANKS; i++ ) {
+				if ( rpg_startingRank.string[0] == 0 && newRank[0] != 0 ) {
+					if ( Q_stricmp( newRank, g_rankNames[i].consoleName ) == 0 ) {
+						tmpScore = i;//1 << i;
 
-				for (i = 0; i < MAX_RANKS; i++ ) {
-					if ( !rpg_startingRank.string[0] && newRank[0] ) {
-						if ( !Q_stricmp( newRank, g_rankNames[i].consoleName ) ) {
-							tmpScore = i;//1 << i;
-
-							if ( rpg_changeRanks.integer )
-								changeRank = qtrue;
-							break;
-						}
-					}
-					else
-					{
-						if (rpg_startingRank.string[0] && !Q_stricmp( g_rankNames[i].consoleName, rpg_startingRank.string ) ) {
-							tmpScore =i;// 1 << i;
+						if ( rpg_changeRanks.integer != 0 ) {
 							changeRank = qtrue;
-							break;
 						}
+						break;
+					}
+				} else {
+					if ((rpg_startingRank.string[0] != 0) && (Q_stricmp( g_rankNames[i].consoleName, rpg_startingRank.string ) == 0)) {
+						tmpScore = i;// 1 << i;
+						changeRank = qtrue;
+						break;
 					}
 				}
+			}
 					
-				if ( changeRank ) {
-					ent->client->UpdateScore = qtrue;
-					SetScore( ent, tmpScore );
-				}
+			if ( changeRank ) {
+				ent->client->UpdateScore = qtrue;
+				SetScore( ent, tmpScore );
 			}
 		}
 
@@ -1346,19 +1351,17 @@ char *G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	{
 		if ( !levelExiting )
 		{//no need to do this during level changes
-			qboolean nameFound=qfalse;
+			qboolean nameFound = qfalse;
 			
 			//Check to see if this player already connected on this server
-			if ( rpg_renamedPlayers.integer && !(ent->r.svFlags & SVF_BOT) ) {
-
+			if ( (rpg_renamedPlayers.integer != 0) && ((ent->r.svFlags & SVF_BOT) == 0) ) {
 				for ( i = 0; i < MAX_RECON_NAMES; i++ ) {
-					if ( !g_reconData[i].previousName[0] ) {
+					if ( g_reconData[i].previousName[0] == 0 ) {
 						continue;
 					}
 
-					if ( !Q_stricmp( client->pers.ip, g_reconData[i].ipAddress ) 
-							&& Q_stricmp( client->pers.netname, g_reconData[i].previousName ) )
-					{		
+					if ( (Q_stricmp( client->pers.ip, g_reconData[i].ipAddress ) == 0) 
+							&& (Q_stricmp( client->pers.netname, g_reconData[i].previousName ) != 0 ) {		
 						trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " (With the previous name of %s" S_COLOR_WHITE ") connected\n\"", client->pers.netname, g_reconData[i].previousName) );
 						nameFound = qtrue;
 						break;
@@ -1377,8 +1380,7 @@ char *G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		}
 	}
 
-	if ( g_gametype.integer >= GT_TEAM && client->sess.sessionTeam != TEAM_SPECTATOR )
-	{
+	if ( (g_gametype.integer >= GT_TEAM) && (client->sess.sessionTeam != TEAM_SPECTATOR )) {
 		BroadcastTeamChange( client, -1 );
 	}
 
@@ -1396,8 +1398,8 @@ char *G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot ) {
 extern holoData_t holoData;
 
 //! Think function for temporal entity that transmits the holodeck date to the client
-void holoTent_think(gentity_t *ent) {
-	if(!ent->count) {
+static void holoTent_think(gentity_t* ent) {
+	if(ent->count == 0) {
 		trap_SendServerCommand(ent-g_entities, va("holo_data %i", holoData.numProgs));
 		ent->count = 1;
 		ent->health = 0;
@@ -1432,7 +1434,7 @@ void holoTent_think(gentity_t *ent) {
 }
 
 //! Create a temporal entity that sends over the holodata to the client
-static void G_SendHoloData(int clientNum) {
+static void G_SendHoloData(int32_t clientNum) {
 	gentity_t *holoTent;
 
 	holoTent = G_Spawn();
@@ -1445,40 +1447,26 @@ static void G_SendHoloData(int clientNum) {
 }
 
 //! Think function for temporal entity that transmits the server change data and map change data for transporter UI
-void transTent_think(gentity_t *ent) {
-	char temp[MAX_STRING_CHARS];
-	int i;
+static void transTent_think(gentity_t* ent) {
+	char	temp[MAX_STRING_CHARS];
+	int32_t i;
 
 	memset(temp, 0, sizeof(temp));
 
 	for(i = 0; i < level.srvChangeData.count; i++) {
-		if(!temp[0])
+		if(temp[0] == 0) {
 			Com_sprintf(temp, sizeof(temp), "ui_trdata d%i\\%s\\", i, level.srvChangeData.name[i]);
-		else
+		} else {
 			Com_sprintf(temp, sizeof(temp), "%sd%i\\%s\\", temp, i, level.srvChangeData.name[i]);
+		}
 	}
 
 	trap_SendServerCommand(ent->target_ent-g_entities, temp);
-
-#if 0
-	memset(temp, 0, sizeof(temp));
-
-	for(i = 0; i < 16; i++) {
-		if(!mapChangeData.name[i][0]) break;
-		if(!temp[0])
-			Com_sprintf(temp, sizeof(temp), "a%i\\%s\\", i, mapChangeData.name[i]);
-		else
-			Com_sprintf(temp, sizeof(temp), "%sa%i\\%s\\", temp, i, mapChangeData.name[i]);
-	}
-
-	trap_SendServerCommand(ent->target_ent-g_entities, va("ui_trdata \"%s\"", temp));
-#endif
-
 	G_FreeEntity(ent);
 }
 
 //! creates an entity that transmits the server change data to the client 
-static void G_SendTransData(int clientNum) {
+static void G_SendTransData(int32_t clientNum) {
 	gentity_t *transTent;
 
 	transTent = G_Spawn();
@@ -1500,16 +1488,19 @@ G_Client_Begin
 *	to be placed into the level.  This will happen every level load,
 *	and on transition between teams, but doesn't happen on respawns
 */
-void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qboolean first ) {
-	gentity_t	*ent;
-	gclient_t	*client;
-	gentity_t	*tent;
-	gentity_t	*selfdestruct;
-	int			flags;
+void G_Client_Begin( int32_t clientNum, qboolean careAboutWarmup, qboolean isBot, qboolean first ) {
+	gentity_t*	ent = NULL;
+	gclient_t*	client = NULL;
+	gentity_t*	tent = NULL;
+	gentity_t*	selfdestruct = NULL;
+	int32_t		flags = 0;
 	qboolean	alreadyIn = qfalse;
-	int			score;
+	int32_t		score = 0;
 
 	ent = g_entities + clientNum;
+	if(ent == NULL) {
+		return;
+	}
 
 	if( ent->botDelayBegin ) {
 		G_QueueBotBegin( clientNum );
@@ -1527,8 +1518,7 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
 	ent->pain = 0;
 	ent->client = client;
 
-	if ( client->pers.connected == CON_CONNECTED )
-	{
+	if ( client->pers.connected == CON_CONNECTED ) {
 		alreadyIn = qtrue;
 	}
 	client->pers.connected = CON_CONNECTED;
@@ -1554,8 +1544,8 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
 	// locate ent at a spawn point
 	G_Client_Spawn( ent, 0, qfalse );//RPG-X: RedTechie - Modifyed
 
-	if ( client->sess.sessionTeam != TEAM_SPECTATOR /*&& g_holoIntro.integer==0 */ )
-	{	// Don't use transporter FX for spectators or those watching the holodoors.
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR) {	
+		// Don't use transporter FX for spectators or those watching the holodoors.
 		// send event
 
 		ent->client->ps.powerups[PW_QUAD] = level.time + 4000;
@@ -1571,47 +1561,48 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
 	//When a client connects, or if they enter admin or medics class
 	//ensure the relevant health data is sent to them, or else they'll
 	//see anomalies when scanning players
-	if ( client->sess.sessionTeam == TEAM_SPECTATOR || 
-			g_classData[client->sess.sessionClass].isMedical || 
-			g_classData[client->sess.sessionClass].isAdmin )
+	if ( (client->sess.sessionTeam == TEAM_SPECTATOR) || 
+			(g_classData[client->sess.sessionClass].isMedical) || 
+			(g_classData[client->sess.sessionClass].isAdmin) )
 	{
-		int			i;
+		int32_t		i = 0;
 		char		entry[16];
 		char		command[1024];
-		int			numPlayers;
+		int32_t		numPlayers = 0;
 		gentity_t	*player;
-		int			len;
-		int			cmdLen=0;
+		int32_t		len = 0;
+		int32_t		cmdLen=0;
 
-		numPlayers = 0;
-		command[0] = '\0';
+		memset(entry, 0, sizeof(entry));
+		memset(command, 0, sizeof(command));
 
-		for ( i=0; i<g_maxclients.integer; i++ )
+		for ( ; i < g_maxclients.integer; i++ )
 		{
 			player = g_entities + i;
 
-			if ( player == ent || !player->inuse )
+			if ( (player == NULL) || (player == ent) || !player->inuse ) {
 				continue;
+			}
 			
 			Com_sprintf( entry, sizeof(entry), " %i %i", i, player->health >= 0 ? player->health : 0 );
 			len = strlen( entry );
-			if ( cmdLen + len > sizeof( command ) )
+			if ( cmdLen + len > sizeof( command ) ) {
 				break;
+			}
 			strcpy( command + cmdLen, entry );
 			cmdLen += len;
 
 			numPlayers++;
 		}
 
-		if ( numPlayers > 0 )
+		if ( numPlayers > 0 ) {
 			trap_SendServerCommand( clientNum, va("hinfo %i%s", numPlayers, command) );
+		}
 	}
 
 	//RPG-X: RedTechie - But we dont care about warmup!
-	if ( careAboutWarmup )
-	{
-		if (level.restarted || g_restarted.integer)
-		{
+	if ( careAboutWarmup ) {
+		if (level.restarted || g_restarted.integer != 0) {
 			trap_Cvar_Set( "g_restarted", "0" );
 			level.restarted = qfalse;
 		}
@@ -1633,39 +1624,43 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
 	//the client and get it to encode it into our new key
 
 	//Scooter's filter list
-	if( Q_stricmp( ent->client->pers.ip, "localhost" )		//localhost
-		&& Q_strncmp( ent->client->pers.ip, "10.", 3 )		//class A
-		&& Q_strncmp( ent->client->pers.ip, "172.16.", 7 )	//class B
-		&& Q_strncmp( ent->client->pers.ip, "192.168.", 8 )	//class C
-		&& Q_strncmp( ent->client->pers.ip, "127.", 4 )		//loopback
-		&& Q_strncmp( ent->client->pers.ip, "169.254.", 8 )	//link-local
+	if( Q_stricmp( ent->client->pers.ip, "localhost" ) != 0			//localhost
+		&& Q_strncmp( ent->client->pers.ip, "10.", 3 )	!= 0		//class A
+		&& Q_strncmp( ent->client->pers.ip, "172.16.", 7 ) != 0		//class B
+		&& Q_strncmp( ent->client->pers.ip, "192.168.", 8 )	!= 0	//class C
+		&& Q_strncmp( ent->client->pers.ip, "127.", 4 )	!= 0		//loopback
+		&& Q_strncmp( ent->client->pers.ip, "169.254.", 8 )	!= 0	//link-local
 		)
 	{
-		char			userInfo[MAX_TOKEN_CHARS];
-		unsigned long	securityID;
+		char		userInfo[MAX_TOKEN_CHARS];
+		uint64_t	securityID = 0;
+
+		memset(userInfo, 0, sizeof(userInfo));
 
 		trap_GetUserinfo( clientNum, userInfo, sizeof( userInfo ) );
-		if ( !userInfo[0] )
+		if ( userInfo[0] == 0 ) {
 			return;
+		}
 
-		securityID = (unsigned)atoul( Info_ValueForKey( userInfo, "sv_securityCode" ) );
+		securityID = (uint64_t)atoul( Info_ValueForKey( userInfo, "sv_securityCode" ) );
 
-		if ( securityID <= 0 || securityID >= 0xffffffff )
-		{
+		if ( (securityID <= 0) || (securityID >= 0xffffffff) ) {
 			trap_SendServerCommand( clientNum, va( "configID %s", ent->client->pers.ip ) );
 		}
 	}
 
 	// send srv change data to ui
 	if(!isBot && first) {
-		if(level.srvChangeData.count > 0)
+		if(level.srvChangeData.count > 0) {
 			G_SendTransData(clientNum);
+		}
 	}
 
 	// send holo data to ui
 	if(!isBot && first) {
-		if(holoData.numProgs)
+		if(holoData.numProgs) {
 			G_SendHoloData(clientNum);
+		}
 	}
 
 	//RPG-X: Marcin: show the server motd - 15/12/2008
@@ -1674,18 +1669,20 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
 	}
 
     if ( !isBot ) {
-		qboolean last = qfalse;
-        int len;
-        fileHandle_t file;
-		char *p, *q;
+		qboolean		last = qfalse;
+        int32_t			len = 0;
+        fileHandle_t	file = 0;
+		char*			p = NULL;
+		char*			q = NULL;
         char buf[16000]; // TODO move to heap ?
 
         len = trap_FS_FOpenFile( rpg_motdFile.string, &file, FS_READ );
-        if (!file || !len) {
+        if (file == 0 || len == 0) {
             trap_SendServerCommand( ent->s.number, va("motd_line \"^1%s not found or empty^7\"", rpg_motdFile.string) );
 			return;
         }
 
+		memset(buf, 0, sizeof(buf));
         trap_FS_Read( buf, len, file );
 
 		p = &buf[0];
@@ -1712,102 +1709,79 @@ void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qb
     }
 	//we may currently be selfdestructing, so send stuff for that case
 	selfdestruct = G_Find(NULL, FOFS(classname), "target_selfdestruct");
-	if(selfdestruct && selfdestruct->spawnflags & 1)
+	if((selfdestruct != NULL) && ((selfdestruct->spawnflags & 1) != 0)) {
 		trap_SendServerCommand(ent->s.number, va("selfdestructupdate %i", selfdestruct->damage - level.time));
-	else
+	} else {
 		trap_SendServerCommand(ent->s.number, va("selfdestructupdate %i", -1));
+	}
 }
 
-// WEAPONS - PHENIX1
-void G_Client_WeaponsForClass ( gclient_t *client, pclass_t pclass )
+/**
+ * Get weapons for a class.
+ *
+ * \param client The client.
+ * \param pclass Class to get weapons for.
+ * \author PHENIX1
+ */
+static void G_Client_WeaponsForClass ( gclient_t* client, pclass_t pclass )
 {
-	int		i;
-	int		Bits;
+	int32_t i = WP_1;
+	int32_t	Bits = 0;
 
 	Bits = ( 1 << WP_1);
 	Bits |= g_classData[pclass].weaponsFlags;
 
-	for ( i = WP_1; i < MAX_WEAPONS; i++ ) {
+	for ( ; i < MAX_WEAPONS; i++ ) {
 		//if we want no weapons and aren't an admin, skip this particular weapon
-		if ( rpg_noweapons.integer != 0 && !g_classData[pclass].isAdmin/*pclass != PC_ADMIN*/ ) {
-			if ( i >= WP_5 && i <= WP_10 ) {
+		if ( (rpg_noweapons.integer != 0) && !g_classData[pclass].isAdmin ) {
+			if ( (i >= WP_5) && (i <= WP_10) ) {
 				continue;
 			}
 		}
 		
-		if ( Bits & ( 1 << i ) ) {
+		if ( (Bits & ( 1 << i )) != 0 ) {
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << i );
 			client->ps.ammo[i] = Min_Weapon(i);
 		}
 	}
 }
 
-void G_Client_HoldablesForClass ( gclient_t *client, pclass_t pclass )
+/**
+ * Get holdable items for a class.
+ *
+ * \param client The client.
+ * \param pclass Class for which to get holdables.
+ */
+static void G_Client_HoldablesForClass ( gclient_t* client, pclass_t pclass )
 {
-	if ( g_classData[pclass].isMarine )
+	if ( g_classData[pclass].isMarine ) {
 		client->ps.stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable( HI_TRANSPORTER ) - bg_itemlist;
-
-	else if ( g_classData[pclass].isAdmin )
+	} else if ( g_classData[pclass].isAdmin ) {
 		client->ps.stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable( HI_SHIELD ) - bg_itemlist;
+	}
 }
 
-void G_Client_StoreClientInitialStatus( gentity_t *ent )
+void G_Client_StoreClientInitialStatus( gentity_t* ent )
 {
-	char	userinfo[MAX_INFO_STRING];
+	char userinfo[MAX_INFO_STRING];
 
-	if ( clientInitialStatus[ent->s.number].initialized )
-	{//already set
+	if ( clientInitialStatus[ent->s.number].initialized ) {
+		//already set
 		return;
 	}
 
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
-	{//don't store their data if they're just a spectator
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+		//don't store their data if they're just a spectator
 		return;
 	}
 
+	memset(userinfo, 0, sizeof(userinfo));
 	trap_GetUserinfo( ent->s.number, userinfo, sizeof( userinfo ) );
 	Q_strncpyz( clientInitialStatus[ent->s.number].model, Info_ValueForKey (userinfo, "model"), sizeof( clientInitialStatus[ent->s.number].model ) );
 	clientInitialStatus[ent->s.number].pClass = ent->client->sess.sessionClass;
 	clientInitialStatus[ent->s.number].team = ent->client->sess.sessionTeam;
 	clientInitialStatus[ent->s.number].initialized = qtrue;
 	ent->client->classChangeDebounceTime = 0;
-}
-
-void G_RestoreClientInitialStatus( gentity_t *ent )
-{
-	char	userinfo[MAX_INFO_STRING];
-	clientSession_t *sess;
-
-	if ( !clientInitialStatus[ent->s.number].initialized )
-	{//not set
-		return;
-	}
-
-	sess = &ent->client->sess;
-
-	trap_GetUserinfo( ent->s.number, userinfo, sizeof( userinfo ) );
-
-	if ( clientInitialStatus[ent->s.number].team != sess->sessionTeam &&
-		 clientInitialStatus[ent->s.number].pClass != sess->sessionClass )
-	{
-		SetClass( ent, ClassNameForValue( clientInitialStatus[ent->s.number].pClass ), (char *)TeamName( clientInitialStatus[ent->s.number].team ), qtrue );
-	}
-	else
-	{
-		if ( clientInitialStatus[ent->s.number].pClass != sess->sessionClass )
-		{
-			SetClass( ent, ClassNameForValue( clientInitialStatus[ent->s.number].pClass ), NULL, qtrue);
-		}
-		if ( clientInitialStatus[ent->s.number].team != sess->sessionTeam )
-		{
-			SetTeam( ent, (char *)TeamName( clientInitialStatus[ent->s.number].team ) );
-		}
-	}
-	if ( Q_stricmp( clientInitialStatus[ent->s.number].model, Info_ValueForKey (userinfo, "model") ) != 0 )
-	{//restore the model
-		Info_SetValueForKey( userinfo, "model", clientInitialStatus[ent->s.number].model );
-		trap_SetUserinfo( ent->s.number, userinfo );
-	}
 }
 
 /*
@@ -1822,22 +1796,28 @@ Modifyed By: RedTechie
 And also by Marcin - 30/12/2008
 ============
 */
-void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
-	int		index=0;
-	vec3_t	spawn_origin, spawn_angles;
-	gclient_t	*client=NULL;
-	int		i=0;
+void G_Client_Spawn(gentity_t* ent, int32_t rpgx_spawn, qboolean fromDeath ) {
+	int32_t				index = 0;
+	int32_t				i = 0;
+	int32_t				persistant[MAX_PERSISTANT];
+	int32_t				flags = 0;
+	int32_t				savedPing = 0;
+	int32_t				cCDT = 0;
+	int32_t				clientNum = 0;
+	vec3_t				spawn_origin;
+	vec3_t				spawn_angles;
+	gclient_t*			client = NULL;
 	clientPersistant_t	saved;
 	clientSession_t		savedSess;
-	int		persistant[MAX_PERSISTANT];
-	gentity_t	*spawnPoint=NULL;
-	int		flags = 0;
-	int		savedPing;
-	pclass_t	pClass = 0;//PC_NOCLASS;
-	int		cCDT = 0;
-	int clientNum;
-	pclass_t oClass;
+	gentity_t*			spawnPoint = NULL;
+	pclass_t			pClass = 0;
+	pclass_t			oClass = 0;
 
+	if(ent == NULL) {
+		return;
+	}
+
+	memset(persistant, 0, sizeof(persistant));
 	index = ent - g_entities;
 	client = ent->client;
 	clientNum = ent->client->ps.clientNum;
@@ -1847,8 +1827,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	// ranging doesn't count this client
 	if(rpgx_spawn != 1){//RPG-X: RedTechie - Make sure the spawn is regular spawn or spawn at current position (rpgx_spawn = current possition)
 		if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
-			spawnPoint = SelectSpectatorSpawnPoint (
-				spawn_origin, spawn_angles);
+			spawnPoint = SelectSpectatorSpawnPoint (spawn_origin, spawn_angles);
 		} else {
 			do {
 				// the first spawn should be at a good looking spot
@@ -1857,18 +1836,16 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 					spawnPoint = SelectInitialSpawnPoint( spawn_origin, spawn_angles );
 				} else {
 					// don't spawn near existing origin if possible
-					spawnPoint = G_Client_SelectSpawnPoint (
-						client->ps.origin,
-						spawn_origin, spawn_angles);
+					spawnPoint = G_Client_SelectSpawnPoint (client->ps.origin, spawn_origin, spawn_angles);
 				}
 
 				// Tim needs to prevent bots from spawning at the initial point
 				// on q3dm0...
-				if ( ( spawnPoint->flags & FL_NO_BOTS ) && ( ent->r.svFlags & SVF_BOT ) ) {
+				if ( (( spawnPoint->flags & FL_NO_BOTS ) != 0) && (( ent->r.svFlags & SVF_BOT ) != 0) ) {
 					continue;	// try again
 				}
 				// just to be symetric, we have a nohumans option...
-				if ( ( spawnPoint->flags & FL_NO_HUMANS ) && !( ent->r.svFlags & SVF_BOT ) ) {
+				if ( (( spawnPoint->flags & FL_NO_HUMANS ) != 0) && (( ent->r.svFlags & SVF_BOT ) == 0) ) {
 					continue;	// try again
 				}
 
@@ -1876,7 +1853,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 
 			} while ( 1 );
 		}
-	}//RPG-X: RedTechie - End rpgx_spawn check
+	} //RPG-X: RedTechie - End rpgx_spawn check
 	client->pers.teamState.state = TEAM_ACTIVE;
 
 	// toggle the teleport bit so the client knows to not lerp
@@ -1896,8 +1873,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	//okay, this is hacky, but we need to keep track of this, even if uninitialized first time you spawn, it will be stomped anyway
 	//RPG-X: RedTechie - Damn thing screwed my function up
 	if(rpgx_spawn != 1){
-		if ( client->classChangeDebounceTime )
-		{
+		if ( client->classChangeDebounceTime ) {
 			cCDT = client->classChangeDebounceTime;
 		}
 		memset (client, 0, sizeof(*client));
@@ -1912,12 +1888,12 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	}
 
 	// increment the spawncount so the client will detect the respawn
-	if(rpgx_spawn != 1){
+	if(rpgx_spawn != 1) {
 		client->ps.persistant[PERS_SPAWN_COUNT]++;
 		client->airOutTime = level.time + 12000;
 	}
 
-	if(client->sess.sessionTeam != TEAM_SPECTATOR){
+	if(client->sess.sessionTeam != TEAM_SPECTATOR) {
 		client->sess.sessionTeam = TEAM_FREE;
 	}
 	client->ps.persistant[PERS_TEAM] = client->sess.sessionTeam;
@@ -1942,7 +1918,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	ent->watertype = 0;
 	ent->flags = 0;
 
-	if(rpgx_spawn != 1){
+	if(rpgx_spawn != 1) {
 		VectorCopy (playerMins, ent->r.mins);
 		VectorCopy (playerMaxs, ent->r.maxs);
 	}
@@ -1954,33 +1930,33 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 
 	oClass = client->sess.sessionClass;
 
-	if ( oClass != client->sess.sessionClass )
-	{//need to send the class change
+	if ( oClass != client->sess.sessionClass ) {
+		//need to send the class change
 		G_Client_UserinfoChanged( client->ps.clientNum );
 	}
 
 	client->ps.persistant[PERS_CLASS] = client->sess.sessionClass;
 	pClass = client->sess.sessionClass;
 
-	if ( pClass != 0 )
-	{//no health boost on spawn for playerclasses
+	if ( pClass != 0 ) {
+		//no health boost on spawn for playerclasses
 		ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
 	}
 		
-	if ( !fromDeath || !rpg_dropOnDeath.integer || !rpg_allowWeaponDrop.integer ) {
+	if ( !fromDeath || (rpg_dropOnDeath.integer == 0) || (rpg_allowWeaponDrop.integer == 0) ) {
 		G_Client_WeaponsForClass( client, pClass );
 	} else { // Marcin: just a hand
 		G_Client_WeaponsForClass( client, 0 );
 	}
 	G_Client_HoldablesForClass( client, pClass );
 	
-	if(rpgx_spawn != 1){
+	if(rpgx_spawn != 1) {
 		G_SetOrigin( ent, spawn_origin );
 		VectorCopy( spawn_origin, client->ps.origin );
 	}
 
 	// the respawned flag will be cleared after the attack and jump keys come up
-	if(rpgx_spawn != 1){
+	if(rpgx_spawn != 1) {
 		client->ps.pm_flags |= PMF_RESPAWNED;
 	}
 
@@ -1989,7 +1965,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 		G_Client_SetViewAngle( ent, spawn_angles );
 	}
 	
-	if(rpgx_spawn != 1){
+	if(rpgx_spawn != 1) {
 		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
 
 		} else {
@@ -2007,7 +1983,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 	client->ps.pm_time = 100;
 
-	if(rpgx_spawn != 1){
+	if(rpgx_spawn != 1) {
 		client->respawnTime = level.time;
 	}
 
@@ -2024,7 +2000,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 		MoveClientToIntermission( ent );
 	} else {
 		// fire the targets of the spawn point
-		if(rpgx_spawn != 1){
+		if(rpgx_spawn != 1) {
 			G_UseTargets( spawnPoint, ent );
 		}
 
@@ -2045,7 +2021,7 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	// positively link the client, even if the command times are weird
 	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
-		if(rpgx_spawn != 1){
+		if(rpgx_spawn != 1) {
 			VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		}
 		trap_LinkEntity( ent );
@@ -2062,10 +2038,9 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	//FIXME: externalize all this text!
 	//FIXME: make the gametype titles be graphics!
 	//FIXME: make it do this on a map_restart also
-	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
-	{//spectators just get the title of the game
-		switch ( g_gametype.integer )
-		{
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+		//spectators just get the title of the game
+		switch ( g_gametype.integer ) {
 		case GT_FFA:				// free for all
 			trap_SendServerCommand( ent-g_entities, va("cp \"%s\"", rpg_welcomemessage.string )  );
 			break;
@@ -2082,13 +2057,10 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 			trap_SendServerCommand( ent-g_entities, va("cp \"%s\"", rpg_welcomemessage.string )  );
 			break;
 		}
-	}
-	else
-	{
-		if ( !clientInitialStatus[ent->s.number].initialized )
-		{//first time coming in
-			switch ( g_gametype.integer )
-			{
+	} else {
+		if ( !clientInitialStatus[ent->s.number].initialized ) {
+			//first time coming in
+			switch ( g_gametype.integer ) {
 			case GT_FFA:				// free for all
 				trap_SendServerCommand( ent-g_entities, va("cp \"%s\"", rpg_welcomemessage.string ) );
 				break;
@@ -2108,41 +2080,43 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 		}
 	}
 
-	if(rpgx_spawn) {
-		if ( client->sess.sessionTeam == TEAM_SPECTATOR || 
+	if(rpgx_spawn != 0) {
+		if ( (client->sess.sessionTeam == TEAM_SPECTATOR) || 
 				g_classData[client->sess.sessionClass].isMedical || 
-				g_classData[client->sess.sessionClass].isAdmin )
-		{
-			int			l;
+				g_classData[client->sess.sessionClass].isAdmin ) {
+			int32_t		l = 0;
+			int32_t		numPlayers = 0;
+			int32_t		len = 0;
+			int32_t		cmdLen=0;
 			char		entry[16];
 			char		command[1024];
-			int			numPlayers;
-			gentity_t	*player;
-			int			len;
-			int			cmdLen=0;
+			gentity_t*	player = NULL;
 
-			numPlayers = 0;
-			command[0] = '\0';
+			memset(entry, 0, sizeof(entry));
+			memset(command, 0, sizeof(entry));
 
-			for ( l=0; l<g_maxclients.integer; l++ )
+			for ( ; l < g_maxclients.integer; l++ )
 			{
 				player = g_entities + l;
 
-				if ( player == ent || !player->inuse )
+				if ( (player == NULL) || (player == ent) || !player->inuse ) {
 					continue;
+				}
 				
 				Com_sprintf( entry, sizeof(entry), " %i %i", l, player->health >= 0 ? player->health : 0 );
 				len = strlen( entry );
-				if ( cmdLen + len > sizeof( command ) )
+				if ( cmdLen + len > sizeof( command ) ) {
 					break;
+				}
 				strcpy( command + cmdLen, entry );
 				cmdLen += len;
 
 				numPlayers++;
 			}
 
-			if ( numPlayers > 0 )
+			if ( numPlayers > 0 ) {
 				trap_SendServerCommand( clientNum, va("hinfo %i%s", numPlayers, command) );
+			}
 		}
 	}
 
@@ -2152,39 +2126,6 @@ void G_Client_Spawn(gentity_t *ent, int rpgx_spawn, qboolean fromDeath ) {
 	G_Client_StoreClientInitialStatus( ent );
 
 	//RPG-X: Marcin: stuff was here previously - 22/12/2008
-}
-
-gentity_t *SpawnBeamOutPlayer( gentity_t	*ent ) {
-		gentity_t	*body;
-	
-		body = G_Spawn();
-		body->physicsBounce = 0.0f;//bodys are *not* bouncy
-		VectorCopy( ent->client->ps.origin, body->s.origin );
-		body->r.mins[2] = -24;//keep it off the floor
-		VectorCopy( ent->client->ps.viewangles, body->s.angles );
-		body->s.clientNum = ent->client->ps.clientNum;
-
-		//--------------------------- SPECIALIZED body SETUP
-		body->count = 12;						// about 1 minute before dissapear
-		body->nextthink = level.time + 4000;	// think after 4 seconds
-		body->parent = ent;
-
-		(body->s).eType = (ent->s).eType;		// set to type PLAYER
-		(body->s).eFlags= (ent->s).eFlags;
-
-		body->s.weapon = ent->s.weapon;		// get Player's Wepon Type
-
-		body->s.apos = ent->s.apos;			// copy angle of player to body
-
-		//TiM: Set it's anim to whatever anims we're playing right now
-		body->s.legsAnim = ent->client->ps.stats[LEGSANIM];
-		body->s.torsoAnim= ent->client->ps.stats[TORSOANIM];
-
-		//--------------------------- WEAPON ADJUST
-		if (body->s.weapon==WP_5 || body->s.weapon==WP_13)
-			body->s.weapon = WP_6;
-
-		return body;
 }
 
 /*
@@ -2199,13 +2140,13 @@ call trap_DropClient(), which will call this and do
 server system housekeeping.
 ============
 */
-void G_Client_Disconnect( int clientNum ) {
-	gentity_t	*ent;
-	gentity_t	*tent;
-	int			i;
+void G_Client_Disconnect( int32_t clientNum ) {
+	gentity_t*	ent = NULL;
+	gentity_t*	tent = NULL;
+	int32_t		i = 0;
 
 	ent = g_entities + clientNum;
-	if ( !ent->client ) {
+	if ( (ent = NULL) || (ent->client == NULL) ) {
 		return;
 	}
 
@@ -2224,17 +2165,17 @@ void G_Client_Disconnect( int clientNum ) {
 	g_entities[clientNum].client->noclip = qfalse;  
 
 	//TiM: Log the player's IP and name.  If they reconnect again, it'll announce their deceipt >:)
-	if ( rpg_renamedPlayers.integer && !(ent->r.svFlags & SVF_BOT) ) {
-		int			l;
-		qboolean	foundName=qfalse;
+	if ( (rpg_renamedPlayers.integer != 0) && ((ent->r.svFlags & SVF_BOT) == 0) ) {
+		int32_t		l = 0;
+		qboolean	foundName = qfalse;
 
 		//Do a chek to see if this player has disconnected b4.  else we'll be wasting a slot.
-		for ( l = 0; l < MAX_RECON_NAMES; l++ ) {
-			if ( !g_reconData[l].ipAddress[0] ) {
+		for ( ; l < MAX_RECON_NAMES; l++ ) {
+			if ( g_reconData[l].ipAddress[0] == 0 ) {
 				continue;
 			}
 
-			if ( !Q_stricmp( ent->client->pers.ip, g_reconData[l].ipAddress ) ) {
+			if ( Q_stricmp( ent->client->pers.ip, g_reconData[l].ipAddress ) == 0 ) {
 				foundName=qtrue;
 				break;
 			}
@@ -2247,8 +2188,7 @@ void G_Client_Disconnect( int clientNum ) {
 			Q_strncpyz( g_reconData[i].ipAddress, ent->client->pers.ip, sizeof( g_reconData[i].ipAddress ) );
 			//Player Name
 			Q_strncpyz( g_reconData[i].previousName, ent->client->pers.netname, sizeof( g_reconData[i].previousName ) );
-		}
-		else {
+		} else {
 			memset( &g_reconData[g_reconNum], 0, sizeof( g_reconData[g_reconNum] ) );
 
 			//IP Address
@@ -2266,8 +2206,8 @@ void G_Client_Disconnect( int clientNum ) {
 	}
 
 	// send effect if they were completely connected
-	if ( ent->client->pers.connected == CON_CONNECTED
-		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( (ent->client->pers.connected == CON_CONNECTED)
+		&& (ent->client->sess.sessionTeam != TEAM_SPECTATOR) ) {
 		vec3_t	org;
 
 		VectorCopy( ent->client->ps.origin, org );
@@ -2284,14 +2224,13 @@ void G_Client_Disconnect( int clientNum ) {
 	G_LogPrintf( "ClientDisconnect: %i (%s)\n", clientNum, g_entities[clientNum].client->pers.ip );
 
 	// if we are playing in tourney mode and losing, give a win to the other player
-	if ( g_gametype.integer == GT_TOURNAMENT && !level.intermissiontime
-		&& !level.warmupTime && level.sortedClients[1] == clientNum ) {
+	if ( (g_gametype.integer == GT_TOURNAMENT) && (level.intermissiontime == 0)
+		&& (level.warmupTime == 0) && (level.sortedClients[1] == clientNum) ) {
 		level.clients[ level.sortedClients[0] ].sess.wins++;
 		G_Client_UserinfoChanged( level.sortedClients[0] );
 	}
 
-	if ( g_gametype.integer == GT_TOURNAMENT && ent->client->sess.sessionTeam == TEAM_FREE && level.intermissiontime )
-	{
+	if ( (g_gametype.integer == GT_TOURNAMENT) && (ent->client->sess.sessionTeam == TEAM_FREE) && (level.intermissiontime != 0) ) {
 		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
 		level.restarted = qtrue;
 		level.intermissiontime = 0;
@@ -2312,7 +2251,7 @@ void G_Client_Disconnect( int clientNum ) {
 
 	G_Client_CalculateRanks( qfalse );
 
-	if ( ent->r.svFlags & SVF_BOT ) {
+	if ( (ent->r.svFlags & SVF_BOT) != 0 ) {
 		BotAIShutdownClient( clientNum );
 	}
 

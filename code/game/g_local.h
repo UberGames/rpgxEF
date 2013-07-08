@@ -1619,15 +1619,6 @@ void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to );
 void G_Client_BeginIntermission(void);
 
 /**
- * Spawn client.
- *
- * \param ent Client to spawn
- * \param rpgx_spawn rpgx_spawn
- * \param fromDeath Is this a spawn from death?
- */
-void G_Client_Spawn( gentity_t* ent, int rpgx_spawn, qboolean fromDeath );
-
-/**
  * Let the client die.
  *
  * \param self Client.
@@ -1654,29 +1645,6 @@ void G_Client_AddScore( gentity_t* ent, int score );
 void G_Client_CalculateRanks( qboolean fromExit );
 
 /**
- * Get weapons for a class.
- *
- * \param client The client.
- * \param pclass Class to get weapons for.
- */
-void G_Client_WeaponsForClass( gclient_t* client, pclass_t pclass );
-
-/**
- * Get holdable items for a class.
- *
- * \param client The client.
- * \param pclass Class for which to get holdables.
- */
-void G_Client_HoldablesForClass( gclient_t* client, pclass_t pclass );
-
-/**
- * Store the clients initial status.
- *
- * \param ent The client.
- */
-void G_Client_StoreClientInitialStatus( gentity_t* ent );
-
-/**
  *	Get location message for a client.
  * 
  * \param ent The client.
@@ -1697,32 +1665,6 @@ void G_Client_CheckClientStatus(void);
  * \param ent The client.
  */
 void G_Client_LocationsMessage( gentity_t *ent );
-
-/**
- * Client connect.
- *
- * \param clientNum Client num.
- * \param firstTime Indicate whether this was the first connect.
- * \param isBot Indicate if bot or player.
- */
-/*@shared@*/ char* G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot );
-
-/**
- * Disconnect client.
- *
- * \param clientNum Client num.
- */
-void G_Client_Disconnect( int clientNum );
-
-/**
- * Initialize client.
- *
- * \param clientNum Client num.
- * \param careAboutWarmup Indicate whether to care about warm up.
- * \param isBot Bot or client?
- * \param first First time?
- */
-void G_Client_Begin( int clientNum, qboolean careAboutWarmup, qboolean isBot, qboolean first );
 
 /**
  * Client command.
