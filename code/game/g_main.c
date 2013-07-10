@@ -6,8 +6,9 @@
 #include "g_groups.h"
 #include "g_client.h"
 #include "g_spawn.h"
-#include "bg_lex.h"
 #include "g_cmds.h"
+#include "g_items.h"
+#include "bg_lex.h"
 #include "bg_misc.h"
 
 extern void BG_LoadItemNames(void);

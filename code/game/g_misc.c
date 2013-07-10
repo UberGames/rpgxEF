@@ -5,6 +5,7 @@
 #include "g_local.h"
 #include "g_client.h"
 #include "g_spawn.h"
+#include "g_items.h"
 
 
 /*QUAKED func_group (0 0 0) ?

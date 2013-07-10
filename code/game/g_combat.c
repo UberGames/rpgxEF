@@ -7,6 +7,7 @@
 #include "g_main.h"
 #include "g_cmds.h"
 #include "g_client.h"
+#include "g_items.h"
 
 /*
 ============

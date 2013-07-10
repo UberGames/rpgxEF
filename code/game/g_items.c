@@ -1,5 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
+
+#include "g_items.h"
 #include "g_local.h"
 #include "g_client.h"
 #include "g_spawn.h"
@@ -113,7 +115,16 @@ int Min_Weapon(int num)
 	}
 }
 
-void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
+/**
+ * Add a new padd.
+ *
+ * \param key entity
+ * \param who owner of the padd
+ * \param txt text of the padd
+ * \author Ubergames - Marcin
+ * \date 06/12/2008
+ */
+static void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
 {
     int i = 0;
     char *txtp;
@@ -153,7 +164,16 @@ void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
     ++paddDataNum;
 }
 
-char *Padd_Get( gentity_t *key, gentity_t *who )
+/**
+ * Pickup padd.
+ *
+ * \param key entity
+ * \param who Who picked up the padd.
+ * \return Text of the padd.
+ * \author Ubergames - Marcin
+ * \date 06/12/2008
+ */
+static char *Padd_Get( gentity_t *key, gentity_t *who )
 {
     int i, j;
     for ( i = 0; i < PADD_DATA_MAX; ++i ) {
@@ -177,7 +197,14 @@ char *Padd_Get( gentity_t *key, gentity_t *who )
     return 0;
 }
 
-void Padd_Remove( gentity_t *key )
+/**
+ * Remove a padd.
+ *
+ * \param key entity
+ * \author Ubergames - Marcin
+ * \date 06/12/2008
+ */
+static void Padd_Remove( gentity_t *key )
 {
     int i = 0;
 
@@ -330,6 +357,13 @@ int Pickup_Holdable( gentity_t *ent, gentity_t *other )
 
 //======================================================================
 
+/**
+ * Add ammo for a weapon to a player.
+ *
+ * \param ent The player.
+ * \param weapon For which weapon.
+ * \param count Ammount of ammo.
+ */
 void Add_Ammo (gentity_t *ent, int weapon, int count)
 {
 	playerState_t *ps = &ent->client->ps;
@@ -435,7 +469,12 @@ int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
 
 //======================================================================
 
-void RespawnItem( gentity_t *ent ) {
+/**
+ * Repsawn an item.
+ *
+ * \param ent The item.
+ */
+static void RespawnItem( gentity_t *ent ) {
 	if(!ent) return;
 
 	// randomly select from teamed entities
@@ -481,7 +520,14 @@ void RespawnItem( gentity_t *ent ) {
 }
 
 
-void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
+/**
+ * Touch function for items.
+ *
+ * \param ent The entity for the item.
+ * \param other The touching entity.
+ * \param trace A trace.
+ */
+static void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	int			respawn;
 
 	if (!other->client)
@@ -738,7 +784,13 @@ void Use_Item( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 
 //======================================================================
 
-void FinishSpawningItem( gentity_t *ent ) {
+/**
+ * Traces down to find where an item should rest, instead of letting them
+ * free fall from their spawn points
+ *
+ * \param ent Entity for the item.
+ */
+static void FinishSpawningItem( gentity_t *ent ) {
 	trace_t		tr;
 	vec3_t		dest;
 

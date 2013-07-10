@@ -1048,6 +1048,7 @@ Cmd_Ready_f
 *	(see ClientIntermissionThink())
 *
 *	when all clients have signaled ready, the game continues to the next match.
+*  \param ent A player.
 */
 void Cmd_Ready_f (gentity_t *ent)
 {
