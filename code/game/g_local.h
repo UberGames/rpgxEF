@@ -2910,8 +2910,8 @@ qboolean IsBorg( gentity_t* ent ); //GSIO01 | 08/05/2009
 qboolean G_SetupUsablesStrings( void );
 
 //RPG-X: Marcin: for easier lookup - 30/12/2008
-int Max_Weapon(int num);
-int Min_Weapon(int num);
+int32_t Max_Weapon(int32_t num);
+int32_t Min_Weapon(int32_t num);
 //! Max ammount of weapons a player can have for each weapons
 extern vmCvar_t* Max_Weapons[];
 //! Min ammount of weapons a player can have for each weapons

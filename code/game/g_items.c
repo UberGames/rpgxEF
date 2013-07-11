@@ -70,8 +70,8 @@ vmCvar_t *Min_Weapons[WP_NUM_WEAPONS] = {
 
 // RPG-X: Marcin: Definitions of the PADD messaging system data structures - 06/12/2008
 paddData_t	paddData[PADD_DATA_MAX];
-int			paddDataNum = 0;
-int			numTotalDropped = 0;
+int32_t		paddDataNum = 0;
+int32_t		numTotalDropped = 0;
 
 /*
 ===============
@@ -85,7 +85,7 @@ RPG-X | Marcin | 06/12/2008
 *	\author Ubergames - Marcin
 *	\date 06/12/2008
 */
-int Max_Weapon(int num)
+int32_t Max_Weapon(int32_t num)
 {
 	if ( Max_Weapons[num] == NULL ) {
 		return 1;
@@ -106,7 +106,7 @@ RPG-X | Marcin | 06/12/2008
 *	\author Ubergames - Marcin
 *	\date 06/12/2008
 */
-int Min_Weapon(int num)
+int32_t Min_Weapon(int32_t num)
 {
 	if ( Min_Weapons[num] == NULL ) {
 		return 1;
@@ -126,13 +126,13 @@ int Min_Weapon(int num)
  */
 static void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
 {
-    int i = 0;
-    char *txtp;
-    paddData_t *empty = 0;
+    int32_t		i = 0;
+    char*		txtp = NULL;
+    paddData_t*	empty = NULL;
 
     DPRINTF(( S_COLOR_YELLOW "in Padd_Add: txt = %s and last = %s\n", txt, who->client->lastPaddMsg ));
 
-    while ( !empty ) {
+    while ( empty == NULL ) {
         if ( i >= PADD_DATA_MAX ) {
             G_Printf( S_COLOR_RED "Padd_Add: Too much PADDs!\n" S_COLOR_WHITE );
             return;
@@ -146,16 +146,16 @@ static void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
     DPRINTF(( S_COLOR_YELLOW "added: %i with %s on nr %i\n" S_COLOR_WHITE, key, txt, i - 1));
 
     empty->key = key;
-    if ( txt && txt[0] ) {
+    if ( (txt != NULL) && (txt[0] != 0) ) {
         txtp = txt;
         Q_strncpyz( who->client->lastPaddMsg, txt, sizeof( who->client->lastPaddMsg ) );
-    } else if ( who->client->lastPaddMsg && who->client->lastPaddMsg[0] ) {
+    } else if ( who->client->lastPaddMsg[0] != 0 ) {
         txtp = who->client->lastPaddMsg;
     } else {
         txtp = 0;
     }
 
-    if (txtp) {
+    if (txtp != NULL) {
         Q_strncpyz( empty->value, txtp, sizeof( empty->value ) );
     }
 
@@ -173,28 +173,32 @@ static void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
  * \author Ubergames - Marcin
  * \date 06/12/2008
  */
-static char *Padd_Get( gentity_t *key, gentity_t *who )
+static char* Padd_Get( gentity_t* key, gentity_t* who )
 {
-    int i, j;
-    for ( i = 0; i < PADD_DATA_MAX; ++i ) {
-        if ( paddData[i].key == key ) {
-            DPRINTF(("^3got: %i with %s on nr %i\n", key, paddData[i].value, i));
-            //Inform admins
-            for ( j = 0; j < level.maxclients; ++j ) {
-                gentity_t *player = &g_entities[j];
-                if ( !player->client->noAdminChat && IsAdmin( player ) && rpg_respectPrivacy.integer == 0 && player != who && paddData[i].value && paddData[i].value[0] ) {
-                    trap_SendServerCommand( player-g_entities, va("print \"%s" S_COLOR_CYAN" (picked up by %s" S_COLOR_CYAN ") " S_COLOR_WHITE "%s\n\"", paddData[i].owner, who->client->pers.netname, paddData[i].value ) );
-                }
-            }
+    int32_t i = 0;
+	int32_t j = 0;
 
-            //Store string
-            Q_strncpyz( who->client->lastPaddMsg, paddData[i].value, sizeof( who->client->lastPaddMsg ) );
-            return paddData[i].value;
-        }
-    }
+	if((key != NULL) && (who != NULL)) {
+		for ( ; i < PADD_DATA_MAX; ++i ) {
+			if ( paddData[i].key == key ) {
+				DPRINTF(("^3got: %i with %s on nr %i\n", key, paddData[i].value, i));
+				//Inform admins
+				for ( j = 0; j < level.maxclients; ++j ) {
+					gentity_t *player = &g_entities[j];
+					if ( (player != NULL) && (!player->client->noAdminChat) && IsAdmin( player ) && (rpg_respectPrivacy.integer == 0) && (player != who) && (paddData[i].value[0] != 0) ) {
+						trap_SendServerCommand( player-g_entities, va("print \"%s" S_COLOR_CYAN" (picked up by %s" S_COLOR_CYAN ") " S_COLOR_WHITE "%s\n\"", paddData[i].owner, who->client->pers.netname, paddData[i].value ) );
+					}
+				}
+
+				//Store string
+				Q_strncpyz( who->client->lastPaddMsg, paddData[i].value, sizeof( who->client->lastPaddMsg ) );
+				return paddData[i].value;
+			}
+		}
+	}
 
     G_Printf( S_COLOR_RED "Padd_Get: Unable to find the text for this PADD!\n" S_COLOR_WHITE );
-    return 0;
+    return NULL;
 }
 
 /**
@@ -204,9 +208,9 @@ static char *Padd_Get( gentity_t *key, gentity_t *who )
  * \author Ubergames - Marcin
  * \date 06/12/2008
  */
-static void Padd_Remove( gentity_t *key )
+static void Padd_Remove( gentity_t* key )
 {
-    int i = 0;
+    int32_t i = 0;
 
     while ( qtrue ) {
         if ( paddData[i].key == key ) {
@@ -226,110 +230,111 @@ static void Padd_Remove( gentity_t *key )
 }
 
 // For more than four players, adjust the respawn times, up to 1/4.
-int adjustRespawnTime(float respawnTime)
-{
-	if (!g_adaptRespawn.integer)
-	{
-		return((int)respawnTime);
+static int32_t adjustRespawnTime(double respawnTime) {
+	if (g_adaptRespawn.integer == 0) {
+		return ((int32_t)respawnTime);
 	}
 
-	if (level.numPlayingClients > 4)
-	{	// Start scaling the respawn times.
-		if (level.numPlayingClients > 32)
-		{	// 1/4 time minimum.
+	if (level.numPlayingClients > 4) {
+		// Start scaling the respawn times.
+		
+		if (level.numPlayingClients > 32) {
+			// 1/4 time minimum.
 			respawnTime *= 0.25;
-		}
-		else if (level.numPlayingClients > 12)
-		{	// From 12-32, scale from 0.5 to 0.25;
-			respawnTime *= 20.0 / (float)(level.numPlayingClients + 8);
-		}
-		else 
-		{	// From 4-12, scale from 1.0 to 0.5;
-			respawnTime *= 8.0 / (float)(level.numPlayingClients + 4);
+		} else if (level.numPlayingClients > 12) {	
+			// From 12-32, scale from 0.5 to 0.25;
+			respawnTime *= 20.0 / (double)(level.numPlayingClients + 8);
+		} else {
+			// From 4-12, scale from 1.0 to 0.5;
+			respawnTime *= 8.0 / (double)(level.numPlayingClients + 4);
 		}
 	}
 
-	if (respawnTime < 1.0)
-	{	// No matter what, don't go lower than 1 second, or the pickups become very noisy!
+	if (respawnTime < 1.0) {
+		// No matter what, don't go lower than 1 second, or the pickups become very noisy!
 		respawnTime = 1.0;
 	}
 
-	return ((int)respawnTime);
+	return ((int32_t)respawnTime);
 }
 
 
 //======================================================================
 
-int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
-	int			quantity;
-	int			i;
-	gclient_t	*client;
-	playerState_t *ps = &other->client->ps;
+static int32_t Pickup_Powerup( gentity_t* ent, gentity_t* other ) {
+	int32_t			quantity = 0;
+	int32_t			i = 0;
+	gclient_t*		client = NULL;
+	playerState_t*	ps = &other->client->ps;
 
-	if ( !ps->powerups[ent->item->giTag] ) {
-		// round timing to seconds to make multiple powerup timers
-		// count in sync
-		ps->powerups[ent->item->giTag] = 
-			level.time - ( level.time % 1000 );
+	if(other != NULL && other->client != NULL && ent != NULL) {
+		if ( ps->powerups[ent->item->giTag] == 0 ) {
+			// round timing to seconds to make multiple powerup timers
+			// count in sync
+			ps->powerups[ent->item->giTag] = level.time - ( level.time % 1000 );
 
-		// kef -- log the fact that we picked up this powerup
-		G_LogWeaponPowerup(other->s.number, ent->item->giTag);
-	}
-
-	if ( ent->count ) {
-		quantity = ent->count;
-	} else {
-		quantity = ent->item->quantity;
-	}
-
-	ps->powerups[ent->item->giTag] += quantity * 1000;
-
-	// give any nearby players a "denied" anti-reward
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
-		vec3_t		delta;
-		float		len;
-		vec3_t		forward;
-		trace_t		tr;
-
-		client = &level.clients[i];
-		if ( client == other->client ) {
-			continue;
-		}
-		if ( client->pers.connected == CON_DISCONNECTED ) {
-			continue;
-		}
-		if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
-			continue;
+			// kef -- log the fact that we picked up this powerup
+			G_LogWeaponPowerup(other->s.number, ent->item->giTag);
 		}
 
-    // if same team in team game, no sound
-    // cannot use OnSameTeam as it expects to g_entities, not clients
-  	if ( g_gametype.integer >= GT_TEAM && other->client->sess.sessionTeam == client->sess.sessionTeam  ) {
-      continue;
-    }
-
-		// if too far away, no sound
-		VectorSubtract( ent->s.pos.trBase, client->ps.origin, delta );
-		len = VectorNormalize( delta );
-		if ( len > 192 ) {
-			continue;
+		if ( ent->count != 0 ) {
+			quantity = ent->count;
+		} else {
+			quantity = ent->item->quantity;
 		}
 
-		// if not facing, no sound
-		AngleVectors( client->ps.viewangles, forward, NULL, NULL );
-		if ( DotProduct( delta, forward ) < 0.4 ) {
-			continue;
-		}
+		ps->powerups[ent->item->giTag] += quantity * 1000;
 
-		// if not line of sight, no sound
-		trap_Trace( &tr, client->ps.origin, NULL, NULL, ent->s.pos.trBase, ENTITYNUM_NONE, CONTENTS_SOLID );
-		if ( tr.fraction != 1.0 ) {
-			continue;
-		}
+		// give any nearby players a "denied" anti-reward
+		for ( i = 0 ; i < level.maxclients ; i++ ) {
+			vec3_t		delta;
+			double		len = 0.0;
+			vec3_t		forward;
+			trace_t		tr;
 
-		// anti-reward
-		client->ps.persistant[PERS_REWARD_COUNT]++;
-		client->ps.persistant[PERS_REWARD] = REWARD_DENIED;
+			client = &level.clients[i];
+			if ( client == other->client ) {
+				continue;
+			}
+
+			if ( client->pers.connected == CON_DISCONNECTED ) {
+				continue;
+			}
+
+			if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
+				continue;
+			}
+
+			// if same team in team game, no sound
+			// cannot use OnSameTeam as it expects to g_entities, not clients
+  			if ( g_gametype.integer >= GT_TEAM && other->client->sess.sessionTeam == client->sess.sessionTeam  ) {
+			  continue;
+			}
+
+			// if too far away, no sound
+			VectorSubtract( ent->s.pos.trBase, client->ps.origin, delta );
+			len = VectorNormalize( delta );
+			if ( len > 192 ) {
+				continue;
+			}
+
+			// if not facing, no sound
+			AngleVectors( client->ps.viewangles, forward, NULL, NULL );
+			if ( DotProduct( delta, forward ) < 0.4 ) {
+				continue;
+			}
+
+			// if not line of sight, no sound
+			memset(&tr, 0, sizeof(trace_t));
+			trap_Trace( &tr, client->ps.origin, NULL, NULL, ent->s.pos.trBase, ENTITYNUM_NONE, CONTENTS_SOLID );
+			if ( tr.fraction != 1.0 ) {
+				continue;
+			}
+
+			// anti-reward
+			client->ps.persistant[PERS_REWARD_COUNT]++;
+			client->ps.persistant[PERS_REWARD] = REWARD_DENIED;
+		}
 	}
 
 	return RESPAWN_POWERUP;
@@ -337,19 +342,22 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 
 //======================================================================
 
-int Pickup_Holdable( gentity_t *ent, gentity_t *other )
+static int32_t Pickup_Holdable( gentity_t* ent, gentity_t* other )
 {
-	int nItem = ent->item - bg_itemlist;
+	int32_t nItem;
+	
+	if((ent != NULL) && (other != NULL) && (other->client != NULL)) { 	
+		nItem = ent->item - bg_itemlist;
 
-	other->client->ps.stats[STAT_HOLDABLE_ITEM] = nItem;
+		other->client->ps.stats[STAT_HOLDABLE_ITEM] = nItem;
 
-	// if we just picked up the detpack, indicate that it has not been placed yet
-	if (HI_DETPACK == bg_itemlist[nItem].giTag)
-	{
-		other->client->ps.stats[STAT_USEABLE_PLACED] = 0;
+		// if we just picked up the detpack, indicate that it has not been placed yet
+		if (HI_DETPACK == bg_itemlist[nItem].giTag) {
+			other->client->ps.stats[STAT_USEABLE_PLACED] = 0;
+		}
+		// kef -- log the fact that we picked up this item
+		G_LogWeaponItem(other->s.number, bg_itemlist[nItem].giTag);
 	}
-	// kef -- log the fact that we picked up this item
-	G_LogWeaponItem(other->s.number, bg_itemlist[nItem].giTag);
 
 	return adjustRespawnTime(RESPAWN_HOLDABLE);
 }
@@ -364,26 +372,30 @@ int Pickup_Holdable( gentity_t *ent, gentity_t *other )
  * \param weapon For which weapon.
  * \param count Ammount of ammo.
  */
-void Add_Ammo (gentity_t *ent, int weapon, int count)
-{
-	playerState_t *ps = &ent->client->ps;
-	ps->ammo[weapon] += count;
-	if ( ps->ammo[weapon] > Max_Weapon(weapon) ) {
-		ps->ammo[weapon] = Max_Weapon(weapon);
+static void Add_Ammo (gentity_t* ent, int32_t weapon, int32_t count) {
+	playerState_t* ps = &ent->client->ps;
+
+	if(ent != NULL) {
+		ps->ammo[weapon] += count;
+		if ( ps->ammo[weapon] > Max_Weapon(weapon) ) {
+			ps->ammo[weapon] = Max_Weapon(weapon);
+		}
 	}
 }
 
-int Pickup_Ammo (gentity_t *ent, gentity_t *other)
+static int32_t Pickup_Ammo (gentity_t* ent, gentity_t* other)
 {
-	int		quantity;
+	int32_t quantity = 0;
 
-	if ( ent->count ) {
-		quantity = ent->count;
-	} else {
-		quantity = ent->item->quantity;
+	if(ent != NULL && other != NULL) {
+		if ( ent->count != 0 ) {
+			quantity = ent->count;
+		} else {
+			quantity = ent->item->quantity;
+		}
+
+		Add_Ammo (other, ent->item->giTag, quantity);
 	}
-
-	Add_Ammo (other, ent->item->giTag, quantity);
 
 	return adjustRespawnTime(RESPAWN_AMMO);
 }
@@ -391,30 +403,29 @@ int Pickup_Ammo (gentity_t *ent, gentity_t *other)
 //======================================================================
 
 
-int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
-    char *msg;
+static int32_t Pickup_Weapon (gentity_t* ent, gentity_t* other) {
+    char *msg = NULL;
 
-	// add the weapon
-	other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
-	Add_Ammo( other, ent->item->giTag, 1 );
+	if(ent != NULL && other != NULL) {
+		// add the weapon
+		other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
+		Add_Ammo( other, ent->item->giTag, 1 );
 
+		// RPG-X: Marcin: print PADD message - 06/12/2008
 
+		if ( ent->item->giTag == WP_3 ) {
+			msg = Padd_Get( ent, other );
+			if (msg != NULL) {
+				trap_SendServerCommand( other-g_entities, va("print \"" S_COLOR_CYAN "(padd)" S_COLOR_WHITE " %s\n\"", msg) );
+			}
+		}
 
-    // RPG-X: Marcin: print PADD message - 06/12/2008
-
-    if ( ent->item->giTag == WP_3 ) {
-        msg = Padd_Get( ent, other );
-        if (msg) {
-            trap_SendServerCommand( other-g_entities, va("print \"" S_COLOR_CYAN "(padd)" S_COLOR_WHITE " %s\n\"", msg) );
-        }
-    }
-
-	G_LogWeaponPickup(other->s.number, ent->item->giTag);
+		G_LogWeaponPickup(other->s.number, ent->item->giTag);
 	
-	// team deathmatch has slow weapon respawns
-	if ( g_gametype.integer == GT_TEAM )
-	{
-		return adjustRespawnTime(RESPAWN_TEAM_WEAPON);
+		// team deathmatch has slow weapon respawns
+		if ( g_gametype.integer == GT_TEAM ) {
+			return adjustRespawnTime(RESPAWN_TEAM_WEAPON);
+		}
 	}
 
 	return adjustRespawnTime(g_weaponRespawn.integer);
@@ -423,33 +434,37 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 
 //======================================================================
 
-int Pickup_Health (gentity_t *ent, gentity_t *other) {
-	int			max;
-	int			quantity;
-	playerState_t *ps = &other->client->ps;
+static int32_t Pickup_Health (gentity_t* ent, gentity_t* other) {
+	int32_t			max = 0;
+	int32_t			quantity = 0;
+	playerState_t* ps = NULL;
+	
+	if(ent != NULL && other != NULL && other->client != NULL) {
+		ps = &other->client->ps;
 
-	// small and mega healths will go over the max
-	if ( ent->item->quantity != 5 && ent->item->quantity != 100  ) {
-		max = ps->stats[STAT_MAX_HEALTH];
-	} else {
-		max = ps->stats[STAT_MAX_HEALTH] * 2;
-	}
+		// small and mega healths will go over the max
+		if ( ent->item->quantity != 5 && ent->item->quantity != 100  ) {
+			max = ps->stats[STAT_MAX_HEALTH];
+		} else {
+			max = ps->stats[STAT_MAX_HEALTH] * 2;
+		}
 
-	if ( ent->count ) {
-		quantity = ent->count;
-	} else {
-		quantity = ent->item->quantity;
-	}
+		if ( ent->count != 0 ) {
+			quantity = ent->count;
+		} else {
+			quantity = ent->item->quantity;
+		}
 
-	other->health += quantity;
+		other->health += quantity;
 
-	if (other->health > max ) {
-		other->health = max;
-	}
-	ps->stats[STAT_HEALTH] = other->health;
+		if (other->health > max ) {
+			other->health = max;
+		}
+		ps->stats[STAT_HEALTH] = other->health;
 
-	if ( ent->item->giTag == 100 ) {		// mega health respawns slow
-		return RESPAWN_MEGAHEALTH;			// It also does not adapt like other health pickups.
+		if ( ent->item->giTag == 100 ) {		// mega health respawns slow
+			return RESPAWN_MEGAHEALTH;			// It also does not adapt like other health pickups.
+		}
 	}
 
 	return adjustRespawnTime(RESPAWN_HEALTH);
@@ -457,11 +472,13 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 
 //======================================================================
 
-int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
-	playerState_t *ps = &other->client->ps;
-	ps->stats[STAT_ARMOR] += ent->item->quantity;
-	if ( ps->stats[STAT_ARMOR] > ps->stats[STAT_MAX_HEALTH] * 2 ) {
-		ps->stats[STAT_ARMOR] = ps->stats[STAT_MAX_HEALTH] * 2;
+static int32_t Pickup_Armor( gentity_t* ent, gentity_t* other ) {
+	if(ent != NULL && other != NULL && other->client != NULL) {
+		playerState_t *ps = &other->client->ps;
+		ps->stats[STAT_ARMOR] += ent->item->quantity;
+		if ( ps->stats[STAT_ARMOR] > ps->stats[STAT_MAX_HEALTH] * 2 ) {
+			ps->stats[STAT_ARMOR] = ps->stats[STAT_MAX_HEALTH] * 2;
+		}
 	}
 
 	return adjustRespawnTime(RESPAWN_ARMOR);
@@ -474,49 +491,52 @@ int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
  *
  * \param ent The item.
  */
-static void RespawnItem( gentity_t *ent ) {
-	if(!ent) return;
+static void RespawnItem( gentity_t* ent ) {
+	if(ent != NULL) {
 
-	// randomly select from teamed entities
-	if (ent->team) {
-		gentity_t	*master;
-		int	count;
-		int choice;
+		// randomly select from teamed entities
+		if (ent->team != NULL) {
+			gentity_t*	master = NULL;
+			int32_t		count = 0;
+			int32_t		choice = 0;
 
-		if ( !ent->teammaster ) {
-			G_Error( "RespawnItem: bad teammaster");
+			if ( ent->teammaster == NULL ) {
+				G_Error( "RespawnItem: bad teammaster");
+			}
+			master = ent->teammaster;
+
+			for (count = 0, ent = master; ent != NULL; ent = ent->teamchain, count++)
+				;
+
+			choice = rand() % count;
+
+			for (count = 0, ent = master; count < choice && ent; ent = ent->teamchain, count++)
+				;
 		}
-		master = ent->teammaster;
 
-		for (count = 0, ent = master; ent; ent = ent->teamchain, count++)
-			;
+		if(ent == NULL) {
+			return;
+		}
 
-		choice = rand() % count;
+		ent->r.contents = CONTENTS_TRIGGER;
+		ent->s.eFlags &= ~(EF_NODRAW | EF_ITEMPLACEHOLDER);
+		ent->r.svFlags &= ~SVF_NOCLIENT;
+		trap_LinkEntity (ent);
 
-		for (count = 0, ent = master; count < choice && ent; ent = ent->teamchain, count++)
-			;
+		if ( ent->item->giType == IT_POWERUP ) {
+			// play powerup spawn sound to all clients
+			gentity_t	*te;
+
+			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
+			te->s.eventParm = G_SoundIndex( "sound/items/poweruprespawn.wav" );//cgs.media.poweruprespawn
+			te->r.svFlags |= SVF_BROADCAST;
+		}
+
+		// play the normal respawn sound only to nearby clients
+		G_AddEvent( ent, EV_ITEM_RESPAWN, 0 );
+
+		ent->nextthink = 0;
 	}
-
-	if(!ent) return;
-
-	ent->r.contents = CONTENTS_TRIGGER;
-	ent->s.eFlags &= ~(EF_NODRAW | EF_ITEMPLACEHOLDER);
-	ent->r.svFlags &= ~SVF_NOCLIENT;
-	trap_LinkEntity (ent);
-
-	if ( ent->item->giType == IT_POWERUP ) {
-		// play powerup spawn sound to all clients
-		gentity_t	*te;
-
-		te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
-		te->s.eventParm = G_SoundIndex( "sound/items/poweruprespawn.wav" );//cgs.media.poweruprespawn
-		te->r.svFlags |= SVF_BROADCAST;
-	}
-
-	// play the normal respawn sound only to nearby clients
-	G_AddEvent( ent, EV_ITEM_RESPAWN, 0 );
-
-	ent->nextthink = 0;
 }
 
 
@@ -527,16 +547,19 @@ static void RespawnItem( gentity_t *ent ) {
  * \param other The touching entity.
  * \param trace A trace.
  */
-static void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
-	int			respawn;
+static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
+	int32_t respawn = 0;
 
-	if (!other->client)
+	if ((other == NULL) || (other->client == NULL) || (ent == NULL)) {
 		return;
-	if (other->health < 1)
+	}
+
+	if (other->health < 1) {
 		return;		// dead people can't pickup
+	}
 
     // RPG-X: Marcin: Press USE to pick up items. - 03/12/2008
-    if ( !(other->client->pers.cmd.buttons & BUTTON_USE) || other->client->pressedUse == qtrue) {
+    if ( ((other->client->pers.cmd.buttons & BUTTON_USE) == 0) || (other->client->pressedUse == qtrue)) {
         return;
 	} else {
 		other->client->pressedUse = qtrue;
@@ -582,7 +605,7 @@ static void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		return;
 	}
 
-	if ( !respawn) {
+	if (respawn == 0) {
 		return;
 	}
 
@@ -595,7 +618,7 @@ static void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 
 	// powerup pickups are global broadcasts
 	if ( ent->item->giType == IT_POWERUP || ent->item->giType == IT_TEAM) {
-		gentity_t	*te;
+		gentity_t* te = NULL;
 
 		te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
 		te->s.eventParm = ent->s.modelindex;
@@ -625,20 +648,20 @@ static void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	}
 
 	// non zero wait overrides respawn time
-	if ( ent->wait ) {
+	if ( ent->wait > 0.0f) {
 		respawn = ent->wait;
 	}
 
 	// random can be used to vary the respawn time
-	if ( ent->random ) {
+	if ( ent->random > 0.0f ) {
 		respawn += crandom() * ent->random;
-		if ( respawn < 1 ) {
+		if ( respawn < 1.0f ) {
 			respawn = 1;
 		}
 	}
 
 	// dropped items will not respawn
-	if ( ent->flags & FL_DROPPED_ITEM ) {
+	if ( (ent->flags & FL_DROPPED_ITEM) != 0 ) {
 		ent->freeAfterEvent = qtrue;
 	}
 
