@@ -694,6 +694,7 @@ static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
         ent->nextthink = level.time + respawn * 1000;
 		ent->think = RespawnItem;
 	}
+
 	trap_LinkEntity( ent );
 }
 
@@ -707,9 +708,9 @@ LaunchItem
 Spawns an item and tosses it forward
 ================
 */
-gentity_t *LaunchItem( gitem_t *item, gentity_t *who, vec3_t origin, vec3_t velocity, int flags, char *txt) // RPG-X: Marcin: for ThrowWeapon 03/12/2008
+static gentity_t* LaunchItem( gitem_t* item, gentity_t* who, vec3_t origin, vec3_t velocity, int32_t flags, char* txt) // RPG-X: Marcin: for ThrowWeapon 03/12/2008
 {                                                                                                           // and for PADD stuff too         06/12/2008, 08/12/2008
-	gentity_t	*dropped;
+	gentity_t* dropped = NULL;
 
 	dropped = G_Spawn();
 
@@ -744,7 +745,7 @@ gentity_t *LaunchItem( gitem_t *item, gentity_t *who, vec3_t origin, vec3_t velo
 
 	dropped->flags = flags; // FL_DROPPED_ITEM; // RPG-X: Marcin: for ThrowWeapon - 03/12/2008
 
-    if( flags & FL_THROWN_ITEM) {
+    if( (flags & FL_THROWN_ITEM) != 0 ) {
         dropped->clipmask = MASK_SHOT;
         dropped->s.pos.trTime = level.time - 50;
         VectorScale( velocity, 300, dropped->s.pos.trDelta );
@@ -758,9 +759,13 @@ gentity_t *LaunchItem( gitem_t *item, gentity_t *who, vec3_t origin, vec3_t velo
 	return dropped;
 }
 
-gentity_t *DropWeapon( gentity_t *ent, gitem_t *item, float angle, int flags, char *txt ) {
+gentity_t *DropWeapon( gentity_t *ent, gitem_t *item, double angle, int32_t flags, char *txt ) {
 	vec3_t	velocity;
 	vec3_t	origin;
+
+	if(ent == NULL) {
+		return NULL;
+	}
 
 	VectorCopy( ent->s.pos.trBase, origin );
 
@@ -775,12 +780,17 @@ gentity_t *DropWeapon( gentity_t *ent, gitem_t *item, float angle, int flags, ch
 	// extra vertical velocity
 	velocity[2] += 0.2;
 	VectorNormalize( velocity );
+
 	return LaunchItem( item, ent, origin, velocity, flags, txt );
 }
 
-gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
+gentity_t* Drop_Item( gentity_t* ent, gitem_t* item, double angle ) {
 	vec3_t	velocity;
 	vec3_t	angles;
+
+	if(ent == NULL) { 
+		return;
+	}
 
 	VectorCopy( ent->s.apos.trBase, angles );
 	angles[YAW] += angle;
@@ -801,8 +811,10 @@ Use_Item
 Respawn the item
 ================
 */
-void Use_Item( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
-	RespawnItem( ent );
+static void Use_Item( gentity_t* ent, gentity_t* other, gentity_t* activator ) {
+	if(ent != NULL) {
+		RespawnItem( ent );
+	}
 }
 
 //======================================================================
@@ -813,19 +825,19 @@ void Use_Item( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
  *
  * \param ent Entity for the item.
  */
-static void FinishSpawningItem( gentity_t *ent ) {
+static void FinishSpawningItem( gentity_t* ent ) {
 	trace_t		tr;
 	vec3_t		dest;
 
-	if ( !ent )
+	if ( ent == NULL )
 	{
-		Com_Printf("print \"Ent Missing\"");
+		DEVELOPER(G_Printf("print \"Ent Missing\"");)
 		return;
 	}
 
-	if ( !ent->item )
+	if ( ent->item == NULL )
 	{
-		Com_Printf("print \"Ent->item Missing\"");
+		DEVELOPER(G_Printf("print \"Ent->item Missing\"");)
 		return;
 	}
 
@@ -844,19 +856,21 @@ static void FinishSpawningItem( gentity_t *ent ) {
 	
 	Com_Printf("print \"giType %i!\n\"", ent->item->giType);
 
-	if ( ent->spawnflags & 1 ) {
+	if ( (ent->spawnflags & 1) != 0 ) {
 		// suspended
 		G_SetOrigin( ent, ent->s.origin );
 	} else {
 		// drop to floor
 		VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096 );
+		memset(&tr, 0, sizeof(trace_t));
 		trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
+
 		if ( tr.startsolid ) {
-			G_Printf ("FinishSpawningItem: removing %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
+			DEVELOPER(G_Printf ("FinishSpawningItem: removing %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));)
 #ifndef FINAL_BUILD
 			G_Error("FinishSpawningItem: removing %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
 #endif
-			G_Printf ("FinishSpawningItem: %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
+			DEVELOPER(G_Printf ("FinishSpawningItem: %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));)
 
 			G_FreeEntity( ent );
 			return;
@@ -869,7 +883,7 @@ static void FinishSpawningItem( gentity_t *ent ) {
 	}
 
 	// team slaves and targeted items aren't present at start
-	if ( ( ent->flags & FL_TEAMSLAVE ) || ent->targetname ) {
+	if ( (( ent->flags & FL_TEAMSLAVE ) != 0) || (ent->targetname != NULL) ) {
 		ent->s.eFlags |= EF_NODRAW;
 		ent->r.contents = 0;
 		return;
@@ -887,8 +901,6 @@ Traces down to find where an item should rest, instead of letting them
 free fall from their spawn points
 ================
 */
-extern void detpack_shot( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath );
-
 qboolean FinishSpawningDetpack( gentity_t *ent, int itemIndex )
 {
 	trace_t		tr;

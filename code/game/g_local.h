@@ -1798,19 +1798,6 @@ void G_Active_ShieldRemove(gentity_t* self);
 */
 void ThrowWeapon( gentity_t* ent, char* txt );
 
-/**
- *	Drop a weapon.
- *
- *	\author Ubergames - Marcin 
- *	\date 03/12/2008
- *	\param ent The client.
- *	\param item The item.
- *	\param angle Angle to throw at.
- *	\param flags Entity flags to use.
- *	\param Optional message for PADD dropping.
- */
-/*@shared@*/ /*@null@*/  gentity_t *DropWeapon( gentity_t* ent, gitem_t* item, float angle, int flags, char* txt );
-
 //
 // g_mem.c
 //

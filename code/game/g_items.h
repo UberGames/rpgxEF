@@ -2,6 +2,7 @@
 #define _G_ITEMS_H
 
 #include "g_local.h"
+#include "g_active.h"
 
 /**
 *	Data structures + functions for the PADD messaging system.
@@ -48,7 +49,7 @@ void G_SpawnItem (gentity_t* ent, gitem_t* item);
  * \param angle Direction to toss to.
  * \return The entity for the item.
  */
-/*@shared@*/ /*@null@*/  gentity_t* Drop_Item( gentity_t* ent, gitem_t* item, float angle );
+/*@shared@*/ /*@null@*/  gentity_t* Drop_Item( gentity_t* ent, gitem_t* item, double angle );
 
 /**
  * Clear all registered items.
@@ -66,5 +67,18 @@ void RegisterItem( gitem_t* item );
  * Write the needed items to a config string so the client will know which ones to precache.
  */
 void SaveRegisteredItems( void );
+
+/**
+ *	Drop a weapon.
+ *
+ *	\author Ubergames - Marcin 
+ *	\date 03/12/2008
+ *	\param ent The client.
+ *	\param item The item.
+ *	\param angle Angle to throw at.
+ *	\param flags Entity flags to use.
+ *	\param Optional message for PADD dropping.
+ */
+/*@shared@*/ /*@null@*/  gentity_t *DropWeapon( gentity_t* ent, gitem_t* item, double angle, int32_t flags, char* txt );
 
 #endif /* _G_ITEMS_H */
