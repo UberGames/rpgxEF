@@ -81,4 +81,14 @@ void SaveRegisteredItems( void );
  */
 /*@shared@*/ /*@null@*/  gentity_t *DropWeapon( gentity_t* ent, gitem_t* item, double angle, int32_t flags, char* txt );
 
+/*
+================
+FinishSpawningDetpack
+
+Traces down to find where an item should rest, instead of letting them
+free fall from their spawn points
+================
+*/
+qboolean FinishSpawningDetpack( gentity_t* ent, int32_t itemIndex );
+
 #endif /* _G_ITEMS_H */

@@ -630,7 +630,6 @@ typedef struct detHit_s
 static detHit_t	detHits[MAX_DETHITS];
 static qboolean	bDetInit = qfalse;
 
-extern qboolean FinishSpawningDetpack( gentity_t* ent, int32_t itemIndex );
 //-----------------------------------------------------------------------------DECOY TEMP
 extern qboolean FinishSpawningDecoy( gentity_t* ent, int32_t itemIndex );
 //-----------------------------------------------------------------------------DECOY TEMP

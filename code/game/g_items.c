@@ -905,6 +905,10 @@ qboolean FinishSpawningDetpack( gentity_t *ent, int itemIndex )
 {
 	trace_t		tr;
 	vec3_t		dest;
+	
+	if(ent == NULL) {
+		return qfalse;
+	}
 
 	VectorSet( ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, 0 );
 	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
@@ -925,6 +929,7 @@ qboolean FinishSpawningDetpack( gentity_t *ent, int itemIndex )
 
 	// drop to floor
 	VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096 );
+	memset(&tr,0, sizeof(trace_t));
 	trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
 	if ( tr.startsolid )
 	{
