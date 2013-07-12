@@ -789,7 +789,7 @@ gentity_t* Drop_Item( gentity_t* ent, gitem_t* item, double angle ) {
 	vec3_t	angles;
 
 	if(ent == NULL) { 
-		return;
+		return NULL;
 	}
 
 	VectorCopy( ent->s.apos.trBase, angles );

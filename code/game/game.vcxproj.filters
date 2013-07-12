@@ -488,6 +488,9 @@
     <ClInclude Include="g_items.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="g_active.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">
