@@ -302,7 +302,11 @@ void SP_target_speaker( gentity_t *ent ) {
 	}
 
 	// a repeating speaker can be done completely client side
-	ent->s.eType = ET_SPEAKER;
+	if((ent->spawnflags & 4) != 0) {
+		ent->s.eType = ET_GLOBALSPEAKER;
+	} else {
+		ent->s.eType = ET_SPEAKER;
+	}
 	ent->s.eventParm = ent->noise_index;
 	ent->s.frame = (int)(ent->wait * 10);
 	ent->s.clientNum = (int)(ent->random * 10);
