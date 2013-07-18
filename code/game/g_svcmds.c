@@ -647,9 +647,6 @@ void	Svcmd_EntityList_f (void) {
 				case ET_SPEAKER:
 					G_Printf("ET_SPEAKER          ");
 					break;
-				case ET_GLOBALSPEAKER:
-					G_Printf("ET_GLOBALSPEAKER    ");
-					break;
 				case ET_PUSH_TRIGGER:
 					G_Printf("ET_PUSH_TRIGGER     ");
 					break;
@@ -694,9 +691,6 @@ void	Svcmd_EntityList_f (void) {
 					break;
 				case ET_SPEAKER:
 					G_Printf("ET_SPEAKER          ");
-					break;
-				case ET_GLOBALSPEAKER:
-					G_Printf("ET_GLOBALSPEAKER    ");
 					break;
 				case ET_PUSH_TRIGGER:
 					G_Printf("ET_PUSH_TRIGGER     ");

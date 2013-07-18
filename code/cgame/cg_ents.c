@@ -110,25 +110,7 @@ static void CG_EntityEffects( centity_t *cent ) {
 	CG_SetEntitySoundPosition( cent );
 
 	// add loop sound
-	if(cent->currentState.eType == ET_GLOBALSPEAKER) {
-		// This is an attempt to create global loop sounds. We'll the if it works ...
-		// The idea is to use the player as sound source for any loopsoung marked as global.
-		// This way it should be ensured that the player always hears the sound.
-		if(cent->currentState.loopSound && cent->currentState.loopSound < 256) {
-			centity_t* c = NULL;
-			int i = 0;
-
-			for( ; i < MAX_CLIENTS; i++) {
-				c = &cg_entities[i];
-
-				if(c->currentState.clientNum == cg.snap->ps.clientNum) {
-					break;
-				}
-			}
-
-			trap_S_AddLoopingSound(c->currentState.number, c->lerpOrigin, vec3_origin, cgs.gameSounds[cent->currentState.loopSound]);
-		}
-	} else if ( cent->currentState.loopSound && cent->currentState.loopSound < 256) {
+	if ( cent->currentState.loopSound && cent->currentState.loopSound < 256 ) {
 		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, 
 			cgs.gameSounds[ cent->currentState.loopSound ] );
 	}
@@ -949,7 +931,6 @@ static void CG_AddCEntity( centity_t *cent ) {
 		CG_Portal( cent );
 		break;
 	case ET_SPEAKER:
-	case ET_GLOBALSPEAKER:
 		CG_Speaker( cent );
 		break;
 	case ET_LASER:
