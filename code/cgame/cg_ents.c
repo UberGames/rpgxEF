@@ -111,8 +111,13 @@ static void CG_EntityEffects( centity_t *cent ) {
 
 	// add loop sound
 	if ( cent->currentState.loopSound && cent->currentState.loopSound < 256 ) {
-		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, 
-			cgs.gameSounds[ cent->currentState.loopSound ] );
+		if(cent->currentState.eType == ET_GLOBALSPEAKER) {
+			trap_S_AddLoopingSound( cent->currentState.number, cg.snap->ps.origin, vec3_origin,
+				cgs.gameSounds[ cent->currentState.loopSound] );
+		} else {
+			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, 
+				cgs.gameSounds[ cent->currentState.loopSound ] );
+		}
 	}
 
 
@@ -323,7 +328,11 @@ static void CG_Speaker( centity_t *cent ) {
 		return;
 	}
 
-	trap_S_StartSound (NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.eventParm] );
+	if(cent->currentState.eType == ET_SPEAKER) {
+		trap_S_StartSound (NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.eventParm] );
+	} else {
+		trap_S_StartSound (NULL, cent->currentState.number, CHAN_AUTO, cgs.gameSounds[cent->currentState.eventParm] );
+	}
 
 	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
 }
@@ -931,6 +940,7 @@ static void CG_AddCEntity( centity_t *cent ) {
 		CG_Portal( cent );
 		break;
 	case ET_SPEAKER:
+	case ET_GLOBALSPEAKER:
 		CG_Speaker( cent );
 		break;
 	case ET_LASER:
