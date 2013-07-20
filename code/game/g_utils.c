@@ -608,6 +608,7 @@ void G_FreeEntity( gentity_t *ed ) {
 	ed->classname = "freed";
 	ed->freetime = level.time;
 	ed->inuse = qfalse;
+	ed->type = ENT_FREE;
 }
 
 gentity_t *G_TempEntity( vec3_t origin, int event ) {

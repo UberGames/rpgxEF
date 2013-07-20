@@ -59,6 +59,8 @@ potential spawning position for deathmatch games.
 void SP_info_player_deathmatch( gentity_t *ent ) {
 	int32_t i = 0;
 
+	ent->type = ENT_INFO_PLAYER_START;
+
 	if(strcmp(ent->classname, "info_player_deathmatch") != 0) {
 		ent->classname = G_NewString("info_player_deathmatch");
 	}
@@ -90,7 +92,9 @@ none
 /**
 *	Spawn function for intermission entity.
 */
-void SP_info_player_intermission( gentity_t *ent ) { }
+void SP_info_player_intermission( gentity_t *ent ) { 
+	ent->type = ENT_INFO_PLAYER_INTERMISSION;
+}
 
 /**
  * Determine whether spot would telefrag.

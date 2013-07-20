@@ -94,6 +94,7 @@ void ui_transporter_setup(gentity_t *ent) {
 *	\author GSIO01
 */
 void SP_ui_transporter(gentity_t *ent) {
+	ent->type = ENT_UI_TRANSPORTER;
 	
 	if(!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] ui_transporter without target at %s!\n", vtos(ent->s.origin)););
@@ -237,6 +238,7 @@ void ui_msd_setup(gentity_t *ent) {
 *	\author GSIO01
 */
 void SP_ui_msd(gentity_t *ent) {
+	ent->type = ENT_UI_MSD;
 	
 	if(!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] ui_msd without target at %s! Removing Entity.\n", vtos(ent->s.origin)););
@@ -308,6 +310,8 @@ void ui_holodeck_setup(gentity_t *ent) {
 }
 
 void SP_ui_holodeck(gentity_t *ent) {
+	ent->type = ENT_UI_HOLODECK;
+
 	if(!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] ui_holodeck without target at %s!\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);

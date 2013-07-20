@@ -1491,6 +1491,8 @@ void SP_func_door (gentity_t *ent) {
 	float	lip;
 	char	*sound;
 
+	ent->type = ENT_FUNC_DOOR;
+
 	if(!ent->tmpEntity) { // not modified by spawnfile
 		G_SpawnString("soundstart", "sound/movers/doors/largedoorstart.wav", &sound);
 		ent->sound1to2 = ent->sound2to1 = G_SoundIndex(sound);
@@ -1705,6 +1707,8 @@ void SP_func_plat (gentity_t *ent) {
 	float		lip, height;
 	char		*sound;
 
+	ent->type = ENT_FUNC_PLAT;
+
 	G_SpawnString("soundstart", "sound/movers/plats/largeplatstart.wav", &sound);
 	ent->sound1to2 = ent->sound2to1 = G_SoundIndex(sound);
 	G_SpawnString("soundstop", "sound/movers/plats/largeplatstop.wav", &sound);
@@ -1817,6 +1821,8 @@ void SP_func_button( gentity_t *ent ) {
 	vec3_t		size;
 	float		lip;
 	char		*sound;
+
+	ent->type = ENT_FUNC_BUTTON;
 
 	if(!ent->tmpEntity) { // not modified by spawn file
 		G_SpawnString("sounduse", "sound/movers/switches/forgepos.wav", &sound);
@@ -2024,6 +2030,8 @@ none
 "wait" - seconds to wait before behining move to next corner
 */
 void SP_path_corner( gentity_t *self ) {
+	self->type = ENT_PATH_CORNER;
+
 	if ( !self->targetname ) {
 		DEVELOPER(G_Printf (S_COLOR_YELLOW "[Entity-Error] path_corner with no targetname at %s\n", vtos(self->s.origin)););
 		G_FreeEntity( self );
@@ -2064,6 +2072,8 @@ q3map2:
 "_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_train (gentity_t *self) {
+	self->type = ENT_FUNC_TRAIN;
+	
 	VectorClear (self->s.angles);
 
 	if (self->spawnflags & TRAIN_BLOCK_STOPS) {
@@ -2137,6 +2147,8 @@ q3map2:
 "_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_static( gentity_t *ent ) {
+	ent->type = ENT_FUNC_STATIC;
+
 	trap_SetBrushModel( ent, ent->model );
 	G_SetOrigin(ent, ent->s.origin);
 	G_SetAngles(ent, ent->s.angles);
@@ -2391,6 +2403,9 @@ q3map2:
 void SP_func_forcefield( gentity_t *ent )
 {
 	char *activate, *damage, *touch, *deactivate, *temp;
+
+	ent->type = ENT_FUNC_FORCEFIELD;
+
 	// timestamp keeps track of whether the field is on or off
 	ent->timestamp = 1;
 
@@ -2526,6 +2541,8 @@ void func_rotating_use (gentity_t *ent, gentity_t *other, gentity_t *activator)
 
 void SP_func_rotating (gentity_t *ent) {
 	float	speed;
+
+	ent->type = ENT_FUNC_ROTATING;
 
 	if ( !ent->speed ) {
 		ent->speed = 100;
@@ -2671,6 +2688,9 @@ q3map2:
 
 void SP_func_door_rotating ( gentity_t *ent ) {
 	char *sound;
+
+	ent->type = ENT_FUNC_DOOR_ROTATING;
+
 	G_SpawnString("soundstart", "sound/movers/doors/largedoorstart.wav", &sound);
 	ent->sound1to2 = ent->sound2to1 = G_SoundIndex(sound);
 	G_SpawnString("soundstop", "sound/movers/doors/largedoorstop.wav", &sound);
@@ -2803,6 +2823,8 @@ void SP_func_bobbing (gentity_t *ent) {
 	float		height;
 	float		phase;
 
+	ent->type = ENT_FUNC_BOBBING;
+
 	if(!ent->tmpEntity) { // only do this if this is not done by spawn file
 		G_SpawnFloat( "height", "32", &height );
 		G_SpawnFloat( "phase", "0", &phase );
@@ -2873,6 +2895,8 @@ void SP_func_pendulum(gentity_t *ent) {
 	float		phase;
 	float		speed;
 
+	ent->type = ENT_FUNC_PENDULUM;
+
 	G_SpawnFloat( "speed", "30", &speed );
 	G_SpawnInt( "dmg", "2", &ent->damage );
 	G_SpawnFloat( "phase", "0", &phase );
@@ -2931,6 +2955,8 @@ q3map2:
 "_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_brushmodel(gentity_t *ent) {
+	ent->type = ENT_FUNC_BRUSHMODEL;
+
 	trap_SetBrushModel(ent, ent->model);
 	ent->s.eType = ET_MOVER;
 	ent->s.pos.trType = TR_STATIONARY;
@@ -2993,6 +3019,8 @@ void func_lightchange_setup(gentity_t *ent) {
 }
 
 void SP_func_lightchange(gentity_t *ent) {
+	ent->type = ENT_FUNC_LIGHTCHANGE;
+
 	if(!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] func_lightchange without target at %s!\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
@@ -3083,6 +3111,8 @@ void func_targetmover_link(gentity_t *ent) {
 
 void SP_func_targetmover(gentity_t *ent) {
 	char	*sound;
+
+	ent->type = ENT_FUNC_TARGETMOVER;
 
 	if(!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] func_targetmover without target at %s!\n", vtos(ent->s.origin)););
@@ -3291,11 +3321,16 @@ Target position for the discontinued func_mover
 "angles" - to rotate to
 */
 void SP_path_point(gentity_t *ent) {
+	ent->type = ENT_PATH_POINT;
+
 	// check if angles are set
-	if(ent->angle)
+	if(ent->angle) {
 		ent->angle = 0;
-	if(ent->s.angles[0] || ent->s.angles[1] || ent->s.angles[2])
+	}
+
+	if(ent->s.angles[0] || ent->s.angles[1] || ent->s.angles[2]) {
 		ent->angle = 1;
+	}
 }
 
 /*QUAKED func_mover (0 .5 .8) ?
@@ -3321,6 +3356,8 @@ q3map2:
 void SP_func_mover(gentity_t *ent) {
 	gentity_t  *target;
 	float aspeed;
+
+	ent->type = ENT_FUNC_MOVER;
 	
 	if(!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] func_mover without target at %s!\n", vtos(ent->s.origin)););
@@ -3552,6 +3589,8 @@ A bmodel that just sits there and opens when a player gets close to it.
 */
 void SP_func_stasis_door( gentity_t *ent ) 
 {
+	ent->type = ENT_FUNC_STASIS_DOOR;
+
 	/* set the brush model */
 	trap_SetBrushModel( ent, ent->model );
 

@@ -730,6 +730,8 @@ void SP_misc_turret (gentity_t *base)
 	gentity_t *head = G_Spawn();
 	vec3_t		fwd;
 
+	base->type = ENT_MISC_TURRET;
+
 	/* Base */
 	/* Base does the looking for enemies and pointing the arm and head */
 	VectorCopy( base->s.angles, base->s.apos.trBase );
@@ -1234,6 +1236,7 @@ void laser_arm_start (gentity_t *base)
  */
 void SP_laser_arm (gentity_t *base)
 {
+	base->type = ENT_LASER_ARM;
 	base->think = laser_arm_start;
 	base->nextthink = level.time + FRAMETIME;
 }

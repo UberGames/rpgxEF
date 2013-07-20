@@ -96,6 +96,8 @@ static void spark_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_spark( gentity_t	*ent )
 {
+	ent->type = ENT_FX_SPARK;
+
 	if (ent->wait <= 0)
 	{
 		ent->wait = 2000.0;
@@ -259,6 +261,8 @@ static void steam_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_steam( gentity_t	*ent )
 {
+	ent->type = ENT_FX_STEAM;
+
 	SnapVector(ent->s.origin);
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	trap_LinkEntity( ent );
@@ -399,6 +403,8 @@ static void bolt_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_bolt( gentity_t *ent )
 {
+	ent->type = ENT_FX_BOLT;
+
 	G_SpawnInt( "damage", "0", &ent->damage );
 	G_SpawnFloat( "random", "0.5", &ent->random );
 	G_SpawnFloat( "speed", "15.0", &ent->speed );
@@ -444,6 +450,8 @@ static void transporter_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_transporter(gentity_t *ent)
 {
+	ent->type = ENT_FX_TRANSPORTER;
+
 	SnapVector(ent->s.origin);
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 
@@ -482,8 +490,9 @@ static void drip_think( gentity_t *ent )
 //------------------------------------------
 void SP_fx_drip( gentity_t	*ent )
 {
-	ent->s.time2 = ent->damage; 
+	ent->type = ENT_FX_DRIP;
 
+	ent->s.time2 = ent->damage; 
 	ent->s.angles2[0] = ent->random; 
 
 	SnapVector(ent->s.origin);
@@ -542,6 +551,8 @@ static void fountain_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unu
 
 void SP_fx_fountain ( gentity_t *ent ) {
 	gentity_t	*target = NULL;
+
+	ent->type = ENT_FX_FOUNTAIN;
 
 	if ( ent->target != NULL && ent->target[0] != 0 ) {
 		target = G_Find (target, FOFS(targetname), ent->target);
@@ -644,6 +655,8 @@ static void surface_explosion_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_surface_explosion( gentity_t *ent )
 {
+	ent->type = ENT_FX_SURFACE_EXPLOSION;
+
 	if ( (ent->spawnflags & 4) == 0 ){
 		G_SpawnInt( "damage", "50", &ent->splashDamage );
 		G_SpawnFloat( "radius", "20", &ent->distance ); // was: ent->radius
@@ -728,6 +741,8 @@ static void blow_chunks_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_blow_chunks( gentity_t *ent )
 {
+	ent->type = ENT_FX_BLOW_CHUNKS;
+
 	G_SpawnFloat( "radius", "65", &ent->distance );
 	G_SpawnInt( "material", "1", &ent->s.powerups );
 
@@ -843,6 +858,8 @@ static void smoke_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_smoke( gentity_t *ent )
 {
+	ent->type = ENT_FX_SMOKE;
+
 	G_SpawnFloat( "radius", "16.0", &ent->distance ); // was: ent->radius
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
@@ -912,6 +929,8 @@ static void electrical_explosion_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_electrical_explosion( gentity_t *ent )
 {
+	ent->type = ENT_FX_ELETRICAL_EXPLOSION;
+
 	if ( (ent->spawnflags & 4) == 0 )
 	{
 		G_SpawnInt( "damage", "20", &ent->splashDamage );
@@ -1004,6 +1023,9 @@ void SP_fx_phaser(gentity_t *ent) {
 	float	scale = 0.0f;
 	char	*sound = NULL;
 	int		impact = 0;
+
+	ent->type = ENT_FX_PHASER;
+
 	ent->count = PHASER_FX_UNLINKED;
 
 	if(ent->target == NULL || ent->target[0] == 0) {
@@ -1142,6 +1164,8 @@ static void fx_torpedo_link(gentity_t *ent) {
 void SP_fx_torpedo(gentity_t *ent) {
 	char	*sound;
 
+	ent->type = ENT_FX_TORPEDO;
+
 	if(ent->target == NULL || ent->target[0] == 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_torpedo at %s without target\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
@@ -1199,6 +1223,9 @@ static void particleFire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*
 
 void SP_fx_particleFire(gentity_t *ent) {
 	int size;
+
+	ent->type = ENT_FX_PARTICLEFIRE;
+
 	G_SpawnInt("size", "10", &size);
 	if(size == 0) {
 		ent->count = 10;
@@ -1280,6 +1307,8 @@ static void fire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /*@unused@
 void SP_fx_fire(gentity_t *ent) {
 	int size;
 
+	ent->type = ENT_FX_FIRE;
+
 	G_SpawnInt("size", "64", &size);
 	if(size == 0) {
 		ent->s.time = 64;
@@ -1360,6 +1389,8 @@ static void cooking_steam_use( gentity_t *self, /*@unused@*/ gentity_t *other, /
 //------------------------------------------
 void SP_fx_cooking_steam( gentity_t	*ent )
 {
+	ent->type = ENT_FX_COOKING_STEAM;
+
 	if (ent->distance <= 0.0f) {
 		ent->distance = 3.0f;
 	}
@@ -1430,6 +1461,8 @@ static void electric_fire_use( gentity_t *self, /*@unused@*/ gentity_t *other, /
 //------------------------------------------
 void SP_fx_electricfire( gentity_t	*ent )
 {
+	ent->type = ENT_FX_ELECTRICFIRE;
+
 	if (ent->targetname != NULL && ent->targetname[0] != 0)	{
 		ent->use = electric_fire_use;
 	}
@@ -1589,6 +1622,8 @@ static void forge_bolt_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_forge_bolt( gentity_t *ent )
 {
+	ent->type = ENT_FX_FORGE_BOLT;
+
 	G_SpawnInt( "damage", "0", &ent->damage );
 	G_SpawnFloat( "random", "0.4", &ent->random );
 	G_SpawnFloat( "radius", "3.0", &ent->distance );
@@ -1720,6 +1755,8 @@ void SP_fx_plasma( gentity_t *ent )
 {
 	int t;
 
+	ent->type = ENT_FX_PLASMA;
+
 	G_SpawnVector4("startRGBA", "100 180 255 255", ent->startRGBA); 
 	G_SpawnVector4("finalRGBA", "0 0 180 0", ent->finalRGBA);
 	G_SpawnInt( "damage", "0", &ent->damage );
@@ -1844,6 +1881,8 @@ static void stream_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_stream( gentity_t *ent )
 {
+	ent->type = ENT_FX_STREAM;
+
 	G_SpawnInt( "damage", "0", &ent->damage );
 
 	if (ent->targetname != NULL && ent->targetname[0] != 0) {
@@ -1944,6 +1983,8 @@ static void transporter_stream_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_transporter_stream( gentity_t *ent )
 {
+	ent->type = ENT_FX_TRANSPORTER_STREAM;
+
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 
 	ent->think = transporter_stream_link;
@@ -2003,6 +2044,8 @@ static void explosion_trail_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_explosion_trail( gentity_t *ent )
 {
+	ent->type = ENT_FX_EXPLOSION_TRAIL;
+
 	G_SpawnInt( "damage", "150", &ent->splashDamage );
 	G_SpawnFloat( "radius", "80", &ent->distance );
 
@@ -2105,6 +2148,8 @@ static void borg_energy_beam_link( gentity_t *ent )
 void SP_fx_borg_energy_beam( gentity_t *ent )
 {
 	int t;
+
+	ent->type = ENT_FX_BORG_ENERGY_BEAM;
 
 	G_SpawnFloat( "radius", "30", &ent->distance );
 	G_SpawnFloat( "speed", "100", &ent->speed );
@@ -2214,6 +2259,8 @@ static void shimmery_thing_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_shimmery_thing( gentity_t *ent )
 {
+	ent->type = ENT_FX_SHIMMERY_THING;
+
 	G_SpawnFloat( "radius", "10", &ent->s.angles[1] );
 	if ( ent->wait <= 0.0f ) {
 		ent->wait = 2000.0f;
@@ -2333,6 +2380,8 @@ static void borg_bolt_link( gentity_t *ent )
 //------------------------------------------
 void SP_fx_borg_bolt( gentity_t *ent )
 {
+	ent->type = ENT_FX_BORG_BOLT;
+
 	ent->think = borg_bolt_link;
 	ent->nextthink = level.time + 1000;
 

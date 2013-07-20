@@ -1408,7 +1408,6 @@ typedef struct {
 
 } cgMedia_t;
 
-
 // The client game static (cgs) structure hold everything
 // loaded or calculated from the gamestate.  It will NOT
 // be cleared when a tournement restart is done, allowing
@@ -1502,6 +1501,9 @@ typedef struct {
 	char				scannableStrings[MAX_SCANNABLES][36];
 
 	qboolean			scannablePanels;
+
+	// sound zones
+	uint8_t				clientSoundZone;
 } cgs_t;
 
 //==============================================================================

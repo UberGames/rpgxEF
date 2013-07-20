@@ -1002,11 +1002,11 @@ typedef struct playerState_s {
 	int32_t			pm_flags;		// ducked, jump_held, etc
 	int32_t			pm_time;
 
-	vec3_t		origin;
-	vec3_t		velocity;
+	vec3_t			origin;
+	vec3_t			velocity;
 	int32_t			weaponTime;
 	int32_t			rechargeTime;		// for the phaser
-	int16_t		useTime;			// use debounce
+	int16_t			useTime;			// use debounce
 
 	int32_t			introTime;			// for the holodoor
 
@@ -1042,7 +1042,7 @@ typedef struct playerState_s {
 	int32_t			weapon;			// copied to entityState_t->weapon
 	int32_t			weaponstate;
 
-	vec3_t		viewangles;		// for fixed views
+	vec3_t			viewangles;		// for fixed views
 	int32_t			viewheight;
 
 	// damage feedback

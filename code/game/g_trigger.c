@@ -159,6 +159,8 @@ so, the basic time between firing is a random time between
  * @param ent the trigger
  */
 void SP_trigger_multiple( gentity_t *ent ) {
+	ent->type = ENT_TRIGGER_MULTIPLE;
+
 	G_SpawnFloat( "wait", "0.5", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
 
@@ -231,6 +233,8 @@ none
  * @param ent the trigger
  */
 void SP_trigger_always (gentity_t *ent) {
+	ent->type = ENT_TRIGGER_ALWAYS;
+
 	/* we must have some delay to make sure our use targets are present */
 	ent->nextthink = level.time + 300;
 	ent->think = trigger_always_think;
@@ -334,6 +338,8 @@ None
  * @param self the trigger
  */
 void SP_trigger_push( gentity_t *self ) {
+	self->type = ENT_TRIGGER_PUSH;
+
 	InitTrigger (self);
 
 	/* unlike other triggers, we need to send this one to the client */
@@ -403,9 +409,12 @@ This is predicted on the serverside and is triggered by use-function.
  * @param self the entity
  */
 void SP_target_push( gentity_t *self ) {
+	self->type = ENT_TARGET_PUSH;
+
 	if (!self->speed) {
 		self->speed = 1000;
 	}
+
 	G_SetMovedir (self->s.angles, self->s.origin2);
 	VectorScale (self->s.origin2, self->speed, self->s.origin2);
 
@@ -641,6 +650,8 @@ void SP_trigger_teleport( gentity_t *self )
 {
 	char *temp;
 
+	self->type = ENT_TRIGGER_TELEPORT;
+
 	InitTrigger (self);
 
 	/*
@@ -786,6 +797,8 @@ void hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace ) {
  * @param self the trigger
  */
 void SP_trigger_hurt( gentity_t *self ) {
+	self->type = ENT_TRIGGER_HURT;
+
 	InitTrigger (self);
 
 	/* TiM - gets very annoying after a while */
@@ -884,6 +897,8 @@ void func_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator ) {
  * @param self the entity
  */
 void SP_func_timer( gentity_t *self ) {
+	self->type = ENT_FUNC_TIMER;
+
 	G_SpawnFloat( "random", "1", &self->random);
 	G_SpawnFloat( "wait", "1", &self->wait );
 
@@ -1025,6 +1040,9 @@ void trigger_transporter_delay(gentity_t *ent) {
  */
 void SP_trigger_transporter(gentity_t *ent) {
 	char		*temp;
+
+	ent->type = ENT_TRIGGER_TRANSPORTER;
+
 	InitTrigger(ent);
 	
 	if(!ent->wait) {
@@ -1128,6 +1146,7 @@ void trigger_radiation_use(gentity_t *ent, gentity_t *other, gentity_t *activato
  * @param ent the trigger
  */
 void SP_trigger_radiation(gentity_t *ent) {
+	ent->type = ENT_TRIGGGER_RADIATION;
 	
 	if(!ent->damage)
 		ent->damage = 1;

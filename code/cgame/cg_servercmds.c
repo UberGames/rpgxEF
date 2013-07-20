@@ -931,6 +931,26 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
+	/* update the sound sone information */
+	if(strcmp(cmd, "slup") == 0) {
+		char key[8];
+		const char* sinfo = CG_Argv(1);
+		const char* value = NULL;
+
+		if(sinfo == NULL) {
+			return;
+		}
+
+		Com_sprintf(key, sizeof(char) * 8, "c%d", cg.snap->ps.clientNum);
+		value = Info_ValueForKey(sinfo, key);
+
+		if(strcmp(value, "") == 0) {
+			cgs.clientSoundZone = 0;
+		} else {
+			cgs.clientSoundZone = atoi(value);
+		}
+	}
+
 	CG_Printf( "Unknown client game command: %s\n", cmd );
 }
 

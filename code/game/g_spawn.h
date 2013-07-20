@@ -29,10 +29,6 @@ typedef struct
 
 void SP_info_player_deathmatch(/*@shared@*/ gentity_t *ent);
 void SP_info_player_intermission(/*@shared@*/ gentity_t *ent);
-void SP_info_firstplace(/*@shared@*/ gentity_t *ent);
-void SP_info_secondplace(/*@shared@*/ gentity_t *ent);
-void SP_info_thirdplace(/*@shared@*/ gentity_t *ent);
-void SP_info_podium(/*@shared@*/ gentity_t *ent);
 
 void SP_func_plat (/*@shared@*/ gentity_t *ent);
 void SP_func_forcefield(/*@shared@*/ gentity_t *ent);

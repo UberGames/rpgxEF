@@ -270,6 +270,8 @@ Also if you have a (morer or less) generic console that you want to fire generic
  */
 void SP_func_usable( gentity_t *self ) 
 {
+	self->type = ENT_FUNC_USABLE;
+
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
 	VectorCopy( self->s.origin, self->s.pos.trBase );

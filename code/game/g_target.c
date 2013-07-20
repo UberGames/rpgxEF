@@ -53,6 +53,8 @@ void SP_target_give( gentity_t *ent )
 	char*		token;
 	unsigned	weapon;
 
+	ent->type = ENT_TARGET_GIVE;
+
 	G_SpawnString( "items", "", &items );
 
 	if(strcmp(items, "") == 0 && ent->target != NULL) { // spawnTEnt
@@ -127,6 +129,7 @@ static void Use_target_remove_powerups( /*@shared@*/ /*@unused@*/ gentity_t *ent
 }
 
 void SP_target_remove_powerups( gentity_t *ent ) {
+	ent->type = ENT_TARGET_REMOVE_POWERUPS;
 	ent->use = Use_target_remove_powerups;
 }
 
@@ -171,6 +174,8 @@ static void Use_Target_Delay( /*@shared@*/  gentity_t *ent, /*@shared@*/ /*@unus
 }
 
 void SP_target_delay( gentity_t *ent ) {
+	ent->type = ENT_TARGET_DELAY;
+
 	if ( ent->wait <= 0.0f ) {
 		G_SpawnFloat("delay", "0", &ent->wait);
 		if(ent->wait <= 0.0f) {
@@ -224,6 +229,7 @@ static void Use_Target_Print (/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unuse
 }
 
 void SP_target_print( gentity_t *ent ) {
+	ent->type = ENT_TARGET_PRINT;
 	ent->use = Use_Target_Print;
 }
 
@@ -275,6 +281,8 @@ static void Use_Target_Speaker (/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unu
 void SP_target_speaker( gentity_t *ent ) {
 	char	buffer[MAX_QPATH];
 	char	*s;
+
+	ent->type = ENT_TARGET_SPEAKER;
 
 	G_SpawnFloat( "wait", "0", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
@@ -442,6 +450,8 @@ static void target_laser_start (/*@shared@*/ gentity_t *self)
 
 void SP_target_laser (gentity_t *self)
 {
+	self->type = ENT_TARGET_LASER;
+
 	// let everything else get spawned before we start firing
 	self->think = target_laser_start;
 	self->nextthink = level.time + FRAMETIME;
@@ -527,6 +537,8 @@ The activator will be instantly teleported away.
 "swapname" - Activate/Deactivate (Using entity needs SELF/NOACTIVATOR)
 */
 void SP_target_teleporter( gentity_t *self ) {
+	self->type = ENT_TARGET_TELEPORTER;
+
 	if (self->targetname == NULL) {
 		if(self->classname != NULL) {
 			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] untargeted %s at %s\n", self->classname, vtos(self->s.origin)););
@@ -608,6 +620,7 @@ static void target_relay_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unus
 }
 
 void SP_target_relay (gentity_t *self) {
+	self->type = ENT_TARGET_RELAY;
 	self->use = target_relay_use;
 }
 
@@ -631,6 +644,8 @@ static void target_kill_use( /*@shared@*/ /*@unused@*/ gentity_t *self, /*@share
 }
 
 void SP_target_kill( gentity_t *self ) {
+	self->type = ENT_TARGET_KILL;
+
 	self->use = target_kill_use;
 
 	// don't need to send this to clients
@@ -705,6 +720,8 @@ For Type = 1: /locedit add <protected> "<location-name>"
 	this will close the file.
 */
 void SP_target_location( gentity_t *self ){
+	self->type = ENT_TARGET_LOCATION;
+
 	self->think = target_location_linkup;
 	self->nextthink = level.time + 200;  // Let them all spawn first
 
@@ -748,6 +765,8 @@ static void target_counter_use( /*@shared@*/ gentity_t *self, /*@shared@*/ /*@un
 
 void SP_target_counter (gentity_t *self)
 {
+	self->type = ENT_TARGET_COUNTER;
+
 	self->wait = -1.0f;
 	if (self->count == 0) {
 		self->count = 2;
@@ -792,6 +811,8 @@ static void target_objective_use( /*@shared@*/ gentity_t *self, /*@shared@*/ /*@
 
 void SP_target_objective (gentity_t *self)
 {
+	self->type = ENT_TARGET_OBJECTIVE;
+
 	if ( self->count <= 0 ) {
 		//FIXME: error msg
 		G_FreeEntity( self );
@@ -893,6 +914,8 @@ static void target_boolean_use (/*@shared@*/ gentity_t *self, /*@shared@*/ genti
 }
 
 void SP_target_boolean (gentity_t *self) {
+	self->type = ENT_TARGET_BOOLEAN;
+
 	if (!self->booleanstate && (self->spawnflags & 1) != 0) {
 		self->booleanstate = qtrue;
 	} else if (!self->booleanstate) {
@@ -949,13 +972,18 @@ void target_gravity_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/
 
 void SP_target_gravity (gentity_t *self) {
 	char *temp;
+
+	self->type = ENT_TARGET_GRAVITY;
+
 	if(!self->tmpEntity) { // check for spawnTEnt
 		G_SpawnString("gravity", "800", &temp);
 		self->targetname2 = G_NewString(temp);
 	}
+
 	if(self->count != 0) { // support for SP
 		self->targetname2 = G_NewString(va("%i", self->count));
 	}
+
 	self->use = target_gravity_use;
 
 	// don't need to send this to clients
@@ -983,6 +1011,7 @@ void target_shake_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ g
 }
 
 void SP_target_shake (gentity_t *self) {
+	self->type = ENT_TARGET_SHAKE;
 
 	//TiM: Phenix, you're a n00b. You should always put default values in. ;P
 	G_SpawnFloat( "intensity", "5", &self->distance /*was &self->intensity*/ );
@@ -1023,6 +1052,8 @@ void target_evosuit_use (/*@shared@*/ /*@unused@*/ gentity_t *self, /*@shared@*/
 }
 
 void SP_target_evosuit (gentity_t *self) {
+	self->type = ENT_TARGET_EVOSUIT;
+
 	self->use = target_evosuit_use;
 
 	// don't need to send this to clients
@@ -1751,6 +1782,8 @@ void SP_target_turbolift ( gentity_t *self )
 		return;
 	}
 
+	self->type = ENT_TARGET_TURBOLIFT;
+
 	//cache the moving sounds
 	G_SpawnString( "soundLoop", "sound/movers/plats/turbomove.wav", &loopSound );
 	G_SpawnString( "soundEnd", "sound/movers/plats/turbostop.wav", &endSound );
@@ -1932,6 +1965,8 @@ void target_doorLock_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ 
 
 void SP_target_doorLock(gentity_t *ent) {
 	char *temp;
+
+	ent->type = ENT_TARGET_DOORLOCK;
 
 	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_doorlock at %s without target!\n", vtos(ent->s.origin)););
@@ -2412,6 +2447,8 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 void SP_target_alert(gentity_t *ent) {
 	char		*temp;
 
+	ent->type = ENT_TARGET_ALERT;
+
 	G_SpawnString("greenname", "", &temp);
 	ent->swapname = G_NewString(temp);
 	G_SpawnString("yellowname", "", &temp);
@@ -2638,6 +2675,8 @@ void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gent
 void SP_target_warp(gentity_t *ent) {
 	char *temp;
 
+	ent->type = ENT_TARGET_WARP;
+
 	G_SpawnString("swapWarp", "", &temp);
 	ent->swapname = G_NewString(temp);
 	G_SpawnString("swapCoreState", "", &temp);
@@ -2695,6 +2734,7 @@ void target_deactivate_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*
 }
 
 void SP_target_deactivate(/*@shared@*/ gentity_t *ent) {
+	ent->type = ENT_TARGET_DEACTIVATE;
 
 	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_deactivate at %s without target!\n", vtos(ent->r.currentOrigin)););
@@ -2758,6 +2798,8 @@ void target_serverchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused
 void SP_target_serverchange(/*@shared@*/ gentity_t *ent) {
 	int serverNum = 0;
 
+	ent->type = ENT_TARGET_SERVERCHANGE;
+
 	G_SpawnInt("serverNum", "1", &serverNum);
 	ent->count = serverNum;
 
@@ -2812,6 +2854,8 @@ void target_levelchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@
 }
 
 void SP_target_levelchange(gentity_t *ent) {
+	ent->type = ENT_TARGET_LEVELCHANGE;
+
 	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_levelchange without target at %s!\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
@@ -2846,6 +2890,8 @@ void SP_target_holodeck(/*@shared@*/ gentity_t *ent) {
 	G_FreeEntity(ent);
 	return;
 #else 
+	ent->type = ENT_TARGET_HOLODECK;
+
 	// don't need to send this to clients
 	ent->r.svFlags &= SVF_NOCLIENT;
 	trap_LinkEntity(ent);
@@ -2896,6 +2942,8 @@ void target_shaderremap_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@
 }
 
 void SP_target_shaderremap(gentity_t *ent) {
+
+	ent->type = ENT_TARGET_SHADERREMAP;
 
 	if(ent->falsename == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shaderremap without falsename-shader at %s!\n", vtos(ent->s.origin)););
@@ -3015,6 +3063,8 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	double		ETAmin, ETAsec;
 	float		temp;
 
+	ent->type = ENT_TARGET_SELFDESTRUCT;
+
 	if(level.time < 1000.0f){ //failsafe in case someone spawned this in the radiant
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_selfdestruct spawned by level. Removing entity."););
 		G_FreeEntity(ent);
@@ -3117,6 +3167,7 @@ Note: Spawnflags will only work with the system they are attached to
 	0 - none, will free entity
 	1 - safezone for target_selfdestruct and target_shiphealth
 	2 - display zone for target_shiphealth (HUD overlay)
+	4 - sound zone
 
 -----USAGE-----
 As safezone:
@@ -3140,6 +3191,8 @@ void target_safezone_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ 
 }
 
 void SP_target_zone(gentity_t *ent) {
+
+	ent->type = ENT_TARGET_ZONE;
 
 	if(ent->targetname == NULL || ent->targetname[0] == 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_zone without targetname at %s, removing entity.\n", vtos(ent->s.origin)););
@@ -3567,6 +3620,7 @@ void target_shiphealth_think(/*@shared@*/ gentity_t *ent) {
 
 
 void SP_target_shiphealth(gentity_t *ent) {
+	ent->type = ENT_TARGET_SHIPHEALTH;
 
 	if(ent->targetname == NULL || ent->health == 0 || ent->splashRadius == 0 || !ent->angle || !ent->speed){
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shiphealth at %s is missing one or more parameters, removing entity.\n", vtos(ent->s.origin)););
