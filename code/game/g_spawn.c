@@ -330,7 +330,7 @@ qboolean G_CallSpawn( gentity_t *ent ) {
 	spawn_t	*s;
 	gitem_t	*item;
 
-	if ( !ent->classname )
+	if ( ent->classname == NULL )
 	{
 		G_Printf ("G_CallSpawn: NULL classname\n");
 		return qfalse;

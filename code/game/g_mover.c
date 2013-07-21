@@ -508,7 +508,7 @@ ReturnToPos1
 void ReturnToPos1( gentity_t *ent ) 
 {
 	//if it's a crushing door, make sure there are no ents in the way
-	if ( !Q_stricmp( ent->classname, "func_door" ) && ent->targetname && !(ent->spawnflags&32) && ent->wait > 0 ) //OVERRIDE
+	if ( (ent->type == ENT_FUNC_DOOR) && (ent->targetname != NULL) && ((ent->spawnflags & 32) == 0) && (ent->wait > 0) ) //OVERRIDE
 	{
 		gentity_t *t;
 		trace_t tr;
@@ -517,7 +517,7 @@ void ReturnToPos1( gentity_t *ent )
 		//FIX: make sure it isn't a turbolift door either
 		//A turbolift door should only be targetted by its turbolift parent
 		t = G_Find(NULL, FOFS(target), ent->targetname);
-		if ( t && Q_stricmp( t->classname, "target_turbolift" ) )
+		if ( (t != NULL) && (t->type != ENT_TARGET_TURBOLIFT) )
 		{
 			VectorCopy( ent->r.mins, mins );
 			VectorCopy( ent->r.maxs, maxs );
@@ -559,7 +559,7 @@ TiM: To make toggle doors
 void ReturnToPos1_Use( gentity_t* ent, gentity_t* other, gentity_t* activator)
 {
 	//if it's a crushing door, make sure there are no ents in the way
-	if ( !Q_stricmp( ent->classname, "func_door" ) && ent->targetname && !(ent->spawnflags&32) && ent->wait > 0 ) //OVERRIDE
+	if ( (ent->type == ENT_FUNC_DOOR) && (ent->targetname != NULL) && ((ent->spawnflags & 32) == 0) && (ent->wait > 0) ) //OVERRIDE
 	{
 		gentity_t *t;
 		trace_t tr;
@@ -568,7 +568,7 @@ void ReturnToPos1_Use( gentity_t* ent, gentity_t* other, gentity_t* activator)
 		//FIX: make sure it isn't a turbolift door either
 		//A turbolift door should only be targetted by its turbolift parent
 		t = G_Find(NULL, FOFS(target), ent->targetname);
-		if ( t && Q_stricmp( t->classname, "target_turbolift" ) )
+		if ( (t != NULL) && (t->type != ENT_TARGET_TURBOLIFT) )
 		{
 			VectorCopy( ent->r.mins, mins );
 			VectorCopy( ent->r.maxs, maxs );
@@ -777,7 +777,7 @@ void G_Mover_UseBinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activa
 
 	//GSIO01 -> is this a train and is called by the swapname
 	if(activator && activator->target && ent->swapname) {
-		if(!Q_stricmp(ent->classname, "func_train") && !Q_stricmp(activator->target, ent->swapname)) {
+		if((ent->type == ENT_FUNC_TRAIN) && !Q_stricmp(activator->target, ent->swapname)) {
 			if(ent->count == 1) {
 				ent->s.solid = 0;
 				ent->r.contents = 0;
@@ -808,10 +808,11 @@ void G_Mover_UseBinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activa
 	}
 
 	//GSIO01 | 09/05/2009: do engage if door is admin only and player isn admin
-	if((!Q_stricmp(ent->classname, "func_door") && (ent->spawnflags & 128)) 
-		|| (!Q_stricmp(ent->classname, "func_door_rotating") && (ent->spawnflags & 64))) {
-		if(activator && !IsAdmin(activator))
+	if(((ent->type == ENT_FUNC_DOOR) && ((ent->spawnflags & 128) != 0))
+		|| ((ent->type == ENT_FUNC_DOOR_ROTATING) && ((ent->spawnflags & 64) != 0))) {
+		if((activator != NULL) && !IsAdmin(activator)) {
 			return;
+		}
 	}
 
 	// only the master should be used
@@ -1009,13 +1010,14 @@ void InitMover( gentity_t *ent ) {
 
 
 	ent->use = G_Mover_UseBinaryMover;
-	if(Q_stricmp(ent->classname, "func_mover"))
+	if(ent->type != ENT_FUNC_MOVER) {
 		ent->reached = Reached_BinaryMover;
-	else
+	} else {
 		ent->reached = Reached_AdvancedMover;
+	}
 
 	// if this is a func_mover we have to make sure it is a bit away from it's first target
-	if(!Q_stricmp(ent->classname, "func_mover")) {
+	if(ent->type == ENT_FUNC_MOVER) {
 		VectorSubtract(ent->pos1, ent->pos2, move);
 		distance = VectorLength(move);
 		if(distance < 32) {
@@ -1059,7 +1061,7 @@ void InitMover( gentity_t *ent ) {
 		ent->s.apos.trDuration = 1;
 	}
 
-	if(!Q_stricmp(ent->classname, "func_rotating")) {
+	if(ent->type == ENT_FUNC_ROTATING) {
 		ent->reached = 0;
 	}
 }
@@ -1170,7 +1172,7 @@ void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 	if ( ent->damage ) {
 		G_Damage( other, ent, ent, NULL, NULL, ent->damage, 0, MOD_CRUSH );
 	}
-	if ( ent->spawnflags & 4 || (!Q_stricmp(ent->classname, "func_door_rotating") && (ent->spawnflags & 2))) { // GSIO01: added support for fucn_door_roating
+	if ( ((ent->spawnflags & 4) != 0) || ((ent->type == ENT_FUNC_DOOR_ROTATING) && ((ent->spawnflags & 2) != 0)) ) { // GSIO01: added support for fucn_door_roating
 		return;		// crushers don't reverse
 	}
 
@@ -1312,12 +1314,12 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent ) {
 	}
 
 	// should we have a big old trigger volume, or a small one?
-	if(((ent->spawnflags & 256) && !Q_stricmp(ent->classname, "func_door")) ||
-		((ent->spawnflags & 128) && !Q_stricmp(ent->classname, "func_door_rotating"))) {
+	if((((ent->spawnflags & 256) != 0) && (ent->type == ENT_FUNC_DOOR)) ||
+		(((ent->spawnflags & 128) != 0) && (ent->type == ENT_FUNC_DOOR_ROTATING))) {
 		maxs[best] += 12;
 		mins[best] -= 12;
 	}
-	else if (ent->spawnflags & 8 && !Q_stricmp(ent->classname, "func_door"))
+	else if (((ent->spawnflags & 8) != 0) && (ent->type == ENT_FUNC_DOOR))
 	{
 		maxs[best] += 48;
 		mins[best] -= 48;
@@ -2006,7 +2008,7 @@ void Think_SetupTrainTargets( gentity_t *ent ) {
 					vtos(path->s.origin) ););
 				return;
 			}
-		} while ( strcmp( next->classname, "path_corner" ) );
+		} while ( next->type != ENT_PATH_CORNER );
 
 		path->nextTrain = next;
 	}
@@ -3001,7 +3003,7 @@ void func_lightchange_setup(gentity_t *ent) {
 		G_FreeEntity(ent);
 		return;
 	}
-	if(Q_stricmp(bmodel->classname, "func_brushmodel")) {
+	if(ent->type != ENT_FUNC_BRUSHMODEL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] func_lightchange with invalid target entity of class %s at %s!\n", bmodel->classname, vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;

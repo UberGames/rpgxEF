@@ -152,9 +152,11 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		shieldstate = target->splashDamage;
 		if(target->falsetarget){
 			while((temp = G_Find(temp, FOFS(truename), target->falsetarget)) != NULL){
-				if(!Q_stricmp(temp->classname, "target_warp")) break;
+				if(temp->type == ENT_TARGET_WARP) {
+					break;
+				}
 			}
-			if(temp){
+			if(temp != NULL){
 				if(temp->sound2to1)//core ejected, we don't really care if it is online
 					warpstate = 2;
 				if(!temp->sound2to1 && temp->sound1to2)//not ejected and not deactivated -> core active
@@ -166,7 +168,9 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		}
 		if(target->bluename){
 			while((temp = G_Find(temp, FOFS(swapname), target->bluename)) != NULL){
-				if(!Q_stricmp(temp->classname, "target_turbolift")) break;
+				if(temp->type == ENT_TARGET_TURBOLIFT) { 
+					break;
+				}
 			}
 			if(temp){
 				if (temp->flags & FL_LOCKED)
@@ -178,7 +182,9 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		}
 		if(target->bluesound){
 			while((temp = G_Find(temp, FOFS(swapname), target->bluesound)) != NULL){
-				if(!Q_stricmp(temp->classname, "ui_transporter")) break;
+				if(temp->type == ENT_UI_TRANSPORTER) {
+					break;
+				}
 			}
 			if(temp){
 				if (temp->flags & FL_LOCKED)
@@ -190,7 +196,7 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		}
 		if(target->falsename){
 			while((temp = G_Find(temp, FOFS(falsename), target->falsename)) != NULL){
-				if(!Q_stricmp(temp->classname, "target_alert")) break;
+				if(temp->type == ENT_TARGET_ALERT) break;
 			}
 			if(temp){
 			alertstate = temp->damage;
@@ -214,7 +220,9 @@ void ui_msd_setup(gentity_t *ent) {
 	gentity_t *target = NULL;
 
 	while((target = G_Find(target, FOFS(targetname), ent->target)) != NULL){
-		if(!Q_stricmp(target->classname, "target_shiphealth")) break;
+		if(target->type == ENT_TARGET_SHIPHEALTH) {
+			break;
+		}
 	}
 
 	if(!target) {

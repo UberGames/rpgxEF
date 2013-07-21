@@ -185,6 +185,7 @@ typedef enum {
 typedef enum {
 	ENT_FREE = 0,
 	ENT_UNKNOWN,
+	ENT_TEMPORAL,
 	ENT_CUSTOM,
 	ENT_LIGHT,
 	ENT_PATH_CORNER,

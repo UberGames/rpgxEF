@@ -672,7 +672,7 @@ static void target_location_linkup(/*@shared@*/ gentity_t *ent)
 	for (i = 0, ent = g_entities, n = 1;
 		i < level.num_entities;
 		i++, ent++) {
-			if (ent->classname != NULL && Q_stricmp(ent->classname, "target_location") == 0) {
+			if ((ent->classname != NULL) && (ent->type == ENT_TARGET_LOCATION)) {
 				// lets overload some variables!
 				ent->health = n; // use for location marking
 				trap_SetConfigstring( CS_LOCATIONS + n, ent->message );
@@ -1082,7 +1082,7 @@ static void target_turbolift_unlock ( /*@shared@*/ gentity_t *ent )
 		if(ent->target != NULL) {
 			while ( ( door = G_Find( door, FOFS( targetname ), ent->target )) != NULL  )
 			{
-				if ( Q_stricmp( door->classname, "func_door" ) == 0 )
+				if ( door->type == ENT_FUNC_DOOR )
 				{
 					door->flags &= ~FL_CLAMPED;
 				}
@@ -1094,7 +1094,7 @@ static void target_turbolift_unlock ( /*@shared@*/ gentity_t *ent )
 		{
 			while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
 			{
-				if ( Q_stricmp( door->classname, "func_door" ) == 0 )
+				if ( door->type == ENT_FUNC_DOOR )
 				{
 					door->flags &= ~FL_CLAMPED;
 				}
@@ -1145,7 +1145,7 @@ static void target_turbolift_endMove ( /*@shared@*/ gentity_t *ent )
 		if(ent->target != NULL) {
 			while ( ( lights = G_Find( lights, FOFS( targetname ), ent->target ) ) != NULL )
 			{
-				if ( Q_stricmp( lights->classname, "func_usable" ) == 0 )
+				if ( lights->type == ENT_FUNC_USABLE )
 				{	
 					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
@@ -1191,7 +1191,7 @@ static void target_turbolift_endMove ( /*@shared@*/ gentity_t *ent )
 		if(otherLift != NULL && otherLift->target != NULL) {
 			while ( ( lights = G_Find( lights, FOFS( targetname ), otherLift->target ) ) != NULL )
 			{
-				if ( Q_stricmp( lights->classname, "func_usable" ) == 0 )
+				if ( lights->type == ENT_FUNC_USABLE )
 				{
 					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
@@ -1439,7 +1439,7 @@ static void target_turbolift_startMove (/*@shared@*/ gentity_t *ent )
 		if(ent->target != NULL) {
 			while ( ( lights = G_Find( lights, FOFS( targetname ), ent->target ) ) != NULL )
 			{
-				if ( Q_stricmp( lights->classname, "func_usable" ) == 0 )
+				if ( lights->type == ENT_FUNC_USABLE )
 				{
 					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
@@ -1485,7 +1485,7 @@ static void target_turbolift_startMove (/*@shared@*/ gentity_t *ent )
 		if(otherLift->target != NULL) {
 			while ( ( lights = G_Find( lights, FOFS( targetname ), otherLift->target ) ) != NULL )
 			{
-				if ( Q_stricmp( lights->classname, "func_usable" ) == 0 )
+				if ( lights->type == ENT_FUNC_USABLE )
 				{
 					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
@@ -1576,7 +1576,7 @@ static void target_turbolift_shutDoors (/*@shared@*/  gentity_t *ent )
 	if(ent->target != NULL) {
 		while ( ( door = G_Find( door, FOFS( targetname ), ent->target )) != NULL  )
 		{
-			if ( Q_stricmp( door->classname, "func_door" ) == 0 )
+			if ( door->type == ENT_FUNC_DOOR )
 			{
 				if ( door->moverState != MOVER_POS1 ) {
 					ent->nextthink = level.time + 500;
@@ -1590,7 +1590,7 @@ static void target_turbolift_shutDoors (/*@shared@*/  gentity_t *ent )
 	if(otherLift->target != NULL) {
 		while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
 		{
-			if ( Q_stricmp( door->classname, "func_door" ) == 0 )
+			if ( door->type == ENT_FUNC_DOOR )
 			{
 				if ( door->moverState != MOVER_POS1 ) {
 					ent->nextthink = level.time + 500;
@@ -1626,7 +1626,7 @@ void target_turbolift_start ( gentity_t *self )
 		if(self->target != NULL) {
 			while ( ( door = G_Find( door, FOFS( targetname ), self->target )) != NULL  )
 			{
-				if ( Q_stricmp( door->classname, "func_door" ) == 0 )
+				if ( door->type == ENT_FUNC_DOOR )
 				{
 					door->flags |= FL_CLAMPED;
 					if ( door->moverState != MOVER_POS1 )
@@ -1641,7 +1641,7 @@ void target_turbolift_start ( gentity_t *self )
 		if(otherLift->target != NULL) {
 			while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
 			{
-				if ( Q_stricmp( door->classname, "func_door" ) == 0 )
+				if ( door->type == ENT_FUNC_DOOR )
 				{
 					door->flags |= FL_CLAMPED;
 					if ( door->moverState != MOVER_POS1 )
@@ -1955,7 +1955,7 @@ void target_doorLock_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ 
 		}
 	}
 
-	if(Q_stricmp(target->classname, "func_door") == 0 || Q_stricmp(target->classname, "func_door_rotating") == 0) {
+	if((target->type == ENT_FUNC_DOOR) || (target->type == ENT_FUNC_DOOR_ROTATING)) {
 		target->flags ^= FL_LOCKED;
 	} else {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Target %s of target_doorlock at %s is not a door!\n", ent->target, vtos(ent->s.origin)););
@@ -2560,7 +2560,7 @@ void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gent
 				continue;
 			}
 
-			if(Q_stricmp(g_entities[i].classname, "func_train") != 0 && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
+			if((g_entities[i].type != ENT_FUNC_TRAIN) && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
 				target = &g_entities[i];
 				if(target == NULL) {
 					continue;
@@ -2581,7 +2581,7 @@ void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gent
 					}
 #endif
 				}
-			} else if(Q_stricmp(g_entities[i].classname, "func_train") == 0 && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
+			} else if((g_entities[i].type == ENT_FUNC_TRAIN) && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
 				target = &g_entities[i];
 				if(target == NULL) {
 					continue;
@@ -2727,7 +2727,7 @@ void target_deactivate_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*
 	}
 
 	while((target = G_Find(target, FOFS(targetname2), ent->target)) != NULL) {
-		if(Q_stricmp(target->classname, "func_usable") == 0) {
+		if(target->type == ENT_FUNC_USABLE) {
 			target->flags ^= FL_LOCKED;
 		}
 	}
@@ -3202,7 +3202,7 @@ void SP_target_zone(gentity_t *ent) {
 
 	if(Q_stricmp(ent->classname, "target_zone") != 0){
 		ent->count = 1;
-		ent->classname = G_NewString("target_zone");
+		ent->classname = "target_zone";
 	}
 	
 	if(ent->count == 0) {
@@ -3213,8 +3213,7 @@ void SP_target_zone(gentity_t *ent) {
 
 	if(strcmp(ent->classname, "target_zone") != 0){
 		ent->count = 1;
-		//ent->classname = G_NewString("target_zone");
-		strcpy(ent->classname, "target_zone");
+		ent->classname = "target_zone";
 	}
 
 	if(ent->luaEntity == qfalse && ent->model != NULL) {
@@ -3571,14 +3570,14 @@ void target_shiphealth_think(/*@shared@*/ gentity_t *ent) {
 	//shield reenstatement
 	if(ent->splashDamage == -1) { //else we don't need to run this
 		if((ent->count * pow(ent->health, -1)) > 0.5) {
-			if(alertEnt != NULL && alertEnt->damage == 0 && Q_stricmp(alertEnt->classname, "target_alert") == 0) {
+			if(alertEnt != NULL && alertEnt->damage == 0 && (alertEnt->type == ENT_TARGET_ALERT)) {
 				ent->splashDamage = 0;
 			} else {
 				ent->splashDamage = 1;
 			}
 		} else {
 			if((ent->count * pow(ent->health, -1) * flrandom(0, 1)) > 0.75){
-				if(alertEnt != NULL && alertEnt->damage == 0 && Q_stricmp(alertEnt->classname, "target_alert") == 0) {
+				if(alertEnt != NULL && alertEnt->damage == 0 && (alertEnt->type == ENT_TARGET_ALERT)) {
 					ent->splashDamage = 0;
 				} else {
 					ent->splashDamage = 1;

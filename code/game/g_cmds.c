@@ -3690,9 +3690,10 @@ static void Cmd_UseEnt_f ( gentity_t *ent ) {
 	//TiM: Hack. Well... since we can use usables anyway, I'ma gonna disable them here.
 	//Doing it this way can screw up maps bigtime. >.<
 	//RPG_Chambers may never be the same again.... :S
-	if ( ( targetEnt && targetEnt->use) ) {
-		if ( !Q_stricmp( targetEnt->classname, "func_usable" ) )
+	if ( ( (targetEnt != NULL) && (targetEnt->use != NULL) ) ) {
+		if ( targetEnt->type == ENT_FUNC_USABLE ) {
 			return;
+		}
 
 		targetEnt->use( targetEnt, ent, ent ); //Activate the Ent
 	}
@@ -3733,7 +3734,7 @@ static void Cmd_EntList_f ( gentity_t *ent ) {
 		i < level.num_entities;
 		i++, mapEnt++) {
 
-			if (  ( !Q_stricmpn( mapEnt->classname, "fx_", 3) ) || ( !Q_stricmp( mapEnt->classname, "func_usable" ) && ent->targetname ) ) {
+			if (  (Q_stricmpn( mapEnt->classname, "fx_", 3) == 0) || ((mapEnt->type == ENT_FUNC_USABLE) && (ent->targetname != NULL)) ) {
 				if ( mapEnt->use ) {
 					memset( &entBuffer, 0, sizeof( entBuffer ) );
 
@@ -3863,7 +3864,7 @@ static void Cmd_BeamToLoc_f( gentity_t *ent ) {
 	for ( i=0, locEnt=g_entities; i < level.num_entities; locEnt++, i++ ) 
 	{
 
-		if ( !Q_stricmp( locEnt->classname, "target_location" ) ) {
+		if (locEnt->type == ENT_TARGET_LOCATION) {
 			//if we have a health index (which will always be above 0 coz 0 is a default 'unknown' value)
 			if ( locEnt->health == locIndex && locEnt->health >= 1 && locIndex >= 1 ) {
 				break;
@@ -3877,7 +3878,7 @@ static void Cmd_BeamToLoc_f( gentity_t *ent ) {
 		}
 	}
 
-	if ( !locEnt || Q_stricmp( locEnt->classname, "target_location" ) ) {
+	if ( (locEnt == NULL) || (locEnt->type != ENT_TARGET_LOCATION )) {
 		trap_SendServerCommand( ent-g_entities, va("chat \"Invalid Beam Entity.\n\" " ) );
 		return;
 	}
@@ -5083,7 +5084,7 @@ static void Cmd_Turbolift_f( gentity_t* ent )
 			continue;
 
 		//found our ent!
-		if ( !Q_stricmp( lift->classname, "target_turbolift" ) )
+		if ( lift->type == ENT_TARGET_TURBOLIFT )
 		{
 			break;
 		}
@@ -5379,9 +5380,9 @@ static void Cmd_lockDoor_f(gentity_t *ent) {
 	//Doing it this way can screw up maps bigtime. >.<
 	//RPG_Chambers may never be the same again.... :S
 	if ( ( targetEnt ) ) {
-		if ( Q_stricmp( targetEnt->classname, "func_door" ) ) {
+		if ( targetEnt->type != ENT_FUNC_DOOR ) {
 			//GSIO01 not a func_door?? well then check wheter its a rotating door
-			if( Q_stricmp(targetEnt->classname, "func_door_rotating") ) {
+			if( targetEnt->type != ENT_FUNC_DOOR_ROTATING ) {
 				trap_SendServerCommand( ent-g_entities, va( " print \"Entity %i isn't a door.\n\" ", index ) );
 				return;
 			}
@@ -5498,10 +5499,11 @@ static void Cmd_unlockAll_f(gentity_t *ent) {
 #endif
 
 	for(i = g_maxclients.integer; i < MAX_GENTITIES ; i++) {
-		if(Q_stricmp(g_entities[i].classname, "func_door") == 0 && (g_entities[i].flags & FL_LOCKED))
+		if((g_entities[i].type == ENT_FUNC_DOOR) && ((g_entities[i].flags & FL_LOCKED) != 0)) {
 			g_entities[i].flags ^= FL_LOCKED;
-		else if(Q_stricmp(g_entities[i].classname, "func_door_rotating") == 0 && (g_entities[i].flags & FL_LOCKED))
+		} else if((g_entities[i].type == ENT_FUNC_DOOR_ROTATING) && ((g_entities[i].flags & FL_LOCKED) != 0)) {
 			g_entities[i].flags ^= FL_LOCKED;
+		}
 	}
 	G_PrintfClient(ent, "All doors unlocked.\n");
 }
@@ -5551,10 +5553,11 @@ static void Cmd_lockAll_f(gentity_t *ent) {
 #endif
 
 	for(i = g_maxclients.integer; i < MAX_GENTITIES; i++) {
-		if(Q_stricmp(g_entities[i].classname, "func_door") == 0 && !(g_entities[i].flags & FL_LOCKED))
+		if((g_entities[i].type == ENT_FUNC_DOOR) && ((g_entities[i].flags & FL_LOCKED) == 0)) {
 			g_entities[i].flags ^= FL_LOCKED;
-		else if(Q_stricmp(g_entities[i].classname, "func_door_rotating") == 0 && !(g_entities[i].flags & FL_LOCKED))
+		} else if((g_entities[i].type == ENT_FUNC_DOOR_ROTATING) && !(g_entities[i].flags & FL_LOCKED)) {
 			g_entities[i].flags ^= FL_LOCKED;
+		}
 	}
 	G_PrintfClient(ent, "All doors locked.\n");
 }
@@ -6181,10 +6184,11 @@ static void Cmd_listSPs(gentity_t *ent) {
 
 	G_Printf("Spawnpoint list: \n");
 	for(i = 0; i < MAX_GENTITIES; i++) {
-		if(!Q_stricmp(g_entities[i].classname, "info_player_start"))
+		if(g_entities[i].type == ENT_INFO_PLAYER_START) {
 			G_Printf("Spawnpoint type: info_player_start Origin: %s\n", vtos(ent->s.origin));
-		if(!Q_stricmp(g_entities[i].classname, "info_player_deathmatch")) 
+		} else if(Q_stricmp(g_entities[i].classname, "info_player_deathmatch") == 0) { 
 			G_Printf("Spawnpoint type: info_player_deathmatch Origin: %s\n", vtos(ent->s.origin));
+		}
 	}
 }
 
@@ -6353,7 +6357,7 @@ static void Cmd_getEntByTarget_f(gentity_t *ent) {
 			continue;
 		}
 
-		if(!t->classname) {
+		if(t->classname == NULL) {
 			continue;
 		}
 
@@ -6559,7 +6563,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 	//check wether this is a valid entity
 	if(!Q_stricmpn(arg, "trigger_", 8)) {
 		if(!Q_stricmp(arg, "trigger_teleport")) {
-			newEnt->classname = G_NewString("trigger_teleport");
+			newEnt->classname = "trigger_teleport";
 			if(numArgs < 5) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for trigger_teleport!\n\"");
@@ -6598,7 +6602,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			}
 			G_CallSpawn(newEnt);
 		}else if(!Q_stricmp(arg, "trigger_once")) { //actually trigger_multiple with wait of -1
-			newEnt->classname = G_NewString("trigger_multiple");
+			newEnt->classname = "trigger_multiple";
 			if(numArgs < 5) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of argmuments for trigger_once!\n\"");
@@ -6626,7 +6630,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			G_CallSpawn(newEnt);
 			newEnt->wait = -1;
 		} else if(!Q_stricmp(arg, "trigger_multiple")) {
-			newEnt->classname = G_NewString("trigger_multiple");
+			newEnt->classname = "trigger_multiple";
 			if(numArgs < 6) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of argmuments for trigger_multple!\n\"");
@@ -6656,7 +6660,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			newEnt->wait = atof(arg);
 		} else if(!Q_stricmp(arg, "trigger_hurt")) {
 			//newEnt = G_Spawn();
-			newEnt->classname = G_NewString("trigger_hurt");
+			newEnt->classname = "trigger_hurt";
 			if(numArgs < 4) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for trigger_hurt!\n\"");
@@ -6690,7 +6694,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 	} else if (!Q_stricmpn(arg, "fx_", 3)) {
 		if(!Q_stricmp(arg, "fx_spark")) {
 			//newEnt = G_Spawn();
-			newEnt->classname = G_NewString("fx_spark");
+			newEnt->classname = "fx_spark";
 			if(numArgs < 3) {
 				G_FreeEntity(ent);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for fx_spark!\n\"");
@@ -6711,7 +6715,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			trap_Argv(2, arg, sizeof(arg));
 			newEnt->wait = atof(arg);
 		} else if(!Q_stricmp(arg, "fx_surface_explosion")) {
-			newEnt->classname = G_NewString("fx_surface_explosion");
+			newEnt->classname = "fx_surface_explosion";
 			if(numArgs < 2) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for fx_surface_explosion!\n\"");
@@ -6742,7 +6746,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			}
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "fx_blow_chunks")) {
-			newEnt->classname = G_NewString("fx_blow_chunks");
+			newEnt->classname = "fx_blow_chunks";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for fx_blow_chunks!\n\"");
@@ -6763,7 +6767,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			}
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "fx_electrical_explosion")) {
-			newEnt->classname =  G_NewString("fx_electrical_explosion");
+			newEnt->classname =  "fx_electrical_explosion";
 			if(numArgs < 2) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for fx_electrical_explosion!\n\"");
@@ -6788,7 +6792,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 		}
 	} else if(!Q_stricmpn(arg, "info_", 5)) {
 		if(!Q_stricmp(arg, "info_notnull")) {
-			newEnt->classname = G_NewString("info_notnull");
+			newEnt->classname = "info_notnull";
 			if(numArgs < 2) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for info_notnull!\n\"");
@@ -6796,15 +6800,15 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 				return;
 			}
 			trap_Argv(2, arg, sizeof(arg));
-			newEnt->targetname = G_NewString(arg);
+			newEnt->targetname = arg;
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "info_player_deathmatch") || !Q_stricmp(arg, "info_player_start")) {
-			newEnt->classname = G_NewString("info_player_deathmatch");
+			newEnt->classname = "info_player_deathmatch";
 			G_CallSpawn(newEnt);
 		}
 	} else if(!Q_stricmpn(arg, "target_", 7)) {
 		if(!Q_stricmp(arg, "target_boolean")) {
-			newEnt->classname = G_NewString("target_boolean");
+			newEnt->classname = "target_boolean";
 			if(numArgs < 5) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_boolean!\n\"");
@@ -6834,7 +6838,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			}
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_counter")) {
-			newEnt->classname = G_NewString("target_counter");
+			newEnt->classname = "target_counter";
 			if(numArgs < 4) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_count!\n\"");
@@ -6849,7 +6853,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			newEnt->count = atoi(arg);
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_deactivate")) {
-			newEnt->classname = G_NewString("target_deactivate");
+			newEnt->classname = "target_deactivate";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_deactivate!\n\"");
@@ -6862,7 +6866,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			newEnt->target = G_NewString(arg);
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_doorlock")) {
-			newEnt->classname = G_NewString("target_doorlock");
+			newEnt->classname = "target_doorlock";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of  arguments for target_doorlock!\n\"");
@@ -6887,7 +6891,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			}
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_relay")) {
-			newEnt->classname = G_NewString("target_relay");
+			newEnt->classname = "target_relay";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_relay!\n\"");
@@ -6904,7 +6908,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			}
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_delay")) {
-			newEnt->classname = G_NewString("target_delay");
+			newEnt->classname = "target_delay";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_delay!\n\"");
@@ -6927,7 +6931,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			trap_Argv(4, arg, sizeof(arg));
 			newEnt->wait = atoi(arg);
 		} else if(!Q_stricmp(arg, "target_evosuit")) {
-			newEnt->classname = G_NewString("target_evosuit");
+			newEnt->classname = "target_evosuit";
 			if(numArgs < 2) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_evosuit!\n\"");
@@ -6938,7 +6942,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			newEnt->targetname = G_NewString(arg);
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_give")) {
-			newEnt->classname = G_NewString("target_give");
+			newEnt->classname = "target_give";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_give!\n\"");
@@ -6951,7 +6955,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			newEnt->target = G_NewString(arg);
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_gravity")) {
-			newEnt->classname = G_NewString("target_gravity");
+			newEnt->classname = "target_gravity";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_gravity!\n\"");
@@ -6968,7 +6972,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			}
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_kill")) {
-			newEnt->classname = G_NewString("target_kill");
+			newEnt->classname = "target_kill";
 			if(numArgs < 2) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_kill!\n\"");
@@ -6979,7 +6983,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			newEnt->targetname = G_NewString(arg);
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_print")) {
-			newEnt->classname = G_NewString("target_print");
+			newEnt->classname = "target_print";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_print!\n\"");
@@ -6996,7 +7000,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			}
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_repair")) {
-			newEnt->classname = G_NewString("target_repair");
+			newEnt->classname = "target_repair";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_repair!\n\"");
@@ -7009,7 +7013,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			newEnt->target = G_NewString(arg);
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_shake")) {
-			newEnt->classname = G_NewString("target_shake");
+			newEnt->classname = "target_shake";
 			if(numArgs < 4) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_shake!\n\"");
@@ -7024,7 +7028,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			trap_Argv(4, arg, sizeof(arg));
 			newEnt->wait = atof(arg);
 		} else if(!Q_stricmp(arg, "target_teleporter")) {
-			newEnt->classname = G_NewString("target_teleporter");
+			newEnt->classname = "target_teleporter";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_teleporter!\n\"");
@@ -7045,7 +7049,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 			}
 			G_CallSpawn(newEnt);
 		} else if(!Q_stricmp(arg, "target_speaker")) {
-			newEnt->classname = G_NewString("target_speaker");
+			newEnt->classname = "target_speaker";
 			if(numArgs < 3) {
 				G_FreeEntity(newEnt);
 				trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for target_speaker!\n\"");
@@ -7079,7 +7083,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 	if(newEnt) {
 		Com_sprintf(tmp, sizeof(tmp), "%s%s", "tmp_", newEnt->classname);
 		newEnt->classname = G_NewString(tmp);
-		if(!Q_stricmp(newEnt->classname, "tmp_trigger_multiple") && ent->wait == -1)
+		if((Q_stricmp(newEnt->classname, "tmp_trigger_multiple") == 0) && (ent->wait == -1))
 			newEnt->classname = G_NewString("tmp_trigger_once");
 		trap_SendServerCommand(clientNum, va("print \"Spawned entity of type %s with entity number %i.\"", newEnt->classname, newEnt->s.number));
 	}
@@ -7120,7 +7124,7 @@ static void Cmd_UiTransporterLoc_f(gentity_t *ent) {
 	delay *= 1000;
 
 	for(i = 0; i < MAX_GENTITIES; i++) {
-		if(!Q_stricmp(g_entities[i].classname, "target_location")) {
+		if(g_entities[i].type == ENT_TARGET_LOCATION) {
 			if(g_entities[i].health == targetLoc && g_entities[i].health >= 1 && targetLoc >= 1) {
 				locTarget = &g_entities[i];
 				break;
@@ -7506,7 +7510,7 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 	for(i = 0; i < MAX_GENTITIES; i++) {
 		if(!g_entities[i].inuse) continue;
 
-		if(g_entities[i].classname != NULL && !strcmp(g_entities[i].classname, "target_turbolift")) {
+		if(g_entities[i].type == ENT_TARGET_TURBOLIFT) {
 			if(g_entities[i].falsename != NULL && g_entities[i].falsename[0] != 0) {
 				addShaderToList(shaders, g_entities[i].falsename);
 			}

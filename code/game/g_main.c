@@ -1434,7 +1434,7 @@ static void G_LoadLocationsFile( void )
 				return;
 			}
 
-			ent->classname = G_NewString("target_location");
+			ent->classname = "target_location";
 
 			//copy position data
 			VectorCopy( origin, ent->s.origin );
@@ -1553,7 +1553,7 @@ static void G_FindTeams( void ) {
 			continue;
 		if ((e->flags & FL_TEAMSLAVE) != 0)
 			continue;
-		if ( (e->classname != NULL) && Q_stricmp( "func_door", e->classname ) != 0 )
+		if ( (e->classname != NULL) && (e->type != ENT_FUNC_DOOR) )
 		{//not a door
 			if ( Q_stricmp( "1", e->team ) == 0 || Q_stricmp( "2", e->team ) == 0 )
 			{//is trying to tell us it belongs to the TEAM_RED or TEAM_BLUE
@@ -1674,15 +1674,21 @@ static void Dev_ShowTriggers(gentity_t *ent) {
 
 	for(i = 0; i < MAX_GENTITIES; i++) {
 		if((tar = &g_entities[i]) == NULL) continue;
-		if(Q_stricmpn(tar->classname, "trigger_", 8) == 0) {
-			if(Q_stricmp(tar->classname, "trigger_always") == 0) continue;
-			if((tar->r.svFlags & SVF_NOCLIENT) != 0)
+		if(tar->type >= ENT_TRIGGER_ALWAYS && tar->type < ENT_TARGET_REMOVE_POWERUPS) {
+			if(tar->type == ENT_TRIGGER_ALWAYS) { 
+				continue;
+			}
+
+			if((tar->r.svFlags & SVF_NOCLIENT) != 0) {
 				tar->r.svFlags ^= SVF_NOCLIENT;
+			}
+
 			trap_LinkEntity(ent);
-			if(Q_stricmpn(tar->classname, "trigger_push", 13) == 0)
+			if(tar->type == ENT_TRIGGER_PUSH) {
 				G_AddEvent(tar, EV_TRIGGER_SHOW, 1);
-			else
+			} else {
 				G_AddEvent(tar, EV_TRIGGER_SHOW, 0);
+			}
 		}
 	}
 }

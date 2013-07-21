@@ -54,7 +54,7 @@ static void TryUse( gentity_t* ent )
 	target = &g_entities[trace.entityNum];
 
 	//Check for a use command
-	if ( target && target->use && Q_stricmp("func_usable", target->classname) == 0 )
+	if ( (target != NULL) && (target->use != NULL) && (ent->type == ENT_FUNC_USABLE) )
 	{//usable brush
 		if ( target->team && atoi( target->team ) != 0 )
 		{//usable has a team
@@ -72,7 +72,7 @@ static void TryUse( gentity_t* ent )
 #endif
 		return;
 	}
-	else if ( target && target->use && Q_stricmp("misc_ammo_station", target->classname) == 0 )
+	else if ( (target != NULL) && (target->use != NULL) && (ent->type == ENT_MISC_AMMOSTATION) )
 	{//ammo station
 		if ( sess->sessionTeam )
 		{

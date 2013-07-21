@@ -39,7 +39,7 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 		eState->solid = 0;
 		eShared->contents = 0;
 		self->clipmask = 0;
-		if(((self->spawnflags & 256) != 0) && (strcmp(self->classname, "func_breakable") == 0)) {
+		if(((self->spawnflags & 256) != 0) && (self->type == ENT_FUNC_BREAKABLE)) {
 			eShared->svFlags |= SVF_NOCLIENT;
 			eState->eFlags |= EF_NODRAW;
 		}
@@ -783,7 +783,7 @@ void target_repair_link(gentity_t *ent) {
 
 	ent->lastEnemy = target;
 
-	if(Q_stricmp(target->classname, "func_breakable") != 0) {
+	if(target->type != ENT_FUNC_BREAKABLE) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_repair at %s with an invalid target entity %s\n", vtos(ent->s.origin), target->classname););
 		return;
 	}

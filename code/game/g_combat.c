@@ -1039,17 +1039,17 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// shootable doors / buttons don't actually have any health
-	if ( (targ->s.eType == ET_MOVER && Q_stricmp("func_breakable", targ->classname) != 0 && Q_stricmp("misc_model_breakable", targ->classname) != 0) ||
-		(targ->s.eType == ET_MOVER_STR && Q_stricmp("func_breakable", targ->classname) != 0 && Q_stricmp("misc_model_breakable", targ->classname) != 0)) //RPG-X | GSIO01 | 13/05/2009 
+	if ( ((targ->s.eType == ET_MOVER) && (targ->type != ENT_FUNC_BREAKABLE) && (targ->type != ENT_MISC_MODEL_BREAKABLE)) ||
+		((targ->s.eType == ET_MOVER_STR) && (targ->type != ENT_FUNC_BREAKABLE) && (targ->type != ENT_MISC_MODEL_BREAKABLE))) //RPG-X | GSIO01 | 13/05/2009 
 	{
-		if ( !Q_stricmp( targ->classname, "func_forcefield" ) )
+		if ( targ->type == ENT_FUNC_FORCEFIELD )
 		{
 			if ( targ->pain )
 			{
 				targ->pain( targ, inflictor, take );
 			}
 		}
-		else if ( targ->use && (targ->moverState == MOVER_POS1 || targ->moverState == ROTATOR_POS1) && Q_stricmp(targ->classname, "func_door") && Q_stricmp(targ->classname, "func_door_rotating") ) 
+		else if ( (targ->use != NULL) && ((targ->moverState == MOVER_POS1) || (targ->moverState == ROTATOR_POS1)) && (targ->type != ENT_FUNC_DOOR) && (targ->type != ENT_FUNC_DOOR_ROTATING) ) 
 		{
 			targ->use( targ, inflictor, attacker );
 		}
@@ -1237,7 +1237,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		targ->health = targ->health - take;
 
 		//RPG-X: RedTechie - If medicrevive is on then health only goes down to 1 so we can simulate fake death
-		if(rpg_medicsrevive.integer == 1 && Q_stricmp("func_breakable", targ->classname) && Q_stricmp("misc_model_breakable", targ->classname ) ){
+		if((rpg_medicsrevive.integer == 1) && (targ->type != ENT_FUNC_BREAKABLE) && (targ->type != ENT_MISC_MODEL_BREAKABLE) ){
 			if(targ->health <= 0){
 				targ->health = 1;
 			}
@@ -1455,7 +1455,7 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 	float		max = 0;
 
 	// if count isn't 0 the breakable is not damaged and if target is no breakable it does not make sense to go on
-	if(tr_ent->count != 0 || strstr(tr_ent->classname, "breakable") == NULL) {
+	if((tr_ent->count != 0) || strstr(tr_ent->classname, "breakable") == NULL) {
 		return; 
 	}
 
@@ -1497,7 +1497,7 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 			if(tr_ent->target) {
 				G_UseTargets2(tr_ent, tr_ent, tr_ent->target);
 			}
-			if(!strcmp(tr_ent->classname, "func_breakable")) {
+			if(tr_ent->type == ENT_FUNC_BREAKABLE) {
 				tr_ent->s.solid = CONTENTS_BODY;
 				trap_SetBrushModel(tr_ent, tr_ent->model);
 				tr_ent->r.svFlags &= ~SVF_NOCLIENT;
@@ -1516,7 +1516,7 @@ void G_Repair(gentity_t *ent, gentity_t *tr_ent, float rate) {
 
 				tr_ent->clipmask = 0;
 				tr_ent->count = 1;
-			} else if(!strcmp(tr_ent->classname, "misc_model_breakable")) {
+			} else if(tr_ent->type == ENT_MISC_MODEL_BREAKABLE) {
 				SP_misc_model_breakable(tr_ent);
 			}
 		}

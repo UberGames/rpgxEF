@@ -233,7 +233,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 	if ( ( ent->s.eFlags & EF_MISSILE_STICK ) ) 
 	{
 		// kinda cheap, but if a sticky grenade hits a forcefield or a moving, explode
-		if ( other && ( (other->classname && !Q_stricmp(other->classname, "holdable_shield")) || (!VectorCompare( vec3_origin, other->s.pos.trDelta ) && other->s.pos.trType!=TR_STATIONARY) || (!VectorCompare( vec3_origin, other->s.apos.trDelta ) && other->s.apos.trType!=TR_STATIONARY) ) )
+		if ( (other != NULL) && ( ((other->classname != NULL) && !Q_stricmp(other->classname, "holdable_shield")) || (VectorCompare( vec3_origin, other->s.pos.trDelta == 0) && (other->s.pos.trType != TR_STATIONARY)) || ((VectorCompare( vec3_origin, other->s.apos.trDelta ) == 0) && (other->s.apos.trType != TR_STATIONARY))))
 		{
 			//RPG-X: - Our forcefield killer :D
 			if(other && ((other->classname && !Q_stricmp(other->classname, "holdable_shield")))){

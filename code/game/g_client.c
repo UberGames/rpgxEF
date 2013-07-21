@@ -62,7 +62,7 @@ void SP_info_player_deathmatch( gentity_t *ent ) {
 	ent->type = ENT_INFO_PLAYER_START;
 
 	if(strcmp(ent->classname, "info_player_deathmatch") != 0) {
-		ent->classname = G_NewString("info_player_deathmatch");
+		ent->classname = "info_player_deathmatch";
 	}
 
 	G_SpawnInt( "nobots", "0", &i);
@@ -1443,7 +1443,7 @@ static void G_SendHoloData(int32_t clientNum) {
 	gentity_t *holoTent;
 
 	holoTent = G_Spawn();
-	holoTent->classname = G_NewString("holoTent");
+	holoTent->classname = "holoTent";
 
 	holoTent->target_ent = g_entities + clientNum;
 
@@ -1475,7 +1475,7 @@ static void G_SendTransData(int32_t clientNum) {
 	gentity_t *transTent;
 
 	transTent = G_Spawn();
-	transTent->classname = G_NewString("transTent");
+	transTent->classname = "transTent";
 
 	transTent->target_ent = g_entities + clientNum;
 
@@ -2756,7 +2756,41 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 	}
 }
 
+void G_Client_UpdateSoundZones() {
+	int32_t i = 0;
+	int32_t b = 0;
+	int32_t entlist[MAX_GENTITIES];
+	int32_t zones[MAX_CLIENTS];
+	int32_t count = 0;
+	char supdate[MAX_STRING_CHARS];
+	
+	memset(&zones, 0, sizeof(zones));
+	memset(&supdate, 0, sizeof(supdate));
 
+	for( ; i < MAX_GENTITIES; i++) {
+		if((g_entities[i].type == ENT_TARGET_ZONE) && (g_entities[i].count == 3)) {
+			memset(&entlist, 0, sizeof(entlist));
+			count = trap_EntitiesInBox(g_entities[i].r.mins, g_entities[i].r.maxs, &entlist, MAX_GENTITIES);
 
+			for(b = 0; b < count; b++) {
+				if(g_entities[entlist[b]].client != NULL) {
+					zones[g_entities[entlist[b]].client->ps.clientNum] = g_entities[i].s.number;
+				}
+			}
+		}
+	}
 
+	for(i = 0; i < MAX_CLIENTS; i++) {
+		if(strlen(supdate) != 0) {
+			Com_sprintf(supdate, sizeof(supdate), "%s\\c%d\\%d", supdate, i, zones[i]);
+		} else {
+			Com_sprintf(supdate, sizeof(supdate), "cd%\\%d", i, zones[i]);
+		}
+	}
 
+	for(i = 0; i < MAX_GENTITIES; i++) {
+		if(g_entities[i].client != NULL) {
+			trap_SendServerCommand(i, va("slup %s", supdate));
+		}
+	}
+}

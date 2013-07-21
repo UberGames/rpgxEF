@@ -90,13 +90,14 @@ none
 */
 void SP_info_notnull( gentity_t *self ){
 
-	if(!Q_stricmp(self->classname, "ref_tag") && !rpg_allowspmaps.integer)
+	if((Q_stricmp(self->classname, "ref_tag") == 0) && (rpg_allowspmaps.integer == 0)) {
 		G_FreeEntity(self);
+	}
 
 	self->type = ENT_INFO_NOTNULL;
 
 	if(strcmp(self->classname, "info_notnull")) {
-		self->classname = G_NewString("info_notnull");
+		self->classname = "info_notnull";
 	}
 	G_SetOrigin( self, self->s.origin );
 }
