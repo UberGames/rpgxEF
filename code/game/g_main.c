@@ -2463,7 +2463,7 @@ void G_RunFrame( int levelTime ) {
 	//
 	ent = &g_entities[0];
 	for (i=0 ; i<level.num_entities ; i++, ent++) {
-		if ( ent == NULL || ent->client == NULL || ent->inuse == qfalse ) {
+		if ( ent == NULL || ent->inuse == qfalse ) {
 			continue;
 		}
 

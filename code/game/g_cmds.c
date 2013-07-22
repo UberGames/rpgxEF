@@ -6234,7 +6234,7 @@ static void Cmd_getEntInfo_f(gentity_t *ent) {
 	if(i > MAX_GENTITIES - 1)
 		return;
 
-	G_PrintfClient(ent, "Classname: %s\n Targetname: %s\n Target: %s\n Spawnflags: %i\n Bmodel: %s\n\"", g_entities[i].classname, g_entities[i].targetname, g_entities[i].target, g_entities[i].spawnflags, g_entities[i].model);
+	G_PrintfClient(ent, "EntType: %d\n Classname: %s\n Targetname: %s\n Target: %s\n Spawnflags: %i\n Bmodel: %s\n", g_entities[i].type, g_entities[i].classname, g_entities[i].targetname, g_entities[i].target, g_entities[i].spawnflags, g_entities[i].model);
 }
 
 /*

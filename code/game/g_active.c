@@ -26,7 +26,7 @@ static void TryUse( gentity_t* ent )
 	vec3_t		src, dest, vf;
 	clientSession_t* sess;
 
-	if(ent == NULL || ent->client == NULL) {
+	if(ent == NULL) {
 		return;
 	}
 
@@ -54,7 +54,7 @@ static void TryUse( gentity_t* ent )
 	target = &g_entities[trace.entityNum];
 
 	//Check for a use command
-	if ( (target != NULL) && (target->use != NULL) && (ent->type == ENT_FUNC_USABLE) )
+	if ( (target != NULL) && (target->use != NULL) && (target->type == ENT_FUNC_USABLE) )
 	{//usable brush
 		if ( target->team && atoi( target->team ) != 0 )
 		{//usable has a team

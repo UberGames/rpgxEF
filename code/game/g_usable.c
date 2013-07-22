@@ -60,7 +60,7 @@ void func_usable_think( gentity_t *self )
 	{
 		/*self->r.svFlags |= SVF_PLAYER_USABLE;*/ /* Replace the usable flag */
 		self->use = func_usable_use;
-		self->think = 0; /*NULL*/
+		self->think = NULL; /*NULL*/
 		self->nextthink = -1;
 	}
 }
@@ -98,15 +98,16 @@ void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 		/* Remove the ability to use the entity directly */
 		/*self->r.svFlags &= ~SVF_PLAYER_USABLE;*/
 		/*also remove ability to call any use func at all!*/
-		self->use = 0; /*NULL*/
-		
+		self->use = NULL; /*NULL*/
+
 		if(self->target && self->target[0])
 		{
-			if(self->spawnflags & 512)
+			if(self->spawnflags & 512) {
 				G_UseTargets(self, self);
-			else
+			} else {
 				G_UseTargets(self, activator);
-		}
+			}
+		} 
 		
 		if ( self->wait )
 		{
