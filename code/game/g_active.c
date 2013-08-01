@@ -1817,7 +1817,7 @@ void ThrowWeapon( gentity_t *ent, char *txt )
 		return;
 	}
 
-	if ( ps->weapon == WP_1 || ( ucmd->buttons & BUTTON_ATTACK )) {
+	if ( ps->weapon == WP_0 || ps->weapon == WP_1 || ( ucmd->buttons & BUTTON_ATTACK )) {
 		return;
 	}
 
