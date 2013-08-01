@@ -282,6 +282,9 @@
     <ClCompile Include="bg_lex.yy.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="memorypool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ai_chat.h">
@@ -489,6 +492,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="g_active.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="memorypool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
