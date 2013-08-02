@@ -57,7 +57,7 @@ main(int argc, char *argv[]) {
 		return;
 	}
 
-	out = fopen(argv[2], "r");
+/*	out = fopen(argv[2], "r");
 	if(out) {
 		fseek(out, 0, SEEK_END);
 		len = ftell(out);
@@ -70,17 +70,20 @@ main(int argc, char *argv[]) {
 		}
 		fgets(buf, len, out);
 		fclose(out);
+		out = NULL;
 	}
 
+	printf("%s\n", buf); */
+	
 	out = fopen(argv[2], "a");
 	if(!out) {
 		return;
 	}
 
-	if(buf != NULL) {
+	/*if(buf != NULL) {
 		fprintf(out, "%s", buf);
 		free(buf);
-	}
+	}*/
 
 	yyin = in;
 
