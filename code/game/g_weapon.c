@@ -19,8 +19,8 @@ extern void G_MissileImpact( gentity_t *ent, trace_t *trace);
 /* RPG-X: TiM - Increased to a standard 0.5 second 
  * burst - Phenix GOING DOWN - TiM GOING UP we had 
  * complaints when this was put down :P */
-#define	PHASER_DAMAGE			rpg_phaserDamage.integer
-#define PHASER_ALT_RADIUS		80 			 /* RPG-X: TiM - Increased to a near instant kill */
+#define	PHASER_DAMAGE				rpg_phaserDamage.integer
+#define PHASER_ALT_RADIUS			80 			 /* RPG-X: TiM - Increased to a near instant kill */
 
 /* Compression Rifle */
 #define	CRIFLE_DAMAGE				rpg_rifleDamage.integer
@@ -31,24 +31,24 @@ extern void G_MissileImpact( gentity_t *ent, trace_t *trace);
 #define CRIFLE_ALT_SPLASH_DMG		0 
 
 /* Stasis Weapon */
-#define STASIS_DAMAGE			rpg_disruptorDamage.integer
+#define STASIS_DAMAGE				rpg_disruptorDamage.integer
 
 /* Grenade Launcher */
-#define GRENADE_DAMAGE			rpg_grenadeDamage.integer
-#define GRENADE_SPLASH_RAD		190
-#define GRENADE_SPLASH_DAM		100
-#define GRENADE_ALT_DAMAGE		rpg_grenadeAltDamage.integer
+#define GRENADE_DAMAGE				rpg_grenadeDamage.integer
+#define GRENADE_SPLASH_RAD			190
+#define GRENADE_SPLASH_DAM			100
+#define GRENADE_ALT_DAMAGE			rpg_grenadeAltDamage.integer
 
 /* Tetrion Disruptor */
-#define TETRION_DAMAGE			rpg_tr116Damage.integer
+#define TETRION_DAMAGE				rpg_tr116Damage.integer
 		
 /* Quantum Burst */
-#define QUANTUM_DAMAGE			rpg_photonDamage.integer	
-#define QUANTUM_SPLASH_DAM		rpg_photonDamage.integer
-#define QUANTUM_SPLASH_RAD		160
-#define QUANTUM_ALT_DAMAGE		rpg_photonAltDamage.integer	
-#define QUANTUM_ALT_SPLASH_DAM	rpg_photonAltDamage.integer
-#define QUANTUM_ALT_SPLASH_RAD	80
+#define QUANTUM_DAMAGE				rpg_photonDamage.integer	
+#define QUANTUM_SPLASH_DAM			rpg_photonDamage.integer
+#define QUANTUM_SPLASH_RAD			160
+#define QUANTUM_ALT_DAMAGE			rpg_photonAltDamage.integer	
+#define QUANTUM_ALT_SPLASH_DAM		rpg_photonAltDamage.integer
+#define QUANTUM_ALT_SPLASH_RAD		80
 
 void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
 	int i;
