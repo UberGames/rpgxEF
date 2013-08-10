@@ -278,8 +278,6 @@ void SP_func_usable( gentity_t *self )
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.origin, self->r.currentOrigin );
 
-	/*Com_Printf( "PointOrigin: { %f, %f, %f }\n", self->s.origin[0], self->s.origin[1], self->s.origin[2] );*/
-
 	self->count = 1;
 	if (self->spawnflags & 1)
 	{
