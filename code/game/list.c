@@ -22,7 +22,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "list.h"
 #include <string.h>
 
-/** 
  * Create a list_iter object for the linked_list list. The flag init can be
  * either LIST_FRONT or LIST_BACK and indicates whether to start the iterator from the first
  * or last item in the list 
@@ -77,6 +76,7 @@ static int list_add(list_p list, void* data, dataType_t type, size_t size, char 
 	node->cont->type = type;
 	node->cont->data = malloc(size);
 	if(node->cont->data == NULL) {
+		free(node);
 		return 0;
 	}
 	memcpy(node->cont->data, data, size);

@@ -7457,12 +7457,14 @@ void addShaderToList(list_p list, char *shader) {
 
 	i = list->iterator(list, LIST_FRONT);
 	if(i == NULL) {
+		free(s);
 		return;
 	}
 
 	for(c = list->next(i); c != NULL; c = list->next(i)) {
 		t = c->data;
 		if(!strcmp(shader, t)) {
+			free(s);
 			return;
 		}
 	}
