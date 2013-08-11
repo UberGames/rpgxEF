@@ -180,10 +180,10 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 ----------------------------------------------
 */
 
-#define MAXRANGE_PHASER			2048 /* This is the same as the range MAX_BEAM_RANGE	2048 */
-#define NUM_PHASER_TRACES 		3
-#define BEAM_VARIATION			6
-#define PHASER_POINT_BLANK		96
+#define MAXRANGE_PHASER				2048 /* This is the same as the range MAX_BEAM_RANGE	2048 */
+#define NUM_PHASER_TRACES 			3
+#define BEAM_VARIATION				6
+#define PHASER_POINT_BLANK			96
 #define PHASER_POINT_BLANK_FRAC		((float)PHASER_POINT_BLANK / (float)MAXRANGE_PHASER)
 
 /**
