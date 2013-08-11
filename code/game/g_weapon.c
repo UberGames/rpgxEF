@@ -51,7 +51,7 @@ extern void G_MissileImpact( gentity_t *ent, trace_t *trace);
 #define QUANTUM_ALT_SPLASH_RAD		80
 
 void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
-	int i;
+	int32_t i;
 
 	for ( i = 0 ; i < 3 ; i++ ) {
 		if ( to[i] <= v[i] ) {
@@ -96,7 +96,7 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 	container_p cont;
 	gentity_t*	e = NULL;
 	gentity_t*	nearest = NULL;
-	int			count = 0;
+	int32_t		count = 0;
 	float		nearestd = 65000;
 	vec3_t		dVec, end;
 	vec3_t		mins = { -40, -40, 0 }, maxs = { 40, 40, 0 };
@@ -177,10 +177,10 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 ----------------------------------------------
 */
 
-#define MAXRANGE_PHASER			2048 /* This is the same as the range MAX_BEAM_RANGE	2048 */
-#define NUM_PHASER_TRACES 		3
-#define BEAM_VARIATION			6
-#define PHASER_POINT_BLANK		96
+#define MAXRANGE_PHASER				2048 /* This is the same as the range MAX_BEAM_RANGE	2048 */
+#define NUM_PHASER_TRACES 			3
+#define BEAM_VARIATION				6
+#define PHASER_POINT_BLANK			96
 #define PHASER_POINT_BLANK_FRAC		((float)PHASER_POINT_BLANK / (float)MAXRANGE_PHASER)
 
 /**
