@@ -1008,11 +1008,8 @@ char* G_GetBotInfoByName( const char* name ) {
 }
 
 void G_InitBots( qboolean restart ) {
-	int32_t		fragLimit = 0;
-	int32_t		timeLimit = 0;
 	const char* arenainfo = NULL;
 	char*		strValue = NULL;
-	int32_t		basedelay = 0;
 	char		map[MAX_QPATH];
 	char		serverinfo[MAX_INFO_STRING];
 
@@ -1025,6 +1022,10 @@ void G_InitBots( qboolean restart ) {
 	trap_Cvar_Register( &bot_minplayers, "bot_minplayers", "0", CVAR_SERVERINFO );
 
 	if( g_gametype.integer == GT_SINGLE_PLAYER ) {
+		int32_t fragLimit = 0;
+		int32_t timeLimit = 0;
+		int32_t basedelay = 0;
+
 		trap_GetServerinfo( serverinfo, sizeof(serverinfo) );
 		Q_strncpyz( map, Info_ValueForKey( serverinfo, "mapname" ), sizeof(map) );
 		arenainfo = G_GetArenaInfoByMap( map );

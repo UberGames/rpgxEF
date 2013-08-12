@@ -3000,12 +3000,12 @@ static void Cmd_ForceRank_f( gentity_t *ent)
 
 	other = &g_entities[targetNum];
 
-	//Lets get old score first just incase
-	OldScore = other->client->ps.persistant[PERS_SCORE]; //ent
-
-	if ( !other || !other->inuse || !other->client ) {
+	if ( other == NULL || !other->inuse || other->client == NULL ) {
 		return;
 	}
+
+	//Lets get old score first just incase
+	OldScore = other->client->ps.persistant[PERS_SCORE]; //ent
 
 	//Get the raw rank value
 	trap_Argv(2, ArgStr, sizeof(ArgStr));

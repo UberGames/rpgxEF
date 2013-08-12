@@ -374,10 +374,7 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 						return BOTH_ATTACK2;
 					else
 					{
-						if (upper)
-							return BOTH_ATTACK3;
-						else
-							return BOTH_ATTACK3;
+						return BOTH_ATTACK3;
 					}
 					break;
 				//1 handed weapon - "phaser"
@@ -924,7 +921,7 @@ PM_Friction
 static void PM_Friction( void ) {
 	vec3_t	vec;
 	float	*vel;
-	float	speed, newspeed, control;
+	float	speed, newspeed;
 	float	drop;
 	playerState_t *ps = pm->ps;
 	
@@ -950,7 +947,7 @@ static void PM_Friction( void ) {
 		if ( (pm->watertype & CONTENTS_LADDER) || (pml.walking && !(pml.groundTrace.surfaceFlags & SURF_SLICK)) ) {
 			// if getting knocked back, no friction
 			if ( ! (ps->pm_flags & PMF_TIME_KNOCKBACK) ) {
-				control = speed < pm_stopspeed ? pm_stopspeed : speed;
+				float control = speed < pm_stopspeed ? pm_stopspeed : speed;
 				drop += control*pm_friction*pml.frametime;
 			}
 		}
@@ -1257,12 +1254,10 @@ PM_WaterMove
 *	Handles movement in water
 */
 static void PM_WaterMove( void ) {
-	int		i;
 	vec3_t	wishvel;
 	float	wishspeed;
 	vec3_t	wishdir;
 	float	scale;
-	float	vel;
 	playerState_t *ps = pm->ps;
 
 	if ( PM_CheckWaterJump() ) {
@@ -1298,6 +1293,8 @@ static void PM_WaterMove( void ) {
 			wishvel[2] = -60;		// sink towards bottom
 		}
 	} else {
+		int i;
+
 		for (i=0 ; i<3 ; i++) {
 			wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove + scale * pml.right[i]*pm->cmd.rightmove;
 		}
@@ -1322,7 +1319,7 @@ static void PM_WaterMove( void ) {
 
 	// make sure we can go up slopes easily under water
 	if ( pml.groundPlane && DotProduct( ps->velocity, pml.groundTrace.plane.normal ) < 0 ) {
-		vel = VectorLength(ps->velocity);
+		float vel = VectorLength(ps->velocity);
 		// slide along the ground plane
 		PM_ClipVelocity (ps->velocity, pml.groundTrace.plane.normal, 
 			ps->velocity, OVERCLIP );
@@ -1350,7 +1347,6 @@ Oh crap... it does lol
 *	Handles fly movement (e.g. flight powerup or spectator movement)
 */
 static void PM_FlyMove( void ) {
-	int		i;
 	vec3_t	wishvel;
 	float	wishspeed;
 	vec3_t	wishdir;
@@ -1369,6 +1365,8 @@ static void PM_FlyMove( void ) {
 		wishvel[1] = 0;
 		wishvel[2] = 0;
 	} else {
+		int i;
+
 		for (i=0 ; i<3 ; i++) {
 			if ( ps->pm_type == PM_SPECTATOR ) {
 				wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove + scale * pml.right[i]*pm->cmd.rightmove;
@@ -2096,8 +2094,6 @@ PM_SetWaterLevel	FIXME: avoid this twice?  certainly if not moving
 static void PM_SetWaterLevel( void ) {
 	vec3_t		point;
 	int			cont;
-	int			sample1;
-	int			sample2;
 	playerState_t *ps = pm->ps;
 
 	//
@@ -2112,8 +2108,8 @@ static void PM_SetWaterLevel( void ) {
 	cont = pm->pointcontents( point, ps->clientNum );
 
 	if ( cont & (MASK_WATER|CONTENTS_LADDER) ) {
-		sample2 = ps->viewheight - MINS_Z;
-		sample1 = sample2 / 2;
+		int sample2 = ps->viewheight - MINS_Z;
+		int sample1 = sample2 / 2;
 
 		pm->watertype = cont;
 		pm->waterlevel = 1;
