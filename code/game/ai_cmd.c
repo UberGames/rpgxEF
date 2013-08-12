@@ -167,7 +167,6 @@ BotGetTime
 float BotGetTime(bot_match_t *match) {
 	bot_match_t timematch;
 	char timestring[MAX_MESSAGE_SIZE];
-	float t;
 
 	//if the matched string has a time
 	if (match->subtype & ST_TIME) {
@@ -175,10 +174,11 @@ float BotGetTime(bot_match_t *match) {
 		trap_BotMatchVariable(match, TIME, timestring, MAX_MESSAGE_SIZE);
 		//match it to find out if the time is in seconds or minutes
 		if (trap_BotFindMatch(timestring, &timematch, MTCONTEXT_TIME)) {
+			float t;
+
 			if (timematch.type == MSG_FOREVER) {
 				t = 99999999;
-			}
-			else {
+			} else {
 				trap_BotMatchVariable(&timematch, TIME, timestring, MAX_MESSAGE_SIZE);
 				if (timematch.type == MSG_MINUTES) t = atof(timestring) * 60;
 				else if (timematch.type == MSG_SECONDS) t = atof(timestring);
@@ -436,7 +436,7 @@ BotMatch_HelpAccompany
 ==================
 */
 void BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match) {
-	int client, other, areanum;
+	int client, other;
 	char teammate[MAX_MESSAGE_SIZE], netname[MAX_MESSAGE_SIZE];
 	char itemname[MAX_MESSAGE_SIZE];
 	bot_match_t teammatematch;
@@ -487,7 +487,7 @@ void BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match) {
 	BotEntityInfo(client, &entinfo);
 	//if info is valid (in PVS)
 	if (entinfo.valid) {
-		areanum = BotPointAreaNum(entinfo.origin);
+		int areanum = BotPointAreaNum(entinfo.origin);
 		if (areanum && trap_AAS_AreaReachability(areanum)) {
 			bs->teamgoal.entitynum = client;
 			bs->teamgoal.areanum = areanum;
@@ -981,7 +981,6 @@ BotMatch_StartTeamLeaderShip
 ==================
 */
 void BotMatch_StartTeamLeaderShip(bot_state_t *bs, bot_match_t *match) {
-	int client;
 	char teammate[MAX_MESSAGE_SIZE];
 
 	if (!TeamPlayIsOn()) return;
@@ -994,6 +993,8 @@ void BotMatch_StartTeamLeaderShip(bot_state_t *bs, bot_match_t *match) {
 	}
 	//chats for someone else
 	else {
+		int client;
+
 		//get the team mate that will be the team leader
 		trap_BotMatchVariable(match, TEAMMATE, teammate, sizeof(teammate));
 		client = FindClientByName(teammate);
@@ -1245,7 +1246,7 @@ BotMatch_LeadTheWay
 void BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match) {
 	aas_entityinfo_t entinfo;
 	char netname[MAX_MESSAGE_SIZE], teammate[MAX_MESSAGE_SIZE];
-	int client, areanum, other;
+	int client, other;
 
 	if (!TeamPlayIsOn()) return;
 	//if not addressed to this bot
@@ -1284,7 +1285,7 @@ void BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match) {
 	BotEntityInfo(client, &entinfo);
 	//if info is valid (in PVS)
 	if (entinfo.valid) {
-		areanum = BotPointAreaNum(entinfo.origin);
+		int areanum = BotPointAreaNum(entinfo.origin);
 		if (areanum && trap_AAS_AreaReachability(areanum)) {
 			bs->lead_teamgoal.entitynum = client;
 			bs->lead_teamgoal.areanum = areanum;
