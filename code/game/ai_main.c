@@ -225,7 +225,6 @@ BotTestSolid
 ==================
 */
 void BotTestSolid(vec3_t origin) {
-	int areanum;
 
 	if( !bot_setupComplete ) {
 		return;
@@ -233,6 +232,8 @@ void BotTestSolid(vec3_t origin) {
 
 	trap_Cvar_Update(&bot_testsolid);
 	if (bot_testsolid.integer) {
+		int areanum;
+
 		if (!trap_AAS_Initialized()) return;
 		areanum = BotPointAreaNum(origin);
 		if (areanum) BotAI_Print(PRT_MESSAGE, "\remtpy area");
@@ -1327,10 +1328,10 @@ BotAIShutdown
 */
 int BotAIShutdown( int restart ) {
 
-	int i;
-
 	//if the game is restarted for a tournament
 	if ( restart ) {
+		int i;
+
 		//shutdown all the bots in the botlib
 		for (i = 0; i < MAX_CLIENTS; i++) {
 			if (botstates[i] && botstates[i]->inuse) {

@@ -508,7 +508,6 @@ BotChooseWeapon
 ==================
 */
 void BotChooseWeapon(bot_state_t *bs) {
-	int newweaponnum;
 
 	if (bs->cur_ps.weaponstate == WEAPON_RAISING || bs->cur_ps.weaponstate == WEAPON_DROPPING)
 	{
@@ -516,7 +515,7 @@ void BotChooseWeapon(bot_state_t *bs) {
 	}
 	else
 	{
-		newweaponnum = trap_BotChooseBestFightWeapon(bs->ws, bs->inventory, BotUseMeleeWeapon(bs));
+		int newweaponnum = trap_BotChooseBestFightWeapon(bs->ws, bs->inventory, BotUseMeleeWeapon(bs));
 		if (bs->weaponnum != newweaponnum)
 		{
 			bs->weaponchange_time = trap_AAS_Time();
@@ -1613,8 +1612,8 @@ BotAimAtEnemy
 ==================
 */
 void BotAimAtEnemy(bot_state_t *bs) {
-	int i, enemyvisible;
-	float dist, f, aim_skill, aim_accuracy, speed, reactiontime;
+	int enemyvisible;
+	float dist, aim_skill, aim_accuracy;
 	vec3_t dir, bestorigin, end, start, groundtarget, cmdmove, enemyvelocity;
 	vec3_t mins = {-4,-4,-4}, maxs = {4, 4, 4};
 	weaponinfo_t wi;
@@ -1634,7 +1633,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	if (aim_skill > 0.95)
 	{
 		//don't aim too early
-		reactiontime = 0.5;
+		float reactiontime = 0.5;
 		if (bs->enemysight_time > trap_AAS_Time() - reactiontime) return;
 		if (bs->teleport_time > trap_AAS_Time() - reactiontime) return;
 	}
@@ -1766,7 +1765,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 					VectorSubtract(entinfo.origin, entinfo.lastvisorigin, dir);
 					dir[2] = 0;
 					//
-					speed = VectorNormalize(dir) / entinfo.update_time;
+					float speed = VectorNormalize(dir) / entinfo.update_time;
 					//botimport.Print(PRT_MESSAGE, "speed = %f, wi->speed = %f\n", speed, wi->speed);
 					//best spot to aim at
 					VectorMA(entinfo.origin, (dist / wi.speed) * speed, dir, bestorigin);
@@ -1852,6 +1851,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	// kef -- fixme. i'm guessing this is listing all of the instant-hit weapons?
 	if (wi.number == WP_5 ||
 		wi.number == WP_1) {
+		float f;
 		//distance towards the enemy
 		dist = VectorLength(dir);
 		if (dist > 150) dist = 150;
@@ -1860,6 +1860,8 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	}
 	//add some random stuff to the aim direction depending on the aim accuracy
 	if (aim_accuracy < 0.8) {
+		int i;
+
 		VectorNormalize(dir);
 		for (i = 0; i < 3; i++) dir[i] += 0.3 * crandom() * (1 - aim_accuracy);
 	}
@@ -1890,7 +1892,7 @@ BotCheckAttack
 ==================
 */
 void BotCheckAttack(bot_state_t *bs) {
-	float points, reactiontime, fov, firethrottle;
+	float reactiontime, fov, firethrottle;
 	bsp_trace_t bsptrace;
 	//float selfpreservation;
 	vec3_t forward, right, start, end, dir, angles;
@@ -1960,7 +1962,7 @@ void BotCheckAttack(bot_state_t *bs) {
 		//if the projectile does a radial damage
 		if (wi.proj.damagetype & DAMAGETYPE_RADIAL) {
 			if (trace.fraction * 1000 < wi.proj.radius) {
-				points = (wi.proj.damage - 0.5 * trace.fraction * 1000) * 0.5;
+				float points = (wi.proj.damage - 0.5 * trace.fraction * 1000) * 0.5;
 				if (points > 0) {
 //					selfpreservation = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_SELFPRESERVATION, 0, 1);
 //					if (random() < selfpreservation) return;
@@ -2008,8 +2010,6 @@ BotMapScripts
 void BotMapScripts(bot_state_t *bs) {
 	char info[1024];
 	char mapname[128];
-	int i, shootbutton;
-	float aim_accuracy;
 	aas_entityinfo_t entinfo;
 	vec3_t dir;
 
@@ -2019,6 +2019,8 @@ void BotMapScripts(bot_state_t *bs) {
 	mapname[sizeof(mapname)-1] = '\0';
 
 	if (!Q_stricmp(mapname, "q3tourney6")) {
+		int shootbutton = qfalse;
+		int i ;
 		vec3_t mins = {700, 204, 672}, maxs = {964, 468, 680};
 		vec3_t buttonorg = {304, 352, 920};
 		//NOTE: NEVER use the func_bobbing in q3tourney6
@@ -2031,7 +2033,7 @@ void BotMapScripts(bot_state_t *bs) {
 				}
 			}
 		}
-		shootbutton = qfalse;
+		
 		//if an enemy is below this bounding box then shoot the button
 		for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 
@@ -2059,10 +2061,11 @@ void BotMapScripts(bot_state_t *bs) {
 			}
 		}
 		if (shootbutton) {
+			float aim_accuracy = 1;
+
 			bs->flags |= BFL_IDEALVIEWSET;
 			VectorSubtract(buttonorg, bs->eye, dir);
 			vectoangles(dir, bs->ideal_viewangles);
-			aim_accuracy = 1;
 			bs->ideal_viewangles[PITCH] += 8 * crandom() * (1 - aim_accuracy);
 			bs->ideal_viewangles[PITCH] = AngleMod(bs->ideal_viewangles[PITCH]);
 			bs->ideal_viewangles[YAW] += 8 * crandom() * (1 - aim_accuracy);
@@ -2226,9 +2229,9 @@ which buttons to activate etc.
 ==================
 */
 void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
-	int movetype, ent, i, areas[10], numareas, modelindex;
+	int movetype, areas[10], modelindex;
 	char classname[128], model[128];
-	float lip, dist, health, angle;
+	float lip, health, angle;
 	vec3_t hordir, size, start, end, mins, maxs, sideward, angles;
 	vec3_t movedir, origin, goalorigin, bboxmins, bboxmaxs;
 	vec3_t up = {0, 0, 1}, extramins = {1, 1, 1}, extramaxs = {-1, -1, -1};
@@ -2253,7 +2256,7 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 	if (entinfo.modelindex > 0 && entinfo.modelindex <= max_bspmodelindex && activate) {
 		//find the bsp entity which should be activated in order to remove
 		//the blocking entity
-		ent = BotEntityToActivate(entinfo.number);
+		int ent = BotEntityToActivate(entinfo.number);
 		if (!ent) {
 			strcpy(classname, "");
 #ifdef OBSTACLEDEBUG
@@ -2268,6 +2271,8 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 #endif
 		}
 		if (!strcmp(classname, "func_button")) {
+			float dist;
+
 			//create a bot goal towards the button
 			trap_AAS_ValueForBSPEpairKey(ent, "model", model, sizeof(model));
 			modelindex = atoi(model+1);
@@ -2310,6 +2315,8 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 				return;
 			}
 			else {
+				int i, numareas;
+
 				//add bounding box size to the dist
 				trap_AAS_PresenceTypeBoundingBox(PRESENCE_CROUCH, bboxmins, bboxmaxs);
 				for (i = 0; i < 3; i++) {

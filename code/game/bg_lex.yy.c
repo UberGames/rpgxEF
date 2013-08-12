@@ -371,7 +371,9 @@ static void yy_fatal_error (yyconst char msg[] ,yyscan_t yyscanner );
    but its presence is necessary. */
 struct yy_trans_info
 	{
+	// cppcheck-suppress "unusedStructMember"
 	flex_int32_t yy_verify;
+	// cppcheck-suppress "unusedStructMember"
 	flex_int32_t yy_nxt;
 	};
 static yyconst flex_int16_t yy_accept[307] =
@@ -1059,6 +1061,8 @@ YY_RULE_SETUP
 #line 46 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1073,6 +1077,8 @@ YY_RULE_SETUP
 #line 57 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1087,6 +1093,8 @@ YY_RULE_SETUP
 #line 67 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1101,6 +1109,8 @@ YY_RULE_SETUP
 #line 77 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1115,6 +1125,8 @@ YY_RULE_SETUP
 #line 87 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1129,6 +1141,8 @@ YY_RULE_SETUP
 #line 97 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1143,6 +1157,8 @@ YY_RULE_SETUP
 #line 107 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1157,6 +1173,8 @@ YY_RULE_SETUP
 #line 117 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1171,6 +1189,8 @@ YY_RULE_SETUP
 #line 127 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1185,6 +1205,8 @@ YY_RULE_SETUP
 #line 138 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1199,6 +1221,8 @@ YY_RULE_SETUP
 #line 148 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1213,6 +1237,8 @@ YY_RULE_SETUP
 #line 158 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1227,6 +1253,8 @@ YY_RULE_SETUP
 #line 168 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1241,6 +1269,8 @@ YY_RULE_SETUP
 #line 178 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1255,6 +1285,8 @@ YY_RULE_SETUP
 #line 188 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1269,6 +1301,8 @@ YY_RULE_SETUP
 #line 198 "bg_lex.lex"
 {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -1283,6 +1317,8 @@ YY_RULE_SETUP
 #line 208 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1298,6 +1334,8 @@ YY_RULE_SETUP
 #line 219 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1313,6 +1351,8 @@ YY_RULE_SETUP
 #line 230 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1328,6 +1368,8 @@ YY_RULE_SETUP
 #line 241 "bg_lex.lex"
 { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1343,6 +1385,8 @@ YY_RULE_SETUP
 #line 252 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1358,6 +1402,8 @@ YY_RULE_SETUP
 #line 263 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1373,6 +1419,8 @@ YY_RULE_SETUP
 #line 274 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1388,6 +1436,8 @@ YY_RULE_SETUP
 #line 285 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1403,6 +1453,8 @@ YY_RULE_SETUP
 #line 296 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1418,6 +1470,8 @@ YY_RULE_SETUP
 #line 307 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1433,6 +1487,8 @@ YY_RULE_SETUP
 #line 318 "bg_lex.lex"
 { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1448,6 +1504,8 @@ YY_RULE_SETUP
 #line 329 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1463,6 +1521,8 @@ YY_RULE_SETUP
 #line 340 "bg_lex.lex"
 { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1478,6 +1538,8 @@ YY_RULE_SETUP
 #line 351 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1493,6 +1555,8 @@ YY_RULE_SETUP
 #line 362 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1508,6 +1572,8 @@ YY_RULE_SETUP
 #line 373 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1523,6 +1589,8 @@ YY_RULE_SETUP
 #line 384 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1538,6 +1606,8 @@ YY_RULE_SETUP
 #line 395 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1553,6 +1623,8 @@ YY_RULE_SETUP
 #line 406 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1568,6 +1640,8 @@ YY_RULE_SETUP
 #line 417 "bg_lex.lex"
 { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1583,6 +1657,8 @@ YY_RULE_SETUP
 #line 428 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1598,6 +1674,8 @@ YY_RULE_SETUP
 #line 439 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1613,6 +1691,8 @@ YY_RULE_SETUP
 #line 450 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1628,6 +1708,8 @@ YY_RULE_SETUP
 #line 461 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1643,6 +1725,8 @@ YY_RULE_SETUP
 #line 472 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1658,6 +1742,8 @@ YY_RULE_SETUP
 #line 483 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1673,6 +1759,8 @@ YY_RULE_SETUP
 #line 494 "bg_lex.lex"
 { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1688,6 +1776,8 @@ YY_RULE_SETUP
 #line 505 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1703,6 +1793,8 @@ YY_RULE_SETUP
 #line 516 "bg_lex.lex"
 { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1718,6 +1810,8 @@ YY_RULE_SETUP
 #line 527 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1733,6 +1827,8 @@ YY_RULE_SETUP
 #line 538 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -1748,6 +1844,8 @@ YY_RULE_SETUP
 #line 549 "bg_lex.lex"
 {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;

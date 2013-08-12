@@ -45,6 +45,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -56,6 +58,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 
 "{"" "+{INT}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -66,6 +70,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -76,6 +82,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -86,6 +94,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -96,6 +106,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -106,6 +118,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -116,6 +130,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -126,6 +142,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -137,6 +155,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 
 "{"" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -147,6 +167,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -157,6 +179,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -167,6 +191,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -177,6 +203,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -187,6 +215,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -197,6 +227,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf }", &a, &b, &c);
 	yyextra->data.vector3[0] = a;
 	yyextra->data.vector3[1] = b;
@@ -207,6 +239,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{INT}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -218,6 +252,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{INT}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -229,6 +265,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{INT}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -240,6 +278,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+"}" { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -251,6 +291,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -262,6 +304,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -273,6 +317,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -284,6 +330,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -295,6 +343,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{INT}" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -306,6 +356,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -317,6 +369,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+{INT}" "+"}" { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -328,6 +382,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -339,6 +395,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+{INT}" "+"}" { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -350,6 +408,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -361,6 +421,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -372,6 +434,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf %lf %lf %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -383,6 +447,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -394,6 +460,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -405,6 +473,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -416,6 +486,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -427,6 +499,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -438,6 +512,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -449,6 +525,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -460,6 +538,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -471,6 +551,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "*","" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -482,6 +564,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -493,6 +577,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -504,6 +590,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -515,6 +603,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{INT}" "+"}" { 
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -526,6 +616,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -537,6 +629,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{INT}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
@@ -548,6 +642,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 }
 "{"" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "*","" "+{DOUBLE}" "+"}" {
 	double a, b, c, d;
+
+	// cppcheck-suppress "invalidscanf"
 	sscanf(yytext, "{ %lf, %lf, %lf, %lf }", &a, &b, &c, &d);
 	yyextra->data.vector4[0] = a;
 	yyextra->data.vector4[1] = b;
