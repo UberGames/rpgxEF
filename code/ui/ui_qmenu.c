@@ -77,9 +77,7 @@ Text_Init
 */
 static void Text_Init( menutext_s *t )
 {
-	int	x;
-	int	y;
-	int	h,lines;
+	int		x,y,w,h,lines;
 	char	buff[512];	
 	char	buff2[512];	
 	char	buff3[512];	
@@ -97,7 +95,7 @@ static void Text_Init( menutext_s *t )
 	}
 	else
 	{
-		int	w=0,w2=0,w3=0;
+		int	w2=0,w3=0;
 		// Button text (text can be clicked on)
 		if (t->buttontextEnum)
 		{
