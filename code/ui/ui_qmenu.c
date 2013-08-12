@@ -77,7 +77,7 @@ Text_Init
 */
 static void Text_Init( menutext_s *t )
 {
-	int		x,y,w,h,lines;
+	int		x,y,w=0,h;
 	char	buff[512];	
 	char	buff2[512];	
 	char	buff3[512];	
@@ -196,7 +196,7 @@ static void Text_Init( menutext_s *t )
 		y = t->generic.y;
 
 
-		lines = 0;
+		int lines = 0;
 		if (buff2[0] != '\0')
 		{
 			++lines;

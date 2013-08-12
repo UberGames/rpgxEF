@@ -51,9 +51,9 @@ void trap_Cvar_Set( const char *var_name, const char *value ) {
 }
 
 float trap_Cvar_VariableValue( const char *var_name ) {
-	int temp;
+	float temp;
 	temp = syscall( UI_CVAR_VARIABLEVALUE, var_name );
-	return (*(float*)&temp);
+	return temp;
 }
 
 void trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize ) {
