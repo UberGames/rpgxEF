@@ -1733,7 +1733,9 @@ void UI_InitRanksData( char* ranksName ) {
 		if ( !BG_ParseRankNames( va( "ext_data/ranksets/%s.ranks", RANKSET_DEFAULT), uis.rankSet.rankNames ) )
 			trap_Error( va( "UI_InitRanksData: Was unable to load default rankset: %s", RANKSET_DEFAULT ) ); 
 	}
-	else {  /*
+	else {  
+		int i;
+		 /*
 		 * nvm, all loaded good :)
 		 * set the current rank CVAR so it'll use this rankset next time they start the game
 		 */
@@ -1744,7 +1746,6 @@ void UI_InitRanksData( char* ranksName ) {
 
 refreshRank:
 		/* using our current cvar'd rank, do a compare.  if we find a match, set our player to that rank in the menu */
-		int i;
 		for ( i=0, uis.currentRank=0; i < MAX_RANKS; i++ ) {
 			if ( !Q_stricmp( uis.rankSet.rankNames[i].consoleName, UI_Cvar_VariableString( "ui_playerRank" ) ) ) {
 				uis.currentRank = i;
