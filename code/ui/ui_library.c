@@ -1337,7 +1337,7 @@ static void UI_ParseLibraryText()
 {
 	char	*token;
 	char *buffer,*holdPtr;
-	int i,len;
+	int len;
 
 	memset(libraryText,0,sizeof(libraryText));
 
@@ -1348,7 +1348,6 @@ static void UI_ParseLibraryText()
 	COM_BeginParseSession();
 
 	buffer = LibraryText;
-	i = 1;	// Zero is null string
 	while ( buffer ) 
 	{
 		token = COM_ParseExt( &buffer, qtrue );

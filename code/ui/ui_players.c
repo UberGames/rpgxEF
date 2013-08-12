@@ -387,7 +387,6 @@ UI_RunLerpFrame
 ===============
 */
 static void UI_RunLerpFrame( playerInfo_t *ci, lerpFrame_t *lf, int newAnimation ) {
-	int			f;
 	animation_t	*anim;
 
 	// see if the animation sequence is switching
@@ -413,7 +412,7 @@ static void UI_RunLerpFrame( playerInfo_t *ci, lerpFrame_t *lf, int newAnimation
 		} else {
 			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
 		}
-		f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
+		int f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
 		if ( f >= anim->numFrames ) {
 			f -= anim->numFrames;
 			if ( anim->loopFrames ) {
@@ -605,7 +604,6 @@ UI_PlayerAngles
 static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[3], vec3_t torso[3], vec3_t head[3] ) {
 	vec3_t		legsAngles, torsoAngles, headAngles;
 	float		dest;
-	float		adjust;
 
 	VectorCopy( pi->viewAngles, headAngles );
 	headAngles[YAW] = AngleMod( headAngles[YAW] );
@@ -625,10 +623,8 @@ static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[3], vec3_t torso[3], 
 
 	// adjust legs for movement dir
 	if ( !uis.spinView ) {
-		//adjust = UI_MovedirAdjustment( pi ); //TiM: Do we really need this?
-		adjust = 0;
-		legsAngles[YAW] = headAngles[YAW] + adjust;
-		torsoAngles[YAW] = headAngles[YAW] + /*0.25 **/ adjust;
+		legsAngles[YAW] = headAngles[YAW];
+		torsoAngles[YAW] = headAngles[YAW];
 
 		// torso
 		UI_SwingAngles( torsoAngles[YAW], 25, 90, SWINGSPEED, &pi->torso.yawAngle, &pi->torso.yawing );
@@ -736,7 +732,6 @@ void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerIn
 	vec3_t			maxs = {16, 16, 32};
 	float			len;
 	float			xx;
-	int				anim;
 
 	if ( !pi->legsModel || !pi->torsoModel || !pi->headModel || !pi->animations[0].numFrames ) {
 		return;
@@ -813,7 +808,7 @@ void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerIn
 	//whup, time to play a random emote
 	if ( pi->randomEmote && uis.realtime > pi->nextEmoteTime ) {
 		//randomly pick an anim
-		anim = irandom( BOTH_STAND1_RANDOM2, BOTH_STAND1_RANDOM11 );
+		int anim = irandom( BOTH_STAND1_RANDOM2, BOTH_STAND1_RANDOM11 );
 
 		//make sure we can play this emote
 		if ( pi->animations[anim].numFrames > 0 ) {

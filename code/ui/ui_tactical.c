@@ -121,8 +121,6 @@ M_TacticalMenu_Graphics
 */
 static void M_TacticalMenu_Graphics (void) {
 	menubitmap_s *holdWeapon;
-	int		i,length,xWeaponStart;
-	int		numColor,roundColor;
 
 	vec4_t	bgColor = { 0.1, 0.1, 0.1, .75 };
 

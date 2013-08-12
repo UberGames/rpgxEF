@@ -1110,7 +1110,6 @@ static void PlayerModel_MenuInit(int menuFrom)
 	static char	playername[32];
 	static char	modelname[32];
 	static char	skinname[32];
-	static char	skinnameviewed[32];
 
 	// zero set all our globals
 	memset( &s_playermodel, 0 ,sizeof(playermodel_t) );

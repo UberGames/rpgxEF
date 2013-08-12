@@ -355,7 +355,7 @@ void MenuField_Draw( menufield_s *f )
 	int			w;
 	int			style;
 	qboolean	focus;
-	int			color,titleColor;
+	int			color;
 	menuframework_s *menu;
 	int offset;
 
@@ -453,6 +453,7 @@ void MenuField_Draw( menufield_s *f )
 
 	if ( f->field.titleEnum ) 
 	{
+		int titleColor;
 		if (f->field.titlecolor)
 		{ 
 			titleColor = f->field.titlecolor;

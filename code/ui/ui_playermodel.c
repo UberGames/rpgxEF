@@ -1552,8 +1552,6 @@ PlayerSettingsMenu_Graphics
 */
 void PlayerModelMenu_Graphics (void)
 {
-	int i;
-
 	// Draw the basic screen layout
 	UI_MenuFrame2(&s_playermodel.menu);
 
@@ -1655,6 +1653,7 @@ void PlayerModelMenu_Graphics (void)
 
 	//paint the selected model white
 	{
+		int i;
 		for ( i = 0; i < MAX_MENULISTITEMS; i++ )
 		{
 			if ( s_playermodel.charMenu[i].textcolor == CT_WHITE && s_playermodel.charMenu[i].textcolor2 == CT_WHITE )

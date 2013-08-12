@@ -573,10 +573,11 @@ int UI_GetAnim ( int anim, int weapon, qboolean upper )
 				//1 handed weapon - "phaser"
 				case WP_5:
 				case WP_10:
-					if (upper)
+					if (upper){
 						return BOTH_STAND1; //TORSO_WEAPONIDLE1
-					else
+					} else {
 						return BOTH_STAND1;
+					}
 					break;
 				//Generic tools - "everything else"
 				case WP_4:

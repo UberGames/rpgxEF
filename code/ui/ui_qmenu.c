@@ -79,7 +79,6 @@ static void Text_Init( menutext_s *t )
 {
 	int	x;
 	int	y;
-	int	w=0,w2,w3;
 	int	h,lines;
 	char	buff[512];	
 	char	buff2[512];	
@@ -98,10 +97,10 @@ static void Text_Init( menutext_s *t )
 	}
 	else
 	{
+		int	w=0,w2=0,w3=0;
 		// Button text (text can be clicked on)
 		if (t->buttontextEnum)
 		{
-			w = w2 = w3 = 0;
 
 			if (menu_button_text[t->buttontextEnum][0])
 			{
@@ -528,9 +527,8 @@ void Bitmap_Draw( menubitmap_s *b )
 	float	h;
 	vec4_t	tempcolor;
 	float*	color;
-	int		colorI;
 	char highlight;
-	int		textStyle,incY;
+	int		textStyle;
 	menuframework_s *menu;
 
 	textStyle = b->textStyle;
@@ -644,6 +642,7 @@ void Bitmap_Draw( menubitmap_s *b )
 	// If there's text to go on top of the bitmap
 	if ((b->textEnum) || (b->textPtr))
 	{
+		int		colorI;
 		// Bitmap is highlighted, use textcolor2
 		if (highlight)
 		{
@@ -669,6 +668,7 @@ void Bitmap_Draw( menubitmap_s *b )
 		// Is there a 2nd line of button text?
 		if (b->textEnum2)
 		{
+			int incY;
 			if (textStyle & UI_SMALLFONT)
 			{
 				incY=PROP_HEIGHT * 1.15;
@@ -1267,10 +1267,6 @@ static void SpinControl_Init( menulist_s *s )
 }
 
 static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
-	int	bestWidth=0;
-	int i;
-	int	widthOffset;
-	int heightOffset;
 
 	if ( !s->generic.parent->displaySpinList ) {
 		if ( (s->generic.flags & QMF_HASMOUSEFOCUS) ) { //we clicked on the button, and the list wasn't open lol
@@ -1278,7 +1274,10 @@ static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
 			{
 				//init the data area
 				memset( &s->drawList, 0, sizeof( drawList_t ) );
-
+				int	bestWidth=0;
+				int i;
+				int	widthOffset;
+				int heightOffset;
 				//first, find the longest string in the list
 				for ( i=0; i<s->numitems; i++ ) {
 					if ( s->listnames ) {
@@ -1495,7 +1494,7 @@ SpinControl_Draw
 */
 static void SpinControl_Draw( menulist_s *s )
 {
-	int x,y,listX,buttonColor,buttonTextColor;
+	int x,y,buttonColor,buttonTextColor;
 	int boxWidth,color;
 	char text[64];
 
@@ -1549,6 +1548,7 @@ static void SpinControl_Draw( menulist_s *s )
 	}
 	else
 	{
+		int listX;
 		// Draw button and button text
 		trap_R_SetColor( colorTable[buttonColor]);
 		//if (!s->focusHeight && !s->focusWidth)
@@ -2300,16 +2300,12 @@ void Menu_Draw( menuframework_s *menu )
 
 #ifndef NDEBUG
 		if( uis.debug ) {
-			int	x;
-			int	y;
-			int	w;
-			int	h;
 
 			if( !( itemptr->flags & QMF_INACTIVE ) ) {
-				x = itemptr->left;
-				y = itemptr->top;
-				w = itemptr->right - itemptr->left + 1;
-				h =	itemptr->bottom - itemptr->top + 1;
+				int x = itemptr->left;
+				int y = itemptr->top;
+				int w = itemptr->right - itemptr->left + 1;
+				int h =	itemptr->bottom - itemptr->top + 1;
 
 				if (itemptr->flags & QMF_HASMOUSEFOCUS) {
 					UI_DrawRect(x, y, w, h, colorYellow );
