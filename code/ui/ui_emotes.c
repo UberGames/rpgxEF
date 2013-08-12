@@ -1065,7 +1065,6 @@ static sfxHandle_t PlayerEmotes_KeyEvent ( int key ) {
 	menucommon_s	*s;
 	int				i;
 	char			command[256];
-	int				emoteId;
 
 	s = (menucommon_s *)Menu_ItemAtCursor( &s_playerEmotes.menu );
 
@@ -1134,7 +1133,7 @@ static sfxHandle_t PlayerEmotes_KeyEvent ( int key ) {
 	if ( key == K_MOUSE2 && ( s->id >= ID_EMOTELIST1 && s->id <= ID_EMOTELIST12 ) ) {
 		PlayerEmotes_ExecuteOffset();
 		
-		emoteId = s_playerEmotes.mainEmotesList[ ((s->id - 100)-1)+s_playerEmotes.emoteListOffset ];
+		int emoteId = s_playerEmotes.mainEmotesList[ ((s->id - 100)-1)+s_playerEmotes.emoteListOffset ];
 
 		if ( emoteId >= 0 && emoteId < bg_numEmotes ) {
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait 5;emote %s\n", bg_emoteList[emoteId].name ) );

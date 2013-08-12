@@ -129,7 +129,6 @@ static void UI_CDKeyMenu_DrawKey( void *self )
 	menufield_s		*f;
 	qboolean		focus;
 	int				style;
-	char			c;
 	float			*color;
 	int				x, y;
 
@@ -157,6 +156,7 @@ static void UI_CDKeyMenu_DrawKey( void *self )
 	// draw cursor if we have focus
 	if( focus ) 
 	{
+		char			c;
 		if ( trap_Key_GetOverstrikeMode() ) 
 		{
 			c = 11;

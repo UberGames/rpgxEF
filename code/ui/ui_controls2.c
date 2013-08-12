@@ -942,7 +942,6 @@ static void Controls_DrawKeyBinding( void *self )
 	int				x,bindingX;
 	int				y;
 	int				b1;
-	int				b2;
 	qboolean		c;
 	char			name[32];
 	char			name2[32];
@@ -970,7 +969,7 @@ static void Controls_DrawKeyBinding( void *self )
 		trap_Key_KeynumToStringBuf( b1, name, 32 );
 		Q_strupr(name);
 
-		b2 = g_bindings[a->generic.id].bind2;
+		int b2 = g_bindings[a->generic.id].bind2;
 		if (b2 != -1)
 		{
 			trap_Key_KeynumToStringBuf( b2, name2, 32 );

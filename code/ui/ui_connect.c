@@ -63,7 +63,6 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 
 	int downloadSize, downloadCount, downloadTime;
 	char dlSizeBuf[64], totalSizeBuf[64], xferRateBuf[64], dlTimeBuf[64];
-	int xferRate;
 	int width, leftWidth;
 	int style = UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW;
 	const char *s;
@@ -100,6 +99,7 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 		UI_DrawProportionalString( leftWidth, etaYpos, estimating, style, color_white );
 		UI_DrawProportionalString( leftWidth, copiedYpos, va(XofXcopied, dlSizeBuf, totalSizeBuf), style, color_white );
 	} else {
+		int xferRate;
 		if ((uis.realtime - downloadTime) / 1000) {
 			xferRate = downloadCount / ((uis.realtime - downloadTime) / 1000);
 		} else {

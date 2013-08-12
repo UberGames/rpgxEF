@@ -1716,7 +1716,6 @@ rankset to that new data
 
 void UI_InitRanksData( char* ranksName ) {
 	char	filePath[MAX_QPATH];
-	int		i;
 
 	if ( !Q_stricmp( uis.rankSet.rankSetName, ranksName ) )
 		goto refreshRank;
@@ -1745,7 +1744,8 @@ void UI_InitRanksData( char* ranksName ) {
 
 refreshRank:
 		/* using our current cvar'd rank, do a compare.  if we find a match, set our player to that rank in the menu */
-		for ( i=0, uis.currentRank=0; i < MAX_RANKS; i++ ) {
+		int		i;
+		for ( int i=0, uis.currentRank=0; i < MAX_RANKS; i++ ) {
 			if ( !Q_stricmp( uis.rankSet.rankNames[i].consoleName, UI_Cvar_VariableString( "ui_playerRank" ) ) ) {
 				uis.currentRank = i;
 				break;
@@ -2929,7 +2929,6 @@ void UI_SecurityCodeSetup ( void )
 	int						fileLen;
 	rpgxSecurityFile_t		*code;
 	rpgxSecurityFile_t		wCode;
-	unsigned long			bit=0;
 	static qboolean			ui_SecuritySetup=qfalse;
 
 	/* QVM Hack */
@@ -2997,6 +2996,7 @@ void UI_SecurityCodeSetup ( void )
 		/* generate our player hash */
 		while ( code->hash == 0 || code->hash == SECURITY_HASH )
 		{
+			unsigned long			bit=0;
 			/* set a pretty good random seed */
 			srand( trap_Milliseconds() );
 			/*code->hash = (int)(rand() / (((double)RAND_MAX + 1)/ SECURITY_HASH));*/

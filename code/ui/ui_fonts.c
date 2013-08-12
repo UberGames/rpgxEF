@@ -39,13 +39,13 @@ M_GridFont_Graphics
 */
 void M_GridFont_Graphics (void)
 {
-	int x,y,color;
+	int x,y;
 	int i,i2,xInc;
 	char	character[2];
 
 	character[1] = 0;
 	y = 190;
-	color = CT_LTORANGE;
+	int color = CT_LTORANGE;
 	for (i=32;i<256;)
 	{
 		x = 100;
@@ -236,12 +236,10 @@ Fonts_MenuEvent
 */
 static void Fonts_MenuEvent( void* ptr, int notification )
 {
-	menuframework_s*	m;
-
 	if (notification != QM_ACTIVATED)
 		return;
 
-	m = ((menucommon_s*)ptr)->parent;
+	menuframework_s* m = ((menucommon_s*)ptr)->parent;
 
 	switch (((menucommon_s*)ptr)->id)
 	{
