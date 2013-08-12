@@ -46,7 +46,7 @@ BotPrintTeamGoal
 */
 void BotPrintTeamGoal(bot_state_t *bs) {
 	char netname[MAX_NETNAME];
-	float t;
+	float t = 0.0f;
 
 	ClientName(bs->client, netname, sizeof(netname));
 	t = bs->teamgoal_time - trap_AAS_Time();
@@ -124,20 +124,25 @@ FIXME: add stuff like "upper rocket launcher"
 "the rl near the railgun", "lower grenade launcher" etc.
 ==================
 */
-int BotGetItemTeamGoal(char *goalname, bot_goal_t *goal) {
-	int i;
+int32_t BotGetItemTeamGoal(char *goalname, bot_goal_t *goal) {
+	int32_t i = -1;
 
-	if (!strlen(goalname)) return qfalse;
-	i = -1;
+	if (strlen(goalname) == 0) {
+		return qfalse;
+	}
+
 	do {
 		i = trap_BotGetLevelItemGoal(i, goalname, goal);
 		if (i > 0) {
 			//do NOT defend dropped items
-			if (goal->flags & GFL_DROPPED)
+			if (goal->flags & GFL_DROPPED) {
 				continue;
+			}
+
 			return qtrue;
 		}
 	} while(i > 0);
+
 	return qfalse;
 }
 
@@ -146,13 +151,15 @@ int BotGetItemTeamGoal(char *goalname, bot_goal_t *goal) {
 BotGetMessageTeamGoal
 ==================
 */
-int BotGetMessageTeamGoal(bot_state_t *bs, char *goalname, bot_goal_t *goal) {
+int32_t BotGetMessageTeamGoal(bot_state_t *bs, char *goalname, bot_goal_t *goal) {
 	bot_waypoint_t *cp;
 
-	if (BotGetItemTeamGoal(goalname, goal)) return qtrue;
+	if (BotGetItemTeamGoal(goalname, goal)) {
+		return qtrue;
+	}
 
 	cp = BotFindWayPoint(bs->checkpoints, goalname);
-	if (cp) {
+	if (cp != NULL) {
 		memcpy(goal, &cp->goal, sizeof(bot_goal_t));
 		return qtrue;
 	}
@@ -174,10 +181,10 @@ float BotGetTime(bot_match_t *match) {
 		trap_BotMatchVariable(match, TIME, timestring, MAX_MESSAGE_SIZE);
 		//match it to find out if the time is in seconds or minutes
 		if (trap_BotFindMatch(timestring, &timematch, MTCONTEXT_TIME)) {
-			float t;
+			float t = 0.0f;
 
 			if (timematch.type == MSG_FOREVER) {
-				t = 99999999;
+				t = 99999999.0f;
 			} else {
 				trap_BotMatchVariable(&timematch, TIME, timestring, MAX_MESSAGE_SIZE);
 				if (timematch.type == MSG_MINUTES) t = atof(timestring) * 60;
@@ -185,7 +192,9 @@ float BotGetTime(bot_match_t *match) {
 				else t = 0;
 			}
 			//if there's a valid time
-			if (t > 0) return trap_AAS_Time() + t;
+			if (t > 0.0f) {
+				return trap_AAS_Time() + t;
+			}
 		}
 	}
 	return 0;
@@ -196,21 +205,25 @@ float BotGetTime(bot_match_t *match) {
 FindClientByName
 ==================
 */
-int FindClientByName(char *name) {
-	int i;
+int32_t FindClientByName(char *name) {
+	int32_t i = 0;
 	char buf[MAX_INFO_STRING];
-	static int maxclis;
+	static int32_t maxclis;
 
-	if (!maxclis)
+	if (maxclis == 0) {
 		maxclis = trap_Cvar_VariableIntegerValue("sv_maxclients");
+	}
+
 	for (i = 0; i < maxclis && i < MAX_CLIENTS; i++) {
 		ClientName(i, buf, sizeof(buf));
-		if (!Q_stricmp(buf, name)) return i;
+		if (Q_stricmp(buf, name) == 0) return i;
 	}
+
 	for (i = 0; i < maxclis && i < MAX_CLIENTS; i++) {
 		ClientName(i, buf, sizeof(buf));
 		if (stristr(buf, name)) return i;
 	}
+
 	return -1;
 }
 
@@ -219,23 +232,27 @@ int FindClientByName(char *name) {
 FindEnemyByName
 ==================
 */
-int FindEnemyByName(bot_state_t *bs, char *name) {
-	int i;
+int32_t FindEnemyByName(bot_state_t *bs, char *name) {
+	int32_t i = 0;
 	char buf[MAX_INFO_STRING];
-	static int maxclis;
+	static int32_t maxclis;
 
-	if (!maxclis)
+	if (maxclis == 0) {
 		maxclis = trap_Cvar_VariableIntegerValue("sv_maxclients");
+	}
+
 	for (i = 0; i < maxclis && i < MAX_CLIENTS; i++) {
 		if (BotSameTeam(bs, i)) continue;
 		ClientName(i, buf, sizeof(buf));
 		if (!Q_stricmp(buf, name)) return i;
 	}
+
 	for (i = 0; i < maxclis && i < MAX_CLIENTS; i++) {
 		if (BotSameTeam(bs, i)) continue;
 		ClientName(i, buf, sizeof(buf));
 		if (stristr(buf, name)) return i;
 	}
+
 	return -1;
 }
 
@@ -244,13 +261,15 @@ int FindEnemyByName(bot_state_t *bs, char *name) {
 NumPlayersOnSameTeam
 ==================
 */
-int NumPlayersOnSameTeam(bot_state_t *bs) {
-	int i, num;
+int32_t NumPlayersOnSameTeam(bot_state_t *bs) {
+	int32_t i = 0;
+	int32_t num = 0;
 	char buf[MAX_INFO_STRING];
 	static int maxclis;
 
-	if (!maxclis)
+	if (maxclis == 0) {
 		maxclis = trap_Cvar_VariableIntegerValue("sv_maxclients");
+	}
 
 	num = 0;
 	for (i = 0; i < maxclis && i < MAX_CLIENTS; i++) {
@@ -259,6 +278,7 @@ int NumPlayersOnSameTeam(bot_state_t *bs) {
 			if (BotSameTeam(bs, i+1)) num++;
 		}
 	}
+
 	return num;
 }
 
@@ -267,9 +287,9 @@ int NumPlayersOnSameTeam(bot_state_t *bs) {
 TeamPlayIsOn
 ==================
 */
-int BotGetPatrolWaypoints(bot_state_t *bs, bot_match_t *match) {
+int32_t BotGetPatrolWaypoints(bot_state_t *bs, bot_match_t *match) {
 	char keyarea[MAX_MESSAGE_SIZE];
-	int patrolflags;
+	int32_t patrolflags;
 	bot_waypoint_t *wp, *newwp, *newpatrolpoints;
 	bot_match_t keyareamatch;
 	bot_goal_t goal;
@@ -345,18 +365,25 @@ int BotGetPatrolWaypoints(bot_state_t *bs, bot_match_t *match) {
 BotAddressedToBot
 ==================
 */
-int BotAddressedToBot(bot_state_t *bs, bot_match_t *match) {
+int32_t BotAddressedToBot(bot_state_t *bs, bot_match_t *match) {
 	char addressedto[MAX_MESSAGE_SIZE];
 	char netname[MAX_MESSAGE_SIZE];
 	char name[MAX_MESSAGE_SIZE];
 	char botname[128];
-	int client;
+	int32_t client = 0;
 	bot_match_t addresseematch;
 
 	trap_BotMatchVariable(match, NETNAME, netname, sizeof(netname));
 	client = ClientFromName(netname);
-	if (client < 0) return qfalse;
-	if (!BotSameTeam(bs, client)) return qfalse;
+
+	if (client < 0) {
+		return qfalse;
+	}
+	
+	if (!BotSameTeam(bs, client)) {
+		return qfalse;
+	}
+
 	//if the message is addressed to someone
 	if (match->subtype & ST_ADDRESSED) {
 		trap_BotMatchVariable(match, ADDRESSEE, addressedto, sizeof(addressedto));
@@ -392,6 +419,7 @@ int BotAddressedToBot(bot_state_t *bs, bot_match_t *match) {
 		//make sure not everyone reacts to this message
 		if (random() > (float ) 1.0 / (NumPlayersOnSameTeam(bs)-1)) return qfalse;
 	}
+
 	return qtrue;
 }
 
@@ -400,9 +428,9 @@ int BotAddressedToBot(bot_state_t *bs, bot_match_t *match) {
 BotGPSToPosition
 ==================
 */
-int BotGPSToPosition(char *buf, vec3_t position) {
-	int i, j = 0;
-	int num, sign;
+int32_t BotGPSToPosition(char *buf, vec3_t position) {
+	int32_t i, j = 0;
+	int32_t num, sign;
 
 	for (i = 0; i < 3; i++) {
 		num = 0;
@@ -436,7 +464,7 @@ BotMatch_HelpAccompany
 ==================
 */
 void BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match) {
-	int client, other;
+	int32_t client, other;
 	char teammate[MAX_MESSAGE_SIZE], netname[MAX_MESSAGE_SIZE];
 	char itemname[MAX_MESSAGE_SIZE];
 	bot_match_t teammatematch;
@@ -611,7 +639,7 @@ BotMatch_Camp
 ==================
 */
 void BotMatch_Camp(bot_state_t *bs, bot_match_t *match) {
-	int client, areanum;
+	int32_t client, areanum;
 	char netname[MAX_MESSAGE_SIZE];
 	char itemname[MAX_MESSAGE_SIZE];
 	aas_entityinfo_t entinfo;
@@ -766,7 +794,7 @@ BotMatch_TaskPreference
 void BotMatch_TaskPreference(bot_state_t *bs, bot_match_t *match) {
 	char netname[MAX_NETNAME];
 	char teammatename[MAX_MESSAGE_SIZE];
-	int teammate, preference;
+	int32_t teammate, preference;
 
 	ClientName(bs->client, netname, sizeof(netname));
 	if (Q_stricmp(netname, bs->teamleader) != 0) return;
@@ -889,7 +917,7 @@ BotMatch_CheckPoint
 ==================
 */
 void BotMatch_CheckPoint(bot_state_t *bs, bot_match_t *match) {
-	int areanum;
+	int32_t areanum;
 	char buf[MAX_MESSAGE_SIZE];
 	vec3_t position;
 	bot_waypoint_t *cp;
@@ -1008,7 +1036,7 @@ BotMatch_StopTeamLeaderShip
 ==================
 */
 void BotMatch_StopTeamLeaderShip(bot_state_t *bs, bot_match_t *match) {
-	int client;
+	int32_t client;
 	char teammate[MAX_MESSAGE_SIZE];
 	char netname[MAX_MESSAGE_SIZE];
 
@@ -1146,7 +1174,7 @@ BotNearestVisibleItem
 ==================
 */
 float BotNearestVisibleItem(bot_state_t *bs, char *itemname, bot_goal_t *goal) {
-	int i;
+	int32_t i;
 	char name[64];
 	bot_goal_t tmpgoal;
 	float dist, bestdist;
@@ -1180,7 +1208,7 @@ BotMatch_WhereAreYou
 */
 void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 	float dist, bestdist;
-	int i, bestitem, redflagtt, blueflagtt;
+	int32_t i, bestitem, redflagtt, blueflagtt;
 	bot_goal_t goal;
 	char *nearbyitems[] = {
 		"Phaser Compression Rifle",
@@ -1246,7 +1274,7 @@ BotMatch_LeadTheWay
 void BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match) {
 	aas_entityinfo_t entinfo;
 	char netname[MAX_MESSAGE_SIZE], teammate[MAX_MESSAGE_SIZE];
-	int client, other;
+	int32_t client, other;
 
 	if (!TeamPlayIsOn()) return;
 	//if not addressed to this bot
@@ -1285,7 +1313,7 @@ void BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match) {
 	BotEntityInfo(client, &entinfo);
 	//if info is valid (in PVS)
 	if (entinfo.valid) {
-		int areanum = BotPointAreaNum(entinfo.origin);
+		int32_t areanum = BotPointAreaNum(entinfo.origin);
 		if (areanum && trap_AAS_AreaReachability(areanum)) {
 			bs->lead_teamgoal.entitynum = client;
 			bs->lead_teamgoal.areanum = areanum;
@@ -1314,7 +1342,7 @@ BotMatch_Kill
 */
 void BotMatch_Kill(bot_state_t *bs, bot_match_t *match) {
 	char enemy[MAX_MESSAGE_SIZE];
-	int client;
+	int32_t client;
 
 	if (!TeamPlayIsOn()) return;
 	//if not addressed to this bot
@@ -1386,7 +1414,7 @@ void BotMatch_CTF(bot_state_t *bs, bot_match_t *match) {
 BotMatchMessage
 ==================
 */
-int BotMatchMessage(bot_state_t *bs, char *message) {
+int32_t BotMatchMessage(bot_state_t *bs, char *message) {
 	bot_match_t match;
 
 	match.type = 0;

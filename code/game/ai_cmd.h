@@ -14,6 +14,8 @@
  *
  *****************************************************************************/
 
-int BotMatchMessage(bot_state_t *bs, char *message);
+#include "g_local.h"
+
+int32_t BotMatchMessage(bot_state_t *bs, char *message);
 void BotPrintTeamGoal(bot_state_t *bs);
 
