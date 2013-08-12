@@ -1744,7 +1744,6 @@ void UI_InitRanksData( char* ranksName ) {
 
 refreshRank:
 		/* using our current cvar'd rank, do a compare.  if we find a match, set our player to that rank in the menu */
-		int		i;
 		for ( int i=0, uis.currentRank=0; i < MAX_RANKS; i++ ) {
 			if ( !Q_stricmp( uis.rankSet.rankNames[i].consoleName, UI_Cvar_VariableString( "ui_playerRank" ) ) ) {
 				uis.currentRank = i;

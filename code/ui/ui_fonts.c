@@ -45,7 +45,6 @@ void M_GridFont_Graphics (void)
 
 	character[1] = 0;
 	y = 190;
-	int color = CT_LTORANGE;
 	for (i=32;i<256;)
 	{
 		x = 100;
@@ -238,8 +237,6 @@ static void Fonts_MenuEvent( void* ptr, int notification )
 {
 	if (notification != QM_ACTIVATED)
 		return;
-
-	menuframework_s* m = ((menucommon_s*)ptr)->parent;
 
 	switch (((menucommon_s*)ptr)->id)
 	{

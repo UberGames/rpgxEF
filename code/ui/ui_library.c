@@ -274,12 +274,10 @@ CrewMenu_Blinkies
 */
 void LogMenu_Blinkies (void)
 {
-	int descI;
-
 	// Turning on description a line at a time
 	if ((logmenu_graphics[LMG_CURRENT_DESC].timer < uis.realtime) && (logmenu_graphics[LMG_CURRENT_DESC].type == MG_VAR))
 	{
-		descI = logmenu_graphics[LMG_CURRENT_DESC].target;
+		int descI = logmenu_graphics[LMG_CURRENT_DESC].target;
 		if (!descI)
 		{
 			logmenu_graphics[LMG_CURRENT_DESC].type = MG_OFF;
@@ -507,29 +505,6 @@ static void UI_LibraryDrawMD3Model(qhandle_t modelHandle,int x, int y,int modelD
 	}
 
 	UI_Draw3DModel( x, y, 447, 305, modelHandle, origin, angles);
-
-}
-
-/*
-================
-UI_DrawLibraryMDRModel
-
-================
-*/
-static void UI_DrawLibraryMDRModel(qhandle_t modelHandle,int x, int y)
-{
-	void *voidPtr;
-
-//	vec3_t	origin = {50,0,2};
-	vec3_t	angles;
-
-	angles[PITCH] = 0;
-	angles[YAW]   = 20.0/300.0 * uis.realtime;
-	angles[ROLL]  = 0;
-
-	voidPtr = (void *) &s_library.playerModel;
-//	Controls_DrawPlayer(voidPtr);
-//	Controls_UpdateModel( 0 );
 
 }
 
@@ -988,8 +963,6 @@ M_LibraryMenu_Graphics
 */
 void M_LibraryMenu_Graphics (void)
 {
-	int nameX,stardateX; //,textIndex; //length
-
 	trap_R_SetColor( colorTable[CT_VDKPURPLE2]);
 	UI_DrawHandlePic( 30,  24,16,   32, s_library.leftRound);
 
@@ -1010,13 +983,6 @@ void M_LibraryMenu_Graphics (void)
 	trap_R_SetColor( colorTable[CT_DKBROWN1]);
 	UI_DrawHandlePic(  30, 386,  64, -16, s_library.corner_ll_8_47);
 	UI_DrawHandlePic(  30, 425, 128,  64, s_library.corner_ll_18_47);
-
-	stardateX  = 50;
-//	UI_DrawProportionalString( stardateX , 24, menu_normal_text[MNT_TOPICS],  UI_BIGFONT , colorTable[CT_LTPURPLE2]);	
-
-//	length = UI_ProportionalStringWidth( menu_normal_text[MNT_TOPICS],UI_BIGFONT);
-//	trap_R_SetColor( colorTable[CT_VDKBLUE1]);
-//	UI_DrawHandlePic( stardateX + 4 + length,  24, (196 - (stardateX + 4 + length)), 24, uis.whiteShader);
 
 	// Left side
 	trap_R_SetColor( colorTable[CT_VDKPURPLE2]);
@@ -1041,17 +1007,8 @@ void M_LibraryMenu_Graphics (void)
 	UI_DrawHandlePic( 195, 368,   7,  18, uis.whiteShader);		// Bottom2
 
 	// Right side
-	nameX = 592;
-
-//	textIndex = MNT_LIBRARYSTATION;
-
-//	UI_DrawProportionalString( nameX, 24,
-//		menu_normal_text[textIndex],   UI_BIGFONT | UI_RIGHT, colorTable[CT_LTPURPLE2]);	
-//	length = UI_ProportionalStringWidth( menu_normal_text[textIndex],UI_BIGFONT);
 
 	trap_R_SetColor( colorTable[CT_VDKPURPLE2]);
-//	UI_DrawHandlePic( nameX + 4,  24,-16,   32, s_library.leftRound);
-//	UI_DrawHandlePic( 218,  24, (nameX - (length +4)) - 218, 24, uis.whiteShader);
 	
 	UI_DrawProportionalString( 240, 58,va("%s / %s", libraryText[s_library.mainTopic].mainTopic,libraryText[s_library.mainTopic].subTopic[s_library.subTopic]),
 	   UI_SMALLFONT , colorTable[CT_VLTGOLD1]);	
