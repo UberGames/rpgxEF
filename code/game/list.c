@@ -22,6 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "list.h"
 #include <string.h>
 
+/*
  * Create a list_iter object for the linked_list list. The flag init can be
  * either LIST_FRONT or LIST_BACK and indicates whether to start the iterator from the first
  * or last item in the list 
