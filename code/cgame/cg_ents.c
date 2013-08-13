@@ -542,7 +542,6 @@ static void CG_Missile( centity_t *cent, qboolean altfire ) {
 	entityState_t		*s1;
 	qhandle_t			missile = 0;
 	const weaponInfo_t		*weapon;
-	int     rpg_tripmines;
 	const char	*info;
 	
 	s1 = &cent->currentState;
@@ -581,7 +580,7 @@ static void CG_Missile( centity_t *cent, qboolean altfire ) {
 		}
 		//RPG-X: RedTechie - non-admin see no tripmines! But first by popular demand check CVAR
 		info = CG_ConfigString( CS_SERVERINFO );
-		rpg_tripmines = atoi( Info_ValueForKey( info, "rpg_invisibletripmines" ) );
+		int rpg_tripmines = atoi( Info_ValueForKey( info, "rpg_invisibletripmines" ) );
 		if (!weapon->alt_missileModel || (!cgs.clientinfo[cg.snap->ps.clientNum].isAdmin/*cg.snap->ps.persistant[PERS_CLASS] != PC_ADMIN*/ && rpg_tripmines == 1)) {
 			//if there is no missile then we're done
 			return;

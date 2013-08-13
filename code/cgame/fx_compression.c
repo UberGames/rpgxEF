@@ -60,7 +60,6 @@ void FX_CompressionShot( vec3_t start, vec3_t dir )
 	trace_t			trace;
 	qboolean		render_impact = qtrue;
 	centity_t		*traceEnt = NULL;
-	int			clientNum = -1;
 
 	VectorMA(start, MAXRANGE_CRIFLE, dir, end);
 	CG_Trace( &trace, start, NULL, NULL, end, 0, MASK_SHOT );
@@ -78,8 +77,8 @@ void FX_CompressionShot( vec3_t start, vec3_t dir )
 	if ( render_impact )
 	{
 		traceEnt = &cg_entities[trace.entityNum];
-		clientNum = traceEnt->currentState.clientNum;
-		if ( (trace.entityNum != ENTITYNUM_WORLD) && (clientNum >= 0 || clientNum < MAX_CLIENTS) )
+		int clientNum = traceEnt->currentState.clientNum;
+		if ( (trace.entityNum != ENTITYNUM_WORLD) && clientNum >= 0 && clientNum < MAX_CLIENTS )
 		{
 			FX_CompressionHit(trace.endpos);
 		} 
@@ -100,7 +99,6 @@ void FX_CompressionAltShot( vec3_t start, vec3_t dir )
 	trace_t			trace;
 	qboolean		render_impact = qtrue;
 	centity_t		*traceEnt = NULL;
-	int			clientNum = -1;
 
 	VectorMA(start, MAXRANGE_CRIFLE, dir, end);
 	CG_Trace( &trace, start, NULL, NULL, end, cg_entities[cg.predictedPlayerState.clientNum].currentState.number, MASK_SHOT );
@@ -121,8 +119,8 @@ void FX_CompressionAltShot( vec3_t start, vec3_t dir )
 	if ( render_impact )
 	{
 		traceEnt = &cg_entities[trace.entityNum];
-		clientNum = traceEnt->currentState.clientNum;
-		if ( (trace.entityNum != ENTITYNUM_WORLD) && (clientNum >= 0 || clientNum < MAX_CLIENTS) )
+		int clientNum = traceEnt->currentState.clientNum;
+		if ( (trace.entityNum != ENTITYNUM_WORLD) && clientNum >= 0 && clientNum < MAX_CLIENTS )
 		{
 			FX_CompressionHit(trace.endpos);
 		} 
@@ -152,7 +150,6 @@ void FX_CompressionExplosion( vec3_t start, vec3_t origin, vec3_t normal, qboole
 
 	vec3_t color = {0.7, 0.43, 0.44};
 
-	int size = 2;
 
 	//FX_CompressionHit( origin ); //TiM: let's test if the rifle doesn't make stuff explode when its shot :)
 	//return;
@@ -225,6 +222,7 @@ void FX_CompressionExplosion( vec3_t start, vec3_t origin, vec3_t normal, qboole
 
 	if (!altfire)
 	{
+		int size = 2;
 		CG_InitLensFlare( origin, 
 						350, 350,
 						color, 1.2, 2.0, 1600, 200,
@@ -299,9 +297,7 @@ void FX_PrifleBeamFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean 
 {
 	refEntity_t		beam;
 	sfxHandle_t		sfx;
-	float			size;
 	vec3_t			velocity;
-	int				sparks;
 	vec3_t			rgb = { 1,0.9,0.6}, rgb2={1,0.3,0};
 
 	//vec3_t			rgb3 = { 1.0, 1.0, 1.0 };
@@ -412,10 +408,10 @@ void FX_PrifleBeamFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean 
 	// "Fun" sparks...  Not when empty.
 	if ( spark && !empty)
 	{
-		sparks = (rand() & 1) + 1;
+		int sparks = (rand() & 1) + 1;
 		for(;sparks>0;sparks--)
 		{	
-			size = 0.2f + (random() * 0.4);
+			float size = 0.2f + (random() * 0.4);
 			FXE_Spray( normal, 200, 75, 0.8f, velocity);
 			if (rand() & LEF_USE_COLLISION)
 			{	// This spark bounces.

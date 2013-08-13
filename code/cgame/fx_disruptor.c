@@ -163,9 +163,7 @@ void FX_DisruptorBeamFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboole
 {
 	refEntity_t		beam;
 	sfxHandle_t		sfx;
-	float			size;
 	vec3_t			velocity;
-	int				sparks;
 	vec3_t			rgb = { 1,0.9,0.6}, rgb2={1,0.3,0};
 
 	//vec3_t			rgb3 = { 1.0, 1.0, 1.0 };
@@ -276,10 +274,10 @@ void FX_DisruptorBeamFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboole
 	// "Fun" sparks...  Not when empty.
 	if ( spark && !empty)
 	{
-		sparks = (rand() & 1) + 1;
+		int sparks = (rand() & 1) + 1;
 		for(;sparks>0;sparks--)
 		{	
-			size = 0.2f + (random() * 0.4);
+			float size = 0.2f + (random() * 0.4);
 			FXE_Spray( normal, 200, 75, 0.8f, velocity);
 			if (rand() & LEF_USE_COLLISION)
 			{	// This spark bounces.

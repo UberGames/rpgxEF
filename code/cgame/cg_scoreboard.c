@@ -252,7 +252,6 @@ static void CG_DrawClientScore_Big( int y, score_t *score, float *color, float f
 	char	        *rpg_class;
 	vec4_t	        rpg_color;
 	vec_t			*ping_txtcolor = NULL;
-	int				intClamp;
 
 	ci = &cgs.clientinfo[score->client];
 
@@ -339,7 +338,7 @@ static void CG_DrawClientScore_Big( int y, score_t *score, float *color, float f
 
 		//player client Num
 		//Com_sprintf(string,sizeof(string), "%i", intClamp);				//RPG-X: J2J Switched Scoore to Client No.
-		intClamp = Com_Clamp( 0, 128, cg_entities[score->client].currentState.clientNum );
+		int intClamp = Com_Clamp( 0, 128, cg_entities[score->client].currentState.clientNum );
 		UI_DrawProportionalString( SB_SCORE_X_BIG, y , va("%i", intClamp), UI_TINYFONT | UI_LEFT, colorTable[CT_WHITE]);
 
 		//player time
@@ -403,15 +402,9 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	CG_DrawPic( SB_TOPLINE_LENGTH+32, y+321, 36, 32, cgs.media.scoreboardbotright ); //RPG-X: - RedTechie Bottom Right
 	*/
 	//RPG-X: - RedTechie Fixed intermissions scoreboard
-	if ( !inIntermission ) 
-	{
 		//RPG-X BOOKMARK
 		CG_DrawClientScore_Big(y, score, color, fade, largeFormat );
 		return;
-	}else{
-		CG_DrawClientScore_Big(y, score, color, fade, largeFormat );
-		return;
-	}
 }
 
 /*

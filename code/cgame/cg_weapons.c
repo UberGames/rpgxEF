@@ -786,11 +786,9 @@ CG_MachinegunSpinAngle
 #define		SPIN_SPEED	0.9
 #define		COAST_TIME	1000
 static float	CG_MachinegunSpinAngle( centity_t *cent ) {
-	int		delta;
 	float	angle;
-	float	speed;
 
-	delta = cg.time - cent->pe.barrelTime;
+	int delta = cg.time - cent->pe.barrelTime;
 	if ( cent->pe.barrelSpinning ) {
 		angle = cent->pe.barrelAngle + delta * SPIN_SPEED;
 	} else {
@@ -798,7 +796,7 @@ static float	CG_MachinegunSpinAngle( centity_t *cent ) {
 			delta = COAST_TIME;
 		}
 
-		speed = 0.5 * ( SPIN_SPEED + (float)( COAST_TIME - delta ) / COAST_TIME );
+		float speed = 0.5 * ( SPIN_SPEED + (float)( COAST_TIME - delta ) / COAST_TIME );
 		angle = cent->pe.barrelAngle + delta * speed;
 	}
 

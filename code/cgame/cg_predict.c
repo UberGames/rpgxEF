@@ -601,7 +601,6 @@ void CG_PredictPlayerState( void ) {
 		// we want to compare
 		if ( cg.predictedPlayerState.commandTime == oldPlayerState.commandTime ) {
 			vec3_t	delta;
-			float	len;
 
 			if ( cg.thisFrameTeleport ) {
 				// a teleport will not cause an error decay
@@ -621,7 +620,7 @@ void CG_PredictPlayerState( void ) {
 					}
 				}
 				VectorSubtract( oldPlayerState.origin, adjusted, delta );
-				len = VectorLength( delta );
+				float len = VectorLength( delta );
 				if ( len > 0.1 ) {
 					if ( cg_showmiss.integer ) {
 						CG_Printf("Prediction miss: %f\n", len);

@@ -191,7 +191,6 @@ CG_MakeExplosion
 localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir, 
 								qhandle_t hModel, qhandle_t shader,
 								int msec, float scale, qboolean isSprite ) {
-	float			ang;
 	localEntity_t	*ex;
 	int				offset;
 	vec3_t			tmpVec, newOrigin;
@@ -219,7 +218,7 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 		if ( !dir ) {
 			AxisClear( ex->refEntity.axis );
 		} else {
-			ang = rand() % 360;
+			float ang = rand() % 360;
 			VectorCopy( dir, ex->refEntity.axis[0] );
 			RotateAroundDirection( ex->refEntity.axis, ang );
 		}
@@ -256,7 +255,6 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 localEntity_t *CG_MakeExplosion2( vec3_t origin, vec3_t dir, 
 								qhandle_t hModel, int numFrames, qhandle_t shader,
 								int msec, qboolean isSprite, float scale, int flags) {
-	float			ang;
 	localEntity_t	*ex;
 	int				offset;
 	vec3_t			tmpVec, newOrigin;
@@ -284,7 +282,7 @@ localEntity_t *CG_MakeExplosion2( vec3_t origin, vec3_t dir,
 		if ( !dir ) {
 			AxisClear( ex->refEntity.axis );
 		} else {
-			ang = rand() % 360;
+			float ang = rand() % 360;
 			VectorCopy( dir, ex->refEntity.axis[0] );
 			RotateAroundDirection( ex->refEntity.axis, ang );
 		}

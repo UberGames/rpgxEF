@@ -124,7 +124,6 @@ void CG_TestModelPrevSkin_f (void) {
 }
 
 static void CG_AddTestModel (void) {
-	int		i;
 
 	// re-register the model, because the level may have changed
 	cg.testModelEntity.hModel = trap_R_RegisterModel( cg.testModelName );
@@ -141,6 +140,7 @@ static void CG_AddTestModel (void) {
 		VectorCopy( cg.refdef.viewaxis[2], cg.testModelEntity.axis[2] );
 
 		// allow the position to be adjusted
+		int		i;
 		for (i=0 ; i<3 ; i++) {
 			cg.testModelEntity.origin[i] += cg.refdef.viewaxis[0][i] * cg_gun_x.value;
 			cg.testModelEntity.origin[i] += cg.refdef.viewaxis[1][i] * cg_gun_y.value;
@@ -390,7 +390,6 @@ Still trying to figure out how lerp actually works.
 static void CG_UpdateThirdPersonTargetDamp ( void ) {
 	trace_t tr;
 	vec3_t	targetDiff; //difference between our aimed target and current target
-	float dampFactor, dampTime, dampRatio;
 
 	//Just to be on the safe side, let's set the current ideal data again
 	CG_CalcIdealThirdPersonViewTarget();
@@ -406,15 +405,16 @@ static void CG_UpdateThirdPersonTargetDamp ( void ) {
 		//Ugh.... maaaaath >.<
 		//The JKA code says the equation is "(Damp)^(time)", so I'm guessing it's inverse exponential to 
 		//get that cool slowy down effect :)
+		float dampFactor;
 		if ( !freeRotate )
 			dampFactor = 1.0 - cg_thirdPersonTargetDamp.value; //yeh, I guess this is the inverse exponential bit.
 		else
 			dampFactor = 1.0 - Q_fabs( cameraFocusAngles[PITCH] ) / 90.0f;
 
-		dampTime = (float)(cg.time - cameraLastFrame) * (1.0f/(float)CAMERA_DAMP_INTERVAL); //chikushou! I don't know how this time factor is caluclated O_o
+		float dampTime = (float)(cg.time - cameraLastFrame) * (1.0f/(float)CAMERA_DAMP_INTERVAL); //chikushou! I don't know how this time factor is caluclated O_o
 		
 		//Square this number for each unit of dampTime
-		dampRatio = Q_powf( dampFactor, dampTime);
+		float dampRatio = Q_powf( dampFactor, dampTime);
 
 		//Okay, so our current position is calulated as the difference * -ratio + ideal... O_o
 		VectorMA( cameraIdealTarget, -dampRatio, targetDiff, cameraCurTarget );
@@ -441,7 +441,6 @@ Looks somewhat similar to Target Damp
 static void CG_UpdateThirdPersonCameraDamp ( void ) {
 	trace_t	tr;
 	vec3_t	locationDiff;
-	float dampFactor=0.0, dampTime, dampRatio;
 
 	//Initialise our goal angle
 	CG_CalcIdealThirdPersonViewLocation();
@@ -461,7 +460,7 @@ static void CG_UpdateThirdPersonCameraDamp ( void ) {
 		//The JKA code says these statments are to get it to damp less the more u look up.
 		//Makes sense. Still looking how tho lol
 		pitch /= 115.0; //magic number I guess lol.
-		dampFactor = (1.0-cg_thirdPersonCameraDamp.value) * ( pitch * pitch );
+		float dampFactor = (1.0-cg_thirdPersonCameraDamp.value) * ( pitch * pitch );
 		
 		dampFactor += cg_thirdPersonCameraDamp.value;		
 
@@ -484,10 +483,10 @@ static void CG_UpdateThirdPersonCameraDamp ( void ) {
 		//The JKA code says the equation is "(Damp)^(time)", so I'm guessing it's inverse exponential to 
 		//get that cool slowy down effect :)
 		dampFactor = 1.0 - dampFactor; //yeh, I guess this is the inverse exponential bit.
-		dampTime = (float)(cg.time - cameraLastFrame) * (1.0/(float)CAMERA_DAMP_INTERVAL); //chikushou! I don't know how this time factor is caluclated O_o
+		float dampTime = (float)(cg.time - cameraLastFrame) * (1.0/(float)CAMERA_DAMP_INTERVAL); //chikushou! I don't know how this time factor is caluclated O_o
 		
 		//Square this number for each unit of dampTime
-		dampRatio = Q_powf( dampFactor, dampTime);
+		float dampRatio = Q_powf( dampFactor, dampTime);
 
 		//Okay, so our current position is calulated as the difference * -ratio + ideal... O_o
 		VectorMA( cameraIdealLoc, -dampRatio, locationDiff, cameraCurLoc );		
@@ -516,7 +515,6 @@ Let's see if I can understand this in any way lol
 */
 static void CG_OffsetThirdPersonView( void ) {
 	vec3_t	diff;
-	float deltaYaw;
 	qboolean neg=qfalse;
 
 	cameraStiffFactor = 0.0f;
@@ -562,7 +560,7 @@ static void CG_OffsetThirdPersonView( void ) {
 
 		AngleVectors( cameraFocusAngles, cameraForward, cameraRight, cameraUp );
 
-		deltaYaw = fabs( cameraFocusAngles[YAW] - cameraLastYaw );
+		float deltaYaw = fabs( cameraFocusAngles[YAW] - cameraLastYaw );
 		//if we exceeded our norms, stick it back
 		if (deltaYaw > 180.0f ) {
 			deltaYaw = fabs( deltaYaw - 360.0f );
@@ -771,7 +769,6 @@ static void CG_OffsetFirstPersonView( void ) {
 	float			*origin;
 	float			*angles;
 	float			bob;
-	float			ratio;
 	float			delta;
 	float			speed;
 	float			f;
@@ -828,7 +825,7 @@ static void CG_OffsetFirstPersonView( void ) {
 
 	// add angles based on damage kick
 	if ( cg.damageTime ) {
-		ratio = cg.time - cg.damageTime;
+		float ratio = cg.time - cg.damageTime;
 		if ( ratio < DAMAGE_DEFLECT_TIME ) {
 			ratio /= DAMAGE_DEFLECT_TIME;
 			angles[PITCH] += ratio * cg.v_dmg_pitch;
@@ -1179,8 +1176,6 @@ static int CG_CalcFov( void ) {
 	float	v;
 	int		contents;
 	float	fov_x, fov_y;
-	float	zoomFov;
-	float	f;
 	int		inwater;
 	qboolean	warpEffect=qfalse;
 
@@ -1202,7 +1197,7 @@ static int CG_CalcFov( void ) {
 		}
 
 		// account for zooms
-		zoomFov = cg_zoomFov.value;
+		float zoomFov = cg_zoomFov.value;
 		if ( zoomFov < 1 ) {
 			zoomFov = 1;
 		} else if ( zoomFov > FOV_MAX) {
@@ -1241,10 +1236,8 @@ static int CG_CalcFov( void ) {
 
 			fov_x = cg_zoomFov.value;
 		} else {
-			f = ( cg.time - cg.zoomTime ) / (float)ZOOM_OUT_TIME;
-			if ( f > 1.0 ) {
-				fov_x = fov_x;
-			} else {
+			float f = ( cg.time - cg.zoomTime ) / (float)ZOOM_OUT_TIME;
+			if ( f <= 1.0 ) {
 				fov_x = zoomFov + f * ( fov_x - zoomFov );
 			}
 		}
@@ -1268,8 +1261,8 @@ static int CG_CalcFov( void ) {
 
 	if ( warpEffect ){
 		//phase = cg.time / 1000.0 * WAVE_FREQUENCY * M_PI * 2;
-		phase = cg.time * 0.001 * WAVE_FREQUENCY * M_PI * 2;
-		v = WAVE_AMPLITUDE * sin( phase );
+		float phase = cg.time * 0.001 * WAVE_FREQUENCY * M_PI * 2;
+		float v = WAVE_AMPLITUDE * sin( phase );
 		fov_x += v;
 		fov_y -= v;
 		inwater = qtrue;

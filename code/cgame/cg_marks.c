@@ -68,12 +68,11 @@ Will allways succeed, even if it requires freeing an old active mark
 */
 markPoly_t	*CG_AllocMark( void ) {
 	markPoly_t	*le;
-	int time;
 
 	if ( !cg_freeMarkPolys ) {
 		// no free entities, so free the one at the end of the chain
 		// remove the oldest active entity
-		time = cg_activeMarkPolys.prevMark->time;
+		int time = cg_activeMarkPolys.prevMark->time;
 		while (cg_activeMarkPolys.prevMark && time == cg_activeMarkPolys.prevMark->time) {
 			CG_FreeMarkPoly( cg_activeMarkPolys.prevMark );
 		}

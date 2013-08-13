@@ -23,9 +23,9 @@ void dllEntry( int (QDECL  *syscallptr)( int arg,... ) ) {
 
 
 int PASSFLOAT( float x ) {
-	float	floatTemp;
+	int	floatTemp;
 	floatTemp = x;
-	return *(int *)&floatTemp;
+	return floatTemp;
 }
 
 void	trap_Print( const char *fmt ) {

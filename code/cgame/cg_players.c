@@ -1893,7 +1893,6 @@ void CG_NewClientInfo( int clientNum ) {
 		char charStr[MAX_QPATH];
 		char *model;
 		char *skin;
-		size_t len;
 
 		trap_Cvar_VariableStringBuffer( "model", charStr, sizeof( charStr ) );
 		if ( ( model = strchr( charStr, '/' ) ) == NULL) {
@@ -1901,7 +1900,7 @@ void CG_NewClientInfo( int clientNum ) {
 			skin = "default";
 		} else {
 			*model = 0; //*model++ = 0;
-			len = strlen(model);
+			size_t len = strlen(model);
 
 			//if there was a slash, but no model afterwards
 			if ( !model || !model[1] ) {
@@ -2095,11 +2094,9 @@ independantly of its spawner player.
 void CG_NewDecoyInfo( int decoyNum ) {
 	clientInfo_t	*ci;
 	char			*userinfo;
-	int				i;
 	char			*v;
 	char			*temp, *temp2;
 	//char			charName[MAX_QPATH], modelName[MAX_QPATH], skinName[MAX_QPATH];
-	int				len;
 	qboolean		noMemoryLeft=qfalse;
 
 	ci = &cgs.decoyInfo[decoyNum];
@@ -2157,7 +2154,7 @@ void CG_NewDecoyInfo( int decoyNum ) {
 			}
 		} else {
 			temp++; //bypass the slash
-			len = strlen(temp);
+			int len = strlen(temp);
 			temp2 = strchr( temp, '/' );
 
 			//if there was a model defined, but no skin
@@ -2200,7 +2197,7 @@ void CG_NewDecoyInfo( int decoyNum ) {
 	//Okay... if another player actively has the skin we want, let's pilfer that rather than load it like a schmuck rofl.
 	{
 		clientInfo_t	*match;
-
+		int i;
 		for ( i = 0; i < cgs.maxclients; i++ ) {
 			match = &cgs.clientinfo[i];
 
@@ -2288,10 +2285,8 @@ cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
 static qboolean CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale ) {
-	int			f;
 	animation_t	*anim;
 	qboolean	newFrame = qfalse;
-	float		frameLerp;
 
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 ) {
@@ -2324,7 +2319,7 @@ static qboolean CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnima
 
 		//TiM - Calc frame lerp scale here, else the frames
 		//just snap to each other
-		frameLerp = (float)anim->frameLerp + (anim->frameLerp*(1.0f - speedScale));
+		float frameLerp = (float)anim->frameLerp + (anim->frameLerp*(1.0f - speedScale));
 		if ( frameLerp < 1.0f )
 			frameLerp = 1.0f;
 
@@ -2335,7 +2330,7 @@ static qboolean CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnima
 		} else {
 			lf->frameTime = lf->oldFrameTime + frameLerp;//anim->frameLerp;
 		}
-		f = ( lf->frameTime - lf->animationTime ) / frameLerp;//anim->frameLerp;
+		int f = ( lf->frameTime - lf->animationTime ) / frameLerp;//anim->frameLerp;
 		//f *= speedScale;		// adjust for haste, etc
 		if ( f >= anim->numFrames ) {
 			f -= anim->numFrames;
@@ -2706,7 +2701,6 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	int			dir;
 	qboolean	offsetPitch;
 	clientInfo_t* ci;
-	int			i;
 
 	qboolean	LockBodyYaw=qfalse; //RPG-X:TiM
 
@@ -2940,6 +2934,7 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 		if ( cent->currentState.eFlags & EF_TALKING ) {
 			if ( cg.time > ci->nextTalkAngle || (!ci->talkAngles[PITCH] && !ci->talkAngles[YAW] && !ci->talkAngles[ROLL]) ) {
 
+				int	i;
 				for ( i = 0; i < 3; i++ ) {
 					ci->talkAngles[i] = flrandom( -4, 4 );
 				}
@@ -3268,14 +3263,12 @@ model itself
 
 void CG_CalcBeamAlpha( int powerups, beamData_t *beamData ) {
 	float beamAlpha = 1.0;
-	int bTime = 0;
-
 
 	if ( ( powerups & ( 1 << PW_BEAM_OUT ) ) || ( powerups & ( 1 << PW_QUAD ) ) ) {
 		//TiM - SP transporter FX, also base alpha off of phase in transport cycle
 		//bTime = cg.time - beamData->beamTimeParam;
 
-		bTime = cg.time - beamData->beamTimeParam;
+		int bTime = cg.time - beamData->beamTimeParam;
 
 		if (bTime > PLAYER_BEAM_FADE ) {
 			if ( bTime < ( PLAYER_BEAM_FADE + PLAYER_BEAM_FADETIME) ) {

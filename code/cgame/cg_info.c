@@ -502,7 +502,7 @@ ObjectivePrint_Line
 static void ObjectivePrint_Line(int strIndex,int color,centity_t *cent)
 {
 	char *str,*strBegin;
-	int y,pixelLen,charLen;
+	int y,pixelLen;
 	char holdText[1024], holdText2[2];
 	char finalText[MAX_OBJ_LENGTH];
 	int len, maxPixLength, charHeight;
@@ -547,7 +547,7 @@ static void ObjectivePrint_Line(int strIndex,int color,centity_t *cent)
 	else
 	{
 		pixelLen = 0;
-		charLen = 0;
+		int charLen = 0;
 		holdText2[1] = '\0';
 		strBegin = str;
 
@@ -601,7 +601,7 @@ static void ObjectivePrint_Line(int strIndex,int color,centity_t *cent)
 static int Objective_LineCnt(int strIndex,centity_t *cent)
 {
 	char *str,*strBegin;
-	int pixelLen,charLen;
+	int pixelLen;
 	char holdText[1024], holdText2[2];
 	char finalText[MAX_OBJ_LENGTH];
 	int len, maxPixLength;
@@ -629,7 +629,7 @@ static int Objective_LineCnt(int strIndex,centity_t *cent)
 	else
 	{
 		pixelLen = 0;
-		charLen = 0;
+		int charLen = 0;
 		holdText2[1] = '\0';
 		strBegin = str;
 

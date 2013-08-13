@@ -39,9 +39,7 @@ void FX_PhaserFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean spar
 {
 	refEntity_t		beam;
 	sfxHandle_t		sfx;
-	float			size;
 	vec3_t			velocity;
-	int				sparks;
 	vec3_t			rgb = { 1,0.9,0.6}, rgb2={1,0.3,0};
 
 	//vec3_t			rgb3 = { 1.0, 1.0, 1.0 };
@@ -152,10 +150,10 @@ void FX_PhaserFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean spar
 	// "Fun" sparks...  Not when empty.
 	if ( spark && !empty)
 	{
-		sparks = (rand() & 1) + 1;
+		int sparks = (rand() & 1) + 1;
 		for(;sparks>0;sparks--)
 		{	
-			size = 0.2f + (random() * 0.4);
+			float size = 0.2f + (random() * 0.4);
 			FXE_Spray( normal, 200, 75, 0.8f, velocity);
 			if (rand() & LEF_USE_COLLISION)
 			{	// This spark bounces.
@@ -183,7 +181,6 @@ void FX_PhaserAltFire( vec3_t start, vec3_t end, vec3_t normal, qboolean spark, 
 {
 	float		scale = flrandom(13.0f, 17.0f), scale2 = flrandom(2.0f, 6.0f);
 	vec3_t		vel, diff, end2;
-	int			i = 0, sparks = 0;
 	refEntity_t	beam;
 	vec3_t		rgb = { 1,0.6,0.5}, rgb2={1,0.3,0};
 	float		len;
@@ -325,12 +322,13 @@ void FX_PhaserAltFire( vec3_t start, vec3_t end, vec3_t normal, qboolean spark, 
 	{
 		// kef -- fixme. dunno what the deal is with this velocity vector
 		VectorClear(vel);
-		sparks = (rand() & 3) + 1;
+		int sparks = (rand() & 3) + 1;
 
 		// Set random starting pos...
 		end2[0] = flrandom(-1.0, 1.0) + end[0];
 		end2[1] = flrandom(-1.0, 1.0) + end[1];
 		end2[2] = flrandom(-1.0, 1.0) + end[2];
+		int 1;
 		for( i = 0; i < sparks; i++ )
 		{	
 			scale = 0.5f + (random() * 0.5);

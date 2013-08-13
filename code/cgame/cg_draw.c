@@ -1857,7 +1857,6 @@ CG_DrawSelfdestructTimer
 */
 static float CG_DrawSelfdestructTimer( void ) {
 	char		*s;
-	int			w;
 	int msec = cg.selfdestructTime - cg.time;
 
 	if (msec > 0){
@@ -1869,7 +1868,7 @@ static float CG_DrawSelfdestructTimer( void ) {
 
 		s = va( "%i:%i%i.%i", mins, tens, seconds, remainder );
 	
-		w = UI_ProportionalStringWidth("SELF-DESTRUCT IN",UI_SMALLFONT);
+		int w = UI_ProportionalStringWidth("SELF-DESTRUCT IN",UI_SMALLFONT);
 		UI_DrawProportionalString(320 - (w / 2), 10, "SELF-DESTRUCT IN", UI_SMALLFONT, colorTable[CT_RED]);
 	
 		w = UI_ProportionalStringWidth(s,UI_SMALLFONT);

@@ -83,8 +83,6 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage, int shielddamage
 	float		scale;
 	vec3_t		dir;
 	vec3_t		angles;
-	float		dist;
-	float		yaw, pitch;
 
 	// show the attacking player's head and name in corner
 	cg.attackerTime = cg.time;
@@ -112,8 +110,8 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage, int shielddamage
 		cg.v_dmg_pitch = -kick;
 	} else {
 		// positional
-		pitch = pitchByte / 255.0 * 360;
-		yaw = yawByte / 255.0 * 360;
+		float pitch = pitchByte / 255.0 * 360;
+		float yaw = yawByte / 255.0 * 360;
 
 		angles[PITCH] = pitch;
 		angles[YAW] = yaw;
@@ -122,14 +120,14 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage, int shielddamage
 		AngleVectors( angles, dir, NULL, NULL );
 		VectorSubtract( vec3_origin, dir, dir );
 
-		front = DotProduct (dir, cg.refdef.viewaxis[0] );
-		left = DotProduct (dir, cg.refdef.viewaxis[1] );
-		up = DotProduct (dir, cg.refdef.viewaxis[2] );
+		float front = DotProduct (dir, cg.refdef.viewaxis[0] );
+		float left = DotProduct (dir, cg.refdef.viewaxis[1] );
+		float up = DotProduct (dir, cg.refdef.viewaxis[2] );
 
 		dir[0] = front;
 		dir[1] = left;
 		dir[2] = 0;
-		dist = VectorLength( dir );
+		float dist = VectorLength( dir );
 		if ( dist < 0.1 ) {
 			dist = 0.1;
 		}

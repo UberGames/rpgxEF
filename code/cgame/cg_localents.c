@@ -1113,12 +1113,10 @@ CG_AddFragment
 void CG_AddFragment( localEntity_t *le ) {
 	vec3_t	newOrigin;
 	trace_t	trace;
-	int k;
 
 	if ( le->pos.trType == TR_STATIONARY ) {
 		// sink into the ground if near the removal time
 		int		t;
-		float	oldZ;
 		
 		t = le->endTime - cg.time;
 		if ( t < SINK_TIME ) {
@@ -1127,7 +1125,7 @@ void CG_AddFragment( localEntity_t *le ) {
 			// into the ground
 			VectorCopy( le->refEntity.origin, le->refEntity.lightingOrigin );
 			le->refEntity.renderfx |= RF_LIGHTING_ORIGIN;
-			oldZ = le->refEntity.origin[2];
+			float oldZ = le->refEntity.origin[2];
 			le->refEntity.origin[2] -= 16 * ( 1.0 - (float)t / SINK_TIME );
 			trap_R_AddRefEntityToScene( &le->refEntity );
 			le->refEntity.origin[2] = oldZ;
@@ -1152,6 +1150,7 @@ void CG_AddFragment( localEntity_t *le ) {
 
 			BG_EvaluateTrajectory( &le->angles, cg.time, angles );
 			AnglesToAxis( angles, le->refEntity.axis );
+			int k;
 			for(k = 0; k < 3; k++)
 			{
 				VectorScale(le->refEntity.axis[k], le->data.fragment.radius, le->refEntity.axis[k]);
