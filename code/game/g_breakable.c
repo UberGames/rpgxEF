@@ -425,7 +425,6 @@ custom explosion effect/sound?
 void SP_misc_model_breakable( gentity_t *ent ) 
 {
 	char			damageModel[MAX_QPATH];
-	int32_t			len = 0;
 	entityShared_t*	eShared = &ent->r;
 	entityState_t*	eState = &ent->s;
 	
@@ -455,7 +454,7 @@ void SP_misc_model_breakable( gentity_t *ent )
 
 
 	if(ent->model2 == NULL) {
-		len = strlen( ent->model ) - 4;
+		int32_t len = strlen( ent->model ) - 4;
 		strncpy( damageModel, ent->model, len );
 		damageModel[len] = 0;	//chop extension
 	}
@@ -541,12 +540,12 @@ void ammo_fade_out( gentity_t *ent )
 //! Think function for the ammo station
 void ammo_think( gentity_t *ent )
 {
-	int32_t dif = 0;
-	int32_t	i = 0;
 
 	// Still has ammo to give
 	if ( ent->enemy && ent->enemy->client )
 	{
+		int32_t i = 0;
+
 		//assume that we'll finish here, if we don't, it will be overridden
 		ent->use = ammo_use;	
 		ent->think = 0;//qvm complains about using NULL
@@ -556,7 +555,7 @@ void ammo_think( gentity_t *ent )
 			
 			if ( (ent->enemy->client->ps.stats[STAT_WEAPONS]&( 1 << i )) ) {
 				//has this weapon
-				dif = Max_Weapon(i) - ent->enemy->client->ps.ammo[i];//needs ammo?
+				int32_t dif = Max_Weapon(i) - ent->enemy->client->ps.ammo[i];//needs ammo?
 
 				if (dif > 2 ) {
 					dif= 2;
@@ -595,8 +594,6 @@ void ammo_think( gentity_t *ent )
 //! use function for a ammo station
 void ammo_use( gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-	int32_t dif = 0;
-	int32_t	i = 0;
 
 	if (self->think != NULL) {
 		if (self->use != NULL) {
@@ -604,7 +601,11 @@ void ammo_use( gentity_t *self, gentity_t *other, gentity_t *activator)
 			self->nextthink = -1;
 		}
 	} else {
+		int32_t dif = 0;
+
 		if ( other && other->client ) {
+			int32_t i = 0;
+
 			for ( ; i < WP_NUM_WEAPONS && dif == 0; i++ ) {
 				//go through all weapons
 				

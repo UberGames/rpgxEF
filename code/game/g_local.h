@@ -2808,7 +2808,7 @@ void trap_UnlinkEntity( gentity_t* ent );
 *
 *	The size of the box is defined by mins and maxs.
 */
-int trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int* entityList, int maxcount );
+int trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int32_t* entityList, int maxcount );
 
 /**
 *	Checks if a entity is in contact with a defined box.
