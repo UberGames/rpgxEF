@@ -445,7 +445,6 @@ void CG_DrawLensFlare( lensFlare_t *flare )
 	int		h = flare->h1;
 	float	x, y, streakX, streakY; 
 	int		xCart, yCart;
-	int		i;
 	vec4_t	color, reflecColor, strkColor;
 	int		xMax, yMax;
 	vec3_t	distDif, black = {0.0, 0.0, 0.0};
@@ -545,6 +544,7 @@ void CG_DrawLensFlare( lensFlare_t *flare )
 
 	//Lens Reflections - those cool circly bits that go in the opposite direction of the flare
 	if ( reflecAlpha != 0.0 ) {//Sheez, only do this if we really WANT it O_o
+		int		i;
 		for( i = 0; i < 10; i++ ) {
 		
 			//if they wanted the cool photoshoppy style reflections
@@ -664,7 +664,6 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 	clientInfo_t	*ci;
 	playerState_t	*ps;
 	float		value;
-	float			len;
 	vec3_t			origin;
 	vec3_t			mins, maxs;
 
@@ -688,7 +687,7 @@ void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t head
 
 		// calculate distance so the head nearly fills the box
 		// assume heads are taller than wide
-		len = 0.7 * ( maxs[2] - mins[2] );		
+		float len = 0.7 * ( maxs[2] - mins[2] );		
 		origin[0] = len / 0.268;	// len / tan( fov/2 )
 
 		// allow per-model tweaking
@@ -721,7 +720,6 @@ Used for both the status bar and the scoreboard
 */
 void CG_DrawFlagModel( float x, float y, float w, float h, int team ) {
 	qhandle_t		cm;
-	float			len;
 	vec3_t			origin, angles;
 	vec3_t			mins, maxs;
 
@@ -739,7 +737,7 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team ) {
 
 		// calculate distance so the flag nearly fills the box
 		// assume heads are taller than wide
-		len = 0.5 * ( maxs[2] - mins[2] );		
+		float len = 0.5 * ( maxs[2] - mins[2] );		
 		origin[0] = len / 0.268;	// len / tan( fov/2 )
 
 		angles[YAW] = 60 * sin( cg.time / 2000.0 );;
@@ -759,7 +757,7 @@ I dont know who commented this out but it's going back in ;)
 */
 static int CG_DrawStatusBarHead( float x ) {
 	vec3_t		angles;
-	float		size, stretch;
+	float		size;
 	float		frac;
 
 	VectorClear( angles );
@@ -768,7 +766,7 @@ static int CG_DrawStatusBarHead( float x ) {
 		frac = (float)(cg.time - cg.damageTime ) / DAMAGE_TIME;
 		size = ICON_SIZE * 1.25 * ( 1.5 - frac * 0.5 );
 
-		stretch = size - ICON_SIZE * 1.25;
+		float stretch = size - ICON_SIZE * 1.25;
 		// kick in the direction of damage
 		x -= stretch * 0.5 + cg.damageX * stretch * 0.5;
 
@@ -865,7 +863,6 @@ static int CG_DrawHealth(centity_t	*cent)
 	int         health_barwidth;
 	vec_t       *health_txtcolor = NULL;
 	int			health_txteffect = 0;
-	int			x, y;
 
 	ps = &cg.snap->ps;
 
@@ -910,8 +907,8 @@ static int CG_DrawHealth(centity_t	*cent)
 
 		return health_barwidth;
 	} else {
-		x = 3;
-		y = 435;
+		int x = 3;
+		int y = 435;
 
 		//Draw the text
 		UI_DrawProportionalString(x + 46, y + 11, health_str, health_txteffect, health_txtcolor);
@@ -968,7 +965,6 @@ static void CG_DrawStatusBar( void )
 	vec3_t		angles;
 	int y=0;
 	vec4_t	whiteA;
-	int		x, z, i, h, yZ;
 	vec3_t	tmpVec, eAngle, forward, dAngle;
 	int healthBarWidth;
 
@@ -1021,7 +1017,7 @@ static void CG_DrawStatusBar( void )
 	//
 	if(cg.predictedPlayerState.powerups[PW_EVOSUIT] || cg.predictedPlayerState.powerups[PW_FLIGHT] || cg.predictedPlayerState.powerups[PW_INVIS]){
 		//RPG-X | Phenix | 08/06/2005
-		yZ = 478 - SMALLCHAR_HEIGHT;
+		int yZ = 478 - SMALLCHAR_HEIGHT;
 		// UI_BIGFONT
 		//DEBUG
 		if(cg.predictedPlayerState.powerups[PW_EVOSUIT]) {
@@ -1052,21 +1048,22 @@ static void CG_DrawStatusBar( void )
 		vec4_t	radColor;
 
 		CG_DrawPic(40, 100, 100, 100, cgs.media.radarShader);
+		int i;
 		for (i = 0; i < cg.snap->numEntities; i++) // Go through all entities in VIS range
 		{
 			if ( cg.snap->entities[i].eType == ET_PLAYER ) // If the Entity is a Player
 			{
 				// Calculate How Far Away They Are
-				x = (cg.snap->entities[i].pos.trBase[0] - cg.predictedPlayerState.origin[0]);
+				int x = (cg.snap->entities[i].pos.trBase[0] - cg.predictedPlayerState.origin[0]);
 				y = (cg.snap->entities[i].pos.trBase[1] - cg.predictedPlayerState.origin[1]);
-				z = (cg.snap->entities[i].pos.trBase[2] - cg.predictedPlayerState.origin[2]);
+				int z = (cg.snap->entities[i].pos.trBase[2] - cg.predictedPlayerState.origin[2]);
 				tmpVec[0] = x;
 				tmpVec[1] = y;
 				tmpVec[2] = 0.0;
 
 				// Convert Vector to Angle
 				vectoangles(tmpVec, eAngle);
-				h = sqrt((x*x) + (y*y)); // Get Range
+				int h = sqrt((x*x) + (y*y)); // Get Range
 
 				// We only Want "YAW" value
 				dAngle[0] = 0.0;
@@ -1251,11 +1248,8 @@ CG_DrawFPS
 #define	FPS_FRAMES	4
 static float CG_DrawFPS( float y ) {
 	char		*s;
-	int			w;
 	static int	previousTimes[FPS_FRAMES];
 	static int	index;
-	int		i, total;
-	int		fps;
 	static	int	previous;
 	int		t, frameTime;
 
@@ -1269,17 +1263,17 @@ static float CG_DrawFPS( float y ) {
 	index++;
 	if ( index > FPS_FRAMES ) {
 		// average multiple frames together to smooth changes out a bit
-		total = 0;
+		int total = 0, i;
 		for ( i = 0 ; i < FPS_FRAMES ; i++ ) {
 			total += previousTimes[i];
 		}
 		if ( !total ) {
 			total = 1;
 		}
-		fps = 1000 * FPS_FRAMES / total;
+		int fps = 1000 * FPS_FRAMES / total;
 
 		s = va( "%ifps", fps );
-		w = UI_ProportionalStringWidth(s,UI_BIGFONT);
+		int w = UI_ProportionalStringWidth(s,UI_BIGFONT);
 		//RPG-X | Phenix | 08/06/2005
 		// Changed "- w" to "- (w + 50)" to account for lagometer
 		if ( !cg_lagometer.integer ) {
@@ -1864,17 +1858,14 @@ CG_DrawSelfdestructTimer
 static float CG_DrawSelfdestructTimer( void ) {
 	char		*s;
 	int			w;
-	int			mins, tens, seconds, remainder;
-	int			msec;
-
-	msec = cg.selfdestructTime - cg.time;
+	int msec = cg.selfdestructTime - cg.time;
 
 	if (msec > 0){
 
-		mins = msec / 60000;
-		tens = (msec - (mins * 60000)) / 10000;
-		seconds = (msec - (mins * 60000) - (tens * 10000)) / 1000;
-		remainder = msec - (mins * 60000) - (tens * 10000) - (seconds * 1000);
+		int mins = msec / 60000;
+		int tens = (msec - (mins * 60000)) / 10000;
+		int seconds = (msec - (mins * 60000) - (tens * 10000)) / 1000;
+		int remainder = msec - (mins * 60000) - (tens * 10000) - (seconds * 1000);
 
 		s = va( "%i:%i%i.%i", mins, tens, seconds, remainder );
 	
@@ -2597,7 +2588,6 @@ CG_ScanForCrosshairEntity
 static void CG_ScanForCrosshairEntity( void ) {
 	trace_t		trace;
 	vec3_t		start, end;
-	int			content;
 	vec3_t		pitchConstraint, df_f;
 
 	VectorCopy( cg.predictedPlayerState.origin, start ); //cg.refdef.vieworg
@@ -2626,7 +2616,7 @@ static void CG_ScanForCrosshairEntity( void ) {
 		}
 
 		// if the player is in fog, don't show it
-		content = trap_CM_PointContents( trace.endpos, 0 );
+		int content = trap_CM_PointContents( trace.endpos, 0 );
 		if ( content & CONTENTS_FOG ) {
 			return;
 		}
@@ -3108,7 +3098,6 @@ static void CG_DrawZoomMask( void )
 	float		amt = 1, size, /*val,*/ start_x, start_y;
 	int			width, height, i;
 	vec4_t		color1;
-	int			x, y;
 
 	//TiM: New system. :)  Base zoom on current active weapon. :)
 	if ( !(cg.snap->ps.weapon == WP_6 || cg.snap->ps.weapon == WP_7) ) 
@@ -3205,6 +3194,7 @@ static void CG_DrawZoomMask( void )
 		}
 
 		// Convert zoom and view axis into some numbers to throw onto the screen
+		int			x, y;
 		if ( cg.snap->ps.weapon == WP_7 ) {
 			x = 74;
 			y = 340;

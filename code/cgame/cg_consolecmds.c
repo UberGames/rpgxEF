@@ -385,7 +385,6 @@ void CG_LocEdit_f(void) {
 	char path[MAX_QPATH];
 	char buffer[MAX_STRING_CHARS];
 	const char *argptr;
-	int  i;
 
 	argptr = CG_Argv(1);
 
@@ -407,7 +406,7 @@ void CG_LocEdit_f(void) {
 
 		if(f) {
 			if((argptr = CG_Argv(2)) != NULL) {
-				i = atoi(argptr);
+				int i = atoi(argptr);
 				if(i) {
 					trap_FS_Write("LocationsList2\n", 15, f);
 				} else {
