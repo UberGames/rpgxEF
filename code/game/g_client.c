@@ -1362,6 +1362,8 @@ char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) 
 			
 			//Check to see if this player already connected on this server
 			if ( (rpg_renamedPlayers.integer != 0) && ((ent->r.svFlags & SVF_BOT) == 0) ) {
+				int32_t i = 0;
+
 				for ( i = 0; i < MAX_RECON_NAMES; i++ ) {
 					if ( g_reconData[i].previousName[0] == 0 ) {
 						continue;
