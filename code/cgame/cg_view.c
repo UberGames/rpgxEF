@@ -441,6 +441,7 @@ Looks somewhat similar to Target Damp
 static void CG_UpdateThirdPersonCameraDamp ( void ) {
 	trace_t	tr;
 	vec3_t	locationDiff;
+	float dampFactor;
 
 	//Initialise our goal angle
 	CG_CalcIdealThirdPersonViewLocation();
@@ -460,7 +461,7 @@ static void CG_UpdateThirdPersonCameraDamp ( void ) {
 		//The JKA code says these statments are to get it to damp less the more u look up.
 		//Makes sense. Still looking how tho lol
 		pitch /= 115.0; //magic number I guess lol.
-		float dampFactor = (1.0-cg_thirdPersonCameraDamp.value) * ( pitch * pitch );
+		dampFactor = (1.0-cg_thirdPersonCameraDamp.value) * ( pitch * pitch );
 		
 		dampFactor += cg_thirdPersonCameraDamp.value;		
 
