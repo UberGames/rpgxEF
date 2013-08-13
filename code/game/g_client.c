@@ -1304,6 +1304,7 @@ char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) 
 			client->ps.persistant[PERS_SCORE] = 1;
 		} else {
 			int32_t tmpScore = 0;
+			int32_t i = 0;
 
 			newClass = Info_ValueForKey (userinfo, "ui_playerClass" );
 			newRank	= Info_ValueForKey (userinfo, "ui_playerRank" );
