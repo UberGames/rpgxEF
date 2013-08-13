@@ -1206,8 +1206,6 @@ char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) 
 	gentity_t*	ent = NULL;
 	vmCvar_t	mapname;
 	vmCvar_t	sv_hostname;
-	int32_t		tmpScore = 0; //Without these, tonnes of proverbial shyte hits the fan if a bot connects O_o
-	int32_t		i = 0;
 	qboolean	changeRank = qfalse;
 	
 	ent = &g_entities[ clientNum ];
@@ -1247,6 +1245,7 @@ char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) 
 	if ( rpg_uniqueNames.integer != 0 && !isBot ) {
 		char name[36];
 		char oldName[36];
+		int32_t i = 0;
 
 		memset(name, 0, sizeof(name));
 		memset(oldName, 0, sizeof(oldName));
@@ -1304,6 +1303,8 @@ char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) 
 			client->sess.sessionClass = 0;
 			client->ps.persistant[PERS_SCORE] = 1;
 		} else {
+			int32_t tmpScore = 0;
+
 			newClass = Info_ValueForKey (userinfo, "ui_playerClass" );
 			newRank	= Info_ValueForKey (userinfo, "ui_playerRank" );
 
@@ -2518,11 +2519,12 @@ static void G_Client_LocationsMessage( gentity_t *ent ) {
 
 //TiM - Modified to work with RPG-X
 void G_Client_CheckClientStatus(void) {
-	int32_t		i = 0;
 	gentity_t*	loc = NULL;
 	gentity_t*	ent = NULL;
 
 	if (level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME) {
+		int32_t i = 0;
+
 		level.lastTeamLocationTime = level.time;
 
 		for ( ; i < g_maxclients.integer; i++) {
@@ -2659,10 +2661,8 @@ FIXME: for elimination, the last man standing must be ranked first
 ============
 */
 void G_Client_CalculateRanks( qboolean fromExit ) {
-	int		i;
-	int		rank;
-	int		score;
-	int		newScore;
+	int32_t	i = 0;
+
 	gclient_t	*cl;
 
 	level.follow1 = -1;
@@ -2671,7 +2671,7 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 	level.numNonSpectatorClients = 0;
 	level.numPlayingClients = 0;
 	level.numVotingClients = 0;		// don't count bots
-	for ( i = 0 ; i < level.maxclients ; i++ ) {
+	for ( ; i < level.maxclients ; i++ ) {
 		if ( level.clients[i].pers.connected != CON_DISCONNECTED ) {
 			level.sortedClients[level.numConnectedClients] = i;
 			level.numConnectedClients++;
@@ -2712,9 +2712,11 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 			}
 		}
 	} else {
-		rank = -1;
-		score = 0;
+		int32_t rank = -1;
+		int32_t score = 0;
 		for ( i = 0;  i < level.numPlayingClients; i++ ) {
+			int32_t newScore = 0;
+			
 			cl = &level.clients[ level.sortedClients[i] ];
 			newScore = cl->ps.persistant[PERS_SCORE];
 			if ( i == 0 || newScore != score ) {
