@@ -328,7 +328,7 @@ void FX_PhaserAltFire( vec3_t start, vec3_t end, vec3_t normal, qboolean spark, 
 		end2[0] = flrandom(-1.0, 1.0) + end[0];
 		end2[1] = flrandom(-1.0, 1.0) + end[1];
 		end2[2] = flrandom(-1.0, 1.0) + end[2];
-		int 1;
+		int i;
 		for( i = 0; i < sparks; i++ )
 		{	
 			scale = 0.5f + (random() * 0.5);
