@@ -1172,8 +1172,6 @@ Fixed fov at intermissions, otherwise account for fov variable and zooms.
 
 static int CG_CalcFov( void ) {
 	float	x;
-	float	phase;
-	float	v;
 	int		contents;
 	float	fov_x, fov_y;
 	int		inwater;

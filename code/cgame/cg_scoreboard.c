@@ -373,12 +373,6 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 	//char			/**worstEnemy,*/*faveWeapon=0;
 	//float			hcolor[4];
 	//gitem_t *		item;
-	int		inIntermission/*,length*/;
-
-	inIntermission = (
-		   (cg.snap->ps.pm_type==PM_INTERMISSION) 
-		|| (cg.intermissionStarted)
-		|| (cg.predictedPlayerState.pm_type==PM_INTERMISSION)   );
 
 
 	if ( score->client < 0 || score->client >= cgs.maxclients ) 

@@ -2131,6 +2131,7 @@ void CG_NewDecoyInfo( int decoyNum ) {
 
 	//First thing's first.  We need to isolate these into three strings: model, char, skin
 	{
+		int len;
 		//step 1, take the first bit of the string and put it in the charName var.
 		if ( ( temp = strchr( v, '/') ) == NULL ) { //if there's no slash
 			Q_strncpyz( ci->charName, v, sizeof( ci->charName ) ); //just set it
@@ -2154,7 +2155,7 @@ void CG_NewDecoyInfo( int decoyNum ) {
 			}
 		} else {
 			temp++; //bypass the slash
-			int len = strlen(temp);
+			len = strlen(temp);
 			temp2 = strchr( temp, '/' );
 
 			//if there was a model defined, but no skin

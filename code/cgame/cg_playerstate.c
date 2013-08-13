@@ -77,7 +77,6 @@ CG_DamageFeedback
 ==============
 */
 void CG_DamageFeedback( int yawByte, int pitchByte, int damage, int shielddamage ) {
-	float		left, front, up;
 	float		kick;
 	int			health;
 	float		scale;
