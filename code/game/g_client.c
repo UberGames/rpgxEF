@@ -2761,7 +2761,7 @@ void G_Client_CalculateRanks( qboolean fromExit ) {
 	}
 }
 
-void G_Client_UpdateSoundZones() {
+void G_Client_UpdateSoundZones(void) {
 	int32_t i = 0;
 	int32_t b = 0;
 	int32_t entlist[MAX_GENTITIES];
