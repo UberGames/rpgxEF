@@ -448,7 +448,7 @@ static void CG_UpdateThirdPersonCameraDamp ( void ) {
 
 	//If we need to do any damping at all
 	if ( cg_thirdPersonCameraDamp.value != 0.0 ) {
-		float pitch;
+		float pitch,dampFactor;
 
 		//get pitch, and make it all positive.  Direction don't matter here
 		pitch = Q_fabs( cameraFocusAngles[PITCH] );
