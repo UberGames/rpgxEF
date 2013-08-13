@@ -447,7 +447,7 @@ static void CG_UpdateThirdPersonCameraDamp ( void ) {
 
 	//If we need to do any damping at all
 	if ( cg_thirdPersonCameraDamp.value != 0.0 ) {
-		float pitch;
+		float pitch,dampFactor;
 
 		//get pitch, and make it all positive.  Direction don't matter here
 		pitch = Q_fabs( cameraFocusAngles[PITCH] );
@@ -460,7 +460,7 @@ static void CG_UpdateThirdPersonCameraDamp ( void ) {
 		//The JKA code says these statments are to get it to damp less the more u look up.
 		//Makes sense. Still looking how tho lol
 		pitch /= 115.0; //magic number I guess lol.
-		float dampFactor = (1.0-cg_thirdPersonCameraDamp.value) * ( pitch * pitch );
+		dampFactor = (1.0-cg_thirdPersonCameraDamp.value) * ( pitch * pitch );
 		
 		dampFactor += cg_thirdPersonCameraDamp.value;		
 
