@@ -601,9 +601,10 @@ void ammo_use( gentity_t *self, gentity_t *other, gentity_t *activator)
 			self->nextthink = -1;
 		}
 	} else {
+		int32_t dif = 0;
+
 		if ( other && other->client ) {
 			int32_t i = 0;
-			int32_t dif = 0;
 
 			for ( ; i < WP_NUM_WEAPONS && dif == 0; i++ ) {
 				//go through all weapons
