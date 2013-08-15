@@ -441,7 +441,7 @@ Looks somewhat similar to Target Damp
 static void CG_UpdateThirdPersonCameraDamp ( void ) {
 	trace_t	tr;
 	vec3_t	locationDiff;
-	float dampFactor;
+	float dampFactor=0;
 
 	//Initialise our goal angle
 	CG_CalcIdealThirdPersonViewLocation();
