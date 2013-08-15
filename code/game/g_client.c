@@ -1206,7 +1206,6 @@ char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) 
 	gentity_t*	ent = NULL;
 	vmCvar_t	mapname;
 	vmCvar_t	sv_hostname;
-	qboolean	changeRank = qfalse;
 	
 	ent = &g_entities[ clientNum ];
 	if(ent == NULL) {
@@ -1305,6 +1304,7 @@ char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) 
 		} else {
 			int32_t tmpScore = 0;
 			int32_t i = 0;
+			qboolean changeRank = qfalse;
 
 			newClass = Info_ValueForKey (userinfo, "ui_playerClass" );
 			newRank	= Info_ValueForKey (userinfo, "ui_playerRank" );

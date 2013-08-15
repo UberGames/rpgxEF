@@ -981,7 +981,6 @@ Cmd_Team_f
 static void Cmd_Team_f( gentity_t *ent ) {
 	int			oldTeam;
 	char		s[MAX_TOKEN_CHARS];
-	int			j;
 	char		send[100];
 	gentity_t	*other;
 	clientSession_t *sess = &ent->client->sess;
@@ -989,6 +988,8 @@ static void Cmd_Team_f( gentity_t *ent ) {
 	//RPG-X: Redtechie - haha to stupid to change teams!
 	if ( g_classData[sess->sessionClass].isn00b )
 	{
+		int j;
+
 		Com_sprintf (send, sizeof(send), "%s ^7 doesn't know when to quit trying to change teams!", ent->client->pers.netname); 
 
 		for (j = MAX_GENTITIES - 1; j > -1; j--) { // GSIO: change j++ to j--, also why the gell 1023 and not MAX_GENTITIES???
@@ -1066,7 +1067,6 @@ Cmd_Class_f
 static void Cmd_Class_f( gentity_t *ent ) {
 	int			OldScoreclass;
 	char		s[MAX_TOKEN_CHARS];
-	int			j;
 	char		send[100];
 	gentity_t	*other;
 	char		*className;
@@ -1093,6 +1093,8 @@ static void Cmd_Class_f( gentity_t *ent ) {
 	//RPG-X: Redtechie - haha to stupid to change classes!
 	if ( g_classData[sess->sessionClass].isn00b )
 	{
+		int j;
+
 		Com_sprintf (send, sizeof(send), "%s ^7 doesn't know when to quit trying to change classes from n00bie", ent->client->pers.netname); 
 
 		for (j = 0; j < MAX_CLIENTS - 1; j++) { 
@@ -2181,7 +2183,7 @@ Cmd_ForceKill_f					//J2J to others: PLEASE CAN  WE COMMENT THE CODE!!!! :P
 */
 static void Cmd_ForceKill_f( gentity_t *ent ) {
 	int			targetNum;
-	int			j, p;
+	int			j;
 	char		send[80];
 	gentity_t	*target = NULL;
 	gentity_t	*other;
@@ -2211,6 +2213,8 @@ static void Cmd_ForceKill_f( gentity_t *ent ) {
 	}
 
 	if ( targetNum == -1 ) {
+		int p = 0;
+
 		for(p = 0; p < level.maxclients; p++)
 		{
 			target = &g_entities[p];
@@ -2799,7 +2803,6 @@ static void Cmd_disarm_f( gentity_t *ent)
 	gentity_t	*tripwire = NULL;
 	int			foundTripWires[MAX_GENTITIES] = {ENTITYNUM_NONE};
 	int			tripcount = 0;
-	int			i;
 	char		arg[MAX_TOKEN_CHARS];
 
 	//If client isn't in admin class, exit and disallow command.
@@ -2841,6 +2844,8 @@ static void Cmd_disarm_f( gentity_t *ent)
 	}
 
 	if(tripcount != 0){
+		int i = 0;
+
 		for ( i = 0; i < tripcount; i++ )
 		{
 			//remove it... or blow it?
@@ -3153,9 +3158,7 @@ Revive			(RPG-X: RedTechie)
 static void Cmd_Revive_f( gentity_t *ent)
 {
 	char pla_str[50];	//Argument String
-	int targetNum;
 	gentity_t *other;
-	int i;
 	playerState_t *ps;
 	clientPersistant_t *pers;
 
@@ -3196,6 +3199,7 @@ static void Cmd_Revive_f( gentity_t *ent)
 	{
 		//Loop threw all clients
 		int j;
+		int i;
 		gentity_t *sayA;
 		char send[100];
 
@@ -3258,7 +3262,7 @@ static void Cmd_Revive_f( gentity_t *ent)
 		else
 		{
 			//Specific user
-			int j;
+			int targetNum;
 			gentity_t *sayA;
 			char send[100];
 
@@ -3274,6 +3278,8 @@ static void Cmd_Revive_f( gentity_t *ent)
 
 			if( (other && other->client) && (other->health == 1) && (other->client->ps.pm_type == PM_DEAD))
 			{
+				int j = MAX_CLIENTS;
+
 				G_Client_Spawn(other, 1, qtrue);
 
 				ps = &other->client->ps;
