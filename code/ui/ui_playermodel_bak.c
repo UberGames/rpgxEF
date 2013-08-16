@@ -25,7 +25,7 @@
 
 static void PlayerModel_BuildList( void );
 static void PlayerModel_SetMenuItems( void );
-static void PlayerModel_MenuInit(int menuFrom);
+static void PlayerModel_MenuInit(int32_t menuFrom);
 
 static char* playermodel_artlist[] =
 {
@@ -34,7 +34,7 @@ static char* playermodel_artlist[] =
 	NULL
 };
 
-int s_SkinFilter_Names[] =
+int32_t s_SkinFilter_Names[] =
 {
 	MNT_DEFAULT,
 	MNT_BLUE,
@@ -96,7 +96,7 @@ int s_SkinFilter_Names[] =
 typedef struct
 {
 	menuframework_s	menu;
-	int				prevMenu;
+	int32_t				prevMenu;
 	//menubitmap_s	pics[MAX_MODELSPERPAGE];
 	//menubitmap_s	picbuttons[MAX_MODELSPERPAGE];
 	//menubitmap_s	framel;
@@ -138,19 +138,19 @@ typedef struct
 	menutext_s		playername;
 	playerInfo_t	playerinfo;
 
-	int				numChars;
+	int32_t				numChars;
 	char			charNames[MAX_PLAYERCHARS][128];
 	char*			modelNames[MAX_PLAYERMODELS];
 	char*			skinNames[MAX_PLAYERSKINS];
 
-	//int				modelpage;
-	//int				numpages;
+	//int32_t				modelpage;
+	//int32_t				numpages;
 	char			modelData[64];
 	char			modelName[32];
 
-	int				selectedChar;
+	int32_t				selectedChar;
 
-	int				scrollOffset;
+	int32_t				scrollOffset;
 } playermodel_t;
 
 static playermodel_t s_playermodel;
@@ -170,13 +170,13 @@ of elements is calced on init only.  Each
 time we refresh this, we'll need to update ourselves.
 =================
 */
-int PlayerModel_LoadAvailableModels( char* charModels[] ) {
-	int		i;
-	int		numFiles;
+int32_t PlayerModel_LoadAvailableModels( char* charModels[] ) {
+	int32_t		i;
+	int32_t		numFiles;
 	char	fileList[2048]; //Hopefully, this will never be exceed ROFL
 	char*	filePtr;
-	int		fileLen;
-	int		strLen;
+	int32_t		fileLen;
+	int32_t		strLen;
 
 	//Get our num files
 	memset( &fileList, 0, sizeof ( fileList ) );
@@ -216,9 +216,9 @@ fill the skin array with all the skins we found.
 Hoi... this could get complicated... O_o
 ================
 */
-int	PlayerModel_LoadAvailableSkins( char* charSkins[] ) {
-	int				i=0;
-	int				fileLen;
+int32_t	PlayerModel_LoadAvailableSkins( char* charSkins[] ) {
+	int32_t				i=0;
+	int32_t				fileLen;
 	char			fileBuffer[2048];
 	char*			filePtr;
 	fileHandle_t	f;
@@ -280,9 +280,9 @@ So it'll cycle the value of each one up and down.
 ==================
 */
 
-void PlayerModel_OffsetCharList( int* offset ) {
+void PlayerModel_OffsetCharList( int32_t* offset ) {
 	char*	buffer; //intermediate value so performing strupr won't pwn our case sensitive data
-	int		i;
+	int32_t		i;
 
 	if ( *offset < 0 ) {
 		*offset = 0;
@@ -312,8 +312,8 @@ PlayerModel_UpdateGrid
 */
 /*static void PlayerModel_UpdateGrid( void )
 {
-	int	i;
-    int	j;
+	int32_t	i;
+    int32_t	j;
 
 	j = s_playermodel.modelpage * MAX_MODELSPERPAGE;
 	for (i=0; i<PLAYERGRID_ROWS*PLAYERGRID_COLS; i++,j++)
@@ -381,7 +381,7 @@ PlayerModel_UpdateGrid
 PlayerModel_SpinPlayer
 =================
 */
-static void PlayerModel_SpinPlayer( void* ptr, int event)
+static void PlayerModel_SpinPlayer( void* ptr, int32_t event)
 {
 	if ( event == QM_ACTIVATED ) 
 	{
@@ -433,7 +433,7 @@ static void PlayerModel_SaveChanges( void )
 PlayerModel_MenuEvent
 =================
 */
-static void PlayerModel_MenuEvent( void* ptr, int event )
+static void PlayerModel_MenuEvent( void* ptr, int32_t event )
 {
 
 	if (event != QM_ACTIVATED)
@@ -517,10 +517,10 @@ static void PlayerModel_MenuEvent( void* ptr, int event )
 PlayerModel_MenuKey
 =================
 */
-static sfxHandle_t PlayerModel_MenuKey( int key )
+static sfxHandle_t PlayerModel_MenuKey( int32_t key )
 {
 	//menucommon_s*	m;
-	//int				picnum;
+	//int32_t				picnum;
 
 	switch (key)
 	{
@@ -585,13 +585,13 @@ static sfxHandle_t PlayerModel_MenuKey( int key )
 PlayerModel_PicEvent
 =================
 */
-/*static void PlayerModel_PicEvent( void* ptr, int event )
+/*static void PlayerModel_PicEvent( void* ptr, int32_t event )
 {
-	int				modelnum;
-	int				maxlen;
+	int32_t				modelnum;
+	int32_t				maxlen;
 	char*			buffptr;
 	char*			pdest;
-	int				i;
+	int32_t				i;
 
 	if (event != QM_ACTIVATED)
 		return;
@@ -735,17 +735,17 @@ We'll work the rest out later
 */
 static void PlayerModel_BuildList( void )
 {
-	int		numdirs;
-	int		numfiles;
+	int32_t		numdirs;
+	int32_t		numfiles;
 	char	dirlist[8192];
 	char	filelist[2048];
 	//char	skinname[64];
 	char*	dirptr;
 	//char*	fileptr;
-	int		i;
-	//int		j;
-	int		dirlen;
-	//int		filelen;
+	int32_t		i;
+	//int32_t		j;
+	int32_t		dirlen;
+	//int32_t		filelen;
 	//qboolean precache;
 
 	//precache = trap_Cvar_VariableValue("com_buildscript");
@@ -875,8 +875,8 @@ PlayerModel_SetMenuItems
 */
 static void PlayerModel_SetMenuItems( void )
 {
-	int				i;
-	//int				maxlen;
+	int32_t				i;
+	//int32_t				maxlen;
 	//char			modelskin[64];
 	//char*			buffptr;
 	//char*			pdest;
@@ -892,7 +892,7 @@ static void PlayerModel_SetMenuItems( void )
 	if ( ( temp = strchr( UI_Cvar_VariableString("model"), '/' ) ) == NULL ) {
 		Q_strncpyz( s_playermodel.modelName, UI_Cvar_VariableString("model"), sizeof( s_playermodel.modelName ) );
 	} else { 
-		int len;
+		int32_t len;
 //
 		len = strlen( temp );
 		Q_strncpyz( s_playermodel.modelName, UI_Cvar_VariableString("model"), (len - strlen(temp)) + 1 );
@@ -1100,13 +1100,13 @@ static void PlayerModel_MenuDraw (void)
 PlayerModel_MenuInit
 =================
 */
-static void PlayerModel_MenuInit(int menuFrom)
+static void PlayerModel_MenuInit(int32_t menuFrom)
 {
-	int			i;
-	//int			j;
-	//int			k;
-	int			x;
-	int			y;
+	int32_t			i;
+	//int32_t			j;
+	//int32_t			k;
+	int32_t			x;
+	int32_t			y;
 	static char	playername[32];
 	static char	modelname[32];
 	static char	skinname[32];
@@ -1467,7 +1467,7 @@ PlayerModel_Cache
 */
 void PlayerModel_Cache( void )
 {
-	//int	i;
+	//int32_t	i;
 
 	s_playermodel.corner_ll_4_4		= trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_4");
 	s_playermodel.corner_ll_4_18	= trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_18");
@@ -1496,7 +1496,7 @@ void PlayerModel_Cache( void )
 PlayerModel_Cache
 =================
 */
-void UI_PlayerModelMenu(int menuFrom)
+void UI_PlayerModelMenu(int32_t menuFrom)
 {
 	PlayerModel_MenuInit(menuFrom);
 

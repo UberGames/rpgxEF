@@ -25,26 +25,26 @@ typedef struct {
 	menubitmap_s	item_next;
 	menubitmap_s	item_menu;
 
-	int				phase;
-	int				ignoreKeysTime;
-	int				starttime;
-	int				scoreboardtime;
-	int				serverId;
+	int32_t				phase;
+	int32_t				ignoreKeysTime;
+	int32_t				starttime;
+	int32_t				scoreboardtime;
+	int32_t				serverId;
 
-	int				clientNums[MAX_SCOREBOARD_CLIENTS];
-	int				ranks[MAX_SCOREBOARD_CLIENTS];
-	int				scores[MAX_SCOREBOARD_CLIENTS];
+	int32_t				clientNums[MAX_SCOREBOARD_CLIENTS];
+	int32_t				ranks[MAX_SCOREBOARD_CLIENTS];
+	int32_t				scores[MAX_SCOREBOARD_CLIENTS];
 
 	char			placeNames[3][64];
 
-	int				level;
-	int				numClients;
-	int				won;
-	int				numAwards;
-	int				awardsEarned[6];
-	int				awardsLevels[6];
+	int32_t				level;
+	int32_t				numClients;
+	int32_t				won;
+	int32_t				numAwards;
+	int32_t				awardsEarned[6];
+	int32_t				awardsLevels[6];
 	qboolean		playedSound[6];
-	int				lastTier;
+	int32_t				lastTier;
 	sfxHandle_t		winnerSound;
 } postgameMenuInfo_t;
 
@@ -94,7 +94,7 @@ char	*ui_medalSounds[] = {
 UI_SPPostgameMenu_AgainEvent
 =================
 */
-static void UI_SPPostgameMenu_AgainEvent( void* ptr, int event )
+static void UI_SPPostgameMenu_AgainEvent( void* ptr, int32_t event )
 {
 	if (event != QM_ACTIVATED) {
 		return;
@@ -109,8 +109,8 @@ static void UI_SPPostgameMenu_AgainEvent( void* ptr, int event )
 UI_SPPostgameMenu_NextEvent
 =================
 */
-static void UI_SPPostgameMenu_NextEvent( void* ptr, int event ) {
-	int			level;
+static void UI_SPPostgameMenu_NextEvent( void* ptr, int32_t event ) {
+	int32_t			level;
 	const char	*arenaInfo;
 
 
@@ -157,7 +157,7 @@ static void UI_SPPostgameMenu_NextEvent( void* ptr, int event ) {
 UI_SPPostgameMenu_MenuEvent
 =================
 */
-static void UI_SPPostgameMenu_MenuEvent( void* ptr, int event )
+static void UI_SPPostgameMenu_MenuEvent( void* ptr, int32_t event )
 {
 	if (event != QM_ACTIVATED) {
 		return;
@@ -172,7 +172,7 @@ static void UI_SPPostgameMenu_MenuEvent( void* ptr, int event )
 UI_SPPostgameMenu_MenuKey
 =================
 */
-static sfxHandle_t UI_SPPostgameMenu_MenuKey( int key ) {
+static sfxHandle_t UI_SPPostgameMenu_MenuKey( int32_t key ) {
 	if ( uis.realtime < postgameMenuInfo.ignoreKeysTime ) {
 		return 0;
 	}
@@ -191,16 +191,16 @@ static sfxHandle_t UI_SPPostgameMenu_MenuKey( int key ) {
 
 // ____________________________________________________________________ FIX ME!!!!
 /*
-static int medalLocations[6] = {144, 448, 88, 504, 32, 560};
+static int32_t medalLocations[6] = {144, 448, 88, 504, 32, 560};
 
-static void UI_SPPostgameMenu_DrawAwardsMedals( int max ) {
+static void UI_SPPostgameMenu_DrawAwardsMedals( int32_t max ) {
 }
 
 
-static void UI_SPPostgameMenu_DrawAwardsPresentation( int timer ) {
+static void UI_SPPostgameMenu_DrawAwardsPresentation( int32_t timer ) {
 }
 
-static void UI_SPPostgameMenu_MenuDrawScoreLine( int n, int y ) {
+static void UI_SPPostgameMenu_MenuDrawScoreLine( int32_t n, int32_t y ) {
 }
 */
 
@@ -211,7 +211,7 @@ UI_SPPostgameMenu_MenuDraw
 */
 /*
 static void UI_SPPostgameMenu_MenuDraw( void ) {
-	int		serverId;
+	int32_t		serverId;
 	char	info[MAX_INFO_STRING];
 
 	trap_GetConfigString( CS_SYSTEMINFO, info, sizeof(info) );
@@ -322,8 +322,8 @@ UI_SPPostgameMenu_f
 =================
 */
 void UI_SPPostgameMenu_f( void ) {
-	int			playerGameRank;
-//	int			oldFrags, newFrags;
+	int32_t			playerGameRank;
+//	int32_t			oldFrags, newFrags;
 	const char	*arena;
 	char		map[MAX_QPATH];
 	char		info[MAX_INFO_STRING];

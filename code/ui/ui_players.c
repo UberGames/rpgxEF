@@ -21,7 +21,7 @@
 #define COAST_TIME				1000
 
 
-static int			dp_realtime;
+static int32_t			dp_realtime;
 static float		jumpHeight;
 
 //TiM : Bolton Table
@@ -132,7 +132,7 @@ tryagain:
 UI_ForceLegsAnim
 ===============
 */
-static void UI_ForceLegsAnim( playerInfo_t *pi, int anim ) {
+static void UI_ForceLegsAnim( playerInfo_t *pi, int32_t anim ) {
 	pi->legsAnim = ( ( pi->legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 
 	if ( anim == BOTH_JUMP1 ) {
@@ -146,7 +146,7 @@ static void UI_ForceLegsAnim( playerInfo_t *pi, int anim ) {
 UI_SetLegsAnim
 ===============
 */
-static void UI_SetLegsAnim( playerInfo_t *pi, int anim ) {
+static void UI_SetLegsAnim( playerInfo_t *pi, int32_t anim ) {
 	if ( pi->pendingLegsAnim ) {
 		anim = pi->pendingLegsAnim;
 		pi->pendingLegsAnim = 0;
@@ -160,7 +160,7 @@ static void UI_SetLegsAnim( playerInfo_t *pi, int anim ) {
 UI_ForceTorsoAnim
 ===============
 */
-static void UI_ForceTorsoAnim( playerInfo_t *pi, int anim ) {
+static void UI_ForceTorsoAnim( playerInfo_t *pi, int32_t anim ) {
 	pi->torsoAnim = ( ( pi->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 
 	/*.if ( anim == TORSO_GESTURE ) {
@@ -178,7 +178,7 @@ static void UI_ForceTorsoAnim( playerInfo_t *pi, int anim ) {
 UI_SetTorsoAnim
 ===============
 */
-static void UI_SetTorsoAnim( playerInfo_t *pi, int anim ) {
+static void UI_SetTorsoAnim( playerInfo_t *pi, int32_t anim ) {
 	if ( pi->pendingTorsoAnim ) {
 		anim = pi->pendingTorsoAnim;
 		pi->pendingTorsoAnim = 0;
@@ -194,7 +194,7 @@ UI_TorsoSequencing
 ===============
 */
 static void UI_TorsoSequencing( playerInfo_t *pi ) {
-	int		currentAnim;
+	int32_t		currentAnim;
 
 	currentAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
 
@@ -266,7 +266,7 @@ UI_LegsSequencing
 ===============
 */
 static void UI_LegsSequencing( playerInfo_t *pi ) {
-	int		currentAnim;
+	int32_t		currentAnim;
 
 	currentAnim = pi->legsAnim & ~ANIM_TOGGLEBIT;
 
@@ -313,7 +313,7 @@ UI_PositionEntityOnTag
 */
 static void UI_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
 							clipHandle_t parentModel, char *tagName ) {
-	int				i;
+	int32_t				i;
 	orientation_t	lerped;
 	
 	// lerp the tag
@@ -339,7 +339,7 @@ UI_PositionRotatedEntityOnTag
 */
 static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
 							clipHandle_t parentModel, char *tagName ) {
-	int				i;
+	int32_t				i;
 	orientation_t	lerped;
 	vec3_t			tempAxis[3];
 
@@ -364,7 +364,7 @@ static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_
 UI_SetLerpFrameAnimation
 ===============
 */
-static void UI_SetLerpFrameAnimation( playerInfo_t *ci, lerpFrame_t *lf, int newAnimation ) {
+static void UI_SetLerpFrameAnimation( playerInfo_t *ci, lerpFrame_t *lf, int32_t newAnimation ) {
 	animation_t	*anim;
 
 	lf->animationNumber = newAnimation;
@@ -386,7 +386,7 @@ static void UI_SetLerpFrameAnimation( playerInfo_t *ci, lerpFrame_t *lf, int new
 UI_RunLerpFrame
 ===============
 */
-static void UI_RunLerpFrame( playerInfo_t *ci, lerpFrame_t *lf, int newAnimation ) {
+static void UI_RunLerpFrame( playerInfo_t *ci, lerpFrame_t *lf, int32_t newAnimation ) {
 	animation_t	*anim;
 
 	// see if the animation sequence is switching
@@ -412,7 +412,7 @@ static void UI_RunLerpFrame( playerInfo_t *ci, lerpFrame_t *lf, int newAnimation
 		} else {
 			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
 		}
-		int f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
+		int32_t f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
 		if ( f >= anim->numFrames ) {
 			f -= anim->numFrames;
 			if ( anim->loopFrames ) {
@@ -452,8 +452,8 @@ static void UI_RunLerpFrame( playerInfo_t *ci, lerpFrame_t *lf, int newAnimation
 UI_PlayerAnimation
 ===============
 */
-static void UI_PlayerAnimation( playerInfo_t *pi, int *legsOld, int *legs, float *legsBackLerp,
-						int *torsoOld, int *torso, float *torsoBackLerp ) {
+static void UI_PlayerAnimation( playerInfo_t *pi, int32_t *legsOld, int32_t *legs, float *legsBackLerp,
+						int32_t *torsoOld, int32_t *torso, float *torsoBackLerp ) {
 
 	// legs animation
 	pi->legsAnimationTimer -= uis.frametime;
@@ -683,10 +683,10 @@ UI_MachinegunSpinAngle
 ======================
 */
 /*float	UI_MachinegunSpinAngle( playerInfo_t *pi ) {
-	int		delta;
+	int32_t		delta;
 	float	angle;
 	float	speed;
-	int		torsoAnim;
+	int32_t		torsoAnim;
 
 	delta = dp_realtime - pi->barrelTime;
 	if ( pi->barrelSpinning ) {
@@ -719,7 +719,7 @@ UI_MachinegunSpinAngle
 UI_DrawPlayer
 ===============
 */
-void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerInfo_t *pi, int time  ) { //RPG-X : TiM- Origin added
+void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerInfo_t *pi, int32_t time  ) { //RPG-X : TiM- Origin added
 	refdef_t		refdef;
 	refEntity_t		legs;
 	refEntity_t		torso;
@@ -727,7 +727,7 @@ void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerIn
 	refEntity_t		gun;
 	refEntity_t		flash;
 	vec3_t			origin;
-	int				renderfx;
+	int32_t				renderfx;
 	vec3_t			mins = {-16, -24, -24};
 	vec3_t			maxs = {16, 16, 32};
 	float			len;
@@ -767,7 +767,7 @@ void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerIn
 	refdef.width = w;
 	refdef.height = h;
 
-	refdef.fov_x = (int)((float)refdef.width / 640.0f * 10.0f); //RPG-X : TiM- 90.0f //Anyone else noticed how the high FOV value distorted the model horribly in the menus? O_o
+	refdef.fov_x = (int32_t)((float)refdef.width / 640.0f * 10.0f); //RPG-X : TiM- 90.0f //Anyone else noticed how the high FOV value distorted the model horribly in the menus? O_o
 	xx = refdef.width / tan( refdef.fov_x / 360 * M_PI );
 	refdef.fov_y = atan2( refdef.height, xx );
 	refdef.fov_y *= ( 360 / M_PI );
@@ -808,7 +808,7 @@ void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerIn
 	//whup, time to play a random emote
 	if ( pi->randomEmote && uis.realtime > pi->nextEmoteTime ) {
 		//randomly pick an anim
-		int anim = irandom( BOTH_STAND1_RANDOM2, BOTH_STAND1_RANDOM11 );
+		int32_t anim = irandom( BOTH_STAND1_RANDOM2, BOTH_STAND1_RANDOM11 );
 
 		//make sure we can play this emote
 		if ( pi->animations[anim].numFrames > 0 ) {
@@ -991,11 +991,11 @@ UI_ParseAnimationFile
 */
 static qboolean UI_ParseAnimationFile( const char *filename, animation_t *animations ) {
 	char		*text_p, *prev;
-	int			len;
-	int			i;
+	int32_t			len;
+	int32_t			i;
 	char		*token;
 	float		fps;
-	int			skip;
+	int32_t			skip;
 	char		text[20000];
 	fileHandle_t	f;
 
@@ -1175,10 +1175,10 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 	char*			token;
 	char*			textPtr;
 	char			buffer[5000];
-	int				len;
+	int32_t				len;
 	fileHandle_t	f;
-	int				n, i;
-	int				noBlinking = trap_Cvar_VariableValue( "cg_noBlinkingHeads" );
+	int32_t				n, i;
+	int32_t				noBlinking = trap_Cvar_VariableValue( "cg_noBlinkingHeads" );
 
 	if ( ( skinStar = strstr( skinSetFrame, "*" ) ) == NULL )
 	{
@@ -1194,7 +1194,7 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 			Com_sprintf( skinSetName, sizeof( skinSetName ), "%s%s", skinName, skinStar );
 		}
 		//star is at end
-		else if ((int)(skinStar - skinSetFrame)+1 == (int)strlen(skinSetFrame) )
+		else if ((int32_t)(skinStar - skinSetFrame)+1 == (int32_t)strlen(skinSetFrame) )
 		{
 			Q_strncpyz( skinSetName, skinSetFrame, strlen( skinSetFrame ) );
 			Q_strcat( skinSetName, sizeof( skinSetName ), skinName );
@@ -1370,11 +1370,11 @@ a character model.
 qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName, 
 										const char *modelName, const char *skinName ) {
 	fileHandle_t	file;
-	int				file_len;
+	int32_t				file_len;
 	char			charText[20000];
 	char			*textPtr;
 	char			fileName[MAX_QPATH];
-	int				i, n;
+	int32_t				i, n;
 	char			*token;
 	char			legsFileRoute[MAX_QPATH];
 	qboolean		didAnims = qfalse;
@@ -1503,7 +1503,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 				continue;
 			}
 			pi->torsoModel = trap_R_RegisterModel( token );
-			//Com_Printf("Torsomodel passed as %s, %i\n", token, (int)ci->torsoModel);
+			//Com_Printf("Torsomodel passed as %s, %i\n", token, (int32_t)ci->torsoModel);
 
 			if (!pi->torsoModel) {
 				Com_Printf( S_COLOR_RED "ERROR: Unable to load torso model: %s\n", token);
@@ -1694,7 +1694,7 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 	//char		filename[MAX_QPATH];
 	char		*model, *skin;
 	//char		*slash;
-	int			len;
+	int32_t			len;
 
 	pi->torsoModel = 0;
 	pi->headModel = 0;
@@ -1720,7 +1720,7 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 		Q_strncpyz( charName, modelSkinName, sizeof( charName ) ); //just set it
 	} else { //otherwise, isolate the first bit, and copy that
 		len = strlen( modelSkinName );
-		Q_strncpyz( charName, modelSkinName, ((int)len - (int)strlen(model)) + 1 );
+		Q_strncpyz( charName, modelSkinName, ((int32_t)len - (int32_t)strlen(model)) + 1 );
 	}
 	//Com_Printf("%s\n", newInfo.charName);
 
@@ -1749,7 +1749,7 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 			}
 			else {
 				if ( !skin[1] ) {
-					Q_strncpyz( modelName, model, (int)strlen(model) );
+					Q_strncpyz( modelName, model, (int32_t)strlen(model) );
 				}
 			}
 
@@ -1761,7 +1761,7 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 		} else {
 			//*skin++;
 			skin++;
-			Q_strncpyz( modelName, model, ((int)len - (int)strlen(skin)) );
+			Q_strncpyz( modelName, model, ((int32_t)len - (int32_t)strlen(skin)) );
 			Q_strncpyz( skinName, skin, sizeof( skinName ) );
 		}
 
@@ -1867,8 +1867,8 @@ void UI_PlayerInfo_SetModel( playerInfo_t *pi, const char *model ) {
 UI_PlayerInfo_SetInfo
 ===============
 */
-void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNumber, float height, float weight, qboolean chat ) {
-	int			currentAnim;
+void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int32_t legsAnim, int32_t torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNumber, float height, float weight, qboolean chat ) {
+	int32_t			currentAnim;
 	weapon_t	weaponNum;
 
 	pi->chat = chat;

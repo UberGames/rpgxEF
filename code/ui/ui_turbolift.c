@@ -7,7 +7,7 @@
 
 typedef struct
 {
-	int		deckNum;
+	int32_t		deckNum;
 	char	deckDesc[MAX_QPATH];
 } deckData_t;
 
@@ -15,9 +15,9 @@ typedef struct
 typedef struct //static
 {
 	menuframework_s menu;
-	int				maxDecks;
-	int				chosenDeck;
-	int				highLightedDeck;
+	int32_t				maxDecks;
+	int32_t				chosenDeck;
+	int32_t				highLightedDeck;
 	sfxHandle_t		openingVoice;
 	menubitmap_s	quitmenu;
 	menubitmap_s	engage;
@@ -39,9 +39,9 @@ typedef struct //static
 	menubitmap_s	deck16;
 
 	deckData_t		deckData[MAX_DECKS];
-	int				numDecks;
+	int32_t				numDecks;
 
-	int				liftNum;
+	int32_t				liftNum;
 } turbolift_t;
 
 turbolift_t	s_turbolift;
@@ -80,9 +80,9 @@ void UI_HolodeckMenu_Cache (void);
 M_Turbolift_Event
 =================
 */
-static void M_Turbolift_Event (void* ptr, int notification)
+static void M_Turbolift_Event (void* ptr, int32_t notification)
 {
-	int	id;
+	int32_t	id;
 	menubitmap_s	*holdDeck;
 
 	id = ((menucommon_s*)ptr)->id;
@@ -150,7 +150,7 @@ static void M_Turbolift_Event (void* ptr, int notification)
 TurboliftMenu_Key
 =================
 */
-sfxHandle_t TurboliftMenu_Key (int key)
+sfxHandle_t TurboliftMenu_Key (int32_t key)
 {
 	return ( Menu_DefaultKey( &s_turbolift.menu, key ) );
 }
@@ -168,8 +168,8 @@ M_TurboliftMenu_Graphics
 static void M_TurboliftMenu_Graphics (void)
 {
 	menubitmap_s	*holdDeck;
-	int		i,length,xTurboStart;
-	int		numColor,roundColor;
+	int32_t		i,length,xTurboStart;
+	int32_t		numColor,roundColor;
 
 	// Draw the basic screen frame
 
@@ -320,10 +320,10 @@ void UI_TurboliftMenu_Cache (void)
 
 
 //Sorts decks in ascending order
-static int QDECL SortDecks( const void *arg1, const void *arg2 ) 
+static int32_t QDECL SortDecks( const void *arg1, const void *arg2 ) 
 {
-	int	deck1;
-	int	deck2;
+	int32_t	deck1;
+	int32_t	deck2;
 
 	deck1 = ( (deckData_t *)arg1)->deckNum;
 	deck2 = ( (deckData_t *)arg2)->deckNum;
@@ -346,7 +346,7 @@ static int QDECL SortDecks( const void *arg1, const void *arg2 )
 static void UI_TurboliftMenu_LoadDecks( void )
 {
 	char	buffer[MAX_TOKEN_CHARS];
-	int		i;
+	int32_t		i;
 	char	*temp;
 
 	s_turbolift.numDecks = 0;
@@ -385,7 +385,7 @@ static void UI_ManageDeckLoading( void )
 	char			mapRoute[MAX_QPATH];
 	char			info[MAX_TOKEN_CHARS];
 	fileHandle_t	f;
-	int				file_len;
+	int32_t				file_len;
 	char			*textPtr;
 	char			buffer[20000];
 	char			*token;
@@ -468,9 +468,9 @@ TurboliftMenu_Init
 */
 void TurboliftMenu_Init(void)
 {
-	int	y,pad,x;
+	int32_t	y,pad,x;
 	menubitmap_s	*holdDeck;
-	int		i,width;
+	int32_t		i,width;
 
 	UI_ManageDeckLoading();
 
@@ -580,7 +580,7 @@ void TurboliftMenu_Init(void)
 UI_TurboliftMenu
 ===============
 */
-void UI_TurboliftMenu ( int liftNum )
+void UI_TurboliftMenu ( int32_t liftNum )
 {
 	if ( !liftNum )
 		return;

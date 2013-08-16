@@ -19,7 +19,7 @@ typedef struct
 	menuframework_s menu;
 	menutext_s		no;
 	menutext_s		yes;
-	int				slashX;
+	int32_t				slashX;
 } resetMenu_t;
 
 static resetMenu_t	s_reset;
@@ -30,7 +30,7 @@ static resetMenu_t	s_reset;
 Reset_MenuEvent
 =================
 */
-void Reset_MenuEvent(void* ptr, int event) {
+void Reset_MenuEvent(void* ptr, int32_t event) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
@@ -54,7 +54,7 @@ void Reset_MenuEvent(void* ptr, int event) {
 Reset_MenuKey
 =================
 */
-static sfxHandle_t Reset_MenuKey( int key ) {
+static sfxHandle_t Reset_MenuKey( int32_t key ) {
 	switch ( key ) {
 	case K_KP_LEFTARROW:
 	case K_LEFTARROW:
@@ -113,8 +113,8 @@ UI_ResetMenu
 */
 void UI_ResetMenu(void) {
 	uiClientState_t	cstate;
-	int	n1, n2, n3;
-	int	l1, l2, l3;
+	int32_t	n1, n2, n3;
+	int32_t	l1, l2, l3;
 
 	// zero set all our globals
 	memset( &s_reset, 0, sizeof(s_reset) );

@@ -24,9 +24,9 @@ typedef struct {
 
 	menubitmap_s	back;
 
-	int				gametype;
-	int				numBots;
-	int				selectedBot;
+	int32_t				gametype;
+	int32_t				numBots;
+	int32_t				selectedBot;
 	char			*bots[9];
 	char			botNames[9][16];
 } teamOrdersMenuInfo_t;
@@ -50,7 +50,7 @@ static const char *ctfOrders[] =
 */
 
 //you can translate this list
-static int ctfOrders[] = 
+static int32_t ctfOrders[] = 
 {
 	MNT_ORDER_IMLEADER,
 	MNT_ORDER_DEFEND,
@@ -89,7 +89,7 @@ static const char *teamOrders[] =
 };
 */
 
-int teamOrders[] = 
+int32_t teamOrders[] = 
 {
 	MNT_ORDER_IMLEADER,
 	MNT_ORDER_FOLLOW,
@@ -118,7 +118,7 @@ static const char *teamMessages[] =
 UI_TeamOrdersMenu_BackEvent
 ===============
 */
-static void UI_TeamOrdersMenu_BackEvent( void *ptr, int event ) {
+static void UI_TeamOrdersMenu_BackEvent( void *ptr, int32_t event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
@@ -131,7 +131,7 @@ static void UI_TeamOrdersMenu_BackEvent( void *ptr, int event ) {
 UI_TeamOrdersMenu_SetList
 ===============
 */
-static void UI_TeamOrdersMenu_SetList( int id ) {
+static void UI_TeamOrdersMenu_SetList( int32_t id ) {
 	switch( id ) {
 	default:
 	case ID_LIST_BOTS:
@@ -165,11 +165,11 @@ static void UI_TeamOrdersMenu_SetList( int id ) {
 UI_TeamOrdersMenu_Key
 =================
 */
-sfxHandle_t UI_TeamOrdersMenu_Key( int key ) {
+sfxHandle_t UI_TeamOrdersMenu_Key( int32_t key ) {
 	menulist_s	*l;
-	int	x;
-	int	y;
-	int	index;
+	int32_t	x;
+	int32_t	y;
+	int32_t	index;
 
 	l = (menulist_s	*)Menu_ItemAtCursor( &teamOrdersMenuInfo.menu );
 	if( l != &teamOrdersMenuInfo.list ) {
@@ -228,12 +228,12 @@ UI_TeamOrdersMenu_ListDraw
 */
 static void UI_TeamOrdersMenu_ListDraw( void *self ) {
 	menulist_s	*l;
-	int			x;
-	int			y;
-	int			i;
+	int32_t			x;
+	int32_t			y;
+	int32_t			i;
 	float		*color;
 	qboolean	hasfocus;
-	int			style;
+	int32_t			style;
 
 	l = (menulist_s *)self;
 
@@ -276,9 +276,9 @@ static void UI_TeamOrdersMenu_ListDraw( void *self ) {
 UI_TeamOrdersMenu_ListEvent
 ===============
 */
-static void UI_TeamOrdersMenu_ListEvent( void *ptr, int event ) {
-	int		id;
-	int		selection;
+static void UI_TeamOrdersMenu_ListEvent( void *ptr, int32_t event ) {
+	int32_t		id;
+	int32_t		selection;
 	char	message[256];
 
 	if (event != QM_ACTIVATED)
@@ -322,9 +322,9 @@ UI_TeamOrdersMenu_BuildBotList
 */
 static void UI_TeamOrdersMenu_BuildBotList( void ) {
 	uiClientState_t	cs;
-	int		numPlayers;
-	int		isBot;
-	int		n;
+	int32_t		numPlayers;
+	int32_t		isBot;
+	int32_t		n;
 	char	playerTeam=0;
 	char	botTeam;
 	char	info[MAX_INFO_STRING];
@@ -388,7 +388,7 @@ static void UI_TeamOrdersMenu_Draw( void )
 UI_TeamOrdersMenu_Init
 ===============
 */
-static void UI_TeamOrdersMenu_Init(int fromMenu ) 
+static void UI_TeamOrdersMenu_Init(int32_t fromMenu ) 
 {
 	UI_TeamOrdersMenu_Cache();
 
@@ -465,7 +465,7 @@ void UI_TeamOrdersMenu_Cache( void )
 UI_TeamOrdersMenu
 ===============
 */
-void UI_TeamOrdersMenu(int fromMenu ) 
+void UI_TeamOrdersMenu(int32_t fromMenu ) 
 {
 	UI_TeamOrdersMenu_Init(fromMenu);
 	UI_PushMenu( &teamOrdersMenuInfo.menu );
@@ -481,7 +481,7 @@ void UI_TeamOrdersMenu_f( void )
 {
 	uiClientState_t	cs;
 	char	info[MAX_INFO_STRING];
-	int		team;
+	int32_t		team;
 
 	// make sure it's a team game
 	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );

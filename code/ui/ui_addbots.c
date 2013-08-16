@@ -41,11 +41,11 @@ typedef struct {
 	menubitmap_s	go;
 	menubitmap_s	back;
 
-	int				numBots;
-	int				delay;
-	int				baseBotNum;
-	int				selectedBotNum;
-	int				sortedBotNums[MAX_BOTS];
+	int32_t				numBots;
+	int32_t				delay;
+	int32_t				baseBotNum;
+	int32_t				selectedBotNum;
+	int32_t				sortedBotNums[MAX_BOTS];
 	char			botnames[BOTS_VIEWABLE][32];
 } addBotsMenuInfo_t;
 
@@ -57,7 +57,7 @@ static addBotsMenuInfo_t	addBotsMenuInfo;
 UI_AddBotsMenu_BotEvent
 =================
 */
-static void UI_AddBotsMenu_BotEvent( void* ptr, int event ) {
+static void UI_AddBotsMenu_BotEvent( void* ptr, int32_t event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -73,7 +73,7 @@ static void UI_AddBotsMenu_BotEvent( void* ptr, int event ) {
 UI_AddBotsMenu_BackEvent
 =================
 */
-static void UI_AddBotsMenu_BackEvent( /*@unused@*/ void* ptr, int event ) {
+static void UI_AddBotsMenu_BackEvent( /*@unused@*/ void* ptr, int32_t event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -87,7 +87,7 @@ UI_AddBotsMenu_SetBotNames
 =================
 */
 static void UI_AddBotsMenu_SetBotNames( void ) {
-	int			n;
+	int32_t			n;
 	const /*@shared@*/ char	*info;
 
 	for ( n = 0; n < BOTS_VIEWABLE; n++ ) 
@@ -104,7 +104,7 @@ static void UI_AddBotsMenu_SetBotNames( void ) {
 UI_AddBotsMenu_UpEvent
 =================
 */
-static void UI_AddBotsMenu_UpEvent( /*@unused@*/ void* ptr, int event ) {
+static void UI_AddBotsMenu_UpEvent( /*@unused@*/ void* ptr, int32_t event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -121,7 +121,7 @@ static void UI_AddBotsMenu_UpEvent( /*@unused@*/ void* ptr, int event ) {
 UI_AddBotsMenu_DownEvent
 =================
 */
-static void UI_AddBotsMenu_DownEvent( /*@unused@*/ void* ptr, int event ) {
+static void UI_AddBotsMenu_DownEvent( /*@unused@*/ void* ptr, int32_t event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -138,15 +138,15 @@ static void UI_AddBotsMenu_DownEvent( /*@unused@*/ void* ptr, int event ) {
 UI_AddBotsMenu_GetSortedBotNums
 =================
 */
-static int QDECL UI_AddBotsMenu_SortCompare( const void *arg1, const void *arg2 ) {
-	int			num1, num2;
+static int32_t QDECL UI_AddBotsMenu_SortCompare( const void *arg1, const void *arg2 ) {
+	int32_t			num1, num2;
 	const char* info1;
 	const char* info2;
 	const char* name1;
 	const char* name2;
 
-	num1 = *(int *)arg1;
-	num2 = *(int *)arg2;
+	num1 = *(int32_t *)arg1;
+	num2 = *(int32_t *)arg2;
 
 	info1 = UI_GetBotInfoByNumber( num1 );
 	info2 = UI_GetBotInfoByNumber( num2 );
@@ -158,7 +158,7 @@ static int QDECL UI_AddBotsMenu_SortCompare( const void *arg1, const void *arg2 
 }
 
 static void UI_AddBotsMenu_GetSortedBotNums( void ) {
-	int		n;
+	int32_t		n;
 
 	/* initialize the array */
 	for( n = 0; n < addBotsMenuInfo.numBots; n++ ) {
@@ -205,7 +205,7 @@ static void UI_AddBotsMenu_Draw( void )
 UI_AddBotsMenu_Init
 =================
 */
-static int skillNames[] =
+static int32_t skillNames[] =
 {
 MNT_BABYLEVEL,
 MNT_EASYLEVEL,
@@ -215,13 +215,13 @@ MNT_NIGHTMARELEVEL,
 0
 };
 
-static int teamNames1[] = 
+static int32_t teamNames1[] = 
 {
 	MNT_FREE,
 	0
 };
 
-static int teamNames2[] = 
+static int32_t teamNames2[] = 
 {
 	MNT_TEAM_RED,
 	MNT_TEAM_BLUE,
@@ -239,7 +239,7 @@ static char* Game_teamNames2[] =
 	"blue",
 };
 
-static int pClassNames[] = 
+static int32_t pClassNames[] = 
 {
 	MNT_PC_INFILTRATOR,
 	MNT_PC_SNIPER,
@@ -250,7 +250,7 @@ static int pClassNames[] =
 	0
 };
 
-static int pClassNames2[] = 
+static int32_t pClassNames2[] = 
 {
 	MNT_PC_NOCLASS,
 	0
@@ -276,10 +276,10 @@ static char* Game_pClassNames2[] =
 UI_AddBotsMenu_FightEvent
 =================
 */
-static void UI_AddBotsMenu_FightEvent( /*@unused@*/ void* ptr, int event ) {
+static void UI_AddBotsMenu_FightEvent( /*@unused@*/ void* ptr, int32_t event ) {
 	const char	*team;
 	const char	*pclass;
-	int			skill;
+	int32_t			skill;
 
 	if (event != QM_ACTIVATED) {
 		return;
@@ -310,10 +310,10 @@ static void UI_AddBotsMenu_FightEvent( /*@unused@*/ void* ptr, int event ) {
 
 static void UI_AddBotsMenu_Init( void ) 
 {
-	int		n;
-	int		y,x;
-	int		gametype, specialties;
-	int		count;
+	int32_t		n;
+	int32_t		y,x;
+	int32_t		gametype, specialties;
+	int32_t		count;
 	char	info[MAX_INFO_STRING];
 
 	memset(info, 0, sizeof(char) * MAX_INFO_STRING);
@@ -421,7 +421,7 @@ static void UI_AddBotsMenu_Init( void )
 	addBotsMenuInfo.skill.generic.x			= x;
 	addBotsMenuInfo.skill.generic.y			= y;
 	addBotsMenuInfo.skill.generic.id		= ID_SKILL;
-	addBotsMenuInfo.skill.curvalue			= Com_Clamp( 0, 4, (int)trap_Cvar_VariableValue( "g_spSkill" ) - 1 );
+	addBotsMenuInfo.skill.curvalue			= Com_Clamp( 0, 4, (int32_t)trap_Cvar_VariableValue( "g_spSkill" ) - 1 );
 	addBotsMenuInfo.skill.textEnum			= MBT_SKILL;
 	/*addBotsMenuInfo.skill.generic.id		= ID_TEAM;*/
 	addBotsMenuInfo.skill.listnames			= skillNames;

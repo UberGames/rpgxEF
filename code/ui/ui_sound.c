@@ -3,7 +3,7 @@
 #include "ui_local.h"
 
 
-extern int rate_items[];
+extern int32_t rate_items[];
 
 // action identifiers
 #define ID_EFFECTSVOLUME	14
@@ -12,7 +12,7 @@ extern int rate_items[];
 #define ID_A3D				17
 #define ID_RATE				18
 
-static int s_sndquality_Names[] =
+static int32_t s_sndquality_Names[] =
 {
 	MNT_LOW,
 	MNT_HIGH,
@@ -20,7 +20,7 @@ static int s_sndquality_Names[] =
 };
 
 
-extern int s_OffOnNone_Names[];
+extern int32_t s_OffOnNone_Names[];
 
 /*
 =======================================================================
@@ -46,8 +46,8 @@ typedef struct
 	menulist_s			a3d;
 
 	menubitmap_s		back;
-	int					holdSoundQuality;
-	int					a3dtimer;
+	int32_t					holdSoundQuality;
+	int32_t					a3dtimer;
 } soundOptionsInfo_t;
 
 static soundOptionsInfo_t	soundOptionsInfo;
@@ -82,9 +82,9 @@ UI_SoundOptionsMenu_Event
 =================
 */
 
-static void UI_SoundOptionsMenu_Event( void* ptr, int event ) 
+static void UI_SoundOptionsMenu_Event( void* ptr, int32_t event ) 
 {
-	int holdCurvalue;
+	int32_t holdCurvalue;
 
 	if( event != QM_ACTIVATED ) 
 	{
@@ -137,7 +137,7 @@ static void UI_SoundOptionsMenu_Event( void* ptr, int event )
 			trap_Cmd_ExecuteText( EXEC_NOW, "s_disable_a3d\n" );
 		}
 
-		holdCurvalue = (int)trap_Cvar_VariableValue( "s_usingA3D" );
+		holdCurvalue = (int32_t)trap_Cvar_VariableValue( "s_usingA3D" );
 		if ((soundOptionsInfo.a3d.curvalue == 1) && (holdCurvalue !=1))
 		{
 			soundOptionsInfo.a3dtimer = uis.realtime + 10000;
@@ -236,7 +236,7 @@ void M_Sound_MenuDraw (void)
 M_Sound_MenuKey
 =================
 */
-static sfxHandle_t M_Sound_MenuKey( int key )
+static sfxHandle_t M_Sound_MenuKey( int32_t key )
 {
 	return Menu_DefaultKey( &soundOptionsInfo.menu, key );
 }
@@ -263,8 +263,8 @@ SoundMenu_Init
 */
 void SoundMenu_Init(void) 
 {
-	int x,y;
-	int	rate;
+	int32_t x,y;
+	int32_t	rate;
 
 	UI_SoundMenu_Cache();
 
@@ -405,7 +405,7 @@ void SoundMenu_Init(void)
 	soundOptionsInfo.musicvolume.curvalue = trap_Cvar_VariableValue( "s_musicvolume" ) * 10;
 	soundOptionsInfo.quality.curvalue = trap_Cvar_VariableValue( "s_khz" ) != 11;
 	soundOptionsInfo.holdSoundQuality = soundOptionsInfo.quality.curvalue; 
-	soundOptionsInfo.a3d.curvalue = (int)trap_Cvar_VariableValue( "s_usingA3D" );
+	soundOptionsInfo.a3d.curvalue = (int32_t)trap_Cvar_VariableValue( "s_usingA3D" );
 
 	soundOptionsInfo.menu.initialized = qtrue;
 

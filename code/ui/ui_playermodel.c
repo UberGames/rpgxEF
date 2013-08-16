@@ -23,7 +23,7 @@
 
 static void PlayerModel_BuildList( void );
 static void PlayerModel_SetMenuItems( void );
-static void PlayerModel_MenuInit(int menuFrom);
+static void PlayerModel_MenuInit(int32_t menuFrom);
 
 //yes... a lot
 #define MAX_PLAYERCHARS		256
@@ -69,17 +69,17 @@ static void PlayerModel_MenuInit(int menuFrom);
 
 typedef struct
 {
-	int		orgChar;
-	int		orgModel;
-	int		orgSkin;
+	int32_t		orgChar;
+	int32_t		orgModel;
+	int32_t		orgSkin;
 } storedData_t;
 
 typedef struct
 {
 	char	charName[36];
-	int		race;
-	int		gender;
-	int		index;
+	int32_t		race;
+	int32_t		gender;
+	int32_t		index;
 } charData_t;
 
 typedef struct
@@ -87,19 +87,19 @@ typedef struct
 	qboolean		mouseDown;
 	qboolean		doubleStep;
 
-	int				yStart;
+	int32_t				yStart;
 } scrollData_t;
 
 typedef struct
 {
 	char	filterName[32];
-	int		filterIndex;
+	int32_t		filterIndex;
 } filterData_t;
 
 typedef struct
 {
 	menuframework_s	menu;
-	int				prevMenu;
+	int32_t				prevMenu;
 	menubitmap_s	mainmenu;
 	menubitmap_s	back;
 	menubitmap_s	player;
@@ -136,7 +136,7 @@ typedef struct
 	menutext_s		playername;
 	playerInfo_t	playerinfo;
 
-	int				numChars;
+	int32_t				numChars;
 	charData_t		charNames[MAX_PLAYERCHARS]/*[128]*/;
 	char			modelNames[MAX_PLAYERMODELS][32];
 	char			skinNames[MAX_PLAYERMODELS][MAX_PLAYERSKINS][32]; 
@@ -163,14 +163,14 @@ typedef struct
 	//char			raceNames[MAX_RACES][32];
 	filterData_t	raceList[MAX_RACES];
 	char*			raceNames[MAX_RACES];
-	int				numRaces;
+	int32_t				numRaces;
 
 	filterData_t	genderList[MAX_GENDERS];
 	char*			genderNames[MAX_GENDERS];
-	int				numGenders;
+	int32_t				numGenders;
 
-	int				selectedChar;
-	int				scrollOffset;
+	int32_t				selectedChar;
+	int32_t				scrollOffset;
 
 	storedData_t	storedData;		//Original Skin Data
 
@@ -179,8 +179,8 @@ typedef struct
 
 static playermodel_t s_playermodel;
 
-static int QDECL FilterList_Compare( const void *ptr1, const void *ptr2 );
-static int QDECL CharMediaList_Compare( const void *ptr1, const void *ptr2 );
+static int32_t QDECL FilterList_Compare( const void *ptr1, const void *ptr2 );
+static int32_t QDECL CharMediaList_Compare( const void *ptr1, const void *ptr2 );
 static void PlayerModel_DrawLoading( void );
 
 /*
@@ -192,8 +192,8 @@ Mental Note: Study Pointer Arithmetic more....
 =================
 */
 
-static int PlayerModel_CheckInFilter( char* string, filterData_t *filter, int width, int *num ) {
-	int		i=0;
+static int32_t PlayerModel_CheckInFilter( char* string, filterData_t *filter, int32_t width, int32_t *num ) {
+	int32_t		i=0;
 
 	while( filter[i].filterName[0] && i < width ) {
 		if ( !Q_stricmp( filter[i].filterName, string ) ) {
@@ -217,8 +217,8 @@ static int PlayerModel_CheckInFilter( char* string, filterData_t *filter, int wi
 	return i;
 }
 
-//static int PlayerModel_CheckInArray( char* string, void *array, size_t length ) {
-//	int		i=0;
+//static int32_t PlayerModel_CheckInArray( char* string, void *array, size_t length ) {
+//	int32_t		i=0;
 //	char	*str=NULL;
 //
 //	for (i = 0; i < length; i++ ) {
@@ -253,14 +253,14 @@ of elements is calced on init only.  Each
 time we refresh this, we'll need to update ourselves.
 =================
 */
-static int PlayerModel_LoadAvailableModels( void ) {
-	int		i;
-	int		j;
-	int		numFiles;
+static int32_t PlayerModel_LoadAvailableModels( void ) {
+	int32_t		i;
+	int32_t		j;
+	int32_t		numFiles;
 	char	fileList[4096]; //Hopefully, this will never be exceeded ROFL
 	char*	filePtr;
-	int		fileLen;
-	int		strLen;
+	int32_t		fileLen;
+	int32_t		strLen;
 	char*	temp;
 	char	fileRoute[MAX_QPATH];
 
@@ -343,21 +343,21 @@ Hoi... this could get complicated... O_o
 ================
 */
 static void PlayerModel_LoadAvailableSkins( void ) {
-	int				j=0;
-	int				i=0;
-	int				fileLen;
+	int32_t				j=0;
+	int32_t				i=0;
+	int32_t				fileLen;
 	char			fileBuffer[20000];
-	int				numFiles;
+	int32_t				numFiles;
 	char			fileListBuffer[10000];
 	char*			filePtr;
 	fileHandle_t	f;
 	char			filePath[MAX_QPATH];
 	char*			token;
 	char			skinSetFrame[MAX_QPATH];
-	int				strLen;
+	int32_t				strLen;
 	char*			star;
-	int				numSkins=0;
-	int				starFlags;
+	int32_t				numSkins=0;
+	int32_t				starFlags;
 	char			skins[MAX_PLAYERSKINS][64];
 
 	if ( s_playermodel.selectedChar == -1 )
@@ -498,7 +498,7 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 		star = strstr( skinSetFrame, "*" );
 		
 		////star is at the end
-		if ( (int)(star - skinSetFrame) + 1 == (int)strlen(skinSetFrame) )
+		if ( (int32_t)(star - skinSetFrame) + 1 == (int32_t)strlen(skinSetFrame) )
 		{
 			Q_strncpyz( filePath, skinSetFrame, sizeof( filePath ) );
 			filePath[strlen(filePath)-1] = '\0';
@@ -506,7 +506,7 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 			starFlags = 1;
 		}
 		//star is at the front
-		else if ( (int)(star - skinSetFrame) == 0 )
+		else if ( (int32_t)(star - skinSetFrame) == 0 )
 		{
 			star++; //QVMNOTE
 			Q_strncpyz( filePath, star, sizeof( filePath ) );
@@ -535,8 +535,8 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 			{
 				if ( (token = strstr( skins[i], filePath ) ) != NULL ) 
 				{
-					Q_strncpyz( s_playermodel.skinNames[j][numSkins], skins[i], (int)(strlen(skins[i]) - strlen(token))+1 );
-					//Q_strncpyz( s_playermodel.skinNamesUpr[j][numSkins], skins[i], (int)(strlen(skins[i]) - strlen(token))+1 );
+					Q_strncpyz( s_playermodel.skinNames[j][numSkins], skins[i], (int32_t)(strlen(skins[i]) - strlen(token))+1 );
+					//Q_strncpyz( s_playermodel.skinNamesUpr[j][numSkins], skins[i], (int32_t)(strlen(skins[i]) - strlen(token))+1 );
 					numSkins++;
 				}
 			}
@@ -558,7 +558,7 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 	}
 }
 
-static int QDECL CharMediaList_Compare( const void *ptr1, const void *ptr2 )
+static int32_t QDECL CharMediaList_Compare( const void *ptr1, const void *ptr2 )
 {
 	const char *str1, *str2;
 	char chr1, chr2;
@@ -594,10 +594,10 @@ static int QDECL CharMediaList_Compare( const void *ptr1, const void *ptr2 )
 	}
 
 	//based off of their ASCII order.
-	return ((int)chr1 - (int)chr2);
+	return ((int32_t)chr1 - (int32_t)chr2);
 }
 
-static int QDECL FilterList_Compare( const void *ptr1, const void *ptr2 )
+static int32_t QDECL FilterList_Compare( const void *ptr1, const void *ptr2 )
 {
 	const char *str1, *str2;
 	char chr1, chr2;
@@ -627,7 +627,7 @@ static int QDECL FilterList_Compare( const void *ptr1, const void *ptr2 )
 	}
 
 	//based off of their ASCII order.
-	return ((int)chr1 - (int)chr2);
+	return ((int32_t)chr1 - (int32_t)chr2);
 }
 
 /*
@@ -635,9 +635,9 @@ static int QDECL FilterList_Compare( const void *ptr1, const void *ptr2 )
 PlayerModel_PopulateSkinsList
 =================
 */
-static int PlayerModel_PopulateSkinsList ( void ) {
-	int i;
-	int j;
+static int32_t PlayerModel_PopulateSkinsList ( void ) {
+	int32_t i;
+	int32_t j;
 
 	if ( !s_playermodel.skinNames[s_playermodel.charModel.curvalue][0][0] ) {
 		Com_Printf( S_COLOR_RED "ERROR: No valid skins found.\n" );	
@@ -686,9 +686,9 @@ code area. :)
 ==================
 */
 
-static void PlayerModel_OffsetCharList( int* offset ) {
+static void PlayerModel_OffsetCharList( int32_t* offset ) {
 	char*	buffer; //intermediate value so performing strupr won't pwn our case sensitive data
-	int		i;
+	int32_t		i;
 
 	if ( *offset < 0 ) {
 		*offset = 0;
@@ -730,7 +730,7 @@ Rebuild the main list based on the new parameters
 =================
 */
 static void PlayerModel_RebuildCharMenu( void ) {
-	int i;
+	int32_t i;
 	qboolean	raceValid=qfalse;
 	qboolean	genderValid=qfalse;
 
@@ -785,7 +785,7 @@ static void PlayerModel_RebuildCharMenu( void ) {
 PlayerModel_SpinPlayer
 =================
 */
-static void PlayerModel_SpinPlayer( void* ptr, int event)
+static void PlayerModel_SpinPlayer( void* ptr, int32_t event)
 {
 	if ( event == QM_ACTIVATED ) 
 	{
@@ -875,7 +875,7 @@ PlayerModel_SetupScrollBar
 */
 static void PlayerModel_SetupScrollBar( menuaction_s *bar )
 {
-	int height;
+	int32_t height;
 
 	//first make sure it's worth enabling this at all
 	if ( s_playermodel.numChars <= MAX_MENULISTITEMS )
@@ -929,7 +929,7 @@ static void PlayerModel_UpdateScrollBar( menuaction_s *bar )
 PlayerModel_MenuEvent
 =================
 */
-static void PlayerModel_MenuEvent( void* ptr, int event )
+static void PlayerModel_MenuEvent( void* ptr, int32_t event )
 {
 
 	if (event != QM_ACTIVATED)
@@ -1016,8 +1016,8 @@ static void PlayerModel_MenuEvent( void* ptr, int event )
 		case ID_MENUCHAR10:
 		case ID_MENUCHAR11:
 			{
-				int		temp;
-				int		oldChar = s_playermodel.selectedChar;
+				int32_t		temp;
+				int32_t		oldChar = s_playermodel.selectedChar;
 
 				s_playermodel.selectedChar = ( ((menucommon_s*)ptr)->id - ID_MENUCHAR0 ) + s_playermodel.scrollOffset;
 				temp = s_playermodel.selectedChar;
@@ -1079,7 +1079,7 @@ static void PlayerModel_MenuEvent( void* ptr, int event )
 PlayerModel_MenuKey
 =================
 */
-static sfxHandle_t PlayerModel_MenuKey( int key )
+static sfxHandle_t PlayerModel_MenuKey( int32_t key )
 {
 	switch( key )
 	{
@@ -1113,7 +1113,7 @@ static void PlayerModel_DrawPlayer( void *self )
 		return;
 	}
 
-	UI_DrawPlayer( (float)b->generic.x, (float)b->generic.y, (float)b->width, (float)b->height, origin, &s_playermodel.playerinfo, (int)(uis.realtime/1.5) );
+	UI_DrawPlayer( (float)b->generic.x, (float)b->generic.y, (float)b->width, (float)b->height, origin, &s_playermodel.playerinfo, (int32_t)(uis.realtime/1.5) );
 }
 
 /*
@@ -1128,20 +1128,20 @@ We'll work the rest out later
 =================
 */
 
-static int QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2 );
+static int32_t QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2 );
 
 static void PlayerModel_BuildList( void )
 {
-	int			numdirs;
-	int			numfiles;
+	int32_t			numdirs;
+	int32_t			numfiles;
 	char		dirlist[8192];
 	char		filelist[128]; //2048
 	char*		dirptr;
-	int			i, j;
-	int			dirlen;
+	int32_t			i, j;
+	int32_t			dirlen;
 	charData_t	*tempBuff;
-	//int			offset;
-	int			temp;
+	//int32_t			offset;
+	int32_t			temp;
 
 	s_playermodel.selectedChar = -1;
 	s_playermodel.numChars = 0;
@@ -1198,7 +1198,7 @@ static void PlayerModel_BuildList( void )
 				fileHandle_t	f;
 				char			buffer[1024];
 				char*			filePtr;
-				int				fileLength;
+				int32_t				fileLength;
 				char*			token;
 				char			filePath[MAX_QPATH];
 
@@ -1321,10 +1321,10 @@ list based on alphabetical
 name.
 =================
 */
-static int QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2 )
+static int32_t QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2 )
 {
 	char			*chr1, *chr2;
-	int				delta;
+	int32_t				delta;
 
 	//extract the first characters of the name from each entry
 	chr1 = ((charData_t *)ptr1)->charName;
@@ -1335,7 +1335,7 @@ static int QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2 )
 	if ( *chr2 >= 'A' && *chr2 <= 'Z' ) *chr2 += 32;
 
 	//based off of their ASCII order.
-	delta = (int)*chr1 - (int)*chr2;
+	delta = (int32_t)*chr1 - (int32_t)*chr2;
 	
 	//if characters weren't the same
 	if ( delta != 0 )
@@ -1344,7 +1344,7 @@ static int QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2 )
 	//else loop through the rest
 	while ( chr1 && chr2 && delta == 0 )
 	{
-		delta = (int)*chr1 - (int)*chr2;
+		delta = (int32_t)*chr1 - (int32_t)*chr2;
 
 		chr1++;
 		chr2++;
@@ -1360,7 +1360,7 @@ PlayerModel_SetMenuItems
 */
 static void PlayerModel_SetMenuItems( void )
 {
-	int				i;
+	int32_t				i;
 	char*			temp;
 	//char			model[64];
 	char			model[32];
@@ -1380,7 +1380,7 @@ static void PlayerModel_SetMenuItems( void )
 	} 
 	else 
 	{ 
-		int len;
+		int32_t len;
 		char*	tempSkin;
 //
 		len = strlen( temp );
@@ -1491,10 +1491,10 @@ static void PlayerModel_DrawScrollBar( void *self )
 {
 	qboolean		focus;
 	menuaction_s	*bar;
-	int				*y;
-	int				color;
-	int				newY;
-	int				dif;
+	int32_t				*y;
+	int32_t				color;
+	int32_t				newY;
+	int32_t				dif;
 
 	bar = (menuaction_s *)self;
 
@@ -1653,7 +1653,7 @@ void PlayerModelMenu_Graphics (void)
 
 	//paint the selected model white
 	{
-		int i;
+		int32_t i;
 		for ( i = 0; i < MAX_MENULISTITEMS; i++ )
 		{
 			if ( s_playermodel.charMenu[i].textcolor == CT_WHITE && s_playermodel.charMenu[i].textcolor2 == CT_WHITE )
@@ -1694,13 +1694,13 @@ static void PlayerModel_MenuDraw (void)
 PlayerModel_MenuInit
 =================
 */
-static void PlayerModel_MenuInit(int menuFrom)
+static void PlayerModel_MenuInit(int32_t menuFrom)
 {
-	int			i;
-	//int			j;
-	//int			k;
-	int			x;
-	int			y;
+	int32_t			i;
+	//int32_t			j;
+	//int32_t			k;
+	int32_t			x;
+	int32_t			y;
 	static char	playername[32];
 	//static char	modelname[32];
 	//static char	skinname[32];
@@ -2090,7 +2090,7 @@ PlayerModel_Cache
 */
 void PlayerModel_Cache( void )
 {
-	//int	i;
+	//int32_t	i;
 
 	s_playermodel.corner_ll_4_18	= trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_18");
 	s_playermodel.corner_ll_4_4		= trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_4");
@@ -2111,7 +2111,7 @@ static void PlayerModel_DrawLoading( void )
 {
 	//register the corners now
 	qhandle_t cornerPic = trap_R_RegisterShaderNoMip("menu/common/corner_ll_47_18.tga");
-	int	y = 50;
+	int32_t	y = 50;
 
 	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
 
@@ -2136,7 +2136,7 @@ static void PlayerModel_DrawLoading( void )
 PlayerModel_Cache
 =================
 */
-void UI_PlayerModelMenu(int menuFrom)
+void UI_PlayerModelMenu(int32_t menuFrom)
 {
 	//TiM - Spawn a quick "loading" box
 	//Sometimes this gives me the eerie creeps the game froze

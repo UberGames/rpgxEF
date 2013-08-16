@@ -44,7 +44,7 @@ static mods_t	s_mods;
 Mods_MenuEvent
 ===============
 */
-static void Mods_MenuEvent( void *ptr, int event ) 
+static void Mods_MenuEvent( void *ptr, int32_t event ) 
 {
 	if( event != QM_ACTIVATED ) 
 	{
@@ -94,7 +94,7 @@ UI_Mods_LoadModsFromFile
 /*
 static void UI_Mods_LoadModsFromFile( char *filename ) 
 {
-	int				len;
+	int32_t				len;
 	fileHandle_t	f;
 	char			buf[1024];
 
@@ -133,12 +133,12 @@ Mods_LoadMods
 */
 static void Mods_LoadMods( void ) 
 {
-	int		numdirs;
+	int32_t		numdirs;
 	char	dirlist[4096];
 	char	*dirptr;
 	char	*descptr;
-	int		i;
-	int		dirlen;
+	int32_t		i;
+	int32_t		dirlen;
 
 	s_mods.list.itemnames = (const char **)s_mods.descriptionList;
 	s_mods.descriptionPtr = s_mods.description;

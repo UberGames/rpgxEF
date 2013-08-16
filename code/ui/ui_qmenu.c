@@ -38,24 +38,24 @@ static void	Action_Draw( menuaction_s *a );
 // radio button widget
 static void	RadioButton_Init( menuradiobutton_s *rb );
 static void	RadioButton_Draw( menuradiobutton_s *rb );
-static sfxHandle_t RadioButton_Key( menuradiobutton_s *rb, int key );
+static sfxHandle_t RadioButton_Key( menuradiobutton_s *rb, int32_t key );
 
 // slider widget
 static void Slider_Init( menuslider_s *s );
-static sfxHandle_t Slider_Key( menuslider_s *s, int key );
+static sfxHandle_t Slider_Key( menuslider_s *s, int32_t key );
 static void	Slider_Draw( menuslider_s *s );
 
 // spin control widget
 static void	SpinControl_Init( menulist_s *s );
 static void	SpinControl_Draw( menulist_s *s );
-static sfxHandle_t SpinControl_Key( menulist_s *l, int key );
+static sfxHandle_t SpinControl_Key( menulist_s *l, int32_t key );
 
 // text widget
 static void Text_Init( menutext_s *b );
 
 // scrolllist widget
 static void	ScrollList_Init( menulist_s *l );
-sfxHandle_t ScrollList_Key( menulist_s *l, int key );
+sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key );
 
 // proportional text widget
 static void PText_Init( menutext_s *b );
@@ -77,7 +77,7 @@ Text_Init
 */
 static void Text_Init( menutext_s *t )
 {
-	int		x,y,w=0,h;
+	int32_t		x,y,w=0,h;
 	char	buff[512];	
 	char	buff2[512];	
 	char	buff3[512];	
@@ -95,7 +95,7 @@ static void Text_Init( menutext_s *t )
 	}
 	else
 	{
-		int	w2=0,w3=0;
+		int32_t	w2=0,w3=0;
 		// Button text (text can be clicked on)
 		if (t->buttontextEnum)
 		{
@@ -196,7 +196,7 @@ static void Text_Init( menutext_s *t )
 		y = t->generic.y;
 
 
-		int lines = 0;
+		int32_t lines = 0;
 		if (buff2[0] != '\0')
 		{
 			++lines;
@@ -250,8 +250,8 @@ Text_Draw
 //static void Text_Draw( menutext_s *t )
 static void Text_Draw(menuframework_s *menu, menutext_s *t )
 {
-	int		x;
-	int		y,incY;
+	int32_t		x;
+	int32_t		y,incY;
 	char	buff[512];	
 	char	buff2[512];	
 	char	buff3[512];	
@@ -385,8 +385,8 @@ BText_Draw
 */
 static void BText_Draw( menutext_s *t )
 {
-	int		x;
-	int		y;
+	int32_t		x;
+	int32_t		y;
 	float*	color;
 
 	x = t->generic.x;
@@ -407,10 +407,10 @@ PText_Init
 */
 static void PText_Init( menutext_s *t )
 {
-	int	x;
-	int	y;
-	int	w;
-	int	h;
+	int32_t	x;
+	int32_t	y;
+	int32_t	w;
+	int32_t	h;
 	float	sizeScale;
 
 	sizeScale = UI_ProportionalSizeScale( t->style );
@@ -440,10 +440,10 @@ PText_Draw
 */
 static void PText_Draw( menutext_s *t )
 {
-	int		x;
-	int		y;
+	int32_t		x;
+	int32_t		y;
 	float *	color;
-	int		style;
+	int32_t		style;
 
 	x = t->generic.x;
 	y = t->generic.y;
@@ -478,10 +478,10 @@ Bitmap_Init
 */
 void Bitmap_Init( menubitmap_s *b )
 {
-	int	x;
-	int	y;
-	int	w;
-	int	h;
+	int32_t	x;
+	int32_t	y;
+	int32_t	w;
+	int32_t	h;
 
 	x = b->generic.x;
 	y = b->generic.y;
@@ -526,7 +526,7 @@ void Bitmap_Draw( menubitmap_s *b )
 	vec4_t	tempcolor;
 	float*	color;
 	char highlight;
-	int		textStyle;
+	int32_t		textStyle;
 	menuframework_s *menu;
 
 	textStyle = b->textStyle;
@@ -640,7 +640,7 @@ void Bitmap_Draw( menubitmap_s *b )
 	// If there's text to go on top of the bitmap
 	if ((b->textEnum) || (b->textPtr))
 	{
-		int		colorI;
+		int32_t		colorI;
 		// Bitmap is highlighted, use textcolor2
 		if (highlight)
 		{
@@ -666,7 +666,7 @@ void Bitmap_Draw( menubitmap_s *b )
 		// Is there a 2nd line of button text?
 		if (b->textEnum2)
 		{
-			int incY;
+			int32_t incY;
 			if (textStyle & UI_SMALLFONT)
 			{
 				incY=PROP_HEIGHT * 1.15;
@@ -694,8 +694,8 @@ Action_Init
 */
 static void Action_Init( menuaction_s *a )
 {
-	int x,y,w,h;
-/*	int	len;
+	int32_t x,y,w,h;
+/*	int32_t	len;
 
 	// calculate bounds
 	if (a->generic.name)
@@ -739,10 +739,10 @@ Action_Draw
 */
 static void Action_Draw( menuaction_s *a )
 {
-	int		x, y;
-	int		style;
+	int32_t		x, y;
+	int32_t		style;
 //	float*	color;
-	int		textColor,buttonColor;
+	int32_t		textColor,buttonColor;
 
 	style = 0;
 	if ( a->generic.flags & QMF_GRAYED )
@@ -804,7 +804,7 @@ static void Action_Draw( menuaction_s *a )
 	// Is there a 2nd line of text?
 	if (a->textEnum2)
 	{
-		int		incY;
+		int32_t		incY;
 		if (style & UI_SMALLFONT)
 		{
 			incY=PROP_HEIGHT * 1.15;
@@ -827,7 +827,7 @@ RadioButton_Init
 */
 static void RadioButton_Init( menuradiobutton_s *rb )
 {
-	int	len;
+	int32_t	len;
 
 	// calculate bounds
 	if (rb->generic.name)
@@ -846,7 +846,7 @@ static void RadioButton_Init( menuradiobutton_s *rb )
 RadioButton_Key
 =================
 */
-static sfxHandle_t RadioButton_Key( menuradiobutton_s *rb, int key )
+static sfxHandle_t RadioButton_Key( menuradiobutton_s *rb, int32_t key )
 {
 	switch (key)
 	{
@@ -882,10 +882,10 @@ RadioButton_Draw
 */
 static void RadioButton_Draw( menuradiobutton_s *rb )
 {
-	int	x;
-	int y;
+	int32_t	x;
+	int32_t y;
 	float *color;
-	int	style;
+	int32_t	style;
 	qboolean focus;
 
 	x = rb->generic.x;
@@ -975,11 +975,11 @@ static void Slider_Init( menuslider_s *s )
 Slider_Key
 =================
 */
-static sfxHandle_t Slider_Key( menuslider_s *s, int key )
+static sfxHandle_t Slider_Key( menuslider_s *s, int32_t key )
 {
 	sfxHandle_t	sound;
-	int			x;
-	int			oldvalue;
+	int32_t			x;
+	int32_t			oldvalue;
 
 	switch (key)
 	{
@@ -1049,10 +1049,10 @@ Slider_Draw
 */
 static void Slider_Draw( menuslider_s *s ) 
 {
-	int color;
-	int textColor=CT_RED;
-	int	thumbColor=CT_LTGREY,backgroundColor=CT_DKGREY;
-	int	focus,thumbX;
+	int32_t color;
+	int32_t textColor=CT_RED;
+	int32_t	thumbColor=CT_LTGREY,backgroundColor=CT_DKGREY;
+	int32_t	focus,thumbX;
 	
 
 	focus = 0;
@@ -1156,10 +1156,10 @@ Slider_Draw
 static void Slider_Draw( menuslider_s *s )
 {
 	float *color;
-	int	style;
-	int	i;
-	int x;
-	int y;
+	int32_t	style;
+	int32_t	i;
+	int32_t x;
+	int32_t y;
 	qboolean focus;
 	
 	x =	s->generic.x;
@@ -1214,7 +1214,7 @@ static void Slider_Draw( menuslider_s *s )
 		style &= ~UI_PULSE;
 		style |= UI_BLINK;
 	}
-	UI_DrawChar( (int)( x + 2*SMALLCHAR_WIDTH + (SLIDER_RANGE-1)*SMALLCHAR_WIDTH* s->range ), y, 131, UI_LEFT|style, color);
+	UI_DrawChar( (int32_t)( x + 2*SMALLCHAR_WIDTH + (SLIDER_RANGE-1)*SMALLCHAR_WIDTH* s->range ), y, 131, UI_LEFT|style, color);
 }
 #endif
 
@@ -1272,10 +1272,10 @@ static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
 			{
 				//init the data area
 				memset( &s->drawList, 0, sizeof( drawList_t ) );
-				int	bestWidth=0;
-				int i;
-				int	widthOffset;
-				int heightOffset;
+				int32_t	bestWidth=0;
+				int32_t i;
+				int32_t	widthOffset;
+				int32_t heightOffset;
 				//first, find the longest string in the list
 				for ( i=0; i<s->numitems; i++ ) {
 					if ( s->listnames ) {
@@ -1317,7 +1317,7 @@ static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
 
 				//if the text is centered, offset the box to match
 				if ( s->textFlags & UI_CENTER ) {
-					int half = ( s->drawList.right - s->drawList.left) >> 1;
+					int32_t half = ( s->drawList.right - s->drawList.left) >> 1;
 					s->drawList.left -= half;
 					s->drawList.right -= half;
 				}
@@ -1377,7 +1377,7 @@ static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
 								(s->drawList.right - s->drawList.left) * 2, 
 								(s->drawList.down - s->drawList.up ) ) ) )
 		{
-			int	selectedNum;
+			int32_t	selectedNum;
 
 			selectedNum = ( uis.cursory - s->drawList.up+1 ) / SMALLCHAR_HEIGHT;
 			
@@ -1415,7 +1415,7 @@ static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
 SpinControl_Key
 =================
 */
-static sfxHandle_t SpinControl_Key( menulist_s *s, int key )
+static sfxHandle_t SpinControl_Key( menulist_s *s, int32_t key )
 {
 	sfxHandle_t	sound;
 	qboolean	callback=qfalse;
@@ -1492,8 +1492,8 @@ SpinControl_Draw
 */
 static void SpinControl_Draw( menulist_s *s )
 {
-	int x,y,buttonColor,buttonTextColor;
-	int boxWidth,color;
+	int32_t x,y,buttonColor,buttonTextColor;
+	int32_t boxWidth,color;
 	char text[64];
 
 	x = s->generic.x;
@@ -1546,7 +1546,7 @@ static void SpinControl_Draw( menulist_s *s )
 	}
 	else
 	{
-		int listX;
+		int32_t listX;
 		// Draw button and button text
 		trap_R_SetColor( colorTable[buttonColor]);
 		//if (!s->focusHeight && !s->focusWidth)
@@ -1660,7 +1660,7 @@ ScrollList_Init
 */
 static void ScrollList_Init( menulist_s *l )
 {
-	int		w;
+	int32_t		w;
 
 	l->oldvalue = 0;
 	l->curvalue = 0;
@@ -1692,18 +1692,18 @@ static void ScrollList_Init( menulist_s *l )
 ScrollList_Key
 =================
 */
-sfxHandle_t ScrollList_Key( menulist_s *l, int key )
+sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 {
-	int	x;
-	int	y;
-	int	w;
-	int	i;
-	int	j;	
-	int	c;
-	int	cursorx;
-	int	cursory;
-	int	column;
-	int	index;
+	int32_t	x;
+	int32_t	y;
+	int32_t	w;
+	int32_t	i;
+	int32_t	j;	
+	int32_t	c;
+	int32_t	cursorx;
+	int32_t	cursory;
+	int32_t	column;
+	int32_t	index;
 
 	switch (key)
 	{
@@ -1975,15 +1975,15 @@ ScrollList_Draw
 */
 void ScrollList_Draw( menulist_s *l )
 {
-	int			x;
-	int			u;
-	int			y;
-	int			i;
-	int			base;
-	int			column;
+	int32_t			x;
+	int32_t			u;
+	int32_t			y;
+	int32_t			i;
+	int32_t			base;
+	int32_t			column;
 	float*		color;
 	qboolean	hasfocus;
-	int			style;
+	int32_t			style;
 
 	hasfocus = (l->generic.parent->cursor == l->generic.menuPosition);
 
@@ -2114,7 +2114,7 @@ Menu_CursorMoved
 */
 void Menu_CursorMoved( menuframework_s *m )
 {
-	void (*callback)( void *self, int notification );
+	void (*callback)( void *self, int32_t notification );
 	
 	if (m->cursor_prev == m->cursor)
 		return;
@@ -2139,7 +2139,7 @@ void Menu_CursorMoved( menuframework_s *m )
 Menu_SetCursor
 =================
 */
-void Menu_SetCursor( menuframework_s *m, int cursor )
+void Menu_SetCursor( menuframework_s *m, int32_t cursor )
 {
 	if (((menucommon_s*)(m->items[cursor]))->flags & (QMF_GRAYED|QMF_INACTIVE))
 	{
@@ -2160,7 +2160,7 @@ Menu_SetCursorToItem
 */
 void Menu_SetCursorToItem( menuframework_s *m, void* ptr )
 {
-	int	i;
+	int32_t	i;
 
 	for (i=0; i<m->nitems; i++)
 	{
@@ -2179,7 +2179,7 @@ void Menu_SetCursorToItem( menuframework_s *m, void* ptr )
 ** to adjust the menu's cursor so that it's at the next available
 ** slot.
 */
-void Menu_AdjustCursor( menuframework_s *m, int dir ) {
+void Menu_AdjustCursor( menuframework_s *m, int32_t dir ) {
 	menucommon_s	*item = NULL;
 	qboolean		wrapped = qfalse;
 
@@ -2231,7 +2231,7 @@ Menu_Draw
 */
 void Menu_Draw( menuframework_s *menu )
 {
-	int				i;
+	int32_t				i;
 	menucommon_s	*itemptr;
 
 	// draw menu
@@ -2300,10 +2300,10 @@ void Menu_Draw( menuframework_s *menu )
 		if( uis.debug ) {
 
 			if( !( itemptr->flags & QMF_INACTIVE ) ) {
-				int x = itemptr->left;
-				int y = itemptr->top;
-				int w = itemptr->right - itemptr->left + 1;
-				int h =	itemptr->bottom - itemptr->top + 1;
+				int32_t x = itemptr->left;
+				int32_t y = itemptr->top;
+				int32_t w = itemptr->right - itemptr->left + 1;
+				int32_t h =	itemptr->bottom - itemptr->top + 1;
 
 				if (itemptr->flags & QMF_HASMOUSEFOCUS) {
 					UI_DrawRect(x, y, w, h, colorYellow );
@@ -2326,8 +2326,8 @@ void Menu_Draw( menuframework_s *menu )
 	if ( menu->displaySpinList )
 	{
 		menulist_s	*s;
-		int selectedNum;
-		int i;
+		int32_t selectedNum;
+		int32_t i;
 
 		s = (menulist_s *) menu->displaySpinList;
 
@@ -2451,11 +2451,11 @@ sfxHandle_t Menu_ActivateItem( menuframework_s *s, menucommon_s* item ) {
 Menu_DefaultKey
 =================
 */
-sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
+sfxHandle_t Menu_DefaultKey( menuframework_s *m, int32_t key )
 {
 	sfxHandle_t		sound = 0;
 	menucommon_s	*item;
-	int				cursor_prev;
+	int32_t				cursor_prev;
 
 	// menu system keys
 	switch ( key )
@@ -2595,7 +2595,7 @@ Menu_Cache
 */
 void Menu_Cache( void )
 {
-	int i;
+	int32_t i;
 	static  const char *smallNumbers[]= 
 	{
 	"gfx/2d/numbers/s_zero.tga",

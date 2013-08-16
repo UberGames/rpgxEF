@@ -20,7 +20,7 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .qvm file
 ================
 */
-Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
+Q_EXPORT intptr_t vmMain( int32_t command, int32_t arg0, int32_t arg1, int32_t arg2, int32_t arg3, int32_t arg4, int32_t arg5, int32_t arg6 ) {
 	switch ( command ) {
 	case UI_GETAPIVERSION:
 		return UI_API_VERSION;
@@ -74,7 +74,7 @@ typedef struct {
 	vmCvar_t	*vmCvar;
 	char		*cvarName;
 	char		*defaultString;
-	int			cvarFlags;
+	int32_t			cvarFlags;
 } cvarTable_t;
 
 vmCvar_t	ui_ffa_fraglimit;
@@ -471,7 +471,7 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_handleWidescreen, "ui_handleWidescreen", "1", CVAR_ARCHIVE },
 };
 
-static int	cvarTableSize = sizeof(cvarTable) / sizeof(cvarTable[0]);
+static int32_t	cvarTableSize = sizeof(cvarTable) / sizeof(cvarTable[0]);
 
 /*
 =================
@@ -479,7 +479,7 @@ UI_RegisterCvars
 =================
 */
 void UI_RegisterCvars( void ) {
-	int			i;
+	int32_t			i;
 	cvarTable_t	*cv;
 
 	//RPG-X: RedTechie - Keep no class default
@@ -497,7 +497,7 @@ UI_UpdateCvars
 =================
 */
 void UI_UpdateCvars( void ) {
-	int			i;
+	int32_t			i;
 	cvarTable_t	*cv;
 
 	//TiM - unexplained engine bug
@@ -514,7 +514,7 @@ void UI_UpdateCvars( void ) {
 //TiM I wanted to make this linked in the function in pMove, but it seems impossible to get the right scope
 //So I'll make a local version here
 
-int UI_GetAnim ( int anim, int weapon, qboolean upper )
+int32_t UI_GetAnim ( int32_t anim, int32_t weapon, qboolean upper )
 {
 	// Called when player is in idle crouching
 	switch ( anim ) {

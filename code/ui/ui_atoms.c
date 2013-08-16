@@ -46,7 +46,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 
 typedef struct 
 {
-	int			initialized;	/* Has this structure been initialized */
+	int32_t			initialized;	/* Has this structure been initialized */
 	qhandle_t		cornerUpper;
 	qhandle_t		cornerUpper2;
 	qhandle_t		cornerLower;
@@ -83,7 +83,7 @@ UI_PushMenu
 */
 void UI_PushMenu( menuframework_s *menu )
 {
-	int				i;
+	int32_t				i;
 	menucommon_s*	item;
 
 	/* avoid stacking menus invoked by hotkeys */
@@ -169,7 +169,7 @@ UI_LerpColor
 */
 static void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
 {
-	int i;
+	int32_t i;
 
 	/* lerp and clamp each component */
 	for (i=0; i<4; i++)
@@ -193,11 +193,11 @@ UI_DrawProportionalString2
 #define PROPB_SPACE_WIDTH	12
 #define PROPB_HEIGHT		36
 
-static int	propMapBig[CHARMAX][3];
-static int	propMap[CHARMAX][3];
-static int	propMapTiny[CHARMAX][3];
+static int32_t	propMapBig[CHARMAX][3];
+static int32_t	propMap[CHARMAX][3];
+static int32_t	propMapTiny[CHARMAX][3];
 
-static int const propMapB[26][3] = {
+static int32_t const propMapB[26][3] = {
 {11, 12, 33},
 {49, 12, 31},
 {85, 12, 31},
@@ -234,7 +234,7 @@ static int const propMapB[26][3] = {
 UI_DrawBannerString
 =================
 */
-static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
+static void UI_DrawBannerString2( int32_t x, int32_t y, const char* str, vec4_t color )
 {
 	const char* s;
 	char	ch;
@@ -263,11 +263,11 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 		}
 		else if ( ch >= 'A' && ch <= 'Z' ) {
 			ch -= 'A';
-			fcol = (float)propMapB[(int)ch][0] / 256.0f; /*256.0f*/
-			frow = (float)propMapB[(int)ch][1] / 256.0f;
-			fwidth = (float)propMapB[(int)ch][2] / 256.0f;
+			fcol = (float)propMapB[(int32_t)ch][0] / 256.0f; /*256.0f*/
+			frow = (float)propMapB[(int32_t)ch][1] / 256.0f;
+			fwidth = (float)propMapB[(int32_t)ch][2] / 256.0f;
 			fheight = (float)PROPB_HEIGHT / 256.0f;
-			aw = (float)propMapB[(int)ch][2] * uis.scalex;
+			aw = (float)propMapB[(int32_t)ch][2] * uis.scalex;
 			ah = (float)PROPB_HEIGHT * uis.scaley;
 			trap_R_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, uis.charsetPropB );
 			ax += (aw + (float)PROPB_GAP_WIDTH * uis.scalex);
@@ -283,10 +283,10 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 UI_DrawBannerString
 =================
 */
-void UI_DrawBannerString( int x, int y, const char* str, int style, vec4_t color ) {
+void UI_DrawBannerString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color ) {
 	const char *	s;
-	int				ch;
-	int				width;
+	int32_t				ch;
+	int32_t				width;
 	vec4_t			drawcolor;
 
 	/* find the width of the drawn text */
@@ -333,11 +333,11 @@ void UI_DrawBannerString( int x, int y, const char* str, int style, vec4_t color
 UI_ProportionalStringWidth
 =================
 */
-int UI_ProportionalStringWidth( const char* str,int style ) {
+int32_t UI_ProportionalStringWidth( const char* str,int32_t style ) {
 	const char *	s;
-	int				ch;
-	int				charWidth;
-	int				width;		
+	int32_t				ch;
+	int32_t				charWidth;
+	int32_t				width;		
 
 	if (style == UI_TINYFONT)
 	{
@@ -390,7 +390,7 @@ int UI_ProportionalStringWidth( const char* str,int style ) {
 	return width;
 }
 
-static int specialTinyPropChars[CHARMAX][2] = {
+static int32_t specialTinyPropChars[CHARMAX][2] = {
 {0, 0},
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	/* 10 */
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	/* 20 */
@@ -421,7 +421,7 @@ static int specialTinyPropChars[CHARMAX][2] = {
 }; 
 
 
-static int specialPropChars[CHARMAX][2] = {
+static int32_t specialPropChars[CHARMAX][2] = {
 {0, 0},
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	/* 10 */
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	/* 20 */
@@ -452,7 +452,7 @@ static int specialPropChars[CHARMAX][2] = {
 }; 
 
 
-static int specialBigPropChars[CHARMAX][2] = {
+static int32_t specialBigPropChars[CHARMAX][2] = {
 {0, 0},
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	/* 10 */
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	/* 20 */
@@ -482,14 +482,14 @@ static int specialBigPropChars[CHARMAX][2] = {
 {3,-3},{3,-3},{3,-3},{0, 0},{3,-3}					/* 255 */
 }; 
 
-static int showColorChars;
+static int32_t showColorChars;
 
 /*
 =================
 UI_DrawProportionalString2
 =================
 */
-static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t color, int style, qhandle_t charset )
+static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, vec4_t color, int32_t style, qhandle_t charset )
 {
 	const char* s;
 	unsigned char ch;
@@ -502,8 +502,8 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 	float	fwidth;
 	float	fheight;
 	float	sizeScale;
-	int		colorI;
-	int		special;
+	int32_t		colorI;
+	int32_t		special;
 
 	/* draw the colored text */
 	trap_R_SetColor( color );
@@ -696,7 +696,7 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 UI_ProportionalSizeScale
 =================
 */
-float UI_ProportionalSizeScale( int style ) {
+float UI_ProportionalSizeScale( int32_t style ) {
 	if(  style & UI_SMALLFONT ) {
 		return PROP_SMALL_SIZE_SCALE;
 	}
@@ -710,11 +710,11 @@ float UI_ProportionalSizeScale( int style ) {
 UI_DrawProportionalString
 =================
 */
-void UI_DrawProportionalString( int x, int y, const char* str, int style, vec4_t color ) {
+void UI_DrawProportionalString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color ) {
 	vec4_t	drawcolor;
-	int		width;
+	int32_t		width;
 	float	sizeScale;
-	int		charstyle=0;
+	int32_t		charstyle=0;
 
 	if ((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1))
 		return;
@@ -812,11 +812,11 @@ void UI_DrawProportionalString( int x, int y, const char* str, int style, vec4_t
 UI_DrawString2
 =================
 */
-static void UI_DrawString2( int x, int y, const char* str, vec4_t color, int charw, int charh )
+static void UI_DrawString2( int32_t x, int32_t y, const char* str, vec4_t color, int32_t charw, int32_t charh )
 {
 	const char* s;
 	char	ch;
-	int forceColor = qfalse; /* APSFIXME; */
+	int32_t forceColor = qfalse; /* APSFIXME; */
 	vec4_t	tempcolor;
 	float	ax;
 	float	ay;
@@ -893,11 +893,11 @@ static void UI_DrawString2( int x, int y, const char* str, vec4_t color, int cha
 UI_DrawString
 =================
 */
-void UI_DrawString( int x, int y, const char* str, int style, vec4_t color, qboolean highRes )
+void UI_DrawString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color, qboolean highRes )
 {
-	int		len;
-	int		charw;
-	int		charh;
+	int32_t		len;
+	int32_t		charw;
+	int32_t		charh;
 	vec4_t	newcolor;
 	vec4_t	lowlight;
 	float	*drawcolor;
@@ -995,7 +995,7 @@ void UI_DrawString( int x, int y, const char* str, int style, vec4_t color, qboo
 UI_DrawChar
 =================
 */
-void UI_DrawChar( int x, int y, int ch, int style, vec4_t color )
+void UI_DrawChar( int32_t x, int32_t y, int32_t ch, int32_t style, vec4_t color )
 {
 	char	buff[2];
 
@@ -1049,7 +1049,7 @@ void UI_SetActiveMenu( uiMenuCommand_t menu ) {
 UI_KeyEvent
 =================
 */
-void UI_KeyEvent( int key ) {
+void UI_KeyEvent( int32_t key ) {
 	sfxHandle_t		s;
 
 	if (!uis.activemenu) {
@@ -1070,9 +1070,9 @@ void UI_KeyEvent( int key ) {
 UI_MouseEvent
 =================
 */
-void UI_MouseEvent( int dx, int dy )
+void UI_MouseEvent( int32_t dx, int32_t dy )
 {
-	int				i;
+	int32_t				i;
 	menucommon_s*	m;
 
 	if (!uis.activemenu)
@@ -1144,7 +1144,7 @@ void UI_MouseEvent( int dx, int dy )
 	}
 }
 
-char *UI_Argv( int arg ) {
+char *UI_Argv( int32_t arg ) {
 	static char	buffer[MAX_STRING_CHARS];
 
 	trap_Argv( arg, buffer, sizeof( buffer ) );
@@ -1221,7 +1221,7 @@ UI_ConsoleCommand
 */
 qboolean UI_ConsoleCommand( void ) {
 	char	*cmd;
-	/*int	i;*/
+	/*int32_t	i;*/
 
 	cmd = UI_Argv( 0 );
 
@@ -1354,10 +1354,10 @@ void UI_Shutdown( void ) {
 
 
 //--------------------------------------------
-static char *UI_ParseFontParms(char *buffer,int	propArray[CHARMAX][3])
+static char *UI_ParseFontParms(char *buffer,int32_t	propArray[CHARMAX][3])
 {
 	char	*token;
-	int		i,i2;
+	int32_t		i,i2;
 	
 	while ( buffer ) 
 	{
@@ -1419,7 +1419,7 @@ UI_LoadFonts
 void UI_LoadFonts( void ) 
 {
 	char buffer[FONT_BUFF_LENGTH];
-	int len;
+	int32_t len;
 	fileHandle_t	f;
 	char *holdBuf;
 
@@ -1460,13 +1460,13 @@ load the class data string
 and parse it up
 *************************/
 
-/*int UI_LoadClassString( void ) {
+/*int32_t UI_LoadClassString( void ) {
 	char	buffer[MAX_TOKEN_CHARS];
-	int		i, j;
+	int32_t		i, j;
 	char	*val;
 	char	*lineChar;
 	char	*lineCharEnd;
-	int		classIndex=0;
+	int32_t		classIndex=0;
 	char*	className;
 
 	if ( !ingameFlag ) {
@@ -1552,13 +1552,13 @@ the data we need to show a list
 in the UI
 *************************/
 
-int UI_InitClassData( char* fileName ) {
+int32_t UI_InitClassData( char* fileName ) {
 	char			buffer[32000];
 	fileHandle_t	f;
-	int				fileLen;
+	int32_t				fileLen;
 	char			*textPtr;
 	char			filePath[MAX_QPATH];
-	int				classIndex=0;
+	int32_t				classIndex=0;
 	char			*token;
 
 	/* TiM - check if we've already loaded this file */
@@ -1686,8 +1686,8 @@ TiM: Fills up a local array with the
 formal names of the currently selected rankset.
 Used for choosing ranks in spin control menu items.
 *************************/
-int UI_PopulateRanksArray( char* ranks[] ) {
-	int				i;
+int32_t UI_PopulateRanksArray( char* ranks[] ) {
+	int32_t				i;
 	rankNames_t		*rank;
 
 	for( i = 0; i < MAX_RANKS; i++ ) {
@@ -1734,7 +1734,7 @@ void UI_InitRanksData( char* ranksName ) {
 			trap_Error( va( "UI_InitRanksData: Was unable to load default rankset: %s", RANKSET_DEFAULT ) ); 
 	}
 	else {  
-		int i;
+		int32_t i;
 		 /*
 		 * nvm, all loaded good :)
 		 * set the current rank CVAR so it'll use this rankset next time they start the game
@@ -1755,8 +1755,8 @@ refreshRank:
 	}
 }
 
-int	UI_PopulateRankSetArray( char *rankSets[] ) {
-	int	i;
+int32_t	UI_PopulateRankSetArray( char *rankSets[] ) {
+	int32_t	i;
 
 	for( i = 0; i < MAX_RANKSETS; i++ ) {
 		if ( !uis.rankSet.rankSetNames[i][0] )
@@ -1779,13 +1779,13 @@ settings menu, and the server settings menu.
 =========================
 */
 
-int UI_GetRankSets( void )
+int32_t UI_GetRankSets( void )
 {
-	int		numFiles, i;
+	int32_t		numFiles, i;
 	char		fileBuffer[2048];
 	char		*filePtr;
 	/*char		filePath[128];*/
-	int		fileLen;
+	int32_t		fileLen;
 
 	numFiles = trap_FS_GetFileList("ext_data/ranksets", ".ranks", fileBuffer, sizeof(fileBuffer) );
 	/*Com_Printf( S_COLOR_RED "%s\n", filePtr);*/
@@ -1833,8 +1833,8 @@ array with these here
 hard stored char vals
 **********************/
 
-int	UI_PopulateClassArray( char *classes[] ) {
-	int	i;
+int32_t	UI_PopulateClassArray( char *classes[] ) {
+	int32_t	i;
 
 	for( i = 0; i < MAX_CLASSES; i++ ) {
 		if ( !uis.classData[i].classNameFull[0] )
@@ -1857,13 +1857,13 @@ files and store them
 locally.
 *********************/
 
-int UI_GetClassSets( void )
+int32_t UI_GetClassSets( void )
 {
-	int		numFiles, i;
+	int32_t		numFiles, i;
 	char		fileBuffer[2048];
 	char		*filePtr;
 	/*char		filePath[128];*/
-	int		fileLen;
+	int32_t		fileLen;
 
 	numFiles = trap_FS_GetFileList("ext_data/classes", ".classes", fileBuffer, sizeof(fileBuffer) );
 	/*Com_Printf( S_COLOR_RED "%s\n", filePtr);*/
@@ -1910,8 +1910,8 @@ TiM: Populate a character pointer
 array with class set names
 *******************************/
 
-int	UI_PopulateClassSetArray( char *classSets[] ) {
-	int	i;
+int32_t	UI_PopulateClassSetArray( char *classSets[] ) {
+	int32_t	i;
 
 	for( i = 0; i < MAX_CLASSSETS; i++ ) {
 		if ( !uis.classList[i][0] )
@@ -1928,17 +1928,17 @@ int	UI_PopulateClassSetArray( char *classSets[] ) {
  * Plus I don't want to delete it as I tore several layers of hair out coding it rofl
  */
 /*void	UI_InitRanksData( void ) {
-	int		numFiles, i=0, j=0;
+	int32_t		numFiles, i=0, j=0;
 	char	fileBuffer[2048];
 	char*	filePtr;
 	char	filePath[128];
-	int		fileLen;
+	int32_t		fileLen;
 
 	numFiles = trap_FS_GetFileList("ext_data/ranksets", ".ranks", fileBuffer, sizeof(fileBuffer) );
 	filePtr = fileBuffer;
 	//Com_Printf( S_COLOR_RED "%s\n", filePtr);
 
-	for ( i = 0, j = 0; i < numFiles && j < MAX_RANKSETS; i++, filePtr+=(int)fileLen+1 ) {
+	for ( i = 0, j = 0; i < numFiles && j < MAX_RANKSETS; i++, filePtr+=(int32_t)fileLen+1 ) {
 		fileLen = strlen(filePtr);
 
 		if ( !fileLen )
@@ -2150,7 +2150,7 @@ void UI_DrawRect( float x, float y, float width, float height, const float *colo
 UI_Refresh
 =================
 */
-void UI_Refresh( int realtime )
+void UI_Refresh( int32_t realtime )
 {
 	vec4_t color;
 
@@ -2230,7 +2230,7 @@ void UI_Refresh( int realtime )
 	}
 }
 
-qboolean UI_CursorInRect (int x, int y, int width, int height)
+qboolean UI_CursorInRect (int32_t x, int32_t y, int32_t width, int32_t height)
 {
 	if (uis.cursorx < x ||
 		uis.cursory < y ||
@@ -2249,12 +2249,12 @@ Take x,y positions as if 640 x 480 and scales them to the proper resolution
 
 ==============
 */
-static void UI_DrawNumField (int x, int y, int width, int value,int charWidth,int charHeight)
+static void UI_DrawNumField (int32_t x, int32_t y, int32_t width, int32_t value,int32_t charWidth,int32_t charHeight)
 {
 	char	num[16], *ptr;
-	int		l;
-	int		frame;
-	int		xWidth;
+	int32_t		l;
+	int32_t		frame;
+	int32_t		xWidth;
 
 	if (width < 1)
 		return;
@@ -2314,9 +2314,9 @@ static void UI_DrawNumField (int x, int y, int width, int value,int charWidth,in
 UI_PrintMenuGraphics
 ==============
 */
-void UI_PrintMenuGraphics(menugraphics_s *menuGraphics,int maxI)
+void UI_PrintMenuGraphics(menugraphics_s *menuGraphics,int32_t maxI)
 {
-	int i;
+	int32_t i;
 	const char *text;
 
 	/* Now that all the changes are made, print up the graphics */
@@ -2377,9 +2377,9 @@ void UI_PrintMenuGraphics(menugraphics_s *menuGraphics,int maxI)
 UI_PrecacheMenuGraphics
 ==============
 */
-void UI_PrecacheMenuGraphics(menugraphics_s *menuGraphics,int maxI)
+void UI_PrecacheMenuGraphics(menugraphics_s *menuGraphics,int32_t maxI)
 {
-	int i;
+	int32_t i;
 
 	for (i=0;i<maxI;++i)
 	{
@@ -2480,9 +2480,9 @@ static void UI_FrameBottom_Graphics(void)
 UI_MenuBottomLineEnd_Graphics
 =================
 */
-void UI_MenuBottomLineEnd_Graphics (const char *string,int color, qboolean *space )
+void UI_MenuBottomLineEnd_Graphics (const char *string,int32_t color, qboolean *space )
 {
-	int holdX,holdLength;
+	int32_t holdX,holdLength;
 
 	trap_R_SetColor( colorTable[color]);
 	holdX = MENU_TITLE_X - (UI_ProportionalStringWidth( string,UI_SMALLFONT));
@@ -2612,9 +2612,9 @@ it quits as well. :)
 
 const char* illegalStrings[] = { "D4", "d4", "RPG-Y", "rpg-y", "AORP", "aorp" };
 
-/*static void UI_AntiPlagiarise ( const char *textLine, int arg )
+/*static void UI_AntiPlagiarise ( const char *textLine, int32_t arg )
 {
-	int i;
+	int32_t i;
 	char language[32];
 
 	trap_Cvar_VariableStringBuffer( "g_language", language, 32 );
@@ -2649,9 +2649,9 @@ static void UI_ParseMenuText(void)
 {
 	char *token;
 	char *buffer;
-	int  i;
-	int  len;
-	/*int j;*/
+	int32_t  i;
+	int32_t  len;
+	/*int32_t j;*/
 
 	COM_BeginParseSession();
 
@@ -2704,7 +2704,7 @@ UI_LoadMenuText
 */
 void UI_LoadMenuText()
 {
-	int len;/*,i;*/
+	int32_t len;/*,i;*/
 	fileHandle_t	f;
 	char	filename[MAX_QPATH];
 
@@ -2747,8 +2747,8 @@ static void UI_ParseButtonText(void)
 {
 	char	*token;
 	char *buffer;
-	int i;
-	int len;
+	int32_t i;
+	int32_t len;
 
 	COM_BeginParseSession();
 
@@ -2816,7 +2816,7 @@ UI_LoadButtonText
 void UI_LoadButtonText()
 {
 	char	filename[MAX_QPATH];
-	int len,i;
+	int32_t len,i;
 	fileHandle_t	f;
 
 	UI_LanguageFilename("ext_data/mp_buttontext","dat",filename);
@@ -2927,7 +2927,7 @@ void UI_SecurityCodeSetup ( void )
 {
 	fileHandle_t			f;
 	byte					buffer[SECURITY_SIZE];
-	int						fileLen;
+	int32_t						fileLen;
 	rpgxSecurityFile_t		*code;
 	rpgxSecurityFile_t		wCode;
 	static qboolean			ui_SecuritySetup=qfalse;
@@ -2984,7 +2984,7 @@ void UI_SecurityCodeSetup ( void )
 		code->hash == SECURITY_HASH )
 	{
 		fileHandle_t		wf;
-		int					i;
+		int32_t					i;
 
 		/*Com_Printf( S_COLOR_RED "Building new key!\n" );*/
 
@@ -3000,7 +3000,7 @@ void UI_SecurityCodeSetup ( void )
 			unsigned long			bit=0;
 			/* set a pretty good random seed */
 			srand( trap_Milliseconds() );
-			/*code->hash = (int)(rand() / (((double)RAND_MAX + 1)/ SECURITY_HASH));*/
+			/*code->hash = (int32_t)(rand() / (((double)RAND_MAX + 1)/ SECURITY_HASH));*/
 			for ( i = 0; i < 32; i++ )
 			{
 				if ( (irandom(1, 2)-1 ) )
@@ -3019,7 +3019,7 @@ void UI_SecurityCodeSetup ( void )
 		/* TiM - shifted to client to be built off of IP */
 		while ( code->playerID == 0 || code->playerID == SECURITY_PID )
 		{
-			srand( (int)(trap_Milliseconds() * irandom( 0, 0x7FFF )) );
+			srand( (int32_t)(trap_Milliseconds() * irandom( 0, 0x7FFF )) );
 			for ( i = 0; i < 32; i++ )
 			{
 				code->playerID |= irandom(1, 2)-1;

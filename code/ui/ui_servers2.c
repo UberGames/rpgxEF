@@ -114,7 +114,7 @@ static const char *sortkey_items[] = {
 };
 */
 
-static int master_items[] = 
+static int32_t master_items[] = 
 {
 	MNT_MASTER_ITEMS_LOCAL,
 //	MNT_MASTER_ITEMS_MPLAYER,
@@ -127,7 +127,7 @@ static int master_items[] =
 	0
 };
 
-static int servertype_items[] = 
+static int32_t servertype_items[] = 
 {
 	MNT_SERVERTYPE_ALL,
 	MNT_SERVERTYPE_RPGX,
@@ -146,7 +146,7 @@ static int servertype_items[] =
 	0
 };
 
-static int sortkey_items[] = 
+static int32_t sortkey_items[] = 
 {
 	MNT_SORTKEY_SERVER_NAME,
 	MNT_SORTKEY_MAP_NAME,
@@ -156,7 +156,7 @@ static int sortkey_items[] =
 	0
 };
 
-static int noyes_items[] = 
+static int32_t noyes_items[] = 
 {
 	MNT_NO,
 	MNT_YES,
@@ -203,21 +203,21 @@ static char quake3worldMessage[] = "For more information, please visit :   www.r
 
 typedef struct {
 	char	adrstr[MAX_ADDRESSLENGTH];
-	int		start;
+	int32_t		start;
 } pinglist_t;
 
 typedef struct servernode_s {
 	char	adrstr[MAX_ADDRESSLENGTH];
 	char	hostname[MAX_HOSTNAMELENGTH];
 	char	mapname[MAX_MAPNAMELENGTH];
-	int		numclients;
-	int		maxclients;
-	int		pingtime;
-	int		gametype;
+	int32_t		numclients;
+	int32_t		maxclients;
+	int32_t		pingtime;
+	int32_t		gametype;
 	char	gamename[12];
-	int		nettype;
-	int		minPing;
-	int		maxPing;
+	int32_t		nettype;
+	int32_t		minPing;
+	int32_t		maxPing;
 	qboolean	isPure;
 	qboolean	isExpansion;
 } servernode_t; 
@@ -255,16 +255,16 @@ typedef struct {
 	pinglist_t			pinglist[MAX_PINGREQUESTS];
 	table_t				table[MAX_LISTBOXITEMS];
 	char*				items[MAX_LISTBOXITEMS];
-	int					numqueriedservers;
-	int					*numservers;
+	int32_t					numqueriedservers;
+	int32_t					*numservers;
 	servernode_t		*serverlist;	
-	int					currentping;
+	int32_t					currentping;
 	qboolean			refreshservers;
-	int					nextpingtime;
-	int					maxservers;
-	int					refreshtime;
+	int32_t					nextpingtime;
+	int32_t					maxservers;
+	int32_t					refreshtime;
 	char				favoriteaddresses[MAX_FAVORITESERVERS][MAX_ADDRESSLENGTH];
-	int					numfavoriteaddresses;
+	int32_t					numfavoriteaddresses;
 } arenaservers_t;
 
 static arenaservers_t	g_arenaservers;
@@ -278,18 +278,18 @@ typedef struct
 static chooseservertype_t		g_chooseservertype;
 
 static servernode_t		g_globalserverlist[MAX_GLOBALSERVERS];
-static int				g_numglobalservers;
+static int32_t				g_numglobalservers;
 static servernode_t		g_localserverlist[MAX_LOCALSERVERS];
-static int				g_numlocalservers;
+static int32_t				g_numlocalservers;
 static servernode_t		g_favoriteserverlist[MAX_FAVORITESERVERS];
-static int				g_numfavoriteservers;
+static int32_t				g_numfavoriteservers;
 //static servernode_t		g_mplayerserverlist[MAX_GLOBALSERVERS];
-//static int				g_nummplayerservers;
-static int				g_servertype;
-static int				g_gametype;
-static int				g_sortkey;
-static int				g_emptyservers;
-static int				g_fullservers;
+//static int32_t				g_nummplayerservers;
+static int32_t				g_servertype;
+static int32_t				g_gametype;
+static int32_t				g_sortkey;
+static int32_t				g_emptyservers;
+static int32_t				g_fullservers;
 
 
 /*
@@ -297,10 +297,10 @@ static int				g_fullservers;
 ArenaServers_MaxPing
 =================
 */
-int ArenaServers_MaxPing( void ) { /*static*/
-	int		maxPing;
+int32_t ArenaServers_MaxPing( void ) { /*static*/
+	int32_t		maxPing;
 
-	maxPing = (int)trap_Cvar_VariableValue( "cl_maxPing" );
+	maxPing = (int32_t)trap_Cvar_VariableValue( "cl_maxPing" );
 	if( maxPing < 100 ) {
 		maxPing = 100;
 	}
@@ -313,7 +313,7 @@ int ArenaServers_MaxPing( void ) { /*static*/
 ArenaServers_Compare
 =================
 */
-static int QDECL ArenaServers_Compare( const void *arg1, const void *arg2 ) {
+static int32_t QDECL ArenaServers_Compare( const void *arg1, const void *arg2 ) {
 	float			f1;
 	float			f2;
 	servernode_t*	t1;
@@ -424,9 +424,9 @@ ArenaServers_UpdateMenu
 =================
 */
 static void ArenaServers_UpdateMenu( void ) {
-	int				i;
-	int				j;
-	int				count;
+	int32_t				i;
+	int32_t				j;
+	int32_t				count;
 	char*			buff;
 	servernode_t*	servernodeptr;
 	table_t*		tableptr;
@@ -665,7 +665,7 @@ ArenaServers_Remove
 */
 static void ArenaServers_Remove( void )
 {
-	int				i;
+	int32_t				i;
 	servernode_t*	servernodeptr;
 	table_t*		tableptr;
 
@@ -721,11 +721,11 @@ static void ArenaServers_Remove( void )
 ArenaServers_Insert
 =================
 */
-static void ArenaServers_Insert( char* adrstr, char* info, int pingtime )
+static void ArenaServers_Insert( char* adrstr, char* info, int32_t pingtime )
 {
 	servernode_t*	servernodeptr;
 	char*			s;
-	int				i;
+	int32_t				i;
 
 	if ((pingtime >= ArenaServers_MaxPing()) && (g_servertype != AS_FAVORITES))
 	{
@@ -810,8 +810,8 @@ Insert nonresponsive address book entries into display lists.
 */
 void ArenaServers_InsertFavorites( void )
 {
-	int		i;
-	int		j;
+	int32_t		i;
+	int32_t		j;
 	char	info[MAX_INFO_STRING];
 
 	// resync existing results with new or deleted cvars
@@ -842,9 +842,9 @@ Load cvar address book entries into local lists.
 */
 void ArenaServers_LoadFavorites( void )
 {
-	int				i;
-	int				j;
-	int				numtempitems;
+	int32_t				i;
+	int32_t				j;
+	int32_t				numtempitems;
 	char			adrstr[MAX_ADDRESSLENGTH];
 	servernode_t	templist[MAX_FAVORITESERVERS];
 	qboolean		found;
@@ -948,10 +948,10 @@ ArenaServers_DoRefresh
 */
 static void ArenaServers_DoRefresh( void )
 {
-	int		i;
-	int		j;
-	int		time;
-	int		maxPing;
+	int32_t		i;
+	int32_t		j;
+	int32_t		time;
+	int32_t		maxPing;
 	char	adrstr[MAX_ADDRESSLENGTH];
 	char	info[MAX_INFO_STRING];
 
@@ -1132,7 +1132,7 @@ ArenaServers_StartRefresh
 */
 static void ArenaServers_StartRefresh( void )
 {
-	int		i;
+	int32_t		i;
 	char	myargs[32];
 
 	memset( g_arenaservers.serverlist, 0, g_arenaservers.maxservers*sizeof(table_t) );
@@ -1212,7 +1212,7 @@ static void ArenaServers_StartRefresh( void )
 			strcat(myargs, " full");
 		}
 
-		trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d %d%s\n", i, (int)trap_Cvar_VariableValue( "protocol" ), myargs ) );
+		trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d %d%s\n", i, (int32_t)trap_Cvar_VariableValue( "protocol" ), myargs ) );
 	}
 }
 
@@ -1224,7 +1224,7 @@ ArenaServers_SaveChanges
 */
 void ArenaServers_SaveChanges( void )
 {
-	int	i;
+	int32_t	i;
 
 	for (i=0; i<g_arenaservers.numfavoriteaddresses; i++)
 		trap_Cvar_Set( va("server%d",i+1), g_arenaservers.favoriteaddresses[i] );
@@ -1239,7 +1239,7 @@ void ArenaServers_SaveChanges( void )
 ArenaServers_Sort
 =================
 */
-void ArenaServers_Sort( int type ) {
+void ArenaServers_Sort( int32_t type ) {
 	if( g_sortkey == type ) {
 		return;
 	}
@@ -1254,7 +1254,7 @@ void ArenaServers_Sort( int type ) {
 ArenaServers_SetType
 =================
 */
-void ArenaServers_SetType( int type )
+void ArenaServers_SetType( int32_t type )
 {
 	char IP[128];
 
@@ -1383,8 +1383,8 @@ Add current server to favorites
 void ArenaServers_Favorites_Add( void )
 {
 	char	adrstr[128];
-	int		i;
-	int		best;
+	int32_t		i;
+	int32_t		best;
 
 	if (!g_arenaservers.table[g_arenaservers.list.curvalue].servernode->adrstr)
 		return;
@@ -1416,8 +1416,8 @@ void ArenaServers_Favorites_Add( void )
 ArenaServers_Event
 =================
 */
-static void ArenaServers_Event( void* ptr, int event ) {
-	int		id;
+static void ArenaServers_Event( void* ptr, int32_t event ) {
+	int32_t		id;
 
 	id = ((menucommon_s*)ptr)->id;
 
@@ -1612,7 +1612,7 @@ static void ArenaServers_MenuDraw( void )
 ArenaServers_MenuKey
 =================
 */
-static sfxHandle_t ArenaServers_MenuKey( int key ) {
+static sfxHandle_t ArenaServers_MenuKey( int32_t key ) {
 	if( key == K_SPACE  && g_arenaservers.refreshservers ) {
 		ArenaServers_StopRefresh();	
 		return menu_move_sound;
@@ -1642,8 +1642,8 @@ ArenaServers_MenuInit
 */
 static void ArenaServers_MenuInit( void ) 
 {
-	int			i;
-	int			type;
+	int32_t			i;
+	int32_t			type;
 	static char	statusbuffer[MAX_STATUSLENGTH];
 
 	// zero set all our globals
@@ -2007,7 +2007,7 @@ void UI_ArenaServersMenu( void )
 ChooseServerType_MenuKey
 =================
 */
-static sfxHandle_t ChooseServerType_MenuKey( int key ) 
+static sfxHandle_t ChooseServerType_MenuKey( int32_t key ) 
 {
 	return Menu_DefaultKey( &g_chooseservertype.menu, key );
 }

@@ -38,7 +38,7 @@ static confirmMenu_t	s_confirm;
 ConfirmMenu_Event
 =================
 */
-static void ConfirmMenu_Event( void* ptr, int event ) 
+static void ConfirmMenu_Event( void* ptr, int32_t event ) 
 {
 	qboolean	result;
 
@@ -70,7 +70,7 @@ static void ConfirmMenu_Event( void* ptr, int event )
 ConfirmMenu_Key
 =================
 */
-static sfxHandle_t ConfirmMenu_Key( int key ) 
+static sfxHandle_t ConfirmMenu_Key( int32_t key ) 
 {
 	switch ( key ) 
 	{
@@ -140,13 +140,13 @@ static void ConfirmMenu_Draw( void )
 	}
 	else
 	{
-		int		numLines;
+		int32_t		numLines;
 		char	*message;
 		char	buffer[46];
-		int		height;
-		int		y;
-		int		i, j;
-		int		spacePoint=45;
+		int32_t		height;
+		int32_t		y;
+		int32_t		i, j;
+		int32_t		spacePoint=45;
 
 		message = s_confirm.question;
 

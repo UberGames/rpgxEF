@@ -28,7 +28,7 @@ static const char *rate_items[] = {
 	0
 };
 */
-int rate_items[] =
+int32_t rate_items[] =
 {
 	MNT_NW_28,
 	MNT_NW_33,
@@ -57,7 +57,7 @@ static networkOptionsInfo_t	networkOptionsInfo;
 UI_NetworkOptionsMenu_Event
 =================
 */
-static void UI_NetworkOptionsMenu_Event( void* ptr, int event ) 
+static void UI_NetworkOptionsMenu_Event( void* ptr, int32_t event ) 
 {
 	if( event != QM_ACTIVATED ) 
 	{
@@ -176,7 +176,7 @@ UI_NetworkOptionsMenu_Init
 */
 static void UI_NetworkOptionsMenu_Init( void ) 
 {
-	int		rate;
+	int32_t		rate;
 
 	memset( &networkOptionsInfo, 0, sizeof(networkOptionsInfo) );
 

@@ -83,7 +83,7 @@ START SERVER MENU *****
 void UI_BuildGroupTable(void);
 void SetPlayerMod(void);
 
-extern int s_OffOnNone_Names[];
+extern int32_t s_OffOnNone_Names[];
 
 static const char  *s_skinsForRace[MAX_SKINS_FOR_RACE];
 
@@ -129,7 +129,7 @@ typedef struct
 
 	menutext_s		errorText;
 
-	int				errorFlag;
+	int32_t				errorFlag;
 
 } advancedserver_t;
 
@@ -163,14 +163,14 @@ typedef struct
 	qhandle_t		corner_lr;
 
 	qboolean		multiplayer;
-	int				currentmap;
-	int				nummaps;
-	int				page;
-	int				maxpages;
+	int32_t				currentmap;
+	int32_t				nummaps;
+	int32_t				page;
+	int32_t				maxpages;
 	char			maplist[MAX_SERVERMAPS][MAX_NAMELENGTH];
-	int				mapGamebits[MAX_SERVERMAPS];
+	int32_t				mapGamebits[MAX_SERVERMAPS];
 	char			maplongname[MAX_SERVERMAPS][MAX_NAMELENGTH];
-	int				maprecommended[MAX_SERVERMAPS];
+	int32_t				maprecommended[MAX_SERVERMAPS];
 } startserver_t;
 
 static startserver_t s_startserver;
@@ -184,7 +184,7 @@ static const char *gametype_items[] = {
 };
 */
 
-static int gametype_items[] =
+static int32_t gametype_items[] =
 {
 	MNT_TYPE_FREEFORALL,
 	MNT_TYPE_TEAMDEATHMATCH,
@@ -193,11 +193,11 @@ static int gametype_items[] =
 	0
 };
 
-static int gametype_remap[] = {GT_FFA, GT_TEAM, GT_TOURNAMENT, GT_CTF};
-//static int gametype_remap2[] = {0, 2, 0, 1, 3};
+static int32_t gametype_remap[] = {GT_FFA, GT_TEAM, GT_TOURNAMENT, GT_CTF};
+//static int32_t gametype_remap2[] = {0, 2, 0, 1, 3};
 
 static void UI_ServerOptionsMenu( qboolean multiplayer );
-static int UI_SearchGroupTable(char *current_race);
+static int32_t UI_SearchGroupTable(char *current_race);
 static void UI_BlankGroupTable(void);
 
 void StartServerSetModButtons(void);
@@ -207,8 +207,8 @@ void StartServerSetModButtons(void);
 GametypeBits
 =================
 */
-static int GametypeBits( char *string ) {
-	int		bits;
+static int32_t GametypeBits( char *string ) {
+	int32_t		bits;
 	char	*p;
 	char	*token;
 
@@ -264,8 +264,8 @@ StartServer_Update
 =================
 */
 static void StartServer_Update( void ) {
-	int				i;
-	int				top;
+	int32_t				i;
+	int32_t				top;
 	static	char	picname[MAX_MAPSPERPAGE][64];
 
 	top = s_startserver.page*MAX_MAPSPERPAGE;
@@ -327,7 +327,7 @@ static void StartServer_Update( void ) {
 StartServer_MapEvent
 =================
 */
-static void StartServer_MapEvent( void* ptr, int event ) {
+static void StartServer_MapEvent( void* ptr, int32_t event ) {
 	if( event != QM_ACTIVATED) {
 		return;
 	}
@@ -401,11 +401,11 @@ StartServer_GametypeEvent
 =================
 */
 extern vmCvar_t	ui_language;
-static void StartServer_GametypeEvent( void* ptr, int event ) {
-	int			i;
-	int			count;
-	int			gamebits;
-	int			matchbits;
+static void StartServer_GametypeEvent( void* ptr, int32_t event ) {
+	int32_t			i;
+	int32_t			count;
+	int32_t			gamebits;
+	int32_t			matchbits;
 	const char	*info;
 
 	if( event != QM_ACTIVATED) {
@@ -493,7 +493,7 @@ void GetStartServerMods(void)
 SetServerButtons - where buttons are turned on/off or activated/grayed
 =================
 */
-void SetServerButtons(int gameType,menulist_s *assimilation,menulist_s *specialties,menulist_s *disintegration,menulist_s *elimination,menulist_s *actionhero)
+void SetServerButtons(int32_t gameType,menulist_s *assimilation,menulist_s *specialties,menulist_s *disintegration,menulist_s *elimination,menulist_s *actionhero)
 {
 
 	//Lots of checks because NULL  could be sent for one of the buttons
@@ -682,7 +682,7 @@ void SetServerButtons(int gameType,menulist_s *assimilation,menulist_s *specialt
 ServerGameMods - where game mod rules are
 =================
 */
-void ServerGameMods(int gametype,int *pModAssimilation,int *pModSpecialties,int *pModDisintegration,int *pModElimination,int *pModActionHero)
+void ServerGameMods(int32_t gametype,int32_t *pModAssimilation,int32_t *pModSpecialties,int32_t *pModDisintegration,int32_t *pModElimination,int32_t *pModActionHero)
 {
 //Check gametype first
 	// Check assimilation
@@ -780,7 +780,7 @@ void StartServerSetModButtons(void)
 StartServer_MenuEvent
 =================
 */
-static void StartServer_MenuEvent( void* ptr, int event ) {
+static void StartServer_MenuEvent( void* ptr, int32_t event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
@@ -856,9 +856,9 @@ StartServer_LevelshotDraw
 */
 static void StartServer_LevelshotDraw( void *self ) {
 	menubitmap_s	*b;
-	int				x;
-	int				y;
-	int				n;
+	int32_t				x;
+	int32_t				y;
+	int32_t				n;
 
 	b = (menubitmap_s *)self;
 
@@ -975,12 +975,12 @@ static void StartServer_MenuDraw( void )
 StartServer_MenuInit
 =================
 */
-static void StartServer_MenuInit(int multiplayer) {
-	int	i;
-	int	x;
-	int	y,pad;
+static void StartServer_MenuInit(int32_t multiplayer) {
+	int32_t	i;
+	int32_t	x;
+	int32_t	y,pad;
 	static char mapnamebuffer[64];
-	int	picWidth,picHeight;
+	int32_t	picWidth,picHeight;
 
 	// zero set all our globals
 	memset( &s_startserver, 0 ,sizeof(startserver_t) );
@@ -1297,7 +1297,7 @@ StartServer_Cache
 */
 void StartServer_Cache( void )
 {
-	int				i;
+	int32_t				i;
 	const char		*info;
 	qboolean		precache;
 	char			picname[64];
@@ -1421,15 +1421,15 @@ typedef struct {
 	menubitmap_s		advanced;
 
 	qboolean			multiplayer;
-	int					gametype;
+	int32_t					gametype;
 	qboolean			specialties;
 	char				mapnamebuffer[32];
 	char				playerNameBuffers[PLAYER_SLOTS][16];
 	qboolean			updatedPlayer;
-	int					newUpdatedPlayer;
+	int32_t					newUpdatedPlayer;
 
 	qboolean			newBot;
-	int					newBotIndex;
+	int32_t					newBotIndex;
 	char				newBotName[16];
 
 } serveroptions_t;
@@ -1444,7 +1444,7 @@ static const char *dedicated_list[] = {
 };
 */
 
-static int dedicated_list[] = 
+static int32_t dedicated_list[] = 
 {
 	MNT_DEDICATED_NO,
 	MNT_DEDICATED_LAN,
@@ -1460,7 +1460,7 @@ static const char *playerType_list[] = {
 	0
 };*/
 
-static int playerType_list[] = 
+static int32_t playerType_list[] = 
 {
 	MNT_OPEN,
 	MNT_BOT,
@@ -1474,14 +1474,14 @@ static const char *playerTeam_list[] = {
 	0
 };
 */
-static int playerTeam_list[] = 
+static int32_t playerTeam_list[] = 
 {
 	MNT_TEAM_BLUE,
 	MNT_TEAM_RED,
 	0
 };
 
-static int playerClass_list[] = 
+static int32_t playerClass_list[] = 
 {
 	MNT_PC_INFILTRATOR,
 	MNT_PC_SNIPER,
@@ -1504,7 +1504,7 @@ static const char *botSkill_list[] =
 };
 */
 
-static int botSkill_list[] =
+static int32_t botSkill_list[] =
 {
 	MNT_BABYLEVEL,
 	MNT_EASYLEVEL,
@@ -1521,7 +1521,7 @@ BotAlreadySelected
 =================
 */
 static qboolean BotAlreadySelected( const char *checkName ) {
-	int		n;
+	int32_t		n;
 
 	for( n = 1; n < PLAYER_SLOTS; n++ ) {
 		if( s_serveroptions.playerType[n].curvalue != 1 ) {
@@ -1550,15 +1550,15 @@ ServerOptions_Start
 =================
 */
 static void ServerOptions_Start( void ) {
-	int		timelimit;
-	int		fraglimit;
-	int		maxclients,holdMaxClients;
-	int		dedicated;
-	int		friendlyfire;
-	int		flaglimit;
-	int		pure;
-	int		skill;
-	int		n;
+	int32_t		timelimit;
+	int32_t		fraglimit;
+	int32_t		maxclients,holdMaxClients;
+	int32_t		dedicated;
+	int32_t		friendlyfire;
+	int32_t		flaglimit;
+	int32_t		pure;
+	int32_t		skill;
+	int32_t		n;
 	char	buf[64];
 
 	char pClass[MAX_QPATH];
@@ -1679,8 +1679,8 @@ ServerOptions_InitPlayerItems
 =================
 */
 static void ServerOptions_InitPlayerItems( void ) {
-	int		n;
-	int		v;
+	int32_t		n;
+	int32_t		v;
 
 	// init types
 	if( s_serveroptions.multiplayer ) {
@@ -1746,9 +1746,9 @@ static void ServerOptions_InitPlayerItems( void ) {
 ServerOptions_SetPlayerItems
 =================
 */
-static int ServerOptions_SetPlayerItems( void ) {
-	int		start;
-	int		n,maxClients,holdmaxClients;
+static int32_t ServerOptions_SetPlayerItems( void ) {
+	int32_t		start;
+	int32_t		n,maxClients,holdmaxClients;
 
 	// types
 //	for( n = 0; n < PLAYER_SLOTS; n++ ) {
@@ -1826,9 +1826,9 @@ static int ServerOptions_SetPlayerItems( void ) {
 ServerOptions_Event
 =================
 */
-static void ServerOptions_Event( void* ptr, int event ) 
+static void ServerOptions_Event( void* ptr, int32_t event ) 
 {
-	int maxClients;
+	int32_t maxClients;
 
 	switch( ((menucommon_s*)ptr)->id ) {
 
@@ -1884,8 +1884,8 @@ static void ServerOptions_Event( void* ptr, int event )
 }
 
 
-static void ServerOptions_PlayerNameEvent( void* ptr, int event ) {
-	int		n;
+static void ServerOptions_PlayerNameEvent( void* ptr, int32_t event ) {
+	int32_t		n;
 
 	if( event != QM_ACTIVATED ) 
 	{
@@ -1927,8 +1927,8 @@ ServerOptions_LevelshotDraw
 */
 static void ServerOptions_LevelshotDraw( void *self ) {
 	menubitmap_s	*b;
-	int				x;
-	int				y;
+	int32_t				x;
+	int32_t				y;
 
 	// Map background
 	trap_R_SetColor( colorTable[CT_DKGREY]);
@@ -1968,14 +1968,14 @@ static void ServerOptions_LevelshotDraw( void *self ) {
 
 static void ServerOptions_InitBotNames( void )
 {
-	int			count;
-	int			n;
+	int32_t			count;
+	int32_t			n;
 	const char	*arenaInfo;
 	const char	*botInfo;
 	char		*p;
 	char		*bot;
 	char		bots[MAX_INFO_STRING];
-	int			max;
+	int32_t			max;
 
 	if ( s_serveroptions.gametype >= GT_TEAM )
 	{
@@ -2075,25 +2075,25 @@ static void ServerOptions_SetMenuItems( void )
 	{
 	case GT_FFA:
 	default:
-		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_ffa_fraglimit" ) ) );
-		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_ffa_timelimit" ) ) );
+		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int32_t)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_ffa_fraglimit" ) ) );
+		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int32_t)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_ffa_timelimit" ) ) );
 		break;
 
 	case GT_TOURNAMENT:
-		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_tourney_fraglimit" ) ) );
-		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_tourney_timelimit" ) ) );
+		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int32_t)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_tourney_fraglimit" ) ) );
+		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int32_t)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_tourney_timelimit" ) ) );
 		break;
 
 	case GT_TEAM:
-		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_team_fraglimit" ) ) );
-		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_team_timelimit" ) ) );
-		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp( 0, 1, trap_Cvar_VariableValue( "ui_team_friendly" ) );
+		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int32_t)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_team_fraglimit" ) ) );
+		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int32_t)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_team_timelimit" ) ) );
+		s_serveroptions.friendlyfire.curvalue = (int32_t)Com_Clamp( 0, 1, trap_Cvar_VariableValue( "ui_team_friendly" ) );
 		break;
 
 	case GT_CTF:
-		Com_sprintf( s_serveroptions.flaglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 100, trap_Cvar_VariableValue( "ui_ctf_capturelimit" ) ) );
-		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_ctf_timelimit" ) ) );
-		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp( 0, 1, trap_Cvar_VariableValue( "ui_ctf_friendly" ) );
+		Com_sprintf( s_serveroptions.flaglimit.field.buffer, 4, "%i", (int32_t)Com_Clamp( 0, 100, trap_Cvar_VariableValue( "ui_ctf_capturelimit" ) ) );
+		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int32_t)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_ctf_timelimit" ) ) );
+		s_serveroptions.friendlyfire.curvalue = (int32_t)Com_Clamp( 0, 1, trap_Cvar_VariableValue( "ui_ctf_friendly" ) );
 		break;
 	}
 
@@ -2127,8 +2127,8 @@ static void PlayerName_Draw( void *item )
 {
 	menutext_s	*s;
 	float		*color;
-	int			x, y;
-	int			style;
+	int32_t			x, y;
+	int32_t			style;
 	qboolean	focus;
 
 	s = (menutext_s *)item;
@@ -2237,9 +2237,9 @@ static void ServerOptions_MenuDraw (void)
 ServerOptions_MenuInit2
 =================
 */
-static void ServerOptions_MenuInit2( int specialties) 
+static void ServerOptions_MenuInit2( int32_t specialties) 
 {
-	int	assim,n;
+	int32_t	assim,n;
 
 	assim = trap_Cvar_VariableValue( "g_pModAssimilation");
 
@@ -2288,12 +2288,12 @@ ServerOptions_MenuInit
 
 static void ServerOptions_MenuInit( qboolean multiplayer ) 
 {
-	int		x,y,yInc;
-	int		n;
+	int32_t		x,y,yInc;
+	int32_t		n;
 
 	memset( &s_serveroptions, 0 ,sizeof(serveroptions_t) );
 	s_serveroptions.multiplayer = multiplayer;
-	s_serveroptions.gametype = (int)Com_Clamp( 0, 5, trap_Cvar_VariableValue( "g_gameType" ) );
+	s_serveroptions.gametype = (int32_t)Com_Clamp( 0, 5, trap_Cvar_VariableValue( "g_gameType" ) );
 	s_serveroptions.specialties = (qboolean)trap_Cvar_VariableValue( "g_pModSpecialties" );
 
 	ServerOptions_Cache();
@@ -2754,11 +2754,11 @@ typedef struct {
 	menubitmap_s	mainmenu;
 	qhandle_t		corner_ll_18_18;
 
-	int				numBots;
-	int				modelpage;
-	int				numpages;
-	int				selectedmodel;
-	int				sortedBotNums[MAX_BOTS];
+	int32_t				numBots;
+	int32_t				modelpage;
+	int32_t				numpages;
+	int32_t				selectedmodel;
+	int32_t				sortedBotNums[MAX_BOTS];
 	char			boticons[MAX_MODELSPERPAGE][MAX_QPATH];
 	char			botnames[MAX_MODELSPERPAGE][16];
 } botSelectInfo_t;
@@ -2771,13 +2771,13 @@ static botSelectInfo_t	botSelectInfo;
 UI_BotSelectMenu_SortCompare
 =================
 */
-static int QDECL UI_BotSelectMenu_SortCompare( const void *arg1, const void *arg2 ) {
-	int			num1, num2;
+static int32_t QDECL UI_BotSelectMenu_SortCompare( const void *arg1, const void *arg2 ) {
+	int32_t			num1, num2;
 	const char	*info1, *info2;
 	const char	*name1, *name2;
 
-	num1 = *(int *)arg1;
-	num2 = *(int *)arg2;
+	num1 = *(int32_t *)arg1;
+	num2 = *(int32_t *)arg2;
 
 	info1 = UI_GetBotInfoByNumber( num1 );
 	info2 = UI_GetBotInfoByNumber( num2 );
@@ -2795,7 +2795,7 @@ UI_BotSelectMenu_BuildList
 =================
 */
 static void UI_BotSelectMenu_BuildList( void ) {
-	int		n;
+	int32_t		n;
 
 	botSelectInfo.modelpage = 0;
 	botSelectInfo.numBots = UI_GetNumBots();
@@ -2813,7 +2813,7 @@ static void UI_BotSelectMenu_BuildList( void ) {
 	qsort( botSelectInfo.sortedBotNums, botSelectInfo.numBots, sizeof(botSelectInfo.sortedBotNums[0]), UI_BotSelectMenu_SortCompare );
 }
 
-extern void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize );	//from ui_splevel
+extern void PlayerIcon( const char *modelAndSkin, char *iconName, int32_t iconNameMaxSize );	//from ui_splevel
 
 /*
 =================
@@ -2822,8 +2822,8 @@ UI_BotSelectMenu_UpdateGrid
 */
 static void UI_BotSelectMenu_UpdateGrid( void ) {
 	const char	*info;
-	int			i;
-    int			j,len;
+	int32_t			i;
+    int32_t			j,len;
 
 	j = botSelectInfo.modelpage * MAX_MODELSPERPAGE;
 	for( i = 0; i < (PLAYERGRID_ROWS * PLAYERGRID_COLS); i++, j++) {
@@ -2911,8 +2911,8 @@ UI_BotSelectMenu_Default
 static void UI_BotSelectMenu_Default( char *bot ) {
 	const char	*botInfo;
 	const char	*test;
-	int			n;
-	int			i;
+	int32_t			n;
+	int32_t			i;
 
 	for( n = 0; n < botSelectInfo.numBots; n++ ) {
 		botInfo = UI_GetBotInfoByNumber( n );
@@ -2945,7 +2945,7 @@ static void UI_BotSelectMenu_Default( char *bot ) {
 UI_BotSelectMenu_LeftEvent
 =================
 */
-static void UI_BotSelectMenu_LeftEvent( void* ptr, int event ) {
+static void UI_BotSelectMenu_LeftEvent( void* ptr, int32_t event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
@@ -2962,7 +2962,7 @@ static void UI_BotSelectMenu_LeftEvent( void* ptr, int event ) {
 UI_BotSelectMenu_RightEvent
 =================
 */
-static void UI_BotSelectMenu_RightEvent( void* ptr, int event ) {
+static void UI_BotSelectMenu_RightEvent( void* ptr, int32_t event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
@@ -2979,8 +2979,8 @@ static void UI_BotSelectMenu_RightEvent( void* ptr, int event ) {
 UI_BotSelectMenu_BotEvent
 =================
 */
-static void UI_BotSelectMenu_BotEvent( void* ptr, int event ) {
-	int		i;
+static void UI_BotSelectMenu_BotEvent( void* ptr, int32_t event ) {
+	int32_t		i;
 
 	if( event != QM_ACTIVATED ) {
 		return;
@@ -3007,7 +3007,7 @@ static void UI_BotSelectMenu_BotEvent( void* ptr, int event ) {
 UI_BotSelectMenu_BackEvent
 =================
 */
-static void UI_BotSelectMenu_BackEvent( void* ptr, int event ) {
+static void UI_BotSelectMenu_BackEvent( void* ptr, int32_t event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
@@ -3019,7 +3019,7 @@ static void UI_BotSelectMenu_BackEvent( void* ptr, int event ) {
 UI_BotSelectMenu_MainMenuEvent
 =================
 */
-static void UI_BotSelectMenu_MainMenuEvent( void* ptr, int event ) 
+static void UI_BotSelectMenu_MainMenuEvent( void* ptr, int32_t event ) 
 {
 	if( event != QM_ACTIVATED ) 
 	{
@@ -3034,7 +3034,7 @@ static void UI_BotSelectMenu_MainMenuEvent( void* ptr, int event )
 UI_BotSelectMenu_SelectEvent
 =================
 */
-static void UI_BotSelectMenu_SelectEvent( void* ptr, int event ) 
+static void UI_BotSelectMenu_SelectEvent( void* ptr, int32_t event ) 
 {
 	if( event != QM_ACTIVATED ) 
 	{
@@ -3122,8 +3122,8 @@ void UI_BotSelectMenu_Cache( void )
 
 static void UI_BotSelectMenu_Init( char *bot ) 
 {
-	int		i, j, k;
-	int		x, y,len;
+	int32_t		i, j, k;
+	int32_t		x, y,len;
 	static char chosennamebuffer[64];
 
 	memset( &botSelectInfo, 0 ,sizeof(botSelectInfo) );
@@ -3341,7 +3341,7 @@ AdvancedServer_Update
 */
 static void AdvancedServer_Update( void) 
 {
-	int holdInt;
+	int32_t holdInt;
 	float holdFloat;
 
 	// Set colors to normal
@@ -3519,9 +3519,9 @@ void AdvancedServerSetModButtons(void)
 AdvancedServer_Event
 =================
 */
-static void AdvancedServer_Event( void* ptr, int notification ) 
+static void AdvancedServer_Event( void* ptr, int32_t notification ) 
 {
-	int dmflags;
+	int32_t dmflags;
 
 	if( notification != QM_ACTIVATED ) 
 	{
@@ -3714,7 +3714,7 @@ ServerAdvanced_StatusBar
 */
 static void ServerAdvanced_StatusBar( void* ptr ) 
 {
-	int x,y;
+	int32_t x,y;
 
 	x = 265;
 	y = 400;
@@ -3785,9 +3785,9 @@ static void AdvanceServer_MenuDraw (void)
 UI_AdvancedServerMenu_Init
 =================
 */
-static void UI_AdvancedServerMenu_Init(int fromMenu)
+static void UI_AdvancedServerMenu_Init(int32_t fromMenu)
 {
-	int x,y,pad,dmflags,holdInt;
+	int32_t x,y,pad,dmflags,holdInt;
 
 	memset( &s_advancedserver, 0 ,sizeof(s_advancedserver) );
 
@@ -4347,21 +4347,21 @@ static void UI_AdvancedServerMenu_Init(int fromMenu)
 	s_advancedserver.adaptitemrespawn.curvalue	= Com_Clamp( 0, 1, trap_Cvar_VariableValue( "g_adaptrespawn" ) );
 	s_advancedserver.holodeckintro.curvalue	= Com_Clamp( 0, 1, trap_Cvar_VariableValue( "g_holointro" ) );
 
-	Com_sprintf( s_advancedserver.repawntime.field.buffer, 3, "%i", (int)Com_Clamp( 1, 60, trap_Cvar_VariableValue( "g_weaponrespawn" ) ) );
-	Com_sprintf( s_advancedserver.maxclients.field.buffer, 3, "%i", (int)Com_Clamp( 0, 64, trap_Cvar_VariableValue( "sv_maxclients" ) ) );
-	Com_sprintf( s_advancedserver.runspeed.field.buffer, 5, "%i", (int)Com_Clamp( 150, 1000, trap_Cvar_VariableValue( "g_speed" ) ) );
-	Com_sprintf( s_advancedserver.gravity.field.buffer, 5, "%i", (int)Com_Clamp( 0, 5000, trap_Cvar_VariableValue( "g_gravity" ) ) );
-	Com_sprintf( s_advancedserver.knockback.field.buffer, 6, "%i", (int)Com_Clamp( 0, 10000, trap_Cvar_VariableValue( "g_knockback" ) ) );
+	Com_sprintf( s_advancedserver.repawntime.field.buffer, 3, "%i", (int32_t)Com_Clamp( 1, 60, trap_Cvar_VariableValue( "g_weaponrespawn" ) ) );
+	Com_sprintf( s_advancedserver.maxclients.field.buffer, 3, "%i", (int32_t)Com_Clamp( 0, 64, trap_Cvar_VariableValue( "sv_maxclients" ) ) );
+	Com_sprintf( s_advancedserver.runspeed.field.buffer, 5, "%i", (int32_t)Com_Clamp( 150, 1000, trap_Cvar_VariableValue( "g_speed" ) ) );
+	Com_sprintf( s_advancedserver.gravity.field.buffer, 5, "%i", (int32_t)Com_Clamp( 0, 5000, trap_Cvar_VariableValue( "g_gravity" ) ) );
+	Com_sprintf( s_advancedserver.knockback.field.buffer, 6, "%i", (int32_t)Com_Clamp( 0, 10000, trap_Cvar_VariableValue( "g_knockback" ) ) );
 	Com_sprintf( s_advancedserver.dmgmult.field.buffer, 12, "%f", (float)Com_Clamp( 0.0, 100.0, trap_Cvar_VariableValue( "g_dmgmult" ) ) );
-	Com_sprintf( s_advancedserver.bot_minplayers.field.buffer, 3, "%i", (int)Com_Clamp( 0, 64, trap_Cvar_VariableValue( "bot_minplayers" ) ) );
-	Com_sprintf( s_advancedserver.forceplayerrespawn.field.buffer, 3, "%i", (int)Com_Clamp( 0, 120, trap_Cvar_VariableValue( "g_forcerespawn" ) ) );
-	Com_sprintf( s_advancedserver.respawninvulnerability.field.buffer, 3, "%i", (int)Com_Clamp( 0, 30, trap_Cvar_VariableValue( "g_ghostRespawn" ) ) );
-	Com_sprintf( s_advancedserver.classchangetimeout.field.buffer, 8, "%i", (int)Com_Clamp( 0, 999999, trap_Cvar_VariableValue( "g_classChangeDebounceTime" ) ) );
+	Com_sprintf( s_advancedserver.bot_minplayers.field.buffer, 3, "%i", (int32_t)Com_Clamp( 0, 64, trap_Cvar_VariableValue( "bot_minplayers" ) ) );
+	Com_sprintf( s_advancedserver.forceplayerrespawn.field.buffer, 3, "%i", (int32_t)Com_Clamp( 0, 120, trap_Cvar_VariableValue( "g_forcerespawn" ) ) );
+	Com_sprintf( s_advancedserver.respawninvulnerability.field.buffer, 3, "%i", (int32_t)Com_Clamp( 0, 30, trap_Cvar_VariableValue( "g_ghostRespawn" ) ) );
+	Com_sprintf( s_advancedserver.classchangetimeout.field.buffer, 8, "%i", (int32_t)Com_Clamp( 0, 999999, trap_Cvar_VariableValue( "g_classChangeDebounceTime" ) ) );
 
 	holdInt = trap_Cvar_VariableValue( "g_dowarmup" );
 	if (holdInt == 1)
 	{
-		Com_sprintf( s_advancedserver.dowarmup.field.buffer, 3, "%i", (int)Com_Clamp( 0, 120, trap_Cvar_VariableValue( "g_warmup" ) ) );
+		Com_sprintf( s_advancedserver.dowarmup.field.buffer, 3, "%i", (int32_t)Com_Clamp( 0, 120, trap_Cvar_VariableValue( "g_warmup" ) ) );
 	}
 	else
 	{
@@ -4377,7 +4377,7 @@ static void UI_AdvancedServerMenu_Init(int fromMenu)
 UI_ServerAdvancedOptions
 =================
 */
-void UI_ServerAdvancedOptions(int fromMenu)
+void UI_ServerAdvancedOptions(int32_t fromMenu)
 {
 	UI_AdvancedServerMenu_Init(fromMenu);
 	UI_PushMenu( &s_advancedserver.menu );
@@ -4387,14 +4387,14 @@ void UI_ServerAdvancedOptions(int fromMenu)
 // Giving credit where credit is due - I stole most of this from Jake's code.
 void UI_BuildGroupTable(void)
 {
-	int		howManySkins = 0;
+	int32_t		howManySkins = 0;
 	char	filename[128];
 	char	dirlist[8192];
-	int		i;
+	int32_t		i;
 	char*	dirptr;
 	char*	race_list;
-	int		numdirs;
-	int		dirlen;
+	int32_t		numdirs;
+	int32_t		dirlen;
 	char current_race_name[125];
 	char *max_place;
 	char *s;
@@ -4455,9 +4455,9 @@ void UI_BuildGroupTable(void)
 
 }
 
-static int UI_SearchGroupTable(char *current_race)
+static int32_t UI_SearchGroupTable(char *current_race)
 {
-	int i;
+	int32_t i;
 
 	i=0;
 	while (skinsForRace[i][0])

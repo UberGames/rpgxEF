@@ -60,7 +60,7 @@ they want their characters to play ingame.
 #define LOW_MEMORY			(5 * 1024 * 1024)
 
 //Defined here so the PlayerModel APIs can handle them :)
-static void PlayerEmotes_FillEmotesArray( int emoteCategory );
+static void PlayerEmotes_FillEmotesArray( int32_t emoteCategory );
 
 static void PlayerEmotes_UpdateScrollBar( menuaction_s *bar );
 static void PlayerEmotes_SetupScrollBar( menuaction_s *bar );
@@ -70,7 +70,7 @@ static void PlayerEmotes_SetupScrollBar( menuaction_s *bar );
 /*typedef struct {
 	char	emoteNameUpr[16];
 
-	int		emoteNum;
+	int32_t		emoteNum;
 } listEmote_t;*/
 
 //TiM - data necessary for a scroll bar
@@ -79,7 +79,7 @@ typedef struct
 	qboolean		mouseDown;
 	qboolean		doubleStep;
 
-	int				yStart;
+	int32_t				yStart;
 } scrollData_t;
 
 typedef struct {
@@ -108,14 +108,14 @@ typedef struct {
 	menufield_s			modelOffset;	//button used to enter in modeloffset data
 	
 	menuaction_s		emoteBind;		//keybind(s) for this emote
-	int					bindValue;		//ASCII index of the key this emote is bound to
+	int32_t					bindValue;		//ASCII index of the key this emote is bound to
 	qboolean			keyBindActive;	//True while the code is waiting for the user to enter a new emote bind
 	
 	menubitmap_s		addFav;			//Add Favorites Button
 	menubitmap_s		playEmote;		//Play Emote Button
 
-	int					selectedEmote;
-	int					favvedEmote;	//the cvar index this emote is favved at
+	int32_t					selectedEmote;
+	int32_t					favvedEmote;	//the cvar index this emote is favved at
 
 	//playermodel rendering variables
 	menubitmap_s		playerMdl;
@@ -132,15 +132,15 @@ typedef struct {
 	qhandle_t			corner_lr_4_18;
 
 	//active emotes storage definitions
-	int					emoteListOffset;	//offset that is incremented/decremented by the arrow tools
-	int					numEmotes;		//number of emotes in main list
+	int32_t					emoteListOffset;	//offset that is incremented/decremented by the arrow tools
+	int32_t					numEmotes;		//number of emotes in main list
 	menubitmap_s		emotesMenu[MAX_MENULISTITEMS];	//buttons to display the active emote set
 	char				emoteNames[MAX_MENULISTITEMS][25]; //local store for the emotes name
-	int					mainEmotesList[175];	//the primary emote list, reset each time a new category is picked
+	int32_t					mainEmotesList[175];	//the primary emote list, reset each time a new category is picked
 
-	int					prevOffset;	//Save the modeloffset so as to execute the command when we leave teh menu if changed
+	int32_t					prevOffset;	//Save the modeloffset so as to execute the command when we leave teh menu if changed
 
-	int					currentMenu; //Save the current menu... we need this to refresh the fav menu if need be
+	int32_t					currentMenu; //Save the current menu... we need this to refresh the fav menu if need be
 
 	//ie this menu was called via the console ( ie a key bind instead of from the main menu)
 	qboolean			fromConsole;
@@ -155,7 +155,7 @@ playerEmotes_t s_playerEmotes;
 Player_SpinPlayer
 =================
 */
-static void PlayerEmotes_SpinPlayer( void* ptr, int event)
+static void PlayerEmotes_SpinPlayer( void* ptr, int32_t event)
 {
 	if ( event == QM_ACTIVATED ) 
 	{
@@ -234,12 +234,12 @@ player model onscreen
 do the emote animation
 =================
 */
-static void Player_DoEmote( int emoteNum ) {
+static void Player_DoEmote( int32_t emoteNum ) {
 	emoteList_t		*emote;
-	int	torsoAnim	= BOTH_STAND1;
-	int	legsAnim	= BOTH_STAND1;
-	int	legsTimer	= 0;
-	int torsoTimer	= 0;
+	int32_t	torsoAnim	= BOTH_STAND1;
+	int32_t	legsAnim	= BOTH_STAND1;
+	int32_t	legsTimer	= 0;
+	int32_t torsoTimer	= 0;
 
 	emote = &bg_emoteList[ emoteNum ];
 
@@ -294,10 +294,10 @@ Called upon new list defines as
 well as when the arrow key is clicked
 ===============
 */
-static void PlayerEmotes_BuildEmotesList( int *emoteListOffset ) 
+static void PlayerEmotes_BuildEmotesList( int32_t *emoteListOffset ) 
 {
-	int i;
-	int offset;
+	int32_t i;
+	int32_t offset;
 
 	//clamp the offset value 
 	if ( *emoteListOffset < 0 ) {
@@ -343,8 +343,8 @@ new category.  Then it reloads the main list
 with these new emotes
 ===============
 */
-static void PlayerEmotes_FillEmotesArray( int emoteCategory ) {
-	int	i;
+static void PlayerEmotes_FillEmotesArray( int32_t emoteCategory ) {
+	int32_t	i;
 	emoteList_t	*emote;
 
 	//reset the list and counting data
@@ -380,7 +380,7 @@ static void PlayerEmotes_FillEmotesArray( int emoteCategory ) {
 				char consoleName[25];
 				char fullName[32];
 				char cvarValue[5];
-				int emoteNum;
+				int32_t emoteNum;
 
 				//favorites and recent are basically the same, so with a quick condition here,
 				//we can re-use the same code for both :)
@@ -393,7 +393,7 @@ static void PlayerEmotes_FillEmotesArray( int emoteCategory ) {
 				for ( i = NUM_CVAR_STORES; i > 0; i-- ) {
 					Com_sprintf( fullName, sizeof( fullName ), "%s%i", consoleName, i );
 
-					//even tho we are loading int values from these CVARs, we'll be handling them like strings at first.
+					//even tho we are loading int32_t values from these CVARs, we'll be handling them like strings at first.
 					//reason being, "0" is a valid emote number, "" isn't
 					trap_Cvar_VariableStringBuffer( fullName, cvarValue, sizeof( cvarValue ) );
 
@@ -402,7 +402,7 @@ static void PlayerEmotes_FillEmotesArray( int emoteCategory ) {
 					
 					emoteNum = atoi( cvarValue );
 
-					//error check the int
+					//error check the int32_t
 					if ( emoteNum >= bg_numEmotes || emoteNum < 0 ) {
 						continue;
 					}
@@ -427,7 +427,7 @@ static void PlayerEmotes_FillEmotesArray( int emoteCategory ) {
 		case ID_INJURED:
 		case ID_MISC:
 			{
-				int	emoteIndex;
+				int32_t	emoteIndex;
 				
 				//find out the actual ID we need from that lot up there
 				//lol a case in a case
@@ -493,9 +493,9 @@ Now to handle the tonnes of button
 checks n' stuff
 ===============
 */
-static void PlayerEmotes_HandleNewEmote( int buttonId ) {			
-	int i;
-	int	buttonPressed = buttonId - 100; //offset by 100 so they wouldn't get in the way
+static void PlayerEmotes_HandleNewEmote( int32_t buttonId ) {			
+	int32_t i;
+	int32_t	buttonPressed = buttonId - 100; //offset by 100 so they wouldn't get in the way
 	char binding[256];
 
 	//get emote from stored list
@@ -522,7 +522,7 @@ static void PlayerEmotes_HandleNewEmote( int buttonId ) {
 	//check for favorites
 	s_playerEmotes.favvedEmote = 0;
 	for ( i = 1; i <= NUM_CVAR_STORES; i++ ) {
-		if ( (int)trap_Cvar_VariableValue( va( FAV_CVAR "%i", i ) ) == s_playerEmotes.selectedEmote ) {
+		if ( (int32_t)trap_Cvar_VariableValue( va( FAV_CVAR "%i", i ) ) == s_playerEmotes.selectedEmote ) {
 			s_playerEmotes.favvedEmote = i;
 			s_playerEmotes.addFav.textEnum = MBT_KILL_FAV_EMOTE;
 			break;
@@ -550,7 +550,7 @@ PlayerEmotes_HandleFav
 ===============
 */
 static void PlayerEmotes_HandleFav( void ) {
-	int		i;
+	int32_t		i;
 	char*	cvar;
 
 
@@ -563,15 +563,15 @@ static void PlayerEmotes_HandleFav( void ) {
 		cvar = va( FAV_CVAR "%i", s_playerEmotes.favvedEmote );
 		
 		//double chack. make sure that we've got the right emote
-		if ( (int)trap_Cvar_VariableValue( cvar ) == s_playerEmotes.selectedEmote ) {
+		if ( (int32_t)trap_Cvar_VariableValue( cvar ) == s_playerEmotes.selectedEmote ) {
 			//okay, all good.  unfave it
 			trap_Cvar_Set( cvar, "-1" );
 
 			//shuffle all the other favorites up the list
 			for ( i = s_playerEmotes.favvedEmote + 1; i <= NUM_CVAR_STORES; i++ ) {
-				if ( (int)trap_Cvar_VariableValue( va( FAV_CVAR "%i", i - 1 ) ) == -1 ) {
+				if ( (int32_t)trap_Cvar_VariableValue( va( FAV_CVAR "%i", i - 1 ) ) == -1 ) {
 					//set the previous CVAR, the value of this CVAR regardless if it's -1 or not
-					trap_Cvar_SetValue( va( FAV_CVAR "%i", i - 1 ), (int)trap_Cvar_VariableValue( va( FAV_CVAR "%i", i ) ) );
+					trap_Cvar_SetValue( va( FAV_CVAR "%i", i - 1 ), (int32_t)trap_Cvar_VariableValue( va( FAV_CVAR "%i", i ) ) );
 
 					//and then flush out this CVAR
 					trap_Cvar_Set( va( FAV_CVAR "%i", i ), "-1" );
@@ -592,7 +592,7 @@ static void PlayerEmotes_HandleFav( void ) {
 		for ( i = 1; i <= NUM_CVAR_STORES; i++ ) {
 			
 			cvar = va( FAV_CVAR "%i", i );
-			if ( (int)trap_Cvar_VariableValue( cvar ) == -1 ) {
+			if ( (int32_t)trap_Cvar_VariableValue( cvar ) == -1 ) {
 				//found a slot
 				trap_Cvar_SetValue( cvar, s_playerEmotes.selectedEmote );
 				s_playerEmotes.favvedEmote = i;
@@ -605,7 +605,7 @@ static void PlayerEmotes_HandleFav( void ) {
 			//okay... so we're going to push the top one off, and shuffle the rest up
 			for ( i = 2; i <= NUM_CVAR_STORES; i++ ) {
 				cvar = va( FAV_CVAR "%i", i-1 );
-				trap_Cvar_SetValue( cvar, (int)trap_Cvar_VariableValue( va( FAV_CVAR"%i", i ) ) );
+				trap_Cvar_SetValue( cvar, (int32_t)trap_Cvar_VariableValue( va( FAV_CVAR"%i", i ) ) );
 
 				if ( i == NUM_CVAR_STORES ) {
 					trap_Cvar_SetValue( va( FAV_CVAR"%i", i ), s_playerEmotes.selectedEmote );
@@ -628,7 +628,7 @@ PlayerEmotes_ExecuteOffset
 ===============
 */
 static void PlayerEmotes_ExecuteOffset( void ) {
-	int offset;
+	int32_t offset;
 
 	offset = atoi( s_playerEmotes.modelOffset.field.buffer );
 
@@ -641,7 +641,7 @@ static void PlayerEmotes_ExecuteOffset( void ) {
 PlayerEmotes_Event
 ===============
 */
-static void PlayerEmotes_Event( void* ptr, int event ) {
+static void PlayerEmotes_Event( void* ptr, int32_t event ) {
 
 	if ( event != QM_ACTIVATED )
 		return;
@@ -865,12 +865,12 @@ PlayerEmotes_DrawBinding
 static void PlayerEmotes_DrawBinding( void *self ) {
 	qboolean		focus;
 	menuaction_s	*action;
-	int				x,y;
-	int				bind;
+	int32_t				x,y;
+	int32_t				bind;
 	char			name[20];
-	int				buttonColor;
-	int				textColor;
-	int				width;
+	int32_t				buttonColor;
+	int32_t				textColor;
+	int32_t				width;
 
 	action = (menuaction_s *)self;
 
@@ -947,10 +947,10 @@ static void PlayerEmotes_DrawScrollBar( void *self )
 {
 	qboolean		focus;
 	menuaction_s	*bar;
-	int				*y;
-	int				color;
-	int				newY;
-	int				dif;
+	int32_t				*y;
+	int32_t				color;
+	int32_t				newY;
+	int32_t				dif;
 
 	bar = (menuaction_s *)self;
 
@@ -1007,7 +1007,7 @@ PlayerEmotes_SetupScrollBar
 */
 static void PlayerEmotes_SetupScrollBar( menuaction_s *bar )
 {
-	int height;
+	int32_t height;
 
 	//first make sure it's worth enabling this at all
 	if ( s_playerEmotes.numEmotes <= MAX_MENULISTITEMS )
@@ -1061,9 +1061,9 @@ static void PlayerEmotes_UpdateScrollBar( menuaction_s *bar )
 PlayerEmotes_KeyEvent
 ===============
 */
-static sfxHandle_t PlayerEmotes_KeyEvent ( int key ) {
+static sfxHandle_t PlayerEmotes_KeyEvent ( int32_t key ) {
 	menucommon_s	*s;
-	int				i;
+	int32_t				i;
 	char			command[256];
 
 	s = (menucommon_s *)Menu_ItemAtCursor( &s_playerEmotes.menu );
@@ -1133,7 +1133,7 @@ static sfxHandle_t PlayerEmotes_KeyEvent ( int key ) {
 	if ( key == K_MOUSE2 && ( s->id >= ID_EMOTELIST1 && s->id <= ID_EMOTELIST12 ) ) {
 		PlayerEmotes_ExecuteOffset();
 		
-		int emoteId = s_playerEmotes.mainEmotesList[ ((s->id - 100)-1)+s_playerEmotes.emoteListOffset ];
+		int32_t emoteId = s_playerEmotes.mainEmotesList[ ((s->id - 100)-1)+s_playerEmotes.emoteListOffset ];
 
 		if ( emoteId >= 0 && emoteId < bg_numEmotes ) {
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait 5;emote %s\n", bg_emoteList[emoteId].name ) );
@@ -1165,8 +1165,8 @@ PlayerEmotes_Init
 ===============
 */
 static void PlayerEmotes_Init( void ) {
-	int			x, y;
-	int			i;
+	int32_t			x, y;
+	int32_t			i;
 	qboolean	showRecent = qfalse;
 	
 	UI_PlayerEmotes_Cache();
@@ -1533,14 +1533,14 @@ static void PlayerEmotes_Init( void ) {
 
 	//Emote data initialization
 	//trap_Cvar_VariableStringBuffer( "modelOffset", modelOffset, sizeof( modelOffset ) );
-	s_playerEmotes.prevOffset = (int)trap_Cvar_VariableValue("modelOffset");
+	s_playerEmotes.prevOffset = (int32_t)trap_Cvar_VariableValue("modelOffset");
 	Q_strncpyz( s_playerEmotes.modelOffset.field.buffer, va("%i", s_playerEmotes.prevOffset), s_playerEmotes.modelOffset.field.maxchars );
 
 	s_playerEmotes.selectedEmote = -1;
 
 	//cheesy hack, but it works. if there's nothing in the recent array, do display all
 	for ( i = 1; i <= NUM_CVAR_STORES; i++ ) {
-		if ( (int)trap_Cvar_VariableValue( va( "ui_recentEmote%i", i ) ) >= 0 ) {
+		if ( (int32_t)trap_Cvar_VariableValue( va( "ui_recentEmote%i", i ) ) >= 0 ) {
 			showRecent = qtrue;
 			break;
 		}

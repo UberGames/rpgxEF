@@ -14,8 +14,8 @@ MAIN MENU
 extern void UI_SetupWeaponsMenu( void );
 
 void UI_QuitMenu(void);
-static void QuitMenuInterrupt(int labelId);
-//static void QuitMenu_ChangeAreaFocus(int newSystem);
+static void QuitMenuInterrupt(int32_t labelId);
+//static void QuitMenu_ChangeAreaFocus(int32_t newSystem);
 
 static void UI_HolomatchIn_Menu(void);
 
@@ -139,21 +139,21 @@ extern char* gamenames[];
 
 typedef struct {
 	char	adrstr[MAX_ADDRESSLENGTH];
-	int		start;
+	int32_t		start;
 } pinglist_t;
 
 typedef struct servernode_s {
 	char	adrstr[MAX_ADDRESSLENGTH];
 	char	hostname[MAX_HOSTNAMELENGTH];
 	char	mapname[MAX_MAPNAMELENGTH];
-	int		numclients;
-	int		maxclients;
-	int		pingtime;
-	int		gametype;
+	int32_t		numclients;
+	int32_t		maxclients;
+	int32_t		pingtime;
+	int32_t		gametype;
 	char	gamename[12];
-	int		nettype;
-	int		minPing;
-	int		maxPing;
+	int32_t		nettype;
+	int32_t		minPing;
+	int32_t		maxPing;
 	qboolean	isPure;
 	qboolean	isExpansion;
 } servernode_t; 
@@ -166,12 +166,12 @@ typedef struct {
 typedef struct { //Struct to hold all the network relevant parameters
 	
 	qboolean	refreshservers;
-	int			currentping;
-	int			nextpingtime;
-	int			numservers;
-	int			maxservers;
+	int32_t			currentping;
+	int32_t			nextpingtime;
+	int32_t			numservers;
+	int32_t			maxservers;
 	
-	int			refreshtime;
+	int32_t			refreshtime;
 
 	pinglist_t		pinglist[MAX_PINGREQUESTS];
 	table_t			table[MAX_FAVORITESERVERS];
@@ -223,21 +223,21 @@ typedef struct
 
 
 	/*sfxHandle_t			weaponnamesnd[UI_NUM_WEAPONS];*/
-	int					timer;
-	int					currentWeapon;
+	int32_t					timer;
+	int32_t					currentWeapon;
 	playerInfo_t		playerinfo;
 
 	vec3_t				playerViewangles;
 	vec3_t				playerMoveangles;
-	int					playerLegs;
-	int					playerTorso;
-	int					playerWeapon;
+	int32_t					playerLegs;
+	int32_t					playerTorso;
+	int32_t					playerWeapon;
 	qboolean			playerChat;
 	//qhandel_t			rpgxlogo; //RPG-X HACK
 
 	//RPG-X | Phenix | 18/11/2004 | Adding RPG-X logo
 	qhandle_t		logoModel;
-	int				startTime;
+	int32_t				startTime;
 
 	qhandle_t		graphic_12_8_LU;
 	qhandle_t		graphic_12_8_LL;
@@ -253,8 +253,8 @@ typedef struct
 	qhandle_t		activateSound;
 
 	network_t		networkParms;				//struct to hold all the data we need when pinging for online fav servers
-	int				favOffset;					//int offset when scrolling the list
-	int				selectedFav;				//currently selected server ( as its index in the array )
+	int32_t				favOffset;					//int32_t offset when scrolling the list
+	int32_t				selectedFav;				//currently selected server ( as its index in the array )
 	menubitmap_s	favMenu[MAX_FAVBUTTONS];	//buttons for slecting servers
 	char*			favList[MAX_FAVBUTTONS];	//strings to link to the buffers
 
@@ -645,7 +645,7 @@ static struct
 InitialSetup_Event
 =================
 */
-static void InitialSetup_Event( void* ptr, int notification )
+static void InitialSetup_Event( void* ptr, int32_t notification )
 {
 	if (notification != QM_ACTIVATED)
 	{
@@ -673,7 +673,7 @@ static void InitialSetup_Event( void* ptr, int notification )
 InitialSetupApplyChanges - 
 =================
 */
-static void InitialSetupApplyChanges( void *unused, int notification )
+static void InitialSetupApplyChanges( void *unused, int32_t notification )
 {
 	if (notification != QM_ACTIVATED)
 	{
@@ -694,7 +694,7 @@ static void InitialSetupApplyChanges( void *unused, int notification )
 M_InitialSetupMenu_Key
 =================
 */
-static sfxHandle_t M_InitialSetupMenu_Key (int key)
+static sfxHandle_t M_InitialSetupMenu_Key (int32_t key)
 {
 	if (key == K_ESCAPE)
 	{
@@ -711,7 +711,7 @@ M_InitialSetupMenu_Graphics
 */
 static void M_InitialSetupMenu_Graphics (void)
 {
-	int y;
+	int32_t y;
 
 	UI_MenuFrame2(&s_initialsetup.menu);
 
@@ -760,7 +760,7 @@ InitialSetup_SetValues
 static void InitialSetup_SetValues(void)
 {
 	char buffer[32];
-	int *language;
+	int32_t *language;
 
 	trap_Cvar_VariableStringBuffer( "g_language", buffer, 32 );
 	language = s_textlanguage_Names;
@@ -847,8 +847,8 @@ InitialSetupMenu_Init
 */
 static void InitialSetupMenu_Init( void ) 
 {
-	int x = 179;
-	int y = 260;
+	int32_t x = 179;
+	int32_t y = 260;
 
 	InitialSetupMenu_Cache();
 
@@ -991,14 +991,14 @@ static void UI_InitialSetupMenu(void)
 
 //TiM - Functions needed for the quick connect stuff
 
-int ArenaServers_MaxPing( void );
+int32_t ArenaServers_MaxPing( void );
 
 /*
 =================
 MainArenaServers_Compare
 =================
 */
-static int QDECL MainArenaServers_Compare( const void *arg1, const void *arg2 ) {
+static int32_t QDECL MainArenaServers_Compare( const void *arg1, const void *arg2 ) {
 	float			f1;
 	float			f2;
 	table_t*		t1;
@@ -1038,9 +1038,9 @@ MainArenaServers_UpdateMenu
 =================
 */
 static void MainArenaServers_UpdateMenu( void ) {
-	int				i;
-	//int				j;
-	//int				count;
+	int32_t				i;
+	//int32_t				j;
+	//int32_t				count;
 	//char*			buff;
 	//servernode_t*	servernodeptr;
 	//table_t*		tableptr;
@@ -1148,11 +1148,11 @@ static void MainArenaServers_UpdateMenu( void ) {
 MainArenaServers_Insert
 =================
 */
-static void MainArenaServers_Insert( char* adrstr, char* info, int pingtime )
+static void MainArenaServers_Insert( char* adrstr, char* info, int32_t pingtime )
 {
 	servernode_t*	servernodeptr;
 	char*			s;
-	int				i;
+	int32_t				i;
 
 	if (s_main.networkParms.numservers >= s_main.networkParms.maxservers ) {
 		// list full;
@@ -1225,8 +1225,8 @@ static void MainArenaServers_StopRefresh( void )
 	if ( s_main.networkParms.numservers < s_main.networkParms.maxservers )
 	{
 		char infoString[MAX_INFO_STRING];
-		int	i;
-		int j;
+		int32_t	i;
+		int32_t j;
 
 		infoString[0]='\0';
 		//write into the host name the IP that didn't work			
@@ -1268,10 +1268,10 @@ MainArenaServers_DoRefresh
 
 static void MainArenaServers_DoRefresh( void )
 {
-	int		i;
-	int		j;
-	int		time;
-	int		maxPing;
+	int32_t		i;
+	int32_t		j;
+	int32_t		time;
+	int32_t		maxPing;
 	char	adrstr[MAX_ADDRESSLENGTH];
 	char	info[MAX_INFO_STRING];
 
@@ -1386,7 +1386,7 @@ MainArenaServers_StartRefresh
 */
 static void MainArenaServers_StartRefresh( void )
 {
-	int		i;
+	int32_t		i;
 	char	address[MAX_ADDRESSLENGTH];
 
 	memset( &s_main.networkParms, 0, sizeof( s_main.networkParms ) );
@@ -1428,7 +1428,7 @@ static void MainArenaServers_StartRefresh( void )
 Main_MenuEvent
 =================
 */
-static void Main_MenuEvent (void* ptr, int event) 
+static void Main_MenuEvent (void* ptr, int32_t event) 
 {
 	//void**		weaponptr;
 
@@ -1569,9 +1569,9 @@ static void Main_MenuEvent (void* ptr, int event)
 UI_MainMenuButtons
 =================
 */
-static void UI_MainMenuButtons(int count)
+static void UI_MainMenuButtons(int32_t count)
 {
-	int i, j;
+	int32_t i, j;
 
 	trap_R_SetColor( colorTable[CT_DKPURPLE1]);
 	
@@ -1592,8 +1592,8 @@ static void UI_MainMenuButtons(int count)
 typedef struct
 {
 	qhandle_t	modelhandle;		// model Handle
-	int			pitch;
-	int			roll;
+	int32_t			pitch;
+	int32_t			roll;
 	vec3_t		mid;
 	char*		modelname;
 } weapongraphics_s;
@@ -1684,7 +1684,7 @@ Phenix
 
 void P_WeaponsMenu_Blinkies (void)
 {
-	int i;
+	int32_t i;
 
 	for (i=0;i<AMG_MAX;++i)
 	{
@@ -1775,7 +1775,7 @@ static void Player_DrawPlayer( void ) //*self )
 Player_SpinPlayer
 =================
 */
-static void Player_SpinPlayer( void* ptr, int event)
+static void Player_SpinPlayer( void* ptr, int32_t event)
 {
 	if ( event == QM_ACTIVATED ) 
 	{
@@ -1910,7 +1910,7 @@ UI_DrawWeapon
 
 ================
 */
-static void CacheWeaponModel(int i);
+static void CacheWeaponModel(int32_t i);
 /*static void UI_DrawWeapon(void)
 {
 	vec3_t	origin = {50,0,2};
@@ -1949,14 +1949,14 @@ M_MainMenu_Graphics
 
 static void M_MainMenu_Graphics (void)
 {
-	int y,pad; //i removed
+	int32_t y,pad; //i removed
 //	void**		weaponptr;
 	char string[256];
 	char temp[128];
-	int i;
+	int32_t i;
 	float	scale;
 	servernode_t*	node;
-	int		style;
+	int32_t		style;
 
 	trap_R_ClearScene();
 
@@ -2278,7 +2278,7 @@ static void Main_MenuDraw (void)
 	//UI_drawRPGXLogo();
 }
 
-static void CacheWeaponModel(int i)
+static void CacheWeaponModel(int32_t i)
 {
 //	vec3_t			mins, maxs;
 	//weapon_graphics[i].modelhandle = trap_R_RegisterModel( weapon_graphics[i].modelname);
@@ -2297,7 +2297,7 @@ MainMenu_Cache
 //extern vmCvar_t	ui_precacheweapons;
 void MainMenu_Cache( void ) 
 {
-	int i;
+	int32_t i;
 	gitem_t *	item;
 
 	i = 0;
@@ -2352,7 +2352,7 @@ UI_MainMenu_Init
 */
 static void UI_MainMenu_Init(void)
 {
-	int i;
+	int32_t i;
 
 	memset( &s_main, 0, sizeof(mainmenu_t) );
 
@@ -2716,7 +2716,7 @@ LCARS IN MENU
 M_HolomatchIn_Key
 =================
 */
-static sfxHandle_t M_HolomatchIn_Key (int key)
+static sfxHandle_t M_HolomatchIn_Key (int32_t key)
 {
 	// Advance to Main Menu
 	if ((key == K_SPACE) || (key == K_ENTER) || (key == K_ESCAPE) || (key == K_MOUSE1))
@@ -2734,7 +2734,7 @@ HolomatchInMenu_Draw
 */
 static void HolomatchInMenu_Draw(void)
 {
-	int len,x,y;
+	int32_t len,x,y;
 
 	x = 30;
 	y = 15;
@@ -2856,7 +2856,7 @@ LCARS OUT MENU
 M_LCARSOut_Key
 =================
 */
-static sfxHandle_t M_Leaving_Key (int key)
+static sfxHandle_t M_Leaving_Key (int32_t key)
 {
 	// Get out now!!
 	if ((key == K_SPACE) || (key == K_ENTER) || (key == K_ESCAPE) || (key == K_MOUSE1))
@@ -2875,7 +2875,7 @@ LeavingMenu_Draw
 */
 static void LeavingMenu_Draw(void)
 {
-	int len,x,y;
+	int32_t len,x,y;
 
 	x = 30;
 	y = 15;
@@ -2970,7 +2970,7 @@ UI_Setup_MenuButtons
 */
 void UI_Setup_MenuButtons(void)
 {
-	int i,max;
+	int32_t i,max;
 
 	trap_R_SetColor( colorTable[CT_DKPURPLE1]);
 
@@ -2988,9 +2988,9 @@ void UI_Setup_MenuButtons(void)
 M_Quit_SplitDesc
 =================
 */
-/*static void M_Quit_SplitDesc(int descI)
+/*static void M_Quit_SplitDesc(int32_t descI)
 {
-	int	lineWidth,currentWidth,charCnt,currentLineI;
+	int32_t	lineWidth,currentWidth,charCnt,currentLineI;
 	const char *s, *holds;
 	char holdChar[2];
 
@@ -3057,7 +3057,7 @@ M_Quit_SplitDesc
 QuitMenu_Label
 =================
 */
-/*menutext_s *QuitMenu_Label(int labelId)
+/*menutext_s *QuitMenu_Label(int32_t labelId)
 {
 	menutext_s *label;
 
@@ -3113,7 +3113,7 @@ QuitMenu_Label
 QuitMenuInterrupt
 =================
 */
-static void QuitMenuInterrupt(int labelId)
+static void QuitMenuInterrupt(int32_t labelId)
 {
 	// ten seconds from now, start the auto animation again
 	quitmenu_graphics[QMG_ACTIVE_SYSTEM].timer = uis.realtime + 10000;
@@ -3124,11 +3124,11 @@ static void QuitMenuInterrupt(int labelId)
 QuitMenu_ChangeAreaFocus
 =================
 */
-/*static void QuitMenu_ChangeAreaFocus(int newSystem)
+/*static void QuitMenu_ChangeAreaFocus(int32_t newSystem)
 {
-	int swoopI;
-	int descI;
-	int oldSystem;
+	int32_t swoopI;
+	int32_t descI;
+	int32_t oldSystem;
 	menubitmap_s *bitmap;
 	menutext_s *oldLabel,*newLabel;
 
@@ -3204,7 +3204,7 @@ QuitMenu_ChangeAreaFocus
 M_Quit_Event
 ===============
 */
-static void M_Quit_Event (void* ptr, int notification)
+static void M_Quit_Event (void* ptr, int32_t notification)
 {
 	if (notification != QM_ACTIVATED)
 		return;
@@ -3231,7 +3231,7 @@ static void M_Quit_Event (void* ptr, int notification)
 Quit_MenuKey
 ===============
 */
-static sfxHandle_t Quit_MenuKey( int key )
+static sfxHandle_t Quit_MenuKey( int32_t key )
 {
 	switch ( key )
 	{
@@ -3263,7 +3263,7 @@ Quit_MenuBlinkies
 */
 static void Quit_MenuBlinkies( void )
 {
-	int /*activeSystem,*/i;
+	int32_t /*activeSystem,*/i;
 
 	// Move bottom blip
 	if ( quitmenu_graphics[QMG_BOTTOM_BLIP].timer < uis.realtime )
@@ -3376,7 +3376,7 @@ Quit_MenuDraw
 */
 static void Quit_MenuDraw( void )
 {
-	int i,y;
+	int32_t i,y;
 
 	// Draw the basic screen layout
 	UI_MenuFrame(&s_quit.menu);
@@ -3493,7 +3493,7 @@ UI_QuitMenu
 */
 static void Quit_MenuInit(void)
 {
-	int y,x,i;
+	int32_t y,x,i;
 
 	UI_QuitMenu_Cache(); 
 

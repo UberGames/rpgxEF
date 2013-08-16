@@ -43,8 +43,8 @@ static void PlayerSettings_SetMenuItems( void );
 
 typedef struct {
 	//char	name[36];
-	int		classIndex;
-	int		rankIndex;
+	int32_t		classIndex;
+	int32_t		rankIndex;
 
 	//char	age[36];
 	//char	race[36];
@@ -56,14 +56,14 @@ typedef struct {
 typedef struct {
 	menuframework_s		menu;
 
-	int					prevMenu;
+	int32_t					prevMenu;
 
 	//listdata
 	char				profileList[MAX_PROFILES][32];
 	char*				profileListPtr[MAX_PROFILES];
 
 	//profile loader
-	/*int					numProfiles;
+	/*int32_t					numProfiles;
 	menulist_s			profiles;
 	menubitmap_s		loadProfile;
 
@@ -104,13 +104,13 @@ typedef struct {
 	qhandle_t			fxBasePic;
 	qhandle_t			fxPic[7];
 	playerInfo_t		playerinfo;
-	int					current_fx;
+	int32_t					current_fx;
 	char				playerModel[MAX_QPATH];
 
 	char				*rankList[MAX_RANKS+1]; //TiM: Local buffer for ranks data ( + 1 slot for 'Other' field + 1 for null terminator)
-	int					numRanks;
+	int32_t					numRanks;
 	char				*rankSetList[MAX_RANKSETS+1];
-	int					numRankSets;
+	int32_t					numRankSets;
 
 	qboolean			settingsChanged;		//if settings have been altered, enable this so as to enable the 'commit' button
 	qboolean			displayChangedSettings;
@@ -118,19 +118,19 @@ typedef struct {
 	initialData_t		initData;				//TiM | Storage for all our initial data. So if/when we change the data, we'll know exactly when to make the commit button solid
 
 	char				*classNameList[MAX_CLASSES+1]; //+2 = other + null
-	int					numClasses;
+	int32_t					numClasses;
 
 	char				*classSetList[MAX_CLASSSETS+1];
-	int					numClassSets;
+	int32_t					numClassSets;
 } playersettings_t;
 
 static playersettings_t	s_playersettings;
 
-//static int gamecodetoui[] = {4,2,3,0,5,1,6};
-//static int uitogamecode[] = {4,6,2,3,1,5,7};
+//static int32_t gamecodetoui[] = {4,2,3,0,5,1,6};
+//static int32_t uitogamecode[] = {4,6,2,3,1,5,7};
 
 /*
-static int handicap_items[] = 
+static int32_t handicap_items[] = 
 {
 	MNT_HANDICAP_NONE,
 	MNT_HANDICAP_95,
@@ -248,11 +248,11 @@ TiM: Loads user profiles from external cfgs
 */
 
 /*static void PlayerSettings_LoadProfiles( void ) {
-	int	numDirs;
+	int32_t	numDirs;
 	char dirList[4096];
 	char* dirptr;
-	int	dirlen;
-	int i;
+	int32_t	dirlen;
+	int32_t i;
 
 	//get list
 	numDirs = trap_FS_GetFileList( "profiles", ".cfg", dirList, sizeof( dirList ) );
@@ -371,7 +371,7 @@ PlayerSettings_AffectModel
 {
 	char	 buf[MAX_QPATH];
 	char	 tempBuf[MAX_QPATH];
-	int		 i;
+	int32_t		 i;
 	char*	 slash;
 	
 	trap_Cvar_VariableStringBuffer( "model", buf, sizeof( buf ) );
@@ -467,7 +467,7 @@ static void PlayerSettings_DrawPlayer( void *self )
 	UI_PlayerInfo_SetInfo( &s_playersettings.playerinfo, BOTH_WALK1, BOTH_WALK1, viewangles, vec3_origin, WP_0, s_playersettings.height.curvalue, s_playersettings.weight.curvalue, qfalse );
 
 	b = (menubitmap_s*) self;
-	UI_DrawPlayer( (float)b->generic.x, (float)b->generic.y, (float)b->width, (float)b->height, origin, &s_playersettings.playerinfo, (int)(uis.realtime/1.5) );
+	UI_DrawPlayer( (float)b->generic.x, (float)b->generic.y, (float)b->width, (float)b->height, origin, &s_playersettings.playerinfo, (int32_t)(uis.realtime/1.5) );
 
 	/*if ( uis.spinView == qtrue && !trap_Key_IsDown( K_MOUSE1 )) {
 		uis.spinView = qfalse;
@@ -560,7 +560,7 @@ static void PlayerSettings_SaveChanges( void )
 PlayerSettings_MenuKey
 =================
 */
-static sfxHandle_t PlayerSettings_MenuKey( int key ) 
+static sfxHandle_t PlayerSettings_MenuKey( int32_t key ) 
 {
 	//TiM - Don't save it this way
 	/*if( key == K_MOUSE2 || key == K_ESCAPE ) 
@@ -582,7 +582,7 @@ PlayerSettings_SetMenuItems
 */
 static void PlayerSettings_SetMenuItems( void ) 
 {
-	int		i;
+	int32_t		i;
 
 	// Player Name
 	Q_strncpyz( s_playersettings.name.field.buffer, UI_Cvar_VariableString("name"), sizeof(s_playersettings.name.field.buffer) );
@@ -714,7 +714,7 @@ static void PlayerSettings_SetMenuItems( void )
 PlayerSettings_SpinPlayer
 =================
 */
-static void PlayerSettings_SpinPlayer( void* ptr, int event)
+static void PlayerSettings_SpinPlayer( void* ptr, int32_t event)
 {
 	if ( event == QM_ACTIVATED ) 
 	{
@@ -728,7 +728,7 @@ static void PlayerSettings_SpinPlayer( void* ptr, int event)
 PlayerSettings_MenuEvent
 =================
 */
-static void PlayerSettings_MenuEvent( void* ptr, int event ) 
+static void PlayerSettings_MenuEvent( void* ptr, int32_t event ) 
 {
 	if( event != QM_ACTIVATED ) 
 	{
@@ -929,7 +929,7 @@ void PlayerSettingsMenu_Graphics (void)
 	}
 
 	{
-		int y = 338;
+		int32_t y = 338;
 
 		if ( s_playersettings.rankSets.numitems > 1 )
 			y += 24;
@@ -969,11 +969,11 @@ static void PlayerSettings_MenuDraw (void)
 PlayerSettings_MenuInit
 =================
 */
-static void PlayerSettings_MenuInit(int menuFrom) 
+static void PlayerSettings_MenuInit(int32_t menuFrom) 
 {
-	int		y;
+	int32_t		y;
 	//static char	playername[32];
-	int		i;
+	int32_t		i;
 
 	memset(&s_playersettings,0,sizeof(playersettings_t));
 
@@ -1530,7 +1530,7 @@ void PlayerSettings_Cache( void )
 UI_PlayerSettingsMenu
 =================
 */
-void UI_PlayerSettingsMenu(int menuFrom) 
+void UI_PlayerSettingsMenu(int32_t menuFrom) 
 {
 	PlayerSettings_MenuInit(menuFrom);
 	UI_PushMenu( &s_playersettings.menu );

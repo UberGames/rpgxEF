@@ -10,15 +10,15 @@ typedef struct //static
 	menuframework_s menu;
 	menubitmap_s	quitmenu;
 
-	int				maxhull;
-	int				currhull;
-	int				maxshield;
-	int				currshield;
-	int				shieldstate;
-	int				warpstate;
-	int				turbostate;
-	int				transstate;
-	int				alertstate;
+	int32_t				maxhull;
+	int32_t				currhull;
+	int32_t				maxshield;
+	int32_t				currshield;
+	int32_t				shieldstate;
+	int32_t				warpstate;
+	int32_t				turbostate;
+	int32_t				transstate;
+	int32_t				alertstate;
 	const char		*model;
 } msd_t;
 
@@ -35,9 +35,9 @@ void UI_msdMenu_Cache (void);
 M_msd_Event
 =================
 */
-static void M_msd_Event (void* ptr, int notification)
+static void M_msd_Event (void* ptr, int32_t notification)
 {
-	int	id;
+	int32_t	id;
 	//menubitmap_s	*holdLocation;
 	//menubitmap_s	*holdServer;
 
@@ -57,7 +57,7 @@ static void M_msd_Event (void* ptr, int notification)
 msdMenu_Key
 =================
 */
-sfxHandle_t msdMenu_Key (int key)
+sfxHandle_t msdMenu_Key (int32_t key)
 {
 	return ( Menu_DefaultKey( &s_msd.menu, key ) );
 }
@@ -94,9 +94,9 @@ static void M_msdMenu_Graphics (void)
 
 	*/
 	//menubitmap_s	*holdDeck;
-	//int		i;
-	int length,xTurboStart, lengthshield, lengthhull;
-	//int		numColor, roundColor;
+	//int32_t		i;
+	int32_t length,xTurboStart, lengthshield, lengthhull;
+	//int32_t		numColor, roundColor;
 
 	// Draw the basic screen frame
 
@@ -160,8 +160,8 @@ static void M_msdMenu_Graphics (void)
 	UI_DrawHandlePic( 100,  60, 500, 250, model);
 
 	// health Bars
-	lengthshield = (int)(498 * s_msd.currshield / s_msd.maxshield);
-	lengthhull = (int)(498 * s_msd.currhull / s_msd.maxhull);
+	lengthshield = (int32_t)(498 * s_msd.currshield / s_msd.maxshield);
+	lengthhull = (int32_t)(498 * s_msd.currhull / s_msd.maxhull);
 
 	trap_R_SetColor( colorTable[CT_BLACK] ); 
 	UI_DrawHandlePic( 100, 320,  500,  49, uis.whiteShader);		//background
@@ -357,7 +357,7 @@ void msdMenu_Init(void)
 UI_msdMenu
 ===============
 */
-void UI_msdMenu(int maxhull, int currhull, int maxshield, int currshield, int shieldstate, int warpstate, int turbostate, int transstate, int alertstate, char *model)
+void UI_msdMenu(int32_t maxhull, int32_t currhull, int32_t maxshield, int32_t currshield, int32_t shieldstate, int32_t warpstate, int32_t turbostate, int32_t transstate, int32_t alertstate, char *model)
 {
 	memset( &s_msd, 0, sizeof( s_msd ) );
 

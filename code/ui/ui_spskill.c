@@ -53,7 +53,7 @@ typedef struct
 
 static skillMenuInfo_t	skillMenuInfo;
 
-int skillButtonY[5] = 
+int32_t skillButtonY[5] = 
 {
 	131,
 	161,
@@ -67,7 +67,7 @@ int skillButtonY[5] =
 SetSkillColor
 =================
 */
-static void SetSkillColor( int skill, int color ) 
+static void SetSkillColor( int32_t skill, int32_t color ) 
 {
 	switch( skill ) 
 	{
@@ -98,17 +98,17 @@ static void SetSkillColor( int skill, int color )
 UI_SPSkillMenu_SkillEvent
 =================
 */
-static void UI_SPSkillMenu_SkillEvent( void *ptr, int notification ) 
+static void UI_SPSkillMenu_SkillEvent( void *ptr, int32_t notification ) 
 {
-	int		id;
-	int		skill;
+	int32_t		id;
+	int32_t		skill;
 
 	if (notification != QM_ACTIVATED)
 	{
 		return;
 	}
 
-//	SetSkillColor( (int)trap_Cvar_VariableValue( "g_spSkill" ), CT_RED );
+//	SetSkillColor( (int32_t)trap_Cvar_VariableValue( "g_spSkill" ), CT_RED );
 
 	id = ((menucommon_s*)ptr)->id;
 	skill = id - ID_BABY + 1;
@@ -135,7 +135,7 @@ static void UI_SPSkillMenu_SkillEvent( void *ptr, int notification )
 UI_SPSkillMenu_FightEvent
 =================
 */
-static void UI_SPSkillMenu_FightEvent( void *ptr, int notification ) 
+static void UI_SPSkillMenu_FightEvent( void *ptr, int32_t notification ) 
 {
 	if (notification != QM_ACTIVATED)
 	{
@@ -151,7 +151,7 @@ static void UI_SPSkillMenu_FightEvent( void *ptr, int notification )
 UI_SPSkillMenu_BackEvent
 =================
 */
-static void UI_SPSkillMenu_BackEvent( void* ptr, int notification ) 
+static void UI_SPSkillMenu_BackEvent( void* ptr, int32_t notification ) 
 {
 	if (notification != QM_ACTIVATED) 
 	{
@@ -168,7 +168,7 @@ static void UI_SPSkillMenu_BackEvent( void* ptr, int notification )
 UI_SPSkillMenu_MainEvent
 =================
 */
-static void UI_SPSkillMenu_MainEvent( void* ptr, int notification ) 
+static void UI_SPSkillMenu_MainEvent( void* ptr, int32_t notification ) 
 {
 	if (notification != QM_ACTIVATED) 
 	{
@@ -184,7 +184,7 @@ static void UI_SPSkillMenu_MainEvent( void* ptr, int notification )
 UI_SPSkillMenu_Key
 =================
 */
-static sfxHandle_t UI_SPSkillMenu_Key( int key ) 
+static sfxHandle_t UI_SPSkillMenu_Key( int32_t key ) 
 {
 	if( key == K_MOUSE2 || key == K_ESCAPE ) 
 	{
@@ -279,7 +279,7 @@ UI_SPSkillMenu_Init
 */
 static void UI_SPSkillMenu_Init( void ) 
 {
-	int		skill,x;
+	int32_t		skill,x;
 
 	memset( &skillMenuInfo, 0, sizeof(skillMenuInfo) );
 	skillMenuInfo.menu.fullscreen = qtrue;
@@ -466,7 +466,7 @@ static void UI_SPSkillMenu_Init( void )
 	Menu_AddItem( &skillMenuInfo.menu, ( void * )&skillMenuInfo.item_back );
 	Menu_AddItem( &skillMenuInfo.menu, ( void * )&skillMenuInfo.item_fight );
 
-	skill = (int)Com_Clamp( 1, 5, trap_Cvar_VariableValue( "g_spSkill" ) );
+	skill = (int32_t)Com_Clamp( 1, 5, trap_Cvar_VariableValue( "g_spSkill" ) );
 	SetSkillColor( skill, CT_DKPURPLE1 );
 	skillMenuInfo.art_skillPic.shader = skillMenuInfo.skillpics[skill - 1];
 	skillMenuInfo.item_dotl.generic.y= skillButtonY[skill-1];

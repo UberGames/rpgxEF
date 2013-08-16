@@ -15,7 +15,7 @@
 //#define ID_PLAYERCLASS	105
 //
 ////RPG-X: RedTechie - RPG-X Enhanced
-//static int player_classes[] =
+//static int32_t player_classes[] =
 //{
 //	MNT_PC_INFILTRATOR,//RPG-X: RedTechie - Security
 //	MNT_PC_SNIPER,//RPG-X: RedTechie - Medical
@@ -30,7 +30,7 @@
 //};
 //
 ////RPG-X: RedTechie - Not needed anymore
-///*static int player_classes2[] =
+///*static int32_t player_classes2[] =
 //{
 //	MNT_PC_INFILTRATOR,//RPG-X: RedTechie - Security
 //	MNT_PC_SNIPER,//RPG-X: RedTechie - Medical
@@ -76,7 +76,7 @@
 //	menubitmap_s	joingame;
 //	menubitmap_s	spectate;
 //	menulist_s		playerClass;
-//	int				holdClass;
+//	int32_t				holdClass;
 //	qhandle_t		pClassShaders[NUM_PLAYER_CLASSES];
 //} teammain_t;
 //
@@ -137,7 +137,7 @@
 //TeamMain_MenuEvent
 //===============
 //*/
-//static void TeamMain_MenuEvent( void* ptr, int event )
+//static void TeamMain_MenuEvent( void* ptr, int32_t event )
 //{
 //	if( event != QM_ACTIVATED ) 
 //	{
@@ -224,7 +224,7 @@
 //
 //}
 //
-//static sfxHandle_t TeamMenu_MenuKey( int key )
+//static sfxHandle_t TeamMenu_MenuKey( int32_t key )
 //{
 //		switch (key)
 //		{		
@@ -239,7 +239,7 @@
 //	return Menu_DefaultKey( &s_teammain.menu, key );
 //}
 //
-//void SetServerButtons(int gameType,menulist_s *assimilation,menulist_s *specialties,menulist_s *disintegration,menulist_s *elimination,menulist_s *actionhero);
+//void SetServerButtons(int32_t gameType,menulist_s *assimilation,menulist_s *specialties,menulist_s *disintegration,menulist_s *elimination,menulist_s *actionhero);
 //
 ///*
 //===============
@@ -248,8 +248,8 @@
 //*/
 //void TeamMain_MenuInit( void ) 
 //{
-//	int		y,pad,x;
-//	int		gametype;
+//	int32_t		y,pad,x;
+//	int32_t		gametype;
 //	char	info[MAX_INFO_STRING];
 //
 //	memset( &s_teammain, 0, sizeof(s_teammain) );

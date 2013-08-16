@@ -36,7 +36,7 @@ static struct
 } s_gameoptions;
 
 
-extern int s_OffOnNone_Names[];
+extern int32_t s_OffOnNone_Names[];
 
 #define ID_LIGHTFLARES			129
 #define ID_LIGHTFLARES_VALUE	130
@@ -82,13 +82,13 @@ typedef struct {
 	menulist_s			allowdownload;
 	menulist_s			flares;
 
-	int					currentcrosshair;
+	int32_t					currentcrosshair;
 	//qhandle_t			crosshairShader[NUM_CROSSHAIRS];
 } preferences_t;
 
 static preferences_t s_preferences;
 
-int s_textlanguage_Names[] =
+int32_t s_textlanguage_Names[] =
 {
 	MNT_ENGLISH,
 	MNT_GERMAN,
@@ -96,14 +96,14 @@ int s_textlanguage_Names[] =
 	MNT_NONE
 };
 
-int s_voicelanguage_Names[] =
+int32_t s_voicelanguage_Names[] =
 {
 	MNT_ENGLISH,
 	MNT_GERMAN,
 	MNT_NONE
 };
 
-/*static int teamoverlay_names[] =
+/*static int32_t teamoverlay_names[] =
 {
 	MNT_TO_OFF,
 	MNT_TO_UPPER_RIGHT,
@@ -115,7 +115,7 @@ int s_voicelanguage_Names[] =
 static void Preferences_SetMenuItems( void ) 
 {
 	char buffer[32];
-	int *language;
+	int32_t *language;
 
 	s_preferences.currentcrosshair			= trap_Cvar_VariableValue( "cg_drawCrosshair" ) != 0 /*% NUM_CROSSHAIRS*/;
 	s_preferences.simpleitems.curvalue		= trap_Cvar_VariableValue( "cg_simpleItems" ) != 0;
@@ -174,7 +174,7 @@ static void Preferences_SetMenuItems( void )
 }
 
 
-static void Preferences_Event( void* ptr, int notification ) 
+static void Preferences_Event( void* ptr, int32_t notification ) 
 {
 	if( notification != QM_ACTIVATED ) 
 	{
@@ -257,8 +257,8 @@ Crosshair_Draw
 static void Crosshair_Draw( void *self ) {
 	menulist_s	*s;
 	float		*color;
-	int			x, y;
-	int			style;
+	int32_t			x, y;
+	int32_t			style;
 	qboolean	focus;
 
 	s = (menulist_s *)self;
@@ -305,7 +305,7 @@ GameOptions_MenuDraw
 */
 static void GameOptions_MenuDraw( void )
 {
-	//int x;
+	//int32_t x;
 
 	UI_MenuFrame(&s_gameoptions.menu);
 
@@ -363,7 +363,7 @@ static void GameOptions_MenuDraw( void )
 GameOptions_MenuKey
 =================
 */
-static sfxHandle_t GameOptions_MenuKey( int key )
+static sfxHandle_t GameOptions_MenuKey( int32_t key )
 {
 	return Menu_DefaultKey( &s_gameoptions.menu, key );
 }
@@ -374,7 +374,7 @@ UI_GameOptionsMenu_Cache
 */
 void UI_GameOptionsMenu_Cache( void ) 
 {
-	//int i;
+	//int32_t i;
 
 	s_gameoptions.slant1 = trap_R_RegisterShaderNoMip("menu/lcarscontrols/slant1.tga");
 	s_gameoptions.slant2 = trap_R_RegisterShaderNoMip("menu/lcarscontrols/slant2.tga");
@@ -407,7 +407,7 @@ GameOptions_MenuInit
 */
 static void GameOptions_MenuInit( void )
 {
-	int x,y,inc,width;
+	int32_t x,y,inc,width;
 
 	UI_GameOptionsMenu_Cache();
 

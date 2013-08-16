@@ -10,12 +10,12 @@ Handles horizontal scrolling and cursor blinking
 x, y, are in pixels
 ===================
 */
-void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color,int cursor ) {
-	int		len;
-	int		charw;
-	int		drawLen;
-	int		prestep;
-	int		cursorChar;
+void MField_Draw( mfield_t *edit, int32_t x, int32_t y, int32_t style, vec4_t color,int32_t cursor ) {
+	int32_t		len;
+	int32_t		charw;
+	int32_t		drawLen;
+	int32_t		prestep;
+	int32_t		cursorChar;
 	char	str[MAX_STRING_CHARS];
 
 	drawLen = edit->widthInChars;
@@ -111,7 +111,7 @@ MField_Paste
 */
 void MField_Paste( mfield_t *edit ) {
 	char	pasteBuffer[64];
-	int		pasteLen, i;
+	int32_t		pasteLen, i;
 
 	trap_GetClipboardData( pasteBuffer, 64 );
 
@@ -132,8 +132,8 @@ in-game talk, and menu fields
 Key events are used for non-printable characters, others are gotten from char events.
 =================
 */
-void MField_KeyDownEvent( mfield_t *edit, int key ) {
-	int		len;
+void MField_KeyDownEvent( mfield_t *edit, int32_t key ) {
+	int32_t		len;
 
 	// shift-insert is paste
 	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && trap_Key_IsDown( K_SHIFT ) ) {
@@ -200,8 +200,8 @@ void MField_KeyDownEvent( mfield_t *edit, int key ) {
 MField_CharEvent
 ==================
 */
-void MField_CharEvent( mfield_t *edit, int ch ) {
-	int		len;
+void MField_CharEvent( mfield_t *edit, int32_t ch ) {
+	int32_t		len;
 
 	if ( ch == 'v' - 'a' + 1 ) {	// ctrl-v is paste
 		MField_Paste( edit );
@@ -290,9 +290,9 @@ MenuField_Init
 ==================
 */
 void MenuField_Init( menufield_s* m ) {
-	int	l;
-	int	w;
-	int	h;
+	int32_t	l;
+	int32_t	w;
+	int32_t	h;
 
 	MField_Clear( &m->field );
 
@@ -350,14 +350,14 @@ MenuField_Draw
 */
 void MenuField_Draw( menufield_s *f )
 {
-	int			x;
-	int			y;
-	int			w;
-	int			style;
+	int32_t			x;
+	int32_t			y;
+	int32_t			w;
+	int32_t			style;
 	qboolean	focus;
-	int			color;
+	int32_t			color;
 	menuframework_s *menu;
-	int offset;
+	int32_t offset;
 
 	x =	f->generic.x;
 	y =	f->generic.y;
@@ -399,8 +399,8 @@ void MenuField_Draw( menufield_s *f )
 	}
 
 	if ( f->generic.name && ( f->field.style & UI_CENTER ) ) {
-		int width;
-		int	color;
+		int32_t width;
+		int32_t	color;
 		
 		width = ( ( (MENU_BUTTON_MED_HEIGHT*2) - 16 ) + (strlen(f->generic.name) * w) + 2*w);
 
@@ -453,7 +453,7 @@ void MenuField_Draw( menufield_s *f )
 
 	if ( f->field.titleEnum ) 
 	{
-		int titleColor;
+		int32_t titleColor;
 		if (f->field.titlecolor)
 		{ 
 			titleColor = f->field.titlecolor;
@@ -478,9 +478,9 @@ void MenuField_Draw( menufield_s *f )
 MenuField_Key
 ==================
 */
-sfxHandle_t MenuField_Key( menufield_s* m, int* key )
+sfxHandle_t MenuField_Key( menufield_s* m, int32_t* key )
 {
-	int keycode;
+	int32_t keycode;
 
 	keycode = *key;
 

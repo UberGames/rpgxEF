@@ -9,10 +9,10 @@ typedef struct {
 	char	name[5][MAX_QPATH];
 	char	desc[5][1024];
 	char	image[5][MAX_QPATH];
-	int		active;
-	int		numProgs;
-	int		currentProg;
-	int		currentPart;
+	int32_t		active;
+	int32_t		numProgs;
+	int32_t		currentProg;
+	int32_t		currentPart;
 } holoData_t;
 
 holoData_t holoData;
@@ -27,7 +27,7 @@ typedef struct //static
 
 	char			*prgListPtr[6];
 
-	int				targetEntID;
+	int32_t				targetEntID;
 } holodeck_t;
 
 holodeck_t	s_holodeck;
@@ -72,7 +72,7 @@ PrgmList_Init
 ===============
 */
 void PrgmList_Init(void) {
-	int i;
+	int32_t i;
 
 	for(i = 0; i < holoData.numProgs; i++) {
 		s_holodeck.prgListPtr[i] = holoData.name[i];
@@ -89,17 +89,17 @@ void HolodeckMenu_LoadText (void);
 #define ID_PRGM_BUTTON	101
 
 void UI_HolodeckMenu_Cache (void);
-void UI_HolodeckMenu(int trNum);
+void UI_HolodeckMenu(int32_t trNum);
 
 /*
 =================
 M_Holodeck_Event
 =================
 */
-static void M_Holodeck_Event (void* ptr, int notification)
+static void M_Holodeck_Event (void* ptr, int32_t notification)
 {
-	int	id;
-	int i;
+	int32_t	id;
+	int32_t i;
 
 	id = ((menucommon_s*)ptr)->id;
 
@@ -128,7 +128,7 @@ static void M_Holodeck_Event (void* ptr, int notification)
 HolodeckMenu_Key
 =================
 */
-sfxHandle_t HolodeckMenu_Key (int key)
+sfxHandle_t HolodeckMenu_Key (int32_t key)
 {
 	return ( Menu_DefaultKey( &s_holodeck.menu, key ) );
 }
@@ -149,8 +149,8 @@ M_HolodeckMenu_Graphics
 */
 static void M_HolodeckMenu_Graphics (void)
 {
-	int		i,length,xTurboStart;
-	int		numColor,roundColor;
+	int32_t		i,length,xTurboStart;
+	int32_t		numColor,roundColor;
 
 	// Draw the basic screen frame
 
@@ -272,8 +272,8 @@ HolodeckMenu_Init
 */
 void HolodeckMenu_Init()
 {
-	int y,pad,x;
-	int i,width;
+	int32_t y,pad,x;
+	int32_t i,width;
 
 	PrgmList_Init();
 
@@ -358,7 +358,7 @@ void HolodeckMenu_Init()
 UI_HolodeckMenu
 ===============
 */
-void UI_HolodeckMenu (int trNum)
+void UI_HolodeckMenu (int32_t trNum)
 {
 	if ( !trNum )
 		return;

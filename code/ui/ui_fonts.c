@@ -6,7 +6,7 @@
 //
 //===================================================================
 
-static int currentFont;
+static int32_t currentFont;
 
 // menu action identifiers
 #define ID_MAINMENU		100
@@ -39,8 +39,8 @@ M_GridFont_Graphics
 */
 void M_GridFont_Graphics (void)
 {
-	int x,y;
-	int i,i2,xInc;
+	int32_t x,y;
+	int32_t i,i2,xInc;
 	char	character[2];
 
 	character[1] = 0;
@@ -76,8 +76,8 @@ M_LargeFont_Graphics
 */
 void M_LargeFont_Graphics (void)
 {
-	int x,y,color;
-	int i,i2,xInc;
+	int32_t x,y,color;
+	int32_t i,i2,xInc;
 	char	character[2];
 
 	character[1] = 0;
@@ -114,8 +114,8 @@ M_MediumFont_Graphics
 */
 void M_MediumFont_Graphics (void)
 {
-	int x,y,color;
-	int i,i2,xInc;
+	int32_t x,y,color;
+	int32_t i,i2,xInc;
 	char	character[2];
 
 	character[1] = 0;
@@ -151,8 +151,8 @@ M_SmallFont_Graphics
 */
 void M_SmallFont_Graphics (void)
 {
-	int x,y,color;
-	int i,i2,xInc;
+	int32_t x,y,color;
+	int32_t i,i2,xInc;
 	char	character[2];
 
 	character[1] = 0;
@@ -233,7 +233,7 @@ void M_Fonts_MenuDraw (void)
 Fonts_MenuEvent
 =================
 */
-static void Fonts_MenuEvent( void* ptr, int notification )
+static void Fonts_MenuEvent( void* ptr, int32_t notification )
 {
 	if (notification != QM_ACTIVATED)
 		return;
@@ -279,7 +279,7 @@ static void Fonts_MenuEvent( void* ptr, int notification )
 M_Fonts_MenuKey
 =================
 */
-static sfxHandle_t M_Fonts_MenuKey( int key )
+static sfxHandle_t M_Fonts_MenuKey( int32_t key )
 {
 	return Menu_DefaultKey( &s_fonts_menu, key );
 }

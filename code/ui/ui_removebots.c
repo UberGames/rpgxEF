@@ -36,11 +36,11 @@ typedef struct {
 	menubitmap_s	delete;
 	menubitmap_s	back;
 
-	int				numBots;
-	int				baseBotNum;
-	int				selectedBotNum;
+	int32_t				numBots;
+	int32_t				baseBotNum;
+	int32_t				selectedBotNum;
 	char			botnames[BOTS_VIEWABLE][32];
-	int				botClientNums[MAX_BOTS];
+	int32_t				botClientNums[MAX_BOTS];
 } removeBotsMenuInfo_t;
 
 static removeBotsMenuInfo_t	removeBotsMenuInfo;
@@ -52,7 +52,7 @@ UI_RemoveBotsMenu_SetBotNames
 =================
 */
 static void UI_RemoveBotsMenu_SetBotNames( void ) {
-	int		n;
+	int32_t		n;
 	char	info[MAX_INFO_STRING];
 
 	for ( n = 0; (n < BOTS_VIEWABLE) && (removeBotsMenuInfo.baseBotNum + n < removeBotsMenuInfo.numBots); n++ ) {
@@ -69,7 +69,7 @@ static void UI_RemoveBotsMenu_SetBotNames( void ) {
 UI_RemoveBotsMenu_DeleteEvent
 =================
 */
-static void UI_RemoveBotsMenu_DeleteEvent( void* ptr, int event ) {
+static void UI_RemoveBotsMenu_DeleteEvent( void* ptr, int32_t event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -86,7 +86,7 @@ static void UI_RemoveBotsMenu_DeleteEvent( void* ptr, int event ) {
 UI_RemoveBotsMenu_BotEvent
 =================
 */
-static void UI_RemoveBotsMenu_BotEvent( void* ptr, int event ) {
+static void UI_RemoveBotsMenu_BotEvent( void* ptr, int32_t event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -102,7 +102,7 @@ static void UI_RemoveBotsMenu_BotEvent( void* ptr, int event ) {
 UI_RemoveAddBotsMenu_BackEvent
 =================
 */
-static void UI_RemoveBotsMenu_BackEvent( void* ptr, int event ) {
+static void UI_RemoveBotsMenu_BackEvent( void* ptr, int32_t event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -115,7 +115,7 @@ static void UI_RemoveBotsMenu_BackEvent( void* ptr, int event ) {
 UI_RemoveBotsMenu_UpEvent
 =================
 */
-static void UI_RemoveBotsMenu_UpEvent( void* ptr, int event ) {
+static void UI_RemoveBotsMenu_UpEvent( void* ptr, int32_t event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -132,7 +132,7 @@ static void UI_RemoveBotsMenu_UpEvent( void* ptr, int event ) {
 UI_RemoveBotsMenu_DownEvent
 =================
 */
-static void UI_RemoveBotsMenu_DownEvent( void* ptr, int event ) {
+static void UI_RemoveBotsMenu_DownEvent( void* ptr, int32_t event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -150,9 +150,9 @@ UI_RemoveBotsMenu_GetBots
 =================
 */
 static void UI_RemoveBotsMenu_GetBots( void ) {
-	int		numPlayers;
-	int		isBot;
-	int		n;
+	int32_t		numPlayers;
+	int32_t		isBot;
+	int32_t		n;
 	char	info[MAX_INFO_STRING];
 
 	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
@@ -213,9 +213,9 @@ UI_RemoveBotsMenu_Init
 =================
 */
 static void UI_RemoveBotsMenu_Init( void ) {
-	int		n;
-	int		count;
-	int		y;
+	int32_t		n;
+	int32_t		count;
+	int32_t		y;
 
 	memset( &removeBotsMenuInfo, 0 ,sizeof(removeBotsMenuInfo) );
 	removeBotsMenuInfo.menu.draw					= UI_RemoveMenu_Draw;

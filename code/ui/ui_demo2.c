@@ -56,11 +56,11 @@ typedef struct
 
 	menubitmap_s	currentFile;
 
-	int				numDemos;
+	int32_t				numDemos;
 	char			names[NAMEBUFSIZE];
 	char			*demolist[MAX_DEMOS];
 
-	int				currentDemoIndex;		//TiM - Increments whenevever they scroll. used to increment/decrement the list order		
+	int32_t				currentDemoIndex;		//TiM - Increments whenevever they scroll. used to increment/decrement the list order		
 } demos_t;
 
 static demos_t	s_demos;
@@ -106,8 +106,8 @@ array with the current list
 of demos we have
 =================
 */
-void DemoMenu_PopulateList ( int startingIndex ) {
-	int		i=0, len;
+void DemoMenu_PopulateList ( int32_t startingIndex ) {
+	int32_t		i=0, len;
 	char*	demoName;
 	
 	while (g_demoline[i])
@@ -235,9 +235,9 @@ static void Demos_MenuDraw (void)
 Demos_MenuEvent
 ===============
 */
-static void Demos_MenuEvent( void *ptr, int event ) 
+static void Demos_MenuEvent( void *ptr, int32_t event ) 
 {
-	int index;
+	int32_t index;
 
 	if( event != QM_ACTIVATED ) 
 	{
@@ -306,7 +306,7 @@ static void Demos_MenuEvent( void *ptr, int event )
 UI_DemosMenu_Key
 =================
 */
-static sfxHandle_t UI_DemosMenu_Key( int key ) 
+static sfxHandle_t UI_DemosMenu_Key( int32_t key ) 
 {
 	return Menu_DefaultKey( &s_demos.menu, key );
 }
@@ -339,8 +339,8 @@ Demos_MenuInit
 */
 static void Demos_MenuInit( void ) 
 {
-	int		i,x,y;
-	int		len;
+	int32_t		i,x,y;
+	int32_t		len;
 	char	*demoname;
 
 	memset( &s_demos, 0 ,sizeof(demos_t) );

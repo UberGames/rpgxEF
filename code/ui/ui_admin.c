@@ -89,7 +89,7 @@ ingame.
 #define ID_ADMIN			1411
 #define ID_SQL				1412
 
-static void AdminMenu_Event( void* ptr, int event );
+static void AdminMenu_Event( void* ptr, int32_t event );
 void UI_ClientAdminMenu( void );
 void UI_AdminAudioMenu( void );
 
@@ -103,14 +103,14 @@ typedef enum {
 	CHOICE_ALL
 };*/
 
-static int s_admin_reviveList[] = 
+static int32_t s_admin_reviveList[] = 
 {
 	MNT_MYSELF,
 	MNT_EVERYONE,
 	0
 };
 
-static int s_admin_spawnList[] = 
+static int32_t s_admin_spawnList[] = 
 {
 	MNT_MINE,
 	MNT_ALL,
@@ -119,12 +119,12 @@ static int s_admin_spawnList[] =
 
 typedef struct {
 	char		*name;
-	int			arg1Flags;
-	int			arg2Flags;
-	int			arg3Flags;
-	int			arg1Desc;
-	int			arg2Desc;
-	int			arg3Desc;
+	int32_t			arg1Flags;
+	int32_t			arg2Flags;
+	int32_t			arg3Flags;
+	int32_t			arg1Desc;
+	int32_t			arg2Desc;
+	int32_t			arg3Desc;
 } fxData_t;
 
 const fxData_t s_admin_fxData[] = {
@@ -212,8 +212,8 @@ typedef struct {
 	menuaction_s		useEntBind;
 	menuaction_s		kickTargetBind;
 
-	int			keyBindActive;	/* index of whichever bind is active */
-	int			binds[3];	/* stores the indices of each bind button */
+	int32_t			keyBindActive;	/* index of whichever bind is active */
+	int32_t			binds[3];	/* stores the indices of each bind button */
 
 	/* menu arrows */
 	menubitmap_s		upArrow;
@@ -271,7 +271,7 @@ we'll need for different menus
 ===============
 */
 void AdminGeneric_InitLists( void ) {
-	int		i;
+	int32_t		i;
 	char	info[MAX_TOKEN_CHARS];
 
 	memset( &s_adminGeneric, 0, sizeof( s_adminGeneric ) );
@@ -326,7 +326,7 @@ all of them. :)
 ===============
 */
 
-static void AdminMenu_DrawLCARSBox ( int x, int y, int w, int h, vec4_t color, int title ) {
+static void AdminMenu_DrawLCARSBox ( int32_t x, int32_t y, int32_t w, int32_t h, vec4_t color, int32_t title ) {
 	
 	trap_R_SetColor( color );
 
@@ -501,7 +501,7 @@ static void AdminMenu_InitButtons( menuframework_s *menu ) {
 AdminMenu_Event
 ===============
 */
-static void AdminMenu_Event( void* ptr, int event ) {
+static void AdminMenu_Event( void* ptr, int32_t event ) {
 
 	if ( event != QM_ACTIVATED )
 		return;
@@ -713,8 +713,8 @@ static void AdminMenu_Draw( void ) {
 	Menu_Draw( &s_admin.menu );
 }
 
-static sfxHandle_t AdminMenu_KeyEvent( int key ) {
-	int				i, j;
+static sfxHandle_t AdminMenu_KeyEvent( int32_t key ) {
+	int32_t				i, j;
 	menucommon_s	*s;
 	char			command[256];
 
@@ -774,7 +774,7 @@ static sfxHandle_t AdminMenu_KeyEvent( int key ) {
 	else {
 		/* unbind the current key */
 		if ( s->id >= ID_BIND_SPAWN && s->id <= ID_BIND_KICK ) {
-			int id = s->id - 1161;
+			int32_t id = s->id - 1161;
 
 			switch ( key ) {
 				case K_BACKSPACE:
@@ -820,10 +820,10 @@ are rendered.
 static void AdminMenu_DrawButton ( void *self ) {
 	qboolean		focus;
 	menuaction_s*	action;
-	int				color;
-	int				textColor;
-	int				x;
-	int				y;
+	int32_t				color;
+	int32_t				textColor;
+	int32_t				x;
+	int32_t				y;
 
 	action = (menuaction_s *)self;
 
@@ -874,12 +874,12 @@ AdminMenu_DrawBinding
 static void AdminMenu_DrawBinding( void *self ) {
 	qboolean		focus;
 	menuaction_s	*action;
-	int				x,y;
-	int				bind;
+	int32_t				x,y;
+	int32_t				bind;
 	char			name[20];
-	int				buttonColor;
-	int				textColor;
-	int				width;
+	int32_t				buttonColor;
+	int32_t				textColor;
+	int32_t				width;
 
 	action = (menuaction_s *)self;
 
@@ -953,7 +953,7 @@ AdminMenu_Init
 ===============
 */
 static void AdminMenu_Init( void ) {
-	int i, j;
+	int32_t i, j;
 	char binding[256];
 
 	UI_AdminMenu_Cache();
@@ -1541,20 +1541,20 @@ void UI_AdminMenu( qboolean fromConsole ) {
 /*Admin Client Menu*/
 
 typedef struct {
-	int		id;
+	int32_t		id;
 	char	model[MAX_QPATH];
 	float	height;
 	float	weight;
 	char	race[MAX_NAME_LENGTH];
 	char	age[MAX_NAME_LENGTH];
-	int		classId;
+	int32_t		classId;
 } clientStats_t;
 
 typedef struct {
 	menuframework_s		menu;
 
 	menulist_s			clientList;
-	int					numClients;
+	int32_t					numClients;
 
 	clientStats_t		clientStats;
 
@@ -1588,7 +1588,7 @@ the currently selected player
 ===================
 */
 
-static void ClientAdmin_GetClient ( int listNum ) 
+static void ClientAdmin_GetClient ( int32_t listNum ) 
 {
 	/* get the currently selected client, and parse their info string */
 	char info[MAX_TOKEN_CHARS];
@@ -1622,7 +1622,7 @@ ClientAdmin_Event
 ===================
 */
 
-static void ClientAdmin_Event( void *ptr, int event ) {
+static void ClientAdmin_Event( void *ptr, int32_t event ) {
 
 	if ( event != QM_ACTIVATED )
 		return;
@@ -1681,7 +1681,7 @@ ClientAdmin_Draw
 static void ClientAdmin_Draw( void ) {
 	vec_t*	color = colorTable[CT_LTORANGE];
 	char	string[MAX_QPATH];
-	int		x, y;
+	int32_t		x, y;
 
 	UI_MenuFrame2( &s_clientAdmin.menu );
 
@@ -2036,14 +2036,14 @@ typedef struct {
 	menubitmap_s		playSound;
 
 	soundList_t			musicList[MAX_SONGS];
-	int					numSongs;
-	int					songOffset;
-	int					selectedSong;
+	int32_t					numSongs;
+	int32_t					songOffset;
+	int32_t					selectedSong;
 
 	soundList_t			soundList[MAX_SOUNDS_];
-	int					numSounds;
-	int					soundOffset;
-	int					selectedSound;
+	int32_t					numSounds;
+	int32_t					soundOffset;
+	int32_t					selectedSound;
 
 } adminAudio_t;
 
@@ -2059,9 +2059,9 @@ when we click an arrow button
 */
 /*char mainArray[][MAX_QPATH]*/
 
-static void AdminAudio_OffsetList ( soundList_t *soundList, int *offset, int numSounds, menubitmap_s *btnList )
+static void AdminAudio_OffsetList ( soundList_t *soundList, int32_t *offset, int32_t numSounds, menubitmap_s *btnList )
 {
-	int		i;
+	int32_t		i;
 	char	*buffer;
 
 	if ( *offset < 0 )
@@ -2105,17 +2105,17 @@ for sound/music files
 */
 static void AdminAudio_InitFilesList ( void )
 {
-	int				numFiles;
+	int32_t				numFiles;
 	char			buffer[20000];
 	char*			strPtr;
 	char*			token;
-	int				strLen;
+	int32_t				strLen;
 	fileHandle_t	f;
 	char			soundDirs[MAX_AUDIO_LOCATIONS][MAX_QPATH];
 	char			musicDirs[MAX_AUDIO_LOCATIONS][MAX_QPATH];
-	int				numMusicDirs=0;
-	int				numSndDirs=0;
-	int				i, j;
+	int32_t				numMusicDirs=0;
+	int32_t				numSndDirs=0;
+	int32_t				i, j;
 	
 	/* First step: Parse in the config where we store all our file dirs */
 	strLen = trap_FS_FOpenFile( "ext_data/audioFileRoutes.dat", &f, FS_READ );
@@ -2358,7 +2358,7 @@ AdminAudio_Event
 ====================
 */
 
-static void AdminAudio_Event( void *ptr, int event )
+static void AdminAudio_Event( void *ptr, int32_t event )
 {
 	if ( event != QM_ACTIVATED )
 		return;
@@ -2436,8 +2436,8 @@ AdminAudio_Draw
 
 static void AdminAudio_Draw( void )
 {
-	int i;
-	int x, y, w, h;
+	int32_t i;
+	int32_t x, y, w, h;
 
 	UI_MenuFrame2( &s_adminAudio.menu );
 
@@ -2559,7 +2559,7 @@ AdminAudio_Init
 
 static void AdminAudio_Init( void )
 {
-	int i, x, y;
+	int32_t i, x, y;
 
 	s_adminAudio.selectedSong = -1;
 	s_adminAudio.selectedSound = -1;
@@ -2808,7 +2808,7 @@ typedef struct {
 	menufield_s		password;
 	qboolean		fromConsole;
 	qboolean		isAdmin;
-	int				isSQL;
+	int32_t				isSQL;
 } login_t;
 
 login_t s_login;
@@ -2818,7 +2818,7 @@ login_t s_login;
 UI_LoginSetSqlkey
 =================
 */
-void UI_LoginSetSqlkey(int key) {
+void UI_LoginSetSqlkey(int32_t key) {
 	sqlkey = (byte)key;
 }
 
@@ -2827,8 +2827,8 @@ void UI_LoginSetSqlkey(int key) {
 M_Login_Event
 =================
 */
-static void M_Login_Event(void* ptr, int notification) {
-	int id;
+static void M_Login_Event(void* ptr, int32_t notification) {
+	int32_t id;
 
 	id = ((menucommon_s*)ptr)->id;
 
@@ -2853,7 +2853,7 @@ static void M_Login_Event(void* ptr, int notification) {
 LoginMenu_Key
 =================
 */
-sfxHandle_t LoginMenu_Key(int key) {
+sfxHandle_t LoginMenu_Key(int32_t key) {
 	return (Menu_DefaultKey(&s_login.menu, key));
 }
 
@@ -2863,7 +2863,7 @@ LoginMenu_Draw
 ===============
 */
 static void LoginMenu_Draw(void) {
-	int length;
+	int32_t length;
 
 	AdminMenu_DrawCommon();
 	UI_MenuFrame2( &s_login.menu );

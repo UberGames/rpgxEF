@@ -16,7 +16,7 @@ menufield_s passwordField;
 static connstate_t	lastConnState;
 static char			lastLoadingText[MAX_INFO_VALUE];
 
-static void UI_ReadableSize ( char *buf, int bufsize, int value )
+static void UI_ReadableSize ( char *buf, int32_t bufsize, int32_t value )
 {
 	if (value > 1024*1024*1024 ) { // gigs
 		Com_sprintf( buf, bufsize, "%d", value / (1024*1024*1024) );
@@ -34,7 +34,7 @@ static void UI_ReadableSize ( char *buf, int bufsize, int value )
 }
 
 // Assumes time is in msec
-static void UI_PrintTime ( char *buf, int bufsize, int time ) {
+static void UI_PrintTime ( char *buf, int32_t bufsize, int32_t time ) {
 	time /= 1000;  // change to seconds
 
 	if (time > 3600) { // in the hours range
@@ -56,15 +56,15 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 	char *Xcopied	= (char *) menu_normal_text[MNT_COPIED];
 	char *xSeconds = (char *) menu_normal_text[MNT_SEC];
 
-	const int dlYpos = 288;
-	const int etaYpos = dlYpos + (SMALLCHAR_HEIGHT*1.25);
-	const int copiedYpos = etaYpos + (SMALLCHAR_HEIGHT*1.25);
-	const int xferYpos = copiedYpos + (SMALLCHAR_HEIGHT*1.25);
+	const int32_t dlYpos = 288;
+	const int32_t etaYpos = dlYpos + (SMALLCHAR_HEIGHT*1.25);
+	const int32_t copiedYpos = etaYpos + (SMALLCHAR_HEIGHT*1.25);
+	const int32_t xferYpos = copiedYpos + (SMALLCHAR_HEIGHT*1.25);
 
-	int downloadSize, downloadCount, downloadTime;
+	int32_t downloadSize, downloadCount, downloadTime;
 	char dlSizeBuf[64], totalSizeBuf[64], xferRateBuf[64], dlTimeBuf[64];
-	int width, leftWidth;
-	int style = UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW;
+	int32_t width, leftWidth;
+	int32_t style = UI_LEFT|UI_SMALLFONT|UI_DROPSHADOW;
 	const char *s;
 
 
@@ -99,7 +99,7 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 		UI_DrawProportionalString( leftWidth, etaYpos, estimating, style, color_white );
 		UI_DrawProportionalString( leftWidth, copiedYpos, va(XofXcopied, dlSizeBuf, totalSizeBuf), style, color_white );
 	} else {
-		int xferRate;
+		int32_t xferRate;
 		if ((uis.realtime - downloadTime) / 1000) {
 			xferRate = downloadCount / ((uis.realtime - downloadTime) / 1000);
 		} else {
@@ -109,7 +109,7 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 
 		// Extrapolate estimated completion time
 		if (downloadSize && xferRate) {
-			int n = downloadSize / xferRate; // estimated time for entire d/l in secs
+			int32_t n = downloadSize / xferRate; // estimated time for entire d/l in secs
 
 			// We do it in K (/1024) because we'd overflow around 4MB
 			UI_PrintTime ( dlTimeBuf, sizeof dlTimeBuf, (n - (((downloadCount/1024) * n) / (downloadSize/1024))) * 1000);
@@ -144,7 +144,7 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	const char		*s;
 	uiClientState_t	cstate;
 	char			info[MAX_INFO_VALUE];
-	int			x,strlength,length;
+	int32_t			x,strlength,length;
 
 	Menu_Cache();
 
@@ -288,7 +288,7 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 UI_KeyConnect
 ===================
 */
-void UI_KeyConnect( int key ) {
+void UI_KeyConnect( int32_t key ) {
 	if ( key == K_ESCAPE ) {
 		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
 		return;

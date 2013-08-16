@@ -13,7 +13,7 @@
 InvertMouseCallback
 =================
 */
-void InvertMouseCallback( void *s, int notification )
+void InvertMouseCallback( void *s, int32_t notification )
 {
 	menulist_s *box = (menulist_s *) s;
 
@@ -32,7 +32,7 @@ void InvertMouseCallback( void *s, int notification )
 MouseSpeedCallback
 =================
 */
-void MouseSpeedCallback( void *s, int notification )
+void MouseSpeedCallback( void *s, int32_t notification )
 {
 	menuslider_s	*slider = (menuslider_s *) s;
 
@@ -47,7 +47,7 @@ void MouseSpeedCallback( void *s, int notification )
 SmoothMouseCallback
 =================
 */
-void SmoothMouseCallback( void *s, int notification )
+void SmoothMouseCallback( void *s, int32_t notification )
 {
 	menulist_s *box = (menulist_s *) s;
 
@@ -62,7 +62,7 @@ void SmoothMouseCallback( void *s, int notification )
 GammaCallback
 =================
 */
-void GammaCallback( void *s, int notification )
+void GammaCallback( void *s, int32_t notification )
 {
 	menuslider_s *slider = ( menuslider_s * ) s;
 
@@ -78,7 +78,7 @@ void GammaCallback( void *s, int notification )
 IntensityCallback
 =================
 */
-void IntensityCallback( void *s, int notification )
+void IntensityCallback( void *s, int32_t notification )
 {
 	menuslider_s *slider = ( menuslider_s * ) s;
 
@@ -93,7 +93,7 @@ void IntensityCallback( void *s, int notification )
 ScreensizeCallback
 =================
 */
-void ScreensizeCallback( void *s, int notification )
+void ScreensizeCallback( void *s, int32_t notification )
 {
 	menuslider_s *slider = ( menuslider_s * ) s;
 
@@ -108,7 +108,7 @@ void ScreensizeCallback( void *s, int notification )
 AlwaysRunCallback
 =================
 */
-void AlwaysRunCallback( void *s, int notification )
+void AlwaysRunCallback( void *s, int32_t notification )
 {
 	menulist_s *s_alwaysrun_box = ( menulist_s * ) s;
 
@@ -124,7 +124,7 @@ void AlwaysRunCallback( void *s, int notification )
 AutoswitchCallback
 =================
 */
-void AutoswitchCallback( void *unused, int notification )
+void AutoswitchCallback( void *unused, int32_t notification )
 {
 	static menulist_s	s_autoswitch_box;
 
@@ -140,7 +140,7 @@ void AutoswitchCallback( void *unused, int notification )
 AnisotropicFilteringCallback
 =================
 */
-void AnisotropicFilteringCallback( void *s, int notification )
+void AnisotropicFilteringCallback( void *s, int32_t notification )
 {
 	menulist_s *anisotropicfiltering = ( menulist_s * ) s;
 
@@ -157,7 +157,7 @@ void AnisotropicFilteringCallback( void *s, int notification )
 JoyXButtonCallback
 =================
 */
-void JoyXButtonCallback( void *s, int notification )
+void JoyXButtonCallback( void *s, int32_t notification )
 {
 	menulist_s *box = (menulist_s *) s;
 
@@ -172,7 +172,7 @@ void JoyXButtonCallback( void *s, int notification )
 JoyYButtonCallback
 =================
 */
-void JoyYButtonCallback( void *s, int notification )
+void JoyYButtonCallback( void *s, int32_t notification )
 {
 	menulist_s *box = (menulist_s *) s;
 

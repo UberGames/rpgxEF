@@ -35,7 +35,7 @@ static specifyserver_t	s_specifyserver;
 SpecifyServer_Event
 =================
 */
-static void SpecifyServer_Event( void* ptr, int event )
+static void SpecifyServer_Event( void* ptr, int32_t event )
 {
 	char	buff[256];
 

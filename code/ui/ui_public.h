@@ -7,8 +7,8 @@
 
 typedef struct {
 	connstate_t		connState;
-	int				connectPacketCount;
-	int				clientNum;
+	int32_t				connectPacketCount;
+	int32_t				clientNum;
 	char			servername[MAX_STRING_CHARS];
 	char			updateInfoString[MAX_STRING_CHARS];
 	char			messageString[MAX_STRING_CHARS];
@@ -106,13 +106,13 @@ typedef enum {
 //	void	UI_Shutdown( void );
 
 	UI_KEY_EVENT,
-//	void	UI_KeyEvent( int key );
+//	void	UI_KeyEvent( int32_t key );
 
 	UI_MOUSE_EVENT,
-//	void	UI_MouseEvent( int dx, int dy );
+//	void	UI_MouseEvent( int32_t dx, int32_t dy );
 
 	UI_REFRESH,
-//	void	UI_Refresh( int time );
+//	void	UI_Refresh( int32_t time );
 
 	UI_IS_FULLSCREEN,
 //	qboolean UI_IsFullscreen( void );

@@ -3,13 +3,13 @@
 #include "ui_local.h"
 
 void UI_VideoDriverMenu( void );
-void VideoDriver_Lines(int increment);
+void VideoDriver_Lines(int32_t increment);
 void UI_VideoData2SettingsMenu( void );
 
 
 extern void *holdControlPtr;
-extern int holdControlEvent;
-static void Video_MenuEvent (void* ptr, int event);
+extern int32_t holdControlEvent;
+static void Video_MenuEvent (void* ptr, int32_t event);
 
 #define PIC_MONBAR2		"menu/common/monbar_2.tga"
 #define PIC_SLIDER		"menu/common/slider.tga"
@@ -55,13 +55,13 @@ typedef struct
 
 typedef struct
 {
-	int			width;
-	int			height;
+	int32_t			width;
+	int32_t			height;
 } videoResolutions_t;
 
 static videodata2_t	s_videodata2;
 
-static int s_graphics_options_Names[] =
+static int32_t s_graphics_options_Names[] =
 {
 	MNT_VIDEO_HIGH_QUALITY,
 	MNT_VIDEO_NORMAL,
@@ -71,16 +71,16 @@ static int s_graphics_options_Names[] =
 	MNT_NONE
 };
 
-/*static int s_driver_Names[] =
+/*static int32_t s_driver_Names[] =
 {
 	MNT_VIDEO_DRIVER_DEFAULT,
 	MNT_VIDEO_DRIVER_VOODOO,
 	MNT_NONE
 };*/
 
-extern int s_OffOnNone_Names[];
+extern int32_t s_OffOnNone_Names[];
 
-static int s_resolutions[] =
+static int32_t s_resolutions[] =
 {
 //	MNT_320X200,
 //	MNT_400X300,
@@ -97,7 +97,7 @@ static int s_resolutions[] =
 	MNT_NONE
 };
 
-static int s_aspectRatios[] =
+static int32_t s_aspectRatios[] =
 {
 	MNT_4X3,
 	MNT_16X9,
@@ -156,11 +156,11 @@ static void *s_widescreenResStrings[] =
 };
 
 //store the number of widescreen arrays
-static int s_wideScreenSets = 2;
+static int32_t s_wideScreenSets = 2;
 
 //store the number of resolutions in each array.
 //This will be necessary when we change the lists over
-static int s_resolutionNums[] = {9,4,5};
+static int32_t s_resolutionNums[] = {9,4,5};
 
 //finally for reference sake, use an enum
 typedef enum
@@ -171,7 +171,7 @@ typedef enum
 	ASPECTRATIO_MAX
 } AspectRatios_e;
 
-static int s_colordepth_Names[] =
+static int32_t s_colordepth_Names[] =
 {
 	MNT_DEFAULT,
 	MNT_16BIT,
@@ -179,14 +179,14 @@ static int s_colordepth_Names[] =
 	MNT_NONE
 };
 
-/*static int s_lighting_Names[] =
+/*static int32_t s_lighting_Names[] =
 {
 	MNT_LIGHTMAP,
 	MNT_VERTEX,
 	MNT_NONE
 };*/
 
-static int s_quality_Names[] =
+static int32_t s_quality_Names[] =
 {
 	MNT_LOW,
 	MNT_MEDIUM,
@@ -194,7 +194,7 @@ static int s_quality_Names[] =
 	MNT_NONE
 };
 
-static int s_4quality_Names[] =
+static int32_t s_4quality_Names[] =
 {
 	MNT_LOW,
 	MNT_MEDIUM,
@@ -203,7 +203,7 @@ static int s_4quality_Names[] =
 	MNT_NONE
 };
 
-static int s_tqbits_Names[] =
+static int32_t s_tqbits_Names[] =
 {
 	MNT_DEFAULT,
 	MNT_16BIT,
@@ -211,7 +211,7 @@ static int s_tqbits_Names[] =
 	MNT_NONE
 };
 
-static int s_filter_Names[] =
+static int32_t s_filter_Names[] =
 {
 	MNT_BILINEAR,
 	MNT_TRILINEAR,
@@ -276,11 +276,11 @@ static struct
 	qhandle_t	arrow_dn;
 	menubitmap_s	arrowdwn;
 	menubitmap_s	arrowup;
-	int			currentDriverLine;
-	int			driverCnt;
+	int32_t			currentDriverLine;
+	int32_t			driverCnt;
 
-	int			activeArrowDwn;
-	int			activeArrowUp;
+	int32_t			activeArrowDwn;
+	int32_t			activeArrowUp;
 } s_videodriver;
 
 
@@ -313,7 +313,7 @@ static void* g_videolines[] =
 	NULL,
 };
 
-int video_sidebuttons[3][2] =
+int32_t video_sidebuttons[3][2] =
 {
 	{ 30, 250													},	// Video Data Button
 	{ 30, 250 + 6 + (MENU_BUTTON_MED_HEIGHT * 1.5)				},	// Video Drivers Button
@@ -321,8 +321,8 @@ int video_sidebuttons[3][2] =
 };
 
 
-void Video_SideButtons(menuframework_s *menu,int menuType);
-static void GraphicsOptions_ApplyChanges( void *unused, int notification );
+void Video_SideButtons(menuframework_s *menu,int32_t menuType);
+static void GraphicsOptions_ApplyChanges( void *unused, int32_t notification );
 
 /*
 =======================================================================
@@ -345,7 +345,7 @@ typedef struct
 	menubitmap_s	framer;
 	char			stringbuff[2*MAX_STRING_CHARS];
 	char*			strings[64];
-	int				numstrings;
+	int32_t				numstrings;
 } driverinfo_t;
 
 static driverinfo_t	s_driverinfo;
@@ -358,8 +358,8 @@ DriverInfo_MenuDraw
 */
 static void DriverInfo_MenuDraw( void )
 {
-	int	i;
-	int	y;
+	int32_t	i;
+	int32_t	y;
 
 	Menu_Draw( &s_driverinfo.menu );
 
@@ -402,8 +402,8 @@ UI_DriverInfo_Menu
 static void UI_DriverInfo_Menu( void )
 {
 	char*	eptr;
-	int		i;
-	int		len;
+	int32_t		i;
+	int32_t		len;
 
 	// zero set all our globals
 	memset( &s_driverinfo, 0 ,sizeof(driverinfo_t) );
@@ -539,24 +539,24 @@ typedef struct {
 	menubitmap_s	back;
 
 	//TiM - only update the resolution list when need be
-	int				lastRatio;
+	int32_t				lastRatio;
 
 } graphicsoptions_t;
 
 typedef struct
 {
-	int mode;
+	int32_t mode;
 	qboolean fullscreen;
-	int	aspectRatio;
-	int tq;
-	int lighting;
-	int colordepth;
-	int texturebits;
-	int geometry;
-	int filter;
+	int32_t	aspectRatio;
+	int32_t tq;
+	int32_t lighting;
+	int32_t colordepth;
+	int32_t texturebits;
+	int32_t geometry;
+	int32_t filter;
 	qboolean extensions;
-	int simpleshaders;
-	int compresstextures;
+	int32_t simpleshaders;
+	int32_t compresstextures;
 } InitialVideoOptions_s;
 
 static InitialVideoOptions_s	s_ivo;
@@ -612,7 +612,7 @@ GraphicsOptions_CheckConfig
 */
 static void GraphicsOptions_CheckConfig( void )
 {
-	int i;
+	int32_t i;
 
 	for ( i = 0; i < NUM_IVO_TEMPLATES; i++ )
 	{
@@ -776,7 +776,7 @@ static void GraphicsOptions_UpdateMenuItems( void )
 ApplyChanges - Apply the changes from the video data screen
 =================
 */
-static void ApplyChanges2( void *unused, int notification )
+static void ApplyChanges2( void *unused, int32_t notification )
 {
 	if (notification != QM_ACTIVATED)
 		return;
@@ -788,7 +788,7 @@ static void ApplyChanges2( void *unused, int notification )
 GraphicsOptions_ApplyChanges
 =================
 */
-static void GraphicsOptions_ApplyChanges( void *unused, int notification )
+static void GraphicsOptions_ApplyChanges( void *unused, int32_t notification )
 {
 	if (notification != QM_ACTIVATED)
 		return;
@@ -884,7 +884,7 @@ static void GraphicsOptions_ApplyChanges( void *unused, int notification )
 GraphicsOptions_Event
 =================
 */
-static void GraphicsOptions_Event( void* ptr, int event )
+static void GraphicsOptions_Event( void* ptr, int32_t event )
 {
 	InitialVideoOptions_s *ivo;
 
@@ -965,9 +965,9 @@ void GraphicsOptions_MenuDraw (void)
 
 static qboolean GraphicsOptions_CheckWidescreen( void )
 {
-	int						j, i;
-	int						customWidth = trap_Cvar_VariableValue( "r_customWidth" );
-	int						customHeight = trap_Cvar_VariableValue( "r_customHeight" );
+	int32_t						j, i;
+	int32_t						customWidth = trap_Cvar_VariableValue( "r_customWidth" );
+	int32_t						customHeight = trap_Cvar_VariableValue( "r_customHeight" );
 	videoResolutions_t		*v;
 
 	//double check
@@ -1033,7 +1033,7 @@ static void GraphicsOptions_SetMenuItems( void )
 	}
 
 //	s_graphicsoptions.lighting.curvalue = trap_Cvar_VariableValue( "r_vertexLight" ) != 0;
-	switch ( ( int ) trap_Cvar_VariableValue( "r_texturebits" ) )
+	switch ( ( int32_t ) trap_Cvar_VariableValue( "r_texturebits" ) )
 	{
 	default:
 	case 0:
@@ -1072,7 +1072,7 @@ static void GraphicsOptions_SetMenuItems( void )
 		s_graphicsoptions.geometry.curvalue = 2;
 	}
 
-	switch ( ( int ) trap_Cvar_VariableValue( "r_colorbits" ) )
+	switch ( ( int32_t ) trap_Cvar_VariableValue( "r_colorbits" ) )
 	{
 	default:
 	case 0:
@@ -1108,7 +1108,7 @@ void VideoSideButtonsAction( qboolean result )
 VideoSideButtons_MenuEvent
 =================
 */
-static void VideoSideButtons_MenuEvent (void* ptr, int event)
+static void VideoSideButtons_MenuEvent (void* ptr, int32_t event)
 {
 
 	if (event != QM_ACTIVATED)
@@ -1132,7 +1132,7 @@ static void VideoSideButtons_MenuEvent (void* ptr, int event)
 Video_MenuEvent
 =================
 */
-static void Video_MenuEvent (void* ptr, int event)
+static void Video_MenuEvent (void* ptr, int32_t event)
 {
 	menuframework_s*	m;
 
@@ -1284,7 +1284,7 @@ VideoData_MenuInit
 */
 static void VideoData_MenuInit( void )
 {
-	int x,y,width,inc;
+	int32_t x,y,width,inc;
 
 	UI_VideoDataMenu_Cache();
 
@@ -1578,7 +1578,7 @@ void UI_VideoDataMenu( void )
 Video_SideButtons
 =================
 */
-void Video_SideButtons(menuframework_s *menu,int menuType)
+void Video_SideButtons(menuframework_s *menu,int32_t menuType)
 {
 
 	// Button Data
@@ -1695,9 +1695,9 @@ void Video_SideButtons(menuframework_s *menu,int menuType)
 VideoDriver_Lines
 =================
 */
-void VideoDriver_Lines(int increment)
+void VideoDriver_Lines(int32_t increment)
 {
-	int		i,i2;
+	int32_t		i,i2;
 
 	s_videodriver.currentDriverLine += increment;
 
@@ -1788,7 +1788,7 @@ void VideoDriver_LineSetup(void)
 {
 	char	*bufhold;
 	char	*eptr;
-	int		i;
+	int32_t		i;
 
 	strcpy( s_videodriver.extensionsString, uis.glconfig.extensions_string );
 	eptr = s_videodriver.extensionsString;
@@ -1837,7 +1837,7 @@ void VideoDriver_LineSetup(void)
 VideoDriver_MenuKey
 =================
 */
-sfxHandle_t VideoDriver_MenuKey (int key)
+sfxHandle_t VideoDriver_MenuKey (int32_t key)
 {
 	return ( Menu_DefaultKey( &s_videodriver.menu, key ) );
 }
@@ -1851,7 +1851,7 @@ void M_VideoDriverMenu_Graphics (void)
 {
 	float labelColor[] = { 0, 1.0, 0, 1.0 };
 	float textColor[] = { 1, 1, 1, 1 };
-	int x,y,x2;
+	int32_t x,y,x2;
 
 	UI_MenuFrame(&s_videodriver.menu);
 
@@ -1950,7 +1950,7 @@ Video_MenuInit
 */
 static void VideoDriver_MenuInit( void )
 {
-	int		i,x,y,x2;
+	int32_t		i,x,y,x2;
 
 	UI_VideoDriverMenu_Cache();
 
@@ -2065,7 +2065,7 @@ void UI_VideoDriverMenu( void )
 GammaCallback2
 =================
 */
-void GammaCallback2( void *s, int notification )
+void GammaCallback2( void *s, int32_t notification )
 {
 	if (notification != QM_ACTIVATED)
 		return;
@@ -2085,7 +2085,7 @@ M_VideoData2Menu_Graphics
 */
 void M_VideoData2Menu_Graphics (void)
 {
-	int y;
+	int32_t y;
 
 	UI_MenuFrame(&s_videodata2.menu);
 
@@ -2166,7 +2166,7 @@ VideoData2_MenuInit
 */
 static void VideoData2_MenuInit( void )
 {
-	int x,y;
+	int32_t x,y;
 
 	UI_VideoData2Menu_Cache();
 

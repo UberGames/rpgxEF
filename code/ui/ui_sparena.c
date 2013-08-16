@@ -4,11 +4,11 @@
 
 void UI_SPArena_Start( const char *arenaInfo ) {
 	char	*map;
-	int		level;
-	int		n;
+	int32_t		level;
+	int32_t		n;
 	char	*txt;
 
-	n = (int)trap_Cvar_VariableValue( "sv_maxclients" );
+	n = (int32_t)trap_Cvar_VariableValue( "sv_maxclients" );
 	if ( n < 8 ) {
 		trap_Cvar_SetValue( "sv_maxclients", 8 );
 	}

@@ -120,7 +120,7 @@
 static qhandle_t			cornerUpper;
 static qhandle_t			spaceBackdrop;
 
-int i;
+int32_t i;
 
 static float cm_buttons[9][2] = 
 {
@@ -155,10 +155,10 @@ typedef struct
 	qhandle_t		logoModel;
 	sfxHandle_t		pingSound;
 
-	int				startTime;	//the time index the player hit t3h button, so we can calc display times
-	int				beepTime;	//increment this each time a new item appears, so we can play beep then. :)
+	int32_t				startTime;	//the time index the player hit t3h button, so we can calc display times
+	int32_t				beepTime;	//increment this each time a new item appears, so we can play beep then. :)
 
-	int				creditsNum;	//Index of the button we last clicked
+	int32_t				creditsNum;	//Index of the button we last clicked
 } credits_t;
 
 static credits_t	s_credits;
@@ -474,14 +474,14 @@ draws each value from the array in a specific order whilst playing a sound
 for each set
 =================
 */
-void UI_drawCreditNames( int creditsIndex )
+void UI_drawCreditNames( int32_t creditsIndex )
 {
-	int timeDeviation; //used to separate the times when each credit appears
-	int yDeviation; //used to place each separate credit down the y-axis each loop
+	int32_t timeDeviation; //used to separate the times when each credit appears
+	int32_t yDeviation; //used to place each separate credit down the y-axis each loop
 	
 	//w00t! I can count the length of arrays dynamically now!!!!!!! ^_^!!!!
 	//*SOB* Didn't work :(
-	//int arrayLen = sizeof ( creditSec ) / sizeof ( creditSec[0] ); 
+	//int32_t arrayLen = sizeof ( creditSec ) / sizeof ( creditSec[0] ); 
 	
 	//trap_Print ( va( "arrayLen = %i\n", arrayLen ) );
 
@@ -568,7 +568,7 @@ void UI_drawCreditNames( int creditsIndex )
 Credits_MenuEvent
 ===============
 */
-static void Credits_MenuEvent( void *ptr, int event ) 
+static void Credits_MenuEvent( void *ptr, int32_t event ) 
 {
 	if( event != QM_ACTIVATED ) 
 	{

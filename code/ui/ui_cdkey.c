@@ -23,10 +23,10 @@ typedef struct {
 
 	menubitmap_s	accept;
 	menubitmap_s	acceptlater;
-	int				keyResult;
+	int32_t				keyResult;
 
 	qhandle_t		halfround;
-	int				fromMenu;
+	int32_t				fromMenu;
 } cdkeyMenuInfo_t;
 
 static cdkeyMenuInfo_t	cdkeyMenuInfo;
@@ -36,9 +36,9 @@ static cdkeyMenuInfo_t	cdkeyMenuInfo;
 UI_CDKeyMenu_PreValidateKey
 =================
 */
-static int UI_CDKeyMenu_PreValidateKey( const char *key ) 
+static int32_t UI_CDKeyMenu_PreValidateKey( const char *key ) 
 {
-	int		cnt, i;
+	int32_t		cnt, i;
 
 	// With dashes can't be more than 21 long
 	if( strlen( key ) > 22 ) 
@@ -73,7 +73,7 @@ static int UI_CDKeyMenu_PreValidateKey( const char *key )
 UI_CDKeyMenu_Event
 ===============
 */
-static void UI_CDKeyMenu_Event( void *ptr, int event ) 
+static void UI_CDKeyMenu_Event( void *ptr, int32_t event ) 
 {
 	if( event != QM_ACTIVATED ) 
 	{
@@ -128,9 +128,9 @@ static void UI_CDKeyMenu_DrawKey( void *self )
 {
 	menufield_s		*f;
 	qboolean		focus;
-	int				style;
+	int32_t				style;
 	float			*color;
-	int				x, y;
+	int32_t				x, y;
 
 	f = (menufield_s *)self;
 
@@ -181,7 +181,7 @@ CDKeyMenu_Graphics
 */
 void CDKeyMenu_Graphics (void)
 {
-	int x,y;
+	int32_t x,y;
 
 	// Draw the basic screen layout
 	UI_MenuFrame(&cdkeyMenuInfo.menu);
@@ -324,7 +324,7 @@ void UI_CDKeyMenu( void )
 M_CDKey2Menu_Key
 =================
 */
-sfxHandle_t M_CDKey2Menu_Key (int key)
+sfxHandle_t M_CDKey2Menu_Key (int32_t key)
 {
 	if (key == K_ESCAPE)
 	{
@@ -341,7 +341,7 @@ CDKeyMenu2_Graphics
 */
 void CDKeyMenu2_Graphics (void)
 {
-	int x,y;
+	int32_t x,y;
 
 	// Draw the basic screen layout
 	UI_MenuFrame2(&cdkeyMenuInfo.menu);

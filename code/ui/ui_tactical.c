@@ -7,17 +7,17 @@
 
 typedef struct {
 	char	weaponName[MAX_QPATH];
-	int		weaponMaxCount;
-	int		weaponCurrentCount;
+	int32_t		weaponMaxCount;
+	int32_t		weaponCurrentCount;
 	char	weaponTarget[MAX_QPATH];
-	int		weaponNum;
+	int32_t		weaponNum;
 } weaponData_t;
 
 typedef struct {
 	menuframework_s menu;
-	int				maxWeapons;
-	int				choosenWeapon;
-	int				highLightedWeapon;
+	int32_t				maxWeapons;
+	int32_t				choosenWeapon;
+	int32_t				highLightedWeapon;
 	sfxHandle_t		openingVoice;
 	sfxHandle_t		fireVoice;
 	menubitmap_s	quitmenu;
@@ -30,7 +30,7 @@ typedef struct {
 	menubitmap_s	weap6;
 
 	weaponData_t	weaponData[MAX_TACTICAL_WEAPONS];
-	int				numWeapons;
+	int32_t				numWeapons;
 } tactical_t;
 
 tactical_t s_tactical;
@@ -54,8 +54,8 @@ void UI_TacticalMenu_Cache (void);
 M_Tactical_Event
 =================
 */
-static void M_Tactical_Event (void* ptr, int notification) {
-	int id;
+static void M_Tactical_Event (void* ptr, int32_t notification) {
+	int32_t id;
 	menubitmap_s	*holdWeapon;
 
 	id = ((menucommon_s*)ptr)->id;
@@ -103,7 +103,7 @@ static void M_Tactical_Event (void* ptr, int notification) {
 TacticalMenu_Key
 =================
 */
-sfxHandle_t TacticalMenu_Key (int key) {
+sfxHandle_t TacticalMenu_Key (int32_t key) {
 	return ( Menu_DefaultKey( &s_tactical.menu, key ) );
 }
 
@@ -168,7 +168,7 @@ void UI_TacticalMenu_Cache (void)
 static void UI_TacticalMenu_LoadWeapons( void )
 {
 	char	buffer[MAX_TOKEN_CHARS];
-	int		i;
+	int32_t		i;
 	char	*temp;
 
 	s_tactical.numWeapons = 0;
@@ -204,7 +204,7 @@ static void UI_ManageWeaponLoading( void )
 	char			mapRoute[MAX_QPATH];
 	char			info[MAX_TOKEN_CHARS];
 	fileHandle_t	f;
-	int				file_len;
+	int32_t				file_len;
 	char			*textPtr;
 	char			buffer[20000];
 	char			*token;
@@ -287,9 +287,9 @@ TacticalMenu_Init
 */
 void TacticalMenu_Init(void)
 {
-	int	y,pad,x;
+	int32_t	y,pad,x;
 	menubitmap_s	*holdWeapon;
-	int		i,width;
+	int32_t		i,width;
 
 	UI_ManageWeaponLoading();
 

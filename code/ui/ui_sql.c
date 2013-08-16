@@ -27,8 +27,8 @@ sql_t s_sql;
 M_sql_Event
 =================
 */
-static void M_sql_Event(void *ptr, int notification) {
-	int id;
+static void M_sql_Event(void *ptr, int32_t notification) {
+	int32_t id;
 
 	id = ((menucommon_s*)ptr)->id;
 
@@ -54,7 +54,7 @@ static void M_sql_Event(void *ptr, int notification) {
 sqlMenu_Key
 =================
 */
-sfxHandle_t sqlMenu_Key (int key)
+sfxHandle_t sqlMenu_Key (int32_t key)
 {
 	return ( Menu_DefaultKey( &s_sql.menu, key ) );
 }

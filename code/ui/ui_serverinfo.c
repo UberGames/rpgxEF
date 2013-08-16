@@ -17,8 +17,8 @@ typedef struct
 	menubitmap_s	add;
 	char			info[MAX_INFO_STRING];
 	qhandle_t		cornerLower;
-	int				lineCnt;	
-	int				lineStartCnt;
+	int32_t				lineCnt;	
+	int32_t				lineStartCnt;
 	menubitmap_s	arrowdwn;
 	menubitmap_s	arrowup;
 	menutext_s		key1;
@@ -80,8 +80,8 @@ void Favorites_Add( void )
 {
 	char	adrstr[128];
 	char	serverbuff[128];
-	int		i;
-	int		best;
+	int32_t		i;
+	int32_t		best;
 
 	trap_Cvar_VariableStringBuffer( "cl_currentServerAddress", serverbuff, sizeof(serverbuff) );
 	if (!serverbuff[0])
@@ -112,7 +112,7 @@ void Favorites_Add( void )
 ServerInfo_Event
 =================
 */
-static void ServerInfo_Event( void* ptr, int event )
+static void ServerInfo_Event( void* ptr, int32_t event )
 {
 	switch (((menucommon_s*)ptr)->id)
 	{
@@ -207,7 +207,7 @@ ServerInfo_LinePrep
 */
 static void ServerInfo_LinePrep( void)
 {
-	int				i;
+	int32_t				i;
 	const char		*s;
 	char			key[MAX_INFO_KEY];
 	char			value[MAX_INFO_VALUE];
@@ -241,7 +241,7 @@ static void ServerInfo_LinePrep( void)
 ServerInfo_MenuKey
 =================
 */
-static sfxHandle_t ServerInfo_MenuKey( int key )
+static sfxHandle_t ServerInfo_MenuKey( int32_t key )
 {
 	return ( Menu_DefaultKey( &s_serverinfo.menu, key ) );
 }
@@ -264,7 +264,7 @@ PlayerSettings_MenuInit
 */
 static void UI_ServerInfoMenu_Init(void) 
 {
-	int	i,x,y;
+	int32_t	i,x,y;
 	menutext_s	*hold_key,*hold_value;
 
 	// zero set all our globals

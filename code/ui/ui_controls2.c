@@ -9,16 +9,16 @@ CONTROLS MENU
 */
 #include "ui_local.h"
 
-static void SetupMenu_SideButtons(menuframework_s *menu,int menuType);
+static void SetupMenu_SideButtons(menuframework_s *menu,int32_t menuType);
 static void Controls_UpdateNew( void );
-static void Controls_MenuEvent (void* ptr, int event);
+static void Controls_MenuEvent (void* ptr, int32_t event);
 static void UI_ControlsMoveMenu( void );
 static void UI_ControlsAttackLookMenu( void );
 static void UI_ControlsMouseJoyStickMenu( void );
 static void UI_ControlsDefaultMenu( void );
 static void UI_ControlsOtherMenu( void );
 static void UI_ControlsCommandMenu( void );
-static void Controls_MenuEventVideo (void* ptr, int event);
+static void Controls_MenuEventVideo (void* ptr, int32_t event);
 static void UI_ControlsModelViewMenu( void ); //TiM
 
 void UI_SetupWeaponsMenu( void );
@@ -35,7 +35,7 @@ static menucommon_s	*chosenitem;
 #define PIC_MOUSE2		"menu/common/mouse2.tga"
 
 void *holdControlPtr;
-int holdControlEvent;
+int32_t holdControlEvent;
 static menuaction_s *vid_apply_action;
 
 float setup_menubuttons[8][2] = 
@@ -50,14 +50,14 @@ float setup_menubuttons[8][2] =
 {482,86},
 };
 
-int s_OffOnNone_Names[] =
+int32_t s_OffOnNone_Names[] =
 {
 	MNT_OFF,
 	MNT_ON,
 	MNT_NONE
 };
 
-int s_Autoswitch_Names[] =
+int32_t s_Autoswitch_Names[] =
 {
 	MNT_OFF,
 	MNT_SAFE,
@@ -151,7 +151,7 @@ menugraphics_s attackmenu_graphics[AMG_MAX] =
 
 	{ MG_GRAPHIC,	0.0,	501,	206,	110,	177,	"menu/common/square.tga",	0,	0,		0,		0,	0,		0,		0,		CT_VDKPURPLE1,	NULL },	// AMG_PLAYERBKGRND
 };
-static int					g_section;
+static int32_t					g_section;
 
 static menuframework_s		s_weapons_menu;
 static menubitmap_s			s_controls_playermdl;
@@ -264,15 +264,15 @@ static menubitmap_s			s_controls_other;
 
 typedef struct {
 	char	*command;
-	int		label;
-	int		id;
-	int		anim;
-	int		defaultbind1;
-//	int		defaultbind2;
-	int		bind1;
-	int		bind2;
-	int		bind3;
-	int		desc;
+	int32_t		label;
+	int32_t		id;
+	int32_t		anim;
+	int32_t		defaultbind1;
+//	int32_t		defaultbind2;
+	int32_t		bind1;
+	int32_t		bind2;
+	int32_t		bind3;
+	int32_t		desc;
 } bind_t;
 
 typedef struct
@@ -450,14 +450,14 @@ typedef struct
 	menuaction_s		chat5;
 	menulist_s			joyenable;
 	menuslider_s		joythreshold;
-	int					section;
+	int32_t					section;
 	qboolean			waitingforkey;
 	char				playerModel[64];
 	vec3_t				playerViewangles;
 	vec3_t				playerMoveangles;
-	int					playerLegs;
-	int					playerTorso;
-	int					playerWeapon;
+	int32_t					playerLegs;
+	int32_t					playerTorso;
+	int32_t					playerWeapon;
 	qboolean			playerChat;
 
 	menubitmap_s		back;
@@ -721,7 +721,7 @@ Controls_InitCvars
 */
 static void Controls_InitCvars( void )
 {
-	int				i;
+	int32_t				i;
 	configcvar_t*	cvarptr;
 
 	cvarptr = g_configcvars;
@@ -751,7 +751,7 @@ Controls_GetCvarDefault
 static float Controls_GetCvarDefault( char* name )
 {
 	configcvar_t*	cvarptr;
-	int				i;
+	int32_t				i;
 
 	cvarptr = g_configcvars;
 	for (i=0; ;i++,cvarptr++)
@@ -774,7 +774,7 @@ Controls_GetCvarValue
 static float Controls_GetCvarValue( char* name )
 {
 	configcvar_t*	cvarptr;
-	int				i;
+	int32_t				i;
 
 	cvarptr = g_configcvars;
 	for (i=0; ;i++,cvarptr++)
@@ -796,7 +796,7 @@ Controls_UpdateModel
 =================
 */
 
-static void Controls_UpdateModel( int anim ) 
+static void Controls_UpdateModel( int32_t anim ) 
 {
 	VectorClear( s_controls.playerViewangles );
 	VectorClear( s_controls.playerMoveangles );
@@ -939,14 +939,14 @@ Controls_DrawKeyBinding
 static void Controls_DrawKeyBinding( void *self )
 {
 	menuaction_s*	a;
-	int				x,bindingX;
-	int				y;
-	int				b1;
+	int32_t				x,bindingX;
+	int32_t				y;
+	int32_t				b1;
 	qboolean		c;
 	char			name[32];
 	char			name2[32];
-	int				color,bindingtextcolor, buttontextcolor;
-	int				width;
+	int32_t				color,bindingtextcolor, buttontextcolor;
+	int32_t				width;
 
 	a = (menuaction_s*) self;
 
@@ -969,7 +969,7 @@ static void Controls_DrawKeyBinding( void *self )
 		trap_Key_KeynumToStringBuf( b1, name, 32 );
 		Q_strupr(name);
 
-		int b2 = g_bindings[a->generic.id].bind2;
+		int32_t b2 = g_bindings[a->generic.id].bind2;
 		if (b2 != -1)
 		{
 			trap_Key_KeynumToStringBuf( b2, name2, 32 );
@@ -1090,10 +1090,10 @@ static void Controls_DrawPlayer( void *self )
 Controls_GetKeyAssignment
 =================
 */
-static void Controls_GetKeyAssignment (char *command, int *twokeys)
+static void Controls_GetKeyAssignment (char *command, int32_t *twokeys)
 {
-	int		count;
-	int		j;
+	int32_t		count;
+	int32_t		j;
 	char	b[256];
 
 	twokeys[0] = twokeys[1] = twokeys[2] = -1;
@@ -1121,7 +1121,7 @@ Controls_ClearKeyAssignment
 */
 static void Controls_ClearKeyAssignment (char *command)
 {
-	int		i;
+	int32_t		i;
 	char	b[256];
 
 	for ( i = 0; i < 256; i++ )
@@ -1147,8 +1147,8 @@ Controls_GetConfig
 */
 static void Controls_GetConfig( void )
 {
-	int		i;
-	int		twokeys[3];
+	int32_t		i;
+	int32_t		twokeys[3];
 	bind_t*	bindptr;
 
 	// put the bindings into a local store
@@ -1199,7 +1199,7 @@ Controls_SetConfig
 */
 static void Controls_SetConfig( void )
 {
-	int		i;
+	int32_t		i;
 	bind_t*	bindptr;
 
 	// unbind the command from all keys
@@ -1251,7 +1251,7 @@ Controls_SetDefaults
 /*
 static void Controls_SetDefaults( void )
 {
-	int	i;
+	int32_t	i;
 	bind_t*	bindptr;
 
 	// set the bindings from the local store
@@ -1282,10 +1282,10 @@ static void Controls_SetDefaults( void )
 Controls_MenuKey
 =================
 */
-static sfxHandle_t Controls_MenuKey( int key )
+static sfxHandle_t Controls_MenuKey( int32_t key )
 {
-	int			id;
-	int			i;
+	int32_t			id;
+	int32_t			i;
 	qboolean	found;
 	bind_t*		bindptr;
 	menuframework_s* current_menu;
@@ -1477,7 +1477,7 @@ static void Controls_ResetDefaults_Action( qboolean result )
 Controls_ActionEvent
 =================
 */
-static void Controls_ActionEvent( void* ptr, int event )
+static void Controls_ActionEvent( void* ptr, int32_t event )
 {
 	menuframework_s*	menu;
 
@@ -1525,7 +1525,7 @@ static void Controls_InitModel( void )
 SetupMenu_TopButtons
 =================
 */
-void SetupMenu_TopButtons(menuframework_s *menu,int menuType,menuaction_s *s_video_apply_action)
+void SetupMenu_TopButtons(menuframework_s *menu,int32_t menuType,menuaction_s *s_video_apply_action)
 {
 	vid_apply_action = s_video_apply_action;
 
@@ -1849,7 +1849,7 @@ M_WeaponsMenu_Blinkies
 */
 void M_WeaponsMenu_Blinkies (void)
 {
-	int i;
+	int32_t i;
 
 	for (i=0;i<AMG_MAX;++i)
 	{
@@ -1956,7 +1956,7 @@ WeaponsMenu_Precache
 */
 static void WeaponsMenu_Precache( void )
 {
-	int i;
+	int32_t i;
 
 	swooshTop = trap_R_RegisterShaderNoMip("menu/common/swoosh_top.tga");
 	swooshBottom= trap_R_RegisterShaderNoMip("menu/common/swoosh_bottom.tga");
@@ -1978,7 +1978,7 @@ Controls_ModelEvent
 =================
 */
 
-static void Controls_ModelEvent( void* ptr, int event )
+static void Controls_ModelEvent( void* ptr, int32_t event )
 {
 	/*menucommon_s*	menu = (menucommon_s*)ptr;
 	if (event == QM_LOSTFOCUS)
@@ -2022,9 +2022,9 @@ static void Playermodel_MenuInit( void )
 SetupActionButtons_Init
 =================
 */
-static void SetupActionButtons_Init(int section)
+static void SetupActionButtons_Init(int32_t section)
 {
-	int i,y;
+	int32_t i,y;
 	void**		controlptr;
 	menuframework_s *current_menu;
 
@@ -2270,9 +2270,9 @@ void UI_SetupWeaponsMenu( void )
 SetupMenu_SideButtons
 ===============
 */
-static void SetupMenu_SideButtons(menuframework_s *menu,int menuType)
+static void SetupMenu_SideButtons(menuframework_s *menu,int32_t menuType)
 {
-	int x,y,inc;
+	int32_t x,y,inc;
 
 	y = 204;
 	inc = 6;
@@ -2485,8 +2485,8 @@ Controls_Update
 */
 static void Controls_UpdateNew( void )
 {
-	int			i;
-	int			j;
+	int32_t			i;
+	int32_t			j;
 	void**		controlptr;
 	menuframework_s *current_menu;
 
@@ -2549,7 +2549,7 @@ void ControlsVideoDataAction( qboolean result )
 Controls_MenuEventVideo
 =================
 */
-static void Controls_MenuEventVideo (void* ptr, int event)
+static void Controls_MenuEventVideo (void* ptr, int32_t event)
 {
 
 	if (event != QM_ACTIVATED)
@@ -2574,7 +2574,7 @@ static void Controls_MenuEventVideo (void* ptr, int event)
 Controls_MenuEvent
 =================
 */
-static void Controls_MenuEvent (void* ptr, int event)
+static void Controls_MenuEvent (void* ptr, int32_t event)
 {
 
 	if (event != QM_ACTIVATED)
@@ -3139,7 +3139,7 @@ static void ControlsMouseJoyStick_MenuDraw (void)
 ControlsMouseJoyStick_MenuKey
 =================
 */
-static sfxHandle_t ControlsMouseJoyStick_MenuKey( int key )
+static sfxHandle_t ControlsMouseJoyStick_MenuKey( int32_t key )
 {
 	return Menu_DefaultKey( &s_controlsmouse_menu, key );
 }
@@ -3168,7 +3168,7 @@ ControlsMouseJoyStick_MenuInit
 */
 static void ControlsMouseJoyStick_MenuInit( void )
 {
-	int x,y;
+	int32_t x,y;
 
 	UI_ControlsMouseJoyStickMenu_Cache();
 
@@ -3462,7 +3462,7 @@ static void ControlsDefault_MenuDraw (void)
 M_Default_Event
 =================
 */
-void M_Default_Event (void* ptr, int event)
+void M_Default_Event (void* ptr, int32_t event)
 {
 
 	if (event != QM_ACTIVATED)
@@ -3491,7 +3491,7 @@ void M_Default_Event (void* ptr, int event)
 ControlsDefault_MenuKey
 =================
 */
-static sfxHandle_t ControlsDefault_MenuKey( int key )
+static sfxHandle_t ControlsDefault_MenuKey( int32_t key )
 {
 	return Menu_DefaultKey( &s_controlsdefault_menu, key );
 }
@@ -3633,7 +3633,7 @@ static void ControlsOther_MenuDraw (void)
 ControlsOther_MenuKey
 =================
 */
-static sfxHandle_t ControlsOther_MenuKey( int key )
+static sfxHandle_t ControlsOther_MenuKey( int32_t key )
 {
 	return Menu_DefaultKey( &s_controlsother_menu, key );
 }
@@ -3656,7 +3656,7 @@ ControlsOther_MenuInit
 */
 static void ControlsOther_MenuInit( void )
 {
-	int x,y;
+	int32_t x,y;
 
 	ControlsOther_Cache();
 

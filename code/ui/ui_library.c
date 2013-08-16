@@ -44,15 +44,15 @@ void UI_LanguageFilename(char *baseName,char *baseExtension,char *finalName);
 static struct 
 {
 	menuframework_s menu;
-	int				mainTopic;
-	int				subTopic;
-	int				maxMainTopics;
-	int				topMainTopic;				// Index to Maintopic at top of viewing screen
-	int				cntMainTopic;				// Count of topics loaded in
-	int				topSubTopic;				// Index to Subtopic at top of viewing screen
-	int				cntSubTopic[MAXSUBTOPIC];	// Count of subtopics loaded in
-//	int				menuType;					// 0 if library, 1 if astrometrics
-	int				chosenButton;				// Hi-lite subtopic button
+	int32_t				mainTopic;
+	int32_t				subTopic;
+	int32_t				maxMainTopics;
+	int32_t				topMainTopic;				// Index to Maintopic at top of viewing screen
+	int32_t				cntMainTopic;				// Count of topics loaded in
+	int32_t				topSubTopic;				// Index to Subtopic at top of viewing screen
+	int32_t				cntSubTopic[MAXSUBTOPIC];	// Count of subtopics loaded in
+//	int32_t				menuType;					// 0 if library, 1 if astrometrics
+	int32_t				chosenButton;				// Hi-lite subtopic button
 	qhandle_t		corner_ur_20_24;
 	qhandle_t		corner_lr_18_20;
 	qhandle_t		corner_ll_8_47;
@@ -87,7 +87,7 @@ static struct
 	menuframework_s menu;
 	float			timer;
 	qhandle_t		cornerPic;
-//	int				menuType;		// 0 = library, 1 = astrometrics
+//	int32_t				menuType;		// 0 = library, 1 = astrometrics
 } s_libraryaccessing;
 
 // Log Menu Graphics
@@ -134,20 +134,20 @@ static struct
 	qhandle_t		corner_ll_8_47;
 	qhandle_t		corner_ll_18_47;
 
-	int				lineCnt;	// # of lines in description
-	int				currentLog;	// Index to current log being read in
-	int				maxButtons;	// Count of stardate buttons
-	int				currentButton;	// Currently selected stardate button
-	int				currentText;
-	int				screenType;		// 0=Normal Logs, 1=PADDs
+	int32_t				lineCnt;	// # of lines in description
+	int32_t				currentLog;	// Index to current log being read in
+	int32_t				maxButtons;	// Count of stardate buttons
+	int32_t				currentButton;	// Currently selected stardate button
+	int32_t				currentText;
+	int32_t				screenType;		// 0=Normal Logs, 1=PADDs
 	menubitmap_s	quitMenu;
 	menubitmap_s	buttonArrowUp;
 	menubitmap_s	buttonArrowDown;
 	menubitmap_s	textArrowDown;
 	menubitmap_s	textArrowUp;
-	int				topButton;		// Which line is at the top of the displayed buttons
-	int				topText;		// Which line is at the top of the text
-	int				chosenButton;				// Hi-lite subtopic button
+	int32_t				topButton;		// Which line is at the top of the displayed buttons
+	int32_t				topText;		// Which line is at the top of the text
+	int32_t				chosenButton;				// Hi-lite subtopic button
 	menubitmap_s	logButton1;
 	menubitmap_s	logButton2;
 	menubitmap_s	logButton3;
@@ -168,27 +168,27 @@ typedef struct
 	char	*mainTopicDesc;					// Description of main topic desc
 	char	*subTopic[MAXSUBTOPIC];			// Description of subtopics
 	char	*subTopicDesc[MAXSUBTOPIC];		// Description of subtopic desc
-	int		textY[MAXSUBTOPIC];				// Y starting point of text
-	int		textWidth[MAXSUBTOPIC];			// X width of text 
+	int32_t		textY[MAXSUBTOPIC];				// Y starting point of text
+	int32_t		textWidth[MAXSUBTOPIC];			// X width of text 
 	char	*text[MAXSUBTOPIC];				// Text
 	char	*model[MAXSUBTOPIC];			// Model
-	int		modelX[MAXSUBTOPIC];			// Model x location
-	int		modelY[MAXSUBTOPIC];			// Model y location
-	int		modelDistance[MAXSUBTOPIC];		// Model's distance from camera
-	int		modelOriginY[MAXSUBTOPIC];		// Model change in Y origin
-	int		modelYaw[MAXSUBTOPIC];			// Model's YAW from camera (0 to rotate)
-	int		modelPitch[MAXSUBTOPIC];		// Model's PITCH 
-	int		modelRoll[MAXSUBTOPIC];			// Model's ROLL 
+	int32_t		modelX[MAXSUBTOPIC];			// Model x location
+	int32_t		modelY[MAXSUBTOPIC];			// Model y location
+	int32_t		modelDistance[MAXSUBTOPIC];		// Model's distance from camera
+	int32_t		modelOriginY[MAXSUBTOPIC];		// Model change in Y origin
+	int32_t		modelYaw[MAXSUBTOPIC];			// Model's YAW from camera (0 to rotate)
+	int32_t		modelPitch[MAXSUBTOPIC];		// Model's PITCH 
+	int32_t		modelRoll[MAXSUBTOPIC];			// Model's ROLL 
 	char	*modelLegs[MAXSUBTOPIC];
 	char	*modelHead[MAXSUBTOPIC];
 	char	*modelTorso[MAXSUBTOPIC];
 	qhandle_t	modelHandle[MAXSUBTOPIC];	// Handle to model
 	char	*shader[MAXSUBTOPIC];			// Shader
 	qhandle_t	shaderHandle[MAXSUBTOPIC];	// Handle to shader
-	int		shaderXpos[MAXSUBTOPIC];		// Shader x location
-	int		shaderYpos[MAXSUBTOPIC];		// Shader y location
-	int		shaderXlength[MAXSUBTOPIC];		// Shader x length
-	int		shaderYlength[MAXSUBTOPIC];		// Shader y length
+	int32_t		shaderXpos[MAXSUBTOPIC];		// Shader x location
+	int32_t		shaderYpos[MAXSUBTOPIC];		// Shader y location
+	int32_t		shaderXlength[MAXSUBTOPIC];		// Shader x length
+	int32_t		shaderYlength[MAXSUBTOPIC];		// Shader y length
 	char	*command[MAXSUBTOPIC];			// Command given when exiting the Astrometrics menu
 	char	*sound[MAXSUBTOPIC];			// Wav file to play along with the text
 	sfxHandle_t		soundHandle[MAXSUBTOPIC];	// Handle of wav file to play
@@ -277,7 +277,7 @@ void LogMenu_Blinkies (void)
 	// Turning on description a line at a time
 	if ((logmenu_graphics[LMG_CURRENT_DESC].timer < uis.realtime) && (logmenu_graphics[LMG_CURRENT_DESC].type == MG_VAR))
 	{
-		int descI = logmenu_graphics[LMG_CURRENT_DESC].target;
+		int32_t descI = logmenu_graphics[LMG_CURRENT_DESC].target;
 		if (!descI)
 		{
 			logmenu_graphics[LMG_CURRENT_DESC].type = MG_OFF;
@@ -300,12 +300,12 @@ void LogMenu_Blinkies (void)
 SplitLogDesc
 =================
 */
-static void SplitLogDesc(char *s,int width)
+static void SplitLogDesc(char *s,int32_t width)
 {
-	int	lineWidth,currentWidth,charCnt,currentLineI;
+	int32_t	lineWidth,currentWidth,charCnt,currentLineI;
 	char *holds;
 	char holdChar[2];
-	int	nextLine;
+	int32_t	nextLine;
 
 	// Clean out any old data
 	memset(logDesc,0,sizeof(logDesc));
@@ -383,9 +383,9 @@ static void SplitLogDesc(char *s,int width)
 TurnOnLogDesc
 =================
 */
-static void TurnOnLogDesc(char *s,int lineWidth,int startY)
+static void TurnOnLogDesc(char *s,int32_t lineWidth,int32_t startY)
 {
-	int	y,i;
+	int32_t	y,i;
 
 	logmenu_graphics[LMG_BIO_DESC1].type = MG_STRING;
 	logmenu_graphics[LMG_CURRENT_DESC].target = logmenu_graphics[LMG_BIO_DESC1].target;	// Set up next line
@@ -453,14 +453,14 @@ static void UI_Draw3DModel( float x, float y, float w, float h, qhandle_t model,
 }
 
 //void Controls_DrawPlayer( void *self );
-//void Controls_UpdateModel( int anim );
+//void Controls_UpdateModel( int32_t anim );
 
 /*
 ================
 UI_LibraryDrawMD3Model
 ================
 */
-static void UI_LibraryDrawMD3Model(qhandle_t modelHandle,int x, int y,int modelDistance,int modelYaw,int modelPitch,int modelRoll,int modelOriginY)
+static void UI_LibraryDrawMD3Model(qhandle_t modelHandle,int32_t x, int32_t y,int32_t modelDistance,int32_t modelYaw,int32_t modelPitch,int32_t modelRoll,int32_t modelOriginY)
 {
 	vec3_t	origin = {50,0,2};
 	vec3_t	angles;
@@ -515,7 +515,7 @@ ClearLibraryDesc
 */
 void ClearLibraryDesc(void)
 {
-	int i;
+	int32_t i;
 
 	for (i=0;i<(LMG_MAX - LMG_BIO_DESC1);++i)
 	{
@@ -528,9 +528,9 @@ void ClearLibraryDesc(void)
 ChangeLibraryDesc
 =================
 */
-void ChangeLibraryDesc(int id)
+void ChangeLibraryDesc(int32_t id)
 {
-	int i,y,width;
+	int32_t i,y,width;
 
 	if (s_library.subTopic == id)
 	{
@@ -589,9 +589,9 @@ void ChangeLibraryDesc(int id)
 M_Transporter_Event
 =================
 */
-void M_Library_Event (void* ptr, int notification)
+void M_Library_Event (void* ptr, int32_t notification)
 {
-	int	id,i;
+	int32_t	id,i;
 	menubitmap_s	*holdSubTopicButton,*holdMainTopicButton;
 
 	if (notification != QM_ACTIVATED)
@@ -907,7 +907,7 @@ Library_StatusBar
 */
 /*static void Library_StatusBar(void *itemptr) 
 {
-	int		id;
+	int32_t		id;
 
 	id = ((menucommon_s*)itemptr)->id;
 
@@ -942,7 +942,7 @@ Library_StatusBar
 LibraryMenu_Key
 =================
 */
-sfxHandle_t LibraryMenu_Key (int key)
+sfxHandle_t LibraryMenu_Key (int32_t key)
 {
 	if ( key == K_ESCAPE ) 
 	{
@@ -1088,7 +1088,7 @@ LibraryMenu_Init
 void LibraryMenu_Init(void)
 {
 	menubitmap_s	*holdMainTopicButton,*holdSubTopicButton;
-	int				x,y,pad,i;
+	int32_t				x,y,pad,i;
 
 	s_library.menu.nitems						= 0;
 	s_library.menu.draw							= LibraryMenu_Draw;
@@ -1337,7 +1337,7 @@ static void UI_ParseLibraryText()
 {
 	char	*token;
 	char *buffer,*holdPtr;
-	int len;
+	int32_t len;
 
 	memset(libraryText,0,sizeof(libraryText));
 
@@ -1552,7 +1552,7 @@ void UI_LibraryMenu_Cache (void)
 	//char	*buffer/*,*filePtr*/;
 //	char* buffer;
 	char	filename[MAX_QPATH];
-	int		len,i,i2;
+	int32_t		len,i,i2;
 	fileHandle_t	f;
 
 	s_library.leftRound = trap_R_RegisterShaderNoMip("menu/common/halfroundl_24.tga");
@@ -1655,7 +1655,7 @@ M_Accessing_Graphics
 */
 void LibraryAccessingMenu_Draw (void)
 {
-	int y;
+	int32_t y;
 
 	y = 50;
 

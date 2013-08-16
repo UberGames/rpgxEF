@@ -12,7 +12,7 @@ INGAME MENU
 
 void UI_SetupWeaponsMenu( void );
 
-int		ingameFlag = qfalse;	// true when in game menu is in use
+int32_t		ingameFlag = qfalse;	// true when in game menu is in use
 
 #define INGAME_MENU_VERTICAL_SPACING	24 // 28 // Marcin
 
@@ -70,7 +70,7 @@ typedef struct
 	/*menufield_s			playerName;
 	menulist_s			pClass;
 	menulist_s			pRank;*/
-	int					pclass;
+	int32_t					pclass;
 
 	menubitmap_s		psettings;
 	menubitmap_s		pmodel;
@@ -90,16 +90,16 @@ typedef struct
 	char				playerModel[MAX_QPATH];
 	playerInfo_t		playerinfo;
 
-	int					prevMenu;
+	int32_t					prevMenu;
 
 	qboolean			isAdmin;
-	int					isSQL;
+	int32_t					isSQL;
 
 } ingamemenu_t;
 
 static ingamemenu_t	s_ingame;
 
-/*static int ingame_buttons[10][2] =
+/*static int32_t ingame_buttons[10][2] =
 {
 {152,220},
 {152,220 + INGAME_MENU_VERTICAL_SPACING},
@@ -167,7 +167,7 @@ Player_ModelEvent
 =================
 */
 
-static void Player_ModelEvent ( void *self, int result ) {
+static void Player_ModelEvent ( void *self, int32_t result ) {
 	
 	if ( result == QM_ACTIVATED ) {
 		uis.cursorpx = uis.cursorx;
@@ -214,7 +214,7 @@ void InGame_LeaveAction( qboolean result )
 InGame_Event
 =================
 */
-void InGame_Event( void *ptr, int notification ) 
+void InGame_Event( void *ptr, int32_t notification ) 
 {
 	if( notification != QM_ACTIVATED ) 
 	{
@@ -335,8 +335,8 @@ static void UI_InGameMenu_Draw( void )
 	char*	playerClass;
 	char	string[256];
 	float	scale;
-	int		y=191;
-	int		yOffset = 23;
+	int32_t		y=191;
+	int32_t		yOffset = 23;
 //	char* team;
 
 	playerClass = uis.classData[s_ingame.pclass].classNameFull;
@@ -607,11 +607,11 @@ InGame_MenuInit
 */
 void InGame_MenuInit( void ) 
 {
-	int		y,x;
+	int32_t		y,x;
 	uiClientState_t	cs;
 	char	info[MAX_INFO_STRING];
 	char	info_server[MAX_INFO_STRING];
-	int		team;
+	int32_t		team;
 
 	trap_GetClientState( &cs );
 	trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
@@ -1132,7 +1132,7 @@ void UI_InGameMenu( void )
 InGameQuitMenu_Event
 =================
 */
-void InGameQuitMenu_Event( void *ptr, int notification ) 
+void InGameQuitMenu_Event( void *ptr, int32_t notification ) 
 {
 	if( notification != QM_ACTIVATED ) 
 	{

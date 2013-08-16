@@ -19,7 +19,7 @@
 extern void InGame_LeaveAction( qboolean result );
 
 char motdtext[MAX_MOTD_LINES][256];
-int motdtextnum;
+int32_t motdtextnum;
 
 typedef struct {
     menuframework_s	menu;
@@ -28,7 +28,7 @@ typedef struct {
 	menubitmap_s	arrowdwn;
 	menubitmap_s	arrowup;
 
-	int				scrollnum;
+	int32_t				scrollnum;
 	qhandle_t		halfroundl_22;
 } motdstuff_t;
 
@@ -39,7 +39,7 @@ static motdstuff_t s_motdstuff;
 M_Motd_Event
 =================
 */
-static void M_MotdMenu_Event( void *ptr, int notification )
+static void M_MotdMenu_Event( void *ptr, int32_t notification )
 {
 	if( notification != QM_ACTIVATED )  {
 		return;
@@ -70,7 +70,7 @@ static void M_MotdMenu_Event( void *ptr, int notification )
 MotdMenu_Key
 =================
 */
-sfxHandle_t MotdMenu_Key( int key )
+sfxHandle_t MotdMenu_Key( int32_t key )
 {
     return ( Menu_DefaultKey( &s_motdstuff.menu, key ) );
 }
@@ -82,9 +82,9 @@ M_MotdMenu_Graphics
 */
 static void M_MotdMenu_Graphics( void )
 {
-	int i;
-    int x = 15;
-    int y = 15;
+	int32_t i;
+    int32_t x = 15;
+    int32_t y = 15;
 
 	for (i = s_motdstuff.scrollnum; i < motdtextnum && i < (MIN_MOTD_LINES + s_motdstuff.scrollnum); ++i) {
         UI_DrawProportionalString( x, y, motdtext[i], UI_SMALLFONT | UI_LEFT, colorTable[CT_WHITE]);
@@ -231,7 +231,7 @@ MotdReset
 */
 void MotdReset( void )
 {
-	int i;
+	int32_t i;
 
 	motdtextnum = 0;
 	for ( i = 0; i < MAX_MOTD_LINES; ++i ) {

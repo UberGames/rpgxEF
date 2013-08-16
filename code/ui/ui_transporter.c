@@ -9,7 +9,7 @@ char *delayList[20] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 						"11", "12", "13", "14", "15", "20", "30", "60", 0 };
 
 char			srvList[6][MAX_QPATH];
-int				srvCount;
+int32_t				srvCount;
 
 typedef struct //static
 {
@@ -25,7 +25,7 @@ typedef struct //static
 	char			*srvListPtr[7];
 	char			*mlist[MAX_QPATH];
 	
-	int				targetEntID;
+	int32_t				targetEntID;
 } transporter_t;
 
 transporter_t	s_transporter;
@@ -53,7 +53,7 @@ TransDataReceived
 */
 void TransDataReceived(const char *data) {
 	char *temp;
-	int i;
+	int32_t i;
 
 	for(i = 0; i < 6; i++) {
 		temp = Info_ValueForKey(data, va("d%i", i));
@@ -68,9 +68,9 @@ void TransDataReceived(const char *data) {
 M_Transporter_Event
 =================
 */
-static void M_Transporter_Event (void* ptr, int notification)
+static void M_Transporter_Event (void* ptr, int32_t notification)
 {
-	int	id;
+	int32_t	id;
 	//menubitmap_s	*holdLocation;
 	//menubitmap_s	*holdServer;
 
@@ -137,7 +137,7 @@ static void M_Transporter_Event (void* ptr, int notification)
 TransporterMenu_Key
 =================
 */
-sfxHandle_t TransporterMenu_Key (int key)
+sfxHandle_t TransporterMenu_Key (int32_t key)
 {
 	return ( Menu_DefaultKey( &s_transporter.menu, key ) );
 }
@@ -160,9 +160,9 @@ M_TransporterMenu_Graphics
 static void M_TransporterMenu_Graphics (void)
 {
 	//menubitmap_s	*holdDeck;
-	//int		i;
-	int length,xTurboStart;
-	//int		numColor, roundColor;
+	//int32_t		i;
+	int32_t length,xTurboStart;
+	//int32_t		numColor, roundColor;
 
 	// Draw the basic screen frame
 
@@ -297,9 +297,9 @@ TransporterMenu_Init
 */
 void TransporterMenu_Init(void)
 {
-	int y,pad,x;
-	//int i;
-	int width;
+	int32_t y,pad,x;
+	//int32_t i;
+	int32_t width;
 
 	AdminGeneric_InitLists();
 
@@ -441,7 +441,7 @@ SrvData_Init
 =================
 */
 void SrvData_Init(void) {
-	int		i;
+	int32_t		i;
 
 	for(i = 0; i < 6; i++) {
 		if(!srvList[i][0]) break;
@@ -455,7 +455,7 @@ void SrvData_Init(void) {
 UI_TransporterMenu
 ===============
 */
-void UI_TransporterMenu (int trNum)
+void UI_TransporterMenu (int32_t trNum)
 {
 	if ( !trNum )
 		return;

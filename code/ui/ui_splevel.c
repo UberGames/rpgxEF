@@ -86,12 +86,12 @@ SINGLE PLAYER LEVEL SELECT MENU
 //	qboolean		reinit;
 //
 //	const char *	selectedArenaInfo;
-//	int				numMaps;
+//	int32_t				numMaps;
 //	char			levelPicNames[4][MAX_QPATH];
 //	char			levelNames[4][16];
 //	char			levelLongNames[4][MAX_LONGNAME];
-//	int				levelScores[MAX_ITEM_MAPS];
-//	int				levelScoresSkill[4];
+//	int32_t				levelScores[MAX_ITEM_MAPS];
+//	int32_t				levelScoresSkill[4];
 //	qhandle_t		levelSelectedPic;
 //	qhandle_t		levelFocusPic;
 //	qhandle_t		levelCompletePic[5];
@@ -103,10 +103,10 @@ SINGLE PLAYER LEVEL SELECT MENU
 //
 //	char			playerModel[MAX_QPATH];
 //	char			playerPicName[MAX_QPATH];
-//	int				awardLevels[6];
+//	int32_t				awardLevels[6];
 //	sfxHandle_t		awardSounds[6];
 //
-//	int				numBots;
+//	int32_t				numBots;
 //	qhandle_t		botPics[7];
 //	char			botNames[7][10];
 //} levelMenuInfo_t;
@@ -135,14 +135,14 @@ SINGLE PLAYER LEVEL SELECT MENU
 //
 //void UI_ResetGameMenu( void );
 //
-//static int	selectedArenaSet;
-//static int	selectedArena;
-//static int	currentSet;
-//static int	currentGame;
-//static int	trainingTier;
-//static int	finalTier;
-//static int	minTier;
-//static int	maxTier;
+//static int32_t	selectedArenaSet;
+//static int32_t	selectedArena;
+//static int32_t	currentSet;
+//static int32_t	currentGame;
+//static int32_t	trainingTier;
+//static int32_t	finalTier;
+//static int32_t	minTier;
+//static int32_t	maxTier;
 //
 //
 ///*
@@ -150,7 +150,7 @@ SINGLE PLAYER LEVEL SELECT MENU
 //PlayerIcon
 //=================
 //*/
-void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize ) {
+void PlayerIcon( const char *modelAndSkin, char *iconName, int32_t iconNameMaxSize ) {
 	char	*skin;
 	char	model[MAX_QPATH];
 
@@ -248,7 +248,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //=================
 //*/
 //extern vmCvar_t	ui_language;
-//static void UI_SPLevelMenu_SetMenuArena( int n, int level, const char *arenaInfo ) 
+//static void UI_SPLevelMenu_SetMenuArena( int32_t n, int32_t level, const char *arenaInfo ) 
 //{
 //	char		map[MAX_QPATH];
 //	char			string[MAX_LONGNAME];
@@ -294,8 +294,8 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //*/
 //static void UI_SPLevelMenu_SetMenuItems( void ) 
 //{
-//	int			n,i;
-//	int			level;
+//	int32_t			n,i;
+//	int32_t			level;
 //	const char	*arenaInfo;
 //	char		*type;
 //
@@ -443,7 +443,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_ResetEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_ResetEvent( void* ptr, int event )
+//static void UI_SPLevelMenu_ResetEvent( void* ptr, int32_t event )
 //{
 //	if (event != QM_ACTIVATED) 
 //	{
@@ -460,7 +460,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_LevelEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_LevelEvent( void* ptr, int notification ) 
+//static void UI_SPLevelMenu_LevelEvent( void* ptr, int32_t notification ) 
 //{
 //	if (notification != QM_ACTIVATED) 
 //	{
@@ -480,7 +480,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_LeftArrowEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_LeftArrowEvent( void* ptr, int notification ) 
+//static void UI_SPLevelMenu_LeftArrowEvent( void* ptr, int32_t notification ) 
 //{
 //	if (notification != QM_ACTIVATED) 
 //	{
@@ -503,7 +503,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_RightArrowEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_RightArrowEvent( void* ptr, int notification ) 
+//static void UI_SPLevelMenu_RightArrowEvent( void* ptr, int32_t notification ) 
 //{
 //	if (notification != QM_ACTIVATED) 
 //	{
@@ -526,7 +526,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_PlayerEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_PlayerEvent( void* ptr, int notification ) 
+//static void UI_SPLevelMenu_PlayerEvent( void* ptr, int32_t notification ) 
 //{
 //	if (notification != QM_ACTIVATED) 
 //	{
@@ -541,7 +541,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_CreateEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_CreateEvent( void* ptr, int notification ) 
+//static void UI_SPLevelMenu_CreateEvent( void* ptr, int32_t notification ) 
 //{
 //	if (notification != QM_ACTIVATED) 
 //	{
@@ -556,7 +556,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_AdvancedEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_AdvancedEvent( void* ptr, int notification ) 
+//static void UI_SPLevelMenu_AdvancedEvent( void* ptr, int32_t notification ) 
 //{
 //	if (notification != QM_ACTIVATED) 
 //	{
@@ -577,9 +577,9 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_AwardEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_AwardEvent( void* ptr, int notification ) 
+//static void UI_SPLevelMenu_AwardEvent( void* ptr, int32_t notification ) 
 //{
-//	int		n;
+//	int32_t		n;
 //
 //	if (notification != QM_ACTIVATED) 
 //	{
@@ -596,7 +596,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_NextEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_NextEvent( void* ptr, int notification ) 
+//static void UI_SPLevelMenu_NextEvent( void* ptr, int32_t notification ) 
 //{
 //	if (notification != QM_ACTIVATED) 
 //	{
@@ -617,7 +617,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //UI_SPLevelMenu_BackEvent
 //=================
 //*/
-//static void UI_SPLevelMenu_BackEvent( void* ptr, int notification ) 
+//static void UI_SPLevelMenu_BackEvent( void* ptr, int32_t notification ) 
 //{
 //	if (notification != QM_ACTIVATED) 
 //	{
@@ -652,12 +652,12 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //
 //static void UI_SPLevelMenu_MenuDraw( void ) 
 //{
-//	int				n;//, i;
-//	int				x, y;
+//	int32_t				n;//, i;
+//	int32_t				x, y;
 //	vec4_t			color;
-////	int				level;
-//	int				fraglimit;
-//	int				pad;
+////	int32_t				level;
+//	int32_t				fraglimit;
+//	int32_t				pad;
 //	char			buf[MAX_INFO_VALUE];
 //	char			string[64];
 //
@@ -879,7 +879,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //*/
 //void UI_SPLevelMenu_Cache( void ) 
 //{
-//	int				n;
+//	int32_t				n;
 //
 //	trap_R_RegisterShaderNoMip( ART_MAP_UNKNOWN );
 //
@@ -912,16 +912,16 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //*/
 //static void UI_SPLevelMenu_Init( void ) 
 //{
-//	int		skill;
-//	int		n;
-//	int		x, y;
-//	int		count;
+//	int32_t		skill;
+//	int32_t		n;
+//	int32_t		x, y;
+//	int32_t		count;
 //	char	buf[MAX_QPATH];
-//	int mapHeight,mapWidth;
+//	int32_t mapHeight,mapWidth;
 //
 //
 //	// What skill level are we playing at??
-//	skill = (int)trap_Cvar_VariableValue( "g_spSkill" );
+//	skill = (int32_t)trap_Cvar_VariableValue( "g_spSkill" );
 //	if( skill < 1 || skill > 5 ) 
 //	{
 //		trap_Cvar_Set( "g_spSkill", "2" );
@@ -1243,8 +1243,8 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //*/
 //void UI_SPLevelMenu( void ) 
 //{
-//	int			level;
-//	int			trainingLevel;
+//	int32_t			level;
+//	int32_t			trainingLevel;
 //	const char	*arenaInfo;
 //
 //	trainingTier = -1;
@@ -1331,7 +1331,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //ResetGameMenu_Event
 //===============
 //*/
-//static void ResetGameMenu_Event (void* ptr, int notification)
+//static void ResetGameMenu_Event (void* ptr, int32_t notification)
 //{
 //	if (notification != QM_ACTIVATED)
 //		return;
@@ -1361,7 +1361,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //*/
 //static void UI_resetGameMenu_Draw( void ) 
 //{
-//	int y;
+//	int32_t y;
 //
 //	// Draw the basic screen layout
 //	UI_MenuFrame2(&resetGameMenuInfo.menu);
@@ -1525,7 +1525,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //M_SPChoose_Event
 //===============
 //*/
-//void M_SPChoose_Event (void* ptr, int notification)
+//void M_SPChoose_Event (void* ptr, int32_t notification)
 //{
 //	if (notification != QM_ACTIVATED)
 //		return;
@@ -1550,7 +1550,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //SPChoose_MenuKey
 //===============
 //*/
-//static sfxHandle_t SPChoose_MenuKey( int key )
+//static sfxHandle_t SPChoose_MenuKey( int32_t key )
 //{
 //	return ( Menu_DefaultKey( &s_spchoose.menu, key ) );
 //}
@@ -1599,7 +1599,7 @@ void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMaxSize )
 //*/
 //static void SPChoose_MenuInit(void)
 //{
-//	int x,y;
+//	int32_t x,y;
 //
 //	SPChooseMenu_Cache(); 
 //
