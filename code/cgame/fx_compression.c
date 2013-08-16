@@ -77,7 +77,7 @@ void FX_CompressionShot( vec3_t start, vec3_t dir )
 	if ( render_impact )
 	{
 		traceEnt = &cg_entities[trace.entityNum];
-		int clientNum = traceEnt->currentState.clientNum;
+		int32_t clientNum = traceEnt->currentState.clientNum;
 		if ( (trace.entityNum != ENTITYNUM_WORLD) && clientNum >= 0 && clientNum < MAX_CLIENTS )
 		{
 			FX_CompressionHit(trace.endpos);
@@ -119,7 +119,7 @@ void FX_CompressionAltShot( vec3_t start, vec3_t dir )
 	if ( render_impact )
 	{
 		traceEnt = &cg_entities[trace.entityNum];
-		int clientNum = traceEnt->currentState.clientNum;
+		int32_t clientNum = traceEnt->currentState.clientNum;
 		if ( (trace.entityNum != ENTITYNUM_WORLD) && clientNum >= 0 && clientNum < MAX_CLIENTS )
 		{
 			FX_CompressionHit(trace.endpos);
@@ -144,7 +144,7 @@ void FX_CompressionExplosion( vec3_t start, vec3_t origin, vec3_t normal, qboole
 	vec3_t			velocity;  //, shot_dir;
 	vec3_t			hitpos;
 	float			scale;
-	int				i, j, numSparks;
+	int32_t				i, j, numSparks;
 	weaponInfo_t	*weaponInfo = &cg_weapons[WP_6];
 	float distance;	
 
@@ -222,7 +222,7 @@ void FX_CompressionExplosion( vec3_t start, vec3_t origin, vec3_t normal, qboole
 
 	if (!altfire)
 	{
-		int size = 2;
+		int32_t size = 2;
 		CG_InitLensFlare( origin, 
 						350, 350,
 						color, 1.2, 2.0, 1600, 200,
@@ -408,7 +408,7 @@ void FX_PrifleBeamFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean 
 	// "Fun" sparks...  Not when empty.
 	if ( spark && !empty)
 	{
-		int sparks = (rand() & 1) + 1;
+		int32_t sparks = (rand() & 1) + 1;
 		for(;sparks>0;sparks--)
 		{	
 			float size = 0.2f + (random() * 0.4);

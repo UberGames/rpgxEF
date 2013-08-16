@@ -13,7 +13,7 @@ qboolean SparkThink( localEntity_t *le )
 	vec3_t	dir, direction, start, end;
 	vec3_t	velocity;
 	float	scale = 0, alpha = 0;
-	int		numSparks = 0, i = 0, j = 0;
+	int32_t		numSparks = 0, i = 0, j = 0;
 	sfxHandle_t snd = cgs.media.envSparkSound1;
 
 	switch(irandom(1, 3))
@@ -142,7 +142,7 @@ Creates a spark effect
 ======================
 */
 
-void CG_Spark( vec3_t origin, vec3_t normal, int delay, int killTime )
+void CG_Spark( vec3_t origin, vec3_t normal, int32_t delay, int32_t killTime )
 {
 	// give it a lifetime of 10 seconds because the refresh thinktime in g_fx.c is 10 seconds
 	FX_AddSpawner( origin, normal, NULL, NULL, qfalse, delay, 1.5, killTime, SparkThink, 100 ); //10000
@@ -200,7 +200,7 @@ Creates a steam effect
 ======================
 */
 
-void CG_Steam( vec3_t position, vec3_t dir, int killTime )
+void CG_Steam( vec3_t position, vec3_t dir, int32_t killTime )
 {
 	// give it a lifetime of 10 seconds because the refresh thinktime in g_fx.c is 10 seconds
 	FX_AddSpawner( position, dir, NULL, NULL, qfalse, 0, 0.15, killTime, SteamThink, 100 ); //
@@ -221,13 +221,13 @@ Creates a electricity bolt effect
 void BoltSparkSpew( vec3_t origin, vec3_t normal )
 {
 	float	scale = 1.0f + ( random() * 1.0f );
-	int		num = 0, i = 0;
+	int32_t		num = 0, i = 0;
 	vec3_t	vel;
 
 	trap_R_AddLightToScene( origin, 75 + (rand()&31), 1.0, 0.8, 1.0 );
 
 	// Drop some sparks
-	num = (int)(random() * 2) + 2;
+	num = (int32_t)(random() * 2) + 2;
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -407,7 +407,7 @@ qboolean DripCallback( localEntity_t *le )
 qboolean DripSplash( localEntity_t *le )
 {
 	float	scale = 1.0f + ( random() * 1.0f );
-	int		num = 0, i = 0;
+	int32_t		num = 0, i = 0;
 	vec3_t	vel, normal, origin;
 	qhandle_t	shader = 0;
 
@@ -429,7 +429,7 @@ qboolean DripSplash( localEntity_t *le )
 	VectorCopy(le->refEntity.origin, origin);
 
 	// splashing water droplets. which, I'm fairly certain, is an alternative band from Europe.
-	num = (int)(random() * 2) + 6;
+	num = (int32_t)(random() * 2) + 6;
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -465,8 +465,8 @@ qboolean JackTheDripper( localEntity_t *le )
 	vec3_t		vel, down = {0,0,-1}, end, origin, new_origin;
 	float		time, dis, diameter = 1.0;
 	qhandle_t	shader = 0;
-	int			maxDripsPerLifetime = 200; // given a 10 second lifetime
-	int			desiredDrips = 1 + (int)(le->data.spawner.variance * (maxDripsPerLifetime-1)); // range of (1...max)
+	int32_t			maxDripsPerLifetime = 200; // given a 10 second lifetime
+	int32_t			desiredDrips = 1 + (int32_t)(le->data.spawner.variance * (maxDripsPerLifetime-1)); // range of (1...max)
 	float		percentLife = 1.0f - (le->endTime - cg.time)*le->lifeRate;
 	localEntity_t *splash = NULL;
 
@@ -485,7 +485,7 @@ qboolean JackTheDripper( localEntity_t *le )
 	}
 
 	// do we need to add a drip to maintain our drips-per-second rate?
-	while ( (int)(flrandom(percentLife-0.05,percentLife+0.05)*desiredDrips) > le->data.spawner.data2)
+	while ( (int32_t)(flrandom(percentLife-0.05,percentLife+0.05)*desiredDrips) > le->data.spawner.data2)
 	{
 		VectorCopy(le->refEntity.origin, origin);
 
@@ -524,7 +524,7 @@ qboolean JackTheDripper( localEntity_t *le )
 }
 
 //------------------------------------------------------------------------------
-void CG_Drip(centity_t *cent, int killTime )
+void CG_Drip(centity_t *cent, int32_t killTime )
 {
 	vec3_t down = {0,0,-1};
 	localEntity_t *le = NULL;
@@ -549,8 +549,8 @@ void CG_Drip(centity_t *cent, int killTime )
 //------------------------------------------------------------------------------
 void CG_Chunks( vec3_t origin, vec3_t dir, float scale, material_type_t type )
 {
-	int				i, j, k;
-	int				numChunks;
+	int32_t				i, j, k;
+	int32_t				numChunks;
 	float			baseScale = 1.0f, dist, radius;
 	vec3_t			v;
 	sfxHandle_t		snd = 0;
@@ -665,7 +665,7 @@ void CG_Chunks( vec3_t origin, vec3_t dir, float scale, material_type_t type )
 //The fun part is corellating the height and direction to the bezier function... heh
 void CG_FountainSpurt( vec3_t org, vec3_t end )
 {
-	int			/*i,*/ t;
+	int32_t			/*i,*/ t;
 	vec3_t		org1, org2, cpt1, cpt2;
 	vec3_t		dir/*, dir2*/;
 	//vec3_t		rgb = { 0.4f, 0.7f, 0.8f };
@@ -800,7 +800,7 @@ void CG_ElectricalExplosion( vec3_t start, vec3_t dir, float radius )
 {
 	localEntity_t	*le;
 	vec3_t			pos, temp/*, angles*/;
-	int				i, numSparks;
+	int32_t				i, numSparks;
 	float			scale;
 
 	// Spawn some delayed smoke
@@ -868,7 +868,7 @@ void FX_PhaserFire2(vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean impa
 	refEntity_t		beam;
 	//float			size;
 	//vec3_t			velocity;
-	//int				sparks;
+	//int32_t				sparks;
 	vec3_t			rgb = { 1,0.9,0.6}, rgb2={1,0.3,0};
 
 	// Draw beam first.
@@ -911,7 +911,7 @@ void CG_PhaserFX(centity_t *cent) {
 	le = FX_AddSpawner(cent->currentState.origin, cent->currentState.origin2, NULL, NULL, qfalse, 0, 0, cent->currentState.time2, PhaserFX_Think, 10);
 	le->data.spawner.data1 = cent->currentState.angles[0];
 	le->data.spawner.data2 = cent->currentState.angles[2];
-	le->data.spawner.nextthink = cg.time + (int)cent->currentState.angles[1];
+	le->data.spawner.nextthink = cg.time + (int32_t)cent->currentState.angles[1];
 }
 
 qboolean TorpedoQFX_Think(localEntity_t *le)
@@ -1043,7 +1043,7 @@ qboolean ParticleFire_Think(localEntity_t *le) {
 	vec3_t	origin;
 	vec3_t	dir = { 0, 0 , 15 };
 	float	speed;
-	int i;
+	int32_t i;
 	vec3_t	startRGB	= { 1, 0.2, 0 };
 	vec3_t	endRGB		= {	1, 0.9, 0.7 };
 
@@ -1079,7 +1079,7 @@ qboolean ParticleFire_Think(localEntity_t *le) {
 	return qtrue;
 }
 
-void CG_ParticleFire(vec3_t origin, int killtime, int size) {
+void CG_ParticleFire(vec3_t origin, int32_t killtime, int32_t size) {
 	FX_AddSpawner(origin, NULL, NULL, NULL, qfalse, 0, 0, killtime, ParticleFire_Think, 10);
 }
 
@@ -1173,7 +1173,7 @@ void FX_DisruptorFire2(vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean i
 	refEntity_t		beam;
 	//float			size;
 	//vec3_t			velocity;
-	//int				sparks;
+	//int32_t				sparks;
 	vec3_t			rgb = { 1,0.9,0.6}, rgb2={1,0.3,0};
 
 	// Draw beam first.
@@ -1216,7 +1216,7 @@ void CG_DisruptorFX(centity_t *cent) {
 	le = FX_AddSpawner(cent->currentState.origin, cent->currentState.origin2, NULL, NULL, qfalse, 0, 0, cent->currentState.time2, DisruptorFX_Think, 10);
 	le->data.spawner.data1 = cent->currentState.angles[0];
 	le->data.spawner.data2 = cent->currentState.angles[2];
-	le->data.spawner.nextthink = cg.time + (int)cent->currentState.angles[1];
+	le->data.spawner.nextthink = cg.time + (int32_t)cent->currentState.angles[1];
 }
 
 // Additional ports from SP by Harry Young
@@ -1232,11 +1232,11 @@ void CG_SmallSpark( vec3_t origin, vec3_t normal )
 {
 	vec3_t	dir, direction, start, end, velocity;
 	float	scale;
-	int		numSparks;
+	int32_t		numSparks;
 
 	AngleVectors( normal, normal, NULL, NULL );
 	
-	int j;
+	int32_t j;
 	for ( j = 0; j < 3; j ++ )
 		normal[j] = normal[j] + (0.1f * crandom());
 
@@ -1244,7 +1244,7 @@ void CG_SmallSpark( vec3_t origin, vec3_t normal )
 
 	numSparks = 6 + (random() * 4.0f );
 	
-	int i;
+	int32_t i;
 	for ( i = 0; i < numSparks; i++ )
 	{	
 		scale = 0.1f + (random() *0.2f );
@@ -1293,7 +1293,7 @@ void CG_FireLaser( vec3_t start, vec3_t end, vec3_t normal, vec3_t laserRGB, flo
 	vec3_t	dir, right, up, angles, work, pos,
 			sRGB;
 	float	scale = 1.0f;
-	int		life = 0;
+	int32_t		life = 0;
 
 	// Orient the laser spray
 	VectorSubtract( end, start, dir );
@@ -1338,7 +1338,7 @@ void CG_FireLaser( vec3_t start, vec3_t end, vec3_t normal, vec3_t laserRGB, flo
 					0.0f, 
 					200, 
 					cgs.media.waterDropShader );
-		int t;
+		int32_t t;
 		for ( t=0; t < 2; t ++ )
 		{
 			VectorMA( pos, crandom() * 0.5f, right, work );
@@ -1465,7 +1465,7 @@ void CG_ElectricFire( vec3_t origin, vec3_t normal )
 	vec3_t	dir, direction, start, end;
 	vec3_t	velocity;
 	float	scale, alpha;
-	int		numSparks, i, j;
+	int32_t		numSparks, i, j;
 
 	AngleVectors( normal, normal, NULL, NULL);
 
@@ -1555,7 +1555,7 @@ Creates an orange electricity bolt effect with a pulse that travels down the bea
 void ForgeBoltFireback( vec3_t start, vec3_t end, vec3_t velocity, vec3_t user )
 {
 	FX_AddElectricity( start, end, 1.0, user[DATA_RADIUS], 5.0, 1.0, 0.0, 200, cgs.media.pjBoltShader, 
-						(int)user[DATA_EFFECTS], user[DATA_CHAOS] );
+						(int32_t)user[DATA_EFFECTS], user[DATA_CHAOS] );
 }
 
 #endif
@@ -1612,7 +1612,7 @@ bool ForgeBoltPulse( FXPrimitive *fx, centity_t *ent )
 void CG_ForgeBolt( centity_t *cent )
 {
 	qboolean	pulse;
-	int			effects;
+	int32_t			effects;
 	float		chaos, radius;
 	
 	// Set up all of the parms
@@ -1681,7 +1681,7 @@ Create directed and scaled plasma jet
 ===========================
 */
 
-void CG_Plasma( vec3_t start, vec3_t end, vec3_t sRGB, vec3_t eRGB, int startalpha, int endalpha )
+void CG_Plasma( vec3_t start, vec3_t end, vec3_t sRGB, vec3_t eRGB, int32_t startalpha, int32_t endalpha )
 {
 	vec3_t	v;
 	float len, salpha = (startalpha / 255) , ealpha = (endalpha / 255);
@@ -1797,7 +1797,7 @@ void CG_TransporterStream( centity_t *cent )
 {
 	vec3_t	vel, accel, dir, pos, right, up;
 	float	len, time, acceleration, scale, dis, vf;
-	int		t;
+	int32_t		t;
 	VectorSubtract( cent->currentState.origin2, cent->lerpOrigin, dir );
 	len = VectorNormalize( dir );
 	MakeNormalVectors( dir, right, up );
@@ -1885,7 +1885,7 @@ qboolean explosionTrailThink( localEntity_t	*fx )
 	vec3_t			direction, origin, new_org, angles, dir;
 	trace_t			trace;
 	float			scale;
-	int				i;
+	int32_t				i;
 	qboolean		remove = qfalse;
 
 	VectorCopy( fx->m_origin, origin );
@@ -1914,14 +1914,14 @@ qboolean explosionTrailThink( localEntity_t	*fx )
 	VectorSubtract( cg.refdef.vieworg, origin, direction );
 	VectorNormalize( direction );
 
-	for ( i = 0; i < 3 + (int)remove * 6; i++)
+	for ( i = 0; i < 3 + (int32_t)remove * 6; i++)
 	{
 		angles[2] = crandom() * 360;
 
 		AngleVectors( angles, NULL, dir, NULL );
 		VectorMA( origin, random() * 50.0f, dir, new_org );
 
-		le = CG_MakeExplosion( new_org, direction, cgs.media.explosionModel, 6, cgs.media.surfaceExplosionShader, 400 + (int)remove * 800, qfalse, random() * 1.0 + 0.8 );//random() * 1.0 + 1.0 );
+		le = CG_MakeExplosion( new_org, direction, cgs.media.explosionModel, 6, cgs.media.surfaceExplosionShader, 400 + (int32_t)remove * 800, qfalse, random() * 1.0 + 0.8 );//random() * 1.0 + 1.0 );
 	}
 
 	le->light = 150;
@@ -2037,8 +2037,8 @@ void CG_ShimmeryThing( vec3_t start, vec3_t end, vec3_t content )
 {
 	vec3_t	normal, angles, base, top, dir;
 	float	len;
-	int		i;
-	int		taper = content[2];
+	int32_t		i;
+	int32_t		taper = content[2];
 
 	VectorSubtract( end, start, normal );
 	len = VectorNormalize( normal );
@@ -2112,7 +2112,7 @@ void CG_Borg_Bolt_dynamic( centity_t *cent )
 	// If the length is pretty short, then spawn a glow spark
 	if ( len > 0 && len < 12 )
 	{
-		int		ct, t;
+		int32_t		ct, t;
 		vec3_t	angles, dir, vel;
 		localEntity_t	*particle;
 

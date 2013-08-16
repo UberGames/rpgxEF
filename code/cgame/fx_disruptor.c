@@ -33,13 +33,13 @@ Fun "crawling" electricity ( credit goes to Josh for this one )
 -------------------------
 */
 
-void FX_DisruptorDischarge( vec3_t origin, vec3_t normal, int count, float dist_out, float dist_side )
+void FX_DisruptorDischarge( vec3_t origin, vec3_t normal, int32_t count, float dist_out, float dist_side )
 {
 	trace_t	trace;
 	vec3_t	org, dir, dest;
 	vec3_t	vr;
-	int		i;
-	int		discharge = dist_side;
+	int32_t		i;
+	int32_t		discharge = dist_side;
 
 	vectoangles( normal, dir );
 	dir[ROLL] += random() * 360;
@@ -54,7 +54,7 @@ void FX_DisruptorDischarge( vec3_t origin, vec3_t normal, int count, float dist_
 		AngleVectors( dir, NULL, vr, NULL );
 
 		//Move to the side in a random direction
-		discharge += (int)( crandom() * 8.0f );
+		discharge += (int32_t)( crandom() * 8.0f );
 		VectorMA( org, discharge, vr, org );
 
 		//Trace back to find a surface
@@ -91,10 +91,10 @@ Main fire impact
 #define	DISCHARGE_DIST		8
 #define	DISCHARGE_SIDE_DIST	24
 
-void FX_DisruptorWeaponHitWall( vec3_t origin, vec3_t dir, int size )
+void FX_DisruptorWeaponHitWall( vec3_t origin, vec3_t dir, int32_t size )
 {
 	vec3_t			vel, /*accel,*/ hitpos, direction, org;
-	//int				i, t;
+	//int32_t				i, t;
 	weaponInfo_t	*weaponInfo = &cg_weapons[WP_10];
 
 	CG_InitLensFlare( origin, 
@@ -274,7 +274,7 @@ void FX_DisruptorBeamFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboole
 	// "Fun" sparks...  Not when empty.
 	if ( spark && !empty)
 	{
-		int sparks = (rand() & 1) + 1;
+		int32_t sparks = (rand() & 1) + 1;
 		for(;sparks>0;sparks--)
 		{	
 			float size = 0.2f + (random() * 0.4);

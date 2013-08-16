@@ -8,7 +8,7 @@
 #include "cg_local.h"
 #include "cg_text.h"
 
-void CG_Init( int serverMessageNum, int serverCommandSequence );
+void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence );
 void CG_Shutdown( void );
 void CG_LoadIngameText(void);
 void CG_LoadObjectivesForMap(void);
@@ -20,9 +20,9 @@ qboolean CG_LoadUsablesStrings( void );
 
 extern void FX_InitSinTable(void);
 
-int cg_liftEnts[MAX_CLIENTS];
-int	cg_numAnims;
-int cg_numSndAnims;
+int32_t cg_liftEnts[MAX_CLIENTS];
+int32_t	cg_numAnims;
+int32_t cg_numSndAnims;
 
 animsSndList_t		cg_animsSndList[MAX_CLIENTS];
 
@@ -36,7 +36,7 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .q3vm file
 ================
 */
-Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 ) {
+Q_EXPORT intptr_t vmMain( int32_t command, int32_t arg0, int32_t arg1, int32_t arg2, int32_t arg3, int32_t arg4, int32_t arg5, int32_t arg6 ) {
 	switch ( command ) {
 	case CG_INIT:
 		CG_Init( arg0, arg1 );
@@ -200,7 +200,7 @@ typedef struct {
 	vmCvar_t	*vmCvar;
 	char		*cvarName;
 	char		*defaultString;
-	int			cvarFlags;
+	int32_t			cvarFlags;
 } cvarTable_t;
 
 static cvarTable_t	cvarTable[] = {
@@ -340,7 +340,7 @@ CG_PrecacheRemapShaders
 void CG_PrecacheRemapShaders(void) {
 	char filepath[MAX_QPATH];
 	fileHandle_t f;
-	int len;
+	int32_t len;
 	char* data;
 	char* ptr;
 	char* token;
@@ -397,7 +397,7 @@ CG_RegisterCvars
 =================
 */
 void CG_RegisterCvars( void ) {
-	int			i;
+	int32_t			i;
 	cvarTable_t	*cv;
 	char		var[MAX_TOKEN_CHARS];
 
@@ -418,7 +418,7 @@ CG_UpdateCvars
 =================
 */
 void CG_UpdateCvars( void ) {
-	int			i;
+	int32_t			i;
 	cvarTable_t	*cv;
 
 	for ( i = 0, cv = cvarTable ; i < CVAR_TABLE_SIZE ; i++, cv++ )
@@ -442,7 +442,7 @@ void CG_UpdateCvars( void ) {
 }
 
 
-int CG_CrosshairPlayer( void ) {
+int32_t CG_CrosshairPlayer( void ) {
 	if ( cg.time > ( cg.crosshairClientTime + 1000 ) ) {
 		return -1;
 	}
@@ -450,7 +450,7 @@ int CG_CrosshairPlayer( void ) {
 }
 
 
-int CG_LastAttacker( void ) {
+int32_t CG_LastAttacker( void ) {
 	if ( !cg.attackerTime ) {
 		return -1;
 	}
@@ -530,7 +530,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 CG_Argv
 ================
 */
-const char *CG_Argv( int arg ) {
+const char *CG_Argv( int32_t arg ) {
 	static char	buffer[MAX_STRING_CHARS];
 
 	trap_Argv( arg, buffer, sizeof( buffer ) );
@@ -548,11 +548,11 @@ CG_RegisterItemSounds
 The server says this item is used on this level
 =================
 */
-static void CG_RegisterItemSounds( int itemNum ) {
+static void CG_RegisterItemSounds( int32_t itemNum ) {
 	gitem_t			*item;
 	char			data[MAX_QPATH];
 	char			*s, *start;
-	int				len;
+	int32_t				len;
 
 	item = &bg_itemlist[ itemNum ];
 
@@ -600,7 +600,7 @@ called during a precache command
 */
 static void CG_RegisterSounds( void )
 {
-	int		i;
+	int32_t		i;
 	char	items[MAX_ITEMS+1];
 	char	name[MAX_QPATH];
 	const char	*soundName;
@@ -748,7 +748,7 @@ This function may execute for a couple of minutes with a slow disk.
 =================
 */
 static void CG_RegisterGraphics( void ) {
-	int			i;
+	int32_t			i;
 	char		items[MAX_ITEMS+1];
 
 	static char		*sb_nums[11] = {
@@ -929,7 +929,7 @@ static void CG_RegisterGraphics( void ) {
 	for ( i = 1 ; i < cgs.numInlineModels ; i++ ) {
 		char	name[10];
 		vec3_t			mins, maxs;
-		int				j;
+		int32_t				j;
 
 		Com_sprintf( name, sizeof(name), "*%i", i );
 		cgs.inlineDrawModel[i] = trap_R_RegisterModel( name );
@@ -1084,7 +1084,7 @@ CG_RegisterClients
 ===================
 */
 static void CG_RegisterClients( void ) {
-	int		i;
+	int32_t		i;
 
 	cg.loadLCARSStage = 8;	// Loading bar stage 8
 	CG_LoadingString( "clients" );
@@ -1115,7 +1115,7 @@ static void CG_RegisterClients( void ) {
 CG_ConfigString
 =================
 */
-const char *CG_ConfigString( int index ) {
+const char *CG_ConfigString( int32_t index ) {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
 		CG_Error( "CG_ConfigString: bad index: %i", index );
 	}
@@ -1142,7 +1142,7 @@ void CG_StartMusic( void ) {
 	trap_S_StartBackgroundTrack( parm1, parm2 );
 }
 
-extern int altAmmoUsage[];
+extern int32_t altAmmoUsage[];
 void CG_InitModRules( void )
 {
 	if ( cgs.pModDisintegration )
@@ -1163,9 +1163,9 @@ Called after every level change or subsystem restart
 Will perform callbacks to make the loading info screen update.
 =================
 */
-void CG_Init( int serverMessageNum, int serverCommandSequence ) {
+void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence ) {
 	const char	*s;
-	int i;
+	int32_t i;
 
 	// clear everything
 	memset( &cgs, 0, sizeof( cgs ) );
@@ -1357,8 +1357,8 @@ void CG_ParseIngameText(void)
 {
 	char	*token;
 	char *buffer;
-	int i;
-	int len;
+	int32_t i;
+	int32_t len;
 
 	COM_BeginParseSession();
 
@@ -1434,7 +1434,7 @@ CG_LoadIngameText
 */
 void CG_LoadIngameText(void)
 {
-	int len;
+	int32_t len;
 	fileHandle_t	f;
 	char fileName[MAX_QPATH];
 
@@ -1473,7 +1473,7 @@ CG_LoadObjectivesForMap
 */
 void CG_LoadObjectivesForMap(void)
 {
-	int		len, objnum = 0;
+	int32_t		len, objnum = 0;
 	char	*token;
 	char	*buf;
 	fileHandle_t	f;
@@ -1541,12 +1541,12 @@ void CG_LoadObjectivesForMap(void)
 qboolean CG_LoadClasses( void )
 {
 	fileHandle_t	f;
-	int				file_len;
+	int32_t				file_len;
 	char			buffer[32000];
 	char			*token, *textPtr;
 	char			filePath[MAX_QPATH];
-	int				numClasses=0;
-	int				i;
+	int32_t				numClasses=0;
+	int32_t				i;
 
 	Com_sprintf( filePath, sizeof( filePath ), "ext_data/classes/%s.classes", cgs.classSet );
 
@@ -1627,7 +1627,7 @@ qboolean CG_LoadClasses( void )
 
 					for ( i = 0; i < 3; i++ )
 					{
-						cgs.classData[numClasses].radarColor[i] = (int)Com_Clamp( 0, 255, (int)temp[i] );
+						cgs.classData[numClasses].radarColor[i] = (int32_t)Com_Clamp( 0, 255, (int32_t)temp[i] );
 					}
 
 					continue;
@@ -1669,7 +1669,7 @@ qboolean CG_LoadClasses( void )
 
 				if ( !Q_stricmpn( token, "medical", 7 ) )
 				{
-					if ( COM_ParseInt( &textPtr, (int *)&cgs.classData[numClasses].isMedic ) )
+					if ( COM_ParseInt( &textPtr, (int32_t *)&cgs.classData[numClasses].isMedic ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: Class medic check for class %i was invalid.\n", numClasses );
 						continue;
@@ -1680,7 +1680,7 @@ qboolean CG_LoadClasses( void )
 
 				if( !Q_stricmpn( token, "isBorg", 6 ) )
 				{
-					if( COM_ParseInt( &textPtr, (int *)&cgs.classData[numClasses].isBorg ) )
+					if( COM_ParseInt( &textPtr, (int32_t *)&cgs.classData[numClasses].isBorg ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: Class borg check for class %i was invalid.\n", numClasses );
 						continue;
@@ -1690,7 +1690,7 @@ qboolean CG_LoadClasses( void )
 
 				if ( !Q_stricmpn( token, "hasRanks", 8 ) )
 				{
-					if ( COM_ParseInt( &textPtr, (int *)&cgs.classData[numClasses].showRanks ) )
+					if ( COM_ParseInt( &textPtr, (int32_t *)&cgs.classData[numClasses].showRanks ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: Class Ranks check for class %i was invalid.\n", numClasses );
 						continue;
@@ -1752,11 +1752,11 @@ qboolean CG_LoadUsablesStrings( void )
 	char			fileRoute[MAX_QPATH];
 	char			mapRoute[MAX_QPATH];
 	char			buffer[20000];
-	int				file_len;
+	int32_t				file_len;
 	char			*textPtr, *token;
 	fileHandle_t	f;
-	int				i;
-	int				strLen;
+	int32_t				i;
+	int32_t				strLen;
 
 	//setup the file route
 	Com_sprintf( mapRoute, sizeof( mapRoute ), "%s", cgs.mapname );

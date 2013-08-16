@@ -16,7 +16,7 @@ CG_PlaceString
 Also called by scoreboard drawing
 ===================
 */
-const char	*CG_PlaceString( int rank ) {
+const char	*CG_PlaceString( int32_t rank ) {
 	static char	str[64];
 	static char	str2[64];
 	char	*s, *t;
@@ -80,8 +80,8 @@ CG_Obituary
 =============
 */
 static void CG_Obituary( entityState_t *ent ) {
-	int			mod;
-	int			target, attacker;
+	int32_t			mod;
+	int32_t			target, attacker;
 	char		*method;
 	const char	*targetInfo;
 	const char	*attackerInfo;
@@ -286,7 +286,7 @@ CG_UseItem
 ===============
 */
 static void CG_UseItem( centity_t *cent ) {
-	int			itemNum;
+	int32_t			itemNum;
 	entityState_t *es;
 
 	es = &cent->currentState;
@@ -341,7 +341,7 @@ CG_ItemPickup
 A new item was picked up this frame
 ================
 */
-static void CG_ItemPickup( int itemNum ) {
+static void CG_ItemPickup( int32_t itemNum ) {
 	cg.itemPickup = itemNum;
 	cg.itemPickupTime = cg.time;
 	cg.itemPickupBlendTime = cg.time;
@@ -352,8 +352,8 @@ static void CG_ItemPickup( int itemNum ) {
 
 	if ( bg_itemlist[itemNum].giType == IT_WEAPON )
 	{
-		int nCurWpn = cg.predictedPlayerState.weapon;
-		int nNewWpn = bg_itemlist[itemNum].giTag;
+		int32_t nCurWpn = cg.predictedPlayerState.weapon;
+		int32_t nNewWpn = bg_itemlist[itemNum].giTag;
 
 		// kef -- check cg_autoswitch...
 		//
@@ -409,7 +409,7 @@ CG_PainEvent
 Also called by playerstate transition
 ================
 */
-void CG_PainEvent( centity_t *cent, int health ) {
+void CG_PainEvent( centity_t *cent, int32_t health ) {
 	char	*snd;
 
 	// don't do more than two pain sounds a second
@@ -445,13 +445,13 @@ also called by CG_CheckPlayerstateEvents
 #define	DEBUGNAME(x) if(cg_debugEvents.integer){CG_Printf(x"\n");}
 void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	entityState_t	*es;
-	int				event;
+	int32_t				event;
 	vec3_t			dir;
 	const char		*s;
-	int				clientNum;
+	int32_t				clientNum;
 	clientInfo_t	*ci;
 	vec3_t			normal = { 0, 0, 1 };
-	int				a, b;
+	int32_t				a, b;
 
 	refEntity_t		legs;
 	refEntity_t		torso;
@@ -613,8 +613,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			break;
 	{
 		float	oldStep;
-		int		delta;
-		int		step;
+		int32_t		delta;
+		int32_t		step;
 
 		if ( clientNum != cg.predictedPlayerState.clientNum ) {
 			break;
@@ -700,7 +700,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_ITEM_PICKUP");
 		{
 			gitem_t	*item;
-			int		index;
+			int32_t		index;
 
 			index = es->eventParm;		// player predicted
 
@@ -731,7 +731,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_GLOBAL_ITEM_PICKUP");
 		{
 			gitem_t	*item;
-			int		index;
+			int32_t		index;
 
 			index = es->eventParm;		// player predicted
 
@@ -1380,7 +1380,7 @@ case EV_SHAKE_SOUND:
 	case EV_OBJECTIVE_COMPLETE:
 		if ( es->eventParm == 0  )
 		{//Special code meaning clear all objectives
-			int i;
+			int32_t i;
 			for ( i = 0; i < MAX_OBJECTIVES; i++ )
 			{
 				cgs.objectives[i].complete = qfalse;

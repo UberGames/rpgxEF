@@ -4,13 +4,13 @@
 #include "cg_lua.h"
 
 #ifdef CG_LUA
-static int Refent_GC(lua_State * L)
+static int32_t Refent_GC(lua_State * L)
 {
 
 	return 0;
 }
 
-static int Refent_ToString(lua_State * L)
+static int32_t Refent_ToString(lua_State * L)
 {
 	rent_t		 *rent;
 	refEntity_t  *ent;
@@ -24,7 +24,7 @@ static int Refent_ToString(lua_State * L)
 	return 1;
 }
 
-static int Refent_GetRenderfx(lua_State *L) {
+static int32_t Refent_GetRenderfx(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -33,19 +33,19 @@ static int Refent_GetRenderfx(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetRenderfx(lua_State *L) {
+static int32_t Refent_SetRenderfx(lua_State *L) {
 	rent_t *rent;
-	int renderfx;
+	int32_t renderfx;
 
 	rent = Lua_GetRent(L, 1);
-	renderfx = (int)luaL_checknumber(L, 2);
+	renderfx = (int32_t)luaL_checknumber(L, 2);
 
 	rent->r->renderfx = renderfx;
 
 	return 1;
 }
 
-static int Refent_GetType(lua_State *L) {
+static int32_t Refent_GetType(lua_State *L) {
 	rent_t	*rent;
 	
 	rent = Lua_GetRent(L, 1);
@@ -54,12 +54,12 @@ static int Refent_GetType(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetType(lua_State *L) {
+static int32_t Refent_SetType(lua_State *L) {
 	//rent_t *rent;
 	refEntityType_t type;
 
 	//rent = Lua_GetRent(L, 1);
-	type = (refEntityType_t)((int)luaL_checknumber(L, 2));
+	type = (refEntityType_t)((int32_t)luaL_checknumber(L, 2));
 
 	if(type < 0 || type >= RT_MAX_REF_ENTITY_TYPE)
 		return 1;
@@ -67,7 +67,7 @@ static int Refent_SetType(lua_State *L) {
 	return 1;
 }
 
-static int Refent_GetHmodel(lua_State *L) {
+static int32_t Refent_GetHmodel(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -76,19 +76,19 @@ static int Refent_GetHmodel(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetHmodel(lua_State *L) {
+static int32_t Refent_SetHmodel(lua_State *L) {
 	rent_t *rent;
-	int		hmodel;
+	int32_t		hmodel;
 
 	rent = Lua_GetRent(L, 1);
-	hmodel = (int)luaL_checknumber(L, 2);
+	hmodel = (int32_t)luaL_checknumber(L, 2);
 
 	rent->r->hModel = hmodel;
 
 	return 1;
 }
 
-static int Refent_GetLightingOrigin(lua_State *L) {
+static int32_t Refent_GetLightingOrigin(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -97,7 +97,7 @@ static int Refent_GetLightingOrigin(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetLightingOrigin(lua_State *L) {
+static int32_t Refent_SetLightingOrigin(lua_State *L) {
 	rent_t *rent;
 	vec_t *origin;
 
@@ -109,7 +109,7 @@ static int Refent_SetLightingOrigin(lua_State *L) {
 	return 1;
 }
 
-static int Refent_GetShadowPlane(lua_State *L) {
+static int32_t Refent_GetShadowPlane(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -118,7 +118,7 @@ static int Refent_GetShadowPlane(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetShadowPlane(lua_State *L) {
+static int32_t Refent_SetShadowPlane(lua_State *L) {
 	rent_t *rent;
 	float sp;
 
@@ -130,7 +130,7 @@ static int Refent_SetShadowPlane(lua_State *L) {
 	return 1;
 }
 
-static int Refent_GetAxis0(lua_State *L) {
+static int32_t Refent_GetAxis0(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -139,7 +139,7 @@ static int Refent_GetAxis0(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetAxis0(lua_State *L) {
+static int32_t Refent_SetAxis0(lua_State *L) {
 	rent_t *rent;
 	vec_t *axis;
 
@@ -151,7 +151,7 @@ static int Refent_SetAxis0(lua_State *L) {
 	return 1;
 }
 
-static int Refent_GetAxis1(lua_State *L) {
+static int32_t Refent_GetAxis1(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -160,7 +160,7 @@ static int Refent_GetAxis1(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetAxis1(lua_State *L) {
+static int32_t Refent_SetAxis1(lua_State *L) {
 	rent_t *rent;
 	vec_t *axis;
 
@@ -172,7 +172,7 @@ static int Refent_SetAxis1(lua_State *L) {
 	return 1;
 }
 
-static int Refent_GetAxis2(lua_State *L) {
+static int32_t Refent_GetAxis2(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -181,7 +181,7 @@ static int Refent_GetAxis2(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetAxis2(lua_State *L) {
+static int32_t Refent_SetAxis2(lua_State *L) {
 	rent_t *rent;
 	vec_t *axis;
 
@@ -193,16 +193,16 @@ static int Refent_SetAxis2(lua_State *L) {
 	return 1;
 }
 
-static int Refent_UseNormAxis(lua_State *L) {
+static int32_t Refent_UseNormAxis(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
-	lua_pushboolean(L, (int)(!(rent->r->nonNormalizedAxes)));
+	lua_pushboolean(L, (int32_t)(!(rent->r->nonNormalizedAxes)));
 
 	return 1;
 }
 
-static int Refent_SetUseNormAxis(lua_State *L) {
+static int32_t Refent_SetUseNormAxis(lua_State *L) {
 	rent_t *rent;
 	qboolean b;
 
@@ -214,7 +214,7 @@ static int Refent_SetUseNormAxis(lua_State *L) {
 	return 1;
 }
 
-static int Refent_GetOrigin(lua_State *L) {
+static int32_t Refent_GetOrigin(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -223,7 +223,7 @@ static int Refent_GetOrigin(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetOrigin(lua_State *L) {
+static int32_t Refent_SetOrigin(lua_State *L) {
 	rent_t  *rent;
 	vec_t	*origin;
 
@@ -235,7 +235,7 @@ static int Refent_SetOrigin(lua_State *L) {
 	return 1;
 }
 
-static int Refent_GetFrame(lua_State *L) {
+static int32_t Refent_GetFrame(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -244,19 +244,19 @@ static int Refent_GetFrame(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetFrame(lua_State *L) {
+static int32_t Refent_SetFrame(lua_State *L) {
 	rent_t *rent;
-	int frame;
+	int32_t frame;
 
 	rent = Lua_GetRent(L, 1);
-	frame = (int)luaL_checknumber(L, 2);
+	frame = (int32_t)luaL_checknumber(L, 2);
 
 	rent->r->frame = frame;
 
 	return 1;
 }
 
-static int Refent_GetOldOrigin(lua_State *L) {
+static int32_t Refent_GetOldOrigin(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -265,7 +265,7 @@ static int Refent_GetOldOrigin(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetOldOrigin(lua_State *L) {
+static int32_t Refent_SetOldOrigin(lua_State *L) {
 	rent_t *rent;
 	vec_t  *vec;
 
@@ -277,7 +277,7 @@ static int Refent_SetOldOrigin(lua_State *L) {
 	return 1;
 }
 
-static int Refent_GetOldFrame(lua_State *L) {
+static int32_t Refent_GetOldFrame(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -286,19 +286,19 @@ static int Refent_GetOldFrame(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetOldFrame(lua_State *L) {
+static int32_t Refent_SetOldFrame(lua_State *L) {
 	rent_t *rent;
-	int of;
+	int32_t of;
 
 	rent = Lua_GetRent(L, 1);
-	of = (int)luaL_checknumber(L, 2);
+	of = (int32_t)luaL_checknumber(L, 2);
 
 	rent->r->oldframe = of;
 
 	return 1;
 }
 
-static int Refent_GetBacklerp(lua_State *L) {
+static int32_t Refent_GetBacklerp(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -307,7 +307,7 @@ static int Refent_GetBacklerp(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetBacklerp(lua_State *L) {
+static int32_t Refent_SetBacklerp(lua_State *L) {
 	rent_t *rent;
 	float bl;
 
@@ -319,7 +319,7 @@ static int Refent_SetBacklerp(lua_State *L) {
 	return 1;
 }
 
-static int Refent_GetSkinNum(lua_State *L) {
+static int32_t Refent_GetSkinNum(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -328,19 +328,19 @@ static int Refent_GetSkinNum(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetSkinNum(lua_State *L) {
+static int32_t Refent_SetSkinNum(lua_State *L) {
 	rent_t *rent;
-	int		sn;
+	int32_t		sn;
 
 	rent = Lua_GetRent(L, 1);
-	sn = (int)luaL_checknumber(L, 2);
+	sn = (int32_t)luaL_checknumber(L, 2);
 
 	rent->r->skinNum = sn;
 
 	return 1;
 }
 
-static int Refent_GetCustomSkin(lua_State *L) {
+static int32_t Refent_GetCustomSkin(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -349,19 +349,19 @@ static int Refent_GetCustomSkin(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetCustomSkin(lua_State *L) {
+static int32_t Refent_SetCustomSkin(lua_State *L) {
 	rent_t *rent;
-	int		cs;
+	int32_t		cs;
 
 	rent = Lua_GetRent(L, 1);
-	cs = (int)luaL_checknumber(L, 2);
+	cs = (int32_t)luaL_checknumber(L, 2);
 
 	rent->r->customSkin = cs;
 
 	return 1;
 }
 
-static int Refent_GetCustomShader(lua_State *L) {
+static int32_t Refent_GetCustomShader(lua_State *L) {
 	rent_t *rent;
 
 	rent = Lua_GetRent(L, 1);
@@ -370,12 +370,12 @@ static int Refent_GetCustomShader(lua_State *L) {
 	return 1;
 }
 
-static int Refent_SetCustomShader(lua_State *L) {
+static int32_t Refent_SetCustomShader(lua_State *L) {
 	rent_t *rent;
-	int		cs;
+	int32_t		cs;
 
 	rent = Lua_GetRent(L, 1);
-	cs = (int)luaL_checknumber(L, 2);
+	cs = (int32_t)luaL_checknumber(L, 2);
 
 	rent->r->customShader = cs;
 
@@ -434,7 +434,7 @@ static const luaL_Reg Refentity_meta[] = {
 	{NULL, NULL}
 };
 
-int Luaopen_Rent(lua_State * L)
+int32_t Luaopen_Rent(lua_State * L)
 {
 	luaL_newmetatable(L, "cgame.refentity");
 
@@ -462,7 +462,7 @@ void Lua_PushRent(lua_State * L, refEntity_t * rent)
 	}
 }
 
-rent_t *Lua_GetRent(lua_State * L, int argNum)
+rent_t *Lua_GetRent(lua_State * L, int32_t argNum)
 {
 	void           *ud;
 

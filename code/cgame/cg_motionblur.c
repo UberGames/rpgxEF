@@ -5,8 +5,8 @@
 typedef struct motionblurDot_s {
 	qboolean	active;
 	refEntity_t	refEnt;
-	int			startTime;
-	int			lifeTime;
+	int32_t			startTime;
+	int32_t			lifeTime;
 } motionblurDot_t;
 
 //static motionblurDot_t cg_motionblurDots[MAX_MOTIONBLURDOTS];
@@ -16,7 +16,7 @@ typedef struct motionblurDot_s {
 void CG_MotionBlur(void) {
 	//motionblurDot_t	*dot;
 	//vec3_t			pos, axis[3];
-	//int i;	
+	//int32_t i;	
 
 		
 	/*if ( !cg.snap->ps.powerups[PW_BOOST] && cg.snap->ps.timers[tmZanzoken] < 1 && !cg.snap->ps.timers[tmTransform]) {

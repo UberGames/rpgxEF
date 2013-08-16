@@ -20,7 +20,7 @@ static void CG_ObjectivesUp_f( void )
 }
 
 void CG_TargetCommand_f( void ) {
-	int		targetNum;
+	int32_t		targetNum;
 	char	test[4];
 
 	targetNum = CG_CrosshairPlayer();
@@ -42,7 +42,7 @@ Keybinding command
 =================
 */
 static void CG_SizeUp_f (void) {
-	trap_Cvar_Set("cg_viewsize", va("%i",(int)(cg_viewsize.integer+10)));
+	trap_Cvar_Set("cg_viewsize", va("%i",(int32_t)(cg_viewsize.integer+10)));
 }
 
 
@@ -54,7 +54,7 @@ Keybinding command
 =================
 */
 static void CG_SizeDown_f (void) {
-	trap_Cvar_Set("cg_viewsize", va("%i",(int)(cg_viewsize.integer-10)));
+	trap_Cvar_Set("cg_viewsize", va("%i",(int32_t)(cg_viewsize.integer-10)));
 }
 
 
@@ -66,9 +66,9 @@ Debugging command to print the current view position
 =============
 */
 static void CG_Viewpos_f (void) {
-	CG_Printf ("%s (%i %i %i) : %i\n", cgs.mapname, (int)cg.refdef.vieworg[0],
-		(int)cg.refdef.vieworg[1], (int)cg.refdef.vieworg[2], 
-		(int)cg.refdefViewAngles[YAW]);
+	CG_Printf ("%s (%i %i %i) : %i\n", cgs.mapname, (int32_t)cg.refdef.vieworg[0],
+		(int32_t)cg.refdef.vieworg[1], (int32_t)cg.refdef.vieworg[2], 
+		(int32_t)cg.refdefViewAngles[YAW]);
 }
 
 /*
@@ -115,7 +115,7 @@ static void CG_ScoresUp_f( void ) {
 }
 
 static void CG_TellTarget_f( void ) {
-	int		clientNum;
+	int32_t		clientNum;
 	char	command[128];
 	char	message[128];
 
@@ -130,7 +130,7 @@ static void CG_TellTarget_f( void ) {
 }
 
 static void CG_TellAttacker_f( void ) {
-	int		clientNum;
+	int32_t		clientNum;
 	char	command[128];
 	char	message[128];
 
@@ -174,7 +174,7 @@ the names of all the ranks we can use ATM
 =========================
 */
 void CG_RankList_cmd( void ) {
-	int i;
+	int32_t i;
 
 	/* Print Titles */
 	CG_Printf( S_COLOR_CYAN "RPG-X: Available Ranks\n");
@@ -197,7 +197,7 @@ the names of all the ranks we can use ATM
 =========================
 */
 void CG_ClassList_cmd( void ) {
-	int i;
+	int32_t i;
 
 	/* Print Titles */
 	CG_Printf( S_COLOR_CYAN "RPG-X: Available Classes\n");
@@ -223,7 +223,7 @@ to beam to various locations.
 */
 void CG_BeamList_cmd( void ) {
 	const char *locStr;
-	int i;
+	int32_t i;
 
 	/* Print Titles */
 	CG_Printf( S_COLOR_CYAN "RPG-X Current Beam Locations\n" );
@@ -266,9 +266,9 @@ Although not as bad as the alternative...
 void CG_Emote_f( void ) {
 	const char		*argStr;
 	emoteList_t		*emote = NULL;
-	int				i;
+	int32_t				i;
 	animation_t		*anims;
-	int				animLength;
+	int32_t				animLength;
 	qboolean		emoteFound=qfalse;
 
 	argStr = CG_Argv( 1 );
@@ -292,7 +292,7 @@ void CG_Emote_f( void ) {
 
 	/* find out emote in the list
 	   value of numEmotes calced in bg_misc.c
-	   or if an int was supplied as an arg, use that */
+	   or if an int32_t was supplied as an arg, use that */
 	for ( i = 0; i < bg_numEmotes; i++ ) 
 	{ 
 		emote = &bg_emoteList[i];
@@ -330,7 +330,7 @@ void CG_Emote_f( void ) {
 
 	/* add this emote to the emotes recently played menu */
 	{
-		int j;
+		int32_t j;
 		char* cvar;
 		char buffer[256];
 		qboolean foundSlot=qfalse;
@@ -406,7 +406,7 @@ void CG_LocEdit_f(void) {
 
 		if(f) {
 			if((argptr = CG_Argv(2)) != NULL) {
-				int i = atoi(argptr);
+				int32_t i = atoi(argptr);
 				if(i) {
 					trap_FS_Write("LocationsList2\n", 15, f);
 				} else {
@@ -612,7 +612,7 @@ vmCvar_t*		TPSVars[] = { &cg_thirdPersonRange, &cg_thirdPersonAngle,
    Ie revert any temporary changes. */
 void CG_ThirdPersonRevert_f ( void ) {
 
-	int i;
+	int32_t i;
 	char	value[MAX_TOKEN_CHARS];
 
 	for (i = 0; i < 5; i++ ){
@@ -628,8 +628,8 @@ void CG_ThirdPersonRevert_f ( void ) {
  * Resets the values to the game's defaults. Useful if you screwed up the view big time.
  */
 void CG_ThirdPersonReset_f ( void ) {
-	int	defValues[] = { 80, 0, 16, 0, 0 };
-	int i;
+	int32_t	defValues[] = { 80, 0, 16, 0, 0 };
+	int32_t i;
 
 	for (i = 0; i < 5; i++ ) {
 		TPSVars[i]->value = defValues[i];
@@ -642,7 +642,7 @@ void CG_ThirdPersonReset_f ( void ) {
  * hard coded CVARs to the same value, effectively making them permanent
  */
 void CG_ThirdPersonCommit_f ( void ) {
-	int i;
+	int32_t i;
 
 	for (i = 0; i < 5; i++ ) {
 		trap_Cvar_Set( cVars[i], va("%f", TPSVars[i]->value ) );
@@ -653,7 +653,7 @@ void CG_ThirdPersonCommit_f ( void ) {
 
 /* Toggles between first and third person */
 void CG_ToggleThirdPerson_f ( void ) {
-	int value;
+	int32_t value;
 
 	value = !( cg_thirdPerson.integer > 0 ); /* This is cool. It'll toggle the value each call. */
 
@@ -743,7 +743,7 @@ Cmd_Argc() / Cmd_Argv()
 */
 qboolean CG_ConsoleCommand( void ) {
 	const char	*cmd;
-	int		i;
+	int32_t		i;
 
 	cmd = CG_Argv(0);
 
@@ -766,7 +766,7 @@ so it can perform tab completion
 =================
 */
 void CG_InitConsoleCommands( void ) {
-	int		i;
+	int32_t		i;
 
 	for ( i = 0 ; i < sizeof( commands ) / sizeof( commands[0] ) ; i++ ) {
 		trap_AddCommand( commands[i].cmd );

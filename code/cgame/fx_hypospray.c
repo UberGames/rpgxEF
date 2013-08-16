@@ -17,7 +17,7 @@ void FX_HypoSpray( vec3_t origin, vec3_t dir, qboolean red )  // When not red, i
 {
 	vec3_t  vel, angles, work;
 	float	scale, dscale;
-	int i;
+	int32_t i;
 	localEntity_t *le;
 
 	vectoangles( dir, angles );

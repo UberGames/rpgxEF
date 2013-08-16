@@ -83,8 +83,8 @@ localEntity_t *FX_AddParticle(	vec3_t origin, vec3_t velocity, qboolean gravity,
 								float startalpha, float endalpha, float roll, float elasticity, 
 								float killTime, qhandle_t shader, qboolean (*thinkFn)(localEntity_t *le));
 
-localEntity_t *FX_AddSpawner( vec3_t origin, vec3_t dir, vec3_t velocity, vec3_t user, qboolean gravity, int delay,
-							 float variance, float killTime, qboolean (*thinkFn)(localEntity_t *le), int radius );
+localEntity_t *FX_AddSpawner( vec3_t origin, vec3_t dir, vec3_t velocity, vec3_t user, qboolean gravity, int32_t delay,
+							 float variance, float killTime, qboolean (*thinkFn)(localEntity_t *le), int32_t radius );
 
 /*
  * phaser
@@ -102,8 +102,8 @@ void FX_CompressionExplosion( vec3_t start, vec3_t origin, vec3_t normal, qboole
 void FX_CompressionHit( vec3_t origin );
 void FX_PrifleBeamFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean spark, qboolean impact, qboolean empty );
 
-void FX_ProbeBeam( vec3_t origin, vec3_t dir, int clientNum, qboolean alt_fire );
-void FX_RegenBeam( vec3_t origin, vec3_t dir, int clientNum, qboolean alt_fire );
+void FX_ProbeBeam( vec3_t origin, vec3_t dir, int32_t clientNum, qboolean alt_fire );
+void FX_RegenBeam( vec3_t origin, vec3_t dir, int32_t clientNum, qboolean alt_fire );
 
 /*
  * tetrion disruptor
@@ -137,7 +137,7 @@ void FX_Detpack(vec3_t origin);
  * Disruptor Weapon
  */
 void FX_DisruptorBeamFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean spark, qboolean impact, qboolean empty );
-void FX_DisruptorWeaponHitWall( vec3_t origin, vec3_t dir, int size );
+void FX_DisruptorWeaponHitWall( vec3_t origin, vec3_t dir, int32_t size );
 
 /*
  * Quantum Burst
@@ -153,7 +153,7 @@ void FX_QuantumColumns( vec3_t origin );
  */
 void FX_Transporter(vec3_t origin);
 void FX_TransporterPad( vec3_t origin );
-void FX_SPTransporterLensFlares( centity_t* cent, vec3_t headVector, int startTime );
+void FX_SPTransporterLensFlares( centity_t* cent, vec3_t headVector, int32_t startTime );
 
 
 /* Holdable, portable shield item */
@@ -171,7 +171,7 @@ void FX_PlayerShieldHit( centity_t *cent );
 void FX_Disruptor( vec3_t org, float length );
 void FX_ExplodeBits( vec3_t org);
 
-void FX_qFlash( centity_t* cent, vec3_t org, int timeIndex );
+void FX_qFlash( centity_t* cent, vec3_t org, int32_t timeIndex );
 
 /*
  * sin table

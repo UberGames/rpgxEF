@@ -136,7 +136,7 @@ void UI_ResetMenu(void) {
 	trap_GetClientState( &cstate );
 
 	if ( cstate.connState >= CA_CONNECTED ) {
-		// double on top of running game
+		// float on top of running game
 		s_reset.menu.fullscreen = qfalse;
 	}
 	else {

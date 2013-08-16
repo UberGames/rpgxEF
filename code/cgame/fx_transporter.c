@@ -32,18 +32,18 @@ Planned timing:
 -------------------------
 */
 
-void FX_SPTransporterLensFlares( centity_t* cent, vec3_t headVector, int startTime ) {
+void FX_SPTransporterLensFlares( centity_t* cent, vec3_t headVector, int32_t startTime ) {
 	refEntity_t flare;
 	trace_t	tr;
-	int i;
-	int direction = 1;
-	int timeOffset = 0; //250 - time between first and second flares appearing;
+	int32_t i;
+	int32_t direction = 1;
+	int32_t timeOffset = 0; //250 - time between first and second flares appearing;
 	float ratio;
 	float dlightRatio;
 
 	vec3_t origin, tempOrigin;
-	int width;
-	int height;
+	int32_t width;
+	int32_t height;
 
 	//Hrmm... we have a glitch lol. Since DEPTHHACK is on, the flare will be drawn
 	//from ANYWHERE IN THE LEVEL! O_o

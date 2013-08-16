@@ -5,7 +5,7 @@
 void FXE_Spray (vec3_t direction, float speed, float variation, float cone, vec3_t velocity)
 {
 	vec3_t	dir;
-	int i;
+	int32_t i;
 
 	//Randomize the direction
 	for (i = 0; i < 3; i ++ )
@@ -1077,8 +1077,8 @@ Adds a spawner -- basically, a local entity with a think function. Spawners don'
 associated with them inherently, but the spawner's think fn probably generates them.
 ===============
 */
-localEntity_t *FX_AddSpawner( vec3_t origin, vec3_t dir, vec3_t velocity, vec3_t user, qboolean gravity, int delay,
-							 float variance, float killTime, qboolean (*thinkFn)(localEntity_t *le), int radius )
+localEntity_t *FX_AddSpawner( vec3_t origin, vec3_t dir, vec3_t velocity, vec3_t user, qboolean gravity, int32_t delay,
+							 float variance, float killTime, qboolean (*thinkFn)(localEntity_t *le), int32_t radius )
 {
 	localEntity_t *le = NULL;
 	

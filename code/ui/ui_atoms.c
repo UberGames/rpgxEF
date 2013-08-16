@@ -68,7 +68,7 @@ const char menuEmptyLine[] = " ";
 UI_ClampCvar
 =================
 */
-double UI_ClampCvar( double min, double max, double value )
+float UI_ClampCvar( float min, float max, float value )
 {
 	if ( value < min ) return min;
 	if ( value > max ) return max;
@@ -167,7 +167,7 @@ void UI_ForceMenuOff (void)
 UI_LerpColor
 =================
 */
-static void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, double t)
+static void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
 {
 	int32_t i;
 
@@ -238,14 +238,14 @@ static void UI_DrawBannerString2( int32_t x, int32_t y, const char* str, vec4_t 
 {
 	const char* s;
 	char	ch;
-	double	ax;
-	double	ay;
-	double	aw;
-	double	ah;
-	double	frow;
-	double	fcol;
-	double	fwidth;
-	double	fheight;
+	float	ax;
+	float	ay;
+	float	aw;
+	float	ah;
+	float	frow;
+	float	fcol;
+	float	fwidth;
+	float	fheight;
 
 	/* draw the colored text */
 	trap_R_SetColor( color );
@@ -259,18 +259,18 @@ static void UI_DrawBannerString2( int32_t x, int32_t y, const char* str, vec4_t 
 	{
 		ch = *s & 255;
 		if ( ch == ' ' ) {
-			ax += ((double)PROPB_SPACE_WIDTH + (double)PROPB_GAP_WIDTH)* uis.scalex;
+			ax += ((float)PROPB_SPACE_WIDTH + (float)PROPB_GAP_WIDTH)* uis.scalex;
 		}
 		else if ( ch >= 'A' && ch <= 'Z' ) {
 			ch -= 'A';
-			fcol = (double)propMapB[(int32_t)ch][0] / 256.0f; /*256.0f*/
-			frow = (double)propMapB[(int32_t)ch][1] / 256.0f;
-			fwidth = (double)propMapB[(int32_t)ch][2] / 256.0f;
-			fheight = (double)PROPB_HEIGHT / 256.0f;
-			aw = (double)propMapB[(int32_t)ch][2] * uis.scalex;
-			ah = (double)PROPB_HEIGHT * uis.scaley;
+			fcol = (float)propMapB[(int32_t)ch][0] / 256.0f; /*256.0f*/
+			frow = (float)propMapB[(int32_t)ch][1] / 256.0f;
+			fwidth = (float)propMapB[(int32_t)ch][2] / 256.0f;
+			fheight = (float)PROPB_HEIGHT / 256.0f;
+			aw = (float)propMapB[(int32_t)ch][2] * uis.scalex;
+			ah = (float)PROPB_HEIGHT * uis.scaley;
 			trap_R_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, uis.charsetPropB );
-			ax += (aw + (double)PROPB_GAP_WIDTH * uis.scalex);
+			ax += (aw + (float)PROPB_GAP_WIDTH * uis.scalex);
 		}
 		s++;
 	}
@@ -493,15 +493,15 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 {
 	const char* s;
 	unsigned char ch;
-	double	ax;
-	double	ay,holdY;
-	double	aw;
-	double	ah;
-	double	frow;
-	double	fcol;
-	double	fwidth;
-	double	fheight;
-	double	sizeScale;
+	float	ax;
+	float	ay,holdY;
+	float	aw;
+	float	ah;
+	float	frow;
+	float	fcol;
+	float	fwidth;
+	float	fheight;
+	float	sizeScale;
 	int32_t		colorI;
 	int32_t		special;
 
@@ -543,19 +543,19 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 
 			ch = *s & 255;
 			if ( ch == ' ' ) {
-				aw = (double)PROP_SPACE_TINY_WIDTH;
+				aw = (float)PROP_SPACE_TINY_WIDTH;
 			}
 			else if ( propMap[ch][2] != -1 ) {
 				/* Because some foreign characters were a little different */
 				special = specialTinyPropChars[ch][0];
 				ay = holdY + (specialTinyPropChars[ch][1] * uis.scaley);
 
-				fcol = (double ) propMapTiny[ch][0] / 256.0f; /*256.0f*/
-				frow = (double)propMapTiny[ch][1] / 256.0f;
-				fwidth = (double)propMapTiny[ch][2] / 256.0f;
-				fheight = (double)(PROP_TINY_HEIGHT + special) / 256.0f;
-				aw = (double)propMapTiny[ch][2] * uis.scalex * sizeScale;
-				ah = (double)(PROP_TINY_HEIGHT+ special) * uis.scaley * sizeScale;
+				fcol = (float ) propMapTiny[ch][0] / 256.0f; /*256.0f*/
+				frow = (float)propMapTiny[ch][1] / 256.0f;
+				fwidth = (float)propMapTiny[ch][2] / 256.0f;
+				fheight = (float)(PROP_TINY_HEIGHT + special) / 256.0f;
+				aw = (float)propMapTiny[ch][2] * uis.scalex * sizeScale;
+				ah = (float)(PROP_TINY_HEIGHT+ special) * uis.scaley * sizeScale;
 
 				/* TiM - adjust for widescreen */
 				if ( UI_IsWidescreen() )
@@ -572,11 +572,11 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 			}
 
 			
-			ax += (aw + (double)PROP_GAP_TINY_WIDTH * uis.scalex * sizeScale);
+			ax += (aw + (float)PROP_GAP_TINY_WIDTH * uis.scalex * sizeScale);
 			
 			/* again adjust for widescreen */
 			if ( UI_IsWidescreen() )
-				ax -= ((double)PROP_GAP_TINY_WIDTH * uis.scalex * sizeScale)*(1.0f-uis.widescreen.ratio);
+				ax -= ((float)PROP_GAP_TINY_WIDTH * uis.scalex * sizeScale)*(1.0f-uis.widescreen.ratio);
 
 			s++;
 		}
@@ -597,19 +597,19 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 
 			ch = *s & 255;
 			if ( ch == ' ' ) {
-				aw = (double)PROP_SPACE_BIG_WIDTH * uis.scalex;
+				aw = (float)PROP_SPACE_BIG_WIDTH * uis.scalex;
 			}
 			else if ( propMap[ch][2] != -1 ) {
 				/* Because some foreign characters were a little different */
 				special = specialBigPropChars[ch][0];
 				ay = holdY + (specialBigPropChars[ch][1] * uis.scaley);
 
-				fcol = (double ) propMapBig[ch][0] / 256.0f; /* 256.0f */
-				frow = (double)propMapBig[ch][1] / 256.0f;
-				fwidth = (double)propMapBig[ch][2] / 256.0f;
-				fheight = (double)(PROP_BIG_HEIGHT+ special) / 256.0f;
-				aw = (double)propMapBig[ch][2] * uis.scalex * sizeScale;
-				ah = (double)(PROP_BIG_HEIGHT+ special) * uis.scaley * sizeScale;
+				fcol = (float ) propMapBig[ch][0] / 256.0f; /* 256.0f */
+				frow = (float)propMapBig[ch][1] / 256.0f;
+				fwidth = (float)propMapBig[ch][2] / 256.0f;
+				fheight = (float)(PROP_BIG_HEIGHT+ special) / 256.0f;
+				aw = (float)propMapBig[ch][2] * uis.scalex * sizeScale;
+				ah = (float)(PROP_BIG_HEIGHT+ special) * uis.scaley * sizeScale;
 
 				/* TiM - adjust for widescreen */
 				if ( UI_IsWidescreen() )
@@ -625,11 +625,11 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 			}
 
 			
-			ax += (aw + (double)PROP_GAP_BIG_WIDTH * uis.scalex * sizeScale);
+			ax += (aw + (float)PROP_GAP_BIG_WIDTH * uis.scalex * sizeScale);
 			
 			/* again adjust for widescreen */
 			if ( UI_IsWidescreen() )
-				ax -= ((double)PROP_GAP_BIG_WIDTH * uis.scalex * sizeScale)*(1.0f-uis.widescreen.ratio);
+				ax -= ((float)PROP_GAP_BIG_WIDTH * uis.scalex * sizeScale)*(1.0f-uis.widescreen.ratio);
 
 			s++;
 		}
@@ -650,19 +650,19 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 
 			ch = *s & 255;
 			if ( ch == ' ' ) {
-				aw = (double)PROP_SPACE_WIDTH * uis.scalex * sizeScale;
+				aw = (float)PROP_SPACE_WIDTH * uis.scalex * sizeScale;
 			}
 			else if ( propMap[ch][2] != -1 ) {
 				/* Because some foreign characters were a little different */
 				special = specialPropChars[ch][0];
 				ay = holdY + (specialPropChars[ch][1] * uis.scaley);
 
-				fcol = (double)propMap[ch][0] / 256.0f;
-				frow = (double)propMap[ch][1] / 256.0f;
-				fwidth = (double)propMap[ch][2] / 256.0f;
-				fheight = (double)(PROP_HEIGHT+ special) / 256.0f;
-				aw = (double)propMap[ch][2] * uis.scalex * sizeScale;
-				ah = (double)(PROP_HEIGHT+ special) * uis.scaley * sizeScale;
+				fcol = (float)propMap[ch][0] / 256.0f;
+				frow = (float)propMap[ch][1] / 256.0f;
+				fwidth = (float)propMap[ch][2] / 256.0f;
+				fheight = (float)(PROP_HEIGHT+ special) / 256.0f;
+				aw = (float)propMap[ch][2] * uis.scalex * sizeScale;
+				ah = (float)(PROP_HEIGHT+ special) * uis.scaley * sizeScale;
 				
 				/* TiM - adjust for widescreen */
 				if ( ui_handleWidescreen.integer && uis.widescreen.ratio )
@@ -678,11 +678,11 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 			}
 			
 			
-			ax += (aw + (double)PROP_GAP_WIDTH * uis.scalex * sizeScale);
+			ax += (aw + (float)PROP_GAP_WIDTH * uis.scalex * sizeScale);
 			
 			/* again adjust for widescreen */
 			if ( UI_IsWidescreen() )
-				ax -= ((double)PROP_GAP_WIDTH * uis.scalex * sizeScale)*(1.0f-uis.widescreen.ratio);
+				ax -= ((float)PROP_GAP_WIDTH * uis.scalex * sizeScale)*(1.0f-uis.widescreen.ratio);
 
 			s++;
 		}
@@ -696,7 +696,7 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 UI_ProportionalSizeScale
 =================
 */
-double UI_ProportionalSizeScale( int32_t style ) {
+float UI_ProportionalSizeScale( int32_t style ) {
 	if(  style & UI_SMALLFONT ) {
 		return PROP_SMALL_SIZE_SCALE;
 	}
@@ -713,7 +713,7 @@ UI_DrawProportionalString
 void UI_DrawProportionalString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color ) {
 	vec4_t	drawcolor;
 	int32_t		width;
-	double	sizeScale;
+	float	sizeScale;
 	int32_t		charstyle=0;
 
 	if ((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1))
@@ -818,12 +818,12 @@ static void UI_DrawString2( int32_t x, int32_t y, const char* str, vec4_t color,
 	char	ch;
 	int32_t forceColor = qfalse; /* APSFIXME; */
 	vec4_t	tempcolor;
-	double	ax;
-	double	ay;
-	double	aw;
-	double	ah;
-	double	frow;
-	double	fcol;
+	float	ax;
+	float	ay;
+	float	aw;
+	float	ah;
+	float	frow;
+	float	fcol;
 
 	if (y < -charh)
 		/* offscreen */
@@ -900,7 +900,7 @@ void UI_DrawString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t
 	int32_t		charh;
 	vec4_t	newcolor;
 	vec4_t	lowlight;
-	double	*drawcolor;
+	float	*drawcolor;
 	vec4_t	dropcolor;
 
 	if( !str ) {
@@ -2042,7 +2042,7 @@ UI_AdjustFrom640
 Adjusted for resolution and screen aspect ratio
 ================
 */
-void UI_AdjustFrom640( double *x, double *y, double *w, double *h ) {
+void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
 	/* expect valid pointers */
 	/* *x = *x * uis.scale + uis.bias;*/
 	*x *= uis.scalex;
@@ -2062,7 +2062,7 @@ void UI_AdjustFrom640( double *x, double *y, double *w, double *h ) {
 	}
 }
 
-void UI_DrawNamedPic( double x, double y, double width, double height, const char *picname ) {
+void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname ) {
 	qhandle_t	hShader;
 
 	hShader = trap_R_RegisterShaderNoMip( picname );
@@ -2070,16 +2070,16 @@ void UI_DrawNamedPic( double x, double y, double width, double height, const cha
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
-void UI_DrawHandleStretchPic( double x, double y, double w, double h, double s0, double t0, double s1, double t1, qhandle_t hShader ) {
+void UI_DrawHandleStretchPic( float x, float y, float w, float h, float s0, float t0, float s1, float t1, qhandle_t hShader ) {
 	UI_AdjustFrom640( &x, &y, &w, &h );
 	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
 }
 
-void UI_DrawHandlePic( double x, double y, double w, double h, qhandle_t hShader ) {
-	double	s0;
-	double	s1;
-	double	t0;
-	double	t1;
+void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ) {
+	float	s0;
+	float	s1;
+	float	t0;
+	float	t1;
 
 	/* TiM - security check */
 	if ( w == 0.0f || h == 0.0f )
@@ -2116,7 +2116,7 @@ UI_FillRect
 Coordinates are 640*480 virtual values
 =================
 */
-void UI_FillRect( double x, double y, double width, double height, const double *color ) {
+void UI_FillRect( float x, float y, float width, float height, const float *color ) {
 	trap_R_SetColor( color );
 
 	UI_AdjustFrom640( &x, &y, &width, &height );
@@ -2132,7 +2132,7 @@ UI_DrawRect
 Coordinates are 640*480 virtual values
 =================
 */
-void UI_DrawRect( double x, double y, double width, double height, const double *color ) {
+void UI_DrawRect( float x, float y, float width, float height, const float *color ) {
 	trap_R_SetColor( color );
 
 	UI_AdjustFrom640( &x, &y, &width, &height );

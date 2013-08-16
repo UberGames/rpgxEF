@@ -19,7 +19,7 @@ This is called at startup and for tournement restarts
 ===================
 */
 void	CG_InitLocalEntities( void ) {
-	int		i;
+	int32_t		i;
 
 	memset( cg_localEntities, 0, sizeof( cg_localEntities ) );
 	cg_activeLocalEntities.next = &cg_activeLocalEntities;
@@ -111,7 +111,7 @@ CG_ReflectVelocity
 void CG_ReflectVelocity( localEntity_t *le, trace_t *trace ) {
 	vec3_t	velocity;
 	float	dot;
-	int		hitTime;
+	int32_t		hitTime;
 
 	// reflect the velocity on the trace plane
 	hitTime = cg.time - cg.frametime + cg.frametime * trace->fraction;
@@ -297,7 +297,7 @@ void CG_AddExplosion( localEntity_t *ex )
 	// calculate model frame
 	if ( ex->lifeRate > 0 ) {
 		float frac = (cg.time - ex->startTime) * ex->lifeRate;
-		int f = floor(frac);
+		int32_t f = floor(frac);
 		if ( f < 0 ) {
 			f = 0;
 		}
@@ -1116,7 +1116,7 @@ void CG_AddFragment( localEntity_t *le ) {
 
 	if ( le->pos.trType == TR_STATIONARY ) {
 		// sink into the ground if near the removal time
-		int		t;
+		int32_t		t;
 		
 		t = le->endTime - cg.time;
 		if ( t < SINK_TIME ) {
@@ -1150,7 +1150,7 @@ void CG_AddFragment( localEntity_t *le ) {
 
 			BG_EvaluateTrajectory( &le->angles, cg.time, angles );
 			AnglesToAxis( angles, le->refEntity.axis );
-			int k;
+			int32_t k;
 			for(k = 0; k < 3; k++)
 			{
 				VectorScale(le->refEntity.axis[k], le->data.fragment.radius, le->refEntity.axis[k]);

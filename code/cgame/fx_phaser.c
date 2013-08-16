@@ -150,7 +150,7 @@ void FX_PhaserFire( vec3_t startpos, vec3_t endpos, vec3_t normal, qboolean spar
 	// "Fun" sparks...  Not when empty.
 	if ( spark && !empty)
 	{
-		int sparks = (rand() & 1) + 1;
+		int32_t sparks = (rand() & 1) + 1;
 		for(;sparks>0;sparks--)
 		{	
 			float size = 0.2f + (random() * 0.4);
@@ -184,7 +184,7 @@ void FX_PhaserAltFire( vec3_t start, vec3_t end, vec3_t normal, qboolean spark, 
 	refEntity_t	beam;
 	vec3_t		rgb = { 1,0.6,0.5}, rgb2={1,0.3,0};
 	float		len;
-	int color;
+	int32_t color;
 
 	VectorSubtract(end, start, diff);
 	len = VectorNormalize(diff);
@@ -322,13 +322,13 @@ void FX_PhaserAltFire( vec3_t start, vec3_t end, vec3_t normal, qboolean spark, 
 	{
 		// kef -- fixme. dunno what the deal is with this velocity vector
 		VectorClear(vel);
-		int sparks = (rand() & 3) + 1;
+		int32_t sparks = (rand() & 3) + 1;
 
 		// Set random starting pos...
 		end2[0] = flrandom(-1.0, 1.0) + end[0];
 		end2[1] = flrandom(-1.0, 1.0) + end[1];
 		end2[2] = flrandom(-1.0, 1.0) + end[2];
-		int i;
+		int32_t i;
 		for( i = 0; i < sparks; i++ )
 		{	
 			scale = 0.5f + (random() * 0.5);

@@ -5,7 +5,7 @@
 #include "fx_local.h"
 
 //RPG-X : TiM - Weapons Arrays
-static int RAweapons[8] = { WP_3, 
+static int32_t RAweapons[8] = { WP_3, 
 							WP_2,
 							WP_6,
 							WP_7,
@@ -38,8 +38,8 @@ The server says this item is used on this level
 typedef struct wpnBarrelInfo_s
 {
 	weapon_t			giTag;
-	int					numBarrels;
-	int					flashTime;
+	int32_t					numBarrels;
+	int32_t					flashTime;
 } wpnBarrelInfo_t;
 
 wpnBarrelInfo_t wpnBarrelData[] =
@@ -92,13 +92,13 @@ wpnBarrelInfo_t wpnBarrelData[] =
 //	{WP_0,				0},
 //};
 
-void CG_RegisterWeapon( int weaponNum ) {
+void CG_RegisterWeapon( int32_t weaponNum ) {
 	weaponInfo_t	*weaponInfo;
 	gitem_t			*item, *ammo;
 	char			path[MAX_QPATH];
 	vec3_t			mins, maxs;
-	int				i;
-	int				numBarrels = 0;
+	int32_t				i;
+	int32_t				numBarrels = 0;
 	wpnBarrelInfo_t	*barrelInfo = NULL;
 
 
@@ -453,7 +453,7 @@ CG_RegisterItemVisuals
 The server says this item is used on this level
 =================
 */
-void CG_RegisterItemVisuals( int itemNum ) {
+void CG_RegisterItemVisuals( int32_t itemNum ) {
 	itemInfo_t		*itemInfo;
 	gitem_t			*item;
 
@@ -515,7 +515,7 @@ CG_MapTorsoToWeaponFrame
 
 =================
 */
-static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame ) {
+static int32_t CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int32_t frame ) {
 	animation_t	*anim;
 
 	// change weapon
@@ -572,7 +572,7 @@ CG_CalculateWeaponPosition
 //BOOKMARK
 static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles ) {
 	float	scale;
-	int		delta;
+	int32_t		delta;
 	float	fracsin;
 
 	VectorCopy( cg.refdef.vieworg, origin );
@@ -788,7 +788,7 @@ CG_MachinegunSpinAngle
 static float	CG_MachinegunSpinAngle( centity_t *cent ) {
 	float	angle;
 
-	int delta = cg.time - cent->pe.barrelTime;
+	int32_t delta = cg.time - cent->pe.barrelTime;
 	if ( cent->pe.barrelSpinning ) {
 		angle = cent->pe.barrelAngle + delta * SPIN_SPEED;
 	} else {
@@ -816,7 +816,7 @@ CG_AddWeaponWithPowerups
 ========================
 */
 
-static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups, beamData_t* beamData, int cloakTime, int decloakTime ) //
+static void CG_AddWeaponWithPowerups( refEntity_t *gun, int32_t powerups, beamData_t* beamData, int32_t cloakTime, int32_t decloakTime ) //
 {
 	// add powerup effects
 	if ( powerups & ( 1 << PW_INVIS ) || ( !(powerups & ( 1 << PW_INVIS )) && decloakTime > 0 ) ) {
@@ -842,7 +842,7 @@ static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups, beamData_t
 	} 
 	else if ( powerups & ( 1 << PW_BEAM_OUT ) || powerups & ( 1 << PW_QUAD ) )
 	{
-		int btime;
+		int32_t btime;
 		btime = cg.time - beamData->beamTimeParam;
 
 		if ( btime <= PLAYER_BEAM_FADE ) {
@@ -865,7 +865,7 @@ static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups, beamData_t
 		if (btime > PLAYER_BEAM_FADE && btime < (PLAYER_BEAM_FADE + PLAYER_BEAM_FADETIME) )
 		{
 			gun->renderfx |= RF_FORCE_ENT_ALPHA;
-			gun->shaderRGBA[3] = (int)(255 * beamData->beamAlpha);
+			gun->shaderRGBA[3] = (int32_t)(255 * beamData->beamAlpha);
 		}
 
 		if ( gun->shaderRGBA[3] > 0 ) {
@@ -1073,7 +1073,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	weapon_t	weaponNum;
 	weaponInfo_t	*weapon;
 	centity_t	*nonPredictedCent;
-	int				i = 0, numBarrels = 0;
+	int32_t				i = 0, numBarrels = 0;
 	wpnBarrelInfo_t	*barrelInfo = NULL;
 
 	char filename[MAX_QPATH];
@@ -1529,7 +1529,7 @@ WEAPON SELECTION
 ==============================================================================
 */
 
-void static CG_RegisterWeaponIcon( int weaponNum ) {
+void static CG_RegisterWeaponIcon( int32_t weaponNum ) {
 	weaponInfo_t	*weaponInfo;
 	gitem_t			*item;
 
@@ -1563,7 +1563,7 @@ RPG-X | Phenix | 08/06/2005
 RPG-X |  TiM   | 5/1/2006
 ===========================
 */
-void CG_DrawWeaponIcon ( int x, int y, int weapon )
+void CG_DrawWeaponIcon ( int32_t x, int32_t y, int32_t weapon )
 {
 	/*vec4_t	color;
 
@@ -1604,7 +1604,7 @@ CG_DrawWeaponSelect
 ===================
 */
 
-static int	weaponRows[6][3] = { { WP_1, 0, 0 },
+static int32_t	weaponRows[6][3] = { { WP_1, 0, 0 },
 								 { WP_2, WP_3, WP_4 },
 								 { WP_5, WP_6, WP_7 },
 								 { WP_8, WP_9, WP_10 },
@@ -1612,10 +1612,10 @@ static int	weaponRows[6][3] = { { WP_1, 0, 0 },
 								 { WP_14, WP_15, 0 } };
 
 void CG_DrawWeaponSelect( void ) {
-	int		i, rowCount, cellCount;
-	int		bits;
-	//int		count;
-	int		x, y, defaultX, defaultY;
+	int32_t		i, rowCount, cellCount;
+	int32_t		bits;
+	//int32_t		count;
+	int32_t		x, y, defaultX, defaultY;
 	char	*name;
 	float	*color;
 	qboolean	WeapOnThisRow = qfalse;
@@ -1706,7 +1706,7 @@ void CG_DrawWeaponSelect( void ) {
 CG_WeaponSelectable
 ===============
 */
-static qboolean CG_WeaponSelectable( int i ) {
+static qboolean CG_WeaponSelectable( int32_t i ) {
 	if ( !cg.snap->ps.ammo[i] ) {
 		return qfalse;
 	}
@@ -1717,7 +1717,7 @@ static qboolean CG_WeaponSelectable( int i ) {
 	return qtrue;
 }
 
-extern int altAmmoUsage[];
+extern int32_t altAmmoUsage[];
 /*
 {
 	0,				//WP_0,
@@ -1742,7 +1742,7 @@ extern int altAmmoUsage[];
 CG_WeaponAltSelectable
 ===============
 */
-static qboolean CG_WeaponAltSelectable( int i ) {
+static qboolean CG_WeaponAltSelectable( int32_t i ) {
 	if ( cg.snap->ps.ammo[i] < altAmmoUsage[cg.snap->ps.weapon]) {
 		return qfalse;
 	}
@@ -1760,10 +1760,10 @@ CG_NextWeapon_f
 ===============
 */
 void CG_NextWeapon_f( void ) {
-	int		i; //, topWeapon
-	int		original;
-//	int		newWeapons[16];
-//	int		bits;
+	int32_t		i; //, topWeapon
+	int32_t		original;
+//	int32_t		newWeapons[16];
+//	int32_t		bits;
 
 	if ( !cg.snap ) {
 		return;
@@ -1804,10 +1804,10 @@ CG_PrevWeapon_f
 ===============
 */
 void CG_PrevWeapon_f( void ) {
-	int		i; //, topWeapon
-	int		original;
-//	int		newWeapons[16];
-//	int		bits;
+	int32_t		i; //, topWeapon
+	int32_t		original;
+//	int32_t		newWeapons[16];
+//	int32_t		bits;
 
 	if ( !cg.snap ) {
 		return;
@@ -1843,7 +1843,7 @@ CG_Weapon_f
 ===============
 */
 /*TiM : Here for reference
-static int	weaponRows[6][3] = { WP_1, 0, 0,
+static int32_t	weaponRows[6][3] = { WP_1, 0, 0,
 								 WP_2, WP_3, WP_4,
 								 WP_5, WP_6, WP_7,
 								 WP_8, WP_9, WP_10,
@@ -1851,16 +1851,16 @@ static int	weaponRows[6][3] = { WP_1, 0, 0,
 								 WP_14, WP_NEUTRINO_PROBE, 0 };*/
 
 void CG_Weapon_f( void ) {
-	int		num;
-	//int		newWeapons[16];
-	int		i;
-	int		bits;
-	int		weaponsOnRow;
-	int		weaponGot[6];
-	int		onRow;
-	int		onCol;
-	int		rowsUsed;
-	int		currentWeaponCol;
+	int32_t		num;
+	//int32_t		newWeapons[16];
+	int32_t		i;
+	int32_t		bits;
+	int32_t		weaponsOnRow;
+	int32_t		weaponGot[6];
+	int32_t		onRow;
+	int32_t		onCol;
+	int32_t		rowsUsed;
+	int32_t		currentWeaponCol;
 
 	if ( !cg.snap ) {
 		return;
@@ -1984,7 +1984,7 @@ The current weapon has just run out of ammo
 ===================
 */
 void CG_OutOfAmmoChange( qboolean altfire ) {
-	int		i;
+	int32_t		i;
 
 	cg.weaponSelectTime = cg.time;
 
@@ -2026,12 +2026,12 @@ CG_FireWeapon
 Caused by an EV_FIRE_WEAPON event
 ================
 */
-int tris_state = 0;
+int32_t tris_state = 0;
 void CG_FireWeapon( centity_t *cent, qboolean alt_fire ) {
 	entityState_t *ent;
 	weaponInfo_t	*weap;
-	int     rpg_effectsgun;
-	int     rpg_tripmines;
+	int32_t     rpg_effectsgun;
+	int32_t     rpg_tripmines;
 	const char	*info;
 	//const char	*info2;
 
@@ -2145,7 +2145,7 @@ CG_MissileHitWall
 Caused by an EV_MISSILE_MISS event, or directly by local bullet tracing
 =================
 */
-void CG_MissileHitWall( centity_t *cent, int weapon, vec3_t origin, vec3_t dir ) 
+void CG_MissileHitWall( centity_t *cent, int32_t weapon, vec3_t origin, vec3_t dir ) 
 {
 	qhandle_t		mod;
 	qhandle_t		mark;
@@ -2156,7 +2156,7 @@ void CG_MissileHitWall( centity_t *cent, int weapon, vec3_t origin, vec3_t dir )
 	vec3_t			lightColor;
 	localEntity_t	*le;
 	qboolean		isSprite;
-	int				duration;
+	int32_t				duration;
 	qboolean		alphaFade;
 //	weaponInfo_t	*weaponInfo = &cg_weapons[weapon];
 
@@ -2272,7 +2272,7 @@ void CG_MissileHitWall( centity_t *cent, int weapon, vec3_t origin, vec3_t dir )
 CG_MissileHitPlayer
 =================
 */
-void CG_MissileHitPlayer( centity_t *cent, int weapon, vec3_t origin, vec3_t dir)
+void CG_MissileHitPlayer( centity_t *cent, int32_t weapon, vec3_t origin, vec3_t dir)
 {
 	if (cent)
 	{	// Showing blood is a no-no.
@@ -2293,9 +2293,9 @@ Caused by an EV_BOUNCE | EV_BOUNCE_HALF event
 */
 
 // big fixme. none of these sounds should be registered at runtime
-void CG_BounceEffect( centity_t *cent, int weapon, vec3_t origin, vec3_t normal )
+void CG_BounceEffect( centity_t *cent, int32_t weapon, vec3_t origin, vec3_t normal )
 {
-	int     rpg_tripmines;
+	int32_t     rpg_tripmines;
 	const char	*info;
 
 	switch( weapon )
@@ -2346,7 +2346,7 @@ CG_CalcMuzzlePoint
 ======================
 */
 
-extern qboolean PM_PlayerCrouching ( int legsAnim );
+extern qboolean PM_PlayerCrouching ( int32_t legsAnim );
 
 qboolean	CG_CalcMuzzlePoint( centity_t *cent, vec3_t muzzle, qboolean isDecoy ) {
 	vec3_t		forward;
@@ -2390,7 +2390,7 @@ void CG_SurfaceExplosion( vec3_t origin, vec3_t normal, float radius, float shak
 	vec3_t			sprayvel, velocity		= { 0, 0, 0 };
 	vec3_t			temp_org, temp_vel;
 	float			scale;
-	int				i, numSparks;
+	int32_t				i, numSparks;
 
 	//Sparks
 

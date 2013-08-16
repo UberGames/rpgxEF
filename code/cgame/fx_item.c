@@ -131,7 +131,7 @@ void FX_Detpack(vec3_t origin)
 	localEntity_t	*le;
 	qhandle_t	null = 0;
 	vec3_t			direction, org, vel, norm = {0,0,1};
-	int i;
+	int32_t i;
 
 	VectorCopy( norm, direction);
 
@@ -181,7 +181,7 @@ void FX_Detpack(vec3_t origin)
 //RPG-X ToDo: Modify force field Code Here
 void FX_DrawPortableShield(centity_t *cent)
 {
-	int				xaxis, height, posWidth, negWidth; // light;
+	int32_t				xaxis, height, posWidth, negWidth; // light;
 	vec3_t			start, end, normal;
 	//vec4_t			RGBA;
 	float			halfHeight;
@@ -224,13 +224,13 @@ void FX_DrawPortableShield(centity_t *cent)
 	//This way, we canhave it flare on events, and invisible the rest of the time
 	
 	//tho make sure admins can see it
-	if((int)cent->currentState.origin2[0] == 1) {
+	if((int32_t)cent->currentState.origin2[0] == 1) {
 		shader = cgs.media.shieldActivateShaderBorg;
 	}
-	else if((int)cent->currentState.origin2[0] == 2) {
+	else if((int32_t)cent->currentState.origin2[0] == 2) {
 		shader = cgs.media.shieldActivateShaderYellow;
 	}
-	else if((int)cent->currentState.origin2[0] == 3) {
+	else if((int32_t)cent->currentState.origin2[0] == 3) {
 		shader = cgs.media.shieldActivateShaderRed;
 	}
 	else {

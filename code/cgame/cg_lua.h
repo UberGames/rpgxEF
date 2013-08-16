@@ -31,11 +31,11 @@
 #define Lua_RegConstString(L, n) (lua_pushstring(L, #n), lua_pushstring(L, n), lua_settable(L, -3))
 
 typedef struct {
-	int				id;
+	int32_t				id;
 	char			filename[MAX_QPATH];
 	char			*code;
-	int				code_size;
-	int				error;
+	int32_t				code_size;
+	int32_t				error;
 	lua_State		*L;
 } lvm_t;
 
@@ -44,8 +44,8 @@ extern lvm_t *lVM[NUM_VMS];
 void QDECL			LUA_DEBUG(const char *fmt, ...);
 void QDECL			LUA_LOG(const char *fmt, ...);
 qboolean			CG_LuaInit(void);
-qboolean			CG_LuaCall(lvm_t *vm, char *func, int nargs, int nresults);
-qboolean			CG_LuaResume(lvm_t *vm, lua_State *T, char *func, int nargs);
+qboolean			CG_LuaCall(lvm_t *vm, char *func, int32_t nargs, int32_t nresults);
+qboolean			CG_LuaResume(lvm_t *vm, lua_State *T, char *func, int32_t nargs);
 qboolean			CG_LuaGetFunction(lvm_t *vm, char *name);
 qboolean			CG_LuaGetFunctionT(lua_State *T, char *name);
 qboolean			CG_LuaStartVM(lvm_t *vm);
@@ -55,17 +55,17 @@ void				CG_LuaStatus(void);
 lvm_t				*CG_LuaGetVM(lua_State *L);
 
 // lua_cgame.c
-int			Luaopen_CGame(lua_State *L);
+int32_t			Luaopen_CGame(lua_State *L);
 
 // lua_qmath.c
-int			Luaopen_Qmath(lua_State *L);
+int32_t			Luaopen_Qmath(lua_State *L);
 
 // lua_vector.c
-int			Luaopen_Vector(lua_State *L);
+int32_t			Luaopen_Vector(lua_State *L);
 void		Lua_PushVector(lua_State *L, vec3_t v);
-vec_t		*Lua_GetVector(lua_State *L, int argNum);
-int			Lua_IsVector(lua_State *L, int index);
-vec3_t		*Lua_GetVectorMisc(lua_State *L, int *index);
+vec_t		*Lua_GetVector(lua_State *L, int32_t argNum);
+int32_t			Lua_IsVector(lua_State *L, int32_t index);
+vec3_t		*Lua_GetVectorMisc(lua_State *L, int32_t *index);
 
 // lua_cfx.c
 typedef struct {
@@ -74,7 +74,7 @@ typedef struct {
 
 typedef struct {
 	cfx_t **cfx;
-	int	    cnt;
+	int32_t	    cnt;
 } cfxList_t;
 
 void		Lua_CFX_LoadMapFxFile(void);
@@ -84,16 +84,16 @@ typedef struct {
 	centity_t *e;
 } cent_t;
 
-int			Luaopen_Cent(lua_State *L);
+int32_t			Luaopen_Cent(lua_State *L);
 void		Lua_PushCent(lua_State *L, centity_t *ent);
-cent_t		*Lua_GetCent(lua_State *L, int argNum);
+cent_t		*Lua_GetCent(lua_State *L, int32_t argNum);
 // lua_refent.c
 typedef struct {
 	refEntity_t *r;
 } rent_t;
 
-int			Luaopen_Rent(lua_State *L);
+int32_t			Luaopen_Rent(lua_State *L);
 void		Lua_PushRent(lua_State *L, refEntity_t *rent);
-rent_t		*Lua_GetRent(lua_State *L, int argNum);
+rent_t		*Lua_GetRent(lua_State *L, int32_t argNum);
 
 #endif

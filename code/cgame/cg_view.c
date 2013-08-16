@@ -140,7 +140,7 @@ static void CG_AddTestModel (void) {
 		VectorCopy( cg.refdef.viewaxis[2], cg.testModelEntity.axis[2] );
 
 		// allow the position to be adjusted
-		int		i;
+		int32_t		i;
 		for (i=0 ; i<3 ; i++) {
 			cg.testModelEntity.origin[i] += cg.refdef.viewaxis[0][i] * cg_gun_x.value;
 			cg.testModelEntity.origin[i] += cg.refdef.viewaxis[1][i] * cg_gun_y.value;
@@ -161,7 +161,7 @@ Sets the coordinates of the rendered window
 =================
 */
 static void CG_CalcVrect (void) {
-	int		size;
+	int32_t		size;
 
 	// the intermission should allways be full screen
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
@@ -233,7 +233,7 @@ vec3_t	cameraIdealTarget,			cameraIdealLoc; //location and view angles of where 
 vec3_t	cameraCurTarget={0,0,0},	cameraCurLoc={0,0,0}; //Current view and location of camera
 vec3_t	CameraOldLoc={0,0,0},		cameraNewLoc={0,0,0}; //Backup data for the lerp func
 
-int cameraLastFrame=0;
+int32_t cameraLastFrame=0;
 
 float	cameraLastYaw=0;
 float	cameraStiffFactor=0.0f;
@@ -627,7 +627,7 @@ static void CG_OffsetThirdPersonView( void ) {
 	float		focusDist;
 	float		forwardScale, sideScale;
 	char		medicrevive[32];
-	int		medicrevive_int;
+	int32_t		medicrevive_int;
 	vec3_t		camPlayerPos; //TiM
 	
 	//cg.refdef.vieworg[2] += cg.predictedPlayerState.viewheight;
@@ -750,7 +750,7 @@ static void CG_OffsetThirdPersonView( void ) {
 
 // this causes a compiler bug on mac MrC compiler
 static void CG_StepOffset( void ) {
-	int		timeDelta;
+	int32_t		timeDelta;
 	
 	// smooth out stair climbing
 	timeDelta = cg.time - cg.stepTime;
@@ -774,9 +774,9 @@ static void CG_OffsetFirstPersonView( void ) {
 	float			speed;
 	float			f;
 	vec3_t			predictedVelocity;
-	int				timeDelta;
+	int32_t				timeDelta;
 	char			medicrevive[32];
-	int				medicrevive_int;
+	int32_t				medicrevive_int;
 	
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
 		return;
@@ -938,7 +938,7 @@ CGCam_Shake
 -------------------------
 */
 
-void CG_CameraShake( float intensity, int duration, qboolean addRumbleSound )
+void CG_CameraShake( float intensity, int32_t duration, qboolean addRumbleSound )
 {
 	if ( intensity > MAX_SHAKE_INTENSITY )
 		intensity = MAX_SHAKE_INTENSITY;
@@ -968,7 +968,7 @@ void CG_UpdateCameraShake( vec3_t origin, vec3_t angles )
 	float	intensity_scale, intensity;
 	//float	ranIntensity;
 	float	ratio;
-	int		i;
+	int32_t		i;
 
 	//TiM - restart a server loop shake
 	if ( cg.shake_duration <= 0 && cg.shake_serverIndex > (cg.time - cgs.levelStartTime ) ) {
@@ -1015,7 +1015,7 @@ void CG_UpdateCameraShake( vec3_t origin, vec3_t angles )
 		//ranIntensity = flrandom( ( 10000.0f * ( 1.0f - Q_fabs( intensity ) ) ), ( 30000.0f * ( 1.0f - Q_fabs( intensity ) )) );
 
 		cg.shake_lastLerp = cg.shake_nextLerp;
-		//cg.shake_nextLerp = cg.time + (int)ranIntensity;
+		//cg.shake_nextLerp = cg.time + (int32_t)ranIntensity;
 		cg.shake_nextLerp = cg.time + irandom( 30, 40 );
 
 		if( cg.shake_nextLerp > ( cg.shake_start + cg.shake_duration ) ) {
@@ -1171,11 +1171,11 @@ Fixed fov at intermissions, otherwise account for fov variable and zooms.
 
 #define FOV_MAX			120
 
-static int CG_CalcFov( void ) {
+static int32_t CG_CalcFov( void ) {
 	float	x;
-	int		contents;
+	int32_t		contents;
 	float	fov_x, fov_y;
-	int		inwater;
+	int32_t		inwater;
 	qboolean	warpEffect=qfalse;
 
 	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {
@@ -1223,7 +1223,7 @@ static int CG_CalcFov( void ) {
 				}
 				else
 				{//still zooming
-					static int zoomSoundTime = 0;
+					static int32_t zoomSoundTime = 0;
 
 					if ( zoomSoundTime < cg.time )
 					{
@@ -1294,7 +1294,7 @@ CG_CalcViewValues
 Sets cg.refdef view values
 ===============
 */
-static int CG_CalcViewValues( void ) {
+static int32_t CG_CalcViewValues( void ) {
 	playerState_t	*ps;
 
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
@@ -1327,7 +1327,7 @@ static int CG_CalcViewValues( void ) {
 
 	// add error decay
 	if ( cg_errorDecay.value > 0 ) {
-		int		t;
+		int32_t		t;
 		float	f;
 
 		t = cg.time - cg.predictedErrorTime;
@@ -1370,8 +1370,8 @@ CG_PowerupTimerSounds
 =====================
 */
 /*static void CG_PowerupTimerSounds( void ) {
-	int		i;
-	int		t;
+	int32_t		i;
+	int32_t		t;
 
 	// powerup timers going away
 	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
@@ -1405,9 +1405,9 @@ CG_IntroModel
 This is when the player is starting the level.
 =============
 */
-/*void CG_AddIntroModel(playerState_t *ps, int time) 
+/*void CG_AddIntroModel(playerState_t *ps, int32_t time) 
 {
-	static int soundpoint=0, lasttime=999999;
+	static int32_t soundpoint=0, lasttime=999999;
 	refEntity_t	doorbox;
 	float	alpha;
 	byte a;
@@ -1552,8 +1552,8 @@ CG_DrawActiveFrame
 Generates and draws a game scene and status information at the given time.
 =================
 */
-void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback ) {
-	int		inwater;
+void CG_DrawActiveFrame( int32_t serverTime, stereoFrame_t stereoView, qboolean demoPlayback ) {
+	int32_t		inwater;
 	char	cvarYaw[16]; //an uber long floating point value lol
 	float	yaw;
 

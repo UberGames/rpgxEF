@@ -9,9 +9,9 @@
 
 static	pmove_t		cg_pmove;
 
-static	int			cg_numSolidEntities;
+static	int32_t			cg_numSolidEntities;
 static	centity_t	*cg_solidEntities[MAX_ENTITIES_IN_SNAPSHOT];
-static	int			cg_numTriggerEntities;
+static	int32_t			cg_numTriggerEntities;
 static	centity_t	*cg_triggerEntities[MAX_ENTITIES_IN_SNAPSHOT];
 
 /*
@@ -24,7 +24,7 @@ efficient collision detection
 ====================
 */
 void CG_BuildSolidList( void ) {
-	int			i;
+	int32_t			i;
 	centity_t	*cent;
 	snapshot_t	*snap;
 	entityState_t	*ent;
@@ -65,8 +65,8 @@ CG_ClipMoveToEntities
 #define SHIELD_HALFTHICKNESS		4	// should correspond with the #define in g_active.c
 
 static void CG_ClipMoveToEntities ( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-							int skipNumber, int mask, trace_t *tr ) {
-	int			i, x, zd, zu;
+							int32_t skipNumber, int32_t mask, trace_t *tr ) {
+	int32_t			i, x, zd, zu;
 	trace_t		trace;
 	entityState_t	*ent;
 	clipHandle_t 	cmodel;
@@ -185,7 +185,7 @@ CG_Trace
 ================
 */
 void	CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, 
-					 int skipNumber, int mask ) {
+					 int32_t skipNumber, int32_t mask ) {
 	trace_t	t;
 
 	trap_CM_BoxTrace ( &t, start, end, mins, maxs, 0, mask);
@@ -201,12 +201,12 @@ void	CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 CG_PointContents
 ================
 */
-int		CG_PointContents( const vec3_t point, int passEntityNum ) {
-	int			i;
+int32_t		CG_PointContents( const vec3_t point, int32_t passEntityNum ) {
+	int32_t			i;
 	entityState_t	*ent;
 	centity_t	*cent;
 	clipHandle_t cmodel;
-	int			contents;
+	int32_t			contents;
 
 	contents = trap_CM_PointContents (point, 0);
 
@@ -245,7 +245,7 @@ cg.snap->player_state and cg.nextFrame->player_state
 */
 static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 	float			f;
-	int				i;
+	int32_t				i;
 	playerState_t	*out;
 	snapshot_t		*prev, *next;
 
@@ -258,7 +258,7 @@ static void CG_InterpolatePlayerState( qboolean grabAngles ) {
 	// if we are still allowing local input, short circuit the view angles
 	if ( grabAngles ) {
 		usercmd_t	cmd;
-		int			cmdNum;
+		int32_t			cmdNum;
 
 		cmdNum = trap_GetCurrentCmdNumber();
 		trap_GetUserCmd( cmdNum, &cmd );
@@ -381,7 +381,7 @@ Predict push triggers and items
 =========================
 */
 static void CG_TouchTriggerPrediction( void ) {
-	int			i;
+	int32_t			i;
 	trace_t		trace;
 	entityState_t	*ent;
 	clipHandle_t cmodel;
@@ -481,7 +481,7 @@ to ease the jerk.
 =================
 */
 void CG_PredictPlayerState( void ) {
-	int			cmdNum, current;
+	int32_t			cmdNum, current;
 	playerState_t	oldPlayerState;
 	qboolean	moved;
 	usercmd_t	oldestCmd;
@@ -626,7 +626,7 @@ void CG_PredictPlayerState( void ) {
 						CG_Printf("Prediction miss: %f\n", len);
 					}
 					if ( cg_errorDecay.integer ) {
-						int		t;
+						int32_t		t;
 						float	f;
 
 						t = cg.time - cg.predictedErrorTime;

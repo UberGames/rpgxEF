@@ -50,7 +50,7 @@ void FX_GrenadeExplode( vec3_t origin, vec3_t normal )
 	localEntity_t	*le;
 	qhandle_t	null = 0;
 	vec3_t			direction, org, vel;
-	int i;
+	int32_t i;
 
 	VectorSet( direction, 0,0,1 );
 
@@ -90,7 +90,7 @@ void FX_GrenadeExplode( vec3_t origin, vec3_t normal )
 {
 	localEntity_t	*le;
 	vec3_t			direction, org, vel;
-	int i;
+	int32_t i;
 
 	VectorCopy( norm, direction);
 
@@ -131,7 +131,7 @@ void FX_GrenadeShrapnelExplode( vec3_t origin, vec3_t norm )
 	localEntity_t	*le;
 	//FXTrail			*fx;
 	vec3_t			direction, org, vel;
-	int				i;
+	int32_t				i;
 
 	CG_InitLensFlare( origin, 
 						350, 350,
@@ -219,7 +219,7 @@ By: RedTechie - From SP
 	VectorMA( start, len, diff, org );
 
 	//fx = 
-		FX_AddLine( end, start, (int)(random() * 3.2f), 2.0f + random() * 2, 0, 0.5f, 0.1f, 150 + random() * 150, cgs.media.orangeTrailShader ); 
+		FX_AddLine( end, start, (int32_t)(random() * 3.2f), 2.0f + random() * 2, 0, 0.5f, 0.1f, 150 + random() * 150, cgs.media.orangeTrailShader ); 
 
 	//if ( fx == NULL )
 	//	return;
@@ -253,10 +253,10 @@ void FX_fxfunc_Explosion( vec3_t start, vec3_t origin, vec3_t normal )
 //	vec3_t			end;
 //	trace_t			trace;
 	float			scale;
-	int				i, j, numSparks;
+	int32_t				i, j, numSparks;
 	//weaponInfo_t	*weaponInfo = &cg_weapons[WP_6];
 	//float	scale, dscale;
-//	int		s;
+//	int32_t		s;
 //	vec3_t	new_org;
 
 	//Sparks

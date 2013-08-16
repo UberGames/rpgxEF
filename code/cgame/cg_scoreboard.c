@@ -74,10 +74,10 @@
 
 static qboolean localClient; // true if local client has been displayed
 
-static void CG_ClipString(char *buffer,char *name,int pixelCnt,int font)
+static void CG_ClipString(char *buffer,char *name,int32_t pixelCnt,int32_t font)
 {
 	char str[2];
-	int	length;
+	int32_t	length;
 
 	str[1] = '\0';
 
@@ -131,9 +131,9 @@ static void CG_ClipString(char *buffer,char *name,int pixelCnt,int font)
 */
 
 //Modified by TiM for the new rank system
-static void CG_DrawRank(int x, int y, pclass_t pClass, int score) {
-	int classno;
-	int score_log;
+static void CG_DrawRank(int32_t x, int32_t y, pclass_t pClass, int32_t score) {
+	int32_t classno;
+	int32_t score_log;
 	rankMenuData_t*	ScoreMenuData;
 
 	//Q_log2
@@ -243,7 +243,7 @@ static qboolean AW_Draw( void );
 CG_DrawClientScoreboard_Big
 =======================
 */
-static void CG_DrawClientScore_Big( int y, score_t *score, float *color, float fade, qboolean largeFormat ) {
+static void CG_DrawClientScore_Big( int32_t y, score_t *score, float *color, float fade, qboolean largeFormat ) {
 	char			string[1024];
 	char			string2[1024];
 	//RPG-X: Not Needed without a head
@@ -291,7 +291,7 @@ static void CG_DrawClientScore_Big( int y, score_t *score, float *color, float f
 		UI_DrawProportionalString( SB_NAME_X_BIG, y , string, UI_TINYFONT, colorTable[CT_WHITE]);
 	}
 	else {
-		int clipLength;
+		int32_t clipLength;
 
 		//draw rank image
 		CG_DrawRank( SB_RANK_X_BIG, y-2,ci->pClass, score->score);
@@ -338,7 +338,7 @@ static void CG_DrawClientScore_Big( int y, score_t *score, float *color, float f
 
 		//player client Num
 		//Com_sprintf(string,sizeof(string), "%i", intClamp);				//RPG-X: J2J Switched Scoore to Client No.
-		int intClamp = Com_Clamp( 0, 128, cg_entities[score->client].currentState.clientNum );
+		int32_t intClamp = Com_Clamp( 0, 128, cg_entities[score->client].currentState.clientNum );
 		UI_DrawProportionalString( SB_SCORE_X_BIG, y , va("%i", intClamp), UI_TINYFONT | UI_LEFT, colorTable[CT_WHITE]);
 
 		//player time
@@ -364,12 +364,12 @@ static void CG_DrawClientScore_Big( int y, score_t *score, float *color, float f
 CG_DrawClientScoreboard
 =======================
 */
-static void CG_DrawClientScore( int y, score_t *score, float *color, float fade, qboolean largeFormat ) {
+static void CG_DrawClientScore( int32_t y, score_t *score, float *color, float fade, qboolean largeFormat ) {
 	//char			string[1024];
 	//char			string2[1024];
 	//vec3_t			headAngles;
 	clientInfo_t	*ci;
-	//int				picSize;
+	//int32_t				picSize;
 	//char			/**worstEnemy,*/*faveWeapon=0;
 	//float			hcolor[4];
 	//gitem_t *		item;
@@ -406,11 +406,11 @@ static void CG_DrawClientScore( int y, score_t *score, float *color, float fade,
 CG_TeamScoreboard
 =================
 */
-static int CG_TeamScoreboard( int y, team_t team, float fade, int maxClients, int lineHeight ) {
-	int		i;
+static int32_t CG_TeamScoreboard( int32_t y, team_t team, float fade, int32_t maxClients, int32_t lineHeight ) {
+	int32_t		i;
 	score_t	*score;
 	float	color[4];
-	int		count;
+	int32_t		count;
 	clientInfo_t	*ci;
 
 	color[0] = color[1] = color[2] = 1.0;
@@ -481,18 +481,18 @@ Draw the normal in-game scoreboard
 */
 qboolean CG_DrawScoreboard( void ) 
 {
-	int		y, i, n1 = 0, n2 = 0; // n3 = 0;
+	int32_t		y, i, n1 = 0, n2 = 0; // n3 = 0;
 	float	fade;
 	float	*fadeColor;
 	char	*s;
 	//RPG-X: RedTechie dont need buf with all the print team code commented out
 	//char	buf[64];
-	int		maxClients;
-	int		lineHeight;
+	int32_t		maxClients;
+	int32_t		lineHeight;
 	float	hcolor[4];
-	int		inIntermission;
+	int32_t		inIntermission;
 	char	gamename[1024];
-	//int		gOffset = 20;
+	//int32_t		gOffset = 20;
 
 	inIntermission = (
 		   (cg.snap->ps.pm_type==PM_INTERMISSION) 
@@ -694,10 +694,10 @@ Draw the oversize scoreboard for tournements
 void CG_DrawTourneyScoreboard( void ) {
 	const char		*s;
 	vec4_t			color;
-	int				min, tens, ones;
+	int32_t				min, tens, ones;
 	clientInfo_t	*ci;
-	int				y;
-	int				i,w;
+	int32_t				y;
+	int32_t				i,w;
 
 	// request more scores regularly
 	if ( cg.scoresRequestTime + 2000 < cg.time ) {
@@ -800,38 +800,38 @@ FROM DrawScoreboard()
 
 typedef struct {
 
-	int				phase;
-	int				ignoreKeysTime;
-	int				starttime;
-	int				scoreboardtime;
-	int				serverId;
+	int32_t				phase;
+	int32_t				ignoreKeysTime;
+	int32_t				starttime;
+	int32_t				scoreboardtime;
+	int32_t				serverId;
 
-	int				playerGameRank;
+	int32_t				playerGameRank;
 	qboolean		playersTeamWon;
-	int				playerTied;
+	int32_t				playerTied;
 
 	char			placeNames[3][64];
 	char			winTeamText[64];
 	char			losTeamText[64];
 	char			winTeamMVPText[64];
 	char			nameOfMVP[64];
-	int				scoreOfMVP;
-	int				totalCaptures;
-	int				totalPoints;
-	int				losCaptures;
-	int				losPoints;
-	int				secondPlaceTied;
+	int32_t				scoreOfMVP;
+	int32_t				totalCaptures;
+	int32_t				totalPoints;
+	int32_t				losCaptures;
+	int32_t				losPoints;
+	int32_t				secondPlaceTied;
 
-	int				level;
-	int				numClients;
-	int				won;
-	int				numAwards;
-	int				awardsEarned[9];
-	int				awardsLevels[9];
+	int32_t				level;
+	int32_t				numClients;
+	int32_t				won;
+	int32_t				numAwards;
+	int32_t				awardsEarned[9];
+	int32_t				awardsLevels[9];
 	qboolean		playedSound[9];
-	int				lastTier;
+	int32_t				lastTier;
 	sfxHandle_t		winnerSound;
-	int				winnerDelay;
+	int32_t				winnerDelay;
 	sfxHandle_t		youPlacedSound;
 	sfxHandle_t		commendationsSound;
 
@@ -866,7 +866,7 @@ char	*cg_medalNames[AWARD_MAX] =
 };
 */
 
-int	cg_medalNames[AWARD_MAX] = 
+int32_t	cg_medalNames[AWARD_MAX] = 
 {
 	IGT_EFFICIENCY,	// AWARD_EFFICIENCY,		Accuracy	
 	IGT_SHARPSHOOTER,	// AWARD_SHARPSHOOTER,		Most compression rifle frags
@@ -950,7 +950,7 @@ char	*cg_medalStreakNames[AWARD_STREAK_MAX] = {
 };
 */
 
-int cg_medalStreakNames[AWARD_STREAK_MAX] = {
+int32_t cg_medalStreakNames[AWARD_STREAK_MAX] = {
 	IGT_NONE,		// AWARD_NONE
 	IGT_ACE,		// AWARD_STREAK_ACE,		
 	IGT_EXPERT,		// AWARD_STREAK_EXPERT,		
@@ -958,7 +958,7 @@ int cg_medalStreakNames[AWARD_STREAK_MAX] = {
 	IGT_CHAMPION	// AWARD_STREAK_CHAMPION,			
 };
 
-int cg_medalTeamNames[TEAM_MAX] = {
+int32_t cg_medalTeamNames[TEAM_MAX] = {
 	IGT_NONE,			// AWARD_NONE
 	IGT_MVP,			// TEAM_MVP,		
 	IGT_DEFENDER,		// TEAM_DEFENDER,		
@@ -970,9 +970,9 @@ int cg_medalTeamNames[TEAM_MAX] = {
 
 
 // spaced by 70 pixels apart
-//static int medalLocations[6] = {570, 500, 430, 360, 290};
+//static int32_t medalLocations[6] = {570, 500, 430, 360, 290};
 
-/*static void AW_DrawMedal( int medal, int amount, int x, int y )
+/*static void AW_DrawMedal( int32_t medal, int32_t amount, int32_t x, int32_t y )
 {
 	char		buf[20];
 	qhandle_t	hShader;
@@ -1010,20 +1010,20 @@ int cg_medalTeamNames[TEAM_MAX] = {
 }*/
 
 //========================
-//	DrawTheMedals(int max)
+//	DrawTheMedals(int32_t max)
 //
 //	This function cycles from 0 to max and calls some functions to Draw the Picture and
 // the text below for efficency.
 //
 //========================
 //RPG-X: RedTechie - No awards
-/*static int presentedTeamAward[TEAM_MAX];
-static void AW_DrawTheMedals( int max ) {
-	int			n, i;
-	int			medal;
-	int			amount;
-	int			x, y;
-	int			extraAwardOffset = 0;
+/*static int32_t presentedTeamAward[TEAM_MAX];
+static void AW_DrawTheMedals( int32_t max ) {
+	int32_t			n, i;
+	int32_t			medal;
+	int32_t			amount;
+	int32_t			x, y;
+	int32_t			extraAwardOffset = 0;
 
 	for( n = 0; n < max; n++ ) {
 		x = medalLocations[n] - extraAwardOffset;
@@ -1054,8 +1054,8 @@ static void AW_DrawTheMedals( int max ) {
 	}
 }
 
-static int awardNextDebounceTime = 0;
-static void AW_PresentMedal( int medal, int amount, int timer, int awardNum )
+static int32_t awardNextDebounceTime = 0;
+static void AW_PresentMedal( int32_t medal, int32_t amount, int32_t timer, int32_t awardNum )
 {
 	vec4_t	color;
 
@@ -1104,22 +1104,22 @@ static void AW_PresentMedal( int medal, int amount, int timer, int awardNum )
 }
 */
 //========================
-//	DrawAwardsPresentation(int timer)
+//	DrawAwardsPresentation(int32_t timer)
 //
 //	This function incriments the timer and then calles the above function to actually draw the
 //  award icons.  This function also triggers the sounds for winning the medals.
 //
 //========================
 //RPG-X: RedTechie - No awards
-/*static int extraAwardTime = 0;
+/*static int32_t extraAwardTime = 0;
 static qboolean allTeamAwardsAnnounced = qfalse;
-static int awardNum = 0;
-static int nextTeamAward = 0;
-static void AW_DrawAwardsPresentation( int timer ) {
-	int		medal;
-	int		amount;
-	int		i=0;
-	int		teamAward = 0;
+static int32_t awardNum = 0;
+static int32_t nextTeamAward = 0;
+static void AW_DrawAwardsPresentation( int32_t timer ) {
+	int32_t		medal;
+	int32_t		amount;
+	int32_t		i=0;
+	int32_t		teamAward = 0;
 
 	if ( !postgameMenuInfo.numAwards )
 	{
@@ -1199,7 +1199,7 @@ AW_Draw
 */
 static qboolean AW_Draw( void )
 {
-	int		timer;
+	int32_t		timer;
 	vec4_t	white, yellow;	// new colors
 
 	//         RED                GREEN             BLUE               ALPHA
@@ -1382,7 +1382,7 @@ AW_SPPostgameMenu_Cache
 =================
 
 void AW_SPPostgameMenu_Cache( void ) {
-	int			n;
+	int32_t			n;
 	qboolean	buildscript;
 
 	buildscript = trap_Cvar_VariableValue("com_buildscript");
@@ -1410,9 +1410,9 @@ AW_SPPostgameMenu_Cache
  we are in a team game.
 =================
 */
-static void AW_Prepname( int index)
+static void AW_Prepname( int32_t index)
 {
-//	int		len;
+//	int32_t		len;
 	char	name[64];				// The winning team's name..  Red/Blue/ Klingon...
 	char	MVPname[64];
 	char	otherName[64];
@@ -1469,12 +1469,12 @@ AW_SPPostgameMenu_f
 */
 
 void AW_SPPostgameMenu_f( void ) {
-	int			playerGameRank;
-	int			playerClientNum;
-	int			playerTeam;
-	int			n, clNum[3] = {0,0,0};
-	int			awardFlags;
-	int			numNames;
+	int32_t			playerGameRank;
+	int32_t			playerClientNum;
+	int32_t			playerTeam;
+	int32_t			n, clNum[3] = {0,0,0};
+	int32_t			awardFlags;
+	int32_t			numNames;
 	char		temp_string[200];
 
 	memset( &postgameMenuInfo, 0, sizeof(postgameMenuInfo) );

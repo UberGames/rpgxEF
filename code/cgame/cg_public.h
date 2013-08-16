@@ -21,20 +21,20 @@
 // but they may not be sent if a client's rate level is exceeded, or
 // they may be dropped by the network.
 typedef struct {
-	int				snapFlags;			// SNAPFLAG_RATE_DELAYED, etc
-	int				ping;
+	int32_t				snapFlags;			// SNAPFLAG_RATE_DELAYED, etc
+	int32_t				ping;
 
-	int				serverTime;		// server time the message is valid for (in msec)
+	int32_t				serverTime;		// server time the message is valid for (in msec)
 
 	byte			areamask[MAX_MAP_AREA_BYTES];		// portalarea visibility bits
 
 	playerState_t	ps;						// complete information about the current player at this time
 
-	int				numEntities;			// all of the entities that need to be presented
+	int32_t				numEntities;			// all of the entities that need to be presented
 	entityState_t	entities[MAX_ENTITIES_IN_SNAPSHOT];	// at the time of this snapshot
 
-	int				numServerCommands;		// text based server commands to execute when this
-	int				serverCommandSequence;	// snapshot becomes current
+	int32_t				numServerCommands;		// text based server commands to execute when this
+	int32_t				serverCommandSequence;	// snapshot becomes current
 } snapshot_t;
 
 
@@ -139,7 +139,7 @@ functions exported to the main executable
 
 typedef enum {
 	CG_INIT,
-//	void CG_Init( int serverMessageNum, int serverCommandSequence )
+//	void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence )
 	// called when the level loads or when the renderer is restarted
 	// all media should be registered at this time
 	// cgame will display loading status by calling SCR_Update, which
@@ -159,15 +159,15 @@ typedef enum {
 	// command is not known to the game
 
 	CG_DRAW_ACTIVE_FRAME,
-//	void (*CG_DrawActiveFrame)( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+//	void (*CG_DrawActiveFrame)( int32_t serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
 	// Generates and draws a game scene and status information at the given time.
 	// If demoPlayback is set, local movement prediction will not be enabled
 
 	CG_CROSSHAIR_PLAYER,
-//	int (*CG_CrosshairPlayer)( void );
+//	int32_t (*CG_CrosshairPlayer)( void );
 
 	CG_LAST_ATTACKER
-//	int (*CG_LastAttacker)( void );
+//	int32_t (*CG_LastAttacker)( void );
 } cgameExport_t;
 
 //----------------------------------------------

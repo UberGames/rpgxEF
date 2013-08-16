@@ -16,7 +16,7 @@ CG_ParseScores
 =================
 */
 static void CG_ParseScores( void ) {
-	int		i, powerups, eliminated;
+	int32_t		i, powerups, eliminated;
 
 	cg.numScores = atoi( CG_Argv( 1 ) );
 	if ( cg.numScores > MAX_CLIENTS ) {
@@ -59,8 +59,8 @@ CG_ParseTeamInfo
 =================
 */
 static void CG_ParseTeamInfo( void ) {
-	int		i;
-	int		client;
+	int32_t		i;
+	int32_t		client;
 
 	numSortedTeamPlayers = atoi( CG_Argv( 1 ) );
 
@@ -84,9 +84,9 @@ CG_ParseHealthInfo
 =================
 */
 static void CG_ParseHealthInfo( void ) {
-	int		i;
-	int		client;
-	int		numHealthInfoClients = 0;
+	int32_t		i;
+	int32_t		client;
+	int32_t		numHealthInfoClients = 0;
 
 	numHealthInfoClients = atoi( CG_Argv( 1 ) );
 
@@ -141,7 +141,7 @@ CG_ParseWarmup
 */
 static void CG_ParseWarmup( void ) {
 	const char	*info;
-	int			warmup;
+	int32_t			warmup;
 
 	info = CG_ConfigString( CS_WARMUP );
 
@@ -187,7 +187,7 @@ data.
 */
 void CG_ClientShakeCamera ( void ) {
 	float	intensity;
-	int		duration;
+	int32_t		duration;
 	char	*str;
 
 	str = (char *)CG_ConfigString( CS_CAMERA_SHAKE );
@@ -209,12 +209,12 @@ CG_ParseClassData
 /*void CG_ParseClassData( void )
 {
 	char	*str;
-	int		i;
+	int32_t		i;
 	char	*val;
 	char	*lineChar;
 	char	*lineCharEnd;
-	int		colorBits;
-	int		classBits;
+	int32_t		colorBits;
+	int32_t		classBits;
 
 	str = (char *)CG_ConfigString( CS_CLASS_DATA );
 
@@ -284,7 +284,7 @@ CG_ConfigStringModified
 */
 static void CG_ConfigStringModified( void ) {
 	const char	*str;
-	int		num;
+	int32_t		num;
 
 	num = atoi( CG_Argv( 1 ) );
 
@@ -352,10 +352,10 @@ CG_AddToTeamChat
 =======================
 */
 static void CG_AddToTeamChat( const char *str ) {
-	int len;
+	int32_t len;
 	char *p, *ls;
-	int lastcolor;
-	int chatHeight;
+	int32_t lastcolor;
+	int32_t chatHeight;
 
 	if (cg_teamChatHeight.integer < TEAMCHAT_HEIGHT) {
 		chatHeight = cg_teamChatHeight.integer;
@@ -472,11 +472,11 @@ an ID and save it to file
 
 static void CG_EncodeIDFile( void )
 {
-	unsigned int	playerID;
+	uint32_t	playerID;
 	char			*IP;
 	char			strSubnet[3];
-	int				intSubnet[4];
-	int				i, j;
+	int32_t				intSubnet[4];
+	int32_t				i, j;
 	
 	memset(strSubnet, 0, sizeof(strSubnet));
 
@@ -533,7 +533,7 @@ static void CG_EncodeIDFile( void )
 	{
 		fileHandle_t		f;
 		//unsigned char		buffer[SECURITY_SIZE];
-		int					fileLen;
+		int32_t					fileLen;
 		rpgxSecurityFile_t	sF;
 
 		fileLen = trap_FS_FOpenFile( SECURITY_FILE, &f, FS_READ );
@@ -587,10 +587,10 @@ static void CG_EncodeIDFile( void )
 ConcatArgs
 ==================
 */
-char	*ConcatArgs2( int start ) {
-	int		i, c, tlen;
+char	*ConcatArgs2( int32_t start ) {
+	int32_t		i, c, tlen;
 	static char	line[MAX_STRING_CHARS];
-	int		len;
+	int32_t		len;
 	char	arg[MAX_STRING_CHARS];
 
 	len = 0;
@@ -780,7 +780,7 @@ static void CG_ServerCommand( void ) {
 
 	//TiM: Purge all active effects
 	if ( !strcmp( cmd, "cg_flushFX" ) ) {
-		int i;
+		int32_t i;
 
 		for ( i = 0; i < MAX_LOCAL_ENTITIES; i ++ ) {
 			cg_localEntities[i].endTime = cg.time;
@@ -961,7 +961,7 @@ Execute all of the server commands that were received along
 with this this snapshot.
 ====================
 */
-void CG_ExecuteNewServerCommands( int latestSequence ) {
+void CG_ExecuteNewServerCommands( int32_t latestSequence ) {
 	while ( cgs.serverCommandSequence < latestSequence ) {
 		if ( trap_GetServerCommand( ++cgs.serverCommandSequence ) ) {
 			CG_ServerCommand();

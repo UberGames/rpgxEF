@@ -85,7 +85,7 @@ static struct
 static struct 
 {
 	menuframework_s menu;
-	double			timer;
+	float			timer;
 	qhandle_t		cornerPic;
 //	int32_t				menuType;		// 0 = library, 1 = astrometrics
 } s_libraryaccessing;
@@ -408,7 +408,7 @@ static void TurnOnLogDesc(char *s,int32_t lineWidth,int32_t startY)
 
 }
 
-static void UI_Draw3DModel( double x, double y, double w, double h, qhandle_t model, vec3_t origin, vec3_t angles) 
+static void UI_Draw3DModel( float x, float y, float w, float h, qhandle_t model, vec3_t origin, vec3_t angles) 
 {
 	refdef_t		refdef;
 	refEntity_t		ent;

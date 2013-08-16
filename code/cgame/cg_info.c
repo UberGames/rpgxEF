@@ -19,8 +19,8 @@ CG_DrawLoadingIcons
 ===================
 */
 static void CG_DrawLoadingIcons( void ) {
-//	int		n;
-	int		x, y;
+//	int32_t		n;
+	int32_t		x, y;
 
 	trap_R_SetColor( colorTable[CT_WHITE]);
 
@@ -57,7 +57,7 @@ void CG_LoadingString( const char *s ) {
 CG_LoadingItem
 ===================
 */
-void CG_LoadingItem( int itemNum ) {
+void CG_LoadingItem( int32_t itemNum ) {
 	gitem_t		*item;
 
 	item = &bg_itemlist[itemNum];
@@ -74,7 +74,7 @@ void CG_LoadingItem( int itemNum ) {
 CG_LoadingClient
 ===================
 */
-void CG_LoadingClient( int clientNum ) {
+void CG_LoadingClient( int32_t clientNum ) {
 	const char		*info;
 	char			*skin;
 	char			personality[MAX_QPATH];
@@ -120,12 +120,12 @@ void CG_DrawInformation( void ) {
 	const char	*s;
 	const char	*info;
 	const char	*sysInfo;
-	int			y,x;
-//	int			value;
+	int32_t			y,x;
+//	int32_t			value;
 	qhandle_t	levelshot;
 //	qhandle_t	detail;
 	char		buf[1024];
-	int			strlength,length;
+	int32_t			strlength,length;
 
 	//trap_Cvar_Set ("rpg_playIntro", "1");
 
@@ -282,7 +282,7 @@ CG_LoadBar
 */
 void CG_LoadBar(void)
 {
-	int			x,y,pad;
+	int32_t			x,y,pad;
 
 	// Round LCARS buttons
 	y = 309;
@@ -473,9 +473,9 @@ void CG_LoadBar(void)
 
 }
 
-static int missionYcnt;
-static int missionYpos;
-static int	missionInfoScreenY;
+static int32_t missionYcnt;
+static int32_t missionYpos;
+static int32_t	missionInfoScreenY;
 
 #define	OBJ_HORIZONTAL_BORDER_X		15	// Where graphic starts
 #define	OBJ_HORIZONTAL_BORDER_WIDTH	30	// Thickness of graphic
@@ -499,13 +499,13 @@ static int	missionInfoScreenY;
 ObjectivePrint_Line
 ====================
 */
-static void ObjectivePrint_Line(int strIndex,int color,centity_t *cent)
+static void ObjectivePrint_Line(int32_t strIndex,int32_t color,centity_t *cent)
 {
 	char *str,*strBegin;
-	int y,pixelLen;
+	int32_t y,pixelLen;
 	char holdText[1024], holdText2[2];
 	char finalText[MAX_OBJ_LENGTH];
-	int len, maxPixLength, charHeight;
+	int32_t len, maxPixLength, charHeight;
 
 	assert(cgs.objectives[strIndex].text);
 
@@ -547,7 +547,7 @@ static void ObjectivePrint_Line(int strIndex,int color,centity_t *cent)
 	else
 	{
 		pixelLen = 0;
-		int charLen = 0;
+		int32_t charLen = 0;
 		holdText2[1] = '\0';
 		strBegin = str;
 
@@ -598,14 +598,14 @@ static void ObjectivePrint_Line(int strIndex,int color,centity_t *cent)
 	}
 }
 
-static int Objective_LineCnt(int strIndex,centity_t *cent)
+static int32_t Objective_LineCnt(int32_t strIndex,centity_t *cent)
 {
 	char *str,*strBegin;
-	int pixelLen;
+	int32_t pixelLen;
 	char holdText[1024], holdText2[2];
 	char finalText[MAX_OBJ_LENGTH];
-	int len, maxPixLength;
-	int	lineCnt;
+	int32_t len, maxPixLength;
+	int32_t	lineCnt;
 
 	assert(cgs.objectives[strIndex].text);
 	str =  cgs.objectives[strIndex].text;
@@ -629,7 +629,7 @@ static int Objective_LineCnt(int strIndex,centity_t *cent)
 	else
 	{
 		pixelLen = 0;
-		int charLen = 0;
+		int32_t charLen = 0;
 		holdText2[1] = '\0';
 		strBegin = str;
 
@@ -682,8 +682,8 @@ Objectives_Draw
 */
 static void Objectives_Draw( centity_t *cent )
 {
-	int objCnt,i,lineCnt,maxLines;
-	int	total,textYCnt,length,color;
+	int32_t objCnt,i,lineCnt,maxLines;
+	int32_t	total,textYCnt,length,color;
 	vec4_t newColor; 
 
 	objCnt=0;

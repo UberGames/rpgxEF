@@ -70,7 +70,7 @@ M_sqlMenu_Graphics
 */
 static void M_sqlMenu_Graphics (void)
 {
-	double bg[] = { 0, 0, 0, 0.7 };
+	float bg[] = { 0, 0, 0, 0.7 };
 
 	trap_R_SetColor(bg);
 	UI_DrawHandlePic(160, 120, 320, 240, box_rounded);

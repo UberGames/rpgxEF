@@ -15,9 +15,9 @@ If the ammo has gone low enough to generate the warning, play a sound
 ==============
 */
 void CG_CheckAmmo( void ) {
-	int		i;
-	int		total;
-	int		weapons;
+	int32_t		i;
+	int32_t		total;
+	int32_t		weapons;
 
 	if ( cg.lowAmmoWarning > 2 )
 	{//a timed message, draws for a specific amount of time
@@ -76,9 +76,9 @@ void CG_CheckAmmo( void ) {
 CG_DamageFeedback
 ==============
 */
-void CG_DamageFeedback( int yawByte, int pitchByte, int damage, int shielddamage ) {
+void CG_DamageFeedback( int32_t yawByte, int32_t pitchByte, int32_t damage, int32_t shielddamage ) {
 	float		kick;
-	int			health;
+	int32_t			health;
 	float		scale;
 	vec3_t		dir;
 	vec3_t		angles;
@@ -208,8 +208,8 @@ CG_CheckPlayerstateEvents
 ==============
 */
 void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops ) {
-	int			i;
-	int			event;
+	int32_t			i;
+	int32_t			event;
 	centity_t	*cent;
 
 	if ( ps->externalEvent && ps->externalEvent != ops->externalEvent ) {
@@ -247,13 +247,13 @@ CG_CheckLocalSounds
 */
 void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
 {
-//	int			highScore;
+//	int32_t			highScore;
 
 	// The most important thing to know is if you are doing damage.
 	//RPG-X - TiM	
 	/*if ( ps->persistant[PERS_HITS] > ops->persistant[PERS_HITS] )
 	{
-		int diffhit, diffshields;
+		int32_t diffhit, diffshields;
 
 		diffhit = ps->persistant[PERS_HITS] - ops->persistant[PERS_HITS];
 		diffshields = ps->persistant[PERS_SHIELDS] - ops->persistant[PERS_SHIELDS];
@@ -295,8 +295,8 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
 
 void CG_CheckDamageDealt(playerState_t *ps, playerState_t *ops)
 {
-	static		int damagetime;
-	static		int damageamount;
+	static		int32_t damagetime;
+	static		int32_t damageamount;
 
 	if (cg_reportDamage.integer)
 	{

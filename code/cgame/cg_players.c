@@ -37,10 +37,10 @@ stringID_table_t BoltonTable[BOLTON_MAX + 1] =
 	{ NULL, -1 }
 };
 
-int timeParam;
-//int beamTimeParam; //RPG-X : TiM - Beaming
+int32_t timeParam;
+//int32_t beamTimeParam; //RPG-X : TiM - Beaming
 
-int entNum;
+int32_t entNum;
 
 /*
 ================
@@ -48,9 +48,9 @@ CG_CustomSound
 
 ================
 */
-sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName ) {
+sfxHandle_t	CG_CustomSound( int32_t clientNum, const char *soundName ) {
 	clientInfo_t *ci;
-	int			i;
+	int32_t			i;
 
 	if ( soundName[0] != '*' ) {
 		return trap_S_RegisterSound( soundName );
@@ -80,16 +80,16 @@ ANIM SOUND CONFIG LOADING AND PLAYING
 */
 
 /*
-void CG_PlayerAnimSounds( animsounds_t *animSounds, int frame, const vec3_t org, int entNum )
+void CG_PlayerAnimSounds( animsounds_t *animSounds, int32_t frame, const vec3_t org, int32_t entNum )
 
 play any keyframed sounds - only when start a new frame
 This func is called once for legs and once for torso
 */
-//void CG_PlayerAnimSounds( animsounds_t *animSounds, int frame, int entNum, qboolean metal )
-void CG_PlayerAnimSounds( animsounds_t *animSounds, int frame, int eNum, int surfType)
+//void CG_PlayerAnimSounds( animsounds_t *animSounds, int32_t frame, int32_t entNum, qboolean metal )
+void CG_PlayerAnimSounds( animsounds_t *animSounds, int32_t frame, int32_t eNum, int32_t surfType)
 {
-	int		i;
-	int		holdSnd = -1;
+	int32_t		i;
+	int32_t		holdSnd = -1;
 	qboolean	playSound = qfalse;
 
 	/*if ( entNum == cg.predictedPlayerState.clientNum && !cg.renderingThirdPerson )
@@ -159,12 +159,12 @@ void CG_PlayerAnimSounds( animsounds_t *animSounds, int frame, int eNum, int sur
 	}
 }
 
-void ParseAnimationSndBlock(const char *filename, animsounds_t *animSounds, animation_t *animations, int *i,char **text_p) 
+void ParseAnimationSndBlock(const char *filename, animsounds_t *animSounds, animation_t *animations, int32_t *i,char **text_p) 
 {
 	char		*token;
 	char		soundString[MAX_QPATH];
-	int			lowestVal, highestVal;
-	int			animNum, num, n;
+	int32_t			lowestVal, highestVal;
+	int32_t			animNum, num, n;
 
 	// get past starting bracket
 	while(1) 
@@ -307,14 +307,14 @@ This file's presence is not required
 
 ======================
 */
-static int CG_ParseAnimationSndFile( const char *filename, int animFileIndex ) 
+static int32_t CG_ParseAnimationSndFile( const char *filename, int32_t animFileIndex ) 
 {
 	char		*text_p;
-	int			len;
+	int32_t			len;
 	char		*token;
 	char		text[20000];
 	fileHandle_t	f;
-	int			i, j, upper_i, lower_i;
+	int32_t			i, j, upper_i, lower_i;
 	animsounds_t	*lowerAnimSounds;
 	animsounds_t	*upperAnimSounds;
 	animation_t		*animations;
@@ -423,13 +423,13 @@ A lot more efficient considering how many freakin more animations we introduced 
 */
 //
 //static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) {
-static int	CG_ParseAnimationFile( const char* filename/*, clientInfo_t *ci*/ ) {
+static int32_t	CG_ParseAnimationFile( const char* filename/*, clientInfo_t *ci*/ ) {
 	char		*text_p, *prev;
-	int			len;
-	int			i;
+	int32_t			len;
+	int32_t			i;
 	char		*token;
 	float		fps;
-	int			skip;
+	int32_t			skip;
 	char		text[20000];
 	fileHandle_t	f;
 	animation_t *animations;
@@ -438,7 +438,7 @@ static int	CG_ParseAnimationFile( const char* filename/*, clientInfo_t *ci*/ ) {
 
 	if ( cg_numAnims > 0 ) {
 		for ( i = 0; i <= cg_numAnims; i++ ) {
-			if ( !Q_stricmpn( cg_animsList[i].animFileRoute, filename, (int)strlen( filename ) ) ) { //We found a matching anim set
+			if ( !Q_stricmpn( cg_animsList[i].animFileRoute, filename, (int32_t)strlen( filename ) ) ) { //We found a matching anim set
 				//Com_Printf( S_COLOR_RED "Using index: %i\n", i );
 				return i;
 			}
@@ -694,9 +694,9 @@ static qboolean CG_ParseSkinSetDataFile( clientInfo_t *ci, const char *skinSetFr
 	char*			token;
 	char*			textPtr;
 	char			buffer[5000];
-	int				len;
+	int32_t				len;
 	fileHandle_t	f;
-	int				n, i;
+	int32_t				n, i;
 
 	if ( ( skinStar = strstr( skinSetFrame, "*" ) ) == NULL )
 	{
@@ -712,7 +712,7 @@ static qboolean CG_ParseSkinSetDataFile( clientInfo_t *ci, const char *skinSetFr
 			Com_sprintf( skinSetName, sizeof( skinSetName ), "%s%s", skinName, skinStar );
 		}
 		//star is at end
-		else if ((int)(skinStar - skinSetFrame)+1 == (int)strlen(skinSetFrame) )
+		else if ((int32_t)(skinStar - skinSetFrame)+1 == (int32_t)strlen(skinSetFrame) )
 		{
 			Q_strncpyz( skinSetName, skinSetFrame, strlen( skinSetFrame ) );
 			Q_strcat( skinSetName, sizeof( skinSetName ), skinName );
@@ -950,12 +950,12 @@ a character model.
 static qboolean CG_ParseModelDataFile( clientInfo_t *ci, const char *charName, 
 										const char *modelName, const char *skinName ) {
 	fileHandle_t	file;
-	int				file_len;
+	int32_t				file_len;
 	char			charText[20000];
 	char			*textPtr;
 	char			fileName[MAX_QPATH];
 	//char			animPath[MAX_QPATH];
-	int				i, n;
+	int32_t				i, n;
 	char			*token;
 	char			legsFileRoute[MAX_QPATH];
 	char			animSndFileRoute[MAX_QPATH];
@@ -1096,7 +1096,7 @@ static qboolean CG_ParseModelDataFile( clientInfo_t *ci, const char *charName,
 				continue;
 			}
 			ci->torsoModel = trap_R_RegisterModel( token );
-			//Com_Printf("Torsomodel passed as %s, %i\n", token, (int)ci->torsoModel);
+			//Com_Printf("Torsomodel passed as %s, %i\n", token, (int32_t)ci->torsoModel);
 
 			if (!ci->torsoModel) {
 				Com_Printf( S_COLOR_RED "ERROR: Unable to load torso model: %s\n", token);
@@ -1286,7 +1286,7 @@ static qboolean CG_ParseModelDataFile( clientInfo_t *ci, const char *charName,
 
 	if ( ci->animIndex == -1 && strlen( legsFileRoute ) > 0 ) {
 		//get length of file route
-		i = (int)strlen(legsFileRoute);
+		i = (int32_t)strlen(legsFileRoute);
 
 		while( 1 ) {
 			//if we looped all the way to the end.... ie BAD
@@ -1358,12 +1358,12 @@ CLIENT INFO
 //This function has been rpg-x'ed®! (by J2J and fixed by RedTechie)
 static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) {
 	char		*text_p;
-	int			len;
-	int			i;
+	int32_t			len;
+	int32_t			i;
 	char		*token;
 //	char		aniname[255];
 	float		fps;
-	int			skip;
+	int32_t			skip;
 	char		text[20000];
 //	char		text2[20000];
 	fileHandle_t	f;
@@ -1574,7 +1574,7 @@ CG_ColorFromString
 ====================
 */
 /*static void CG_ColorFromString( const char *v, vec3_t color ) {
-	int val;
+	int32_t val;
 
 	VectorClear( color );
 
@@ -1604,9 +1604,9 @@ Load it now, taking the disk hits.
 This will usually be deferred to a safe time
 ===================
 */
-static void CG_LoadClientInfo( clientInfo_t *ci , int clientNum) {
+static void CG_LoadClientInfo( clientInfo_t *ci , int32_t clientNum) {
 	const char	*dir, *fallback;
-	int			i;
+	int32_t			i;
 	const char	*s;
 	char		temp_string[200];
 
@@ -1672,7 +1672,7 @@ static void CG_LoadClientInfo( clientInfo_t *ci , int clientNum) {
 // teamplay game where groups are defined.
 // most of the time this will not hit
 
-void updateSkin(int clientNum, char *new_model)
+void updateSkin(int32_t clientNum, char *new_model)
 {
 	char		model_string[200];
 
@@ -1692,7 +1692,7 @@ CG_CopyClientInfoModel
 ======================
 */
 static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to ) {
-	//int i;
+	//int32_t i;
 
 	VectorCopy( from->headOffset, to->headOffset );
 	to->footsteps = from->footsteps;
@@ -1768,7 +1768,7 @@ CG_ScanForExistingClientInfo
 ======================
 */
 static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci ) {
-	int		i;
+	int32_t		i;
 	clientInfo_t	*match;
 
 	for ( i = 0 ; i < cgs.maxclients ; i++ ) {
@@ -1803,8 +1803,8 @@ We aren't going to load it now, so grab some other
 client's info to use until we have some spare time.
 ======================
 */
-static void CG_SetDeferredClientInfo( clientInfo_t *ci, int clientNum ) {
-	int		i;
+static void CG_SetDeferredClientInfo( clientInfo_t *ci, int32_t clientNum ) {
+	int32_t		i;
 	clientInfo_t	*match;
 
 	// find the first valid clientinfo and grab its stuff
@@ -1831,7 +1831,7 @@ static void CG_SetDeferredClientInfo( clientInfo_t *ci, int clientNum ) {
 CG_NewClientInfo
 ======================
 */
-void CG_NewClientInfo( int clientNum ) {
+void CG_NewClientInfo( int32_t clientNum ) {
 	clientInfo_t *ci;
 	clientInfo_t newInfo;
 	const char	*configstring;
@@ -1839,7 +1839,7 @@ void CG_NewClientInfo( int clientNum ) {
 	char		*model = NULL;
 	char		*skin = NULL;
 	size_t		len;
-	//int			i;
+	//int32_t			i;
 
 	ci = &cgs.clientinfo[clientNum];
 
@@ -1938,7 +1938,7 @@ void CG_NewClientInfo( int clientNum ) {
 			Q_strncpyz( newInfo.charName, v, sizeof( newInfo.charName ) ); //just set it
 		} else { //otherwise, isolate the first bit, and copy that
 			len = strlen( v );
-			Q_strncpyz( newInfo.charName, v, ((int)len - (int)strlen(model)) + 1 );
+			Q_strncpyz( newInfo.charName, v, ((int32_t)len - (int32_t)strlen(model)) + 1 );
 		}
 
 		//Com_Printf("%s\n", newInfo.charName);
@@ -1967,7 +1967,7 @@ void CG_NewClientInfo( int clientNum ) {
 				}
 				else {
 					if ( !skin[1] ) {
-						Q_strncpyz( newInfo.modelName, model, (int)strlen(model) );
+						Q_strncpyz( newInfo.modelName, model, (int32_t)strlen(model) );
 					}
 				}
 
@@ -1978,7 +1978,7 @@ void CG_NewClientInfo( int clientNum ) {
 				}
 			} else {
 				skin++; //QVMNOTE
-				Q_strncpyz( newInfo.modelName, model, ((int)len - (int)strlen(skin)) );
+				Q_strncpyz( newInfo.modelName, model, ((int32_t)len - (int32_t)strlen(skin)) );
 				Q_strncpyz( newInfo.skinName, skin, sizeof( newInfo.skinName ) );
 			}
 
@@ -2063,7 +2063,7 @@ so deferred players can be loaded
 ======================
 */
 void CG_LoadDeferredPlayers( void ) {
-	int		i;
+	int32_t		i;
 	clientInfo_t	*ci;
 
 	// scan for a deferred player to load
@@ -2091,7 +2091,7 @@ be set up so it may be displayed
 independantly of its spawner player.
 ======================
 */
-void CG_NewDecoyInfo( int decoyNum ) {
+void CG_NewDecoyInfo( int32_t decoyNum ) {
 	clientInfo_t	*ci;
 	char			*userinfo;
 	char			*v;
@@ -2131,13 +2131,13 @@ void CG_NewDecoyInfo( int decoyNum ) {
 
 	//First thing's first.  We need to isolate these into three strings: model, char, skin
 	{
-		int len;
+		int32_t len;
 		//step 1, take the first bit of the string and put it in the charName var.
 		if ( ( temp = strchr( v, '/') ) == NULL ) { //if there's no slash
 			Q_strncpyz( ci->charName, v, sizeof( ci->charName ) ); //just set it
 		} else { //otherwise, isolate the first bit, and copy that
 			len = strlen( v );
-			Q_strncpyz( ci->charName, v, ((int)len - (int)strlen(temp)) + 1 );
+			Q_strncpyz( ci->charName, v, ((int32_t)len - (int32_t)strlen(temp)) + 1 );
 		}
 
 		//Com_Printf("%s\n", newInfo.charName);
@@ -2166,7 +2166,7 @@ void CG_NewDecoyInfo( int decoyNum ) {
 				}
 				else {
 					if ( !temp2[1] ) {
-						Q_strncpyz( ci->modelName, temp, (int)strlen(temp) );
+						Q_strncpyz( ci->modelName, temp, (int32_t)strlen(temp) );
 					}
 				}
 
@@ -2177,7 +2177,7 @@ void CG_NewDecoyInfo( int decoyNum ) {
 				}
 			} else {
 				temp2++;
-				Q_strncpyz( ci->modelName, temp, ((int)len - (int)strlen(temp2)) );
+				Q_strncpyz( ci->modelName, temp, ((int32_t)len - (int32_t)strlen(temp2)) );
 				Q_strncpyz( ci->skinName, temp2, sizeof( ci->skinName ) );
 			}
 		}
@@ -2198,7 +2198,7 @@ void CG_NewDecoyInfo( int decoyNum ) {
 	//Okay... if another player actively has the skin we want, let's pilfer that rather than load it like a schmuck rofl.
 	{
 		clientInfo_t	*match;
-		int i;
+		int32_t i;
 		for ( i = 0; i < cgs.maxclients; i++ ) {
 			match = &cgs.clientinfo[i];
 
@@ -2253,7 +2253,7 @@ CG_SetLerpFrameAnimation
 may include ANIM_TOGGLEBIT
 ===============
 */
-static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation ) {
+static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int32_t newAnimation ) {
 	animation_t	*anim;
 
 	lf->animationNumber = newAnimation;
@@ -2285,7 +2285,7 @@ Sets cg.snap, cg.oldFrame, and cg.backlerp
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
-static qboolean CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale ) {
+static qboolean CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int32_t newAnimation, float speedScale ) {
 	animation_t	*anim;
 	qboolean	newFrame = qfalse;
 
@@ -2331,7 +2331,7 @@ static qboolean CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnima
 		} else {
 			lf->frameTime = lf->oldFrameTime + frameLerp;//anim->frameLerp;
 		}
-		int f = ( lf->frameTime - lf->animationTime ) / frameLerp;//anim->frameLerp;
+		int32_t f = ( lf->frameTime - lf->animationTime ) / frameLerp;//anim->frameLerp;
 		//f *= speedScale;		// adjust for haste, etc
 		if ( f >= anim->numFrames ) {
 			f -= anim->numFrames;
@@ -2379,7 +2379,7 @@ CG_ClearLerpFrame
 ===============
 */
 //This function has been rpg-x'ed®! (by RedTechie)
-void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationNumber ) { //RPG-X: RedTechie - Changed type from       static void      to     void
+void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int32_t animationNumber ) { //RPG-X: RedTechie - Changed type from       static void      to     void
 	
 	if(!lf) return;
 
@@ -2408,14 +2408,14 @@ void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationNumber )
 CG_PlayerAnimation
 ===============
 */
-extern qboolean PM_PlayerWalking( int anim );
-extern qboolean PM_PlayerRunning( int anim );
-extern qboolean PM_PlayerCrouchWalking( int anim );
+extern qboolean PM_PlayerWalking( int32_t anim );
+extern qboolean PM_PlayerRunning( int32_t anim );
+extern qboolean PM_PlayerCrouchWalking( int32_t anim );
 
-static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float *legsBackLerp,
-						int *torsoOld, int *torso, float *torsoBackLerp ) {
+static void CG_PlayerAnimation( centity_t *cent, int32_t *legsOld, int32_t *legs, float *legsBackLerp,
+						int32_t *torsoOld, int32_t *torso, float *torsoBackLerp ) {
 	clientInfo_t	*ci;
-	int				clientNum;
+	int32_t				clientNum;
 	float			speedScale=1;
 	qboolean		newLegsFrame = qfalse;
 	qboolean		newTorsoFrame = qfalse;
@@ -2487,7 +2487,7 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 		//qboolean metal = qfalse; //Uberhack meant specifically for metal clank surfaces
 		vec3_t	mins = { -16, -16, 0 };
 		vec3_t	maxs = { 16, 16, 0 };
-		int surfType;
+		int32_t surfType;
 
 		//TiM: Lower based sounds are always to do with things like shoes clopping n' stuff.
 		//This portion of code makes sure the player is on a solid surface in order to play this sound
@@ -2651,7 +2651,7 @@ CG_AddPainTwitch
 =================
 */
 static void CG_AddPainTwitch( centity_t *cent, vec3_t torsoAngles ) {
-	int		t;
+	int32_t		t;
 	float	f;
 
 	t = cg.time - cent->pe.painTime;
@@ -2690,16 +2690,16 @@ Handles seperate torso motion
 #define YAW_DELTA		100 //max yaw a head can turn around without looking like an exorcist spoof ;P  
 #define PITCH_DELTA		35  //max pitch a head can tilt before looking like the player sepearated their neck O_o
 
-extern qboolean PM_PlayerIdling ( int torsoAnim, int legsAnim );
+extern qboolean PM_PlayerIdling ( int32_t torsoAnim, int32_t legsAnim );
 
 static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t head[3] ) {
 	vec3_t		legsAngles, torsoAngles, headAngles;
 	float		dest;
 	//float		delta;
-	static	int	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 }; //{ 0, 22, 45, -22, 0, 22, -45, -22 };
+	static	int32_t	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 }; //{ 0, 22, 45, -22, 0, 22, -45, -22 };
 	vec3_t		velocity;
 	float		speed;
-	int			dir;
+	int32_t			dir;
 	qboolean	offsetPitch;
 	clientInfo_t* ci;
 
@@ -2935,7 +2935,7 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 		if ( cent->currentState.eFlags & EF_TALKING ) {
 			if ( cg.time > ci->nextTalkAngle || (!ci->talkAngles[PITCH] && !ci->talkAngles[YAW] && !ci->talkAngles[ROLL]) ) {
 
-				int	i;
+				int32_t	i;
 				for ( i = 0; i < 3; i++ ) {
 					ci->talkAngles[i] = flrandom( -4, 4 );
 				}
@@ -3010,7 +3010,7 @@ CG_HasteTrail
 /*static void CG_HasteTrail( centity_t *cent ) {
 	localEntity_t	*smoke;
 	vec3_t			origin, pos2;
-	int				anim;
+	int32_t				anim;
 
 	if ( cent->trailTime > cg.time ) {
 		return;
@@ -3087,8 +3087,8 @@ CG_TrailItem
 	frame = (cg.time / 100.0);
 	ent.renderfx|=RF_WRAP_FRAMES;
 
-	ent.oldframe = (int)frame;
-	ent.frame = (int)frame+1;
+	ent.oldframe = (int32_t)frame;
+	ent.frame = (int32_t)frame+1;
 	ent.backlerp = (float)(ent.frame) - frame;
 
 	// if the player is looking at himself in 3rd person, don't show the flag solid, 'cause he can't see!!!
@@ -3119,7 +3119,7 @@ CG_PlayerPowerups
 ===============
 */
 static void CG_PlayerPowerups( centity_t *cent ) {
-	int		powerups;
+	int32_t		powerups;
 
 	powerups = cent->currentState.powerups;
 	if ( !powerups ) {
@@ -3188,9 +3188,9 @@ Float a sprite over the player's head
 ===============
 */
 static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader ) {
-	int				rf;
+	int32_t				rf;
 	refEntity_t		ent;
-	int				team;
+	int32_t				team;
 
 	if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson ) {
 		rf = RF_THIRD_PERSON;		// only show in mirrors
@@ -3239,7 +3239,7 @@ Float sprites over the player's head
 ===============
 */
 static void CG_PlayerSprites( centity_t *cent ) {
-//	int		team;
+//	int32_t		team;
 
 	if ( cent->currentState.eFlags & EF_CONNECTION )
 	{
@@ -3262,14 +3262,14 @@ model itself
 */
 #define PLAYER_BEAM_FADETIME_DIV 1.0/(float)PLAYER_BEAM_FADETIME
 
-void CG_CalcBeamAlpha( int powerups, beamData_t *beamData ) {
+void CG_CalcBeamAlpha( int32_t powerups, beamData_t *beamData ) {
 	float beamAlpha = 1.0;
 
 	if ( ( powerups & ( 1 << PW_BEAM_OUT ) ) || ( powerups & ( 1 << PW_QUAD ) ) ) {
 		//TiM - SP transporter FX, also base alpha off of phase in transport cycle
 		//bTime = cg.time - beamData->beamTimeParam;
 
-		int bTime = cg.time - beamData->beamTimeParam;
+		int32_t bTime = cg.time - beamData->beamTimeParam;
 
 		if (bTime > PLAYER_BEAM_FADE ) {
 			if ( bTime < ( PLAYER_BEAM_FADE + PLAYER_BEAM_FADETIME) ) {
@@ -3385,7 +3385,7 @@ Draw a mark at the water surface
 static void CG_PlayerSplash( centity_t *cent ) {
 	vec3_t		start, end;
 	trace_t		trace;
-	int			contents;
+	int32_t			contents;
 	polyVert_t	verts[4];
 
 	float		beamRatio = 1.0;
@@ -3483,7 +3483,7 @@ static void CG_PlayerSplash( centity_t *cent ) {
 
 	trap_R_AddPolyToScene( cgs.media.wakeMarkShader, 4, verts );
 }
-static int	timestamp;
+static int32_t	timestamp;
 
 /*
 ===============
@@ -3493,7 +3493,7 @@ Adds a piece with modifications or duplications for powerups
 Also called by CG_Missile for quad rockets, but nobody can tell...
 ===============
 */
-void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, beamData_t *beamData, int cloakTime, int decloakTime, qboolean borg )
+void CG_AddRefEntityWithPowerups( refEntity_t *ent, int32_t powerups, int32_t eFlags, beamData_t *beamData, int32_t cloakTime, int32_t decloakTime, qboolean borg )
 {
 
 	//TiM : No more flickering. Flickering Starfleet officers is bad
@@ -3553,7 +3553,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, be
 	{	// Dead.  timestamp holds the time of death.
 		
 		float alpha;
-		int a;
+		int32_t a;
 
 		// First draw the entity itself.
 		//alpha = (timestamp - cg.time)/2500.0;
@@ -3613,7 +3613,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, be
 	}
 	else if (powerups & (1<<PW_DISINTEGRATE))
 	{
-		int dtime; 
+		int32_t dtime; 
 
 		dtime = cg.time-timeParam;
 		if (dtime < 1000)
@@ -3635,14 +3635,14 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, be
 	}
 	else if (powerups & (1<<PW_EXPLODE))
 	{
-		int dtime; 
+		int32_t dtime; 
 
 		dtime = cg.time-timeParam;
 
 		if (dtime < 300)
 		{
 			ent->renderfx |= RF_FORCE_ENT_ALPHA;
-			ent->shaderRGBA[3] = (int)(255.0 - (dtime / 300.0) * 254.0); 
+			ent->shaderRGBA[3] = (int32_t)(255.0 - (dtime / 300.0) * 254.0); 
 			trap_R_AddRefEntityToScene( ent );
 			ent->renderfx &= ~RF_FORCE_ENT_ALPHA;
 			ent->shaderRGBA[3] = 255;
@@ -3670,7 +3670,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, be
 	//SP Transporter Effect
 	else if ( powerups & ( 1 << PW_BEAM_OUT ) || powerups & ( 1 << PW_QUAD ) )
 	{
-		int btime;
+		int32_t btime;
 		btime = cg.time - beamData->beamTimeParam;
 
 		if ( btime <= PLAYER_BEAM_FADE ) {
@@ -3693,7 +3693,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, be
 		if (btime > PLAYER_BEAM_FADE && btime < (PLAYER_BEAM_FADE + PLAYER_BEAM_FADETIME) )
 		{
 			ent->renderfx |= RF_FORCE_ENT_ALPHA;
-			ent->shaderRGBA[3] = (int)(255 * beamData->beamAlpha);
+			ent->shaderRGBA[3] = (int32_t)(255 * beamData->beamAlpha);
 		}
 
 		if ( ent->shaderRGBA[3] > 0 ) {
@@ -3759,7 +3759,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, be
 		
 		if (powerups & (1<<PW_ARCWELD_DISINT))
 		{
-			int dtime; 
+			int32_t dtime; 
 
 			dtime = cg.time-timeParam;
 
@@ -3770,8 +3770,8 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, be
 //				ent->shaderTime = timeParam / 1000.0f;
 				ent->shaderRGBA[0] = 
 				ent->shaderRGBA[1] = 
-				//ent->shaderRGBA[2] = (int)(1.0 + ((4000.0 - dtime) / 4000.0f * 254.0f ));
-				ent->shaderRGBA[2] = (int)(1.0 + ((4000.0 - dtime) * 0.00025f + 256.0f));
+				//ent->shaderRGBA[2] = (int32_t)(1.0 + ((4000.0 - dtime) / 4000.0f * 254.0f ));
+				ent->shaderRGBA[2] = (int32_t)(1.0 + ((4000.0 - dtime) * 0.00025f + 256.0f));
 				ent->shaderRGBA[3] = 255;
 				trap_R_AddRefEntityToScene( ent );
 
@@ -3789,10 +3789,10 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, int powerups, int eFlags, be
 #define MIN_SHIELD_TIME	1750.0
 
 
-void CG_PlayerShieldHit(int entitynum, vec3_t dir, int amount)
+void CG_PlayerShieldHit(int32_t entitynum, vec3_t dir, int32_t amount)
 {
 	centity_t *cent;
-	int	time;
+	int32_t	time;
 
 	if (entitynum<0 || entitynum >= MAX_CLIENTS)
 	{
@@ -3822,7 +3822,7 @@ void CG_PlayerShieldHit(int entitynum, vec3_t dir, int amount)
 /*void CG_DrawPlayerShield(centity_t *cent, vec3_t origin)
 {
 	refEntity_t ent;
-	int			alpha;
+	int32_t			alpha;
 	float		scale;
 	
 	// Don't draw the shield when the player is dead.
@@ -3924,7 +3924,7 @@ void CG_PlayerShieldHit(int entitynum, vec3_t dir, int amount)
 //------------------------------------------------------------------------------
 //Equip mode features
 
-void CG_AttachHolsters ( centity_t *cent, refEntity_t *parent, int weapon )
+void CG_AttachHolsters ( centity_t *cent, refEntity_t *parent, int32_t weapon )
 {
 	refEntity_t holster;
 	refEntity_t holsterInner;
@@ -3960,7 +3960,7 @@ void CG_AttachHolsters ( centity_t *cent, refEntity_t *parent, int weapon )
 
 }
 
-void CG_AttachTools ( centity_t *cent, refEntity_t *parent, int weaponNum )
+void CG_AttachTools ( centity_t *cent, refEntity_t *parent, int32_t weaponNum )
 {
 	refEntity_t tool;
 	weaponInfo_t *weaponInfo;
@@ -4091,13 +4091,13 @@ void CG_Player( centity_t *cent ) {
 	refEntity_t		legs;
 	refEntity_t		torso;
 	refEntity_t		head;
-	int				clientNum;
-	int				renderfx;
+	int32_t				clientNum;
+	int32_t				renderfx;
 	qboolean		shadow, borg = qfalse;
 	float			shadowPlane = 0;
 	//alpha value
 	float			alpha = cg_thirdPersonAlpha.value;
-	int i = 0;
+	int32_t i = 0;
 	rankModelData_t*	rankModelData = NULL;
 	qboolean		rankDataValidated = qfalse;
 	qboolean		isDecoy = qfalse;
@@ -4366,7 +4366,7 @@ void CG_Player( centity_t *cent ) {
 			cg.fpsBody.sizeOffset = 0.9f;
 
 			//normalize, but don't take Z-axis (vertical) into account
-			//cg.fpsBody.offset = 0 + (int)sqrt( (temp[0]*temp[0]) + (temp[1]*temp[1]) );
+			//cg.fpsBody.offset = 0 + (int32_t)sqrt( (temp[0]*temp[0]) + (temp[1]*temp[1]) );
 			cg.fpsBody.offset = 2;
 
 			cg.fpsBody.anim = cent->currentState.legsAnim ; //+15 for good measure :P
@@ -5118,7 +5118,7 @@ void CG_ResetPlayerEntity( centity_t *cent ) {
 	}
 
 	if ( cg_debugPosition.integer ) {
-		CG_Printf("%i ResetPlayerEntity yaw=%i\n", cent->currentState.number, (int)cent->pe.torso.yawAngle );
+		CG_Printf("%i ResetPlayerEntity yaw=%i\n", cent->currentState.number, (int32_t)cent->pe.torso.yawAngle );
 	}
 }
 

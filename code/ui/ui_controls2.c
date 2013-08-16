@@ -38,7 +38,7 @@ void *holdControlPtr;
 int32_t holdControlEvent;
 static menuaction_s *vid_apply_action;
 
-double setup_menubuttons[8][2] = 
+float setup_menubuttons[8][2] = 
 {
 {125,62},
 {125,86},
@@ -278,8 +278,8 @@ typedef struct {
 typedef struct
 {
 	char*	name;
-	double	defaultvalue;
-	double	value;	
+	float	defaultvalue;
+	float	value;	
 } configcvar_t;
 
 #define SAVE_NOOP		0
@@ -748,7 +748,7 @@ Controls_GetCvarDefault
 =================
 */
 /*
-static double Controls_GetCvarDefault( char* name )
+static float Controls_GetCvarDefault( char* name )
 {
 	configcvar_t*	cvarptr;
 	int32_t				i;
@@ -771,7 +771,7 @@ static double Controls_GetCvarDefault( char* name )
 Controls_GetCvarValue
 =================
 */
-static double Controls_GetCvarValue( char* name )
+static float Controls_GetCvarValue( char* name )
 {
 	configcvar_t*	cvarptr;
 	int32_t				i;

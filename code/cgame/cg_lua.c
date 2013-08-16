@@ -25,7 +25,7 @@ void QDECL LUA_LOG(const char *fmt, ...)
 {
 	va_list         argptr;
 	char            buff[1024], string[1024];
-	int             min, tens, sec;
+	int32_t             min, tens, sec;
 
 	va_start(argptr, fmt);
 	Com_sprintf(buff, sizeof(buff), fmt, argptr);
@@ -44,9 +44,9 @@ void QDECL LUA_LOG(const char *fmt, ...)
 	}
 }
 
-qboolean LoadLuaFile(char *path, int num_vm)
+qboolean LoadLuaFile(char *path, int32_t num_vm)
 {
-	int             flen = 0;
+	int32_t             flen = 0;
 	char           *code;
 	fileHandle_t    f;
 	lvm_t	       *vm;
@@ -117,8 +117,8 @@ qboolean CG_LuaInit()
 	return qtrue;
 }
 
-qboolean CG_LuaResume(lvm_t *vm, lua_State *T, char *func, int nargs) {
-	int res = lua_resume(T, NULL, nargs);
+qboolean CG_LuaResume(lvm_t *vm, lua_State *T, char *func, int32_t nargs) {
+	int32_t res = lua_resume(T, NULL, nargs);
 
 	if(res == LUA_ERRRUN) {
 		LUA_LOG("Lua: %s error running lua script: %s\n", func, lua_tostring(T, -1));
@@ -139,9 +139,9 @@ qboolean CG_LuaResume(lvm_t *vm, lua_State *T, char *func, int nargs) {
 	return qtrue;
 }
 
-qboolean CG_LuaCall(lvm_t * vm, char *func, int nargs, int nresults)
+qboolean CG_LuaCall(lvm_t * vm, char *func, int32_t nargs, int32_t nresults)
 {
-	int             res = lua_pcall(vm->L, nargs, nresults, 0);
+	int32_t             res = lua_pcall(vm->L, nargs, nresults, 0);
 
 	if(res == LUA_ERRRUN)
 	{
@@ -208,7 +208,7 @@ qboolean CG_LuaGetFunction(lvm_t * vm, char *name)
 
 qboolean CG_LuaStartVM(lvm_t * vm)
 {
-	int             res = 0;
+	int32_t             res = 0;
 	char            homepath[MAX_QPATH], gamepath[MAX_QPATH];
 
 	vm->L = luaL_newstate();
@@ -310,7 +310,7 @@ void CG_LuaStopVM(lvm_t * vm)
 
 void CG_LuaShutdown()
 {
-	int             i;
+	int32_t             i;
 	lvm_t	       *vm;
 
 	for(i = 0; i < NUM_VMS; i++)
@@ -327,7 +327,7 @@ void CG_LuaShutdown()
 
 void CG_LuaStatus(void)
 {
-	int             i, cnt = 0;
+	int32_t             i, cnt = 0;
 
 	for(i = 0; i < NUM_VMS; i++)
 		if(lVM[i])
@@ -361,7 +361,7 @@ void CG_LuaStatus(void)
 
 lvm_t *CG_LuaGetVM(lua_State * L)
 {
-	int             i;
+	int32_t             i;
 
 	for(i = 0; i < NUM_VMS; i++)
 		if(lVM[i] && lVM[i]->L == L)

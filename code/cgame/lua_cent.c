@@ -1,13 +1,13 @@
 #include "cg_lua.h"
 
 #ifdef CG_LUA
-static int Cent_GC(lua_State * L)
+static int32_t Cent_GC(lua_State * L)
 {
 
 	return 0;
 }
 
-static int Cent_ToString(lua_State * L)
+static int32_t Cent_ToString(lua_State * L)
 {
 	cent_t     *cent;
 	centity_t  *ent;
@@ -36,7 +36,7 @@ static const luaL_Reg Centity_meta[] = {
 	ent->timestamp;
 }*/
 
-int Luaopen_Cent(lua_State * L)
+int32_t Luaopen_Cent(lua_State * L)
 {
 	luaL_newmetatable(L, "cgame.centity");
 
@@ -64,7 +64,7 @@ void Lua_PushCent(lua_State * L, centity_t * ent)
 	}
 }
 
-cent_t *Lua_GetCent(lua_State * L, int argNum)
+cent_t *Lua_GetCent(lua_State * L, int32_t argNum)
 {
 	void           *ud;
 

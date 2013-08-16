@@ -110,7 +110,7 @@ void FX_QuantumHitWall( vec3_t origin, vec3_t normal )
 	vec3_t			dir, org;
 	vec3_t			vel;
 	float			scale;
-	int				i;
+	int32_t				i;
 	weaponInfo_t	*weaponInfo = &cg_weapons[WP_9];
 
 	CG_InitLensFlare( origin, 
@@ -189,7 +189,7 @@ void FX_QuantumAltHitWall( vec3_t origin, vec3_t normal )
 	vec3_t			dir, org;
 	vec3_t			vel;
 	float			scale;
-	int				i;
+	int32_t				i;
 	vec3_t	RGB={1.0, 0.6, 0.3}, RGB2={1.0, 0.3, 0.0};
 	weaponInfo_t	*weaponInfo = &cg_weapons[WP_9];
 
@@ -259,7 +259,7 @@ void FX_QuantumAltHitWall( vec3_t origin, vec3_t normal )
 
 qboolean FX_QuantumSparkle( localEntity_t *le)
 {
-	int		t, i;
+	int32_t		t, i;
 	vec3_t	org, v;
 
 	for ( i = 0; i < 4; i ++ )
@@ -281,7 +281,7 @@ void FX_QuantumFizzles( vec3_t origin )
 {
 	float	v;
 	vec3_t	dir, vel, org;
-	int		i;
+	int32_t		i;
 
 	for ( i = 0; i < 32; i++ )
 	{

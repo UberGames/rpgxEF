@@ -18,7 +18,7 @@ tag location
 */
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
 							qhandle_t parentModel, char *tagName ) {
-	int				i;
+	int32_t				i;
 	orientation_t	lerped;
 	
 	// lerp the tag
@@ -48,7 +48,7 @@ tag location
 */
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
 							qhandle_t parentModel, char *tagName ) {
-	int				i;
+	int32_t				i;
 	orientation_t	lerped;
 	vec3_t			tempAxis[3];
 
@@ -123,8 +123,8 @@ static void CG_EntityEffects( centity_t *cent ) {
 
 	// constant light glow
 	if ( cent->currentState.constantLight ) {
-		int		cl;
-		int		i, r, g, b;
+		int32_t		cl;
+		int32_t		i, r, g, b;
 
 		cl = cent->currentState.constantLight;
 		r = cl & 255;
@@ -259,7 +259,7 @@ static void CG_General( centity_t *cent ) {
 	// add to refresh list
 	if ( s1->eFlags & EF_ITEMPLACEHOLDER )		// object is "spawning" in
 	{
-		int	msec;
+		int32_t	msec;
 
 		if ( !cent->miscTime )
 		{
@@ -270,7 +270,7 @@ static void CG_General( centity_t *cent ) {
 		if ( msec < ITEM_SCALEUP_TIME )
 		{
 			float alpha;
-			int a;
+			int32_t a;
 			alpha = (float)msec * ITEM_SCALEUP_DIV;
 			if ( s1->eventParm == 255 )
 			{
@@ -346,7 +346,7 @@ static void CG_Item( centity_t *cent ) {
 	refEntity_t			ent;
 	entityState_t		*es;
 	gitem_t				*item;
-	int					msec;
+	int32_t					msec;
 
 	// RPG-X: Marcin: Custom angles for each weapon so they lie on the ground correctly. - 06/12/2008
     const vec3_t weaponangles[WP_NUM_WEAPONS] = {
@@ -429,8 +429,8 @@ static void CG_Item( centity_t *cent ) {
 		frame = (cg.time * 0.01);
 		ent.renderfx|=RF_WRAP_FRAMES;
 
-		ent.oldframe = (int)frame;
-		ent.frame = (int)frame+1;
+		ent.oldframe = (int32_t)frame;
+		ent.frame = (int32_t)frame+1;
 		ent.backlerp = (float)(ent.frame) - frame;
 
 		// and they are scaled too
@@ -497,7 +497,7 @@ static void CG_Item( centity_t *cent ) {
 	if (item->giType != IT_TEAM && msec >= 0 && msec < ITEM_SCALEUP_TIME && !(es->eFlags & EF_ITEMPLACEHOLDER)) 
 	{	// if just respawned, fade in, but don't do this for flags.
 		float alpha;
-		int a;
+		int32_t a;
 		
 		alpha = (float)msec * ITEM_SCALEUP_DIV;
 		a = alpha * 255.0;
@@ -580,7 +580,7 @@ static void CG_Missile( centity_t *cent, qboolean altfire ) {
 		}
 		//RPG-X: RedTechie - non-admin see no tripmines! But first by popular demand check CVAR
 		info = CG_ConfigString( CS_SERVERINFO );
-		int rpg_tripmines = atoi( Info_ValueForKey( info, "rpg_invisibletripmines" ) );
+		int32_t rpg_tripmines = atoi( Info_ValueForKey( info, "rpg_invisibletripmines" ) );
 		if (!weapon->alt_missileModel || (!cgs.clientinfo[cg.snap->ps.clientNum].isAdmin/*cg.snap->ps.persistant[PERS_CLASS] != PC_ADMIN*/ && rpg_tripmines == 1)) {
 			//if there is no missile then we're done
 			return;
@@ -794,7 +794,7 @@ CG_AdjustPositionForMover
 Also called by client movement prediction code
 =========================
 */
-void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out ) {
+void CG_AdjustPositionForMover( const vec3_t in, int32_t moverNum, int32_t fromTime, int32_t toTime, vec3_t out ) {
 	centity_t	*cent;
 	vec3_t	oldOrigin, origin, deltaOrigin;
 	vec3_t	oldAngles, angles /*, deltaAngles*/;
@@ -958,13 +958,13 @@ CG_AddPacketEntities
 ===============
 */
 void CG_AddPacketEntities( void ) {
-	int					num;
+	int32_t					num;
 	centity_t			*cent;
 	playerState_t		*ps;
 
 	// set cg.frameInterpolation
 	if ( cg.nextSnap ) {
-		int		delta;
+		int32_t		delta;
 
 		delta = (cg.nextSnap->serverTime - cg.snap->serverTime);
 		if ( delta == 0 ) {
@@ -1050,7 +1050,7 @@ FX whilst it is in action
 
 static void CG_Turbolift( centity_t* cent )
 {
-	int i;
+	int32_t i;
 	centity_t *player;
 	//TiM - find all of the cents inside the lift, and make it so they orient to their view angles.
 	//Otherwise, when they teleport, the entire body snaps around, looking weird and/or painful.

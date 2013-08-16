@@ -101,8 +101,8 @@ CG_DrawChar
 Coordinates and size in 640*480 virtual screen size
 ===============
 */
-void CG_DrawChar( int x, int y, int width, int height, int ch ) {
-	int row, col;
+void CG_DrawChar( int32_t x, int32_t y, int32_t width, int32_t height, int32_t ch ) {
+	int32_t row, col;
 	float frow, fcol;
 	float size,size2;
 	float	ax, ay, aw, ah;
@@ -146,12 +146,12 @@ to a fixed color.
 Coordinates are at 640 by 480 virtual resolution
 ==================
 */
-void CG_DrawStringExt( int x, int y, const char *string, const float *setColor, 
-	qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars ) {
+void CG_DrawStringExt( int32_t x, int32_t y, const char *string, const float *setColor, 
+	qboolean forceColor, qboolean shadow, int32_t charWidth, int32_t charHeight, int32_t maxChars ) {
 	vec4_t		color;
 	const char	*s;
-	int			xx;
-	int			cnt;
+	int32_t			xx;
+	int32_t			cnt;
 
 	if (maxChars <= 0)
 		maxChars = 32767; // do them all!
@@ -199,7 +199,7 @@ void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 	trap_R_SetColor( NULL );
 }
 
-void CG_DrawBigString( int x, int y, const char *s, float alpha ) {
+void CG_DrawBigString( int32_t x, int32_t y, const char *s, float alpha ) {
 	float	color[4];
 
 	color[0] = color[1] = color[2] = 1.0;
@@ -207,11 +207,11 @@ void CG_DrawBigString( int x, int y, const char *s, float alpha ) {
 	CG_DrawStringExt( x, y, s, color, qfalse, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0 );
 }
 
-void CG_DrawBigStringColor( int x, int y, const char *s, vec4_t color ) {
+void CG_DrawBigStringColor( int32_t x, int32_t y, const char *s, vec4_t color ) {
 	CG_DrawStringExt( x, y, s, color, qtrue, qtrue, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, 0 );
 }
 
-void CG_DrawSmallString( int x, int y, const char *s, float alpha ) {
+void CG_DrawSmallString( int32_t x, int32_t y, const char *s, float alpha ) {
 	float	color[4];
 
 	color[0] = color[1] = color[2] = 1.0;
@@ -219,7 +219,7 @@ void CG_DrawSmallString( int x, int y, const char *s, float alpha ) {
 	CG_DrawStringExt( x, y, s, color, qfalse, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0 );
 }
 
-void CG_DrawSmallStringColor( int x, int y, const char *s, vec4_t color ) {
+void CG_DrawSmallStringColor( int32_t x, int32_t y, const char *s, vec4_t color ) {
 	CG_DrawStringExt( x, y, s, color, qtrue, qfalse, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, 0 );
 }
 
@@ -230,9 +230,9 @@ CG_DrawStrlen
 Returns character count, skiping color escape codes
 =================
 */
-int CG_DrawStrlen( const char *str ) {
+int32_t CG_DrawStrlen( const char *str ) {
 	const char *s = str;
-	int count = 0;
+	int32_t count = 0;
 
 	while ( *s ) {
 		if ( Q_IsColorString( s ) ) {
@@ -254,7 +254,7 @@ This repeats a 64*64 tile graphic to fill the screen around a sized down
 refresh window.
 =============
 */
-static void CG_TileClearBox( int x, int y, int w, int h, qhandle_t hShader ) {
+static void CG_TileClearBox( int32_t x, int32_t y, int32_t w, int32_t h, qhandle_t hShader ) {
 	float	s1, t1, s2, t2;
 
 	s1 = x / 64;
@@ -274,8 +274,8 @@ Clear around a sized down screen
 ==============
 */
 void CG_TileClear( void ) {
-	int		top, bottom, left, right;
-	int		w, h;
+	int32_t		top, bottom, left, right;
+	int32_t		w, h;
 
 	w = cgs.glconfig.vidWidth;
 	h = cgs.glconfig.vidHeight;
@@ -310,9 +310,9 @@ void CG_TileClear( void ) {
 CG_FadeColor
 ================
 */
-float *CG_FadeColor( int startMsec, int totalMsec ) {
+float *CG_FadeColor( int32_t startMsec, int32_t totalMsec ) {
 	static vec4_t		color;
-	int			t;
+	int32_t			t;
 
 	if ( startMsec == 0 ) {
 		return NULL;
@@ -341,7 +341,7 @@ float *CG_FadeColor( int startMsec, int totalMsec ) {
 CG_TeamColor
 ================
 */
-float *CG_TeamColor( int team ) {
+float *CG_TeamColor( int32_t team ) {
 	static vec4_t	red = {1, 0.2, 0.2, 1};
 	static vec4_t	blue = {0.2, 0.2, 1, 1};
 	static vec4_t	other = {1, 1, 1, 1};
@@ -366,9 +366,9 @@ float *CG_TeamColor( int team ) {
 CG_GetColorForHealth
 =================
 */
-void CG_GetColorForHealth( int health, int armor, vec4_t hcolor ) {
-	int		count;
-	int		max;
+void CG_GetColorForHealth( int32_t health, int32_t armor, vec4_t hcolor ) {
+	int32_t		count;
+	int32_t		max;
 
 	// calculate the total points of damage that can
 	// be sustained at the current health / armor level
@@ -417,11 +417,11 @@ void CG_ColorForHealth( vec4_t hcolor ) {
 }
 
 
-static int	propMapTiny[CHARMAX][3];
-static int	propMap[CHARMAX][3];
-static int	propMapBig[CHARMAX][3];
+static int32_t	propMapTiny[CHARMAX][3];
+static int32_t	propMap[CHARMAX][3];
+static int32_t	propMapBig[CHARMAX][3];
 
-static int propMapB[26][3] = {
+static int32_t propMapB[26][3] = {
 {11, 12, 33},
 {49, 12, 31},
 {85, 12, 31},
@@ -465,7 +465,7 @@ static int propMapB[26][3] = {
 UI_DrawBannerString
 =================
 */
-static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
+static void UI_DrawBannerString2( int32_t x, int32_t y, const char* str, vec4_t color )
 {
 	const char* s;
 	char	ch;
@@ -494,11 +494,11 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 		}
 		else if ( ch >= 'A' && ch <= 'Z' ) {
 			ch -= 'A';
-			fcol = (float)propMapB[(int)ch][0] / 256;
-			frow = (float)propMapB[(int)ch][1] / 256;
-			fwidth = (float)propMapB[(int)ch][2] / 256;
+			fcol = (float)propMapB[(int32_t)ch][0] / 256;
+			frow = (float)propMapB[(int32_t)ch][1] / 256;
+			fwidth = (float)propMapB[(int32_t)ch][2] / 256;
 			fheight = (float)PROPB_HEIGHT / 256;
-			aw = (float)(propMapB[(int)ch][2] * cgs.screenXScale);
+			aw = (float)(propMapB[(int32_t)ch][2] * cgs.screenXScale);
 			ah = (float)(PROPB_HEIGHT * cgs.screenYScale);
 			trap_R_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, cgs.media.charsetPropB );
 			ax += (aw + (float)PROPB_GAP_WIDTH * cgs.screenXScale);
@@ -509,10 +509,10 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 	trap_R_SetColor( NULL );
 }
 
-void UI_DrawBannerString( int x, int y, const char* str, int style, vec4_t color ) {
+void UI_DrawBannerString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color ) {
 	const char *	s;
-	int				ch;
-	int				width;
+	int32_t				ch;
+	int32_t				width;
 	vec4_t			drawcolor;
 
 	// find the width of the drawn text
@@ -560,12 +560,12 @@ void UI_DrawBannerString( int x, int y, const char* str, int style, vec4_t color
 UI_ProportionalSizeScale
 =================
 */
-int UI_ProportionalStringWidth( const char* str,int style )
+int32_t UI_ProportionalStringWidth( const char* str,int32_t style )
 {
 	const char *	s;
-	int				ch;
-	int				charWidth;
-	int				width;
+	int32_t				ch;
+	int32_t				charWidth;
+	int32_t				width;
 	char			holdStr[2048];
 
 	Q_strncpyz( holdStr, str, MAX_STRINGWIDTH );
@@ -630,7 +630,7 @@ int UI_ProportionalStringWidth( const char* str,int style )
 	return width;
 }
 
-static int specialTinyPropChars[CHARMAX][2] = {
+static int32_t specialTinyPropChars[CHARMAX][2] = {
 {0, 0},
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	// 10
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	// 20
@@ -661,7 +661,7 @@ static int specialTinyPropChars[CHARMAX][2] = {
 }; 
 
 
-static int specialPropChars[CHARMAX][2] = {
+static int32_t specialPropChars[CHARMAX][2] = {
 {0, 0},
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	// 10
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	// 20
@@ -692,7 +692,7 @@ static int specialPropChars[CHARMAX][2] = {
 }; 
 
 
-static int specialBigPropChars[CHARMAX][2] = {
+static int32_t specialBigPropChars[CHARMAX][2] = {
 {0, 0},
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	// 10
 {0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},{0, 0},	// 20
@@ -738,7 +738,7 @@ static void UI_AdjustForWidescreen( float *x, float *w )
 UI_DrawProportionalString2
 =================
 */
-static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t color, float sizeScale,int style, qhandle_t charset,qboolean forceColor )
+static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, vec4_t color, float sizeScale,int32_t style, qhandle_t charset,qboolean forceColor )
 {
 	const char* s;
 	unsigned char	ch;
@@ -750,8 +750,8 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 	float	fcol;
 	float	fwidth;
 	float	fheight;
-	int		colorI;
-	int		special;
+	int32_t		colorI;
+	int32_t		special;
 
 	// draw the colored text
 	trap_R_SetColor( color );
@@ -940,7 +940,7 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 UI_ProportionalSizeScale
 =================
 */
-float UI_ProportionalSizeScale( int style ) 
+float UI_ProportionalSizeScale( int32_t style ) 
 {
 	if(  style & UI_SMALLFONT ) 
 	{
@@ -956,10 +956,10 @@ float UI_ProportionalSizeScale( int style )
 UI_DrawProportionalString
 =================
 */
-void UI_DrawProportionalString( int x, int y, const char* str, int style, vec4_t color ) 
+void UI_DrawProportionalString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color ) 
 {
 	vec4_t		drawcolor;
-	int			width;
+	int32_t			width;
 	float		sizeScale;
 	qhandle_t	charset;
 
@@ -1059,12 +1059,12 @@ Take x,y positions as if 640 x 480 and scales them to the proper resolution
 
 ==============
 */
-void CG_DrawNumField (int x, int y, int width, int value,int charWidth,int charHeight,int style) 
+void CG_DrawNumField (int32_t x, int32_t y, int32_t width, int32_t value,int32_t charWidth,int32_t charHeight,int32_t style) 
 {
 	char	num[16], *ptr;
-	int		l;
-	int		frame;
-	int		xWidth;
+	int32_t		l;
+	int32_t		frame;
+	int32_t		xWidth;
 
 	if (width < 1) {
 		return;
@@ -1139,9 +1139,9 @@ void CG_DrawNumField (int x, int y, int width, int value,int charWidth,int charH
 CG_PrintInterfaceGraphics
 ================
 */
-void CG_PrintInterfaceGraphics(int min,int max)
+void CG_PrintInterfaceGraphics(int32_t min,int32_t max)
 {
-	int i;
+	int32_t i;
 	vec4_t drawcolor;
 
 	// Printing graphics
@@ -1196,10 +1196,10 @@ void CG_PrintInterfaceGraphics(int min,int max)
 CG_ParseFontParms
 =================
 */
-static char *CG_ParseFontParms(char *buffer,int	propArray[CHARMAX][3])
+static char *CG_ParseFontParms(char *buffer,int32_t	propArray[CHARMAX][3])
 {
 	char	*token;
-	int		i,i2;
+	int32_t		i,i2;
 	
 	while ( buffer ) 
 	{
@@ -1260,7 +1260,7 @@ CG_LoadFonts
 void CG_LoadFonts(void)
 {
 	char buffer[FONT_BUFF_LENGTH];
-	int len;
+	int32_t len;
 	fileHandle_t	f;
 	char *holdBuf;
 
@@ -1459,12 +1459,12 @@ By TiM
 */
 qboolean CG_LoadRanks( void ) {
 	fileHandle_t	file;
-	int				file_len;
+	int32_t				file_len;
 	char			charText[32000];
 	char			*textPtr;
 	char			fileName[MAX_QPATH];
-	int				i;
-	int				rankCount=0;
+	int32_t				i;
+	int32_t				rankCount=0;
 	char			*token;
 
 	qboolean		DefaultRankLoaded = qfalse;
@@ -1715,12 +1715,12 @@ crosshairs.
 */
 qboolean CG_LoadCrosshairs(void) {
 	fileHandle_t	f;
-	int				file_len;
+	int32_t				file_len;
 	char			charText[20000];
 	char			*token, *textPtr;
 	char			*fileName = "ext_data/crosshairs.dat";
-	int				cHairCount = 0;
-	//int				i;
+	int32_t				cHairCount = 0;
+	//int32_t				i;
 
 	//load file and get file length
 	file_len = trap_FS_FOpenFile( fileName, &f, FS_READ );

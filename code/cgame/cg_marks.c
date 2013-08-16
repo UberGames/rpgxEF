@@ -25,7 +25,7 @@ This is called at startup and for tournement restarts
 ===================
 */
 void	CG_InitMarkPolys( void ) {
-	int		i;
+	int32_t		i;
 
 	memset( cg_markPolys, 0, sizeof(cg_markPolys) );
 
@@ -72,7 +72,7 @@ markPoly_t	*CG_AllocMark( void ) {
 	if ( !cg_freeMarkPolys ) {
 		// no free entities, so free the one at the end of the chain
 		// remove the oldest active entity
-		int time = cg_activeMarkPolys.prevMark->time;
+		int32_t time = cg_activeMarkPolys.prevMark->time;
 		while (cg_activeMarkPolys.prevMark && time == cg_activeMarkPolys.prevMark->time) {
 			CG_FreeMarkPoly( cg_activeMarkPolys.prevMark );
 		}
@@ -114,8 +114,8 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	float			texCoordScale;
 	vec3_t			originalPoints[4];
 	byte			colors[4];
-	int				i, j;
-	int				numFragments;
+	int32_t				i, j;
+	int32_t				numFragments;
 	markFragment_t	markFragments[MAX_MARK_FRAGMENTS], *mf;
 	vec3_t			markPoints[MAX_MARK_POINTS];
 	vec3_t			projection;
@@ -181,7 +181,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 			VectorSubtract( v->xyz, origin, delta );
 			v->st[0] = 0.5 + DotProduct( delta, axis[1] ) * texCoordScale;
 			v->st[1] = 0.5 + DotProduct( delta, axis[2] ) * texCoordScale;
-			*(int *)v->modulate = *(int *)colors;
+			*(int32_t *)v->modulate = *(int32_t *)colors;
 		}
 
 		// if it is a temporary (shadow) mark, add it immediately and forget about it
@@ -215,10 +215,10 @@ CG_AddMarks
 #define MARK_DIV_3000		1.0/3000.0
 
 void CG_AddMarks( void ) {
-	int			j;
+	int32_t			j;
 	markPoly_t	*mp, *next;
-	int			t;
-	int			fade;
+	int32_t			t;
+	int32_t			fade;
 
 	if ( !cg_addMarks.integer ) {
 		return;

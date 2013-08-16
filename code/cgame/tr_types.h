@@ -40,7 +40,7 @@ typedef struct {
 
 typedef struct poly_s {
 	qhandle_t			hShader;
-	int					numVerts;
+	int32_t					numVerts;
 	polyVert_t			*verts;
 } poly_t;
 
@@ -67,7 +67,7 @@ typedef enum {
 
 typedef struct {
 	refEntityType_t	reType;
-	int			renderfx;
+	int32_t			renderfx;
 
 	qhandle_t	hModel;				// opaque type outside refresh
 
@@ -78,15 +78,15 @@ typedef struct {
 	vec3_t		axis[3];			// rotation vectors
 	qboolean	nonNormalizedAxes;	// axis are not normalized, i.e. they have scale
 	float		origin[3];			// also used as MODEL_BEAM's "from"
-	int			frame;				// also used as MODEL_BEAM's diameter
+	int32_t			frame;				// also used as MODEL_BEAM's diameter
 
 	// previous data for frame interpolation
 	float		oldorigin[3];		// also used as MODEL_BEAM's "to"
-	int			oldframe;
+	int32_t			oldframe;
 	float		backlerp;			// 0.0 = current, 1.0 = old
 
 	// texturing
-	int			skinNum;			// inline skin index
+	int32_t			skinNum;			// inline skin index
 	qhandle_t	customSkin;			// NULL for default skin
 	qhandle_t	customShader;		// use one image for the entire thing
 
@@ -142,15 +142,15 @@ typedef struct {
 #define	MAX_RENDER_STRING_LENGTH	32
 
 typedef struct {
-	int			x, y, width, height;
+	int32_t			x, y, width, height;
 	float		fov_x, fov_y;
 	vec3_t		vieworg;
 	vec3_t		viewaxis[3];		// transformation matrix
 
 	// time in milliseconds for shader effects and other time dependent rendering issues
-	int			time;
+	int32_t			time;
 
-	int			rdflags;			// RDF_NOWORLDMODEL, etc
+	int32_t			rdflags;			// RDF_NOWORLDMODEL, etc
 
 	// 1 bits will prevent the associated area from rendering at all
 	byte		areamask[MAX_MAP_AREA_BYTES];
@@ -206,10 +206,10 @@ typedef struct {
 	char					version_string[MAX_STRING_CHARS];
 	char					extensions_string[2*MAX_STRING_CHARS];
 
-	int						maxTextureSize;			// queried from GL
-	int						maxActiveTextures;		// multitexture ability
+	int32_t						maxTextureSize;			// queried from GL
+	int32_t						maxActiveTextures;		// multitexture ability
 
-	int						colorBits, depthBits, stencilBits;
+	int32_t						colorBits, depthBits, stencilBits;
 
 	glDriverType_t			driverType;
 	glHardwareType_t		hardwareType;
@@ -219,13 +219,13 @@ typedef struct {
 	qboolean				textureEnvAddAvailable;
 	qboolean				textureFilterAnisotropicAvailable;
 
-	int						vidWidth, vidHeight;
+	int32_t						vidWidth, vidHeight;
 	// aspect is the screen's physical width / height, which may be different
 	// than scrWidth / scrHeight if the pixels are non-square
 	// normal screens should be 4/3, but wide aspect monitors may be 16/9
 	float					windowAspect;
 
-	int						displayFrequency;
+	int32_t						displayFrequency;
 
 	// synonymous with "does rendering consume the entire screen?", therefore
 	// a Voodoo or Voodoo2 will have this set to TRUE, as will a Win32 ICD that

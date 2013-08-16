@@ -4,7 +4,7 @@
 // this is the list of currently drawing fx and their start times and end times
 screenFX_t theScreenFX;
 
-int CG_GetScreenEffectEndTime(int event)
+int32_t CG_GetScreenEffectEndTime(int32_t event)
 {
 	switch (event)
 	{
@@ -20,7 +20,7 @@ int CG_GetScreenEffectEndTime(int event)
 }
 
 // maybe play a sound or something?
-void CG_BeginScreenEffect(int event)
+void CG_BeginScreenEffect(int32_t event)
 {
 	switch (event)
 	{
@@ -34,9 +34,9 @@ void CG_BeginScreenEffect(int event)
 
 // when adding a new effect, we'll either take an empty slot in theScreenFX or
 //overwrite the oldest effect
-void CG_AddFullScreenEffect(int screenfx, int clientNum)
+void CG_AddFullScreenEffect(int32_t screenfx, int32_t clientNum)
 {
-	int i = 0, oldestTime = cg.time, oldestEffect = 0;
+	int32_t i = 0, oldestTime = cg.time, oldestEffect = 0;
 
 	if (clientNum != cg.predictedPlayerState.clientNum)
 	{	// only add screen effects for our client
@@ -157,11 +157,11 @@ static void CG_DrawDirectionalScreenQuad(float alpha, qhandle_t screenshader)
 
 	ent.data.sprite.radius = 4;		
 	ent.customShader = screenshader;
-	* (unsigned int *) ent.shaderRGBA = 0xffffffff;
-	* (unsigned int *) ent.data.sprite.vertRGBA[0] = 0xffffffff; 
-	* (unsigned int *) ent.data.sprite.vertRGBA[1] = 0xffffffff;
-	* (unsigned int *) ent.data.sprite.vertRGBA[2] = 0xffffffff;
-	* (unsigned int *) ent.data.sprite.vertRGBA[3] = 0xffffffff;
+	* (unsigned int32_t *) ent.shaderRGBA = 0xffffffff;
+	* (unsigned int32_t *) ent.data.sprite.vertRGBA[0] = 0xffffffff; 
+	* (unsigned int32_t *) ent.data.sprite.vertRGBA[1] = 0xffffffff;
+	* (unsigned int32_t *) ent.data.sprite.vertRGBA[2] = 0xffffffff;
+	* (unsigned int32_t *) ent.data.sprite.vertRGBA[3] = 0xffffffff;
 
 	// left
 	val = alpha*(0.5 + 0.5*(cg.damageX - fabs(cg.damageY)));
@@ -341,10 +341,10 @@ static void CG_DrawScreenBlob(float redalpha, float greenalpha)
 
 
 
-void CG_DrawFullScreenEffect(int screenfx, int start, int end)
+void CG_DrawFullScreenEffect(int32_t screenfx, int32_t start, int32_t end)
 {
 	float	alpha, alpha2 = 0.0; //TiM - second alpha
-	int end2, start2;
+	int32_t end2, start2;
 
 	alpha = (float)(end-cg.time)/(float)(end-start);
 
@@ -385,7 +385,7 @@ void CG_DrawFullScreenEffect(int screenfx, int start, int end)
 
 void CG_DrawFullScreenFX( void ) 
 {
-	int i = 0, t;
+	int32_t i = 0, t;
 	float alpha, redalpha, greenalpha;
 
 	if ( (cg.snap->ps.clientNum != cg.predictedPlayerState.clientNum) || cg.renderingThirdPerson )

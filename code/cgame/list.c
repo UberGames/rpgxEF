@@ -66,7 +66,7 @@ static list_iter_p list_iterator(list_p list, char init) {
  *	\param end indicator where to add the data
  *	\return Count of elements in the list
  */
-static int list_add(list_p list, void* data, dataType_t type, size_t size, char end) {
+static int32_t list_add(list_p list, void* data, dataType_t type, size_t size, char end) {
 	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
 
 	node->cont = (container_p)malloc(sizeof(container));
@@ -121,7 +121,7 @@ static int list_add(list_p list, void* data, dataType_t type, size_t size, char 
  *	\param size size of data
  *	\return Count of elements in the list
  */
-static int list_append(list_p list, void* data, dataType_t type, size_t size) {
+static int32_t list_append(list_p list, void* data, dataType_t type, size_t size) {
 	return list_add(list, data, type, size, LIST_BACK);
 }
 
@@ -137,7 +137,7 @@ static int list_append(list_p list, void* data, dataType_t type, size_t size) {
  *	\param size size of data
  *	\return Count of elements in the list
  */
-static int list_prepend(list_p list, void* data, dataType_t type, size_t size) {
+static int32_t list_prepend(list_p list, void* data, dataType_t type, size_t size) {
 	return list_add(list, data, type, size, LIST_FRONT);
 }
 
@@ -151,7 +151,7 @@ static int list_prepend(list_p list, void* data, dataType_t type, size_t size) {
  *	\param end indicator where to insert
  *	\return Count of elements in the list
  */
-static int list_add_ptr(list_p list, void* data, dataType_t type, char end) {
+static int32_t list_add_ptr(list_p list, void* data, dataType_t type, char end) {
 	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
 
 	node->cont = (container_p)malloc(sizeof(container));
@@ -199,7 +199,7 @@ static int list_add_ptr(list_p list, void* data, dataType_t type, char end) {
  *	\param type type of data
  *	\return Count of elements in list
  */
-static int list_append_ptr(list_p list, void* data, dataType_t type) {
+static int32_t list_append_ptr(list_p list, void* data, dataType_t type) {
 	return list_add_ptr(list, data, type, LIST_BACK);
 }
 
@@ -212,7 +212,7 @@ static int list_append_ptr(list_p list, void* data, dataType_t type) {
  *	\param type type of data
  *	\return Count of elements in list
  */
-static int list_prepend_ptr(list_p list, void* data, dataType_t type) {
+static int32_t list_prepend_ptr(list_p list, void* data, dataType_t type) {
 	return list_add_ptr(list, data, type, LIST_FRONT);
 }
 
@@ -437,11 +437,11 @@ static void list_remove(list_p list, char end) {
  *	\param list pointer to a list
  *	\param idx index of the element to remove
  */
-static void list_remove_at(list_p list, int idx) {
+static void list_remove_at(list_p list, int32_t idx) {
 	container_p cont;
 	list_iter_p iter;
 	lnode_p target = NULL;
-	int i;
+	int32_t i;
 
 	if(idx < 0 || idx >= list->length || list->length == 0) {
 		return;
@@ -533,10 +533,10 @@ void destroy_iterator(list_iter_p iter) {
  * \param idx index
  * \return element at given index or NULL if index is out of bounds
  */
-static container_p list_at(list_p list, int idx) {
+static container_p list_at(list_p list, int32_t idx) {
 	list_iter_p iter;
 	container_p c = NULL;
-	int i;
+	int32_t i;
 
 	if(idx < 0 || idx >= list->length || list == NULL) {
 		return NULL;

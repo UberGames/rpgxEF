@@ -163,7 +163,7 @@ static int32_t noyes_items[] =
 	0
 };
 
-static double server_buttons[5][2] = 
+static float server_buttons[5][2] = 
 {
 {274, 72},	//	Server type
 {274, 92},	//	Sort by
@@ -314,8 +314,8 @@ ArenaServers_Compare
 =================
 */
 static int32_t QDECL ArenaServers_Compare( const void *arg1, const void *arg2 ) {
-	double			f1;
-	double			f2;
+	float			f1;
+	float			f2;
 	servernode_t*	t1;
 	servernode_t*	t2;
 

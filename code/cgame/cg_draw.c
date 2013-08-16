@@ -10,9 +10,9 @@
 #include "cg_screenfx.h"
 
 /* set in CG_ParseTeamInfo */
-int sortedTeamPlayers[TEAM_MAXOVERLAY];
-int	numSortedTeamPlayers;
-int drawTeamOverlayModificationCount = -1;
+int32_t sortedTeamPlayers[TEAM_MAXOVERLAY];
+int32_t	numSortedTeamPlayers;
+int32_t drawTeamOverlayModificationCount = -1;
 
 /*
  * TiM: dCross
@@ -27,7 +27,7 @@ vec3_t	vup;
 vec3_t	vfwd_n;
 vec3_t	vright_n;
 vec3_t	vup_n;
-int		infoStringCount;
+int32_t		infoStringCount;
 
 static qboolean drawCrosshairName=qfalse;
 
@@ -37,7 +37,7 @@ static void CG_InterfaceStartup(void);
 
 char *ingame_text[IGT_MAX];		/*	Holds pointers to ingame text */
 
-int zoomFlashTime=0;
+int32_t zoomFlashTime=0;
 
 interfacegraphics_s interface_graphics[IG_MAX] = 
 {
@@ -99,13 +99,13 @@ lensReflec_s lensReflec[10] =
 #define HALF_SCREEN_HEIGHT (SCREEN_HEIGHT*0.5)
 
 void CG_InitLensFlare( vec3_t worldCoord, 
-						int w1, int h1,
-						vec3_t glowColor, float glowOffset, float hazeOffset, int minDist, int maxDist,
-						vec3_t streakColor, int streakDistMin, int streakDistMax, int streakW, int streakH,  qboolean whiteStreaks, 
-						int reflecDistMin, int reflecDistMax, qboolean reflecAnamorphic, qboolean defReflecs, 
-						qboolean clamp, float maxAlpha, int startTime, int upTime, int holdTime, int downTime ) 
+						int32_t w1, int32_t h1,
+						vec3_t glowColor, float glowOffset, float hazeOffset, int32_t minDist, int32_t maxDist,
+						vec3_t streakColor, int32_t streakDistMin, int32_t streakDistMax, int32_t streakW, int32_t streakH,  qboolean whiteStreaks, 
+						int32_t reflecDistMin, int32_t reflecDistMax, qboolean reflecAnamorphic, qboolean defReflecs, 
+						qboolean clamp, float maxAlpha, int32_t startTime, int32_t upTime, int32_t holdTime, int32_t downTime ) 
 {
-	int i;
+	int32_t i;
 
 	/* First thing's first.... I understand if you hate flares :'( */
 	if (!cg_dynamiclensflares.value)
@@ -165,7 +165,7 @@ correlates that to an XY value on your screen!! O_o
 
 static qboolean CG_WorldCoordToScreenCoord(vec3_t worldCoord, float *x, float *y, qboolean clamp)
 {
-	int	xcenter, ycenter;
+	int32_t	xcenter, ycenter;
 	vec3_t	local, transformed;
 	vec3_t	fwd;
 	vec3_t	right;
@@ -229,21 +229,21 @@ of jerkiness if the point crosses this line,
 but much less worse than what was before. :)
 *************************************/
 
-static float CG_FlareScreenTrans(int x, int y, int xmin, int ymin, int xmax, int ymax ) 
+static float CG_FlareScreenTrans(int32_t x, int32_t y, int32_t xmin, int32_t ymin, int32_t xmax, int32_t ymax ) 
 {
 	/*
 	 * Think about it, when the XY points are in separate quadrants of the screen,
 	 * they're all the same values anyway, but just either negative or positive.
 	 * Making them all positive, and working on just that set kills about 8 birds with a fricken' huge stone. >:)
 	 */
-	int lx = abs(x);
-	int ly = abs(y);
-	int lxmin = abs(xmin);
-	int lymin = abs(ymin);
-	int lxmax = abs(xmax);
-	int lymax = abs(ymax);
-	int xDif = lxmax - lxmin;
-	int yDif = lymax - lymin;
+	int32_t lx = abs(x);
+	int32_t ly = abs(y);
+	int32_t lxmin = abs(xmin);
+	int32_t lymin = abs(ymin);
+	int32_t lxmax = abs(xmax);
+	int32_t lymax = abs(ymax);
+	int32_t xDif = lxmax - lxmin;
+	int32_t yDif = lymax - lymin;
 	float grad = ( (float)lymax/(float)lxmax ); /* calc the grad as if (xmin, ymin) were the origin */
 
 	float alpha = 1.0;
@@ -286,7 +286,7 @@ so elements can fade in or out
 depending on relative distance :) 
 ================
 */
-static float CG_CorrelateMaxMinDist( float len, int min, int max ) {
+static float CG_CorrelateMaxMinDist( float len, int32_t min, int32_t max ) {
 
 	float alpha = 1.0;
 
@@ -318,9 +318,9 @@ and also has an option
 to fade in as well as out
 ================
 */
-float CG_FadeAlpha( int startMsec, int totalMsec, qboolean fade_in ) {
+float CG_FadeAlpha( int32_t startMsec, int32_t totalMsec, qboolean fade_in ) {
 	static float		alpha;
-	int			t;
+	int32_t			t;
 
 	if ( startMsec == 0 ) {
 		return (fade_in ? 0.0 : 1.0);
@@ -357,7 +357,7 @@ to make the flare fade out
 */
 
 static float prevFrac = 0.0;
-static int fadeTime, fadeInTime;
+static int32_t fadeTime, fadeInTime;
 
 static qboolean CG_FlareTraceTrans ( vec3_t origin, float* alpha )
 {
@@ -415,44 +415,44 @@ processor-intensive, totally un-necessary lensflare engine ;P
 Parameters Key:
 
 vec3_t worldCoord			:			Position in world to draw the flare
-int w1, h1					:			Initial (Maximum) w + h of the flare core
+int32_t w1, h1					:			Initial (Maximum) w + h of the flare core
 vec3_t glowColor			:			Color of the flare's glow
 float glowOffset			:			Multiplier how much bigger the glow is than the core
 float hazeOffset			:			Multiplier how much bigger the surrounding haze is to the core
-int minDist					:			Minimum distance before the flare loses all brightness (Set to 0 if always normal size)
-int maxDist					:			Maximum distance for flare's brightness
+int32_t minDist					:			Minimum distance before the flare loses all brightness (Set to 0 if always normal size)
+int32_t maxDist					:			Maximum distance for flare's brightness
 vec3_t streakColor			:			Color of the flare's lens reflections (if 0,0,0, then a default blue is used)
-int	streakDistMin			:			Distance at where the flare is totally transparent (Set to 0 if always on)
-int streakDistMax			:			Distance at where the flare is totally opaque (Set to same as above to turn it always off)
-int streakW					:			Length of the anamorphic lens streak 
-int streakH					:			Height of the anamorphic lens streak 
+int32_t	streakDistMin			:			Distance at where the flare is totally transparent (Set to 0 if always on)
+int32_t streakDistMax			:			Distance at where the flare is totally opaque (Set to same as above to turn it always off)
+int32_t streakW					:			Length of the anamorphic lens streak 
+int32_t streakH					:			Height of the anamorphic lens streak 
 qboolean whiteStreaks		:			Adds white streaks to the center of normal streaks ;P
-int reflecDistMin			:			Distance at where the reflections are totally transparent (Set to NULL if always on)
-int reflecDistMax			:			Distance at where the reflections are totally opaque (Set to same value as above if wanted off)
+int32_t reflecDistMin			:			Distance at where the reflections are totally transparent (Set to NULL if always on)
+int32_t reflecDistMax			:			Distance at where the reflections are totally opaque (Set to same value as above if wanted off)
 qboolean reflecAnamorphic	:			Enables anamorphic lens reflections
 qboolean defReflecs			:			Makes the Lens Reflections default colors
 qboolean clamp				:			If qtrue, the lensflare will not resize as the distance changes
 float maxAlpha				:			All alpha values of the elements in the flare will not exceed this number
-int upTime					:			How long it takes for the flare to go from 0 intense to maximum intense
-int holdTime				:			How long the flare stays at max intensity for
-int downTime				:			How long it takes for the flare to go from max intensity to 0.
+int32_t upTime					:			How long it takes for the flare to go from 0 intense to maximum intense
+int32_t holdTime				:			How long the flare stays at max intensity for
+int32_t downTime				:			How long it takes for the flare to go from max intensity to 0.
 
 **************************************************************/
 
 void CG_DrawLensFlare( lensFlare_t *flare )
 { 
-	int		w = flare->w1;
-	int		h = flare->h1;
+	int32_t		w = flare->w1;
+	int32_t		h = flare->h1;
 	float	x, y, streakX, streakY; 
-	int		xCart, yCart;
+	int32_t		xCart, yCart;
 	vec4_t	color, reflecColor, strkColor;
-	int		xMax, yMax;
+	int32_t		xMax, yMax;
 	vec3_t	distDif, black = {0.0, 0.0, 0.0};
-	int maxTime = flare->upTime + flare->holdTime + flare->downTime;
-	int tMaxTime = maxTime + flare->startTime;
-	int tUpTime	= flare->upTime + flare->startTime;
-	int tHoldTime = flare->upTime + flare->holdTime + flare->startTime;
-	int tDownTime = flare->upTime + flare->holdTime + flare->downTime + flare->startTime;
+	int32_t maxTime = flare->upTime + flare->holdTime + flare->downTime;
+	int32_t tMaxTime = maxTime + flare->startTime;
+	int32_t tUpTime	= flare->upTime + flare->startTime;
+	int32_t tHoldTime = flare->upTime + flare->holdTime + flare->startTime;
+	int32_t tDownTime = flare->upTime + flare->holdTime + flare->downTime + flare->startTime;
 	float	length;
 
 	float	reflecAlpha = 1.0; //alpha channel of reflections
@@ -504,8 +504,8 @@ void CG_DrawLensFlare( lensFlare_t *flare )
 		h = h * CG_CorrelateMaxMinDist(length, flare->minDist, flare->maxDist );
 	}
 
-	xCart = (int)(x - HALF_SCREEN_WIDTH ); //Re-orient the EF drawing engine so co-ord (0,0) is in the middle of the screen)
-	yCart = (int)(y - HALF_SCREEN_HEIGHT );
+	xCart = (int32_t)(x - HALF_SCREEN_WIDTH ); //Re-orient the EF drawing engine so co-ord (0,0) is in the middle of the screen)
+	yCart = (int32_t)(y - HALF_SCREEN_HEIGHT );
 
 	streakX = (xCart - (flare->streakW*0.5)) + HALF_SCREEN_WIDTH; //Calculate X value of lens streak based on flare position
 	streakY = (yCart - (flare->streakH*0.5)) + HALF_SCREEN_HEIGHT; //Calculate Y value of lens streak based on flare position
@@ -544,7 +544,7 @@ void CG_DrawLensFlare( lensFlare_t *flare )
 
 	//Lens Reflections - those cool circly bits that go in the opposite direction of the flare
 	if ( reflecAlpha != 0.0 ) {//Sheez, only do this if we really WANT it O_o
-		int		i;
+		int32_t		i;
 		for( i = 0; i < 10; i++ ) {
 		
 			//if they wanted the cool photoshoppy style reflections
@@ -659,7 +659,7 @@ CG_DrawHead
 Used for both the status bar and the scoreboard
 ================
 */
-void CG_DrawHead( float x, float y, float w, float h, int clientNum, vec3_t headAngles ) {
+void CG_DrawHead( float x, float y, float w, float h, int32_t clientNum, vec3_t headAngles ) {
 	clipHandle_t	cm;
 	clientInfo_t	*ci;
 	playerState_t	*ps;
@@ -718,7 +718,7 @@ CG_DrawFlagModel
 Used for both the status bar and the scoreboard
 ================
 */
-void CG_DrawFlagModel( float x, float y, float w, float h, int team ) {
+void CG_DrawFlagModel( float x, float y, float w, float h, int32_t team ) {
 	qhandle_t		cm;
 	vec3_t			origin, angles;
 	vec3_t			mins, maxs;
@@ -755,7 +755,7 @@ RPG-X | Phenix | 09/06/2005
 I dont know who commented this out but it's going back in ;)
 ================
 */
-static int CG_DrawStatusBarHead( float x ) {
+static int32_t CG_DrawStatusBarHead( float x ) {
 	vec3_t		angles;
 	float		size;
 	float		frac;
@@ -816,7 +816,7 @@ CG_DrawTeamBackground
 
 ================
 */
-void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, int team, qboolean scoreboard )
+void CG_DrawTeamBackground( int32_t x, int32_t y, int32_t w, int32_t h, float alpha, int32_t team, qboolean scoreboard )
 {
 	vec4_t		hcolor;
 
@@ -855,14 +855,14 @@ static void CG_DrawAmmo(centity_t	*cent)
 	return;
 }
 
-static int CG_DrawHealth(centity_t	*cent)
+static int32_t CG_DrawHealth(centity_t	*cent)
 {
 	float		value;
 	playerState_t	*ps;
 	char		*health_str = NULL;
-	int         health_barwidth;
+	int32_t         health_barwidth;
 	vec_t       *health_txtcolor = NULL;
-	int			health_txteffect = 0;
+	int32_t			health_txteffect = 0;
 
 	ps = &cg.snap->ps;
 
@@ -907,8 +907,8 @@ static int CG_DrawHealth(centity_t	*cent)
 
 		return health_barwidth;
 	} else {
-		int x = 3;
-		int y = 435;
+		int32_t x = 3;
+		int32_t y = 435;
 
 		//Draw the text
 		UI_DrawProportionalString(x + 46, y + 11, health_str, health_txteffect, health_txtcolor);
@@ -963,10 +963,10 @@ static void CG_DrawStatusBar( void )
 {
 	centity_t	*cent;
 	vec3_t		angles;
-	int y=0;
+	int32_t y=0;
 	vec4_t	whiteA;
 	vec3_t	tmpVec, eAngle, forward, dAngle;
-	int healthBarWidth;
+	int32_t healthBarWidth;
 
 	whiteA[0] = whiteA[1] = whiteA[2] = 1.0f;	whiteA[3] = 0.3f;
 	
@@ -1017,7 +1017,7 @@ static void CG_DrawStatusBar( void )
 	//
 	if(cg.predictedPlayerState.powerups[PW_EVOSUIT] || cg.predictedPlayerState.powerups[PW_FLIGHT] || cg.predictedPlayerState.powerups[PW_INVIS]){
 		//RPG-X | Phenix | 08/06/2005
-		int yZ = 478 - SMALLCHAR_HEIGHT;
+		int32_t yZ = 478 - SMALLCHAR_HEIGHT;
 		// UI_BIGFONT
 		//DEBUG
 		if(cg.predictedPlayerState.powerups[PW_EVOSUIT]) {
@@ -1048,22 +1048,22 @@ static void CG_DrawStatusBar( void )
 		vec4_t	radColor;
 
 		CG_DrawPic(40, 100, 100, 100, cgs.media.radarShader);
-		int i;
+		int32_t i;
 		for (i = 0; i < cg.snap->numEntities; i++) // Go through all entities in VIS range
 		{
 			if ( cg.snap->entities[i].eType == ET_PLAYER ) // If the Entity is a Player
 			{
 				// Calculate How Far Away They Are
-				int x = (cg.snap->entities[i].pos.trBase[0] - cg.predictedPlayerState.origin[0]);
+				int32_t x = (cg.snap->entities[i].pos.trBase[0] - cg.predictedPlayerState.origin[0]);
 				y = (cg.snap->entities[i].pos.trBase[1] - cg.predictedPlayerState.origin[1]);
-				int z = (cg.snap->entities[i].pos.trBase[2] - cg.predictedPlayerState.origin[2]);
+				int32_t z = (cg.snap->entities[i].pos.trBase[2] - cg.predictedPlayerState.origin[2]);
 				tmpVec[0] = x;
 				tmpVec[1] = y;
 				tmpVec[2] = 0.0;
 
 				// Convert Vector to Angle
 				vectoangles(tmpVec, eAngle);
-				int h = sqrt((x*x) + (y*y)); // Get Range
+				int32_t h = sqrt((x*x) + (y*y)); // Get Range
 
 				// We only Want "YAW" value
 				dAngle[0] = 0.0;
@@ -1224,7 +1224,7 @@ CG_DrawSnapshot
 */
 static float CG_DrawSnapshot( float y ) {
 	char		*s;
-	int			w;
+	int32_t			w;
 
 	s = va( "time:%i frametime:%i snap:%i cmd:%i", cg.snap->serverTime, cg.frametime, 
 		cg.latestSnapshotNum, cgs.serverCommandSequence );	
@@ -1248,10 +1248,10 @@ CG_DrawFPS
 #define	FPS_FRAMES	4
 static float CG_DrawFPS( float y ) {
 	char		*s;
-	static int	previousTimes[FPS_FRAMES];
-	static int	index;
-	static	int	previous;
-	int		t, frameTime;
+	static int32_t	previousTimes[FPS_FRAMES];
+	static int32_t	index;
+	static	int32_t	previous;
+	int32_t		t, frameTime;
 
 	// don't use serverTime, because that will be drifting to
 	// correct for internet lag changes, timescales, timedemos, etc
@@ -1263,17 +1263,17 @@ static float CG_DrawFPS( float y ) {
 	index++;
 	if ( index > FPS_FRAMES ) {
 		// average multiple frames together to smooth changes out a bit
-		int total = 0, i;
+		int32_t total = 0, i;
 		for ( i = 0 ; i < FPS_FRAMES ; i++ ) {
 			total += previousTimes[i];
 		}
 		if ( !total ) {
 			total = 1;
 		}
-		int fps = 1000 * FPS_FRAMES / total;
+		int32_t fps = 1000 * FPS_FRAMES / total;
 
 		s = va( "%ifps", fps );
-		int w = UI_ProportionalStringWidth(s,UI_BIGFONT);
+		int32_t w = UI_ProportionalStringWidth(s,UI_BIGFONT);
 		//RPG-X | Phenix | 08/06/2005
 		// Changed "- w" to "- (w + 50)" to account for lagometer
 		if ( !cg_lagometer.integer ) {
@@ -1292,9 +1292,9 @@ CG_DrawTimer
 */
 static float CG_DrawTimer( float y ) {
 	char		*s;
-	int			w;
-	int			mins, seconds, tens;
-	int			msec;
+	int32_t			w;
+	int32_t			mins, seconds, tens;
+	int32_t			msec;
 
 	msec = cg.time - cgs.levelStartTime;
 
@@ -1377,20 +1377,20 @@ CG_DrawPowerups
 ================
 */
 static float CG_DrawPowerups( float y ) {
-	int		sorted[MAX_POWERUPS];
-	int		sortedTime[MAX_POWERUPS];
-	int		i, j, k;
-	int		active;
+	int32_t		sorted[MAX_POWERUPS];
+	int32_t		sortedTime[MAX_POWERUPS];
+	int32_t		i, j, k;
+	int32_t		active;
 	playerState_t	*ps;
-	int		t;
+	int32_t		t;
 	gitem_t	*item;
-	int		x;
-	int		color;
+	int32_t		x;
+	int32_t		color;
 	float	size;
 	float	f;
 	static float colors[2][4] = { 
 		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 } };
-	int		hasHoldable;
+	int32_t		hasHoldable;
 
 	hasHoldable = cg.snap->ps.stats[STAT_HOLDABLE_ITEM];
 
@@ -1454,7 +1454,7 @@ static float CG_DrawPowerups( float y ) {
 			vec4_t	modulate;
 
 			f = (float)( t - cg.time ) / POWERUP_BLINK_TIME;
-			f -= (int)f;
+			f -= (int32_t)f;
 			modulate[0] = modulate[1] = modulate[2] = modulate[3] = f;
 			trap_R_SetColor( modulate );
 		}
@@ -1504,8 +1504,8 @@ static void CG_DrawLowerRight( void ) {
 CG_DrawPickupItem
 ===================
 */
-static int CG_DrawPickupItem( int y ) {
-	int		value;
+static int32_t CG_DrawPickupItem( int32_t y ) {
+	int32_t		value;
 	float	*fadeColor;
 
 	if ( cg.snap->ps.stats[STAT_HEALTH] <= 0 ) {
@@ -1558,7 +1558,7 @@ CG_DrawHoldableItem
 ===================
 */
 static void CG_DrawHoldableItem( void ) { 
-	int		value;
+	int32_t		value;
 
 	value = cg.snap->ps.stats[STAT_HOLDABLE_ITEM];
 	if ( value )
@@ -1577,9 +1577,9 @@ static void CG_DrawHoldableItem( void ) {
 	{//holding nothing...
 		if ( cg.snap->ps.stats[STAT_USEABLE_PLACED] > 0 )
 		{//it's a timed countdown to getting a holdable, display the number in seconds
-			int		sec;
+			int32_t		sec;
 			char	*s;
-			int		w;
+			int32_t		w;
 
 			sec = cg.snap->ps.stats[STAT_USEABLE_PLACED];
 
@@ -1604,7 +1604,7 @@ CG_DrawReward
 */
 static void CG_DrawReward( void ) { 
 	float	*color;
-	int		i;
+	int32_t		i;
 	float	x, y;
 
 	if ( !cg_drawRewards.integer ) {
@@ -1638,11 +1638,11 @@ LAGOMETER
 
 
 typedef struct {
-	int		frameSamples[LAG_SAMPLES];
-	int		frameCount;
-	int		snapshotFlags[LAG_SAMPLES];
-	int		snapshotSamples[LAG_SAMPLES];
-	int		snapshotCount;
+	int32_t		frameSamples[LAG_SAMPLES];
+	int32_t		frameCount;
+	int32_t		snapshotFlags[LAG_SAMPLES];
+	int32_t		snapshotSamples[LAG_SAMPLES];
+	int32_t		snapshotCount;
 } lagometer_t;
 
 lagometer_t		lagometer;
@@ -1655,7 +1655,7 @@ Adds the current interpolate / extrapolate bar for this frame
 ==============
 */
 void CG_AddLagometerFrameInfo( void ) {
-	int			offset;
+	int32_t			offset;
 
 	offset = cg.time - cg.latestSnapshotTime;
 	lagometer.frameSamples[ lagometer.frameCount & ( LAG_SAMPLES - 1) ] = offset;
@@ -1695,10 +1695,10 @@ Should we draw something differnet for long lag vs no packets?
 */
 static void CG_DrawDisconnect( void ) {
 	float		x, y;
-	int			cmdNum;
+	int32_t			cmdNum;
 	usercmd_t	cmd;
 	const char		*s;
-	int			w;
+	int32_t			w;
 
 	// draw the phone jack if we are completely past our buffers
 	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
@@ -1737,10 +1737,10 @@ CG_DrawLagometer
 ==============
 */
 static void CG_DrawLagometer( void ) {
-	int		a, x, y, i;
+	int32_t		a, x, y, i;
 	float	v;
 	float	ax, ay, aw, ah, mid, range;
-	int		color;
+	int32_t		color;
 	float	vscale;
 
 	if ( !cg_lagometer.integer ) {
@@ -1857,18 +1857,18 @@ CG_DrawSelfdestructTimer
 */
 static float CG_DrawSelfdestructTimer( void ) {
 	char		*s;
-	int msec = cg.selfdestructTime - cg.time;
+	int32_t msec = cg.selfdestructTime - cg.time;
 
 	if (msec > 0){
 
-		int mins = msec / 60000;
-		int tens = (msec - (mins * 60000)) / 10000;
-		int seconds = (msec - (mins * 60000) - (tens * 10000)) / 1000;
-		int remainder = msec - (mins * 60000) - (tens * 10000) - (seconds * 1000);
+		int32_t mins = msec / 60000;
+		int32_t tens = (msec - (mins * 60000)) / 10000;
+		int32_t seconds = (msec - (mins * 60000) - (tens * 10000)) / 1000;
+		int32_t remainder = msec - (mins * 60000) - (tens * 10000) - (seconds * 1000);
 
 		s = va( "%i:%i%i.%i", mins, tens, seconds, remainder );
 	
-		int w = UI_ProportionalStringWidth("SELF-DESTRUCT IN",UI_SMALLFONT);
+		int32_t w = UI_ProportionalStringWidth("SELF-DESTRUCT IN",UI_SMALLFONT);
 		UI_DrawProportionalString(320 - (w / 2), 10, "SELF-DESTRUCT IN", UI_SMALLFONT, colorTable[CT_RED]);
 	
 		w = UI_ProportionalStringWidth(s,UI_SMALLFONT);
@@ -1908,7 +1908,7 @@ Called for important messages that should stay in the center of the screen
 for a few moments
 ==============
 */
-void CG_CenterPrint( const char *str, int y, int charWidth ) {
+void CG_CenterPrint( const char *str, int32_t y, int32_t charWidth ) {
 	char	*s;
 
 	Q_strncpyz( cg.centerPrint, str, sizeof(cg.centerPrint) );
@@ -1935,8 +1935,8 @@ CG_DrawCenterString
 */
 static void CG_DrawCenterString( void ) {
 	char	*start;
-	int		l;
-	int		x, y, w;
+	int32_t		l;
+	int32_t		x, y, w;
 	float	*color;
 
 	if ( !cg.centerPrintTime ) {
@@ -1995,11 +1995,11 @@ static void CG_DrawCrosshair(void) {
 	float		f;
 	float		x = 0;
 	float		y = 0; //float
-	int			weaponCrosshairNum;
+	int32_t			weaponCrosshairNum;
 	
 	trace_t		trace;
 	vec3_t		start, end;
-	int			ignore;
+	int32_t			ignore;
 	vec3_t		d_f;
 	vec3_t		pitchConstraint;
 	vec3_t		worldPoint;
@@ -2138,14 +2138,14 @@ CG_LabelCrosshairEntity
 =================
 */
 
-static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, vec3_t entMaxs, char *name, qboolean scanAll, vec4_t color, qboolean drawHealth, int health, char *pClass, char *rank, char *race, char* age, char *height, char *weight, char *weapon ) 
+static void CG_LabelViewEntity( int32_t clientNum, vec3_t origin, vec3_t entMins, vec3_t entMaxs, char *name, qboolean scanAll, vec4_t color, qboolean drawHealth, int32_t health, char *pClass, char *rank, char *race, char* age, char *height, char *weight, char *weapon ) 
 {//ID teammates, ID enemies, ID objectives, etc.
 	vec3_t			center, maxs, mins, top, bottom, topLeft, topRight, bottomLeft, bottomRight;
 	vec3_t			worldEast = {1.0f, 0, 0}, worldNorth = {0, 1.0f, 0}, worldUp = {0, 0, 1.0f};
 	float			x = 0, y = 0; 
 	float			topLeftx, topLefty, topRightx, topRighty, bottomLeftx, bottomLefty, bottomRightx, bottomRighty;
-	int				corner, topSize, bottomSize, leftSize, rightSize;
-	int				charIndex, classCharIndex, rankCharIndex, ageCharIndex, raceCharIndex, htCharIndex, wtCharIndex, weapCharIndex, healthCharIndex;
+	int32_t				corner, topSize, bottomSize, leftSize, rightSize;
+	int32_t				charIndex, classCharIndex, rankCharIndex, ageCharIndex, raceCharIndex, htCharIndex, wtCharIndex, weapCharIndex, healthCharIndex;
 	float			lineHorzLength = 8.0f, lineVertLength = 8.0f, lineWidth = 2.0f;
 	float			fUpDot, fEastDot, fNorthDot, uNorthDot, uEastDot;
 	qboolean		doTopLeft = qfalse;
@@ -2414,7 +2414,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 				Com_sprintf( showHealth, sizeof( showHealth ), "%s: %i", "Health", health );
 
 				if ( healthCharIndex > 0 && showHealth[0] ) {
-					int len = strlen( showHealth );
+					int32_t len = strlen( showHealth );
 
 					if ( healthCharIndex > len+1 )
 					{
@@ -2434,7 +2434,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 		case 5:
 			if ( charIndex > 0 && name )
 			{
-				int	len = strlen(name);
+				int32_t	len = strlen(name);
 				if ( charIndex > len+1 )
 				{
 					charIndex = len+1;
@@ -2452,7 +2452,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 		case 6://class
 			if ( classCharIndex > 0 && pClass )
 			{
-				int	len = strlen(pClass);
+				int32_t	len = strlen(pClass);
 				if ( classCharIndex > len+1 )
 				{
 					classCharIndex = len+1;
@@ -2470,7 +2470,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 		case 7://rank
 			if ( rankCharIndex > 0 && rank )
 			{
-				int	len = strlen(rank);
+				int32_t	len = strlen(rank);
 				if ( rankCharIndex > len+1 )
 				{
 					rankCharIndex = len+1;
@@ -2488,7 +2488,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 		case 8://age
 			if ( ageCharIndex > 0 && age )
 			{
-				int	len = strlen(age);
+				int32_t	len = strlen(age);
 				if ( ageCharIndex > len+1 )
 				{
 					ageCharIndex = len+1;
@@ -2506,7 +2506,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 		case 9://race
 			if ( raceCharIndex > 0 && race )
 			{
-				int	len = strlen(race);
+				int32_t	len = strlen(race);
 				if ( raceCharIndex > len+1 )
 				{
 					raceCharIndex = len+1;
@@ -2524,7 +2524,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 		case 10://height
 			if ( htCharIndex > 0 && height )
 			{
-				int	len = strlen(height);
+				int32_t	len = strlen(height);
 				if ( htCharIndex > len+1 )
 				{
 					htCharIndex = len+1;
@@ -2542,7 +2542,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 		case 11://weight
 			if ( wtCharIndex > 0 && weight )
 			{
-				int	len = strlen(weight);
+				int32_t	len = strlen(weight);
 				if ( wtCharIndex > len+1 )
 				{
 					wtCharIndex = len+1;
@@ -2560,7 +2560,7 @@ static void CG_LabelViewEntity( int clientNum, vec3_t origin, vec3_t entMins, ve
 		case 12://weapon
 			if ( weapCharIndex > 0 && weapon )
 			{
-				int	len = strlen(weapon);
+				int32_t	len = strlen(weapon);
 				if ( weapCharIndex > len+1 )
 				{
 					weapCharIndex = len+1;
@@ -2615,7 +2615,7 @@ static void CG_ScanForCrosshairEntity( void ) {
 		}
 
 		// if the player is in fog, don't show it
-		int content = trap_CM_PointContents( trace.endpos, 0 );
+		int32_t content = trap_CM_PointContents( trace.endpos, 0 );
 		if ( content & CONTENTS_FOG ) {
 			return;
 		}
@@ -2644,7 +2644,7 @@ CG_DrawCrosshairNames
 =====================
 */
 
-extern qboolean PM_PlayerCrouching ( int legsAnim );
+extern qboolean PM_PlayerCrouching ( int32_t legsAnim );
 
 static vec3_t	playerMins = {-12, -12, -24}; //RPG-X : TiM - {-15, -15, -24}
 static vec3_t	playerMaxs = {12, 12, 32}; // {15, 15, 32}
@@ -2652,9 +2652,9 @@ static void CG_DrawCrosshairNames( void ) {
 	float		*color;
 	char		name[MAX_QPATH];
 	centity_t	*cent;
-	int			x, y;
+	int32_t			x, y;
 	qboolean		tinyFont;
-	int		drawFlags;
+	int32_t		drawFlags;
 
 	if ( !cg_drawCrosshair.integer ) 
 	{
@@ -2701,8 +2701,8 @@ static void CG_DrawCrosshairNames( void ) {
 				char	weapstr[128];
 				char	agestr[128];
 				char	classstr[128];
-				int		i, irank;
-				int		score = 0;
+				int32_t		i, irank;
+				int32_t		score = 0;
 				clientInfo_t *ci;
 
 				for ( i = 0; i < cgs.maxclients; i++ ) {
@@ -2875,8 +2875,8 @@ static void CG_DrawCrosshairNames( void ) {
 
 		CG_WorldCoordToScreenCoord( org, &x2, &y2, qfalse);
 
-		x = (int)x2;
-		y = (int)y2;
+		x = (int32_t)x2;
+		y = (int32_t)y2;
 
 		tinyFont = qtrue;
 		drawFlags = UI_CENTER|UI_BOTTOM|UI_TINYFONT;
@@ -2920,7 +2920,7 @@ CG_DrawVote
 */
 static void CG_DrawVote(void) {
 	char	*s;
-	int		sec;
+	int32_t		sec;
 
 	if ( !cgs.voteTime ) {
 		return;
@@ -2958,7 +2958,7 @@ CG_DrawAbridgedObjective
 */
 static void CG_DrawAbridgedObjective(void)
 {
-	int i,pixelLen,x,y;
+	int32_t i,pixelLen,x,y;
 
 	for (i=0;i<MAX_OBJECTIVES;i++)
 	{
@@ -3029,8 +3029,8 @@ CG_DrawWarmup
 */
 extern void CG_AddGameModNameToGameName( char *gamename );
 static void CG_DrawWarmup( void ) {
-	int			w;
-	int			sec;
+	int32_t			w;
+	int32_t			sec;
 	const char	*s;
 
 	sec = cg.warmup;
@@ -3095,7 +3095,7 @@ CG_DrawZoomMask
 static void CG_DrawZoomMask( void )
 {
 	float		amt = 1, size, /*val,*/ start_x, start_y;
-	int			width, height, i;
+	int32_t			width, height, i;
 	vec4_t		color1;
 
 	//TiM: New system. :)  Base zoom on current active weapon. :)
@@ -3134,7 +3134,7 @@ static void CG_DrawZoomMask( void )
 		trap_R_SetColor( color1 );
 		
 		if ( cg.snap->ps.weapon == WP_7 ) {
-			static int TR116LoopTime = 0;
+			static int32_t TR116LoopTime = 0;
 
 			//Loop the whirring sight sound
 			if ( TR116LoopTime < cg.time )
@@ -3193,7 +3193,7 @@ static void CG_DrawZoomMask( void )
 		}
 
 		// Convert zoom and view axis into some numbers to throw onto the screen
-		int			x, y;
+		int32_t			x, y;
 		if ( cg.snap->ps.weapon == WP_7 ) {
 			x = 74;
 			y = 340;
@@ -3245,9 +3245,9 @@ Now I'm going to kill you Phenix!!!!
 */
 static void CG_DrawAdminMsg( void ) {
 	float	y;
-	int			t;
-	int		i, msgRow, msgCol;
-	int		biggestW, w;
+	int32_t			t;
+	int32_t		i, msgRow, msgCol;
+	int32_t		biggestW, w;
 	char	message[35][45];
 	char	*thisMessage;
 	char	*p, *currRow;
@@ -3345,7 +3345,7 @@ CG_Draw2D
 =================
 */
 static void CG_Draw2D( void ) {
-	int i;
+	int32_t i;
 
 	//TiM : Testing this API function...
 	//trap_R_SetColor( colorTable[ CT_RED ] );

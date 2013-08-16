@@ -18,14 +18,14 @@ void CG_BubbleTrail( vec3_t start, vec3_t end, float spacing ) {
 	vec3_t		move;
 	vec3_t		vec;
 	float		len;
-	int			i;
+	int32_t			i;
 
 	VectorCopy (start, move);
 	VectorSubtract (end, start, vec);
 	len = VectorNormalize (vec);
 
 	// advance a random amount first
-	i = rand() % (int)spacing;
+	i = rand() % (int32_t)spacing;
 	VectorMA( move, i, vec, move );
 
 	VectorScale (vec, spacing, vec);
@@ -77,10 +77,10 @@ localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 				   float radius,
 				   float r, float g, float b, float a,
 				   float duration,
-				   int startTime,
-				   int leFlags,
+				   int32_t startTime,
+				   int32_t leFlags,
 				   qhandle_t hShader ) {
-	static int	seed = 0x92;
+	static int32_t	seed = 0x92;
 	localEntity_t	*le;
 	refEntity_t		*re;
 
@@ -190,9 +190,9 @@ CG_MakeExplosion
 */
 localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir, 
 								qhandle_t hModel, qhandle_t shader,
-								int msec, float scale, qboolean isSprite ) {
+								int32_t msec, float scale, qboolean isSprite ) {
 	localEntity_t	*ex;
-	int				offset;
+	int32_t				offset;
 	vec3_t			tmpVec, newOrigin;
 
 	if ( msec <= 0 ) {
@@ -253,10 +253,10 @@ localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 
 
 localEntity_t *CG_MakeExplosion2( vec3_t origin, vec3_t dir, 
-								qhandle_t hModel, int numFrames, qhandle_t shader,
-								int msec, qboolean isSprite, float scale, int flags) {
+								qhandle_t hModel, int32_t numFrames, qhandle_t shader,
+								int32_t msec, qboolean isSprite, float scale, int32_t flags) {
 	localEntity_t	*ex;
-	int				offset;
+	int32_t				offset;
 	vec3_t			tmpVec, newOrigin;
 
 	if ( msec <= 0 ) {
@@ -327,7 +327,7 @@ intensity ranges from 1 (minor tremble) to 16 (major quake)
 -------------------------
 */
 
-void CG_ExplosionEffects( vec3_t origin, int intensity, int radius)
+void CG_ExplosionEffects( vec3_t origin, int32_t intensity, int32_t radius)
 {
 	//FIXME: When exactly is the vieworg calculated in relation to the rest of the frame?s
 
@@ -362,7 +362,7 @@ qboolean SmokeThink( localEntity_t *le )
 	vec3_t	origin;
 	vec3_t	dir;
 	float	speed;
-	int i;
+	int32_t i;
 
 	VectorCopy( le->data.spawner.dir, dir );
 	//clamp the smoke vector
@@ -405,7 +405,7 @@ Creates a smoke effect
 ======================
 */
 
-void CG_Smoke( vec3_t position, vec3_t dir, int killTime, int radius )
+void CG_Smoke( vec3_t position, vec3_t dir, int32_t killTime, int32_t radius )
 {
 	FX_AddSpawner( position, dir, NULL, NULL, qfalse, 0, 0.15, killTime, SmokeThink, radius ); //
 }
@@ -452,7 +452,7 @@ RPG-X | Marcin | 24/12/2008
 ======================
 */
 
-void CG_Fire( vec3_t position, vec3_t direction, int killTime, int radius, int fxEnt )
+void CG_Fire( vec3_t position, vec3_t direction, int32_t killTime, int32_t radius, int32_t fxEnt )
 {
 	if(fxEnt)
 		FX_AddSpawner( position, direction, NULL, NULL, qfalse, 500, 0, killTime + 1000, FireThink, radius );

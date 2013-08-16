@@ -15,14 +15,14 @@ enum screenfx_e
 
 typedef struct screenFX_s
 {
-	int		events[MAX_SCREENFX];
-	int		cgStartTimes[MAX_SCREENFX];
-	int		cgEndTimes[MAX_SCREENFX];
+	int32_t		events[MAX_SCREENFX];
+	int32_t		cgStartTimes[MAX_SCREENFX];
+	int32_t		cgEndTimes[MAX_SCREENFX];
 } screenFX_t;
 
 extern screenFX_t theScreenFX;
 
-void CG_AddFullScreenEffect(int screenfx, int clientNum);
+void CG_AddFullScreenEffect(int32_t screenfx, int32_t clientNum);
 
 void CG_DrawFullScreenFX(void);
 

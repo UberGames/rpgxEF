@@ -95,18 +95,18 @@ typedef struct list * list_p;
  * Struct describing a list.
  */
 struct list{
-	int length;					/*!< count of elements in the list */
+	int32_t length;					/*!< count of elements in the list */
 	lnode_p first;				/*!< first element of the list */
 	lnode_p last;				/*!< last element of the list */
 	void (*destructor)(void*);	/*!< pointer to destructor for data. Default is free. */
 	list_iter_p (*iterator)(list_p list, char init);	/*!< creates a new list iterator */
-	int (*add_ptr)(list_p list, void* data, dataType_t type, char end); /*!< add a pointer to the list */
-	int (*append_ptr)(list_p list, void* data, dataType_t type); /*!< append a pointer to the list */
-	int (*prepend_ptr)(list_p list, void* data, dataType_t type); /*!< prepend a pointer to the list */
-	int (*add)(list_p list, void* data, dataType_t type, size_t size, char end); /*!< add data to the list */
-	int (*append)(list_p list, void* data, dataType_t type, size_t size); /*!< append data to the list */
-	int (*prepend)(list_p list, void* data, dataType_t type, size_t size); /*!< prepend data to the list */
-	container_p (*at)(list_p list, int idx); /*!< get container at given index */
+	int32_t (*add_ptr)(list_p list, void* data, dataType_t type, char end); /*!< add a pointer to the list */
+	int32_t (*append_ptr)(list_p list, void* data, dataType_t type); /*!< append a pointer to the list */
+	int32_t (*prepend_ptr)(list_p list, void* data, dataType_t type); /*!< prepend a pointer to the list */
+	int32_t (*add)(list_p list, void* data, dataType_t type, size_t size, char end); /*!< add data to the list */
+	int32_t (*append)(list_p list, void* data, dataType_t type, size_t size); /*!< append data to the list */
+	int32_t (*prepend)(list_p list, void* data, dataType_t type, size_t size); /*!< prepend data to the list */
+	container_p (*at)(list_p list, int32_t idx); /*!< get container at given index */
 	void (*clear)(list_p list); /*!< clear the list */
 	container_p (*current)(list_iter_p iter); /*!< get the current element for the iterator */
 	container_p (*cycl_next)(list_iter_p iter); /*!< get the next element for the iterator (cyclic access) */
@@ -118,7 +118,7 @@ struct list{
 	container_p (*poll)(list_p list); /*<! poll */
 	container_p (*pop)(list_p list); /*<! pop */
 	void (*remove)(list_p list, char end); /*!< remove an element from the list */
-	void (*removeAt)(list_p list, int idx); /*!< remove an element at a specified index */
+	void (*removeAt)(list_p list, int32_t idx); /*!< remove an element at a specified index */
 };
 
 /** 

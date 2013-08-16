@@ -334,7 +334,7 @@ static void UI_InGameMenu_Draw( void )
 {
 	char*	playerClass;
 	char	string[256];
-	double	scale;
+	float	scale;
 	int32_t		y=191;
 	int32_t		yOffset = 23;
 //	char* team;
@@ -498,7 +498,7 @@ static void UI_InGameMenu_Draw( void )
 	//Q_strncpyz( string, string, 25 ); 
 	UI_DrawProportionalString(  270,  y, string, UI_LEFT|UI_SMALLFONT, colorTable[CT_LTGOLD1]);
 
-	scale = trap_Cvar_VariableValue( "height" ) * (double)BASE_HEIGHT;
+	scale = trap_Cvar_VariableValue( "height" ) * (float)BASE_HEIGHT;
 
 	Com_sprintf( string, sizeof(string), "%s: %3.2f%s", menu_normal_text[MNT_HEIGHT], scale, HEIGHT_UNIT );
 	//Q_strncpyz( string, string, 25 ); 
@@ -509,9 +509,9 @@ static void UI_InGameMenu_Draw( void )
 	//Q_strncpyz( string, string, 25 ); 
 	UI_DrawProportionalString(  270,  y, string, UI_LEFT|UI_SMALLFONT, colorTable[CT_LTGOLD1]);
 	
-	scale = trap_Cvar_VariableValue( "height" ) * trap_Cvar_VariableValue( "weight" ) * (double)BASE_WEIGHT;
+	scale = trap_Cvar_VariableValue( "height" ) * trap_Cvar_VariableValue( "weight" ) * (float)BASE_WEIGHT;
 	if ( s_ingame.playerinfo.gender == GENDER_FEMALE )
-		scale *= (double)FEMALE_OFFSET;
+		scale *= (float)FEMALE_OFFSET;
 
 	Com_sprintf( string, sizeof(string), "%s: %3.2f%s", menu_normal_text[MNT_WEIGHT], scale, WEIGHT_UNIT );
 	//Q_strncpyz( string, string, 25 ); 

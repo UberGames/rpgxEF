@@ -40,7 +40,7 @@ qboolean MakeDisruptorShard( localEntity_t *le )
 void FX_Disruptor( vec3_t org, float length )
 {//FIXME: make it move with owner?
 	vec3_t org1, org2, normal={0,0,1};
-	int t;
+	int32_t t;
 
 	VectorMA( org, 48, normal, org1 );
 	VectorMA( org, -48, normal, org2 );
@@ -66,10 +66,10 @@ void FX_EnergyGibs(vec3_t origin )
 	localEntity_t	*le;
 	refEntity_t		*re;
 	vec3_t			dir;
-	int				i, j, k;
-	int				chunkModel=0;
+	int32_t				i, j, k;
+	int32_t				chunkModel=0;
 	float			baseScale = 0.7f, dist;
-	int				numChunks;
+	int32_t				numChunks;
 
 	numChunks = irandom( 10, 15 );
 
@@ -139,7 +139,7 @@ void FX_ExplodeBits( vec3_t org)
 {
 	float width, length;
 	vec3_t vel, pos;
-	int i;
+	int32_t i;
 
 	FX_EnergyGibs(org);
 
@@ -157,7 +157,7 @@ void FX_ExplodeBits( vec3_t org)
 
 #define Q_FLASH_SIZE 110
 
-void FX_qFlash( centity_t* cent, vec3_t org, int timeIndex ) {
+void FX_qFlash( centity_t* cent, vec3_t org, int32_t timeIndex ) {
 	trace_t		tr;
 	refEntity_t	flare;
 	float		frac;	
@@ -204,7 +204,7 @@ void FX_qFlash( centity_t* cent, vec3_t org, int timeIndex ) {
 
 #define PROBE_BEAM_LENGTH		32
 //TiM - Beam FX for the Neutrino Probe weapon
-void FX_ProbeBeam( vec3_t origin, vec3_t dir, int clientNum, qboolean alt_fire )
+void FX_ProbeBeam( vec3_t origin, vec3_t dir, int32_t clientNum, qboolean alt_fire )
 {
 	trace_t			tr;
 	refEntity_t		beam;
@@ -257,7 +257,7 @@ void FX_ProbeBeam( vec3_t origin, vec3_t dir, int clientNum, qboolean alt_fire )
 }
 
 #define REGEN_BEAM_LENGTH 64
-void FX_RegenBeam( vec3_t origin, vec3_t dir, int clientNum, qboolean alt_fire )
+void FX_RegenBeam( vec3_t origin, vec3_t dir, int32_t clientNum, qboolean alt_fire )
 {
 	trace_t			tr;
 	vec3_t			end;

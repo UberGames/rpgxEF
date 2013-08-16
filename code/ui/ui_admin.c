@@ -1543,8 +1543,8 @@ void UI_AdminMenu( qboolean fromConsole ) {
 typedef struct {
 	int32_t		id;
 	char	model[MAX_QPATH];
-	double	height;
-	double	weight;
+	float	height;
+	float	weight;
 	char	race[MAX_NAME_LENGTH];
 	char	age[MAX_NAME_LENGTH];
 	int32_t		classId;
