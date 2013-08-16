@@ -231,7 +231,7 @@ static void UI_TeamOrdersMenu_ListDraw( void *self ) {
 	int32_t			x;
 	int32_t			y;
 	int32_t			i;
-	float		*color;
+	double		*color;
 	qboolean	hasfocus;
 	int32_t			style;
 

@@ -22,7 +22,7 @@
 
 
 static int32_t			dp_realtime;
-static float		jumpHeight;
+static double		jumpHeight;
 
 //TiM : Bolton Table
 stringID_table_t BoltonTable[BOLTON_MAX + 1] =
@@ -442,7 +442,7 @@ static void UI_RunLerpFrame( playerInfo_t *ci, lerpFrame_t *lf, int32_t newAnima
 	if ( lf->frameTime == lf->oldFrameTime ) {
 		lf->backlerp = 0;
 	} else {
-		lf->backlerp = 1.0 - (float)( dp_realtime - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+		lf->backlerp = 1.0 - (double)( dp_realtime - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
 	}
 }
 
@@ -452,8 +452,8 @@ static void UI_RunLerpFrame( playerInfo_t *ci, lerpFrame_t *lf, int32_t newAnima
 UI_PlayerAnimation
 ===============
 */
-static void UI_PlayerAnimation( playerInfo_t *pi, int32_t *legsOld, int32_t *legs, float *legsBackLerp,
-						int32_t *torsoOld, int32_t *torso, float *torsoBackLerp ) {
+static void UI_PlayerAnimation( playerInfo_t *pi, int32_t *legsOld, int32_t *legs, double *legsBackLerp,
+						int32_t *torsoOld, int32_t *torso, double *torsoBackLerp ) {
 
 	// legs animation
 	pi->legsAnimationTimer -= uis.frametime;
@@ -495,11 +495,11 @@ static void UI_PlayerAnimation( playerInfo_t *pi, int32_t *legsOld, int32_t *leg
 UI_SwingAngles
 ==================
 */
-static void UI_SwingAngles( float destination, float swingTolerance, float clampTolerance,
-					float speed, float *angle, qboolean *swinging ) {
-	float	swing;
-	float	move;
-	float	scale;
+static void UI_SwingAngles( double destination, double swingTolerance, double clampTolerance,
+					double speed, double *angle, qboolean *swinging ) {
+	double	swing;
+	double	move;
+	double	scale;
 
 	if ( !*swinging ) {
 		// see if a swing should be started
@@ -557,7 +557,7 @@ static void UI_SwingAngles( float destination, float swingTolerance, float clamp
 UI_MovedirAdjustment
 ======================
 */
-/*static float UI_MovedirAdjustment( playerInfo_t *pi ) {
+/*static double UI_MovedirAdjustment( playerInfo_t *pi ) {
 	vec3_t		relativeAngles;
 	vec3_t		moveVector;
 
@@ -603,7 +603,7 @@ UI_PlayerAngles
 */
 static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[3], vec3_t torso[3], vec3_t head[3] ) {
 	vec3_t		legsAngles, torsoAngles, headAngles;
-	float		dest;
+	double		dest;
 
 	VectorCopy( pi->viewAngles, headAngles );
 	headAngles[YAW] = AngleMod( headAngles[YAW] );
@@ -682,10 +682,10 @@ static void UI_PlayerFloatSprite( playerInfo_t *pi, vec3_t origin, qhandle_t sha
 UI_MachinegunSpinAngle
 ======================
 */
-/*float	UI_MachinegunSpinAngle( playerInfo_t *pi ) {
+/*double	UI_MachinegunSpinAngle( playerInfo_t *pi ) {
 	int32_t		delta;
-	float	angle;
-	float	speed;
+	double	angle;
+	double	speed;
 	int32_t		torsoAnim;
 
 	delta = dp_realtime - pi->barrelTime;
@@ -696,7 +696,7 @@ UI_MachinegunSpinAngle
 			delta = COAST_TIME;
 		}
 
-		speed = 0.5 * ( SPIN_SPEED + (float)( COAST_TIME - delta ) / COAST_TIME );
+		speed = 0.5 * ( SPIN_SPEED + (double)( COAST_TIME - delta ) / COAST_TIME );
 		angle = pi->barrelAngle + delta * speed;
 	}
 
@@ -719,7 +719,7 @@ UI_MachinegunSpinAngle
 UI_DrawPlayer
 ===============
 */
-void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerInfo_t *pi, int32_t time  ) { //RPG-X : TiM- Origin added
+void UI_DrawPlayer( double x, double y, double w, double h, vec3_t pOrigin, playerInfo_t *pi, int32_t time  ) { //RPG-X : TiM- Origin added
 	refdef_t		refdef;
 	refEntity_t		legs;
 	refEntity_t		torso;
@@ -730,8 +730,8 @@ void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerIn
 	int32_t				renderfx;
 	vec3_t			mins = {-16, -24, -24};
 	vec3_t			maxs = {16, 16, 32};
-	float			len;
-	float			xx;
+	double			len;
+	double			xx;
 
 	if ( !pi->legsModel || !pi->torsoModel || !pi->headModel || !pi->animations[0].numFrames ) {
 		return;
@@ -767,7 +767,7 @@ void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerIn
 	refdef.width = w;
 	refdef.height = h;
 
-	refdef.fov_x = (int32_t)((float)refdef.width / 640.0f * 10.0f); //RPG-X : TiM- 90.0f //Anyone else noticed how the high FOV value distorted the model horribly in the menus? O_o
+	refdef.fov_x = (int32_t)((double)refdef.width / 640.0f * 10.0f); //RPG-X : TiM- 90.0f //Anyone else noticed how the high FOV value distorted the model horribly in the menus? O_o
 	xx = refdef.width / tan( refdef.fov_x / 360 * M_PI );
 	refdef.fov_y = atan2( refdef.height, xx );
 	refdef.fov_y *= ( 360 / M_PI );
@@ -817,10 +817,10 @@ void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerIn
 			UI_ForceTorsoAnim( pi, anim );			
 			
 			//play lower
-			pi->legsAnimationTimer = pi->animations[ anim ].numFrames * pi->animations[ anim ].frameLerp * ((float)uis.realtime/(float)dp_realtime);
+			pi->legsAnimationTimer = pi->animations[ anim ].numFrames * pi->animations[ anim ].frameLerp * ((double)uis.realtime/(double)dp_realtime);
 			pi->lowerEmoting = qtrue;
 
-			pi->torsoAnimationTimer = pi->animations[ anim ].numFrames * pi->animations[ anim ].frameLerp * ((float)uis.realtime/(float)dp_realtime);
+			pi->torsoAnimationTimer = pi->animations[ anim ].numFrames * pi->animations[ anim ].frameLerp * ((double)uis.realtime/(double)dp_realtime);
 			pi->upperEmoting = qtrue;
 
 			pi->nextEmoteTime = uis.realtime + ( irandom( 10, 20 ) * 1000 ) + pi->legsAnimationTimer; 
@@ -994,7 +994,7 @@ static qboolean UI_ParseAnimationFile( const char *filename, animation_t *animat
 	int32_t			len;
 	int32_t			i;
 	char		*token;
-	float		fps;
+	double		fps;
 	int32_t			skip;
 	char		text[20000];
 	fileHandle_t	f;
@@ -1867,7 +1867,7 @@ void UI_PlayerInfo_SetModel( playerInfo_t *pi, const char *model ) {
 UI_PlayerInfo_SetInfo
 ===============
 */
-void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int32_t legsAnim, int32_t torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNumber, float height, float weight, qboolean chat ) {
+void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int32_t legsAnim, int32_t torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNumber, double height, double weight, qboolean chat ) {
 	int32_t			currentAnim;
 	weapon_t	weaponNum;
 

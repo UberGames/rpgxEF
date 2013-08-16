@@ -1113,7 +1113,7 @@ static void PlayerModel_DrawPlayer( void *self )
 		return;
 	}
 
-	UI_DrawPlayer( (float)b->generic.x, (float)b->generic.y, (float)b->width, (float)b->height, origin, &s_playermodel.playerinfo, (int32_t)(uis.realtime/1.5) );
+	UI_DrawPlayer( (double)b->generic.x, (double)b->generic.y, (double)b->width, (double)b->height, origin, &s_playermodel.playerinfo, (int32_t)(uis.realtime/1.5) );
 }
 
 /*

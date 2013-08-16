@@ -1522,10 +1522,10 @@ typedef struct
 {
 	menucommon_s generic;
 
-	float minvalue;
-	float maxvalue;
-	float curvalue;
-	float defvalue; //RPG-X: TiM | I'm going to make it if u click the button part, it'll reset to this default value
+	double minvalue;
+	double maxvalue;
+	double curvalue;
+	double defvalue; //RPG-X: TiM | I'm going to make it if u click the button part, it'll reset to this default value
 
 	int32_t				focusWidth;		// For graph
 	int32_t				focusHeight;	// For graph
@@ -1553,7 +1553,7 @@ typedef struct
 	int32_t				textcolor;		// Normal color
 	int32_t				textcolor2;		// Highlight color
 
-	float range;
+	double range;
 
 	qboolean		mouseDown;
 } menuslider_s;
@@ -1648,7 +1648,7 @@ typedef struct
 
 	int32_t				width;
 	int32_t				height;
-	/*@shared@*/ float*			focuscolor;
+	/*@shared@*/ double*			focuscolor;
 
 	int32_t				color;	// Normal color
 	int32_t				color2;	// Highlight color
@@ -1675,8 +1675,8 @@ typedef struct
 	int32_t				normaltextEnum3; // Enum from normal menu text
 	int32_t				buttontextEnum3; // Enum from button text
 	int32_t				style;
-	/*@shared@*/ float	*color;	// Normal color
-	/*@shared@*/ float	*color2;	// Highlight color
+	/*@shared@*/ double	*color;	// Normal color
+	/*@shared@*/ double	*color2;	// Highlight color
 	int32_t				focusX;
 	int32_t				focusY;
 	int32_t				focusWidth;
@@ -1686,7 +1686,7 @@ typedef struct
 typedef struct
 {
 	int32_t				type;		// STRING or GRAPHIC
-	float			timer;		// When it changes
+	double			timer;		// When it changes
 	int32_t				x;			// X position
 	int32_t				y;			// Y positon
 	int32_t				width;		// Graphic width
@@ -1993,11 +1993,11 @@ typedef struct {
 	int32_t			frame;
 	int32_t			frameTime;			// time when ->frame will be exactly on
 
-	float		backlerp;
+	double		backlerp;
 
-	float		yawAngle;
+	double		yawAngle;
 	qboolean	yawing;
-	float		pitchAngle;
+	double		pitchAngle;
 	qboolean	pitching;
 
 	int32_t			animationNumber;	// may include ANIM_TOGGLEBIT
@@ -2037,8 +2037,8 @@ typedef struct {
 
 	gender_t		gender;
 
-	float			height;
-	float			weight;
+	double			height;
+	double			weight;
 
 	qhandle_t		legsModel;
 	qhandle_t		legsSkin;
@@ -2096,7 +2096,7 @@ typedef struct {
 	qboolean		newModel;
 
 	qboolean		barrelSpinning;
-	float			barrelAngle;
+	double			barrelAngle;
 	int32_t				barrelTime;
 
 	//TiM - Just to give this thing a little spice. :)
@@ -2109,9 +2109,9 @@ typedef struct {
 	int32_t				realWeapon;
 } playerInfo_t;
 
-void UI_DrawPlayer( float x, float y, float w, float h, vec3_t pOrigin, playerInfo_t *pi, int32_t time ); //RPG-X : TiM-  origin
+void UI_DrawPlayer( double x, double y, double w, double h, vec3_t pOrigin, playerInfo_t *pi, int32_t time ); //RPG-X : TiM-  origin
 void UI_PlayerInfo_SetModel( playerInfo_t *pi, const char *model );
-void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int32_t legsAnim, int32_t torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, float height, float weight, qboolean chat );
+void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int32_t legsAnim, int32_t torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, double height, double weight, qboolean chat );
 qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName );
 
 //
@@ -2161,9 +2161,9 @@ typedef struct {
 	qhandle_t			cursor;
 	qhandle_t			rb_on;
 	qhandle_t			rb_off;
-	float				scalex;
-	float				scaley;
-//	float				bias;
+	double				scalex;
+	double				scaley;
+//	double				bias;
 	qboolean			demoversion;
 	qboolean			firstdraw;
 
@@ -2195,21 +2195,21 @@ extern void			UI_KeyEvent( int32_t key );
 extern void			UI_MouseEvent( int32_t dx, int32_t dy );
 extern void			UI_Refresh( int32_t realtime );
 extern qboolean		UI_ConsoleCommand( void );
-extern float		UI_ClampCvar( float min, float max, float value );
-extern void			UI_DrawNamedPic( float x, float y, float width, float height, const char *picname );
-extern void			UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ); 
-extern void UI_DrawHandleStretchPic( float x, float y, float w, float h, float s0, float t0, float s1, float t1, qhandle_t hShader );
-extern void			UI_FillRect( float x, float y, float width, float height, const float *color );
-extern void			UI_DrawRect( float x, float y, float width, float height, const float *color );
-//extern void			UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
+extern double		UI_ClampCvar( double min, double max, double value );
+extern void			UI_DrawNamedPic( double x, double y, double width, double height, const char *picname );
+extern void			UI_DrawHandlePic( double x, double y, double w, double h, qhandle_t hShader ); 
+extern void UI_DrawHandleStretchPic( double x, double y, double w, double h, double s0, double t0, double s1, double t1, qhandle_t hShader );
+extern void			UI_FillRect( double x, double y, double width, double height, const double *color );
+extern void			UI_DrawRect( double x, double y, double width, double height, const double *color );
+//extern void			UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, double t);
 extern void			UI_DrawBannerString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color );
-extern float		UI_ProportionalSizeScale( int32_t style );
+extern double		UI_ProportionalSizeScale( int32_t style );
 extern void			UI_DrawProportionalString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color );
 extern int32_t			UI_ProportionalStringWidth( const char* str,int32_t style );
 extern void			UI_DrawString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color, qboolean highRes );
 extern void			UI_DrawChar( int32_t x, int32_t y, int32_t ch, int32_t style, vec4_t color );
 extern qboolean 	UI_CursorInRect (int32_t x, int32_t y, int32_t width, int32_t height);
-extern void			UI_AdjustFrom640( float *x, float *y, float *w, float *h );
+extern void			UI_AdjustFrom640( double *x, double *y, double *w, double *h );
 
 //extern void			UI_DrawTextBox (int32_t x, int32_t y, int32_t width, int32_t lines);
 extern qboolean		UI_IsFullscreen( void );
@@ -2272,9 +2272,9 @@ int32_t				trap_Milliseconds( void );
 void			trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int32_t flags );
 void			trap_Cvar_Update( vmCvar_t *vmCvar );
 void			trap_Cvar_Set( const char *var_name, const char *value );
-float			trap_Cvar_VariableValue( const char *var_name );
+double			trap_Cvar_VariableValue( const char *var_name );
 void			trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int32_t bufsize );
-void			trap_Cvar_SetValue( const char *var_name, float value );
+void			trap_Cvar_SetValue( const char *var_name, double value );
 void			trap_Cvar_Reset( const char *name );
 void			trap_Cvar_Create( const char *var_name, const char *var_value, int32_t flags );
 void			trap_Cvar_InfoStringBuffer( int32_t bit, char *buffer, int32_t bufsize );
@@ -2292,12 +2292,12 @@ qhandle_t		trap_R_RegisterShaderNoMip( const char *name );
 void			trap_R_ClearScene( void );
 void			trap_R_AddRefEntityToScene( const refEntity_t *re );
 void			trap_R_AddPolyToScene( qhandle_t hShader , int32_t numVerts, const polyVert_t *verts );
-void			trap_R_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b );
+void			trap_R_AddLightToScene( const vec3_t org, double intensity, double r, double g, double b );
 void			trap_R_RenderScene( const refdef_t *fd );
-void			trap_R_SetColor( const float *rgba );
-void			trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
+void			trap_R_SetColor( const double *rgba );
+void			trap_R_DrawStretchPic( double x, double y, double w, double h, double s1, double t1, double s2, double t2, qhandle_t hShader );
 void			trap_UpdateScreen( void );
-void			trap_CM_LerpTag( orientation_t *tag, clipHandle_t mod, int32_t startFrame, int32_t endFrame, float frac, const char *tagName );
+void			trap_CM_LerpTag( orientation_t *tag, clipHandle_t mod, int32_t startFrame, int32_t endFrame, double frac, const char *tagName );
 void			trap_S_StartLocalSound( sfxHandle_t sfx, int32_t channelNum );
 sfxHandle_t		trap_S_RegisterSound( const char *sample );
 void			trap_Key_KeynumToStringBuf( int32_t keynum, char *buf, int32_t buflen );
@@ -2355,7 +2355,7 @@ void UI_DisplayOptionsMenu( void );
 //
 //void UI_SoundOptionsMenu_Cache( void );
 //void UI_SoundOptionsMenu( void );
-extern float setup_menubuttons[8][2];
+extern double setup_menubuttons[8][2];
 void UI_SoundMenu( void);
 void UI_SoundMenu_Cache(void); 
 

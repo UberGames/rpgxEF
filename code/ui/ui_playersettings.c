@@ -49,8 +49,8 @@ typedef struct {
 	//char	age[36];
 	//char	race[36];
 
-	//float	height;
-	//float	weight;
+	//double	height;
+	//double	weight;
 } initialData_t;
 
 typedef struct {
@@ -235,9 +235,9 @@ const char* prank_items_actual3[] =
 };*/
 
 
-/*static float yawDelta3;
-static float yaw3 = 180 - 30;
-static float placeHolder3 = 180 - 30;*/
+/*static double yawDelta3;
+static double yaw3 = 180 - 30;
+static double placeHolder3 = 180 - 30;*/
 
 /*
 =======================
@@ -467,7 +467,7 @@ static void PlayerSettings_DrawPlayer( void *self )
 	UI_PlayerInfo_SetInfo( &s_playersettings.playerinfo, BOTH_WALK1, BOTH_WALK1, viewangles, vec3_origin, WP_0, s_playersettings.height.curvalue, s_playersettings.weight.curvalue, qfalse );
 
 	b = (menubitmap_s*) self;
-	UI_DrawPlayer( (float)b->generic.x, (float)b->generic.y, (float)b->width, (float)b->height, origin, &s_playersettings.playerinfo, (int32_t)(uis.realtime/1.5) );
+	UI_DrawPlayer( (double)b->generic.x, (double)b->generic.y, (double)b->width, (double)b->height, origin, &s_playersettings.playerinfo, (int32_t)(uis.realtime/1.5) );
 
 	/*if ( uis.spinView == qtrue && !trap_Key_IsDown( K_MOUSE1 )) {
 		uis.spinView = qfalse;
@@ -658,7 +658,7 @@ static void PlayerSettings_SetMenuItems( void )
 
 	//Player Height
 	{
-		float height = trap_Cvar_VariableValue( "height" );
+		double height = trap_Cvar_VariableValue( "height" );
 
 		//If height was defined, but filled with no value
 		//We don't want infinitely flat players rofl
@@ -672,7 +672,7 @@ static void PlayerSettings_SetMenuItems( void )
 
 	//Player Weight
 	{
-		float weight = trap_Cvar_VariableValue( "weight" );
+		double weight = trap_Cvar_VariableValue( "weight" );
 
 		//If height was defined, but filled with no value
 		//We don't want infinitely thin players rofl
@@ -905,13 +905,13 @@ void PlayerSettingsMenu_Graphics (void)
 
 	//TiM - Player weight and height parameters
 	{
-		float	ht = s_playersettings.height.curvalue * (float)BASE_HEIGHT;
-		float	wt = s_playersettings.weight.curvalue * s_playersettings.height.curvalue * (float)BASE_WEIGHT; 
+		double	ht = s_playersettings.height.curvalue * (double)BASE_HEIGHT;
+		double	wt = s_playersettings.weight.curvalue * s_playersettings.height.curvalue * (double)BASE_WEIGHT; 
 		char	htStr[12];
 		char	wtStr[12];
 
 		if ( s_playersettings.playerinfo.gender == GENDER_FEMALE )
-			wt *= (float)FEMALE_OFFSET;
+			wt *= (double)FEMALE_OFFSET;
 
 		Com_sprintf( htStr, sizeof(htStr), "%4.2f%s", ht, HEIGHT_UNIT );
 		Com_sprintf( wtStr, sizeof(wtStr), "%4.2f%s", wt, WEIGHT_UNIT );

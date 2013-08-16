@@ -255,7 +255,7 @@ static void Text_Draw(menuframework_s *menu, menutext_s *t )
 	char	buff[512];	
 	char	buff2[512];	
 	char	buff3[512];	
-	float	*color;
+	double	*color;
 
 	x = t->generic.x;
 	y = t->generic.y;
@@ -387,7 +387,7 @@ static void BText_Draw( menutext_s *t )
 {
 	int32_t		x;
 	int32_t		y;
-	float*	color;
+	double*	color;
 
 	x = t->generic.x;
 	y = t->generic.y;
@@ -411,7 +411,7 @@ static void PText_Init( menutext_s *t )
 	int32_t	y;
 	int32_t	w;
 	int32_t	h;
-	float	sizeScale;
+	double	sizeScale;
 
 	sizeScale = UI_ProportionalSizeScale( t->style );
 
@@ -442,7 +442,7 @@ static void PText_Draw( menutext_s *t )
 {
 	int32_t		x;
 	int32_t		y;
-	float *	color;
+	double *	color;
 	int32_t		style;
 
 	x = t->generic.x;
@@ -519,12 +519,12 @@ Bitmap_Draw
 */
 void Bitmap_Draw( menubitmap_s *b )
 {
-	float	x;
-	float	y;
-	float	w;
-	float	h;
+	double	x;
+	double	y;
+	double	w;
+	double	h;
 	vec4_t	tempcolor;
-	float*	color;
+	double*	color;
 	char highlight;
 	int32_t		textStyle;
 	menuframework_s *menu;
@@ -741,7 +741,7 @@ static void Action_Draw( menuaction_s *a )
 {
 	int32_t		x, y;
 	int32_t		style;
-//	float*	color;
+//	double*	color;
 	int32_t		textColor,buttonColor;
 
 	style = 0;
@@ -884,7 +884,7 @@ static void RadioButton_Draw( menuradiobutton_s *rb )
 {
 	int32_t	x;
 	int32_t y;
-	float *color;
+	double *color;
 	int32_t	style;
 	qboolean focus;
 
@@ -986,7 +986,7 @@ static sfxHandle_t Slider_Key( menuslider_s *s, int32_t key )
 		case K_MOUSE1:
 			x           = uis.cursorx - s->generic.x;
 			oldvalue    = s->curvalue;
-			s->curvalue = (x/(float)(s->focusWidth)) * (s->maxvalue-s->minvalue) + s->minvalue;
+			s->curvalue = (x/(double)(s->focusWidth)) * (s->maxvalue-s->minvalue) + s->minvalue;
 
 			//TiM | If a default was set, reset it in this case
 			if ( x < 0 && s->defvalue ) {
@@ -1083,7 +1083,7 @@ static void Slider_Draw( menuslider_s *s )
 	}
 
 	if ( s->mouseDown ) {
-		s->curvalue = ((uis.cursorx - s->generic.x)/(float)(s->focusWidth)) * (s->maxvalue-s->minvalue) + s->minvalue;
+		s->curvalue = ((uis.cursorx - s->generic.x)/(double)(s->focusWidth)) * (s->maxvalue-s->minvalue) + s->minvalue;
 		s->curvalue = Com_Clamp( s->minvalue, s->maxvalue, s->curvalue);
 
 		s->generic.parent->noNewSelecting = qtrue;
@@ -1111,7 +1111,7 @@ static void Slider_Draw( menuslider_s *s )
 	// clamp thumb
 	if (s->maxvalue > s->minvalue)
 	{
-		s->range = ( s->curvalue - s->minvalue ) / ( float ) ( s->maxvalue - s->minvalue );
+		s->range = ( s->curvalue - s->minvalue ) / ( double ) ( s->maxvalue - s->minvalue );
 		if ( s->range < 0)
 		{
 			s->range = 0;
@@ -1155,7 +1155,7 @@ Slider_Draw
 */
 static void Slider_Draw( menuslider_s *s )
 {
-	float *color;
+	double *color;
 	int32_t	style;
 	int32_t	i;
 	int32_t x;
@@ -1200,7 +1200,7 @@ static void Slider_Draw( menuslider_s *s )
 	// clamp thumb
 	if (s->maxvalue > s->minvalue)
 	{
-		s->range = ( s->curvalue - s->minvalue ) / ( float ) ( s->maxvalue - s->minvalue );
+		s->range = ( s->curvalue - s->minvalue ) / ( double ) ( s->maxvalue - s->minvalue );
 		if ( s->range < 0)
 			s->range = 0;
 		else if ( s->range > 1)
@@ -1324,7 +1324,7 @@ static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
 				//MIGHTNEEDFIXME: UI_RIGHT...? Eh, If I need it, I'll come back here hehe
 
 				//If we can, cause it's cool, move the list up 1/3 of it's height
-				heightOffset = (float)( s->drawList.down - s->drawList.up ) * (float)0.33;
+				heightOffset = (double)( s->drawList.down - s->drawList.up ) * (double)0.33;
 				s->drawList.up -= heightOffset;
 				s->drawList.down -= heightOffset;
 
@@ -1981,7 +1981,7 @@ void ScrollList_Draw( menulist_s *l )
 	int32_t			i;
 	int32_t			base;
 	int32_t			column;
-	float*		color;
+	double*		color;
 	qboolean	hasfocus;
 	int32_t			style;
 

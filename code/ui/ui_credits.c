@@ -122,7 +122,7 @@ static qhandle_t			spaceBackdrop;
 
 int32_t i;
 
-static float cm_buttons[9][2] = 
+static double cm_buttons[9][2] = 
 {
 	{129,62},
 	{129,86},
@@ -711,8 +711,8 @@ static void UI_drawLogo ( void )
 	refEntity_t		ent;
 	vec3_t			origin = {0.0, 0.0, 0.0};
 	vec3_t			angles;
-	float			adjust;
-	float			x, y, w, h;
+	double			adjust;
+	double			x, y, w, h;
 	//vec4_t			color = {0.5, 0, 0, 1};
 
 	// setup the refdef
@@ -733,7 +733,7 @@ static void UI_drawLogo ( void )
 	refdef.width = w;
 	refdef.height = h;
 
-	adjust = 0; // JDC: Kenneth asked me to stop this 1.0 * sin( (float)uis.realtime / 1000 );
+	adjust = 0; // JDC: Kenneth asked me to stop this 1.0 * sin( (double)uis.realtime / 1000 );
 	refdef.fov_x = 17 + adjust; //60 //TiM: Controls width scale
 	refdef.fov_y = 19.6875 + adjust; //19.6875
 
@@ -749,7 +749,7 @@ static void UI_drawLogo ( void )
 
 	memset( &ent, 0, sizeof(ent) );
 
-	adjust = 20.0/300.0 * uis.realtime; //5.0 * sin( (float)uis.realtime / 5000 );
+	adjust = 20.0/300.0 * uis.realtime; //5.0 * sin( (double)uis.realtime / 5000 );
 	VectorSet( angles, 0, 180 + adjust, 0 );
 	AnglesToAxis( angles, ent.axis );
 	ent.hModel = s_credits.logoModel;

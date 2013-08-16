@@ -618,7 +618,7 @@ END MOD
 
 
 
-static float mm_buttons[6][2] = 
+static double mm_buttons[6][2] = 
 {
 {129,62},
 {129,86},
@@ -628,7 +628,7 @@ static float mm_buttons[6][2] =
 {305,109}
 };
 
-static float federationTimer;
+static double federationTimer;
 
 // Data for Welcome In Menu
 static struct 
@@ -999,8 +999,8 @@ MainArenaServers_Compare
 =================
 */
 static int32_t QDECL MainArenaServers_Compare( const void *arg1, const void *arg2 ) {
-	float			f1;
-	float			f2;
+	double			f1;
+	double			f2;
 	table_t*		t1;
 	table_t*		t2;
 
@@ -1612,8 +1612,8 @@ Phenix
 	refEntity_t		ent;
 	vec3_t			origin = {0.0, 0.0, 0.0};
 	vec3_t			angles;
-	float			adjust;
-	float			x, y, w, h;
+	double			adjust;
+	double			x, y, w, h;
 	//vec4_t			color = {0.5, 0, 0, 1};
 
 	// setup the refdef
@@ -1635,7 +1635,7 @@ Phenix
 	refdef.width = w;
 	refdef.height = h;
 
-	adjust = 0; // JDC: Kenneth asked me to stop this 1.0 * sin( (float)uis.realtime / 1000 );
+	adjust = 0; // JDC: Kenneth asked me to stop this 1.0 * sin( (double)uis.realtime / 1000 );
 	refdef.fov_x = 10 + adjust; //60 //TiM: Controls width scale // yeah.... coz it's the FOV lol //17
 																//that being the case, we have to aim for a value of 10
 																//(10's what I use in MD3View... anything higher and it starts to distort)
@@ -1655,7 +1655,7 @@ Phenix
 
 	memset( &ent, 0, sizeof(ent) );
 
-	adjust = 20.0/300.0 * uis.realtime; //5.0 * sin( (float)uis.realtime / 5000 );
+	adjust = 20.0/300.0 * uis.realtime; //5.0 * sin( (double)uis.realtime / 5000 );
 	VectorSet( angles, 0, 180 + adjust, 0 );
 	AnglesToAxis( angles, ent.axis );
 	ent.hModel = s_main.logoModel;
@@ -1743,7 +1743,7 @@ static void Player_DrawPlayer( void ) //*self )
 	vec3_t			viewangles;
 	vec3_t			origin = {-3, 5, -3 };//{ 0, 3.8, 0};
 	char			buf[MAX_QPATH];
-//	float				yaw;
+//	double				yaw;
 
 	trap_Cvar_VariableStringBuffer( "model", buf, sizeof( buf ) );
 	
@@ -1847,7 +1847,7 @@ static weapongraphics_s weapon_graphics[UI_NUM_WEAPONS] =	//was WP_NUM_WEAPONS, 
 };
 
 
-/*static void UI_Draw3DModel( float x, float y, float w, float h, qhandle_t model, vec3_t origin, vec3_t angles, vec3_t weaponMidpoint ) {
+/*static void UI_Draw3DModel( double x, double y, double w, double h, qhandle_t model, vec3_t origin, vec3_t angles, vec3_t weaponMidpoint ) {
 	refdef_t		refdef;
 	refEntity_t		ent;
 
@@ -1954,7 +1954,7 @@ static void M_MainMenu_Graphics (void)
 	char string[256];
 	char temp[128];
 	int32_t i;
-	float	scale;
+	double	scale;
 	servernode_t*	node;
 	int32_t		style;
 
@@ -2109,7 +2109,7 @@ static void M_MainMenu_Graphics (void)
 	}
 	UI_DrawProportionalString(  270,  y, string, UI_LEFT|UI_SMALLFONT, colorTable[CT_LTGOLD1]);
 
-	scale = trap_Cvar_VariableValue( "height" ) * (float)BASE_HEIGHT;
+	scale = trap_Cvar_VariableValue( "height" ) * (double)BASE_HEIGHT;
 
 	Com_sprintf( string, sizeof( string ), "%s: %3.2f%s", menu_normal_text[MNT_HEIGHT], scale, HEIGHT_UNIT );
 	if ( strlen( string ) > 20 )
@@ -2148,9 +2148,9 @@ static void M_MainMenu_Graphics (void)
 	}
 	UI_DrawProportionalString(  270,  y, string, UI_LEFT|UI_SMALLFONT, colorTable[CT_LTGOLD1]);
 
-	scale = trap_Cvar_VariableValue( "height" ) * trap_Cvar_VariableValue( "weight" ) * (float)BASE_WEIGHT;
+	scale = trap_Cvar_VariableValue( "height" ) * trap_Cvar_VariableValue( "weight" ) * (double)BASE_WEIGHT;
 	if ( s_main.playerinfo.gender == GENDER_FEMALE )
-		scale *= (float)FEMALE_OFFSET;
+		scale *= (double)FEMALE_OFFSET;
 
 	Com_sprintf( string, sizeof( string ), "%s: %3.2f%s", menu_normal_text[MNT_WEIGHT], scale, WEIGHT_UNIT );
 	if ( strlen( string ) > 20 )

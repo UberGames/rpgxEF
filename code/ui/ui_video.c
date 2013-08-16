@@ -1849,8 +1849,8 @@ M_VideoDriverMenu_Graphics
 */
 void M_VideoDriverMenu_Graphics (void)
 {
-	float labelColor[] = { 0, 1.0, 0, 1.0 };
-	float textColor[] = { 1, 1, 1, 1 };
+	double labelColor[] = { 0, 1.0, 0, 1.0 };
+	double textColor[] = { 1, 1, 1, 1 };
 	int32_t x,y,x2;
 
 	UI_MenuFrame(&s_videodriver.menu);

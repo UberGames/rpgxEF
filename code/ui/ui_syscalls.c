@@ -20,7 +20,7 @@ void dllEntry( int32_t (QDECL *syscallptr)( int32_t arg,... ) ) {
 	syscall = syscallptr;
 }*/
 
-int32_t PASSFLOAT( float x ) {
+int32_t PASSFLOAT( double x ) {
 	int32_t	floatTemp;
 	floatTemp = x;
 	return floatTemp;
@@ -50,8 +50,8 @@ void trap_Cvar_Set( const char *var_name, const char *value ) {
 	syscall( UI_CVAR_SET, var_name, value );
 }
 
-float trap_Cvar_VariableValue( const char *var_name ) {
-	float temp;
+double trap_Cvar_VariableValue( const char *var_name ) {
+	double temp;
 	temp = syscall( UI_CVAR_VARIABLEVALUE, var_name );
 	return temp;
 }
@@ -60,7 +60,7 @@ void trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int32_t
 	syscall( UI_CVAR_VARIABLESTRINGBUFFER, var_name, buffer, bufsize );
 }
 
-void trap_Cvar_SetValue( const char *var_name, float value ) {
+void trap_Cvar_SetValue( const char *var_name, double value ) {
 	syscall( UI_CVAR_SETVALUE, var_name, PASSFLOAT( value ) );
 }
 
@@ -132,7 +132,7 @@ void trap_R_AddPolyToScene( qhandle_t hShader , int32_t numVerts, const polyVert
 	syscall( UI_R_ADDPOLYTOSCENE, hShader, numVerts, verts );
 }
 
-void trap_R_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b ) {
+void trap_R_AddLightToScene( const vec3_t org, double intensity, double r, double g, double b ) {
 	syscall( UI_R_ADDLIGHTTOSCENE, org, PASSFLOAT(intensity), PASSFLOAT(r), PASSFLOAT(g), PASSFLOAT(b) );
 }
 
@@ -140,11 +140,11 @@ void trap_R_RenderScene( const refdef_t *fd ) {
 	syscall( UI_R_RENDERSCENE, fd );
 }
 
-void trap_R_SetColor( const float *rgba ) {
+void trap_R_SetColor( const double *rgba ) {
 	syscall( UI_R_SETCOLOR, rgba );
 }
 
-void trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader ) {
+void trap_R_DrawStretchPic( double x, double y, double w, double h, double s1, double t1, double s2, double t2, qhandle_t hShader ) {
 	syscall( UI_R_DRAWSTRETCHPIC, PASSFLOAT(x), PASSFLOAT(y), PASSFLOAT(w), PASSFLOAT(h), PASSFLOAT(s1), PASSFLOAT(t1), PASSFLOAT(s2), PASSFLOAT(t2), hShader );
 }
 
@@ -152,7 +152,7 @@ void trap_UpdateScreen( void ) {
 	syscall( UI_UPDATESCREEN );
 }
 
-void trap_CM_LerpTag( orientation_t *tag, clipHandle_t mod, int32_t startFrame, int32_t endFrame, float frac, const char *tagName ) {
+void trap_CM_LerpTag( orientation_t *tag, clipHandle_t mod, int32_t startFrame, int32_t endFrame, double frac, const char *tagName ) {
 	syscall( UI_CM_LERPTAG, tag, mod, startFrame, endFrame, PASSFLOAT(frac), tagName );
 }
 

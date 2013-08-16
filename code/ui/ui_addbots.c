@@ -62,9 +62,9 @@ static void UI_AddBotsMenu_BotEvent( void* ptr, int32_t event ) {
 		return;
 	}
 
-	addBotsMenuInfo.bots[addBotsMenuInfo.selectedBotNum].color = (float*)colorTable[CT_DKGOLD1];
+	addBotsMenuInfo.bots[addBotsMenuInfo.selectedBotNum].color = (double*)colorTable[CT_DKGOLD1];
 	addBotsMenuInfo.selectedBotNum = ((menucommon_s*)ptr)->id - ID_BOTNAME0;
-	addBotsMenuInfo.bots[addBotsMenuInfo.selectedBotNum].color = (float*)colorTable[CT_YELLOW];
+	addBotsMenuInfo.bots[addBotsMenuInfo.selectedBotNum].color = (double*)colorTable[CT_YELLOW];
 }
 
 
