@@ -3649,4 +3649,350 @@ void SP_target_shiphealth(gentity_t *ent) {
 	trap_LinkEntity(ent);
 }
 
+/*QUAKED target_sequence (1 0 0) (-8 -8 -8) (8 8 8) ? NO_INIT_DELAY DISALLOW_ABORTS LOOP AUTO_INIT FREE_AFTER_SEQUENCE
+-----DESCRIPTION-----
+A sequence manager, mostly to kill off multiple target_delays.
+Will fire specified targets in a fixed order.
+The time intervall between each firing can be specified.
+If an intervall is 0 (or specifically not > 0) the sequence is ended.
+The sequence is also ended once the entity is used a 2nd time (unless disallowed).
+Entities are always fired as noactivator.
 
+-----SPAWNFLAGS-----
+1: NO_INIT_DELAY - The first target will be fired without any delay (damage will simply not be read).
+2: DISALLOW_ABORTS - Disallows aborting the sequence by a 2nd use of the entity.
+4: LOOP - Instead of ending after the frst pass it starts back at stage 1.
+8: AURO_INIT - starts 1st stage when spawned. Overwrites NO_INIT_DELAY as target entities may not have been spawned.
+16: FREE_AFTER_SEQUENCE - removes entity after 1 sequence has either run trough or been aborted. 
+
+-----KEYS-----
+"targetname" - used to init the sequence
+"message" - Message to display when sequence is initialised
+"model" - Message to display when sequence is aborted
+"model2" - Message to display while in an inabortable sequence
+
+Pos | Target | Delay (in ms, 1 s = 1000 ms)
+1 | bluename | damage
+2 | bluesound | health
+3 | falsename | splashDamage
+4 | falsetarget | splashRadius
+5 | greensound | angle
+
+-----USAGE-----
+For more than 5 iterations:
+If you plan a sequence that has more than 5 iterations simply have 
+the 5th iteration of entity a target entity b and have entity b
+have NO_INIIT_DELAY on.
+
+For looping have the last target_sequence target the first (if you don't want the 
+initial init to be instand run it trough a target_delay)
+
+If you want the entire sequence to be inabortable I recomend you use 
+the following lua script hooked via luaUse on your usable. Make sure that every 
+target_sequence has a unique name on the map:
+
+function sequencecheck (ent, other, activator)
+	if ent.GetCount(entity.Find("targetname(1)")) > 0 then
+		if ent.GetCount(entity.Find("targetname(2)")) > 0 then
+			if ent.GetCount(entity.Find("targetname(n)")) > 0 then
+				entity.Use(entity.Find("targetname(1)"));
+			else
+				game.MessagePrint(activator, "=C= Unable to comply, sequence is already in progress");
+			end
+		else
+			game.MessagePrint(activator, "=C= Unable to comply, sequence is already in progress");
+		end
+	else
+		game.MessagePrint(activator, "=C= Unable to comply, sequence is already in progress");
+	end
+end
+*/
+
+// ent->count will be used to keep track of the iteration, will transfer as next targetname to fire
+
+void target_sequence_think(/*@shared@*/ gentity_t *ent){
+
+	// we've called a think, so we're in sequence
+	// let's figure out what to fire:
+	switch(ent->count) {
+	case 1: // bluename | damage
+		ent->target = ent->bluename;
+		G_UseTargets(ent, ent);
+		ent->count = 2;
+		break;
+	case 2: // bluesound | health
+		ent->target = ent->bluesound;
+		G_UseTargets(ent, ent);
+		ent->count = 3;
+		break;
+	case 3: // falsename | splashDamage
+		ent->target = ent->falsename;
+		G_UseTargets(ent, ent);
+		ent->count = 4;
+		break;
+	case 4: // falsetarget | splashRadius
+		ent->target = ent->falsetarget;
+		G_UseTargets(ent, ent);
+		ent->count = 5;
+		break;
+	case 5: // greensound | angle
+		ent->target = ent->greensound;
+		G_UseTargets(ent, ent);
+		// end of line, we need to check how to continue concerning looping
+		if((ent->spawnflags & 4) == 0){
+			//no looping, 0 out
+			ent->count = 0;
+			ent->nextthink = -1;
+			if((ent->spawnflags & 16) != 0){
+				//we have sequenced trough and need to free the entity. Leave a DEV-Note for safety
+				DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Note] target_sequence at %s has run trough, removing entity.\n", vtos(ent->s.origin)););
+				G_FreeEntity(ent);
+			}
+			return;
+		} else {
+			// looping, set up pass 1 delay
+			ent->count = 1;
+			ent->nextthink = level.time + ent->damage;
+			return;
+		}
+	default:
+		//falisafe
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s hit indefined state, please inform ubergames, removing entity.\n", vtos(ent->s.origin)););
+		G_FreeEntity(ent);
+		return;
+	}
+
+	// we've fired our targets, now set up for the next pass
+	// we have 3 things to check for:
+	// 1: is target and delay 0? -> end of sequence
+	// 2: is either target or delay 0? -> warn DEV and free
+	// 3: is target and delay present (else-checked)? -> set up
+	switch(ent->count) {
+	case 1: // bluename | damage
+		if ( ent->bluename == NULL && ent->damage == 0 ) {
+			// end of sequence, do we loop?
+			if((ent->spawnflags & 4) == 0){
+				//no looping, 0 out
+				ent->count = 0;
+				ent->nextthink = -1;
+				if((ent->spawnflags & 16) != 0){
+					//we have sequenced trough and need to free the entity. Leave a DEV-Note for safety
+					DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Note] target_sequence at %s has run trough, removing entity.\n", vtos(ent->s.origin)););
+					G_FreeEntity(ent);
+				}
+				return;
+			} else {
+				// looping, set up pass 1 delay
+				ent->count = 1;
+				ent->nextthink = level.time + ent->damage;
+				return;
+			}
+		} else if ( ent->bluename == NULL || ent->damage == 0 ) {
+			// one without the other does not work, inform dev and free ent
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s is missing bluename or damage in stage 1, removing entity.\n", vtos(ent->s.origin)););
+			G_FreeEntity(ent);
+			return;
+		} else { 
+			// we have everything we need, so continue for next think
+			ent->nextthink = level.time + ent->damage;
+			return;
+		}
+	case 2: // bluesound | health
+		if ( ent->bluesound == NULL && ent->health == 0 ) {
+			// end of sequence, do we loop?
+			if((ent->spawnflags & 4) == 0){
+				//no looping, 0 out
+				ent->count = 0;
+				ent->nextthink = -1;
+				if((ent->spawnflags & 16) != 0){
+					//we have sequenced trough and need to free the entity. Leave a DEV-Note for safety
+					DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Note] target_sequence at %s has run trough, removing entity.\n", vtos(ent->s.origin)););
+					G_FreeEntity(ent);
+				}
+				return;
+			} else {
+				// looping, set up pass 1 delay
+				ent->count = 1;
+				ent->nextthink = level.time + ent->damage;
+				return;
+			}
+		} else if ( ent->bluesound == NULL || ent->health == 0 ) {
+			// one without the other does not work, inform dev and free ent
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s is missing bluesound or health in stage 2, removing entity.\n", vtos(ent->s.origin)););
+			G_FreeEntity(ent);
+			return;
+		} else { 
+			// we have everything we need, so continue for next think
+			ent->nextthink = level.time + ent->health;
+			return;
+		}
+	case 3: // falsename | splashDamage
+		if ( ent->falsename == NULL && ent->splashDamage == 0 ) {
+			// end of sequence, do we loop?
+			if((ent->spawnflags & 4) == 0){
+				//no looping, 0 out
+				ent->count = 0;
+				ent->nextthink = -1;
+				if((ent->spawnflags & 16) != 0){
+					//we have sequenced trough and need to free the entity. Leave a DEV-Note for safety
+					DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Note] target_sequence at %s has run trough, removing entity.\n", vtos(ent->s.origin)););
+					G_FreeEntity(ent);
+				}
+				return;
+			} else {
+				// looping, set up pass 1 delay
+				ent->count = 1;
+				ent->nextthink = level.time + ent->damage;
+				return;
+			}
+		} else if ( ent->falsename == NULL || ent->splashDamage == 0 ) {
+			// one without the other does not work, inform dev and free ent
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s is missing falsename or splashDamage in stage 3, removing entity.\n", vtos(ent->s.origin)););
+			G_FreeEntity(ent);
+			return;
+		} else { 
+			// we have everything we need, so continue for next think
+			ent->nextthink = level.time + ent->splashDamage;
+			return;
+		}
+	case 4: // falsetarget | splashRadius
+		if ( ent->falsetarget == NULL && ent->splashRadius == 0 ) {
+			// end of sequence, do we loop?
+			if((ent->spawnflags & 4) == 0){
+				//no looping, 0 out
+				ent->count = 0;
+				ent->nextthink = -1;
+				if((ent->spawnflags & 16) != 0){
+					//we have sequenced trough and need to free the entity. Leave a DEV-Note for safety
+					DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Note] target_sequence at %s has run trough, removing entity.\n", vtos(ent->s.origin)););
+					G_FreeEntity(ent);
+				}
+				return;
+			} else {
+				// looping, set up pass 1 delay
+				ent->count = 1;
+				ent->nextthink = level.time + ent->damage;
+				return;
+			}
+		} else if ( ent->falsetarget == NULL || ent->splashRadius == 0 ) {
+			// one without the other does not work, inform dev and free ent
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s is missing falsetarget or splashRadius in stage 4, removing entity.\n", vtos(ent->s.origin)););
+			G_FreeEntity(ent);
+			return;
+		} else { 
+			// we have everything we need, so continue for next think
+			ent->nextthink = level.time + ent->splashRadius;
+			return;
+		}
+	case 5: // greensound | angle
+		if ( ent->greensound == NULL && ent->angle == 0 ) {
+			// end of sequence, do we loop?
+			if((ent->spawnflags & 4) == 0){
+				//no looping, 0 out
+				ent->count = 0;
+				ent->nextthink = -1;
+				if((ent->spawnflags & 16) != 0){
+					//we have sequenced trough and need to free the entity. Leave a DEV-Note for safety
+					DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Note] target_sequence at %s has run trough, removing entity.\n", vtos(ent->s.origin)););
+					G_FreeEntity(ent);
+				}
+				return;
+			} else {
+				// looping, set up pass 1 delay
+				ent->count = 1;
+				ent->nextthink = level.time + ent->damage;
+				return;
+			}
+		} else if ( ent->greensound == NULL || ent->angle == 0 ) {
+			// one without the other does not work, inform dev and free ent
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s is missing greensound or angle in stage 5, removing entity.\n", vtos(ent->s.origin)););
+			G_FreeEntity(ent);
+			return;
+		} else { 
+			// we have everything we need, so continue for next think
+			ent->nextthink = level.time + ent->angle;
+			return;
+		}
+	default:
+		//falisafe
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s hit indefined state, please inform ubergames, removing entity.\n", vtos(ent->s.origin)););
+		G_FreeEntity(ent);
+		return;
+	}
+}
+
+
+void target_sequence_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator){
+
+	// let's see if we are in sequence
+	if (ent->count == 0){
+		//we are not, so let's init the sequence, first print message if there is
+		if ( activator != NULL && activator->client != NULL && ent->message != NULL) {
+			trap_SendServerCommand( activator-g_entities, va("servermsg %s", ent->message ));
+		}
+		//do we fire our 1st target imediately or do we delay?
+		if((ent->spawnflags & 1) == 0){
+			//we delay so let's set up
+			ent->nextthink = level.time + ent->damage;
+			ent->count = 1;
+		} else {
+			// we don't delay, so let's fire the targets and set up for stage 2
+			ent->target = ent->bluename;
+			G_UseTargets(ent, ent);
+			ent->nextthink = level.time + ent->damage;
+			ent->count = 2;
+		}
+	} else {
+		// we are in a sequence, so can we abort?
+		if((ent->spawnflags & 2) == 0){
+			//we can, so let's abort
+			if ( activator != NULL && activator->client != NULL && ent->model != NULL) {
+				trap_SendServerCommand( activator-g_entities, va("servermsg %s", ent->model ));
+			}
+			ent->nextthink = -1;
+			ent->count = 0;
+			if((ent->spawnflags & 16) != 0){
+				//we have sequenced trough and need to free the entity. Leave a DEV-Note for safety
+				DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Note] target_sequence at %s has run trough, removing entity.\n", vtos(ent->s.origin)););
+				G_FreeEntity(ent);
+			}
+			return;
+		} else {
+			// we can't, put out info if there is
+			if ( activator != NULL && activator->client != NULL && ent->model2 != NULL) {
+				trap_SendServerCommand( activator-g_entities, va("servermsg %s", ent->model2 ));
+			}
+		}
+	}
+}
+
+void SP_target_sequence(gentity_t *ent) {
+	ent->type = ENT_TARGET_SEQUENCE;
+
+	if(ent->targetname == NULL){
+		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s without targetname, removing entity.\n", vtos(ent->s.origin)););
+		G_FreeEntity(ent);
+		return;
+	}
+
+	ent->think = target_sequence_think;
+	ent->use = target_sequence_use;
+	//do we auto-init?
+	if ((ent->spawnflags & 4) == 0){
+		// we do not, so don't plan a think
+		ent->count = 0;
+		ent->nextthink = -1;
+	} else {
+		// we do so plan think for 1st target time after making sure that we have everything at hand
+		if ( ent->bluename == NULL || ent->damage == 0 ) {
+			// one without the other does not work, inform dev and free ent
+			DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s is missing bluename or damage in stage 1, removing entity.\n", vtos(ent->s.origin)););
+			G_FreeEntity(ent);
+			return;
+		}
+		ent->count = 1;
+		ent->nextthink = level.time + ent->damage;
+	}
+
+	trap_LinkEntity(ent);
+}

@@ -86,6 +86,7 @@ void SP_target_shaderremap(/*@shared@*/ gentity_t *ent);
 void SP_target_selfdestruct(/*@shared@*/ gentity_t *ent);
 void SP_target_zone(/*@shared@*/ gentity_t *ent);
 void SP_target_shiphealth(/*@shared@*/ gentity_t *ent);
+void SP_target_sequence(/*@shared@*/ gentity_t *ent);
 
 void SP_light(/*@shared@*/ gentity_t *self);
 void SP_info_null(/*@shared@*/ gentity_t *self);

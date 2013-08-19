@@ -250,6 +250,7 @@ spawn_t	spawns[] = {
 	{"target_safezone",				SP_target_zone},
 	{"target_zone",					SP_target_zone},
 	{"target_shiphealth",			SP_target_shiphealth},
+	{"target_sequence",				SP_target_sequence},
 
 	{"light",						SP_light},
 	{"path_corner",					SP_path_corner},
