@@ -285,6 +285,9 @@
     <ClCompile Include="memorypool.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="g_logger.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ai_chat.h">
