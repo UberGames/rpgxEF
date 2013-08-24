@@ -1,0 +1,19 @@
+#ifndef G_LOGGER_H_
+#define G_LOGGER_H_
+
+#include "g_local.h"
+
+enum {
+	LL_ERROR,
+	LL_WARN,
+	LL_INFO,
+	LL_DEBUG,
+	LL_TRACE,
+	LL_ALWAYS
+};
+
+#define G_LocLogger(X,...) _G_LocLogger(__FILE__, __LINE__, X, __VA_ARGS__) 
+void QDECL G_Logger(int level, char* fmt, ...) __attribute__ ((format (printf, 2, 3)));
+void QDECL _G_LocLogger(const char* file, int line, int level, char* fmt, ...) __attribute__ ((format (printf, 4, 5)));
+
+#endif /* G_LOGGER_H_ */

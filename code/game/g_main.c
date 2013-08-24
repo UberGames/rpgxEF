@@ -40,6 +40,7 @@ rankNames_t g_rankNames[MAX_RANKS];
 
 g_classData_t	g_classData[MAX_CLASSES];
 
+vmCvar_t	g_logLevel;
 vmCvar_t	g_gametype;
 vmCvar_t	g_dmflags;
 vmCvar_t	g_password;
@@ -472,7 +473,8 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_tr116Damage, 			"rpg_tr116Damage", 				"150", 						CVAR_ARCHIVE,											0, qfalse },
 	{ &rpg_photonDamage, 			"rpg_photonDamage", 			"140", 						CVAR_ARCHIVE, 											0, qfalse },
 	{ &rpg_photonAltDamage,			"rpg_photonAltDamage", 			"140", 						CVAR_ARCHIVE, 											0, qfalse },
-	{ &g_developer,					"g_developer", 					"0", 						CVAR_ARCHIVE, 											0, qfalse }
+	{ &g_developer,					"g_developer", 					"0", 						CVAR_ARCHIVE, 											0, qfalse },
+	{ &g_logLevel,					"g_loglevel",					"1",						CVAR_ARCHIVE,											0, qfalse }
 };
 
 static int	gameCvarTableSize = (int)(sizeof( gameCvarTable ) / sizeof( gameCvarTable[0] ));

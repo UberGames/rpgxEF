@@ -924,5 +924,8 @@ void CG_InitConsoleCommands( void ) {
 
 	/* precacheFile */
 	trap_AddCommand("generatePrecacheFile");
+
+	/* test new logger on game side */
+	trap_AddCommand("testlogger");
 }
 

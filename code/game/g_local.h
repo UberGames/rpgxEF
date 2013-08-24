@@ -2317,6 +2317,7 @@ extern  gentity_t		g_entities[MAX_GENTITIES];
 //extern int shaketimer; //Global shake timer varible //TiM: NOT NECESSARY!
 extern int RPGEntityCount; //Global entity count varible
 
+extern	vmCvar_t	g_logLevel;
 extern	vmCvar_t	g_gametype;
 extern	vmCvar_t	g_dedicated;
 extern	vmCvar_t	g_cheats;

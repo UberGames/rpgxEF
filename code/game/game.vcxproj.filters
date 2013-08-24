@@ -497,6 +497,9 @@
     <ClInclude Include="memorypool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="g_logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">

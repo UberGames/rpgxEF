@@ -514,6 +514,7 @@
     <ClInclude Include="g_sql.h" />
     <ClInclude Include="g_team.h" />
     <ClInclude Include="g_weapon.h" />
+    <ClInclude Include="g_logger.h" />
     <ClInclude Include="inv.h" />
     <ClInclude Include="lapi.h" />
     <ClInclude Include="lauxlib.h" />

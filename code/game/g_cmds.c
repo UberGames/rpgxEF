@@ -6,6 +6,7 @@
 #include "g_sql.h"
 #include "g_main.h"
 #include "g_client.h"
+#include "g_logger.h"
 
 //#include <windows.h>
 
@@ -7565,6 +7566,22 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 	trap_FS_FCloseFile(f);
 }
 
+static void Cmd_TestLogger(gentity_t* ent) {
+	G_Logger(LL_ALWAYS, "always print this %d %s\n", 42, "42");
+	G_Logger(LL_ERROR, "this is an error %d %s\n", 42, "42");
+	G_Logger(LL_WARN, "this is a warning %d %s\n", 42, "42");
+	G_Logger(LL_INFO, "this is an info %d %s\n", 42, "42");
+	G_Logger(LL_DEBUG, "this is a debug message %d %s\n", 42, "42");
+	G_Logger(LL_TRACE, "this is a trace message %d %s\n", 42, "42");
+
+	G_LocLogger(LL_ALWAYS, "always print this %d %s\n", 42, "42");
+	G_LocLogger(LL_ERROR, "this is an error %d %s\n", 42, "42");
+	G_LocLogger(LL_WARN, "this is a warning %d %s\n", 42, "42");
+	G_LocLogger(LL_INFO, "this is an info %d %s\n", 42, "42");
+	G_LocLogger(LL_DEBUG, "this is a debug message %d %s\n", 42, "42");
+	G_LocLogger(LL_TRACE, "this is a trace message %d %s\n", 42, "42");
+}
+
 /*
 =================
 G_Client_Command
@@ -7831,6 +7848,9 @@ void G_Client_Command( int clientNum )
 	// END CCAM
 	else if (Q_stricmp (cmd, "generatePrecacheFile") == 0) {
 		Cmd_GeneratePrecacheFile(ent);
+	}
+	else if (Q_stricmp (cmd, "testlogger") == 0) {
+		Cmd_TestLogger(ent);
 	}
 	else if (Q_strncmp (cmd, "\n", 1) == 0 || Q_strncmp (cmd, " ", 1) == 0 || Q_strncmp (cmd, "\0", 1) == 0) // sorry
 		(void)(0);

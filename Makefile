@@ -2241,6 +2241,7 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/g_sql.o \
   $(B)/$(BASEGAME)/game/g_breakable.o \
   $(B)/$(BASEGAME)/game/g_cinematic.o \
+  $(B)/$(BASEGAME)/game/g_logger.o \
   $(B)/$(BASEGAME)/game/lua_game.o \
   $(B)/$(BASEGAME)/game/lua_entity.o \
   $(B)/$(BASEGAME)/game/lua_vector.o \
