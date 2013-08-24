@@ -1966,6 +1966,8 @@ UI_Init
 */
 void UI_Init( void ) {
 
+	Com_Printf ("This is RPG-X version %s compiled by %s on %s.\n", RPGX_VERSION, RPGX_COMPILEDBY, RPGX_COMPILEDATE);
+
 	memset( &uis, 0, sizeof ( uis ) );
 
 	/*if ( !uis.playCinematic ) {

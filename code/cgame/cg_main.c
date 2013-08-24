@@ -1167,6 +1167,8 @@ void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence ) {
 	const char	*s;
 	int32_t i;
 
+	CG_Printf ("This is RPG-X version %s compiled by %s on %s.\n", RPGX_VERSION, RPGX_COMPILEDBY, RPGX_COMPILEDATE);
+
 	// clear everything
 	memset( &cgs, 0, sizeof( cgs ) );
 	memset( &cg, 0, sizeof( cg ) );

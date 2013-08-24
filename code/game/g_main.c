@@ -1711,6 +1711,7 @@ void G_InitGame( int levelTime, unsigned int randomSeed, int restart ) {
 	G_Printf ("------- Game Initialization -------\n");
 	G_Printf ("gamename: %s\n", GAMEVERSION);
 	G_Printf ("gamedate: %s\n", __DATE__);
+	G_Printf ("This is RPG-X version %s compiled by %s on %s.\n", RPGX_VERSION, RPGX_COMPILEDBY, RPGX_COMPILEDATE);
 
 	level.overrideCalcLiftTravelDuration = 0;
 

@@ -10,7 +10,7 @@
 // second version that must match between game and cgame
 #define RPGX_VERSION		"RPG-X V 2.3 CB 4"
 #define RPGX_COMPILEDATE	__DATE__ " " __TIME__
-#define RPGX_COMPILEDBY		"GSIO01"
+#define RPGX_COMPILEDBY		"Jenkins"
 #define GAME_VERSION		"RPG-X v" RPGX_VERSION
 
 #define INJURED_MODE_HEALTH		20	//!<For the injured mode health system.
