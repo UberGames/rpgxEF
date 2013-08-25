@@ -2154,8 +2154,8 @@ void G_Client_Disconnect( int32_t clientNum ) {
 	gentity_t*	tent = NULL;
 	int32_t		i = 0;
 
-	ent = g_entities + clientNum;
-	if ( (ent = NULL) || (ent->client == NULL) ) {
+	ent = &g_entities[clientNum];
+	if ( (ent == NULL) || (ent->client == NULL) ) {
 		return;
 	}
 
@@ -2191,12 +2191,12 @@ void G_Client_Disconnect( int32_t clientNum ) {
 		}
 
 		if ( foundName ) {
-			memset( &g_reconData[i], 0, sizeof( g_reconData[i] ) );
+			memset( &g_reconData[l], 0, sizeof( g_reconData[l] ) );
 		
 			//IP Address
-			Q_strncpyz( g_reconData[i].ipAddress, ent->client->pers.ip, sizeof( g_reconData[i].ipAddress ) );
+			Q_strncpyz( g_reconData[l].ipAddress, ent->client->pers.ip, sizeof( g_reconData[l].ipAddress ) );
 			//Player Name
-			Q_strncpyz( g_reconData[i].previousName, ent->client->pers.netname, sizeof( g_reconData[i].previousName ) );
+			Q_strncpyz( g_reconData[l].previousName, ent->client->pers.netname, sizeof( g_reconData[l].previousName ) );
 		} else {
 			memset( &g_reconData[g_reconNum], 0, sizeof( g_reconData[g_reconNum] ) );
 
@@ -2229,7 +2229,6 @@ void G_Client_Disconnect( int32_t clientNum ) {
 		// Especially important for stuff like CTF flags
 		TossClientItems ( ent, qtrue );
 	}
-
 	G_LogPrintf( "ClientDisconnect: %i (%s)\n", clientNum, g_entities[clientNum].client->pers.ip );
 
 	// if we are playing in tourney mode and losing, give a win to the other player
@@ -2240,7 +2239,6 @@ void G_Client_Disconnect( int32_t clientNum ) {
 	}
 
 	if ( (g_gametype.integer == GT_TOURNAMENT) && (ent->client->sess.sessionTeam == TEAM_FREE) && (level.intermissiontime != 0) ) {
-		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
 		level.restarted = qtrue;
 		level.intermissiontime = 0;
 	}
