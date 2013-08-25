@@ -2239,6 +2239,7 @@ void G_Client_Disconnect( int32_t clientNum ) {
 	}
 
 	if ( (g_gametype.integer == GT_TOURNAMENT) && (ent->client->sess.sessionTeam == TEAM_FREE) && (level.intermissiontime != 0) ) {
+		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
 		level.restarted = qtrue;
 		level.intermissiontime = 0;
 	}
