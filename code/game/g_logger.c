@@ -21,17 +21,17 @@ void QDECL G_Logger (int level, char* fmt, ...) {
 		G_Printf(S_COLOR_YELLOW "[game][warn ] - %s", text);
 		break;
 	case LL_INFO:
-		G_Printf("[game][info ] %s - ", text);
+		G_Printf("[game][info ] - %s", text);
 		break;
 	case LL_DEBUG:
-		G_Printf("[game][debug] %s - ", text);
+		G_Printf("[game][debug] - %s", text);
 		break;
 	case LL_TRACE:
-		G_Printf("[game][trace] %s - ", text);
+		G_Printf("[game][trace] - %s", text);
 		break;
 	case LL_ALWAYS:
 	default:
-		G_Printf("[game]        %s - ", text);
+		G_Printf("[game]        - %s", text);
 		break;
 	}
 }
