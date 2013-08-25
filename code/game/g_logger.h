@@ -4,12 +4,12 @@
 #include "g_local.h"
 
 enum {
+	LL_ALWAYS,
 	LL_ERROR,
 	LL_WARN,
 	LL_INFO,
 	LL_DEBUG,
-	LL_TRACE,
-	LL_ALWAYS
+	LL_TRACE
 };
 
 #define G_LocLogger(X,...) _G_LocLogger(__FILE__, __LINE__, X, __VA_ARGS__) 

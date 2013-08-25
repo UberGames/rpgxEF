@@ -4,7 +4,7 @@ void QDECL G_Logger (int level, char* fmt, ...) {
 	va_list argptr;
 	char	text[1024];
 
-	if(level > g_logLevel.integer && g_logLevel.integer != LL_ALWAYS) {
+	if(level > g_logLevel.integer) {
 		return;
 	}
 
@@ -15,23 +15,23 @@ void QDECL G_Logger (int level, char* fmt, ...) {
 	switch (level)
 	{
 	case LL_ERROR:
-		G_Printf(S_COLOR_RED "[game][error] %s", text);
+		G_Printf(S_COLOR_RED "[game][error] - %s", text);
 		break;
 	case LL_WARN:
-		G_Printf(S_COLOR_YELLOW "[game][warn] %s", text);
+		G_Printf(S_COLOR_YELLOW "[game][warn ] - %s", text);
 		break;
 	case LL_INFO:
-		G_Printf("[game][info] %s", text);
+		G_Printf("[game][info ] %s - ", text);
 		break;
 	case LL_DEBUG:
-		G_Printf("[game][info] %s", text);
+		G_Printf("[game][debug] %s - ", text);
 		break;
 	case LL_TRACE:
-		G_Printf("[game][trace] %s", text);
+		G_Printf("[game][trace] %s - ", text);
 		break;
 	case LL_ALWAYS:
 	default:
-		G_Printf("[game] %s", text);
+		G_Printf("[game]        %s - ", text);
 		break;
 	}
 }
@@ -40,7 +40,7 @@ void QDECL _G_LocLogger (const char* file, int line, int level, char* fmt, ...) 
 	va_list argptr;
 	char	text[1024];
 
-	if(level > g_logLevel.integer && g_logLevel.integer != LL_ALWAYS) {
+	if(level > g_logLevel.integer) {
 		return;
 	}
 
@@ -51,23 +51,29 @@ void QDECL _G_LocLogger (const char* file, int line, int level, char* fmt, ...) 
 	switch (level)
 	{
 	case LL_ERROR:
-		G_Printf(S_COLOR_RED "[game][error] %s:%d - ", file, line);
+		G_Printf(S_COLOR_RED "[game][error][%s:%d] - ", file, line);
+		G_Printf(S_COLOR_RED "%s", text);
 		break;
 	case LL_WARN:
-		G_Printf(S_COLOR_YELLOW "[game][warn] %s:%d - ", file, line);
+		G_Printf(S_COLOR_YELLOW "[game][warn ][%s:%d] - ", file, line);
+		G_Printf(S_COLOR_YELLOW "%s", text);
 		break;
 	case LL_INFO:
-		G_Printf("[game][info] %s:%d - ", file, line);
+		G_Printf("[game][info ][%s:%d] - ", file, line);
+		G_Printf("%s", text);
 		break;
 	case LL_DEBUG:
-		G_Printf("[game][info] %s:%d - ", file, line);
+		G_Printf("[game][debug][%s:%d] - ", file, line);
+		G_Printf("%s", text);
 		break;
 	case LL_TRACE:
-		G_Printf("[game][trace] %s:%d - ", file, line);
+		G_Printf("[game][trace][%s:%d] - ", file, line);
+		G_Printf("%s", text);
 		break;
 	case LL_ALWAYS:
 	default:
-		G_Printf("[game] %s:%d - ", file, line);
+		G_Printf("[game]       [%s:%d] - ", file, line);
+		G_Printf("%s", text);
 		break;
 	}
 }

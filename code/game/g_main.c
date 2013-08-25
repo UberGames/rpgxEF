@@ -474,7 +474,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_photonDamage, 			"rpg_photonDamage", 			"140", 						CVAR_ARCHIVE, 											0, qfalse },
 	{ &rpg_photonAltDamage,			"rpg_photonAltDamage", 			"140", 						CVAR_ARCHIVE, 											0, qfalse },
 	{ &g_developer,					"g_developer", 					"0", 						CVAR_ARCHIVE, 											0, qfalse },
-	{ &g_logLevel,					"g_loglevel",					"1",						CVAR_ARCHIVE,											0, qfalse }
+	{ &g_logLevel,					"g_loglevel",					"2",						CVAR_ARCHIVE,											0, qfalse }
 };
 
 static int	gameCvarTableSize = (int)(sizeof( gameCvarTable ) / sizeof( gameCvarTable[0] ));
