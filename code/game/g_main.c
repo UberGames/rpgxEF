@@ -1842,10 +1842,10 @@ void G_InitGame( int levelTime, unsigned int randomSeed, int restart ) {
 	G_LoadMapChangeFile();
 
 	//GSIO: load holodeck file if avaible
-	//G_LoadHolodeckFile();
+	G_LoadHolodeckFile();
 
 	//GSIO: load timed message
-	G_LoadTimedMessages();
+	//G_LoadTimedMessages();
 
 	// general initialization
 	G_FindTeams();
