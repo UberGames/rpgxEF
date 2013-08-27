@@ -1,7 +1,7 @@
 #ifndef UI_LOGGER_H_
 #define UI_LOGGER_H_
 
-#include "UI_local.h"
+#include "ui_local.h"
 
 enum {
 	LL_ALWAYS,
