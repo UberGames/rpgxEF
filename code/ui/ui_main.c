@@ -274,6 +274,9 @@ vmCvar_t	sv_securityCode;
 //Widescreen support
 vmCvar_t	ui_handleWidescreen;
 
+//debugging
+vmCvar_t	ui_logLevel;
+
 static cvarTable_t		cvarTable[] = {
 	{ &ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", CVAR_ARCHIVE },
 	{ &ui_ffa_timelimit, "ui_ffa_timelimit", "0", CVAR_ARCHIVE },
@@ -469,6 +472,8 @@ static cvarTable_t		cvarTable[] = {
 	{ &sv_securityCode, "sv_securityCode", "4294967295", CVAR_ARCHIVE | CVAR_USERINFO | CVAR_ROM | CVAR_NORESTART },
 
 	{ &ui_handleWidescreen, "ui_handleWidescreen", "1", CVAR_ARCHIVE },
+
+	{ &ui_logLevel, "ui_loglevel", "1", CVAR_ARCHIVE },
 };
 
 static int32_t	cvarTableSize = sizeof(cvarTable) / sizeof(cvarTable[0]);

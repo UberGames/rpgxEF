@@ -190,6 +190,9 @@ vmCvar_t	rpg_forceFieldSet;
 // grp cvars
 vmCvar_t	grp_berp;
 
+// debugging cvars
+vmCvar_t	cg_logLevel;
+
 // lua
 #ifdef CG_LUA
 vmCvar_t			cg_debugLua;
@@ -321,6 +324,9 @@ static cvarTable_t	cvarTable[] = {
 
 	// grp cvars
 	{ &grp_berp, "grp_berp", "0", CVAR_ARCHIVE | CVAR_LATCH },
+
+	// debugging cvars
+	{ &cg_logLevel, "cg_loglevel", "2", CVAR_ARCHIVE },
 
 	// lua
 #ifdef CG_LUA

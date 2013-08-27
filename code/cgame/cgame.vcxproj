@@ -463,6 +463,7 @@
     <ClCompile Include="lua_cent.c" />
     <ClCompile Include="lua_cfx.c" />
     <ClCompile Include="lua_refent.c" />
+    <ClCompile Include="cg_logger.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\bg_local.h" />
@@ -478,6 +479,7 @@
     <ClInclude Include="..\game\surfaceflags.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="tr_types.h" />
+    <ClCompile Include="cg_logger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cgame.def" />

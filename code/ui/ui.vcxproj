@@ -481,6 +481,7 @@
     </ClCompile>
     <ClCompile Include="ui_transporter.c" />
     <ClCompile Include="ui_turbolift.c" />
+    <ClCompile Include="ui_logger.c" />
     <ClCompile Include="ui_video.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;UI_EXPORTS</PreprocessorDefinitions>
@@ -499,6 +500,7 @@
     <ClInclude Include="..\cgame\tr_types.h" />
     <ClInclude Include="ui_local.h" />
     <ClInclude Include="ui_public.h" />
+    <ClInclude Include="ui_logger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ui.def" />

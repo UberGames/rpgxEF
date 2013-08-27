@@ -1395,6 +1395,9 @@ extern	vmCvar_t		sv_securityCode;
 
 extern	vmCvar_t		ui_handleWidescreen;
 
+// debugging
+extern	vmCvar_t		ui_logLevel;
+
 #define GRAPHIC_SQUARE "menu/common/square.tga"
 #define BUTTON_GRAPHIC_LONGRIGHT "menu/common/bar1.tga"
 

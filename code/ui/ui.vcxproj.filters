@@ -152,6 +152,9 @@
     <ClCompile Include="ui_sql.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui_logger.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\bg_public.h">
@@ -176,6 +179,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ui_public.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
