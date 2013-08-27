@@ -56,6 +56,9 @@
     <ClCompile Include="cg_localents.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cg_logger.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="cg_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -158,6 +161,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cg_local.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cg_logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cg_public.h">
