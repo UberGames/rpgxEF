@@ -480,12 +480,12 @@ The activator will be instantly teleported away.
 
 -----SPAWNFLAGS-----
 1: VISUAL_FX - Instead of instant teleportation with no FX, entity will play the Star Trek style
-	transporter effect and teleport over the course of an 8 second cycle.
-	
-	NB-If using the transporter VISUAL_FX, place the target entity so it's right on top of
-	the surface you want the player to appear on.  It's been hardcoded to take this offset into
-	account only when the VISUAL_FX flag is on
-	
+transporter effect and teleport over the course of an 8 second cycle.
+
+NB-If using the transporter VISUAL_FX, place the target entity so it's right on top of
+the surface you want the player to appear on.  It's been hardcoded to take this offset into
+account only when the VISUAL_FX flag is on
+
 2: SUSPENDED - Unless this is checked, the player will materialise on top of the first solid surface underneath the entity
 4: DEACTIVATED - Teleporter will be deactiavted at spawn
 
@@ -634,7 +634,7 @@ none
 
 -----KEYS-----
 "message" - location name to display. Can be colorized using '^X' where X is one of the following numbers
-	0:white 1:red 2:green 3:yellow 4:blue 5:cyan 6:magenta 7:white
+0:white 1:red 2:green 3:yellow 4:blue 5:cyan 6:magenta 7:white
 
 -----LocEdit-----
 target_locations can also be spawned by a <mapname>.locations-file.
@@ -642,22 +642,22 @@ While creating this was hard work for many years, a new command makes it quite e
 
 There are a few basic commands:
 /locedit start <type>
-	This will open the file. 
-	For type set 1 if you'd like to restrict a location so only admins can autorise transportation there.
-	Else set 0.
+This will open the file. 
+For type set 1 if you'd like to restrict a location so only admins can autorise transportation there.
+Else set 0.
 
 For Type = 0: /locedit add "<location-name>"
 For Type = 1: /locedit add <protected> "<location-name>"
-	this will add a new location to the list.
-	It will grab your current position as well as your yaw-angle (around the Z-Axis) and dump them to the file with the parameters.
-	If you set protected 1 only admins can authorise transportation there.
-	location-name can be colorized as stated above. You need to put it in "".
+this will add a new location to the list.
+It will grab your current position as well as your yaw-angle (around the Z-Axis) and dump them to the file with the parameters.
+If you set protected 1 only admins can authorise transportation there.
+location-name can be colorized as stated above. You need to put it in "".
 
 /locedit nl
-	this will simply add an empty line. If you have to manually edit the file at a later date this will help you get oriented.
+this will simply add an empty line. If you have to manually edit the file at a later date this will help you get oriented.
 
 /locedit stop
-	this will close the file.
+this will close the file.
 */
 void SP_target_location( gentity_t *self ){
 	self->think = target_location_linkup;
@@ -1566,7 +1566,7 @@ For the angles, the entity's angle must be aimed at the main set of doors to the
 -----KEYS-----
 "deck" - which deck number this is (You can have multiple lifts of the same deck. Entity fails spawn if not specified)
 "deckName" - name of the main features on this deck (Appears in the deck menu, defaults to 'Unknown')
-	use either this or a <mapname>.turbolift-file to store the strings, not both simultainously
+use either this or a <mapname>.turbolift-file to store the strings, not both simultainously
 "wait" - number of seconds to wait until teleporting the players (1000 = 1 second, default 3000)
 "soundLoop" - looping sound that plays in the wait period (Defaults to EF SP's sound. '*' for none)
 "soundEnd" - sound that plays as the wait period ends. (Defaults to EF SP's sound. '*' for none)
@@ -1588,42 +1588,42 @@ Turbolifts are a good thing to retrofit, however they have 2 requirements:
 If those are fuffilled you can use the following code at level init to set up the turbolift.
 (this is from enterprise-e-v2 and uses the outdated SetKeyValue-Command. Use Set<key> instead)
 
-		game.Print("--Deck 1 ...");
-			game.Print("---redirecting usables ...");
-				ent = entity.FindBModel(90);
-				ent:SetKeyValue("target", "tld1");
-				ent:SetKeyValue("luaUse", "turbosound");
-				ent = entity.FindBModel(86);
-				ent:SetKeyValue("target", "tld1");
-				ent:SetKeyValue("luaUse", "turbosound");
-				ent = entity.FindBModel(87);
-				ent:SetKeyValue("target", "tld1");
-				ent:SetKeyValue("luaUse", "turbosound");
-				ent = entity.FindBModel(167);
-				ent:SetKeyValue("target", "tld1");
-				ent:SetKeyValue("luaUse", "turbosound");
-				ent = entity.FindBModel(88);
-				ent:SetKeyValue("target", "tld1");
-				ent:SetKeyValue("luaUse", "turbosound");
-				ent = entity.FindBModel(89);
-				ent:SetKeyValue("target", "tld1");
-				ent:SetKeyValue("luaUse", "turbosound");
-			game.Print("---renaming doors ...");
-				ent = entity.FindBModel(7);
-				ent:SetKeyValue("targetname", "tld1doors");
-				ent = entity.FindBModel(8);
-				ent:SetKeyValue("targetname", "tld1doors");
-			game.Print("---Adding turbolift ...");
-				ent = entity.Spawn();
-				ent.SetupTrigger(ent, 144, 100, 98);
-				ent:SetKeyValue("classname", "target_turbolift");
-				ent:SetKeyValue("targetname", "tld1");
-				ent:SetKeyValue("target", "tld1doors");
-				ent:SetKeyValue("health", "1");
-				ent:SetKeyValue("wait", 3000);
-				entity.CallSpawn(ent);
-				mover.SetPosition(ent, -2976, 8028, 887);
-				mover.SetAngles(ent, 0, 270, 0);
+game.Print("--Deck 1 ...");
+game.Print("---redirecting usables ...");
+ent = entity.FindBModel(90);
+ent:SetKeyValue("target", "tld1");
+ent:SetKeyValue("luaUse", "turbosound");
+ent = entity.FindBModel(86);
+ent:SetKeyValue("target", "tld1");
+ent:SetKeyValue("luaUse", "turbosound");
+ent = entity.FindBModel(87);
+ent:SetKeyValue("target", "tld1");
+ent:SetKeyValue("luaUse", "turbosound");
+ent = entity.FindBModel(167);
+ent:SetKeyValue("target", "tld1");
+ent:SetKeyValue("luaUse", "turbosound");
+ent = entity.FindBModel(88);
+ent:SetKeyValue("target", "tld1");
+ent:SetKeyValue("luaUse", "turbosound");
+ent = entity.FindBModel(89);
+ent:SetKeyValue("target", "tld1");
+ent:SetKeyValue("luaUse", "turbosound");
+game.Print("---renaming doors ...");
+ent = entity.FindBModel(7);
+ent:SetKeyValue("targetname", "tld1doors");
+ent = entity.FindBModel(8);
+ent:SetKeyValue("targetname", "tld1doors");
+game.Print("---Adding turbolift ...");
+ent = entity.Spawn();
+ent.SetupTrigger(ent, 144, 100, 98);
+ent:SetKeyValue("classname", "target_turbolift");
+ent:SetKeyValue("targetname", "tld1");
+ent:SetKeyValue("target", "tld1doors");
+ent:SetKeyValue("health", "1");
+ent:SetKeyValue("wait", 3000);
+entity.CallSpawn(ent);
+mover.SetPosition(ent, -2976, 8028, 887);
+mover.SetAngles(ent, 0, 270, 0);
 
 Turbolift descriptions have to be added in via <mapname>.turbolift-file.
 
@@ -1643,6 +1643,10 @@ void SP_target_turbolift ( gentity_t *self )
 	char			fileRoute[MAX_QPATH];
 	char			mapRoute[MAX_QPATH];
 	char			serverInfo[MAX_TOKEN_CHARS];
+
+	if(self == NULL) {
+		return;
+	} 
 
 	//cache the moving sounds
 	G_SpawnString( "soundLoop", "sound/movers/plats/turbomove.wav", &loopSound );
@@ -2685,7 +2689,7 @@ void target_selfdestruct_end(gentity_t *ent) {
 
 void target_selfdestruct_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	if( ent->damage - level.time > 50 ){//I'm still sceptical about a few things here, so I'll leave this in place
-	//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
+		//with the use-function we're going to init aborts in a fairly simple manner: Fire warning notes...
 		trap_SendServerCommand( -1, va("servermsg \"Self Destruct sequence aborted.\""));
 		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/voice/selfdestruct/abort.mp3"));
 		trap_SendServerCommand(-1, va("selfdestructupdate %i", -1));
@@ -2702,55 +2706,55 @@ void target_selfdestruct_think(gentity_t *ent) {
 	int			entlist[MAX_GENTITIES];
 	int			n = 0, num;
 
-		//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
-		healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
-		if(healthEnt && G_Find(healthEnt, FOFS(classname), "target_shiphealth") == NULL ){
-			healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have just one. makes a lot of stuff easier.
-			healthEnt->use(healthEnt, NULL, NULL);
-		}else{
-			while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
-				if(!Q_stricmp(safezone->targetname, ent->bluename))
-					safezone->n00bCount = 0;
-			}
-			safezone = NULL;
-			while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
-				// go through all safe zones and tag all safe players
-				if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename)) {
-					num = trap_EntitiesInBox(safezone->r.mins, safezone->r.maxs, entlist, MAX_GENTITIES);
-					for(n = 0; n < num; n++) {
-						if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
-							while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
-								if(client->s.number == entlist[n])
-									client->client->nokilli = 1;
-								trap_SendServerCommand( -1, va("print \"SETTING: %i = %i\n\" ", client->s.number, client->client->nokilli) );
-							}
+	//I've reconsidered. Selfdestruct will fire it's death mode no matter what. Targets are for FX-Stuff.
+	healthEnt = G_Find(NULL, FOFS(classname), "target_shiphealth");
+	if(healthEnt && G_Find(healthEnt, FOFS(classname), "target_shiphealth") == NULL ){
+		healthEnt->damage = healthEnt->health + healthEnt->splashRadius; //let's use the healthent killfunc if we have just one. makes a lot of stuff easier.
+		healthEnt->use(healthEnt, NULL, NULL);
+	}else{
+		while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
+			if(!Q_stricmp(safezone->targetname, ent->bluename))
+				safezone->n00bCount = 0;
+		}
+		safezone = NULL;
+		while ((safezone = G_Find( safezone, FOFS( classname ), "target_zone" )) != NULL  ){
+			// go through all safe zones and tag all safe players
+			if(safezone->count == 1 && safezone->n00bCount == 1 && Q_stricmp(safezone->targetname, ent->bluename)) {
+				num = trap_EntitiesInBox(safezone->r.mins, safezone->r.maxs, entlist, MAX_GENTITIES);
+				for(n = 0; n < num; n++) {
+					if(entlist[n] < g_maxclients.integer && g_entities[entlist[n]].client) {
+						while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
+							if(client->s.number == entlist[n])
+								client->client->nokilli = 1;
+							trap_SendServerCommand( -1, va("print \"SETTING: %i = %i\n\" ", client->s.number, client->client->nokilli) );
 						}
 					}
 				}
 			}
-
-			client = NULL;
-
-			//Loop trough all clients on the server.
-			while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
-				if (client->client->nokilli != 1)
-					G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
-			}
-			//we may go this way once more so clear clients back.
-			client = NULL;
-			while((client = G_Find( client, FOFS( classname ), "player" ))){
-				client->client->nokilli = 0;
-			}
-			//let's hear it
-			G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
-			//let's be shakey for a sec... I hope lol ^^
-			trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
 		}
-		if(ent->target)
-			G_UseTargets(ent, ent);
-		trap_SendServerCommand(-1, va("selfdestructupdate %i", -1));
-		G_FreeEntity(ent);
-		return;
+
+		client = NULL;
+
+		//Loop trough all clients on the server.
+		while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
+			if (client->client->nokilli != 1)
+				G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+		}
+		//we may go this way once more so clear clients back.
+		client = NULL;
+		while((client = G_Find( client, FOFS( classname ), "player" ))){
+			client->client->nokilli = 0;
+		}
+		//let's hear it
+		G_AddEvent(ent, EV_GLOBAL_SOUND, G_SoundIndex("sound/weapons/explosions/explode2.wav"));
+		//let's be shakey for a sec... I hope lol ^^
+		trap_SetConfigstring( CS_CAMERA_SHAKE, va( "%i %i", 9999, ( 1000 + ( level.time - level.startTime ) ) ) );
+	}
+	if(ent->target)
+		G_UseTargets(ent, ent);
+	trap_SendServerCommand(-1, va("selfdestructupdate %i", -1));
+	G_FreeEntity(ent);
+	return;
 }
 
 void SP_target_selfdestruct(gentity_t *ent) {
@@ -2849,9 +2853,9 @@ Note: Spawnflags will only work with the system they are attached to
 "targetname" - used to link with, some types require this for toggling
 "count" - specifies this zone's type:
 
-	0 - none, will free entity
-	1 - safezone for target_selfdestruct and target_shiphealth
-	2 - display zone for target_shiphealth (HUD overlay)
+0 - none, will free entity
+1 - safezone for target_selfdestruct and target_shiphealth
+2 - display zone for target_shiphealth (HUD overlay)
 
 -----USAGE-----
 As safezone:
@@ -2885,7 +2889,7 @@ void SP_target_zone(gentity_t *ent) {
 		ent->count = 1;
 		ent->classname = G_NewString("target_zone");
 	}
-	
+
 	if(ent->count == 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_zone without specified class by it's count-value at %s, removing entity.\n", vtos(ent->s.origin)););
 		G_FreeEntity(ent);
@@ -2988,26 +2992,26 @@ In that file add the following short script:
 
 gfx/msd/akira //this will be the path to the image for the UI
 {
-	{
-		map textures/msd/akira.jpg //this will be the image you will use
-		blendFunc add //this will remove the black background. I might find a better solution...
-	}
+{
+map textures/msd/akira.jpg //this will be the image you will use
+blendFunc add //this will remove the black background. I might find a better solution...
+}
 }
 
 textures/msd/akira //this will be the image you will use for texturing
 {
-	surfaceparm nolightmap
-	surfaceparm nomarks
-	{
-		map textures/msd/akira.jpg //this will be the image you will use
-	}
-	{
-		map textures/engineering/glass1.tga //this segment creates the glass effect to make it look like a display
-		blendfunc gl_one gl_one_minus_src_color
-		rgbGen identity
-		tcMod scale 3 3
-		tcGen environment
-	}
+surfaceparm nolightmap
+surfaceparm nomarks
+{
+map textures/msd/akira.jpg //this will be the image you will use
+}
+{
+map textures/engineering/glass1.tga //this segment creates the glass effect to make it look like a display
+blendfunc gl_one gl_one_minus_src_color
+rgbGen identity
+tcMod scale 3 3
+tcGen environment
+}
 }
 
 For distribution put both files (including their relative paths) in a *.pk3 file.
@@ -3086,10 +3090,10 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
 		} else { //shields are off, guess where the blow goes...
 			NHS = (ent->count - ent->damage);
 		}
-	ent->count = NHS;
-	ent->damage = 0;
+		ent->count = NHS;
+		ent->damage = 0;
 	}
-	
+
 	//enough math, let's trigger things
 
 	//go to red alert if we are not, this will also activate the shields

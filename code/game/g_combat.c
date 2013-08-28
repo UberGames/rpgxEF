@@ -1113,7 +1113,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	if ( client ) 
 	{
-		if ( client->noclip ) {
+		if ( client == NULL || client->noclip ) {
 			return;
 		}
 	}

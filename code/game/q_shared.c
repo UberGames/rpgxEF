@@ -1,7 +1,7 @@
 /* Copyright (C) 1999-2000 Id Software, Inc.
- *
- * q_shared.c -- stateless support routines that are included in each code dll
- */
+*
+* q_shared.c -- stateless support routines that are included in each code dll
+*/
 #include "q_shared.h"
 
 /*vmCvar_t	rpg_medicsrevive;			//RPG-X: RedTechie - To let bg_pmovto work
@@ -29,7 +29,7 @@ COM_SkipPath
 char *COM_SkipPath (char *pathname)
 {
 	char	*last;
-	
+
 	last = pathname;
 	while (*pathname)
 	{
@@ -62,10 +62,10 @@ void COM_DefaultExtension (char *path, int maxSize, const char *extension ) {
 	char	oldPath[MAX_QPATH];
 	char    *src;
 
-/*
- * if path doesn't have a .EXT, append extension
- * (extension should include the .)
- */
+	/*
+	* if path doesn't have a .EXT, append extension
+	* (extension should include the .)
+	*/
 	src = path + strlen(path) - 1;
 
 	while (*src != '/' && src != path) {
@@ -82,15 +82,15 @@ void COM_DefaultExtension (char *path, int maxSize, const char *extension ) {
 /*
 ============================================================================
 
-					BYTE ORDER FUNCTIONS
+BYTE ORDER FUNCTIONS
 
 ============================================================================
 */
 
 /* 
- *can't just use function pointers, or dll linkage can
- * mess up when qcommon is included in multiple places
- */
+*can't just use function pointers, or dll linkage can
+* mess up when qcommon is included in multiple places
+*/
 static short	(*_BigShort) (short l);
 static short	(*_LittleShort) (short l);
 static int		(*_BigLong) (int l);
@@ -101,8 +101,8 @@ static float	(*_LittleFloat) (float l);
 
 #ifdef _M_IX86
 /*
- * optimised version for intel stuff...
- */
+* optimised version for intel stuff...
+*/
 short	BigShort(short l){return _BigShort(l);}
 int		BigLong (int l) {return _BigLong(l);}
 float	BigFloat (float l) {return _BigFloat(l);}
@@ -111,8 +111,8 @@ float	BigFloat (float l) {return _BigFloat(l);}
 #define LittleFloat(l) l
 #else
 /*
- * standard smart byte-swap stuff....
- */
+* standard smart byte-swap stuff....
+*/
 short	BigShort(short l){return _BigShort(l);}
 short	LittleShort(short l) {return _LittleShort(l);}
 int		BigLong (int l) {return _BigLong(l);}
@@ -162,8 +162,8 @@ float FloatSwap (float f)
 		float	f;
 		byte	b[4];
 	} dat1, dat2;
-	
-	
+
+
 	dat1.f = f;
 	dat2.b[0] = dat1.b[3];
 	dat2.b[1] = dat1.b[2];
@@ -186,7 +186,7 @@ void Swap_Init (void)
 {
 	byte	swaptest[2] = {1,0};
 
-/* set the byte swapping variables in a portable manner	*/
+	/* set the byte swapping variables in a portable manner	*/
 	if ( *(short *)swaptest == 1)
 	{
 		_BigShort = ShortSwap;
@@ -360,7 +360,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
 
 	if (len == MAX_TOKEN_CHARS)
 	{
-/*		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS); */
+		/*		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS); */
 		len = 0;
 	}
 	com_token[len] = 0;
@@ -685,7 +685,7 @@ void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m) {
 /*
 ============================================================================
 
-					LIBRARY REPLACEMENT FUNCTIONS
+LIBRARY REPLACEMENT FUNCTIONS
 
 ============================================================================
 */
@@ -742,7 +742,7 @@ char* Q_strtok(char* str, const char *tok, int size) {
 	char *ptr;
 	char *result;
 	int i, l;
-	
+
 	if(str == NULL || tok == NULL) {
 		return NULL;
 	}
@@ -770,7 +770,7 @@ char* Q_strtok(char* str, const char *tok, int size) {
 /*
 =============
 Q_strncpyz
- 
+
 Safe strncpy that ensures a trailing zero
 =============
 */
@@ -790,21 +790,21 @@ void Q_strncpyz( char *dest, const char *src, int destsize ) {
 	}
 
 	strncpy( dest, src, destsize-1 );
-    dest[destsize-1] = 0;
+	dest[destsize-1] = 0;
 }
-                 
+
 int Q_stricmpn (const char *s1, const char *s2, int n) {
 	int		c1, c2;
-	
+
 	/* bk001129 - moved in 1.17 fix not in id codebase */
-        if ( s1 == NULL ) {
-           if ( s2 == NULL )
-             return 0;
-           else
-             return -1;
-        }
-        else if ( s2==NULL )
-          return 1;
+	if ( s1 == NULL ) {
+		if ( s2 == NULL )
+			return 0;
+		else
+			return -1;
+	}
+	else if ( s2==NULL )
+		return 1;
 
 
 
@@ -815,7 +815,7 @@ int Q_stricmpn (const char *s1, const char *s2, int n) {
 		if (!n--) {
 			return 0;		/* strings are equal until end point */
 		}
-		
+
 		if (c1 != c2) {
 			if (c1 >= 'a' && c1 <= 'z') {
 				c1 -= ('a' - 'A');
@@ -828,13 +828,13 @@ int Q_stricmpn (const char *s1, const char *s2, int n) {
 			}
 		}
 	} while (c1);
-	
+
 	return 0;		/* strings are equal */
 }
 
 int Q_strncmp (const char *s1, const char *s2, int n) {
 	int		c1, c2;
-	
+
 	do {
 		c1 = *s1++;
 		c2 = *s2++;
@@ -842,12 +842,12 @@ int Q_strncmp (const char *s1, const char *s2, int n) {
 		if (!n--) {
 			return 0;		/* strings are equal until end point */
 		}
-		
+
 		if (c1 != c2) {
 			return c1 < c2 ? -1 : 1;
 		}
 	} while (c1);
-	
+
 	return 0;		/* strings are equal */
 }
 
@@ -857,25 +857,25 @@ int Q_stricmp (const char *s1, const char *s2) {
 
 
 char *Q_strlwr( char *s1 ) {
-    char	*s;
+	char	*s;
 
-    s = s1;
+	s = s1;
 	while ( *s ) {
 		*s = tolower(*s);
 		s++;
 	}
-    return s1;
+	return s1;
 }
 
 char *Q_strupr( char *s1 ) {
-    char	*s;
+	char	*s;
 
-    s = s1;
+	s = s1;
 	while ( *s ) {
 		*s = toupper(*s);
 		s++;
 	}
-    return s1;
+	return s1;
 }
 
 /* never goes past bounds or leaves without a terminating 0 */
@@ -917,6 +917,10 @@ char *Q_CleanStr( char *string ) {
 	char*	d;
 	char*	s;
 	int		c;
+
+	if(string == NULL) {
+		return string;
+	} 
 
 	s = string;
 	d = string;
@@ -992,7 +996,7 @@ char	* QDECL va( char *format, ... ) {
 /*
 =====================================================================
 
-  INFO STRINGS
+INFO STRINGS
 
 =====================================================================
 */
@@ -1009,10 +1013,10 @@ FIXME: overflow check?
 char *Info_ValueForKey( const char *s, const char *key ) {
 	char	pkey[BIG_INFO_KEY];
 	static	char value[2][BIG_INFO_VALUE];	/* use two buffers so compares
-											   work without stomping on each other */
+											work without stomping on each other */
 	static	int	valueindex = 0;
 	char	*o;
-	
+
 	if ( !s || !key ) {
 		return "";
 	}
@@ -1346,7 +1350,7 @@ int GetIDForString ( stringID_table_t *table, const char *string )
 	int	index = 0;
 
 	while ( ( table[index].name != NULL ) &&
-			( table[index].name[0] != 0 ) )
+		( table[index].name[0] != 0 ) )
 	{
 		if ( !Q_stricmp( table[index].name, string ) )
 			return table[index].id;
@@ -1368,7 +1372,7 @@ const char *GetStringForID( stringID_table_t *table, int id )
 	int	index = 0;
 
 	while ( ( table[index].name != NULL ) &&
-			( table[index].name[0] != 0 )/*VALIDSTRING( table[index].name )*/ )/* RPG-X: RedTechie - Compile errors Fixed */
+		( table[index].name[0] != 0 )/*VALIDSTRING( table[index].name )*/ )/* RPG-X: RedTechie - Compile errors Fixed */
 	{
 		if ( table[index].id == id )
 			return table[index].name;
