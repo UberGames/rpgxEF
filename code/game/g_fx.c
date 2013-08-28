@@ -2,6 +2,7 @@
 
 #include "g_local.h"
 #include "g_spawn.h"
+#include "g_logger.h"
 
 #define SPARK_STARTOFF		1
 /*QUAKED fx_spark (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
@@ -972,51 +973,70 @@ A phaser effect for use as a ship's weapon.
 #define PHASER_FX_UNLINKED 999
 
 static void phaser_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator) {
-	if(ent->count == PHASER_FX_UNLINKED) return;
+	G_LocLogger(LL_TRACE, "%s - begin\n", __FUNCTION__);
+
+	if(ent->count == PHASER_FX_UNLINKED) {
+		G_Logger(LL_DEBUG, "not linked yet\n");
+		G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
+		return;
+	}
 
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
+		G_Logger(LL_DEBUG, "locking/unlocking\n");
 		ent->flags ^= FL_LOCKED;
 	} else {
 		if((ent->flags & FL_LOCKED) != 0){
 			trap_SendServerCommand(activator-g_entities, va("print \"^1Phasers are offline.\n\""));
 			G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount);
+			G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 			return;
 		}
 
 		if((ent->spawnflags & PHASER_FX_DISRUPTOR) != 0)
 		{ 
+			G_Logger(LL_DEBUG, "sending disruptor event\n");
 			G_AddEvent(ent, EV_FX_DISRUPTOR, 0);
 		}
 		else 
 		{
+			G_Logger(LL_DEBUG, "sending phaser event\n");
 			G_AddEvent(ent, EV_FX_PHASER, 0);
 		}
 	}
 
+	G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 }
 
 static void phaser_link(gentity_t *ent) {
 	gentity_t *target = NULL;
 	
+	G_LocLogger(LL_TRACE, "%s\n", __FUNCTION__);
+
 	if(ent->target != NULL && ent->target[0] != 0) {
 		target = G_Find(target, FOFS(targetname), ent->target);
 	} else {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] phaser_link: ent->target is NULL\n"););
+		G_LocLogger(LL_ERROR, "[Entity-Error] phaser_link: ent->target is NULL\n");
 		G_FreeEntity(ent);
 		return;
 	}
 
 	if(target == NULL) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Enity-Error] Could not find target %s for fx_phaser at %s!\n", ent->target, vtos(ent->r.currentOrigin)););
+		G_Logger(LL_ERROR, "[Enity-Error] Could not find target %s for fx_phaser at %s!\n", ent->target, vtos(ent->r.currentOrigin));
 		G_FreeEntity(ent);
+		G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 		return;
 	}
 
 	VectorCopy(target->s.origin, ent->s.origin2);
 	SnapVector(ent->s.origin2);
+
+	G_Logger(LL_DEBUG, "target->origin=%s, snaped=%s\n", vtos(target->s.origin), vtos(ent->s.origin2));
+
 	ent->use = phaser_use;
 	ent->count = 0;
 	trap_LinkEntity(ent);
+
+	G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 }
 
 void SP_fx_phaser(gentity_t *ent) {
@@ -1024,12 +1044,14 @@ void SP_fx_phaser(gentity_t *ent) {
 	char	*sound = NULL;
 	int		impact = 0;
 
-	ent->type = ENT_FX_PHASER;
+	G_LocLogger(LL_TRACE, "%s - begin\n", __FUNCTION__);
 
+	ent->type = ENT_FX_PHASER;
 	ent->count = PHASER_FX_UNLINKED;
 
 	if(ent->target == NULL || ent->target[0] == 0) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_phaser at %s without target!\n", vtos(ent->r.currentOrigin)););
+		G_Logger(LL_ERROR, "[Entity-Error] fx_phaser at %s without target!\n", vtos(ent->r.currentOrigin));
+		G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 		return;
 	}
 
@@ -1038,18 +1060,24 @@ void SP_fx_phaser(gentity_t *ent) {
 	G_SpawnFloat("delay", "1", &scale);
 	ent->s.angles[1] = scale * 1000;
 	G_SpawnString("customSnd", "sound/pos_b/phaser.wav", &sound);
-	
+
+	G_Logger(LL_DEBUG, "scale=%f, delay=%f\n", ent->s.angles[0], ent->s.angles[1]);
+
 	if((ent->spawnflags & PHASER_FX_NOSOUND) == 0) {
 		ent->s.time = G_SoundIndex(sound);
 	} else {
 		ent->s.time = G_SoundIndex("NULL");
 	}
 
-	if(ent->wait <= 0.0f) {
+	G_Logger(LL_DEBUG, "soundindex=%d\n", ent->s.time);
+
+	if(ent->wait <= 0.0f) { // FIXME does not work°°
 		ent->s.time2 = (int)(ent->wait * 1000.0f);
 	} else {
 		ent->s.time2 = 3000;
 	}
+
+	G_Logger(LL_DEBUG, "firetime=%d\n", ent->s.time2);
 
 	if((ent->spawnflags & PHASER_FX_LOCKED) != 0) {
 		ent->flags |= FL_LOCKED;
@@ -1057,9 +1085,14 @@ void SP_fx_phaser(gentity_t *ent) {
 
 	G_SpawnInt("impact", "0", &impact);
 	ent->s.angles[2] = (float)impact;
+
+	G_Logger(LL_DEBUG, "impact=%d\n", (int)ent->s.angles2[2]);
+
 	ent->think = phaser_link;
 	ent->nextthink = level.time + 1000;
 	trap_LinkEntity(ent);
+
+	G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 }
 
 /*QUAKED fx_torpedo (0 0 1) (-8 -8 -8) (8 8 8) QUANTUM NO_SOUND LOCKED
