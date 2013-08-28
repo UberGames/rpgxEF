@@ -2271,13 +2271,13 @@ call trap_DropClient(), which will call this and do
 server system housekeeping.
 ============
 */
-void G_Client_Disconnect( int clientNum ) {
-	gentity_t	*ent;
-	gentity_t	*tent;
-	int			i;
+void G_Client_Disconnect( int32_t clientNum ) {
+	gentity_t*	ent = NULL;
+	gentity_t*	tent = NULL;
+	int32_t		i = 0;
 
-	ent = g_entities + clientNum;
-	if ( !ent->client ) {
+	ent = &g_entities[clientNum];
+	if ( (ent == NULL) || (ent->client == NULL) ) {
 		return;
 	}
 
@@ -2296,31 +2296,30 @@ void G_Client_Disconnect( int clientNum ) {
 	g_entities[clientNum].client->noclip = qfalse;  
 
 	//TiM: Log the player's IP and name.  If they reconnect again, it'll announce their deceipt >:)
-	if ( rpg_renamedPlayers.integer && !(ent->r.svFlags & SVF_BOT) ) {
-		int			l;
-		qboolean	foundName=qfalse;
+	if ( (rpg_renamedPlayers.integer != 0) && ((ent->r.svFlags & SVF_BOT) == 0) ) {
+		int32_t		l = 0;
+		qboolean	foundName = qfalse;
 
 		//Do a chek to see if this player has disconnected b4.  else we'll be wasting a slot.
-		for ( l = 0; l < MAX_RECON_NAMES; l++ ) {
-			if ( !g_reconData[l].ipAddress[0] ) {
+		for ( ; l < MAX_RECON_NAMES; l++ ) {
+			if ( g_reconData[l].ipAddress[0] == 0 ) {
 				continue;
 			}
 
-			if ( !Q_stricmp( ent->client->pers.ip, g_reconData[l].ipAddress ) ) {
+			if ( Q_stricmp( ent->client->pers.ip, g_reconData[l].ipAddress ) == 0 ) {
 				foundName=qtrue;
 				break;
 			}
 		}
 
 		if ( foundName ) {
-			memset( &g_reconData[i], 0, sizeof( g_reconData[i] ) );
+			memset( &g_reconData[l], 0, sizeof( g_reconData[l] ) );
 		
 			//IP Address
-			Q_strncpyz( g_reconData[i].ipAddress, ent->client->pers.ip, sizeof( g_reconData[i].ipAddress ) );
+			Q_strncpyz( g_reconData[l].ipAddress, ent->client->pers.ip, sizeof( g_reconData[l].ipAddress ) );
 			//Player Name
-			Q_strncpyz( g_reconData[i].previousName, ent->client->pers.netname, sizeof( g_reconData[i].previousName ) );
-		}
-		else {
+			Q_strncpyz( g_reconData[l].previousName, ent->client->pers.netname, sizeof( g_reconData[l].previousName ) );
+		} else {
 			memset( &g_reconData[g_reconNum], 0, sizeof( g_reconData[g_reconNum] ) );
 
 			//IP Address
@@ -2338,8 +2337,8 @@ void G_Client_Disconnect( int clientNum ) {
 	}
 
 	// send effect if they were completely connected
-	if ( ent->client->pers.connected == CON_CONNECTED
-		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( (ent->client->pers.connected == CON_CONNECTED)
+		&& (ent->client->sess.sessionTeam != TEAM_SPECTATOR) ) {
 		vec3_t	org;
 
 		VectorCopy( ent->client->ps.origin, org );
@@ -2352,21 +2351,18 @@ void G_Client_Disconnect( int clientNum ) {
 		// Especially important for stuff like CTF flags
 		TossClientItems ( ent, qtrue );
 	}
-
 	G_LogPrintf( "ClientDisconnect: %i (%s)\n", clientNum, g_entities[clientNum].client->pers.ip );
 
 	// if we are playing in tourney mode and losing, give a win to the other player
-	if ( g_gametype.integer == GT_TOURNAMENT && !level.intermissiontime
-		&& !level.warmupTime && level.sortedClients[1] == clientNum ) {
+	if ( (g_gametype.integer == GT_TOURNAMENT) && (level.intermissiontime == 0)
+		&& (level.warmupTime == 0) && (level.sortedClients[1] == clientNum) ) {
 		level.clients[ level.sortedClients[0] ].sess.wins++;
 		G_Client_UserinfoChanged( level.sortedClients[0] );
 	}
 
-	if ( g_gametype.integer == GT_TOURNAMENT && ent->client->sess.sessionTeam == TEAM_FREE && level.intermissiontime )
-	{
+	if ( (g_gametype.integer == GT_TOURNAMENT) && (ent->client->sess.sessionTeam == TEAM_FREE) && (level.intermissiontime != 0) ) {
 		trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
 		level.restarted = qtrue;
-		level.changemap = NULL;
 		level.intermissiontime = 0;
 	}
 
@@ -2385,7 +2381,7 @@ void G_Client_Disconnect( int clientNum ) {
 
 	G_Client_CalculateRanks( qfalse );
 
-	if ( ent->r.svFlags & SVF_BOT ) {
+	if ( (ent->r.svFlags & SVF_BOT) != 0 ) {
 		BotAIShutdownClient( clientNum );
 	}
 

@@ -1530,6 +1530,8 @@ qboolean PlaceDecoy(gentity_t *ent)
 	decoy->s.number = decoy-g_entities;
 
 	//--------------------------- SPECIALIZED DECOY SETUP
+	decoy->s.time= -1; // tell cgame this is a decoy so it does not mess up the radar
+
 	decoy->parent = ent;
 
 	(decoy->s).eType = (ent->s).eType;		// set to type PLAYER

@@ -1052,21 +1052,26 @@ static void CG_DrawStatusBar( void )
 		vec4_t	radColor;
 
 		CG_DrawPic(40, 100, 100, 100, cgs.media.radarShader);
+		int32_t i;
 		for (i = 0; i < cg.snap->numEntities; i++) // Go through all entities in VIS range
 		{
 			if ( cg.snap->entities[i].eType == ET_PLAYER ) // If the Entity is a Player
 			{
+				/*if(cg.snap->entities[i].time == -1){
+					CG_Printf("Radar: decoy found, going to next ent\n");
+					continue;
+				}*/
 				// Calculate How Far Away They Are
-				x = (cg.snap->entities[i].pos.trBase[0] - cg.predictedPlayerState.origin[0]);
+				int32_t x = (cg.snap->entities[i].pos.trBase[0] - cg.predictedPlayerState.origin[0]);
 				y = (cg.snap->entities[i].pos.trBase[1] - cg.predictedPlayerState.origin[1]);
-				z = (cg.snap->entities[i].pos.trBase[2] - cg.predictedPlayerState.origin[2]);
+				int32_t z = (cg.snap->entities[i].pos.trBase[2] - cg.predictedPlayerState.origin[2]);
 				tmpVec[0] = x;
 				tmpVec[1] = y;
 				tmpVec[2] = 0.0;
 
 				// Convert Vector to Angle
 				vectoangles(tmpVec, eAngle);
-				h = sqrt((x*x) + (y*y)); // Get Range
+				int32_t h = sqrt((x*x) + (y*y)); // Get Range
 
 				// We only Want "YAW" value
 				dAngle[0] = 0.0;
@@ -1097,13 +1102,19 @@ static void CG_DrawStatusBar( void )
 					}
 					else
 					{
-						if ( cgs.clientinfo[cg.snap->entities[i].number].pClass >= 0 )
-						{
-							radColor[0] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[0] / 255.0f;
-							radColor[1] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[1] / 255.0f;
-							radColor[2] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[2] / 255.0f;
-							radColor[3] = 1.0f;
-						}
+						if(cg.snap->entities[i].time != -1)
+							if ( cgs.clientinfo[cg.snap->entities[i].number].pClass >= 0 &&  cg.snap->entities[i].time != -1 )
+							{
+								radColor[0] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[0] / 255.0f;
+								radColor[1] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[1] / 255.0f;
+								radColor[2] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[2] / 255.0f;
+								radColor[3] = 1.0f;
+							}
+							else
+							{
+								VectorCopy( colorTable[CT_BLACK], radColor );
+								radColor[3] = colorTable[CT_BLACK][3];
+							}
 						else
 						{
 							VectorCopy( colorTable[CT_BLACK], radColor );
@@ -1111,7 +1122,9 @@ static void CG_DrawStatusBar( void )
 						}
 
 						if ( cgs.clientinfo[cg.snap->entities[i].number].isAdmin && !cgs.clientinfo[cg.snap->ps.clientNum].isAdmin )
+						{
 							continue;
+						}
 
 						if ( z > 64 ) 
 						{
