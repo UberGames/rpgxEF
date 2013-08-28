@@ -1071,10 +1071,10 @@ void SP_fx_phaser(gentity_t *ent) {
 
 	G_Logger(LL_DEBUG, "soundindex=%d\n", ent->s.time);
 
-	if(ent->wait <= 0.0f) { // FIXME does not work°°
-		ent->s.time2 = (int)(ent->wait * 1000.0f);
-	} else {
+	if(ent->wait <= 0.0f) { 
 		ent->s.time2 = 3000;
+	} else {
+		ent->s.time2 = (int)(ent->wait * 1000.0f);
 	}
 
 	G_Logger(LL_DEBUG, "firetime=%d\n", ent->s.time2);
@@ -1176,7 +1176,7 @@ static void fx_torpedo_link(gentity_t *ent) {
 	VectorCopy(dir, ent->s.angles);
 	trap_LinkEntity(ent);
 
-	ent->wait = (ent->wait <= 0.0f) ? (ent->wait * 1000.0f) : 0.0f;
+	ent->wait = (ent->wait <= 0.0f) ? 0.0f : (ent->wait * 1000.0f);
 	
 	if(ent->count == 0) {
 		ent->count = -1;
