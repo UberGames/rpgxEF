@@ -58,13 +58,14 @@ list_iter_p list_iterator(list_p list, char init) {
 	return iter;
 }
 
-int list_add(list_p list, void* data, dataType_t type, int size) {
+int list_add(list_p list, void* data, dataType_t type, size_t size, char end) {
 	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
 
 	node->cont = (container_p)(sizeof(container));
 	if(node->cont == NULL) {
 		return 0;
 	}
+	node->cont->type = type;
 
 	node->cont->data = malloc(size);
 	if(node->cont->data == NULL) {
@@ -77,7 +78,17 @@ int list_add(list_p list, void* data, dataType_t type, int size) {
 		node->next = NULL;
 		list->first = node;
 		list->last = node;
-	} else {
+	} else if(end == LIST_BACK) {
+		list->last->next = node;
+		node->prev = list->last;
+		node->next = NULL;
+		list->last = node;
+	} else if(end == LIST_FRONT) {
+		list->first->prev = node;
+		node->next = list->first;
+		node->prev = NULL;
+		list->first = node;
+	} else { // assume back
 		list->last->next = node;
 		node->prev = list->last;
 		node->next = NULL;
@@ -86,6 +97,14 @@ int list_add(list_p list, void* data, dataType_t type, int size) {
 	list->length++;
 
 	return list->length;
+}
+
+int list_append(list_p list, void* data, dataType_t type, size_t size) {
+	return list_add(list, data, type, size, LIST_BACK);
+}
+
+int list_prepend(list_p list, void* data, dataType_t type, size_t size) {
+	return list_add(list, data, type, size, LIST_FRONT);
 }
 
 container_p list_current(list_iter_p iter){
