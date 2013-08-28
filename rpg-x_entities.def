@@ -2390,3 +2390,63 @@ Should this thing hit 0 the killing part for everyone outside a target_safezone 
 "damage" - leveltime of countdowns end
 "spawnflags" - 1 tells ent to free once aborted
 */
+
+/*QUAKED target_sequence (1 0 0) (-8 -8 -8) (8 8 8) NO_INIT_DELAY DISALLOW_ABORTS LOOP AUTO_INIT FREE_AFTER_SEQUENCE ABORT_AFTER_SEQUENCE
+-----DESCRIPTION-----
+A sequence manager, mostly to kill off multiple target_delays.
+Will fire specified targets in a fixed order.
+The time intervall between each firing can be specified.
+If an intervall is 0 (or specifically not > 0) the sequence is ended.
+The sequence is also ended once the entity is used a 2nd time (unless disallowed).
+If the sequence is ended it does not pick up at it's last point but rather at it's start mark
+Entities are always fired as noactivator.
+
+-----SPAWNFLAGS-----
+1: NO_INIT_DELAY - The first target will be fired without any delay (damage will simply not be read).
+2: DISALLOW_ABORTS - Disallows aborting the sequence by a 2nd use of the entity.
+4: LOOP - Instead of ending after the frst pass it starts back at stage 1.
+8: AURO_INIT - starts 1st stage when spawned. Overwrites NO_INIT_DELAY as target entities may not have been spawned.
+16: FREE_AFTER_SEQUENCE - removes entity after 1 sequence has either run trough or been aborted. 
+32: ABORT_AFTER_SEQUENCE - once an abort is issued the sequence runs trough and comes to a halt, else it halts directly
+
+-----KEYS-----
+"targetname" - used to init the sequence
+"message" - Message to display when sequence is initialised
+"model" - Message to display when sequence is aborted
+"model2" - Message to display while in an inabortable sequence
+
+Pos | Target | Delay (in ms, 1 s = 1000 ms)
+1 | bluename | count
+2 | swapname | health
+3 | falsename | splashDamage
+4 | falsetarget | splashRadius
+
+-----USAGE-----
+For more than 4 iterations:
+If you plan a sequence that has more than 5 iterations simply have 
+the 5th iteration of entity a target entity b and have entity b
+have NO_INIIT_DELAY on.
+
+For looping have the last target_sequence target the first (if you don't want the 
+initial init to be instand run it trough a target_delay)
+
+If you want the entire sequence to be inabortable I recomend you use 
+the following lua script hooked via luaUse on your usable. Make sure that every 
+target_sequence has a unique name on the map:
+
+function sequencecheck (ent, other, activator)
+	if ent.GetDamage(entity.Find("targetname(1)")) > 0 then
+		if ent.GetDamage(entity.Find("targetname(2)")) > 0 then
+			if ent.GetDamage(entity.Find("targetname(n)")) > 0 then
+				entity.Use(entity.Find("targetname(1)"));
+			else
+				game.MessagePrint(activator, "=C= Unable to comply, sequence is already in progress");
+			end
+		else
+			game.MessagePrint(activator, "=C= Unable to comply, sequence is already in progress");
+		end
+	else
+		game.MessagePrint(activator, "=C= Unable to comply, sequence is already in progress");
+	end
+end
+*/

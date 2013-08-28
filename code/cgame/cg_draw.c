@@ -1053,6 +1053,11 @@ static void CG_DrawStatusBar( void )
 		{
 			if ( cg.snap->entities[i].eType == ET_PLAYER ) // If the Entity is a Player
 			{
+				/*if(cg.snap->entities[i].time == -1){
+					CG_Printf("Radar: decoy found, going to next ent\n");
+					continue;
+				}*/
+				CG_Printf("Radar: Player found on pos %d with enum %d -> do vector math\n", i, cg.snap->entities[i].number);
 				// Calculate How Far Away They Are
 				int32_t x = (cg.snap->entities[i].pos.trBase[0] - cg.predictedPlayerState.origin[0]);
 				y = (cg.snap->entities[i].pos.trBase[1] - cg.predictedPlayerState.origin[1]);
@@ -1074,11 +1079,13 @@ static void CG_DrawStatusBar( void )
 				AngleVectors(dAngle, forward, NULL, NULL);
 				VectorScale(forward, h/32, forward);
 
+				CG_Printf("Radar: are you dead?\n");
 				//RPG-X: RedTechie - If Dead show them as a medical symbol
 				//.number
 				if (h/32 < 100 && h/32 > 0) { // Limit Radar Range
 					if ( cg_entities[cg.snap->entities[i].number].currentState.eFlags & EF_DEAD )
 					{
+						CG_Printf("Radar: He's dead, Jim!, draw dot\n");
 						if (z > 64)
 						{
 							CG_DrawStretchPic( 86 - forward[1], 146 - forward[0], 16, 8, 0, 0, 1, 0.5, cgs.media.rd_injured_level );
@@ -1094,22 +1101,39 @@ static void CG_DrawStatusBar( void )
 					}
 					else
 					{
-						if ( cgs.clientinfo[cg.snap->entities[i].number].pClass >= 0 )
-						{
-							radColor[0] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[0] / 255.0f;
-							radColor[1] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[1] / 255.0f;
-							radColor[2] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[2] / 255.0f;
-							radColor[3] = 1.0f;
-						}
+						CG_Printf("Radar: He's not dead, Jim!\n");
+						if(cg.snap->entities[i].time != -1)
+							if ( cgs.clientinfo[cg.snap->entities[i].number].pClass >= 0 &&  cg.snap->entities[i].time != -1 )
+							{
+								CG_Printf("Radar: color picked from class\n");
+								radColor[0] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[0] / 255.0f;
+								radColor[1] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[1] / 255.0f;
+								radColor[2] = (float)cgs.classData[cgs.clientinfo[cg.snap->entities[i].number].pClass].radarColor[2] / 255.0f;
+								radColor[3] = 1.0f;
+								CG_Printf("Radar: coloring complete: 0 = %.3f -- 1 = %.3f -- 2 = %.3f\n", radColor[0], radColor[1], radColor[2]);
+							}
+							else
+							{
+								CG_Printf("Radar: color picked by default as black\n");
+								VectorCopy( colorTable[CT_BLACK], radColor );
+								radColor[3] = colorTable[CT_BLACK][3];
+								CG_Printf("Radar: coloring complete as black\n");
+							}
 						else
 						{
+							CG_Printf("Radar: Decoy found, color picked as black\n");
 							VectorCopy( colorTable[CT_BLACK], radColor );
 							radColor[3] = colorTable[CT_BLACK][3];
+							CG_Printf("Radar: coloring complete as black\n");
 						}
 
 						if ( cgs.clientinfo[cg.snap->entities[i].number].isAdmin && !cgs.clientinfo[cg.snap->ps.clientNum].isAdmin )
+						{
+							CG_Printf("Radar: hide admins from non admins\n");
 							continue;
+						}
 
+						CG_Printf("Radar: Draw Dot\n");
 						if ( z > 64 ) 
 						{
 							trap_R_SetColor( radColor );
@@ -1126,6 +1150,7 @@ static void CG_DrawStatusBar( void )
 							CG_DrawPic( 86 - forward[1], 146 - forward[0], 8, 8, cgs.media.radarMain );
 						}
 						trap_R_SetColor( NULL );
+						CG_Printf("Radar: Dot Placed\n");
 					}
 				}
 			}
