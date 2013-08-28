@@ -1121,17 +1121,23 @@ Torpedos can be limited and can be set to any value within their maximum range b
 static void fx_torpedo_use(gentity_t* ent, gentity_t*other, gentity_t *activator);
 
 static void fx_torpedo_think(gentity_t *ent) {
+	G_LocLogger(LL_TRACE, "%s\n", __FUNCTION__);
+
 	ent->nextthink = -1;
 	ent->use = fx_torpedo_use;
 }
 
 static void fx_torpedo_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentity_t *activator) {
+	G_LocLogger(LL_TRACE, "%s - begin\n", __FUNCTION__);
+
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
+		G_Logger(LL_DEBUG, "lock/unlock\n");
 		ent->flags ^= FL_LOCKED;
 	} else {
 		if((ent->flags & FL_LOCKED) != 0){
 			trap_SendServerCommand(activator-g_entities, va("print \"^1Torpedo launcher is offline.\n\""));
 			G_AddEvent(ent, EV_GENERAL_SOUND, ent->n00bCount);
+			G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 			return;
 		}
 	
@@ -1140,8 +1146,10 @@ static void fx_torpedo_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentit
 			trap_SendServerCommand(activator-g_entities, va("print \"Torpedos: %i of %i left.\n\"", ent->count, ent->damage));
 			G_AddEvent(ent, EV_GENERAL_SOUND, ent->s.time);
 		} 
+
 		if(ent->count == 0){
 			trap_SendServerCommand(activator-g_entities, "print \"^1Out of Torpedos.\n\"");
+			G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 			return;
 		}
 	
@@ -1150,23 +1158,29 @@ static void fx_torpedo_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentit
 		ent->think = fx_torpedo_think;
 		ent->nextthink = level.time + ent->wait;
 	}
+
+	G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 }
 
 static void fx_torpedo_link(gentity_t *ent) {
 	vec3_t dir;
 	gentity_t *target = NULL;
 
+	G_LocLogger(LL_TRACE, "%s - begin\n", __FUNCTION__);
+
 	if(ent->target != NULL && ent->target[0] != 0) {
 		target = G_Find(target, FOFS(targetname), ent->target);
 	} else {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_torpedo_link: ent->target is NULL\n"););
+		G_Logger(LL_ERROR, "[Entity-Error] fx_torpedo_link: ent->target is NULL\n");
 		G_FreeEntity(ent);
+		G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 		return;
 	}
 	
 	if(target == NULL) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Could not find target %s for fx_torpedo at %s!\n", ent->target, vtos(ent->s.origin)););
+		G_Logger(LL_ERROR, "[Entity-Error] Could not find target %s for fx_torpedo at %s!\n", ent->target, vtos(ent->s.origin));
 		G_FreeEntity(ent);
+		G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 		return;
 	}
 
@@ -1176,7 +1190,11 @@ static void fx_torpedo_link(gentity_t *ent) {
 	VectorCopy(dir, ent->s.angles);
 	trap_LinkEntity(ent);
 
-	ent->wait = (ent->wait <= 0.0f) ? 0.0f : (ent->wait * 1000.0f);
+	G_Logger(LL_DEBUG, "target->origin=%s, direction=%s\n", vtos(ent->s.origin), vtos(ent->s.angles));
+
+	ent->wait = ent->wait ? (ent->wait * 1000.0f) : 0.0f;
+
+	G_Logger(LL_DEBUG, "ent->wait=%f\n", ent->wait);
 	
 	if(ent->count == 0) {
 		ent->count = -1;
@@ -1188,31 +1206,51 @@ static void fx_torpedo_link(gentity_t *ent) {
 		ent->flags |= FL_LOCKED;
 	}
 
-	ent->s.angles2[0] = (ent->speed <= 0.0f) ? ent->speed : 2.5f;
+	ent->s.angles2[0] = (ent->speed <= 0.0f) ? 2.5f : ent->speed;
+
+	G_Logger(LL_DEBUG, "speed=%f\n", ent->s.angles2[0]);
 
 	ent->use = fx_torpedo_use;
 	ent->nextthink = -1;
+
+	G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 }
 
 void SP_fx_torpedo(gentity_t *ent) {
 	char	*sound;
 
+	G_LocLogger(LL_TRACE, "%s - begin\n", __FUNCTION__);
+
 	ent->type = ENT_FX_TORPEDO;
 
 	if(ent->target == NULL || ent->target[0] == 0) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] fx_torpedo at %s without target\n", vtos(ent->s.origin)););
+		G_Logger(LL_ERROR, "[Entity-Error] fx_torpedo at %s without target\n", vtos(ent->s.origin));
 		G_FreeEntity(ent);
+		G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 		return;
 	}
 
 	G_SpawnString("noise", "sound/rpg_runabout/torp.wav", &sound);
-	ent->s.time = ((ent->spawnflags & 2) == 0) ? G_SoundIndex(sound) : G_SoundIndex("NULL");
+	 if((ent->spawnflags & 2) == 0) {
+		ent->s.time = G_SoundIndex(sound);
+		G_Logger(LL_DEBUG, "using sound %s with sound index %d\n", sound, ent->s.time);
+	} else {
+		ent->s.time = G_SoundIndex("NULL");
+	}
+	
 
 	G_SpawnString("soundNoAmmo", "sound/movers/switches/voyneg.mp3", &sound);
-	ent->n00bCount = ((ent->spawnflags & 2) == 0) ? G_SoundIndex(sound) : G_SoundIndex("NULL");
+	if((ent->spawnflags & 2) == 0) {
+		ent->n00bCount = G_SoundIndex(sound);
+		G_Logger(LL_DEBUG, "using soundNoAmmo %s with sound index %d\n", sound, ent->n00bCount);
+	} else {
+		ent->n00bCount = G_SoundIndex("NULL");
+	}
 
 	ent->think = fx_torpedo_link;
 	ent->nextthink = level.time + 1000;
+
+	G_LocLogger(LL_TRACE, "%s - end\n", __FUNCTION__);
 }
 
 /*QUAKED fx_particle_fire (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
