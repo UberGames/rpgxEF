@@ -7,6 +7,9 @@
 #include "cg_public.h"
 #include "list.h"
 
+#ifndef CG_LOCAL_H_
+#define CG_LOCAL_H_
+
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is NO persistant data between levels on the client side.
 // If you absolutely need something stored, it can either be kept
@@ -2270,4 +2273,7 @@ void CG_ResetThirdPersonViewDamp ( void );
 /* GSIO - shader remapping */
 void trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 void CG_ShaderStateChanged(void);
+
+#endif /* CG_LOCAL_H_ */
+
 

@@ -6,6 +6,9 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 
+#ifndef CG_PUBLIC_H_
+#define CG_PUBLIC_H_
+
 #define	CMD_BACKUP			64	
 #define	CMD_MASK			(CMD_BACKUP - 1)
 // allow a lot of command backups for very fast systems
@@ -171,3 +174,5 @@ typedef enum {
 } cgameExport_t;
 
 //----------------------------------------------
+
+#endif /* CG_PUBLIC_H_ */

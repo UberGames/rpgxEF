@@ -7,6 +7,7 @@
 
 #include "cg_local.h"
 #include "cg_text.h"
+#include "cg_logger.h"
 
 void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence );
 void CG_Shutdown( void );
@@ -358,7 +359,7 @@ void CG_PrecacheRemapShaders(void) {
 	len = trap_FS_FOpenFile(filepath, &f, FS_READ);
 
 	if(!f) {
-		CG_Printf("No precache file ...\n");
+		CG_Logger(LL_INFO, "No precache file ...\n");
 		return;
 	}
 
@@ -1173,7 +1174,7 @@ void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence ) {
 	const char	*s;
 	int32_t i;
 
-	CG_Printf ("This is RPG-X version %s compiled by %s on %s.\n", RPGX_VERSION, RPGX_COMPILEDBY, RPGX_COMPILEDATE);
+	CG_Logger(LL_ALWAYS, "This is RPG-X version %s compiled by %s on %s.\n", RPGX_VERSION, RPGX_COMPILEDBY, RPGX_COMPILEDATE);
 
 	// clear everything
 	memset( &cgs, 0, sizeof( cgs ) );

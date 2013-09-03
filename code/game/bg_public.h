@@ -2,6 +2,9 @@
 //
 // bg_public.h -- definitions shared by both the server game and client game modules
 
+#ifndef BG_PUBLIC_H_
+#define BG_PUBLIC_H_
+
 // meh somehow preprocessor G_LUA won't work for me
 #define G_LUA 1
 #define CG_LUA 1
@@ -1072,3 +1075,6 @@ char	*EndWord(char *pos);
 #define PHASER_AMMO_MAX		50
 
 extern int Max_Ammo[];
+
+#endif /* BG_PUBLIC_H_ */
+
