@@ -14,6 +14,12 @@
  *
  *****************************************************************************/
 
+#ifndef AI_TEAM_H_
+#define AI_TEAM_H_
+
 void BotTeamAI(bot_state_t *bs);
 int BotGetTeamMateCTFPreference(bot_state_t *bs, int teammate);
 void BotSetTeamMateCTFPreference(bot_state_t *bs, int teammate, int preference);
+
+#endif AI_TEAM_H_
+

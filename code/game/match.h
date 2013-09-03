@@ -9,6 +9,9 @@
 // Tab Size:		4 (real tabs)
 //===========================================================================
 
+#ifndef MATCH_H_
+#define MATCH_H_
+
 //match template contexts
 #define MTCONTEXT_ENTERGAME				2
 #define MTCONTEXT_INITIALTEAMCHAT		4
@@ -109,4 +112,4 @@
 #define NAME							6
 #define MORE							6
 
-
+#endif /* MATCH_H_ */

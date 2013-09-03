@@ -3,6 +3,9 @@
 
 // g_public.h -- game module information visible to server
 
+#ifndef G_PUBLIC_H_
+#define G_PUBLIC_H_
+
 #define	GAME_API_VERSION	7
 
 // entity->svFlags
@@ -418,3 +421,4 @@ typedef enum {
 	BOTAI_START_FRAME				// ( int time );
 } gameExport_t;
 
+#endif /* G_PUBLIC_H_ */

@@ -14,6 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef AI_CHAT_H_
+#define AI_CHAT_H_
+
 //
 int BotChat_EnterGame(bot_state_t *bs);
 //
@@ -42,4 +45,7 @@ float BotChatTime(bot_state_t *bs);
 int BotValidChatPosition(bot_state_t *bs);
 //! test the initial bot chats
 void BotChatTest(bot_state_t *bs);
+
+#endif /* AI_CHAT_H_ */
+
 

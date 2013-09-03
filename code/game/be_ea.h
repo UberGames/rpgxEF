@@ -14,6 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef BE_EA_H_
+#define BE_EA_H_
+
 //ClientCommand elementary actions
 void EA_Say(int client, char *str);
 void EA_SayTeam(int client, char *str);
@@ -50,3 +53,5 @@ void EA_ResetInput(int client);
 //setup and shutdown routines
 int EA_Setup(void);
 void EA_Shutdown(void);
+
+#endif /* BE_EA_H_ */

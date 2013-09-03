@@ -1,6 +1,8 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 
+#ifndef INV_H_
+#define INV_H_
 
 #define INVENTORY_NONE				0
 
@@ -107,3 +109,5 @@
 #define MODELINDEX_HYPO				37
 #define MODELINDEX_ASSIMILATOR		38
 #define MODELINDEX_BORG_WEAPON		39
+
+#endif /* INV_H_ */

@@ -14,6 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef AI_DMQ3_H_
+#define AI_DMQ3_H_
+
 //!setup the deathmatch AI
 void BotSetupDeathmatchAI(void);
 //!shutdown the deathmatch AI
@@ -131,4 +134,6 @@ extern vmCvar_t bot_challenge;
 
 extern bot_goal_t ctf_redflag;
 extern bot_goal_t ctf_blueflag;
+
+#endif /* AI_DMQ3_H_ */
 

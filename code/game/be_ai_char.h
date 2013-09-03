@@ -14,6 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef BE_AI_CHAR_H_
+#define BE_AI_CHAR_H_
+
 //!loads a bot character from a file
 int BotLoadCharacter(char *charfile, int skill);
 //!frees a bot character
@@ -30,3 +33,6 @@ int Characteristic_BInteger(int character, int index, int min, int max);
 void Characteristic_String(int character, int index, char *buf, int size);
 //!free cached bot characters
 void BotShutdownCharacters(void);
+
+#endif /* BE_AI_CHAR_H_ */
+

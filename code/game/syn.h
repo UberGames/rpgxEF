@@ -10,6 +10,9 @@
 // Notes:			-
 //===========================================================================
 
+#ifndef SYN_H_
+#define SYN_H_
+
 #define CONTEXT_ALL						0xFFFFFFFF
 #define CONTEXT_NORMAL					1
 #define CONTEXT_NEARBYITEM				2
@@ -18,3 +21,5 @@
 #define CONTEXT_REPLY					16
 
 #define CONTEXT_NAMES 1024
+
+#endif /* SYN_H_ */

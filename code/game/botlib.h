@@ -13,6 +13,9 @@
  *
  *****************************************************************************/
 
+#ifndef BOTLIB_H_
+#define BOTLIB_H_
+
 #define	BOTLIB_API_VERSION		2
 
 struct aas_clientmove_s;
@@ -473,3 +476,4 @@ name:						default:			module(s):			description:
 
 */
 
+#endif /* BOTLIB_H_ */

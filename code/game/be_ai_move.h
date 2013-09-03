@@ -14,6 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef BE_AI_MOVE_H
+#define BE_AI_MOVE_H
+
 //movement types
 #define MOVE_WALK						1
 #define MOVE_CROUCH						2
@@ -106,3 +109,4 @@ int BotSetupMoveAI(void);
 //!shutdown movement AI
 void BotShutdownMoveAI(void);
 
+#endif /* BE_AI_MOVE_H */

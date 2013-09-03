@@ -9,6 +9,8 @@
 // Tab Size:		4 (real tabs)
 //===========================================================================
 
+#ifndef CHARS_H_
+#define CHARS_H_
 
 //========================================================
 //========================================================
@@ -123,3 +125,4 @@
 //how much the bot fires it's weapon
 #define CHARACTERISTIC_FIRETHROTTLE					47	//float [0, 1]
 
+#endif /* CHARS_H_ */

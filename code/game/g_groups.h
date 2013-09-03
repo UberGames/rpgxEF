@@ -2,6 +2,9 @@
 //
 // g_groups.h -- local definitions for game module group collections
 
+#ifndef G_GROUPS_H_
+#define G_GROUPS_H_
+
 typedef struct
 {
 	char	name[128];
@@ -15,3 +18,6 @@ extern int 	group_count;
 /*@shared@*/ /*@null@*/ extern char *G_searchGroupList(const char *name);
 
 #define MAX_SKINS_FOR_RACE 128
+
+#endif /* G_GROUPS_H_ */
+

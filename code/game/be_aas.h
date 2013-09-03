@@ -14,6 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef BE_AAS_H_
+#define BE_AAS_H_
+
 #ifndef MAX_STRINGFIELD
 #define MAX_STRINGFIELD				80
 #endif
@@ -163,3 +166,6 @@ typedef struct aas_altroutegoal_s
 	unsigned short goaltraveltime;
 	unsigned short extratraveltime;
 } aas_altroutegoal_t;
+
+#endif /* BE_AAS_H_ */
+

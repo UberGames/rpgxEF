@@ -14,6 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef AI_DMNET_H_
+#define AI_DMNET_H_
+
 #define MAX_NODESWITCHES	50
 
 void AIEnter_Intermission(bot_state_t *bs);
@@ -42,4 +45,7 @@ int AINode_Battle_NBG(bot_state_t *bs);
 
 void BotResetNodeSwitches(void);
 void BotDumpNodeSwitches(bot_state_t *bs);
+
+#endif /* AI_DMNET_H_ */
+
 

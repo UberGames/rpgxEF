@@ -14,6 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef BE_AI_WEAP_H_
+#define BE_AI_WEAP_H_
+
 //projectile flags
 #define PFL_WINDOWDAMAGE			1		//!<projectile damages through window
 #define PFL_RETURN					2		//!<set when projectile returns to owner
@@ -86,3 +89,5 @@ int BotAllocWeaponState(void);
 void BotFreeWeaponState(int weaponstate);
 //!resets the whole weapon state
 void BotResetWeaponState(int weaponstate);
+
+#endif /* BE_AI_WEAP_H_ */

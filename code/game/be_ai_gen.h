@@ -14,4 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef BE_AI_GEN_H_
+#define BE_AU_GEN_H_
+
 int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, int *parent2, int *child);
+
+#endif /* BE_AU_GEN_H_ */

@@ -13,6 +13,9 @@
  *
  *****************************************************************************/
 
+#ifndef BE_AI_GOAL_H_
+#define BE_AI_GOAL_H_
+
 #define MAX_AVOIDGOALS			64
 #define MAX_GOALSTACK			8
 
@@ -93,3 +96,6 @@ void BotFreeGoalState(int handle);
 int BotSetupGoalAI(void);
 //!shut down the goal AI
 void BotShutdownGoalAI(void);
+
+#endif /* BE_AI_GOAL_H_ */
+

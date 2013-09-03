@@ -14,6 +14,9 @@
  *
  *****************************************************************************/
 
+#ifndef AI_MAIN_H_
+#define AI_AMIN_H_
+
 //#define DEBUG
 #define CTF
 
@@ -224,3 +227,7 @@ int		BotAI_GetClientState( int clientNum, playerState_t *state );
 int		BotAI_GetEntityState( int entityNum, entityState_t *state );
 int		BotAI_GetSnapshotEntity( int clientNum, int sequence, entityState_t *state );
 int		BotTeamLeader(bot_state_t *bs);
+
+#endif /* AI_AMIN_H_ */
+
+

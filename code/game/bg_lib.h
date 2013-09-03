@@ -3,6 +3,9 @@
 
 // This file is NOT included on native builds
 
+#ifndef BG_LIB_H_
+#define BG_LIB_H_
+
 #ifdef Q3_VM
 #error "Q3_VM is defined - QVMs are no longer supported by RPG-X2"
 
@@ -71,3 +74,5 @@ int abs( int n );
 double fabs( double x );
 
 #endif // Q3_VM
+
+#endif /* BG_LIB_H_ */
