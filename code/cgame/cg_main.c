@@ -38,26 +38,36 @@ This must be the very first function compiled into the .q3vm file
 ================
 */
 Q_EXPORT intptr_t vmMain( int32_t command, int32_t arg0, int32_t arg1, int32_t arg2, int32_t arg3, int32_t arg4, int32_t arg5, int32_t arg6 ) {
+	CG_LogFuncBegin();
+
 	switch ( command ) {
 	case CG_INIT:
 		CG_Init( arg0, arg1 );
+		CG_LogFuncEnd();
 		return 0;
 	case CG_SHUTDOWN:
 		CG_Shutdown();
+		CG_LogFuncEnd();
 		return 0;
 	case CG_CONSOLE_COMMAND:
+		CG_LogFuncEnd();
 		return CG_ConsoleCommand();
 	case CG_DRAW_ACTIVE_FRAME:
 		CG_DrawActiveFrame( arg0, (stereoFrame_t)arg1, (qboolean)arg2 );
+		CG_LogFuncEnd();
 		return 0;
 	case CG_CROSSHAIR_PLAYER:
+		CG_LogFuncEnd();
 		return CG_CrosshairPlayer();
 	case CG_LAST_ATTACKER:
+		CG_LogFuncEnd();
 		return CG_LastAttacker();
 	default:
 		CG_Error( "vmMain: unknown command %i", command );
 		break;
 	}
+
+	CG_LogFuncEnd();
 	return -1;
 }
 
@@ -353,6 +363,8 @@ void CG_PrecacheRemapShaders(void) {
 	char* token;
 	qhandle_t shader;
 
+	CG_LogFuncBegin();
+
 	COM_StripExtension(cgs.mapname, filepath);
 	Com_sprintf(filepath, MAX_QPATH, "%s.precache", filepath);
 
@@ -360,6 +372,7 @@ void CG_PrecacheRemapShaders(void) {
 
 	if(!f) {
 		CG_Logger(LL_INFO, "No precache file ...\n");
+		CG_LogFuncEnd();
 		return;
 	}
 
@@ -367,6 +380,7 @@ void CG_PrecacheRemapShaders(void) {
 	if(!data) {
 		trap_FS_FCloseFile(f);
 		CG_Printf(S_COLOR_RED "Error - could not allocate %d byte of memory.\n", sizeof(char)*(len+1));
+		CG_LogFuncEnd();
 		return;
 	}
 
@@ -374,27 +388,35 @@ void CG_PrecacheRemapShaders(void) {
 	trap_FS_FCloseFile(f);
 
 	//CG_Printf("Precaching texture files ...");
-	CG_Printf("Precaching texture files ...");
+	CG_Logger(LL_INFO, "Precaching texture files ...");
 	COM_BeginParseSession();
 
 	ptr = data;
 	token = COM_Parse(&ptr);
 	while(token != NULL) {
-		if(!token[0]) break;
-		if(!strcmp(token, "END")) break;
+		if(token == NULL || token[0] == 0) {
+			CG_Logger(LL_DEBUG, "token == NULL\n");
+			break;
+		}
 
-		CG_Printf("\t%s ... ", token);
+		if(strcmp(token, "END") == 0) {
+			CG_Logger(LL_DEBUG, "token == END\n");
+			break;
+		}
+
+		CG_Logger(LL_INFO, "\t%s ... ", token);
 
 		shader = trap_R_RegisterShader(token);
-		if(!shader) {
-			CG_Printf(S_COLOR_RED "FAIL\n");
+		if(shader == NULL) {
+			CG_Logger(LL_WARN, "FAIL\n");
 		} else {
-			CG_Printf("OK\n");
+			CG_Logger(LL_INFO, "OK\n");
 		}
 
 		token = COM_Parse(&ptr);
 	}
 
+	CG_LogFuncEnd();
 	free(data);
 }
 
@@ -408,6 +430,8 @@ void CG_RegisterCvars( void ) {
 	cvarTable_t	*cv;
 	char		var[MAX_TOKEN_CHARS];
 
+	CG_LogFuncBegin();
+
 	for ( i = 0, cv = cvarTable ; i < CVAR_TABLE_SIZE ; i++, cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 			cv->defaultString, cv->cvarFlags );
@@ -416,6 +440,8 @@ void CG_RegisterCvars( void ) {
 	// see if we are also running the server on this machine
 	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
 	cgs.localServer = (qboolean)atoi( var );
+
+	CG_LogFuncEnd();
 }
 
 
@@ -427,6 +453,8 @@ CG_UpdateCvars
 void CG_UpdateCvars( void ) {
 	int32_t			i;
 	cvarTable_t	*cv;
+
+	CG_LogFuncBegin();
 
 	for ( i = 0, cv = cvarTable ; i < CVAR_TABLE_SIZE ; i++, cv++ )
 	{
@@ -446,21 +474,33 @@ void CG_UpdateCvars( void ) {
 			trap_Cvar_Set( "teamoverlay", "0" );
 		}
 	}
+
+	CG_LogFuncEnd();
 }
 
 
 int32_t CG_CrosshairPlayer( void ) {
+	CG_LogFuncBegin();
+
 	if ( cg.time > ( cg.crosshairClientTime + 1000 ) ) {
+		CG_LogFuncEnd();
 		return -1;
 	}
+
+	CG_LogFuncEnd();
 	return cg.crosshairClientNum;
 }
 
 
 int32_t CG_LastAttacker( void ) {
+	CG_LogFuncBegin();
+
 	if ( !cg.attackerTime ) {
+		CG_LogFuncEnd();
 		return -1;
 	}
+
+	CG_LogFuncEnd();
 	return cg.snap->ps.persistant[PERS_ATTACKER];
 }
 
@@ -496,9 +536,13 @@ void QDECL CG_Error( const char *msg, ... ) {
 	va_list		argptr;
 	char		text[1024];
 
+	CG_LogFuncBegin();
+
 	va_start (argptr, msg);
 	vsprintf (text, msg, argptr);
 	va_end (argptr);
+
+	CG_LogFuncEnd();
 
 	trap_Error( text );
 }
@@ -510,9 +554,13 @@ void QDECL Com_Error( int32_t level, const char *error, ... ) {
 	va_list		argptr;
 	char		text[1024];
 
+	CG_LogFuncBegin();
+
 	va_start (argptr, error);
 	vsprintf (text, error, argptr);
 	va_end (argptr);
+
+	CG_LogFuncEnd();
 
 	CG_Error( "%s", text);
 }
@@ -540,7 +588,11 @@ CG_Argv
 const char *CG_Argv( int32_t arg ) {
 	static char	buffer[MAX_STRING_CHARS];
 
+	CG_LogFuncBegin();
+
 	trap_Argv( arg, buffer, sizeof( buffer ) );
+
+	CG_LogFuncEnd();
 
 	return buffer;
 }
@@ -561,6 +613,8 @@ static void CG_RegisterItemSounds( int32_t itemNum ) {
 	char			*s, *start;
 	int32_t				len;
 
+	CG_LogFuncBegin();
+
 	item = &bg_itemlist[ itemNum ];
 
 	if ( item->pickup_sound )
@@ -570,8 +624,10 @@ static void CG_RegisterItemSounds( int32_t itemNum ) {
 
 	// parse the space seperated precache string for other media
 	s = item->sounds;
-	if (!s || !s[0])
+	if (s == NULL || s[0] == 0) {
+		CG_LogFuncEnd();
 		return;
+	}
 
 	while (*s) {
 		start = s;
@@ -581,6 +637,7 @@ static void CG_RegisterItemSounds( int32_t itemNum ) {
 
 		len = s-start;
 		if (len >= MAX_QPATH || len < 5) {
+			CG_LogFuncEnd();
 			CG_Error( "PrecacheItem: %s has bad precache string",
 				item->classname);
 			return;
@@ -595,6 +652,8 @@ static void CG_RegisterItemSounds( int32_t itemNum ) {
 			trap_S_RegisterSound( data );
 		}
 	}
+
+	CG_LogFuncEnd();
 }
 
 
@@ -611,6 +670,8 @@ static void CG_RegisterSounds( void )
 	char	items[MAX_ITEMS+1];
 	char	name[MAX_QPATH];
 	const char	*soundName;
+
+	CG_LogFuncBegin();
 
 	cg.loadLCARSStage = 1;	// Loading bar stage 1
 	CG_LoadingString( "sounds" );
@@ -745,6 +806,8 @@ static void CG_RegisterSounds( void )
 	cgs.media.electricExpSound[1]	= trap_S_RegisterSound("sound/weapons/explosions/explode11.wav");
 	cgs.media.electricExpSound[2]	= trap_S_RegisterSound("sound/weapons/explosions/explode15.wav");
 	cgs.media.bigSurfExpSound		= trap_S_RegisterSound("sound/weapons/explosions/explode12.wav");
+
+	CG_LogFuncEnd();
 }
 
 /*
@@ -757,7 +820,6 @@ This function may execute for a couple of minutes with a slow disk.
 static void CG_RegisterGraphics( void ) {
 	int32_t			i;
 	char		items[MAX_ITEMS+1];
-
 	static char		*sb_nums[11] = {
 		"gfx/2d/numbers/zero",
 		"gfx/2d/numbers/one",
@@ -771,7 +833,6 @@ static void CG_RegisterGraphics( void ) {
 		"gfx/2d/numbers/nine",
 		"gfx/2d/numbers/minus",
 	};
-
 	static char		*sb_t_nums[11] = {
 		"gfx/2d/numbers/t_zero",
 		"gfx/2d/numbers/t_one",
@@ -786,6 +847,7 @@ static void CG_RegisterGraphics( void ) {
 		"gfx/2d/numbers/t_minus",
 	};
 
+	CG_LogFuncBegin();
 
 	// clear any references to old media
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
@@ -860,19 +922,19 @@ static void CG_RegisterGraphics( void ) {
 
 	//RPG-X START | GSIO01 | 09/05/2009 | START
 	switch(rpg_forceFieldSet.integer) {
-		case 2:
-			cgs.media.shieldActivateShaderBorg = trap_R_RegisterShader( "gfx/forcefielddarkgreen" );
-			cgs.media.shieldActivateShaderYellow = trap_R_RegisterShader( "gfx/forcefielddarkyellow" );
-			cgs.media.shieldActivateShaderRed = trap_R_RegisterShader( "gfx/forcefielddarkred" );
-			cgs.media.shieldActivateShaderBlue = trap_R_RegisterShader( "gfx/forcefielddarkblue" );
-			break;
-		case 1:
-		default:
-			cgs.media.shieldActivateShaderBorg = trap_R_RegisterShader( "gfx/ff_green" );
-			cgs.media.shieldActivateShaderYellow = trap_R_RegisterShader( "gfx/ff_yellow" );
-			cgs.media.shieldActivateShaderRed = trap_R_RegisterShader( "gfx/ff_red" );
-			cgs.media.shieldActivateShaderBlue = trap_R_RegisterShader( "gfx/ff_blue" );
-			break;
+	case 2:
+		cgs.media.shieldActivateShaderBorg = trap_R_RegisterShader( "gfx/forcefielddarkgreen" );
+		cgs.media.shieldActivateShaderYellow = trap_R_RegisterShader( "gfx/forcefielddarkyellow" );
+		cgs.media.shieldActivateShaderRed = trap_R_RegisterShader( "gfx/forcefielddarkred" );
+		cgs.media.shieldActivateShaderBlue = trap_R_RegisterShader( "gfx/forcefielddarkblue" );
+		break;
+	case 1:
+	default:
+		cgs.media.shieldActivateShaderBorg = trap_R_RegisterShader( "gfx/ff_green" );
+		cgs.media.shieldActivateShaderYellow = trap_R_RegisterShader( "gfx/ff_yellow" );
+		cgs.media.shieldActivateShaderRed = trap_R_RegisterShader( "gfx/ff_red" );
+		cgs.media.shieldActivateShaderBlue = trap_R_RegisterShader( "gfx/ff_blue" );
+		break;
 	}
 	//RPG-X END
 
@@ -1082,6 +1144,8 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.orangeStarShader = trap_R_RegisterShaderNoMip( "gfx/misc/orangestar" );
 	cgs.media.qFlashSprite = trap_R_RegisterShaderNoMip( "gfx/effects/qflash" );
 
+
+	CG_LogFuncEnd();
 }
 
 /*
@@ -1092,6 +1156,8 @@ CG_RegisterClients
 */
 static void CG_RegisterClients( void ) {
 	int32_t		i;
+
+	CG_LogFuncBegin();
 
 	cg.loadLCARSStage = 8;	// Loading bar stage 8
 	CG_LoadingString( "clients" );
@@ -1113,6 +1179,8 @@ static void CG_RegisterClients( void ) {
 
 	}
 	cg.loadLCARSStage = 9;	// Loading bar stage 9
+
+	CG_LogFuncEnd();
 }
 
 //===========================================================================
@@ -1123,9 +1191,14 @@ CG_ConfigString
 =================
 */
 const char *CG_ConfigString( int32_t index ) {
+	CG_LogFuncBegin();
+
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+		CG_LogFuncEnd();
 		CG_Error( "CG_ConfigString: bad index: %i", index );
 	}
+
+	CG_LogFuncEnd();
 	return cgs.gameState.stringData + cgs.gameState.stringOffsets[ index ];
 }
 
@@ -1141,17 +1214,23 @@ void CG_StartMusic( void ) {
 	char	*s;
 	char	parm1[MAX_QPATH], parm2[MAX_QPATH];
 
+	CG_LogFuncBegin();
+
 	// start the background music
 	s = (char *)CG_ConfigString( CS_MUSIC );
 	Q_strncpyz( parm1, COM_Parse( &s ), sizeof( parm1 ) );
 	Q_strncpyz( parm2, COM_Parse( &s ), sizeof( parm2 ) );
 
 	trap_S_StartBackgroundTrack( parm1, parm2 );
+
+	CG_LogFuncEnd();
 }
 
 extern int32_t altAmmoUsage[];
 void CG_InitModRules( void )
 {
+	CG_LogFuncBegin();
+
 	if ( cgs.pModDisintegration )
 	{//don't use up ammo in disintegration mode
 		altAmmoUsage[WP_6] = 0;
@@ -1160,6 +1239,8 @@ void CG_InitModRules( void )
 	{//tripwires use more ammo
 		altAmmoUsage[WP_8] = 3;
 	}
+
+	CG_LogFuncEnd();
 }
 
 /*
@@ -1174,6 +1255,7 @@ void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence ) {
 	const char	*s;
 	int32_t i;
 
+	CG_LogFuncBegin();
 	CG_Logger(LL_ALWAYS, "This is RPG-X version %s compiled by %s on %s.\n", RPGX_VERSION, RPGX_COMPILEDBY, RPGX_COMPILEDATE);
 
 	// clear everything
@@ -1262,6 +1344,7 @@ void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence ) {
 	// check version
 	s = CG_ConfigString( CS_GAME_VERSION );
 	if ( strcmp( s, GAME_VERSION ) ) {
+		CG_LogFuncEnd();
 		CG_Error( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
 	}
 
@@ -1316,16 +1399,19 @@ void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence ) {
 
 	if ( !CG_LoadCrosshairs() )
 	{
+		CG_LogFuncEnd();
 		CG_Error( "Couldn't load crosshairs script" );
 	}
 
 	if ( !CG_LoadRanks() )
 	{
+		CG_LogFuncEnd();
 		CG_Error( "Couldn't load rankset script: %s", cgs.rankSet );
 	}
 
 	if ( !CG_LoadClasses() )
 	{
+		CG_LogFuncEnd();
 		CG_Error( "Couldn't load classset script: %s", cgs.classSet );
 	}
 
@@ -1336,10 +1422,9 @@ void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence ) {
 	/* shader remapping */
 	CG_ShaderStateChanged();
 
-	if(grp_berp.integer)
-		CG_Printf(S_COLOR_YELLOW "GSIO01 and Ubergames greet Brave Explorers.\n");
-
 	CG_PrecacheRemapShaders();
+
+	CG_LogFuncEnd();
 }
 
 /*
@@ -1350,7 +1435,7 @@ Called before every level change or subsystem restart
 =================
 */
 void CG_Shutdown( void ) {
-
+	CG_LocLogger(LL_TRACE, "%s\n", __FUNCTION__);
 }
 
 
@@ -1368,6 +1453,8 @@ void CG_ParseIngameText(void)
 	char *buffer;
 	int32_t i;
 	int32_t len;
+
+	CG_LogFuncBegin();
 
 	COM_BeginParseSession();
 
@@ -1388,19 +1475,21 @@ void CG_ParseIngameText(void)
 
 		if (i> IGT_MAX)
 		{
-			Com_Printf( S_COLOR_RED "CG_ParseIngameText : too many values!\n");
+			CG_LocLogger(LL_ERROR, "CG_ParseIngameText : too many values!\n");
+			CG_LogFuncEnd();
 			return;
 		}
 	}
 
 	if (i != IGT_MAX)
 	{
-		Com_Printf( S_COLOR_RED "CG_ParseIngameText : not enough lines! Read %d of %d!\n",i,IGT_MAX);
+		CG_LocLogger(LL_ERROR, "CG_ParseIngameText : not enough lines! Read %d of %d!\n", i, IGT_MAX);
 		for(;i<IGT_MAX;i++) {
 			ingame_text[i] = "?";
 		}
 	}
 
+	CG_LogFuncEnd();
 }
 
 /*
@@ -1410,6 +1499,8 @@ void CG_LanguageFilename(char *baseName,char *baseExtension,char *finalName)
 {
 	char	language[32];
 	fileHandle_t	file;
+
+	CG_LogFuncBegin();
 
 	trap_Cvar_VariableStringBuffer("g_language", language, 32 );
 
@@ -1434,6 +1525,8 @@ void CG_LanguageFilename(char *baseName,char *baseExtension,char *finalName)
 			trap_FS_FCloseFile( file );
 		}
 	}
+
+	CG_LogFuncEnd();
 }
 
 /*
@@ -1447,19 +1540,23 @@ void CG_LoadIngameText(void)
 	fileHandle_t	f;
 	char fileName[MAX_QPATH];
 
+	CG_LogFuncBegin();
+
 	CG_LanguageFilename("ext_data/mp_ingametext","dat",fileName);
 
 	len = trap_FS_FOpenFile( fileName, &f, FS_READ );
 
 	if ( !f )
 	{
-		Com_Printf( S_COLOR_RED "CG_LoadIngameText : mp_ingametext.dat file not found!\n");
+		CG_LocLogger(LL_ERROR, "CG_LoadIngameText : mp_ingametext.dat file not found!\n");
+		CG_LogFuncEnd();
 		return;
 	}
 
 	if (len > MAXINGAMETEXT)
 	{
-		Com_Printf( S_COLOR_RED "CG_LoadIngameText : mp_ingametext.dat file bigger than %d!\n",MAXINGAMETEXT);
+		CG_LocLogger(LL_ERROR, "CG_LoadIngameText : mp_ingametext.dat file bigger than %d!\n", MAXINGAMETEXT);
+		CG_LogFuncEnd();
 		return;
 	}
 
@@ -1473,6 +1570,7 @@ void CG_LoadIngameText(void)
 
 	CG_ParseIngameText();
 
+	CG_LogFuncEnd();
 }
 
 /*
@@ -1490,6 +1588,8 @@ void CG_LoadObjectivesForMap(void)
 	char	fullFileName[MAX_QPATH];
 	char	objtext[MAX_OBJ_TEXT_LENGTH];
 
+	CG_LogFuncBegin();
+
 	COM_StripExtension( cgs.mapname, fileName );
 	CG_LanguageFilename( fileName, "efo", fullFileName);
 
@@ -1497,7 +1597,8 @@ void CG_LoadObjectivesForMap(void)
 
 	if ( len > MAX_OBJ_TEXT_LENGTH )
 	{
-		Com_Printf( S_COLOR_RED "CG_LoadObjectivesForMap : %s file bigger than %d!\n", fileName, MAX_OBJ_TEXT_LENGTH );
+		CG_LocLogger(LL_ERROR, "CG_LoadObjectivesForMap : %s file bigger than %d!\n", fileName, MAX_OBJ_TEXT_LENGTH );
+		CG_LogFuncEnd();
 		return;
 	}
 
@@ -1544,6 +1645,8 @@ void CG_LoadObjectivesForMap(void)
 			Q_strncpyz( cgs.objectives[objnum-1].abridgedText, token, sizeof(cgs.objectives[objnum-1].abridgedText) );
 		}
 	}
+
+	CG_LogFuncEnd();
 }
 
 
@@ -1557,6 +1660,8 @@ qboolean CG_LoadClasses( void )
 	int32_t				numClasses=0;
 	int32_t				i;
 
+	CG_LogFuncBegin();
+
 	Com_sprintf( filePath, sizeof( filePath ), "ext_data/classes/%s.classes", cgs.classSet );
 
 	memset( &cgs.classData, 0, sizeof( cg_classData_t ) );
@@ -1565,13 +1670,15 @@ qboolean CG_LoadClasses( void )
 
 	if ( !file_len )
 	{
-		CG_Printf( S_COLOR_RED "Couldn't find class file: %s\n", filePath );
+		CG_LocLogger(LL_ERROR, "Couldn't find class file: %s\n", filePath );
+		CG_LogFuncEnd();
 		return qfalse;
 	}
 
 	if ( file_len > sizeof( buffer ) )
 	{
-		CG_Printf( S_COLOR_RED "File %s was way too big to be loaded.\n", filePath );
+		CG_LocLogger(LL_ERROR, "File %s was way too big to be loaded.\n", filePath );
+		CG_LogFuncEnd();
 		return qfalse;
 	}
 
@@ -1587,12 +1694,14 @@ qboolean CG_LoadClasses( void )
 	token = COM_Parse( &textPtr );
 
 	if ( !token[0] ) {
-		CG_Printf( S_COLOR_RED "ERROR: No data was found when going to parse the file!\n" );
+		CG_LocLogger(LL_ERROR, "ERROR: No data was found when going to parse the file!\n" );
+		CG_LogFuncEnd();
 		return qfalse;
 	}
 
 	if ( Q_stricmpn( token, "{", 1 ) ) {
-		CG_Printf( S_COLOR_RED "ERROR: File did not start with a '{' symbol!\n" );
+		CG_LocLogger(LL_ERROR, "ERROR: File did not start with a '{' symbol!\n" );
+		CG_LogFuncEnd();
 		return qfalse;
 	}
 
@@ -1616,7 +1725,7 @@ qboolean CG_LoadClasses( void )
 				{
 					if ( COM_ParseString( &textPtr, &token ) )
 					{
-						CG_Printf( S_COLOR_RED "ERROR: Invalid class formal name in class index: %i.\n", numClasses );
+						CG_LocLogger(LL_ERROR, "ERROR: Invalid class formal name in class index: %i.\n", numClasses );
 						continue;
 					}
 
@@ -1630,7 +1739,7 @@ qboolean CG_LoadClasses( void )
 
 					if ( COM_ParseVec3( &textPtr, temp ) )
 					{
-						CG_Printf( S_COLOR_RED "ERROR: Invalid color values in class index: %i.\n", numClasses );
+						CG_LocLogger(LL_ERROR, "ERROR: Invalid color values in class index: %i.\n", numClasses );
 						continue;
 					}
 
@@ -1646,7 +1755,7 @@ qboolean CG_LoadClasses( void )
 				{
 					if ( COM_ParseString( &textPtr, &token ) )
 					{
-						CG_Printf( S_COLOR_RED "ERROR: Invalid class icon color in class index: %i.\n", numClasses );
+						CG_LocLogger(LL_ERROR, "ERROR: Invalid class icon color in class index: %i.\n", numClasses );
 						continue;
 					}
 
@@ -1680,7 +1789,7 @@ qboolean CG_LoadClasses( void )
 				{
 					if ( COM_ParseInt( &textPtr, (int32_t *)&cgs.classData[numClasses].isMedic ) )
 					{
-						CG_Printf( S_COLOR_RED "ERROR: Class medic check for class %i was invalid.\n", numClasses );
+						CG_LocLogger(LL_ERROR, "ERROR: Class medic check for class %i was invalid.\n", numClasses );
 						continue;
 					}
 
@@ -1691,7 +1800,7 @@ qboolean CG_LoadClasses( void )
 				{
 					if( COM_ParseInt( &textPtr, (int32_t *)&cgs.classData[numClasses].isBorg ) )
 					{
-						CG_Printf( S_COLOR_RED "ERROR: Class borg check for class %i was invalid.\n", numClasses );
+						CG_LocLogger(LL_ERROR, "ERROR: Class borg check for class %i was invalid.\n", numClasses );
 						continue;
 					}
 					continue;
@@ -1701,7 +1810,7 @@ qboolean CG_LoadClasses( void )
 				{
 					if ( COM_ParseInt( &textPtr, (int32_t *)&cgs.classData[numClasses].showRanks ) )
 					{
-						CG_Printf( S_COLOR_RED "ERROR: Class Ranks check for class %i was invalid.\n", numClasses );
+						CG_LocLogger(LL_ERROR, "ERROR: Class Ranks check for class %i was invalid.\n", numClasses );
 						continue;
 					}
 
@@ -1746,11 +1855,12 @@ qboolean CG_LoadClasses( void )
 		}
 	}
 
-	if ( numClasses > 0 )
+	if ( numClasses > 0 ) {
+		CG_LogFuncEnd();
 		return qtrue;
-	else
-	{
-		CG_Printf( S_COLOR_RED "ERROR: No classes were found in the class file!\n" );
+	} else {
+		CG_LocLogger(LL_ERROR, "ERROR: No classes were found in the class file!\n" );
+		CG_LogFuncEnd();
 		return qfalse;
 	}
 }
@@ -1766,6 +1876,8 @@ qboolean CG_LoadUsablesStrings( void )
 	fileHandle_t	f;
 	int32_t				i;
 	int32_t				strLen;
+
+	CG_LogFuncBegin();
 
 	//setup the file route
 	Com_sprintf( mapRoute, sizeof( mapRoute ), "%s", cgs.mapname );
@@ -1786,6 +1898,7 @@ qboolean CG_LoadUsablesStrings( void )
 	{
 		//CG_Printf( S_COLOR_YELLOW "WARNING: No file named %s was found. If the server \n", fileRoute );
 		trap_FS_FCloseFile( f );
+		CG_LogFuncEnd();
 		return qfalse;
 	}
 
@@ -1798,7 +1911,8 @@ qboolean CG_LoadUsablesStrings( void )
 
 	if ( !buffer[0] )
 	{
-		CG_Printf( S_COLOR_RED "ERROR: Attempted to load %s, but no data was inside!\n", fileRoute );
+		CG_LocLogger(LL_ERROR, "ERROR: Attempted to load %s, but no data was inside!\n", fileRoute );
+		CG_LogFuncEnd();
 		return qfalse;
 	}
 
@@ -1818,7 +1932,7 @@ qboolean CG_LoadUsablesStrings( void )
 			token = COM_Parse( &textPtr );
 			if ( Q_strncmp( token, "{", 1 ) != 0 )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: UsableDescriptions had no opening brace ( { )!\n" );
+				CG_LocLogger(LL_ERROR, "ERROR: UsableDescriptions had no opening brace ( { )!\n" );
 				continue;
 			}
 
@@ -1853,5 +1967,6 @@ qboolean CG_LoadUsablesStrings( void )
 		}
 	}
 
+	CG_LogFuncEnd();
 	return qtrue;
 }
