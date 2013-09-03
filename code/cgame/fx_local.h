@@ -1,4 +1,7 @@
 
+#ifndef FX_LOCAL_H_
+#define FX_LOCAL_H_
+
 #define DEFAULT_DEVIATION	0.5
 
 /*
@@ -178,3 +181,4 @@ void FX_qFlash( centity_t* cent, vec3_t org, int32_t timeIndex );
  */
 void fxRandCircumferencePos(vec3_t center, vec3_t normal, float radius, vec3_t out);
 
+#endif /* FX_LOCAL_H_ */

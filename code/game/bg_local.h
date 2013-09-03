@@ -2,6 +2,9 @@
 //
 // bg_local.h -- local definitions for the bg (both games) files
 
+#ifndef BG_LOCAL_H_
+#define BG_LOCAL_H_
+
 #define	MIN_WALK_NORMAL	0.7		// can't walk on very steep slopes
 
 #define	STEPSIZE		18
@@ -45,6 +48,8 @@ void PM_AddEvent( int newEvent );
 
 qboolean	PM_SlideMove( qboolean gravity );
 void		PM_StepSlideMove( qboolean gravity );
+
+#endif /* BG_LOCAL_H_ */
 
 
 

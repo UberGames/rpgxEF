@@ -3,6 +3,9 @@
 
 #include "cg_local.h"
 
+#ifndef CG_LUA_H_
+#define CG_LUA_H_
+
 #if (defined __linux__ || defined __WIN32__) // linux or mingw
 #include "../game/lua.h"
 #include "../game/lauxlib.h"
@@ -95,5 +98,7 @@ typedef struct {
 int32_t			Luaopen_Rent(lua_State *L);
 void		Lua_PushRent(lua_State *L, refEntity_t *rent);
 rent_t		*Lua_GetRent(lua_State *L, int32_t argNum);
+
+#endif /* CG_LUA_H_ */
 
 #endif

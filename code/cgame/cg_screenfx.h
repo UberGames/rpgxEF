@@ -2,6 +2,9 @@
 // full-screen effects like beaming in/out, static from being hit, etc.
 //
 
+#ifndef CG_SCREENFX_H_
+#define CG_SCREENFX_H_
+
 enum screenfx_e
 {
 	SCREENFX_HIT,
@@ -25,4 +28,7 @@ extern screenFX_t theScreenFX;
 void CG_AddFullScreenEffect(int32_t screenfx, int32_t clientNum);
 
 void CG_DrawFullScreenFX(void);
+
+#endif /* CG_SCREENFX_H_ */
+
 

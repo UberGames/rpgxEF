@@ -7,6 +7,9 @@
 
 // these definitions also need to be in q_shared.h!
 
+#ifndef SURFACEFLAGS_H_
+#define SURFACEFLAGS_H_
+
 #define CONTENTS_NONE			0
 #define	CONTENTS_SOLID			1		// an eye is never valid in a solid
 #define	CONTENTS_LAVA			8
@@ -63,4 +66,8 @@
 #define SURF_SNOW				0x200000	//!< snow, use grass footsteps etc.
 #define SURF_WOOD				0x400000	//!< wood, use grass footsteps etc.
 //RPG-X | GSIO01 | 20/05/2009 | END MOD
+
+#endif /* SURFACEFLAGS_H_ */
+
+
 
