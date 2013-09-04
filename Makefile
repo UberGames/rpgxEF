@@ -2331,7 +2331,6 @@ $(B)/$(MISSIONPACK)/vm/qagame.qvm: $(MPGVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
 Q3UIOBJ_ = \
   $(B)/$(BASEGAME)/ui/ui_main.o \
   $(B)/$(BASEGAME)/ui/bg_misc.o \
-  $(B)/$(BASEGAME)/ui/ui_addbots.o \
   $(B)/$(BASEGAME)/ui/ui_atoms.o \
   $(B)/$(BASEGAME)/ui/ui_cdkey.o \
   $(B)/$(BASEGAME)/ui/ui_confirm.o \
@@ -2351,18 +2350,11 @@ Q3UIOBJ_ = \
   $(B)/$(BASEGAME)/ui/ui_playersettings.o \
   $(B)/$(BASEGAME)/ui/ui_preferences.o \
   $(B)/$(BASEGAME)/ui/ui_qmenu.o \
-  $(B)/$(BASEGAME)/ui/ui_removebots.o \
   $(B)/$(BASEGAME)/ui/ui_serverinfo.o \
   $(B)/$(BASEGAME)/ui/ui_servers2.o \
   $(B)/$(BASEGAME)/ui/ui_sound.o \
-  $(B)/$(BASEGAME)/ui/ui_sparena.o \
   $(B)/$(BASEGAME)/ui/ui_specifyserver.o \
-  $(B)/$(BASEGAME)/ui/ui_splevel.o \
-  $(B)/$(BASEGAME)/ui/ui_sppostgame.o \
-  $(B)/$(BASEGAME)/ui/ui_spskill.o \
   $(B)/$(BASEGAME)/ui/ui_startserver.o \
-  $(B)/$(BASEGAME)/ui/ui_team.o \
-  $(B)/$(BASEGAME)/ui/ui_teamorders.o \
   $(B)/$(BASEGAME)/ui/ui_video.o \
   $(B)/$(BASEGAME)/ui/ui_turbolift.o \
   $(B)/$(BASEGAME)/ui/ui_transporter.o \

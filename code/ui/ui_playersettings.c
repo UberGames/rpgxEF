@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define ID_NAME			9
 #define ID_CLASS		10
@@ -126,170 +127,6 @@ typedef struct {
 
 static playersettings_t	s_playersettings;
 
-//static int32_t gamecodetoui[] = {4,2,3,0,5,1,6};
-//static int32_t uitogamecode[] = {4,6,2,3,1,5,7};
-
-/*
-static int32_t handicap_items[] = 
-{
-	MNT_HANDICAP_NONE,
-	MNT_HANDICAP_95,
-	MNT_HANDICAP_90,
-	MNT_HANDICAP_85,
-	MNT_HANDICAP_80,
-	MNT_HANDICAP_75,
-	MNT_HANDICAP_70,
-	MNT_HANDICAP_65,
-	MNT_HANDICAP_60,
-	MNT_HANDICAP_55,
-	MNT_HANDICAP_50,
-	MNT_HANDICAP_45,
-	MNT_HANDICAP_40,
-	MNT_HANDICAP_35,
-	MNT_HANDICAP_30,
-	MNT_HANDICAP_25,
-	MNT_HANDICAP_20,
-	MNT_HANDICAP_15,
-	MNT_HANDICAP_10,
-	MNT_HANDICAP_05,
-	0
-}; */
-
-
-//QVM HACK!
-//TiM - You're a QVM hack. :)
-//Okay... with the new rank system... here's what I guess we'll do.
-//We're going to have to build a list of all the rank files we have,
-//go thru each one, and find the rank that they're using right now and what set it's from
-//From there... we'll make a button so they can scroll rank files, as well as what ranks there are. :)
-/*const char* prank_items_formal3[] = 
-{
-	"Crewman",
-	"Cadet 4th Class",
-	"Cadet 3rd Class",
-	"Cadet 2nd Class",
-	"Cadet 1st Class",
-	"Ensign",
-	"Lieutenant J.G",
-	"Lieutenant",
-	"Lt. Commander",
-	"Commander",
-	"Captain",
-	"Commodore",
-	"Rear Admiral",
-	"Vice Admiral",
-	"Admiral",
-	"Fleet Admiral",
-	0
-};
-
-const char* prank_items_actual3[] =
-{
-	"crewman",
-	"cadet1",
-	"cadet2",
-	"cadet3",
-	"cadet4",
-	"ensign",
-	"ltjg",
-	"lt",
-	"ltcmdr",
-	"cmdr",
-	"capt",
-	"cmmdr",
-	"adm2",
-	"adm3",
-	"adm4",
-	"adm5",
-	0
-};*/
-
-/*typedef enum
-{
-	CLASS_NONE = 0,
-	CLASS_COMMAND,
-	CLASS_SCIENCE,
-	CLASS_MEDICAL,
-	CLASS_ENGINEER,
-	CLASS_SECURITY,
-	CLASS_ALIEN,
-	CLASS_MARINE,
-	CLASS_ADMIN,
-	CLASS_OTHER,
-	MAX_CLASSES
-} ingamemenu_class_t;*/
-
-/*const char* playerClassList[] =
-{
-	"None",
-	"Command",
-	"Science",
-	"Medical",
-	"Engineer",
-	"Security",
-	"Alien",
-	"Marine",
-	"Admin",
-	"Other",
-	0
-};*/
-
-
-/*static float yawDelta3;
-static float yaw3 = 180 - 30;
-static float placeHolder3 = 180 - 30;*/
-
-/*
-=======================
-PlayerSettings_LoadProfiles
-
-TiM: Loads user profiles from external cfgs
-=======================
-*/
-
-/*static void PlayerSettings_LoadProfiles( void ) {
-	int32_t	numDirs;
-	char dirList[4096];
-	char* dirptr;
-	int32_t	dirlen;
-	int32_t i;
-
-	//get list
-	numDirs = trap_FS_GetFileList( "profiles", ".cfg", dirList, sizeof( dirList ) );
-	dirptr = dirList;
-
-	for (i = 0; i < numDirs; i++, dirptr+= dirlen+1) {
-		dirlen = strlen( dirptr );
-
-		if ( !Q_stricmp( dirptr + dirlen - 4, ".cfg" ) ) {
-			dirptr[dirlen-4]='\0';
-		}
-
-		Q_strncpyz( s_playersettings.profileList[s_playersettings.numProfiles], dirptr, sizeof( s_playersettings.profileList[s_playersettings.numProfiles] ) );
-		s_playersettings.numProfiles++;
-	}
-
-	//link from the char array to the ptr array so we can add this to the spin control
-	for ( i=0; i<s_playersettings.numProfiles; i++ ) {
-		s_playersettings.profileListPtr[i] = s_playersettings.profileList[i];
-	}
-}
-
-static void PlayerSettings_ExecuteProfileConfig( void ) {
-	char fileRoute[MAX_QPATH];
-
-	if ( !s_playersettings.profileList[s_playersettings.profiles.curvalue][0] ) {
-		return;
-	}
-
-	Com_sprintf( fileRoute, MAX_QPATH, "%s/%s.cfg", PROFILE_PATH, s_playersettings.profileList[s_playersettings.profiles.curvalue] );
-
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "execute %s", fileRoute ) );
-
-	//refresh the mainlist
-	PlayerSettings_SetMenuItems();
-}*/
-
 /*
 =======================
 PlayerSettings_SettingsAreDifferent
@@ -302,6 +139,7 @@ button appear.
 */
 
 static qboolean PlayerSettings_SettingsAreDifferent ( void ) {
+	UI_LogFuncBegin();
 	qboolean	endResult=qfalse;
 
 	//Name
@@ -357,71 +195,9 @@ static qboolean PlayerSettings_SettingsAreDifferent ( void ) {
 		//Com_Printf( S_COLOR_RED "Rank text changed!\n");
 		endResult = qtrue;
 	}
-	
+	UI_LogFuncEnd();
 	return endResult;
 }
-
-/*
-=================
-PlayerSettings_AffectModel
-=================
-*/
-
-/*static void PlayerSettings_AffectModel( void )
-{
-	char	 buf[MAX_QPATH];
-	char	 tempBuf[MAX_QPATH];
-	int32_t		 i;
-	char*	 slash;
-	
-	trap_Cvar_VariableStringBuffer( "model", buf, sizeof( buf ) );
-	
-	slash = strchr( UI_Cvar_VariableString("model"), '/' ); //check if we gotz a slash in the string
-
-	if (slash) 
-	{ //gotta get rid of everything after the slash :S
-		for( i =0; i<= MAX_QPATH; i++ ) 
-		{
-			if ( buf[i] != '/' ) 
-			{
-				tempBuf[i] = buf[i];
-			}
-			else 
-			{
-				tempBuf[i] = 0;
-				break;
-			}
-		}
-	
-		Q_strncpyz(buf, tempBuf, sizeof(buf) );
-		//Com_Printf( "buf = %s", buf );
-	}
-	
-	slash = strchr( buf, '/' ); //check if we gotz a slash in the string
-
-	if ( !slash ) {
-		switch ( s_playersettings.pClass.curvalue ) { //Change model skin depending on what class
-			case 0: //no class
-			case 6: //alien
-			case 4: //engineer
-			case 5: //security
-				Q_strcat( buf, MAX_QPATH, "/default" );
-			//	Com_Printf( "buf = %s \n", buf );
-				break;
-			case 1: //command
-				Q_strcat( buf, MAX_QPATH, "/red" );
-				break;
-			case 2: //science
-			case 3: //medical
-				Q_strcat( buf, MAX_QPATH, "/blue" );
-				break;
-		}
-
-		//Com_Printf( "buf = %s \n", buf );
-		trap_Cvar_Set( "model", buf );
-	}
-}*/
-
 
 /*
 =================
@@ -432,16 +208,11 @@ and had an appropriately set FOV
 */
 static void PlayerSettings_DrawPlayer( void *self ) 
 {
+	UI_LogFuncBegin();
 	menubitmap_s	*b;
 	vec3_t			viewangles;
 	vec3_t			origin = {-40, 2.5, -4 }; //-3.8
 	char			buf[MAX_QPATH];
-
-	//if (uis.spinView) {
-	//	yawDelta3 = ( uis.cursorx - uis.cursorpx ) + placeHolder3 /*/ ( uis.frametime / 1000.0f ) ) / 20.0f*/; //5.0f
-
-	//	yaw3 = AngleNormalize360 ( yawDelta3 );
-	//}
 
 	viewangles[YAW]   = uis.lastYaw; //180 - 30
 	viewangles[PITCH] = 0;
@@ -454,25 +225,15 @@ static void PlayerSettings_DrawPlayer( void *self )
 		UI_PlayerInfo_SetModel( &s_playersettings.playerinfo, buf );
 		strcpy( s_playersettings.playerModel, buf );
 
-/*		viewangles[YAW]   = 180 - 30; //30
-		viewangles[PITCH] = 0;
-		viewangles[ROLL]  = 0; */
-
 		uis.lastYaw = viewangles[YAW] = 180 - 30; //180 - 30
 	}
-
-	/*s_playersettings.playerinfo.height = s_playersettings.height.curvalue;
-	s_playersettings.playerinfo.weight = s_playersettings.weight.curvalue;*/
 
 	UI_PlayerInfo_SetInfo( &s_playersettings.playerinfo, BOTH_WALK1, BOTH_WALK1, viewangles, vec3_origin, WP_0, s_playersettings.height.curvalue, s_playersettings.weight.curvalue, qfalse );
 
 	b = (menubitmap_s*) self;
 	UI_DrawPlayer( (float)b->generic.x, (float)b->generic.y, (float)b->width, (float)b->height, origin, &s_playersettings.playerinfo, (int32_t)(uis.realtime/1.5) );
 
-	/*if ( uis.spinView == qtrue && !trap_Key_IsDown( K_MOUSE1 )) {
-		uis.spinView = qfalse;
-		placeHolder3 = yaw3;
-	}*/
+	UI_LogFuncEnd();
 }
 
 
@@ -483,6 +244,7 @@ PlayerSettings_SaveChanges
 */
 static void PlayerSettings_SaveChanges( void ) 
 {
+	UI_LogFuncBegin();
 	// name
 	trap_Cvar_Set( "name", s_playersettings.name.field.buffer );
 	
@@ -540,18 +302,7 @@ static void PlayerSettings_SaveChanges( void )
 	//Display the 'applied msg'
 	s_playersettings.displayChangedSettings = qtrue;
 
-	// handicap
-//	trap_Cvar_SetValue( "handicap", 100 - s_playersettings.handicap.curvalue * 5 );
-	//if ( s_playersettings.pClass.curvalue == 0 || s_playersettings.pClass.curvalue == 6 ) {
-	//	trap_Cvar_Set( "ui_playerrank", "crewman" );
-	//	s_playersettings.pRank.curvalue = 0;
-	//}
-	//else
-	//	trap_Cvar_Set( "ui_playerRank", uis.rankSet.rankNames[s_playersettings.pRank.curvalue].consoleName );
-		//trap_Cvar_Set( "ui_playerrank", prank_items_actual3[s_playersettings.pRank.curvalue] );
-
-	// effects color
-//	trap_Cvar_SetValue( "color", uitogamecode[s_playersettings.effects.curvalue] );
+	UI_LogFuncEnd();
 }
 
 
@@ -562,15 +313,6 @@ PlayerSettings_MenuKey
 */
 static sfxHandle_t PlayerSettings_MenuKey( int32_t key ) 
 {
-	//TiM - Don't save it this way
-	/*if( key == K_MOUSE2 || key == K_ESCAPE ) 
-	{
-		PlayerSettings_SaveChanges();
-	}*/
-
-	/*if ( ( key == K_MOUSE1 || key == K_ENTER ) && s_playersettings.commit.generic.flags & QMF_HASMOUSEFOCUS )
-		return menu_out_sound;*/
-
 	return Menu_DefaultKey( &s_playersettings.menu, key );
 }
 
@@ -582,11 +324,11 @@ PlayerSettings_SetMenuItems
 */
 static void PlayerSettings_SetMenuItems( void ) 
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 
 	// Player Name
 	Q_strncpyz( s_playersettings.name.field.buffer, UI_Cvar_VariableString("name"), sizeof(s_playersettings.name.field.buffer) );
-	//Q_strncpyz( s_playersettings.initData.name, s_playersettings.name.field.buffer, sizeof( s_playersettings.initData.name ) );
 
 	//Player class
 	{
@@ -650,11 +392,9 @@ static void PlayerSettings_SetMenuItems( void )
 
 	//Player Age
 	Q_strncpyz( s_playersettings.age.field.buffer, UI_Cvar_VariableString( "age" ), sizeof( s_playersettings.age.field.buffer ) );
-	//Q_strncpyz( s_playersettings.initData.age, s_playersettings.age.field.buffer, sizeof( s_playersettings.initData.age ) );
 
 	//Player Race
 	Q_strncpyz( s_playersettings.race.field.buffer, UI_Cvar_VariableString( "race" ), sizeof( s_playersettings.race.field.buffer ) );
-	//Q_strncpyz( s_playersettings.initData.race, s_playersettings.race.field.buffer, sizeof( s_playersettings.initData.race ) );
 
 	//Player Height
 	{
@@ -666,7 +406,6 @@ static void PlayerSettings_SetMenuItems( void )
 			height = 1.0f;
 
 		s_playersettings.height.curvalue = height;
-		//s_playersettings.initData.height = s_playersettings.height.curvalue;
 	}
 
 
@@ -680,33 +419,9 @@ static void PlayerSettings_SetMenuItems( void )
 			weight = 1.0f;
 
 		s_playersettings.weight.curvalue = weight;
-		//s_playersettings.initData.weight = s_playersettings.weight.curvalue;
 	}
 
-	/*
-	// effects color
-	c = trap_Cvar_VariableValue( "color" ) - 1;
-	if( c < 0 || c > 6 ) {
-		c = 6;
-	}
-	s_playersettings.effects.curvalue = gamecodetoui[c];
-
-	// model/skin
-	memset( &s_playersettings.playerinfo, 0, sizeof(playerInfo_t) );
-	
-	viewangles[YAW]   = 180 - 30;
-	viewangles[PITCH] = 0;
-	viewangles[ROLL]  = 0;
-
-	UI_PlayerInfo_SetModel( &s_playersettings.playerinfo, UI_Cvar_VariableString( "model" ) );
-	UI_PlayerInfo_SetInfo( &s_playersettings.playerinfo, LEGS_IDLE, TORSO_STAND2, viewangles, vec3_origin, WP_6, qfalse );
-
-	// handicap
-	h = Com_Clamp( 5, 100, trap_Cvar_VariableValue("handicap") );
-	s_playersettings.handicap.curvalue = 20 - h / 5;
-	*/
-
-	//PlayerSettings_AffectModel();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -716,11 +431,13 @@ PlayerSettings_SpinPlayer
 */
 static void PlayerSettings_SpinPlayer( void* ptr, int32_t event)
 {
+	UI_LogFuncBegin();
 	if ( event == QM_ACTIVATED ) 
 	{
 		uis.spinView = qtrue;
 		uis.cursorpx = uis.cursorx;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -730,8 +447,10 @@ PlayerSettings_MenuEvent
 */
 static void PlayerSettings_MenuEvent( void* ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -740,10 +459,6 @@ static void PlayerSettings_MenuEvent( void* ptr, int32_t event )
 
 	switch( ((menucommon_s*)ptr)->id ) 
 	{
-
-/*	case ID_HANDICAP:
-		trap_Cvar_Set( "handicap", va( "%i", 100 - 25 * s_playersettings.handicap.curvalue ) );
-		break;*/
 
 		case ID_MODEL:
 			UI_PopMenu();
@@ -823,6 +538,7 @@ static void PlayerSettings_MenuEvent( void* ptr, int32_t event )
 			break;
 	
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -833,6 +549,7 @@ PlayerSettingsMenu_Graphics
 */
 void PlayerSettingsMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	// Draw the basic screen layout
 	UI_MenuFrame2(&s_playersettings.menu);
 
@@ -890,14 +607,6 @@ void PlayerSettingsMenu_Graphics (void)
 	UI_DrawHandlePic(s_playersettings.mainmenu.generic.x - 14, s_playersettings.mainmenu.generic.y, 
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
 
-/*	trap_R_SetColor( colorTable[s_playersettings.loadProfile.color]);
-	UI_DrawHandlePic(s_playersettings.loadProfile.generic.x - 14, s_playersettings.loadProfile.generic.y, 
-		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
-
-	trap_R_SetColor( colorTable[s_playersettings.saveProfile.color]);
-	UI_DrawHandlePic(s_playersettings.saveProfile.generic.x - 14, s_playersettings.saveProfile.generic.y, 
-		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);*/
-
 	UI_DrawProportionalString(  74,   28, "881",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  150, "2445",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  206, "600",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -940,15 +649,7 @@ void PlayerSettingsMenu_Graphics (void)
 
 	UI_DrawProportionalString( 444, 63, s_playersettings.name.field.buffer, UI_LEFT | UI_SMALLFONT, colorTable[CT_WHITE] );
 
-	//They can do ranks anytime they want now, but ingame, they won't have ranks in those classes
-	/*if (s_playersettings.pClass.curvalue == 6 || s_playersettings.pClass.curvalue == 0 ) { //if current class is alien or none
-		s_playersettings.pRank.generic.flags |= QMF_GRAYED; //gray out the rank, since aliens or nobodies don't 'do' ranks
-//		s_playersettings.pRank.color = CT_MDGREY;
-	}
-	else {
-		s_playersettings.pRank.generic.flags &= ~QMF_GRAYED;
-//		s_playersettings.pRank.color = CT_DKPURPLE1;
-	}*/
+	UI_LogFuncEnd();
 
 }
 
@@ -959,8 +660,10 @@ PlayerSettings_MenuDraw
 */
 static void PlayerSettings_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	PlayerSettingsMenu_Graphics();
 	Menu_Draw( &s_playersettings.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -971,8 +674,8 @@ PlayerSettings_MenuInit
 */
 static void PlayerSettings_MenuInit(int32_t menuFrom) 
 {
+	UI_LogFuncBegin();
 	int32_t		y;
-	//static char	playername[32];
 	int32_t		i;
 
 	memset(&s_playersettings,0,sizeof(playersettings_t));
@@ -1234,14 +937,6 @@ static void PlayerSettings_MenuInit(int32_t menuFrom)
 	s_playersettings.weight.thumbGraphicWidth			= 9;
 	s_playersettings.weight.thumbColor					= CT_DKBLUE1;
 	s_playersettings.weight.thumbColor2					= CT_LTBLUE1;
-//	if (s_playersettings.pClass.curvalue == 6 || s_playersettings.pClass.curvalue == 0 ) { //if current class is alien or none
-//		s_playersettings.pRank.generic.flags |= QMF_INACTIVE; //gray out the rank, since aliens or nobodies don't 'do' ranks
-//		s_playersettings.pRank.color = CT_MDGREY;
-//	}
-//	else {
-//		s_playersettings.pRank.generic.flags &= ~QMF_INACTIVE;
-//		s_playersettings.pRank.color = CT_DKPURPLE1;
-//	}
 
 	if ( s_playersettings.numRankSets > 1 ) {
 		s_playersettings.rankSets.generic.type				= MTYPE_SPINCONTROL;
@@ -1332,74 +1027,6 @@ static void PlayerSettings_MenuInit(int32_t menuFrom)
 	s_playersettings.model.textEnum						= MBT_CHANGEMODEL;
 	s_playersettings.model.textcolor					= CT_BLACK;
 	s_playersettings.model.textcolor2					= CT_WHITE;
-/*#if 0 //RPG-X: TiM- Damn this statement is cool!
-	if ( ingameFlag ) //Why was this here?  It means people cant change their models? O_o
-	{
-		s_playersettings.model.generic.flags			|= QMF_GRAYED;
-	}
-#endif*/
-
-	/*
-	s_playersettings.profiles.generic.type				= MTYPE_SPINCONTROL;
-	s_playersettings.profiles.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_playersettings.profiles.generic.x					= 96;//134;
-	s_playersettings.profiles.generic.y					= 58;//207;
-	s_playersettings.profiles.numitems					= s_playersettings.numProfiles;
-	s_playersettings.profiles.textEnum					= MBT_PROFILESCROLL;
-	s_playersettings.profiles.textcolor					= CT_BLACK;
-	s_playersettings.profiles.textcolor2				= CT_WHITE;
-	s_playersettings.profiles.color						= CT_DKPURPLE1;
-	s_playersettings.profiles.color2					= CT_LTPURPLE1;
-	s_playersettings.profiles.width						= 90;//80;
-	s_playersettings.profiles.textX						= 5;
-	s_playersettings.profiles.textY						= 2;
-	s_playersettings.profiles.itemnames					= (const char**)s_playersettings.profileListPtr;
-
-	s_playersettings.loadProfile.generic.type				= MTYPE_BITMAP;      
-	s_playersettings.loadProfile.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_playersettings.loadProfile.generic.x					= 110;
-	s_playersettings.loadProfile.generic.y					= 80;
-	s_playersettings.loadProfile.generic.name				= BUTTON_GRAPHIC_LONGRIGHT;
-	s_playersettings.loadProfile.generic.callback			= PlayerSettings_MenuEvent;
-	s_playersettings.loadProfile.generic.id					= ID_LOADPROFILE;
-	s_playersettings.loadProfile.width						= 110;
-	s_playersettings.loadProfile.height						= 18;
-	s_playersettings.loadProfile.color						= CT_DKPURPLE1;
-	s_playersettings.loadProfile.color2						= CT_LTPURPLE1;
-	s_playersettings.loadProfile.textX						= MENU_BUTTON_TEXT_X;
-	s_playersettings.loadProfile.textY						= MENU_BUTTON_TEXT_Y;
-	s_playersettings.loadProfile.textcolor					= CT_BLACK;
-	s_playersettings.loadProfile.textcolor2					= CT_WHITE;
-	s_playersettings.loadProfile.textEnum					= MBT_LOADPROFILE;
-
-	s_playersettings.profileName.generic.type				= MTYPE_FIELD;
-	s_playersettings.profileName.field.widthInChars			= MAX_NAMELENGTH;
-	s_playersettings.profileName.field.maxchars				= MAX_NAMELENGTH;
-	s_playersettings.profileName.generic.callback			= PlayerSettings_MenuEvent;
-	s_playersettings.profileName.generic.x					= 96 + 12 + UI_ProportionalStringWidth( menu_button_text[MBT_PROFILENAME][0], UI_SMALLFONT );//159;//180;
-	s_playersettings.profileName.generic.y					= 340;//182;
-	s_playersettings.profileName.field.style				= UI_SMALLFONT;
-	s_playersettings.profileName.field.titleEnum			= MBT_PROFILENAME;
-	s_playersettings.profileName.field.titlecolor			= CT_LTGOLD1;
-	s_playersettings.profileName.field.textcolor			= CT_DKGOLD1;
-	s_playersettings.profileName.field.textcolor2			= CT_LTGOLD1;
-
-	s_playersettings.saveProfile.generic.type				= MTYPE_BITMAP;      
-	s_playersettings.saveProfile.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_playersettings.saveProfile.generic.x					= 110;
-	s_playersettings.saveProfile.generic.y					= 359;
-	s_playersettings.saveProfile.generic.name				= BUTTON_GRAPHIC_LONGRIGHT;
-	s_playersettings.saveProfile.generic.callback			= PlayerSettings_MenuEvent;
-	s_playersettings.saveProfile.generic.id					= ID_SAVEPROFILE;
-	s_playersettings.saveProfile.width						= 110;
-	s_playersettings.saveProfile.height						= 18;
-	s_playersettings.saveProfile.color						= CT_DKPURPLE1;
-	s_playersettings.saveProfile.color2						= CT_LTPURPLE1;
-	s_playersettings.saveProfile.textX						= MENU_BUTTON_TEXT_X;
-	s_playersettings.saveProfile.textY						= MENU_BUTTON_TEXT_Y;
-	s_playersettings.saveProfile.textcolor					= CT_BLACK;
-	s_playersettings.saveProfile.textcolor2					= CT_WHITE;
-	s_playersettings.saveProfile.textEnum					= MBT_SAVEPROFILE;*/
 
 	s_playersettings.player.generic.type				= MTYPE_BITMAP;
 	s_playersettings.player.generic.flags				= QMF_SILENT;
@@ -1410,14 +1037,6 @@ static void PlayerSettings_MenuInit(int32_t menuFrom)
 	s_playersettings.player.width						= 151; //32*7.3
 	s_playersettings.player.height						= 291; //56*7.3
 
-	/*s_playersettings.playername.generic.type			= MTYPE_PTEXT;
-	s_playersettings.playername.generic.flags			= QMF_INACTIVE;
-	s_playersettings.playername.generic.x				= 444;
-	s_playersettings.playername.generic.y				= 63;
-	s_playersettings.playername.string					= UI_Cvar_VariableString("name"); //s_playersettings.name.field.buffer
-	s_playersettings.playername.style					= UI_SMALLFONT;
-	s_playersettings.playername.color					= colorTable[CT_BLACK];*/
-
 	s_playersettings.item_null.generic.type				= MTYPE_BITMAP;
 	s_playersettings.item_null.generic.flags			= QMF_LEFT_JUSTIFY|QMF_MOUSEONLY|QMF_SILENT;
 	s_playersettings.item_null.generic.x				= 0;
@@ -1425,16 +1044,8 @@ static void PlayerSettings_MenuInit(int32_t menuFrom)
 	s_playersettings.item_null.width					= 640;
 	s_playersettings.item_null.height					= 480;
 
-//	if (s_playersettings.prevMenu == PS_MENU_CONTROLS)
-//	{
-//		SetupMenu_TopButtons(&s_playersettings.menu,MENU_PLAYER);
-//	}
-
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.mainmenu);
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.back);
-	//Menu_AddItem( &s_playersettings.menu, &s_playersettings.profiles );
-	//Menu_AddItem( &s_playersettings.menu, &s_playersettings.loadProfile );
-	//Menu_AddItem( &s_playersettings.menu, &s_playersettings.playername );
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.name );
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.classTxt );
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.pClass );
@@ -1445,8 +1056,6 @@ static void PlayerSettings_MenuInit(int32_t menuFrom)
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.height );
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.weight );
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.commit );
-	//Menu_AddItem( &s_playersettings.menu, &s_playersettings.profileName );
-	//Menu_AddItem( &s_playersettings.menu, &s_playersettings.saveProfile );
 	
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.model );
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.data );
@@ -1460,8 +1069,6 @@ static void PlayerSettings_MenuInit(int32_t menuFrom)
 	}
 
 	Menu_AddItem( &s_playersettings.menu, &s_playersettings.player );
-
-//	Menu_AddItem( &s_playersettings.menu, &s_playersettings.item_null );
 	
 	//PlayerSettings_AffectModel();
 
@@ -1504,6 +1111,7 @@ static void PlayerSettings_MenuInit(int32_t menuFrom)
 
 		s_playersettings.pClass.numitems = s_playersettings.numClasses;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -1514,6 +1122,7 @@ PlayerSettings_Cache
 */
 void PlayerSettings_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	s_playersettings.corner_ul_4_4  = trap_R_RegisterShaderNoMip("menu/common/corner_ul_4_4");
 	s_playersettings.corner_ur_4_4  = trap_R_RegisterShaderNoMip("menu/common/corner_ur_4_4");
 	s_playersettings.corner_ll_4_4  = trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_4");
@@ -1522,6 +1131,7 @@ void PlayerSettings_Cache( void )
 
 	trap_R_RegisterShaderNoMip(PIC_MONBAR2);
 	trap_R_RegisterShaderNoMip(PIC_SLIDER);
+	UI_LogFuncEnd();
 }
 
 
@@ -1532,7 +1142,9 @@ UI_PlayerSettingsMenu
 */
 void UI_PlayerSettingsMenu(int32_t menuFrom) 
 {
+	UI_LogFuncBegin();
 	PlayerSettings_MenuInit(menuFrom);
 	UI_PushMenu( &s_playersettings.menu );
+	UI_LogFuncEnd();
 }
 

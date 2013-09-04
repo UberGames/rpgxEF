@@ -9,6 +9,7 @@ INGAME MENU
 */
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 void UI_SetupWeaponsMenu( void );
 
@@ -99,22 +100,6 @@ typedef struct
 
 static ingamemenu_t	s_ingame;
 
-/*static int32_t ingame_buttons[10][2] =
-{
-{152,220},
-{152,220 + INGAME_MENU_VERTICAL_SPACING},
-{152,220 + (INGAME_MENU_VERTICAL_SPACING *2)},
-{152,220 + (INGAME_MENU_VERTICAL_SPACING *3)},
-{152,220 + (INGAME_MENU_VERTICAL_SPACING *4)},
-
-{368,220},
-{368,220 + INGAME_MENU_VERTICAL_SPACING},
-{368,220 + (INGAME_MENU_VERTICAL_SPACING *2)},
-{368,220 + (INGAME_MENU_VERTICAL_SPACING *3)},
-{368,220 + (INGAME_MENU_VERTICAL_SPACING *4)},
-};*/
-
-
 typedef struct 
 {
 	menuframework_s	menu;
@@ -135,6 +120,7 @@ and had an appropriately set FOV
 */
 static void IngamePlayer_DrawPlayer( void *self ) 
 {
+	UI_LogFuncBegin();
 	menubitmap_s	*b;
 	vec3_t			viewangles;
 	vec3_t			origin = {-20, 5, -4 }; //-3.8
@@ -158,7 +144,7 @@ static void IngamePlayer_DrawPlayer( void *self )
 
 	b = &s_ingame.playermdl;
 	UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, origin, &s_ingame.playerinfo, uis.realtime );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -168,11 +154,12 @@ Player_ModelEvent
 */
 
 static void Player_ModelEvent ( void *self, int32_t result ) {
-	
+	UI_LogFuncBegin();
 	if ( result == QM_ACTIVATED ) {
 		uis.cursorpx = uis.cursorx;
 		uis.spinView = qtrue;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -182,13 +169,16 @@ InGame_RestartAction
 */
 static void InGame_RestartAction( qboolean result ) 
 {
+	UI_LogFuncBegin();
 	if( !result ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
 	UI_PopMenu();
 	trap_Cmd_ExecuteText( EXEC_APPEND, "callvote map_restart 0\n" );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -198,14 +188,17 @@ InGame_LeaveAction
 */
 void InGame_LeaveAction( qboolean result ) 
 {
+	UI_LogFuncBegin();
 	if( !result ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
 	//trap_Cvar_Set ("rpg_playIntro", "0");
 	UI_PopMenu();
 	trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
+	UI_LogFuncEnd();
 }
 
 
@@ -216,68 +209,41 @@ InGame_Event
 */
 void InGame_Event( void *ptr, int32_t notification ) 
 {
+	UI_LogFuncBegin();
 	if( notification != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
 	switch( ((menucommon_s*)ptr)->id ) 
 	{
-//	case ID_TEAM:
-////		InGame_SaveChanges();
-//		UI_TeamMainMenu();
-//		break;
-
 	case ID_SETUP:
-//		InGame_SaveChanges();
 		UI_SetupWeaponsMenu();
 		break;
 
 	case ID_SCREENSHOT:
-//		InGame_SaveChanges();
 		UI_ForceMenuOff();
 		trap_Cmd_ExecuteText( EXEC_APPEND, "wait; wait; wait; wait; screenshot\n" );
 		break;
 
 	case ID_LEAVEARENA:
-//		InGame_SaveChanges();
 		UI_ConfirmMenu( menu_normal_text[MNT_LEAVE_MATCH], 0, InGame_LeaveAction );
-//		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
 		break;
 
 	case ID_RESTART:
-//		InGame_SaveChanges();
 		UI_ConfirmMenu( menu_normal_text[MNT_RESTART_MATCH], 0, InGame_RestartAction );
 		break;
 
 	case ID_QUIT:
-//		InGame_SaveChanges();
 		UI_QuitMenu();
-//		UI_ConfirmMenu( "EXIT GAME?", NULL, InGame_QuitAction );
 		break;
 
 	case ID_SERVERINFO:
-//		InGame_SaveChanges();
 		UI_ServerInfoMenu();
 		break;
 
-	case ID_ADDBOTS:
-//		InGame_SaveChanges();
-		UI_AddBotsMenu();
-		break;
-
-	case ID_REMOVEBOTS:
-//		InGame_SaveChanges();
-		UI_RemoveBotsMenu();
-		break;
-
-	case ID_TEAMORDERS:
-//		InGame_SaveChanges();
-		UI_TeamOrdersMenu(0);
-		break;
-
 	case ID_RESUME:
-//		InGame_SaveChanges();
 		UI_PopMenu();
 		break;
 	
@@ -286,19 +252,15 @@ void InGame_Event( void *ptr, int32_t notification )
 		break;
 
 	case ID_PLAYER_MODEL:
-//		UI_PopMenu();
-//		PlayerSettings_SaveChanges();
 		UI_PlayerModelMenu( s_ingame.prevMenu );
 		break;
 
 	case ID_JOIN:
-//		InGame_SaveChanges();
 		trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team free\n" );
 		UI_ForceMenuOff();
 		break;
 
 	case ID_SPECTATE:
-//		InGame_SaveChanges();
 		trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team spectator\n" );
 		UI_ForceMenuOff();
 		break;
@@ -308,7 +270,7 @@ void InGame_Event( void *ptr, int32_t notification )
 		break;
 
 	case ID_ADMIN:
-		UI_LoginMenu(qfalse);
+		UI_AdminMenu(qfalse);
 		break;
 
 	case ID_MOTD: // RPG-X | Marcin | 03/01/2008
@@ -317,12 +279,11 @@ void InGame_Event( void *ptr, int32_t notification )
 		break;
 
 	case ID_RESPAWN: // RPG-X | Marcin | 03/01/2008
-		//trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team spectator\n" );
-		//trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team free\n" );
 		trap_Cmd_ExecuteText( EXEC_APPEND, "respawn\n" );
 		UI_ForceMenuOff();
 		break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -332,6 +293,7 @@ UI_InGameMenu_Draw
 */
 static void UI_InGameMenu_Draw( void ) 
 {
+	UI_LogFuncBegin();
 	char*	playerClass;
 	char	string[256];
 	float	scale;
@@ -340,37 +302,6 @@ static void UI_InGameMenu_Draw( void )
 //	char* team;
 
 	playerClass = uis.classData[s_ingame.pclass].classNameFull;
-
-	/*switch ( s_ingame.pclass ) {
-		case PC_ADMIN:
-			playerClass = "Admin";
-			break;
-		case PC_SECURITY:
-			playerClass = "Security";
-			break;
-		case PC_ALIEN:
-			playerClass = "Alien";
-			break;
-		case PC_COMMAND:
-			playerClass = "Command";
-			break;
-		case PC_SCIENCE:
-			playerClass = "Science";
-			break;
-		case PC_ENGINEER:
-			playerClass = "Engineer";
-			break;
-		case PC_ALPHAOMEGA22:
-			playerClass = "Marine";
-			break;
-		case PC_N00B:
-			playerClass = "n00b";
-			break;
-		case PC_NOCLASS:
-		default:
-			playerClass = "Unknown";
-			break;
-	}*/
 
 	UI_MenuFrame(&s_ingame.menu);
 
@@ -598,6 +529,7 @@ static void UI_InGameMenu_Draw( void )
 
 	// standard menu drawing
 	Menu_Draw( &s_ingame.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -607,6 +539,7 @@ InGame_MenuInit
 */
 void InGame_MenuInit( void ) 
 {
+	UI_LogFuncBegin();
 	int32_t		y,x;
 	uiClientState_t	cs;
 	char	info[MAX_INFO_STRING];
@@ -630,9 +563,6 @@ void InGame_MenuInit( void )
 	UI_InitRanksData( Info_ValueForKey( info_server, "rpg_rankSet" ) );
 	UI_InitClassData( Info_ValueForKey( info_server, "rpg_classSet" ) );
 
-	//TiM: Reset Class Data
-	//UI_LoadClassString();
-
 	//	Player_MenuInit();
 
 	s_ingame.menu.wrapAround			= qtrue;
@@ -647,22 +577,6 @@ void InGame_MenuInit( void )
 
 	x = 284; //305
 	y = 62; //196
-	/*s_ingame.team.generic.type			= MTYPE_BITMAP;
-	s_ingame.team.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_ingame.team.generic.x				= x;
-	s_ingame.team.generic.y				= y;
-	s_ingame.team.generic.id			= ID_TEAM;
-	s_ingame.team.generic.name			= BUTTON_GRAPHIC_LONGRIGHT;
-	s_ingame.team.generic.callback		= InGame_Event; 
-	s_ingame.team.width					= MENU_BUTTON_MED_WIDTH;
-	s_ingame.team.height				= MENU_BUTTON_MED_HEIGHT;
-	s_ingame.team.color					= CT_DKPURPLE1;
-	s_ingame.team.color2				= CT_LTPURPLE1;
-	s_ingame.team.textX					= MENU_BUTTON_TEXT_X;
-	s_ingame.team.textY					= MENU_BUTTON_TEXT_Y;
-	s_ingame.team.textEnum				= MBT_TEAMCLASS;
-	s_ingame.team.textcolor				= CT_BLACK;
-	s_ingame.team.textcolor2			= CT_WHITE;*/
 
 
 //	y += INGAME_MENU_VERTICAL_SPACING;
@@ -740,7 +654,6 @@ void InGame_MenuInit( void )
 
 	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.admin.generic.type				= MTYPE_BITMAP;
-	s_ingame.admin.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
 	s_ingame.admin.generic.x				= x;
 	s_ingame.admin.generic.y				= y;
 	s_ingame.admin.generic.id				= ID_ADMIN;
@@ -755,41 +668,11 @@ void InGame_MenuInit( void )
 	s_ingame.admin.textEnum					= MBT_ADMIN_MENU;
 	s_ingame.admin.textcolor				= CT_BLACK;
 	s_ingame.admin.textcolor2				= CT_WHITE;
-
-	/*y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.teamorders.generic.type		= MTYPE_BITMAP;
-	s_ingame.teamorders.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
-	s_ingame.teamorders.generic.x			= x;
-	s_ingame.teamorders.generic.y			= y;
-	s_ingame.teamorders.generic.id			= ID_TEAMORDERS;
-	s_ingame.teamorders.generic.name		= BUTTON_GRAPHIC_LONGRIGHT;
-	s_ingame.teamorders.generic.callback	= InGame_Event; 
-	s_ingame.teamorders.width				= MENU_BUTTON_MED_WIDTH;
-	s_ingame.teamorders.height				= MENU_BUTTON_MED_HEIGHT;
-	s_ingame.teamorders.color				= CT_DKPURPLE1;
-	s_ingame.teamorders.color2				= CT_LTPURPLE1;
-	s_ingame.teamorders.textX				= MENU_BUTTON_TEXT_X;
-	s_ingame.teamorders.textY				= MENU_BUTTON_TEXT_Y;
-	s_ingame.teamorders.textEnum			= MBT_INGAMETEAMORDERS;
-	s_ingame.teamorders.textcolor			= CT_BLACK;
-	s_ingame.teamorders.textcolor2			= CT_WHITE;
-
-	// make sure it's a team game
-	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
-	if( (atoi( Info_ValueForKey( info, "g_gametype" ) )) < GT_TEAM)
-	{
-		s_ingame.teamorders.generic.flags |= QMF_GRAYED;
+	if( atoi( Info_ValueForKey( info, "admin" )) == 0 ) {	
+		s_ingame.admin.generic.flags = QMF_HIGHLIGHT_IF_FOCUS;
+	} else {	
+		s_ingame.admin.generic.flags = QMF_GRAYED;
 	}
-	else 
-	{
-		trap_GetClientState( &cs );
-		trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
-		team = atoi( Info_ValueForKey( info, "t" ) );
-		if( team == TEAM_SPECTATOR ) 
-		{
-			s_ingame.teamorders.generic.flags |= QMF_GRAYED;
-		}
-	}*/
 
 	x = 121;
 	y = 62;
@@ -962,51 +845,6 @@ void InGame_MenuInit( void )
 	s_ingame.pmodel.textcolor						= CT_BLACK;
 	s_ingame.pmodel.textcolor2						= CT_WHITE;
 
-/*	s_ingame.playerName.generic.type				= MTYPE_FIELD;
-	s_ingame.playerName.field.widthInChars			= MAX_NAMELENGTH;
-	s_ingame.playerName.field.maxchars				= MAX_NAMELENGTH;
-	s_ingame.playerName.generic.x					= 319;
-	s_ingame.playerName.generic.y					= 193;
-	s_ingame.playerName.field.style					= UI_SMALLFONT;
-//	s_ingame.playerName.field.titleEnum				= MBT_PLAYER_NAME;
-	s_ingame.playerName.field.titlecolor			= CT_LTGOLD1;
-	s_ingame.playerName.field.textcolor				= CT_DKGOLD1;
-	s_ingame.playerName.field.textcolor2			= CT_LTGOLD1;
-
-	s_ingame.pClass.generic.type					= MTYPE_SPINCONTROL;
-	s_ingame.pClass.generic.flags					= QMF_HIGHLIGHT_IF_FOCUS;
-	s_ingame.pClass.generic.callback				= InGame_Event;
-	s_ingame.pClass.generic.id						= ID_CLASS;
-	s_ingame.pClass.generic.x						= 265;
-	s_ingame.pClass.generic.y						= 213;
-	s_ingame.pClass.textEnum						= MBT_CLASS;
-	s_ingame.pClass.textcolor						= CT_BLACK;
-	s_ingame.pClass.textcolor2						= CT_WHITE;
-	s_ingame.pClass.color							= CT_DKPURPLE1;
-	s_ingame.pClass.color2							= CT_LTPURPLE1;
-	s_ingame.pClass.listcolor						= CT_LTGOLD1;
-	s_ingame.pClass.width							= 40; //80
-	s_ingame.pClass.textX							= 5;
-	s_ingame.pClass.textY							= 2;
-	s_ingame.pClass.itemnames						= pclass_items;
-
-	s_ingame.pRank.generic.type						= MTYPE_SPINCONTROL;
-	s_ingame.pRank.generic.flags					= QMF_HIGHLIGHT_IF_FOCUS;
-	s_ingame.pRank.generic.callback					= InGame_Event;
-	s_ingame.pRank.generic.id						= ID_RANK;
-	s_ingame.pRank.generic.x						= 265;
-	s_ingame.pRank.generic.y						= 235;
-	s_ingame.pRank.textEnum							= MBT_RANK;
-	s_ingame.pRank.textcolor						= CT_BLACK;
-	s_ingame.pRank.textcolor2						= CT_WHITE;
-	s_ingame.pRank.color							= CT_DKPURPLE1;
-	s_ingame.pRank.color2							= CT_LTPURPLE1;
-	s_ingame.pRank.listcolor						= CT_LTGOLD1;
-	s_ingame.pRank.width							= 40;
-	s_ingame.pRank.textX							= 5;
-	s_ingame.pRank.textY							= 2;
-	s_ingame.pRank.itemnames						= prank_items_formal;*/
-
 	s_ingame.join.generic.type						= MTYPE_BITMAP;
 	s_ingame.join.generic.flags						= QMF_HIGHLIGHT_IF_FOCUS;
 	s_ingame.join.generic.x							= 285; //126 //306
@@ -1089,6 +927,7 @@ void InGame_MenuInit( void )
 	Menu_AddItem( &s_ingame.menu, &s_ingame.respawn );
 
 //	Player_InitModel();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1098,6 +937,7 @@ InGameQuit_Cache
 */
 void InGame_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	s_ingame.graphic_12_8_LU = trap_R_RegisterShaderNoMip( "menu/common/corner_ul_8_12.tga" );
 	s_ingame.graphic_12_8_LL	= trap_R_RegisterShaderNoMip( "menu/common/corner_ll_8_12.tga" );
 	s_ingame.graphic_12_8_RU = trap_R_RegisterShaderNoMip( "menu/common/corner_ur_8_12.tga" );
@@ -1111,6 +951,7 @@ UI_InGameMenu
 */
 void UI_InGameMenu( void ) 
 {
+	UI_LogFuncBegin();
 	// force as top level menu
 	uis.menusp = 0;  
 
@@ -1123,6 +964,7 @@ void UI_InGameMenu( void )
 
 	InGame_MenuInit();
 	UI_PushMenu( &s_ingame.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -1134,8 +976,10 @@ InGameQuitMenu_Event
 */
 void InGameQuitMenu_Event( void *ptr, int32_t notification ) 
 {
+	UI_LogFuncBegin();
 	if( notification != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1144,12 +988,15 @@ void InGameQuitMenu_Event( void *ptr, int32_t notification )
 	case ID_INGAME_QUIT_NO:
 	case ID_INGAMEMENU:
 		UI_PopMenu();
+		UI_LogFuncEnd();
 		return;
 	case ID_INGAME_QUIT_YES:
 		UI_PopMenu();
 		UI_QuitMenu();
+		UI_LogFuncEnd();
 		return;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1159,6 +1006,7 @@ UI_InGameQuitMenu_Draw
 */
 static void UI_InGameQuitMenu_Draw( void ) 
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_ingamequit.menu);
 
 	// Rounded button that takes place of INGAME MENU button
@@ -1171,7 +1019,7 @@ static void UI_InGameQuitMenu_Draw( void )
 
 	// standard menu drawing
 	Menu_Draw( &s_ingamequit.menu );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1181,7 +1029,7 @@ InGameQuitMenu_Init
 */
 void InGameQuitMenu_Init( void ) 
 {
-
+	UI_LogFuncBegin();
 	memset( &s_ingame, 0 ,sizeof(ingamemenu_t) );
 
 	InGame_Cache();
@@ -1250,6 +1098,7 @@ void InGameQuitMenu_Init( void )
 	Menu_AddItem( &s_ingamequit.menu, &s_ingamequit.ingamemenu );
 	Menu_AddItem( &s_ingamequit.menu, &s_ingamequit.no );
 	Menu_AddItem( &s_ingamequit.menu, &s_ingamequit.yes );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1259,7 +1108,9 @@ UI_InGameQuitMenu
 */
 void UI_InGameQuitMenu( void ) 
 {
+	UI_LogFuncBegin();
 	InGameQuitMenu_Init();
 
 	UI_PushMenu( &s_ingamequit.menu );
+	UI_LogFuncEnd();
 }

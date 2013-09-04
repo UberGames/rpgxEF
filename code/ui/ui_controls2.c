@@ -8,6 +8,7 @@ CONTROLS MENU
 =======================================================================
 */
 #include "ui_local.h"
+#include "ui_logger.h"
 
 static void SetupMenu_SideButtons(menuframework_s *menu,int32_t menuType);
 static void Controls_UpdateNew( void );
@@ -162,10 +163,6 @@ static menuaction_s			s_attack_weapon2_action;
 static menuaction_s			s_attack_weapon3_action;
 static menuaction_s			s_attack_weapon4_action;
 static menuaction_s			s_attack_weapon5_action;
-//static menuaction_s			s_attack_weapon6_action;
-//static menuaction_s			s_attack_weapon7_action;
-//static menuaction_s			s_attack_weapon8_action;
-//static menuaction_s			s_attack_weapon9_action;
 static menuaction_s			s_attack_weapon_next_action;
 static menuaction_s			s_attack_weapon_prev_action;
 static menuaction_s			s_attack_waiting_action;
@@ -194,9 +191,6 @@ static menuframework_s		s_controlsmove_menu;
 static menuframework_s		s_controlscommand_menu;
 
 static menuframework_s		s_controlsmouse_menu;
-//atic menulist_s			s_joyenable_box;
-//static menuslider_s			s_joythreshold_slider;
-//static menulist_s			s_forcefeedback_box;
 static menulist_s			s_joyxbutton_box;
 static menulist_s			s_joyybutton_box;
 
@@ -290,9 +284,6 @@ typedef struct
 #define ID_MOVEMENT		100
 #define ID_LOOKING		101
 #define ID_WEAPONS		102
-//#define ID_MISC			103
-//#define ID_DEFAULTS		104
-//#define ID_BACK			105
 #define ID_SAVEANDEXIT	106
 #define ID_EXIT			107
 
@@ -320,10 +311,6 @@ typedef struct
 #define ID_WEAPON4		20	
 #define ID_WEAPON5		21	
 #define ID_WEAPON0		22
-//#define ID_WEAPON6		22	
-//#define ID_WEAPON7		23	
-//#define ID_WEAPON8		24	
-//#define ID_WEAPON9		25	
 #define ID_ATTACK		23
 #define ID_ALT_ATTACK	24	
 #define ID_WEAPPREV		25
@@ -389,11 +376,6 @@ typedef struct
 #define ANIM_WEAPON3	14
 #define ANIM_WEAPON4	15
 #define ANIM_WEAPON5	16
-/*#define ANIM_WEAPON6	17
-#define ANIM_WEAPON7	18
-#define ANIM_WEAPON8	19
-#define ANIM_WEAPON9	20
-#define ANIM_WEAPON10	21*/
 #define ANIM_ATTACK		22
 #define ANIM_GESTURE	23
 #define ANIM_DIE		24
@@ -466,8 +448,6 @@ typedef struct
 
 static controls_t s_controls;
 
-//static vec4_t controls_binding_color  = {1.00, 0.43, 0.00, 1.00};
-
 static bind_t g_bindings[] = 
 {
 	{"+info",					MNT_SHORTCUT_SCORES,			ID_SHOWSCORES,	ANIM_IDLE,		K_TAB,			-1,		-1, -1,MNT_SHORTCUT_KEY},
@@ -485,7 +465,6 @@ static bind_t g_bindings[] =
 	{"+lookup", 				MNT_SHORTCUT_LOOKUP,			ID_LOOKUP,		ANIM_LOOKUP,	K_PGDN,			-1,		-1, -1,MNT_SHORTCUT_KEY},
 	{"+lookdown", 				MNT_SHORTCUT_LOOKDOWN,			ID_LOOKDOWN,	ANIM_LOOKDOWN,	K_DEL,			-1,		-1, -1,MNT_SHORTCUT_KEY},
 	{"laser", 					MNT_SHORTCUT_MOUSELOOK,			ID_MOUSELOOK,	ANIM_IDLE,		'r',			-1,		-1, -1,MNT_SHORTCUT_KEY},
-//	{"+mlook", 					MNT_SHORTCUT_MOUSELOOK,			ID_MOUSELOOK,	ANIM_IDLE,		'/',			-1,		-1, -1,MNT_SHORTCUT_KEY},
 	{"centerview", 				MNT_SHORTCUT_CENTERVIEW,		ID_CENTERVIEW,	ANIM_IDLE,		K_END,			-1,		-1, -1,MNT_SHORTCUT_KEY},
 	{"+zoom", 					MNT_SHORTCUT_ZOOMVIEW,			ID_ZOOMVIEW,	ANIM_IDLE,		-1,				-1,		-1, -1,MNT_SHORTCUT_KEY},
 	{"weapon 1",				MNT_SHORTCUT_WEAPON1,			ID_WEAPON1,		ANIM_WEAPON1,	'1',			-1,		-1, -1,MNT_SHORTCUT_KEY},
@@ -494,10 +473,6 @@ static bind_t g_bindings[] =
 	{"weapon 4",				MNT_SHORTCUT_WEAPON4,			ID_WEAPON4,		ANIM_WEAPON4,	'4',			-1,		-1, -1,MNT_SHORTCUT_KEY},
 	{"weapon 5",				MNT_SHORTCUT_WEAPON5,			ID_WEAPON5,		ANIM_WEAPON5,	'5',			-1,		-1, -1,MNT_SHORTCUT_KEY},
 	{"weapon 0",				MNT_SHORTCUT_WEAPON0,			ID_WEAPON0,		ANIM_WEAPON10,	'0',			-1,		-1, -1,MNT_SHORTCUT_KEY},
-	/*{"weapon 6",				MNT_SHORTCUT_WEAPON6,			ID_WEAPON6,		ANIM_WEAPON6,	'6',			-1,		-1, -1,MNT_SHORTCUT_KEY},
-	{"weapon 7",				MNT_SHORTCUT_WEAPON7,			ID_WEAPON7,		ANIM_WEAPON7,	'7',			-1,		-1, -1,MNT_SHORTCUT_KEY},
-	{"weapon 8",				MNT_SHORTCUT_WEAPON8,			ID_WEAPON8,		ANIM_WEAPON8,	'8',			-1,		-1, -1,MNT_SHORTCUT_KEY},
-	{"weapon 9",				MNT_SHORTCUT_WEAPON9,			ID_WEAPON9,		ANIM_WEAPON9,	'9',			-1,		-1, -1,MNT_SHORTCUT_KEY},*/
 	{"+attack", 				MNT_SHORTCUT_ATTACK,			ID_ATTACK,		ANIM_ATTACK,	K_CTRL,			-1,		-1, -1,MNT_SHORTCUT_KEY},
 	{"+altattack", 				MNT_SHORTCUT_ALTATTCK,			ID_ALT_ATTACK,	ANIM_ATTACK,	K_MOUSE2,		-1,		-1, -1,MNT_SHORTCUT_KEY},
 	{"weapprev",				MNT_SHORTCUT_PREVWEAPON,		ID_WEAPPREV,	ANIM_IDLE,		'[',			-1,		-1, -1,MNT_SHORTCUT_KEY},
@@ -555,10 +530,6 @@ static void* g_attack_controls[] =
 	&s_attack_weapon4_action,
 	&s_attack_weapon5_action,
 	&s_attack_weapon0_action,
-	/*&s_attack_weapon6_action,
-	&s_attack_weapon7_action,
-	&s_attack_weapon8_action,
-	&s_attack_weapon9_action,*/
 	&s_attack_weapon_next_action, 
 	&s_attack_weapon_prev_action, 
 	NULL,
@@ -652,66 +623,21 @@ static void** g_controls[] =
 	g_command_controls
 };
 
-/*static menucommon_s *g_movement_controls[] =
-{
-	(menucommon_s *)&s_controls.alwaysrun,     
-	(menucommon_s *)&s_controls.run,            
-	(menucommon_s *)&s_controls.walkforward,
-	(menucommon_s *)&s_controls.backpedal,
-	(menucommon_s *)&s_controls.stepleft,      
-	(menucommon_s *)&s_controls.stepright,     
-	(menucommon_s *)&s_controls.moveup,        
-	(menucommon_s *)&s_controls.movedown,      
-	(menucommon_s *)&s_controls.turnleft,      
-	(menucommon_s *)&s_controls.turnright,     
-	(menucommon_s *)&s_controls.sidestep,
-	NULL
-};*/
-
-
-/*static menucommon_s *g_looking_controls[] = 
-{
-	(menucommon_s *)&s_controls.sensitivity,
-	(menucommon_s *)&s_controls.smoothmouse,
-	(menucommon_s *)&s_controls.invertmouse,
-	(menucommon_s *)&s_controls.lookup,
-	(menucommon_s *)&s_controls.lookdown,
-	(menucommon_s *)&s_controls.mouselook,
-	(menucommon_s *)&s_controls.freelook,
-	(menucommon_s *)&s_controls.centerview,
-	(menucommon_s *)&s_controls.zoomview,
-	(menucommon_s *)&s_controls.joyenable,
-	(menucommon_s *)&s_controls.joythreshold,
-	NULL,
-};*/
-
-/*static menucommon_s *g_misc_controls[] = 
-{
-	(menucommon_s *)&s_controls.showscores, 
-	(menucommon_s *)&s_controls.useitem,
-	(menucommon_s *)&s_controls.gesture,
-	(menucommon_s *)&s_controls.chat,
-	(menucommon_s *)&s_controls.chat2,
-	(menucommon_s *)&s_controls.chat3,
-	(menucommon_s *)&s_controls.chat4,
-	(menucommon_s *)&s_controls.chat5,
-	(menucommon_s *)&s_controls.gesture,
-	(menucommon_s *)&s_controls.showscores,
-	NULL,
-};*/
-
 /*
 =================
 Setup_ResetDefaults_Action
 =================
 */
 void Setup_ResetDefaults_Action( qboolean result ) {
+	UI_LogFuncBegin();
 	if( !result ) {
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cmd_ExecuteText( EXEC_APPEND, "exec default.cfg\n");
 	trap_Cmd_ExecuteText( EXEC_APPEND, "cvar_restart\n");
 	trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -721,6 +647,7 @@ Controls_InitCvars
 */
 static void Controls_InitCvars( void )
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	configcvar_t*	cvarptr;
 
@@ -740,32 +667,9 @@ static void Controls_InitCvars( void )
 		// restore current value
 		trap_Cvar_SetValue( cvarptr->name, cvarptr->value );
 	}
+	UI_LogFuncEnd();
 }
 
-/*
-=================
-Controls_GetCvarDefault
-=================
-*/
-/*
-static float Controls_GetCvarDefault( char* name )
-{
-	configcvar_t*	cvarptr;
-	int32_t				i;
-
-	cvarptr = g_configcvars;
-	for (i=0; ;i++,cvarptr++)
-	{
-		if (!cvarptr->name)
-			return (0);
-
-		if (!strcmp(cvarptr->name,name))
-			break;
-	}
-
-	return (cvarptr->defaultvalue);
-}
-*/
 /*
 =================
 Controls_GetCvarValue
@@ -773,19 +677,24 @@ Controls_GetCvarValue
 */
 static float Controls_GetCvarValue( char* name )
 {
+	UI_LogFuncBegin();
 	configcvar_t*	cvarptr;
 	int32_t				i;
 
 	cvarptr = g_configcvars;
 	for (i=0; ;i++,cvarptr++)
 	{
-		if (!cvarptr->name)
+		if (!cvarptr->name){
+			UI_LogFuncEnd();
 			return (0);
+		}
 
-		if (!strcmp(cvarptr->name,name))
+		if (!strcmp(cvarptr->name,name)){
+			UI_LogFuncEnd();
 			break;
+		}
 	}
-
+	UI_LogFuncEnd();
 	return (cvarptr->value);
 }
 
@@ -798,6 +707,7 @@ Controls_UpdateModel
 
 static void Controls_UpdateModel( int32_t anim ) 
 {
+	UI_LogFuncBegin();
 	VectorClear( s_controls.playerViewangles );
 	VectorClear( s_controls.playerMoveangles );
 	s_controls.playerViewangles[YAW]	= uis.lastYaw; //180 + 10
@@ -884,22 +794,6 @@ static void Controls_UpdateModel( int32_t anim )
 			s_controls.playerWeapon = WP_15;
 			break;
 
-		/*case ANIM_WEAPON6:
-			s_controls.playerWeapon = WP_8;
-			break;
-
-		case ANIM_WEAPON7:
-			s_controls.playerWeapon = WP_7;
-			break;
-
-		case ANIM_WEAPON8:
-			s_controls.playerWeapon = WP_12;
-			break;
-
-		case ANIM_WEAPON9:
-			s_controls.playerWeapon = WP_13;
-			break;*/
-
 		case ANIM_WEAPON10:
 			s_controls.playerWeapon = WP_1;
 			break;
@@ -909,8 +803,6 @@ static void Controls_UpdateModel( int32_t anim )
 			break;
 
 		case ANIM_GESTURE:
-			//s_controls.playerTorso = TORSO_GESTURE;
-			//FIXME: qboolean talking?
 			break;
 
 		case ANIM_DIE:
@@ -928,6 +820,7 @@ static void Controls_UpdateModel( int32_t anim )
 	}
 
 	UI_PlayerInfo_SetInfo( &s_controls.playerinfo, s_controls.playerLegs, s_controls.playerTorso, s_controls.playerViewangles, s_controls.playerMoveangles, s_controls.playerWeapon, trap_Cvar_VariableValue( "height" ), trap_Cvar_VariableValue( "weight" ), s_controls.playerChat );
+	UI_LogFuncEnd();
 }
 
 
@@ -938,6 +831,7 @@ Controls_DrawKeyBinding
 */
 static void Controls_DrawKeyBinding( void *self )
 {
+	UI_LogFuncBegin();
 	menuaction_s*	a;
 	int32_t				x,bindingX;
 	int32_t				y;
@@ -952,6 +846,7 @@ static void Controls_DrawKeyBinding( void *self )
 
 	if (a->generic.flags & QMF_HIDDEN)	// It's bloody invisible
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1057,7 +952,7 @@ static void Controls_DrawKeyBinding( void *self )
 
 	// Binding text
 	UI_DrawProportionalString(  bindingX, y, name, UI_SMALLFONT, colorTable[bindingtextcolor] );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1068,6 +963,7 @@ Controls_DrawPlayer
 //BOOKMARK
 static void Controls_DrawPlayer( void *self )
 {
+	UI_LogFuncBegin();
 	menubitmap_s	*b;
 	char			buf[MAX_QPATH];
 	vec3_t			origin={ -22, 2, -3 };
@@ -1082,6 +978,7 @@ static void Controls_DrawPlayer( void *self )
 
 	b = (menubitmap_s*) self;
 	UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, origin, &s_controls.playerinfo, uis.realtime/2 );
+	UI_LogFuncEnd();
 }
 
 
@@ -1092,6 +989,7 @@ Controls_GetKeyAssignment
 */
 static void Controls_GetKeyAssignment (char *command, int32_t *twokeys)
 {
+	UI_LogFuncBegin();
 	int32_t		count;
 	int32_t		j;
 	char	b[256];
@@ -1112,6 +1010,7 @@ static void Controls_GetKeyAssignment (char *command, int32_t *twokeys)
 				break;
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1121,6 +1020,7 @@ Controls_ClearKeyAssignment
 */
 static void Controls_ClearKeyAssignment (char *command)
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 	char	b[256];
 
@@ -1136,8 +1036,7 @@ static void Controls_ClearKeyAssignment (char *command)
 			trap_Key_SetBinding( i, "" );
 		}
 	}
-
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1147,6 +1046,7 @@ Controls_GetConfig
 */
 static void Controls_GetConfig( void )
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 	int32_t		twokeys[3];
 	bind_t*	bindptr;
@@ -1178,6 +1078,7 @@ static void Controls_GetConfig( void )
 	s_keyturnspeed_slider.curvalue   = UI_ClampCvar( 1, 5, Controls_GetCvarValue( "cl_anglespeedkey" ) );
 	s_joyxbutton_box.curvalue		 = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "joy_xbutton" ) );
 	s_joyybutton_box.curvalue        = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "joy_ybutton" ) );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1187,9 +1088,10 @@ Controls_SetJoystick
 */
 static void Controls_SetJoystick( void )
 {
-
+	UI_LogFuncBegin();
 	trap_Cvar_SetValue( "in_joystick", s_controls.joyenable.curvalue );
 	trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1199,14 +1101,9 @@ Controls_SetConfig
 */
 static void Controls_SetConfig( void )
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 	bind_t*	bindptr;
-
-	// unbind the command from all keys
-//	for (i=0; i<256; i++)
-//	{
-//		trap_Key_SetBinding( i, "" );
-//	}
 
 	// set the bindings from the local store
 	bindptr = g_bindings;
@@ -1241,42 +1138,9 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "cl_anglespeedkey", s_keyturnspeed_slider.curvalue );
 	trap_Cvar_SetValue( "joy_xbutton", s_joyxbutton_box.curvalue );
 	trap_Cvar_SetValue( "joy_ybutton", s_joyybutton_box.curvalue );
+	UI_LogFuncEnd();
 }
 
-/*
-=================
-Controls_SetDefaults
-=================
-*/
-/*
-static void Controls_SetDefaults( void )
-{
-	int32_t	i;
-	bind_t*	bindptr;
-
-	// set the bindings from the local store
-	bindptr = g_bindings;
-
-	// iterate each command, set its default binding
-	for (i=0; ;i++,bindptr++)
-	{
-		if (!bindptr->label)
-			break;
-
-		bindptr->bind1 = bindptr->defaultbind1;
-		bindptr->bind2 = bindptr->defaultbind2;
-	}
-
-	s_controls.invertmouse.curvalue  = Controls_GetCvarDefault( "m_pitch" ) < 0;
-	s_controls.smoothmouse.curvalue  = Controls_GetCvarDefault( "m_filter" );
-	s_controls.alwaysrun.curvalue    = Controls_GetCvarDefault( "cl_run" );
-	s_controls.autoswitch.curvalue   = Controls_GetCvarDefault( "cg_autoswitch" );
-	s_controls.sensitivity.curvalue  = Controls_GetCvarDefault( "sensitivity" );
-	s_controls.joyenable.curvalue    = Controls_GetCvarDefault( "in_joystick" );
-	s_controls.joythreshold.curvalue = Controls_GetCvarDefault( "joy_threshold" );
-	s_controls.freelook.curvalue     = Controls_GetCvarDefault( "cl_freelook" );
-}
-*/
 /*
 =================
 Controls_MenuKey
@@ -1284,6 +1148,7 @@ Controls_MenuKey
 */
 static sfxHandle_t Controls_MenuKey( int32_t key )
 {
+	UI_LogFuncBegin();
 	int32_t			id;
 	int32_t			i;
 	qboolean	found;
@@ -1342,6 +1207,7 @@ static sfxHandle_t Controls_MenuKey( int32_t key )
 
 		if ((key<1) || (key>256))	// Ignore high ascii keys
 		{
+			UI_LogFuncEnd();
 			return (menu_null_sound);
 		}
 
@@ -1411,17 +1277,6 @@ static sfxHandle_t Controls_MenuKey( int32_t key )
 				bindptr->bind1 = -1;
 				bindptr->bind2 = -1;
 				bindptr->bind3 = -1;
-/*
-				if( bindptr->bind1 != -1 ) 
-				{
-					trap_Key_SetBinding( bindptr->bind1, "" );
-					bindptr->bind1 = -1;
-				}
-				if( bindptr->bind2 != -1 ) 
-				{
-					trap_Key_SetBinding( bindptr->bind2, "" );
-					bindptr->bind2 = -1;
-				}*/
 			}
 			else if (bindptr->bind1 == -1) 
 			{
@@ -1452,26 +1307,10 @@ static sfxHandle_t Controls_MenuKey( int32_t key )
 	}
 
 ignorekey:
+	UI_LogFuncEnd();
 	return Menu_DefaultKey( current_menu, key );
 }
 
-/*
-=================
-Controls_ResetDefaults_Action
-=================
-*/
-/*
-static void Controls_ResetDefaults_Action( qboolean result ) 
-{
-	if( !result ) {
-		return;
-	}
-
-	s_controls.changesmade = qtrue;
-	Controls_SetDefaults();
-	Controls_UpdateNew();
-}
-*/
 /*
 =================
 Controls_ActionEvent
@@ -1479,6 +1318,7 @@ Controls_ActionEvent
 */
 static void Controls_ActionEvent( void* ptr, int32_t event )
 {
+	UI_LogFuncBegin();
 	menuframework_s*	menu;
 
 	if (event == QM_LOSTFOCUS)
@@ -1504,6 +1344,7 @@ static void Controls_ActionEvent( void* ptr, int32_t event )
 
 		Controls_UpdateNew();
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1513,11 +1354,14 @@ Controls_InitModel
 */
 static void Controls_InitModel( void )
 {
+	UI_LogFuncBegin();
 	memset( &s_controls.playerinfo, 0, sizeof(playerInfo_t) );
 
 	UI_PlayerInfo_SetModel( &s_controls.playerinfo, UI_Cvar_VariableString( "model" ) );
 
 	Controls_UpdateModel( ANIM_IDLE );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1527,6 +1371,7 @@ SetupMenu_TopButtons
 */
 void SetupMenu_TopButtons(menuframework_s *menu,int32_t menuType,menuaction_s *s_video_apply_action)
 {
+	UI_LogFuncBegin();
 	vid_apply_action = s_video_apply_action;
 
 	s_controls_mainmenu.generic.type			= MTYPE_BITMAP;      
@@ -1733,24 +1578,7 @@ void SetupMenu_TopButtons(menuframework_s *menu,int32_t menuType,menuaction_s *s
 	{
 		s_controls_cdkey.generic.flags			|= QMF_GRAYED;
 	}
-/*
-	s_controls_network.generic.type		= MTYPE_BITMAP;      
-	s_controls_network.generic.flags	= QMF_HIGHLIGHT_IF_FOCUS;
-	s_controls_network.generic.x		= setup_menubuttons[6][0];
-	s_controls_network.generic.y		= setup_menubuttons[6][1];
-	s_controls_network.generic.name		= "menu/common/bar1.tga";
-	s_controls_network.generic.id		= ID_NETWORK;
-	s_controls_network.generic.callback	= Controls_MenuEvent;
-	s_controls_network.width			= MENU_BUTTON_MED_WIDTH;
-	s_controls_network.height			= MENU_BUTTON_MED_HEIGHT;
-	s_controls_network.color			= CT_DKPURPLE1;
-	s_controls_network.color2			= CT_LTPURPLE1;
-	s_controls_network.textX			= 5;
-	s_controls_network.textY			= 2;
-	s_controls_network.textEnum			= MBT_NETWORK;
-	s_controls_network.textcolor		= CT_BLACK;
-	s_controls_network.textcolor2		= CT_WHITE;
-*/
+
 	s_controls_fonts.generic.type		= MTYPE_BITMAP;      
 	s_controls_fonts.generic.flags	= QMF_HIGHLIGHT_IF_FOCUS;
 	s_controls_fonts.generic.x		= setup_menubuttons[7][0];
@@ -1840,6 +1668,7 @@ void SetupMenu_TopButtons(menuframework_s *menu,int32_t menuType,menuaction_s *s
 	if (trap_Cvar_VariableValue("developer"))
 		Menu_AddItem( menu, ( void * )&s_controls_fonts);
 
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1849,6 +1678,7 @@ M_WeaponsMenu_Blinkies
 */
 void M_WeaponsMenu_Blinkies (void)
 {
+	UI_LogFuncBegin();
 	int32_t i;
 
 	for (i=0;i<AMG_MAX;++i)
@@ -1859,6 +1689,7 @@ void M_WeaponsMenu_Blinkies (void)
 	// Don't flash frame unless waiting for input
 	if (!s_controls.waitingforkey)
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1905,7 +1736,7 @@ void M_WeaponsMenu_Blinkies (void)
 			attackmenu_graphics[AMG_PLAYERBKGRND].color = CT_LTPURPLE1;
 			break;
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1915,6 +1746,7 @@ M_WeaponsMenu_Graphics
 */
 void M_WeaponsMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 
 	UI_MenuFrame(&s_weapons_menu);
 
@@ -1934,6 +1766,7 @@ void M_WeaponsMenu_Graphics (void)
 	{
 		UI_DrawProportionalString(  207,  411, menu_normal_text[MNT_BACKSPACE],UI_SMALLFONT, colorTable[CT_WHITE]);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1943,11 +1776,13 @@ Weapons_MenuDraw
 */
 static void Weapons_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_WeaponsMenu_Graphics();
 
 	UI_Setup_MenuButtons();
 
 	Menu_Draw( &s_weapons_menu );
+	UI_LogFuncEnd();
 }
 /*
 =================
@@ -1956,6 +1791,7 @@ WeaponsMenu_Precache
 */
 static void WeaponsMenu_Precache( void )
 {
+	UI_LogFuncBegin();
 	int32_t i;
 
 	swooshTop = trap_R_RegisterShaderNoMip("menu/common/swoosh_top.tga");
@@ -1969,7 +1805,7 @@ static void WeaponsMenu_Precache( void )
 			attackmenu_graphics[i].graphic = trap_R_RegisterShaderNoMip(attackmenu_graphics[i].file);
 		}
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1980,20 +1816,13 @@ Controls_ModelEvent
 
 static void Controls_ModelEvent( void* ptr, int32_t event )
 {
-	/*menucommon_s*	menu = (menucommon_s*)ptr;
-	if (event == QM_LOSTFOCUS)
-	{
-		g_playerinfo.looking = qfalse;
-	}
-	else if (event == QM_GOTFOCUS)
-	{
-		g_playerinfo.looking = menu->x;
-	}
-	else*/ if ((event == QM_ACTIVATED) )
+	UI_LogFuncBegin();
+	if ((event == QM_ACTIVATED) )
 	{
 		uis.spinView = qtrue;
 		uis.cursorpx = uis.cursorx;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2003,6 +1832,7 @@ Playermodel_MenuInit
 */
 static void Playermodel_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	s_controls_playermdl.generic.type			= MTYPE_BITMAP;
 	s_controls_playermdl.generic.flags			= QMF_SILENT; //INACTIVE
 	s_controls_playermdl.generic.callback		= Controls_ModelEvent;
@@ -2015,6 +1845,7 @@ static void Playermodel_MenuInit( void )
 	//Model spin data
 	uis.spinView = qfalse;
 	uis.lastYaw = 180 - 20;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2024,6 +1855,7 @@ SetupActionButtons_Init
 */
 static void SetupActionButtons_Init(int32_t section)
 {
+	UI_LogFuncBegin();
 	int32_t i,y;
 	void**		controlptr;
 	menuframework_s *current_menu;
@@ -2077,6 +1909,7 @@ static void SetupActionButtons_Init(int32_t section)
 		y += 20;
 
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2086,6 +1919,7 @@ Weapons_MenuInit
 */
 static void Weapons_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	WeaponsMenu_Precache();
 
 	attackmenu_graphics[AMG_MIDLEFT].timer = uis.realtime + 500;
@@ -2157,36 +1991,6 @@ static void Weapons_MenuInit( void )
 	s_attack_weapon5_action.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_attack_weapon5_action.generic.id        = ID_WEAPON5;
 
-	/*s_attack_weapon6_action.generic.type	   = MTYPE_ACTION;
-	s_attack_weapon6_action.generic.flags     = QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_attack_weapon6_action.generic.callback  = Controls_ActionEvent;
-	s_attack_weapon6_action.generic.ownerdraw = Controls_DrawKeyBinding;
-	s_attack_weapon6_action.generic.id        = ID_WEAPON6;
-
-	s_attack_weapon6_action.generic.type	   = MTYPE_ACTION;
-	s_attack_weapon6_action.generic.flags     = QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_attack_weapon6_action.generic.callback  = Controls_ActionEvent;
-	s_attack_weapon6_action.generic.ownerdraw = Controls_DrawKeyBinding;
-	s_attack_weapon6_action.generic.id        = ID_WEAPON6;
-
-	s_attack_weapon7_action.generic.type	   = MTYPE_ACTION;
-	s_attack_weapon7_action.generic.flags     = QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_attack_weapon7_action.generic.callback  = Controls_ActionEvent;
-	s_attack_weapon7_action.generic.ownerdraw = Controls_DrawKeyBinding;
-	s_attack_weapon7_action.generic.id        = ID_WEAPON7;
-
-	s_attack_weapon8_action.generic.type	   = MTYPE_ACTION;
-	s_attack_weapon8_action.generic.flags     = QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_attack_weapon8_action.generic.callback  = Controls_ActionEvent;
-	s_attack_weapon8_action.generic.ownerdraw = Controls_DrawKeyBinding;
-	s_attack_weapon8_action.generic.id        = ID_WEAPON8;
-
-	s_attack_weapon9_action.generic.type	   = MTYPE_ACTION;
-	s_attack_weapon9_action.generic.flags     = QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_attack_weapon9_action.generic.callback  = Controls_ActionEvent;
-	s_attack_weapon9_action.generic.ownerdraw = Controls_DrawKeyBinding;
-	s_attack_weapon9_action.generic.id        = ID_WEAPON9;*/
-
 	s_attack_weapon_next_action.generic.type	   = MTYPE_ACTION;
 	s_attack_weapon_next_action.generic.flags     = QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
 	s_attack_weapon_next_action.generic.callback  = Controls_ActionEvent;
@@ -2248,6 +2052,7 @@ static void Weapons_MenuInit( void )
 
 	// update the ui
 	Controls_UpdateNew();
+	UI_LogFuncEnd();
 }
 
 
@@ -2258,12 +2063,12 @@ UI_SetupWeaponsMenu
 */
 void UI_SetupWeaponsMenu( void )
 {
-//	if (!s_weapons_menu.initialized)
-//	{
-		Weapons_MenuInit();
-//	}
+	UI_LogFuncBegin();
+	Weapons_MenuInit();
 
 	UI_PushMenu( &s_weapons_menu );
+
+	UI_LogFuncEnd();
 }
 /*
 ===============
@@ -2272,6 +2077,7 @@ SetupMenu_SideButtons
 */
 static void SetupMenu_SideButtons(menuframework_s *menu,int32_t menuType)
 {
+	UI_LogFuncBegin();
 	int32_t x,y,inc;
 
 	y = 204;
@@ -2404,43 +2210,6 @@ static void SetupMenu_SideButtons(menuframework_s *menu,int32_t menuType)
 	s_controls_other.textcolor				= CT_BLACK;
 	s_controls_other.textcolor2				= CT_WHITE;
 
-/*	y += inc+MENU_BUTTON_MED_HEIGHT;
-	s_controls_loadconfig.generic.type		= MTYPE_BITMAP;      
-	s_controls_loadconfig.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
-	s_controls_loadconfig.generic.x			= x;
-	s_controls_loadconfig.generic.y			= y;
-	s_controls_loadconfig.generic.name		= "menu/common/square.tga";
-	s_controls_loadconfig.generic.id		= ID_MAINMENU;
-	s_controls_loadconfig.generic.callback	= Controls_MenuEvent;
-	s_controls_loadconfig.width				= MENU_BUTTON_MED_WIDTH - 10;
-	s_controls_loadconfig.height			= MENU_BUTTON_MED_HEIGHT;
-	s_controls_loadconfig.color				= CT_DKPURPLE1;
-	s_controls_loadconfig.color2			= CT_LTPURPLE1;
-	s_controls_loadconfig.textX				= 5;
-	s_controls_loadconfig.textY				= 2;
-	s_controls_loadconfig.textEnum			= MBT_LOADCONFIG;
-	s_controls_loadconfig.textcolor			= CT_BLACK;
-	s_controls_loadconfig.textcolor2		= CT_WHITE;
-
-	y += inc+MENU_BUTTON_MED_HEIGHT;
-	s_controls_saveconfig.generic.type		= MTYPE_BITMAP;      
-	s_controls_saveconfig.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
-	s_controls_saveconfig.generic.x			= x;
-	s_controls_saveconfig.generic.y			= y;
-	s_controls_saveconfig.generic.name		= "menu/common/square.tga";
-	s_controls_saveconfig.generic.id		= ID_MAINMENU;
-	s_controls_saveconfig.generic.callback	= Controls_MenuEvent;
-	s_controls_saveconfig.width				= MENU_BUTTON_MED_WIDTH - 10;
-	s_controls_saveconfig.height			= MENU_BUTTON_MED_HEIGHT;
-	s_controls_saveconfig.color				= CT_DKPURPLE1;
-	s_controls_saveconfig.color2			= CT_LTPURPLE1;
-	s_controls_saveconfig.textX				= 5;
-	s_controls_saveconfig.textY				= 2;
-	s_controls_saveconfig.textEnum			= MBT_SAVECONFIG;
-	s_controls_saveconfig.textcolor			= CT_BLACK;
-	s_controls_saveconfig.textcolor2		= CT_WHITE;
-
-*/
 	switch (menuType)
 	{
 	case MENU_CONTROLS_WEAPON :
@@ -2474,8 +2243,7 @@ static void SetupMenu_SideButtons(menuframework_s *menu,int32_t menuType)
 	
 	Menu_AddItem( menu, ( void * )&s_controls_mouse);
 	Menu_AddItem( menu, ( void * )&s_controls_other);
-//	Menu_AddItem( menu, ( void * )&s_controls_loadconfig);
-//	Menu_AddItem( menu, ( void * )&s_controls_saveconfig);
+	UI_LogFuncEnd();
 
 }
 /*
@@ -2485,6 +2253,7 @@ Controls_Update
 */
 static void Controls_UpdateNew( void )
 {
+	UI_LogFuncBegin();
 	int32_t			i;
 	int32_t			j;
 	void**		controlptr;
@@ -2532,17 +2301,20 @@ static void Controls_UpdateNew( void )
 	if (s_controls.waitingforkey)
 	{
 		((menucommon_s*)(current_menu->items[current_menu->cursor]))->flags &= ~QMF_HIGHLIGHT;
+		UI_LogFuncEnd();
 		return;
 	}
-
+	UI_LogFuncEnd();
 }
 
 void ControlsVideoDataAction( qboolean result ) 
 {
+	UI_LogFuncBegin();
 	if ( result )	// Yes - do it
 	{
 		Controls_MenuEvent (holdControlPtr, holdControlEvent);
 	}
+	UI_LogFuncEnd();
 }
 /*
 =================
@@ -2551,9 +2323,11 @@ Controls_MenuEventVideo
 */
 static void Controls_MenuEventVideo (void* ptr, int32_t event)
 {
-
-	if (event != QM_ACTIVATED)
+	UI_LogFuncBegin();
+	if (event != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	holdControlPtr = ptr;
 	holdControlEvent = event;
@@ -2566,6 +2340,7 @@ static void Controls_MenuEventVideo (void* ptr, int32_t event)
 	{
 		Controls_MenuEvent (holdControlPtr, holdControlEvent);
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -2576,9 +2351,12 @@ Controls_MenuEvent
 */
 static void Controls_MenuEvent (void* ptr, int32_t event)
 {
+	UI_LogFuncBegin();
 
-	if (event != QM_ACTIVATED)
+	if (event != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	switch (((menucommon_s*)ptr)->id)
 	{
@@ -2688,6 +2466,7 @@ static void Controls_MenuEvent (void* ptr, int32_t event)
 			Controls_SetConfig();
 			break;		
 	}
+	UI_LogFuncEnd();
 }
 /*
 =================
@@ -2696,6 +2475,7 @@ M_ControlsMoveMenu_Graphics
 */
 void M_ControlsMoveMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_controlsmove_menu);
 
 	UI_DrawProportionalString(  74,  66, "7-2345",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -2714,6 +2494,7 @@ void M_ControlsMoveMenu_Graphics (void)
 	{
 		UI_DrawProportionalString(  207,  411, menu_normal_text[MNT_BACKSPACE],UI_SMALLFONT, colorTable[CT_WHITE]);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2723,11 +2504,14 @@ ControlsMove_MenuDraw
 */
 static void ControlsMove_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_ControlsMoveMenu_Graphics();
 
 	UI_Setup_MenuButtons();
 
 	Menu_Draw( &s_controlsmove_menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2737,6 +2521,7 @@ ControlsMove_MenuInit
 */
 static void ControlsMove_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	s_controlsmove_menu.nitems				= 0;
 	s_controlsmove_menu.wrapAround			= qtrue;
 	s_controlsmove_menu.draw				= ControlsMove_MenuDraw;
@@ -2867,6 +2652,8 @@ static void ControlsMove_MenuInit( void )
 
 	// update the ui
 	Controls_UpdateNew();
+
+	UI_LogFuncEnd();
 }
 
 
@@ -2877,9 +2664,12 @@ UI_ControlsMoveMenu
 */
 static void UI_ControlsMoveMenu( void )
 {
+	UI_LogFuncBegin();
 	ControlsMove_MenuInit();
 
 	UI_PushMenu( &s_controlsmove_menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2889,6 +2679,7 @@ M_ControlsLookMenu_Graphics
 */
 void M_ControlsLookMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_controlslook_menu);
 
 	UI_DrawProportionalString(  74,  66, "3567",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -2907,6 +2698,8 @@ void M_ControlsLookMenu_Graphics (void)
 	{
 		UI_DrawProportionalString(  207,  411, menu_normal_text[MNT_BACKSPACE],UI_SMALLFONT, colorTable[CT_WHITE]);
 	}
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2916,11 +2709,14 @@ ControlsAttackLook_MenuDraw
 */
 static void ControlsAttackLook_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_ControlsLookMenu_Graphics();
 
 	UI_Setup_MenuButtons();
 
 	Menu_Draw( &s_controlslook_menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2930,6 +2726,7 @@ ControlsAttackLook_MenuInit
 */
 static void ControlsAttackLook_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	s_controlslook_menu.nitems					= 0;
 	s_controlslook_menu.wrapAround				= qtrue;
 	s_controlslook_menu.draw					= ControlsAttackLook_MenuDraw;
@@ -3069,6 +2866,8 @@ static void ControlsAttackLook_MenuInit( void )
 
 	// update the ui
 	Controls_UpdateNew();
+
+	UI_LogFuncEnd();
 }
 
 
@@ -3079,9 +2878,12 @@ UI_ControlsAttackLookMenu
 */
 static void UI_ControlsAttackLookMenu( void )
 {
+	UI_LogFuncBegin();
 	ControlsAttackLook_MenuInit();
 
 	UI_PushMenu( &s_controlslook_menu );
+
+	UI_LogFuncEnd();
 }
 
 
@@ -3092,6 +2894,7 @@ M_ControlsMouseJoyStickMenu_Graphics
 */
 void M_ControlsMouseJoyStickMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_controlsmouse_menu);
 
 	trap_R_SetColor( colorTable[CT_LTORANGE]);
@@ -3118,6 +2921,7 @@ void M_ControlsMouseJoyStickMenu_Graphics (void)
 	UI_DrawProportionalString(  74,  188, "67014",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  395, "356-905",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3127,11 +2931,14 @@ ControlsMouseJoyStick_MenuDraw
 */
 static void ControlsMouseJoyStick_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_ControlsMouseJoyStickMenu_Graphics();
 
 	UI_Setup_MenuButtons();
 
 	Menu_Draw( &s_controlsmouse_menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3141,6 +2948,8 @@ ControlsMouseJoyStick_MenuKey
 */
 static sfxHandle_t ControlsMouseJoyStick_MenuKey( int32_t key )
 {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 	return Menu_DefaultKey( &s_controlsmouse_menu, key );
 }
 
@@ -3151,14 +2960,17 @@ ControlsMouseJoyStick_GetCvars
 */
 void ControlsMouseJoyStick_GetCvars(void)
 {
-
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 }
 
 void UI_ControlsMouseJoyStickMenu_Cache(void)
 {
+	UI_LogFuncBegin();
 	trap_R_RegisterShaderNoMip(PIC_MONBAR2);
 	s_joystick_mouse.mouse1 = trap_R_RegisterShaderNoMip(PIC_MOUSE1);
 	s_joystick_mouse.mouse2 = trap_R_RegisterShaderNoMip(PIC_MOUSE2);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3168,6 +2980,7 @@ ControlsMouseJoyStick_MenuInit
 */
 static void ControlsMouseJoyStick_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	int32_t x,y;
 
 	UI_ControlsMouseJoyStickMenu_Cache();
@@ -3325,24 +3138,6 @@ static void ControlsMouseJoyStick_MenuInit( void )
 	s_controls.joythreshold.thumbGraphicWidth	= 9;
 	s_controls.joythreshold.thumbColor		= CT_DKBLUE1;
 	s_controls.joythreshold.thumbColor2		= CT_LTBLUE1;
-/*
-	y += 22;
-	s_forcefeedback_box.generic.type		= MTYPE_SPINCONTROL;
-	s_forcefeedback_box.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
-	s_forcefeedback_box.generic.x			= x;
-	s_forcefeedback_box.generic.y			= y;
-	s_forcefeedback_box.generic.callback	= Controls_MenuEvent;
-	s_forcefeedback_box.textEnum			= MBT_FORCEFEEDBACK;
-	s_forcefeedback_box.textcolor			= CT_BLACK;
-	s_forcefeedback_box.textcolor2			= CT_WHITE;
-	s_forcefeedback_box.color				= CT_DKPURPLE1;
-	s_forcefeedback_box.color2				= CT_LTPURPLE1;
-	s_forcefeedback_box.textX				= MENU_BUTTON_TEXT_X;
-	s_forcefeedback_box.textY				= MENU_BUTTON_TEXT_Y;
-	s_forcefeedback_box.listnames			= s_OffOnNone_Names;
-*/
-
-
 
 	y += 22;
 	s_joyxbutton_box.generic.type		= MTYPE_SPINCONTROL;
@@ -3399,6 +3194,7 @@ static void ControlsMouseJoyStick_MenuInit( void )
 
 	// update the ui
 	Controls_UpdateNew();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3408,9 +3204,11 @@ UI_ControlsMouseJoyStickMenu
 */
 static void UI_ControlsMouseJoyStickMenu( void )
 {
+	UI_LogFuncBegin();
 	ControlsMouseJoyStick_MenuInit();
 
 	UI_PushMenu( &s_controlsmouse_menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -3421,6 +3219,7 @@ M_ControlsOtherMenu_Graphics
 */
 void M_ControlsDefaultMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	// Draw the basic screen layout
 	UI_MenuFrame(&s_controlsdefault_menu);
 
@@ -3440,6 +3239,7 @@ void M_ControlsDefaultMenu_Graphics (void)
 	UI_DrawProportionalString(345,283,menu_normal_text[MNT_DEFAULT_WARNING3],UI_SMALLFONT | UI_CENTER,colorTable[CT_RED]);
 	UI_DrawProportionalString(345,321,menu_normal_text[MNT_CONTINUE_WARNING],UI_SMALLFONT | UI_CENTER,colorTable[CT_RED]);
 
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3449,11 +3249,14 @@ ControlsDefault_MenuDraw
 */
 static void ControlsDefault_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_ControlsDefaultMenu_Graphics();
 
 	UI_Setup_MenuButtons();
 
 	Menu_Draw( &s_controlsdefault_menu );
+
+	UI_LogFuncEnd();
 }
 
 
@@ -3464,9 +3267,10 @@ M_Default_Event
 */
 void M_Default_Event (void* ptr, int32_t event)
 {
-
+	UI_LogFuncBegin();
 	if (event != QM_ACTIVATED)
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -3484,6 +3288,7 @@ void M_Default_Event (void* ptr, int32_t event)
 			break;
 
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3493,6 +3298,8 @@ ControlsDefault_MenuKey
 */
 static sfxHandle_t ControlsDefault_MenuKey( int32_t key )
 {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 	return Menu_DefaultKey( &s_controlsdefault_menu, key );
 }
 
@@ -3503,7 +3310,7 @@ ControlsOther_MenuInit
 */
 static void ControlsDefault_MenuInit( void )
 {
-
+	UI_LogFuncBegin();
 	s_controlsdefault_menu.nitems					= 0;
 	s_controlsdefault_menu.wrapAround				= qtrue;
 	s_controlsdefault_menu.draw						= ControlsDefault_MenuDraw;
@@ -3562,6 +3369,7 @@ static void ControlsDefault_MenuInit( void )
 	Menu_AddItem( &s_controlsdefault_menu, ( void * )&s_controls_default_yes);
 	Menu_AddItem( &s_controlsdefault_menu, ( void * )&s_controls_default_no);
 
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3571,9 +3379,12 @@ UI_ControlsDefaultMenu
 */
 static void UI_ControlsDefaultMenu( void )
 {
+	UI_LogFuncBegin();
 	ControlsDefault_MenuInit();
 
 	UI_PushMenu( &s_controlsdefault_menu );
+
+	UI_LogFuncEnd();
 }
 /*
 =================
@@ -3582,6 +3393,7 @@ M_ControlsOtherMenu_Graphics
 */
 void M_ControlsOtherMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	// Draw the basic screen layout
 	UI_MenuFrame(&s_controlsother_menu);
 
@@ -3612,6 +3424,7 @@ void M_ControlsOtherMenu_Graphics (void)
 	UI_DrawProportionalString(  74,  188, "28430",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  395, "6900",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3621,11 +3434,14 @@ ControlsOther_MenuDraw
 */
 static void ControlsOther_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_ControlsOtherMenu_Graphics();
 
 	UI_Setup_MenuButtons();
 
 	Menu_Draw( &s_controlsother_menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3635,6 +3451,8 @@ ControlsOther_MenuKey
 */
 static sfxHandle_t ControlsOther_MenuKey( int32_t key )
 {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 	return Menu_DefaultKey( &s_controlsother_menu, key );
 }
 
@@ -3645,7 +3463,9 @@ ControlsOther_Cache
 */
 void ControlsOther_Cache(void)
 {
+	UI_LogFuncBegin();
 	s_controlsother.mon_bar = trap_R_RegisterShaderNoMip("menu/common/mon_bar.tga");
+	UI_LogFuncEnd();
 }
 
 
@@ -3656,6 +3476,7 @@ ControlsOther_MenuInit
 */
 static void ControlsOther_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	int32_t x,y;
 
 	ControlsOther_Cache();
@@ -3732,22 +3553,6 @@ static void ControlsOther_MenuInit( void )
 	s_controls.alwaysrun.textY					= 2;
 	s_controls.alwaysrun.listnames				= s_OffOnNone_Names;
 
-/*	y +=22;
-	s_lookspring_box.generic.type			= MTYPE_SPINCONTROL;
-	s_lookspring_box.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_lookspring_box.generic.x				= x;
-	s_lookspring_box.generic.y				= y;
-	s_lookspring_box.generic.callback		= Controls_MenuEvent;
-	s_lookspring_box.generic.id			    = ID_LOOKSPRING;
-	s_lookspring_box.textEnum				= MBT_LOOKSPRING;
-	s_lookspring_box.textcolor				= CT_BLACK;
-	s_lookspring_box.textcolor2				= CT_WHITE;
-	s_lookspring_box.color					= CT_DKPURPLE1;
-	s_lookspring_box.color2					= CT_LTPURPLE1;
-	s_lookspring_box.textX					= 5;
-	s_lookspring_box.textY					= 2;
-	s_lookspring_box.listnames				= s_OffOnNone_Names;
-*/
 	y +=22;
 	y +=22;
 
@@ -3765,7 +3570,6 @@ static void ControlsOther_MenuInit( void )
 	s_controls.autoswitch.textX					= 5;
 	s_controls.autoswitch.textY					= 2;
 	s_controls.autoswitch.listnames				= s_Autoswitch_Names;
-
 
 	Menu_AddItem( &s_controlsother_menu, ( void * )&s_controls.alwaysrun);
 //	Menu_AddItem( &s_controlsother_menu, ( void * )&s_lookspring_box);
@@ -3785,6 +3589,7 @@ static void ControlsOther_MenuInit( void )
 
 	// update the ui
 	Controls_UpdateNew();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3794,8 +3599,10 @@ UI_ControlsOtherMenu
 */
 static void UI_ControlsOtherMenu( void )
 {
+	UI_LogFuncBegin();
 	ControlsOther_MenuInit();
 	UI_PushMenu( &s_controlsother_menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -3806,6 +3613,7 @@ M_ControlsCommandMenu_Graphics
 */
 void M_ControlsCommandMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_controlscommand_menu);
 
 	UI_DrawProportionalString(  74,  66, "6-7",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -3825,6 +3633,7 @@ void M_ControlsCommandMenu_Graphics (void)
 	{
 		UI_DrawProportionalString(  207,  411, menu_normal_text[MNT_BACKSPACE],UI_SMALLFONT, colorTable[CT_WHITE]);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3834,11 +3643,14 @@ ControlsCommand_MenuDraw
 */
 static void ControlsCommand_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_ControlsCommandMenu_Graphics();
 
 	UI_Setup_MenuButtons();
 
 	Menu_Draw( &s_controlscommand_menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3848,6 +3660,7 @@ ControlsCommand_MenuInit
 */
 static void ControlsCommand_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	s_controlscommand_menu.nitems				= 0;
 	s_controlscommand_menu.wrapAround			= qtrue;
 	s_controlscommand_menu.draw				= ControlsCommand_MenuDraw;
@@ -3887,18 +3700,6 @@ static void ControlsCommand_MenuInit( void )
 	s_controls.chat3.generic.callback		= Controls_ActionEvent;
 	s_controls.chat3.generic.ownerdraw		= Controls_DrawKeyBinding;
 	s_controls.chat3.generic.id 			= ID_CHAT3;
-
-/*	s_controls.chat4.generic.type			= MTYPE_ACTION;
-	s_controls.chat4.generic.flags			= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_controls.chat4.generic.callback		= Controls_ActionEvent;
-	s_controls.chat4.generic.ownerdraw		= Controls_DrawKeyBinding;
-	s_controls.chat4.generic.id 			= ID_CHAT4;*/
-
-/*	s_controls.chat5.generic.type			= MTYPE_ACTION;
-	s_controls.chat5.generic.flags			= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
-	s_controls.chat5.generic.callback		= Controls_ActionEvent;
-	s_controls.chat5.generic.ownerdraw		= Controls_DrawKeyBinding;
-	s_controls.chat5.generic.id 			= ID_CHAT5;*/
 
 	s_controls.gesture.generic.type			= MTYPE_ACTION;
 	s_controls.gesture.generic.flags		= QMF_LEFT_JUSTIFY|QMF_HIGHLIGHT_IF_FOCUS;
@@ -3992,6 +3793,7 @@ static void ControlsCommand_MenuInit( void )
 
 	// update the ui
 	Controls_UpdateNew();
+	UI_LogFuncEnd();
 }
 
 
@@ -4002,9 +3804,11 @@ UI_ControlsCommandMenu
 */
 static void UI_ControlsCommandMenu( void )
 {
+	UI_LogFuncBegin();
 	ControlsCommand_MenuInit();
 
 	UI_PushMenu( &s_controlscommand_menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -4015,6 +3819,7 @@ M_ControlsModelView_Graphics
 */
 void M_ControlsModelView_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_controlsmodelview_menu);
 
 	UI_DrawProportionalString(  74,  66, "2-8",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -4034,6 +3839,7 @@ void M_ControlsModelView_Graphics (void)
 	{
 		UI_DrawProportionalString(  207,  411, menu_normal_text[MNT_BACKSPACE],UI_SMALLFONT, colorTable[CT_WHITE]);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -4043,11 +3849,13 @@ ControlsModelView_MenuDraw
 */
 static void ControlsModelView_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_ControlsModelView_Graphics();
 
 	UI_Setup_MenuButtons();
 
 	Menu_Draw( &s_controlsmodelview_menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -4057,6 +3865,7 @@ ControlsModelView_MenuInit
 */
 static void ControlsModelView_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	s_controlsmodelview_menu.nitems				= 0;
 	s_controlsmodelview_menu.wrapAround			= qtrue;
 	s_controlsmodelview_menu.draw				= ControlsModelView_MenuDraw;
@@ -4186,6 +3995,7 @@ static void ControlsModelView_MenuInit( void )
 
 	// update the ui
 	Controls_UpdateNew();
+	UI_LogFuncEnd();
 }
 
 
@@ -4196,8 +4006,10 @@ UI_ControlsModelViewMenu
 */
 static void UI_ControlsModelViewMenu( void )
 {
+	UI_LogFuncBegin();
 	ControlsModelView_MenuInit();
 
 	UI_PushMenu( &s_controlsmodelview_menu );
+	UI_LogFuncEnd();
 }
 

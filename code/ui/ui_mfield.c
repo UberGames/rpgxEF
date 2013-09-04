@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "ui_local.h"
+#include "ui_logger.h"
 
 /*
 ===================
@@ -11,6 +12,7 @@ x, y, are in pixels
 ===================
 */
 void MField_Draw( mfield_t *edit, int32_t x, int32_t y, int32_t style, vec4_t color,int32_t cursor ) {
+	UI_LogFuncBegin();
 	int32_t		len;
 	int32_t		charw;
 	int32_t		drawLen;
@@ -57,6 +59,7 @@ void MField_Draw( mfield_t *edit, int32_t x, int32_t y, int32_t style, vec4_t co
 	// draw the cursor
 	if (!cursor) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -102,6 +105,7 @@ void MField_Draw( mfield_t *edit, int32_t x, int32_t y, int32_t style, vec4_t co
 	{
 		UI_DrawChar( x, y+2, cursorChar, style & ~(UI_CENTER|UI_RIGHT), color );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -110,6 +114,7 @@ MField_Paste
 ================
 */
 void MField_Paste( mfield_t *edit ) {
+	UI_LogFuncBegin();
 	char	pasteBuffer[64];
 	int32_t		pasteLen, i;
 
@@ -120,6 +125,7 @@ void MField_Paste( mfield_t *edit ) {
 	for ( i = 0 ; i < pasteLen ; i++ ) {
 		MField_CharEvent( edit, pasteBuffer[i] );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -133,11 +139,13 @@ Key events are used for non-printable characters, others are gotten from char ev
 =================
 */
 void MField_KeyDownEvent( mfield_t *edit, int32_t key ) {
+	UI_LogFuncBegin();
 	int32_t		len;
 
 	// shift-insert is paste
 	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && trap_Key_IsDown( K_SHIFT ) ) {
 		MField_Paste( edit );
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -148,6 +156,7 @@ void MField_KeyDownEvent( mfield_t *edit, int32_t key ) {
 			memmove( edit->buffer + edit->cursor, 
 				edit->buffer + edit->cursor + 1, len - edit->cursor );
 		}
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -160,6 +169,7 @@ void MField_KeyDownEvent( mfield_t *edit, int32_t key ) {
 		{
 			edit->scroll++;
 		}
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -172,12 +182,14 @@ void MField_KeyDownEvent( mfield_t *edit, int32_t key ) {
 		{
 			edit->scroll--;
 		}
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( key == K_HOME || key == K_KP_HOME || ( tolower(key) == 'a' && trap_Key_IsDown( K_CTRL ) ) ) {
 		edit->cursor = 0;
 		edit->scroll = 0;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -186,13 +198,16 @@ void MField_KeyDownEvent( mfield_t *edit, int32_t key ) {
 		edit->scroll = len - edit->widthInChars + 1;
 		if (edit->scroll < 0)
 			edit->scroll = 0;
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( key == K_INS || key == K_KP_INS ) {
 		trap_Key_SetOverstrikeMode( !trap_Key_GetOverstrikeMode() );
+		UI_LogFuncEnd();
 		return;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -201,15 +216,18 @@ MField_CharEvent
 ==================
 */
 void MField_CharEvent( mfield_t *edit, int32_t ch ) {
+	UI_LogFuncBegin();
 	int32_t		len;
 
 	if ( ch == 'v' - 'a' + 1 ) {	// ctrl-v is paste
 		MField_Paste( edit );
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( ch == 'c' - 'a' + 1 ) {	// ctrl-c clears the field
 		MField_Clear( edit );
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -225,12 +243,14 @@ void MField_CharEvent( mfield_t *edit, int32_t ch ) {
 				edit->scroll--;
 			}
 		}
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( ch == 'a' - 'a' + 1 ) {	// ctrl-a is home
 		edit->cursor = 0;
 		edit->scroll = 0;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -239,6 +259,7 @@ void MField_CharEvent( mfield_t *edit, int32_t ch ) {
 		edit->scroll = edit->cursor - edit->widthInChars + 1;
 		if (edit->scroll < 0)
 			edit->scroll = 0;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -246,16 +267,21 @@ void MField_CharEvent( mfield_t *edit, int32_t ch ) {
 	// ignore any other non printable chars
 	//
 	if ( ch < 32 ) {
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( !trap_Key_GetOverstrikeMode() ) {	
-		if ((edit->cursor == MAX_EDIT_LINE - 1) || (edit->maxchars && edit->cursor >= edit->maxchars))
+		if ((edit->cursor == MAX_EDIT_LINE - 1) || (edit->maxchars && edit->cursor >= edit->maxchars)){
+			UI_LogFuncEnd();
 			return;
+		}
 	} else {
 		// insert mode
-		if (( len == MAX_EDIT_LINE - 1 ) || (edit->maxchars && len >= edit->maxchars))
+		if (( len == MAX_EDIT_LINE - 1 ) || (edit->maxchars && len >= edit->maxchars)){
+			UI_LogFuncEnd();
 			return;
+		}
 		memmove( edit->buffer + edit->cursor + 1, edit->buffer + edit->cursor, len + 1 - edit->cursor );
 	}
 
@@ -271,6 +297,7 @@ void MField_CharEvent( mfield_t *edit, int32_t ch ) {
 	if ( edit->cursor == len + 1) {
 		edit->buffer[edit->cursor] = 0;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -279,9 +306,11 @@ MField_Clear
 ==================
 */
 void MField_Clear( mfield_t *edit ) {
+	UI_LogFuncBegin();
 	edit->buffer[0] = 0;
 	edit->cursor = 0;
 	edit->scroll = 0;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -290,6 +319,7 @@ MenuField_Init
 ==================
 */
 void MenuField_Init( menufield_s* m ) {
+	UI_LogFuncBegin();
 	int32_t	l;
 	int32_t	w;
 	int32_t	h;
@@ -317,13 +347,7 @@ void MenuField_Init( menufield_s* m ) {
 		h = SMALLCHAR_HEIGHT;
 	}
 
-	//TiM: This is leftover from Quake III.  We'll be using this variable elsewhere now :)
-	/*if (m->generic.name) {
-		l = (strlen( m->generic.name )+1) * w;		
-	}
-	else {*/
-		l = 0;
-	//}
+	l = 0;
 
 	if ( m->field.style & UI_CENTER ) {
 		m->generic.right  = m->generic.x + (w + ( m->field.widthInChars*w ) ) / 2;
@@ -341,6 +365,7 @@ void MenuField_Init( menufield_s* m ) {
 	if ( m->generic.name ) {
 		m->generic.bottom += MENU_BUTTON_MED_HEIGHT + 4;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -350,6 +375,7 @@ MenuField_Draw
 */
 void MenuField_Draw( menufield_s *f )
 {
+	UI_LogFuncBegin();
 	int32_t			x;
 	int32_t			y;
 	int32_t			w;
@@ -470,7 +496,7 @@ void MenuField_Draw( menufield_s *f )
 	}// TiM 5 = 10 previously
 
 	MField_Draw( &f->field, x, y+offset, style, colorTable[color],focus );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -480,6 +506,7 @@ MenuField_Key
 */
 sfxHandle_t MenuField_Key( menufield_s* m, int32_t* key )
 {
+	UI_LogFuncBegin();
 	int32_t keycode;
 
 	keycode = *key;
@@ -513,6 +540,7 @@ sfxHandle_t MenuField_Key( menufield_s* m, int32_t* key )
 				else if ((m->generic.flags & QMF_LOWERCASE) && Q_isupper( keycode ))
 					keycode -= 'A' - 'a';
 				else if ((m->generic.flags & QMF_NUMBERSONLY) && Q_isalpha( keycode ))
+					UI_LogFuncEnd();
 					return (menu_buzz_sound);
 
 				MField_CharEvent( &m->field, keycode);
@@ -526,7 +554,7 @@ sfxHandle_t MenuField_Key( menufield_s* m, int32_t* key )
 
 			break;
 	}
-
+	UI_LogFuncEnd();
 	return (0);
 }
 

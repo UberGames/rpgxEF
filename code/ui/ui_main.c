@@ -10,6 +10,7 @@ USER INTERFACE MAIN
 
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 
 /*
@@ -484,6 +485,7 @@ UI_RegisterCvars
 =================
 */
 void UI_RegisterCvars( void ) {
+	UI_LogFuncBegin();
 	int32_t			i;
 	cvarTable_t	*cv;
 
@@ -493,6 +495,7 @@ void UI_RegisterCvars( void ) {
 
 	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
+		UI_LogFuncEnd();
 	}
 }
 
@@ -502,6 +505,7 @@ UI_UpdateCvars
 =================
 */
 void UI_UpdateCvars( void ) {
+	UI_LogFuncBegin();
 	int32_t			i;
 	cvarTable_t	*cv;
 
@@ -513,6 +517,7 @@ void UI_UpdateCvars( void ) {
 		}
 		else
 			trap_Cvar_Update( cv->vmCvar );
+		UI_LogFuncEnd();
 	}
 }
 
@@ -521,6 +526,7 @@ void UI_UpdateCvars( void ) {
 
 int32_t UI_GetAnim ( int32_t anim, int32_t weapon, qboolean upper )
 {
+	UI_LogFuncBegin();
 	// Called when player is in idle crouching
 	switch ( anim ) {
 		case ANIM_CROUCH:
@@ -529,33 +535,45 @@ int32_t UI_GetAnim ( int32_t anim, int32_t weapon, qboolean upper )
 				case WP_7:
 				case WP_8:
 				case WP_9:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return BOTH_STAND2;
-					else
+					}else{
+						UI_LogFuncEnd();
 						return LEGS_KNEEL1;
+					}
 					break;
 				//2 handed weapon - "light"
 				case WP_6:
 				//case WP_7:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return TORSO_WEAPONREADY2;
-					else
+					}else{
+						UI_LogFuncEnd();
 						return LEGS_KNEEL1;
+					}
 					break;
 				//1 handed weapon - "phaser"
 				case WP_5:
 				case WP_10:
-					if ( upper )
+					if ( upper ){
+						UI_LogFuncEnd();
 						return TORSO_WEAPONPOSE1;
-					else
+					}else{
+						UI_LogFuncEnd();
 						return BOTH_CROUCH1IDLE;
+					}
 					break;
 				case WP_4:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return TORSO_COFFEE;
+					}
 					//break;
 				//Generic tools - "everything else"
 				default:
+					UI_LogFuncEnd();
 					return BOTH_CROUCH2IDLE;
 					break;
 			}
@@ -569,25 +587,32 @@ int32_t UI_GetAnim ( int32_t anim, int32_t weapon, qboolean upper )
 				case WP_8:
 				case WP_9:
 				case WP_7:
+					UI_LogFuncEnd();
 					return BOTH_STAND4;
 					break;
 				//2 handed weapon - "light"
 				case WP_6:
+					UI_LogFuncEnd();
 					return BOTH_STAND4;
 					break;
 				//1 handed weapon - "phaser"
 				case WP_5:
 				case WP_10:
+					UI_LogFuncEnd();
 					return BOTH_STAND1; 
 					break;
 				//Generic tools - "everything else"
 				case WP_4:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return TORSO_COFFEE;
-					else
+					}else{
+						UI_LogFuncEnd();
 						return BOTH_STAND1;
+					}
 					break;
 				default:
+					UI_LogFuncEnd();
 					return BOTH_STAND1;
 					break;
 			}
@@ -601,89 +626,90 @@ int32_t UI_GetAnim ( int32_t anim, int32_t weapon, qboolean upper )
 				case WP_8:
 				case WP_9:
 				case WP_7:
+					UI_LogFuncEnd();
 					return BOTH_ATTACK3;
 					break;
 				//2 handed weapon - "light"
 				case WP_6:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return BOTH_ATTACK2;
-					else
+					}else{
+						UI_LogFuncEnd();
 						return BOTH_ATTACK3;
+					}
 					break;
 				//1 handed weapon - "phaser"
 				case WP_5:
 				case WP_10:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return TORSO_WEAPONREADY1;
-					else
+					}else{
+						UI_LogFuncEnd();
 						return BOTH_STAND1;
+					}
 					break;
 			//Other Tools "padd"
 			case WP_3:
-				if (upper)
+				if (upper){
+					UI_LogFuncEnd();
 					return TORSO_PADD1;
-				else
+				}else{
+					UI_LogFuncEnd();
 					return BOTH_STAND1;
+				}
 				break;
 			//Other Tools "tricorder"
 			case WP_2:
-				if (upper)
+				if (upper){
+					UI_LogFuncEnd();
 					return TORSO_TRICORDER1;
-				else
+				}else{
+					UI_LogFuncEnd();
 					return BOTH_STAND1;
+				}
 				break;
 			//Other: "Medkit"
 			case WP_11:
-				if (upper)
+				if (upper){
+					UI_LogFuncEnd();
 					return TORSO_ACTIVATEMEDKIT1;
-				else
+				}else{
+					UI_LogFuncEnd();
 					return BOTH_STAND1;
+				}
 				break;
 			//Other: "Hypo
 			case WP_12:
-				if (upper)
+				if (upper){
+					UI_LogFuncEnd();
 					return TORSO_HYPOSPRAY1;
-				else
+				}else{
+					UI_LogFuncEnd();
 					return BOTH_STAND1;
-			//Other: "Toolkit"
-			/*case WP_14:
-				//Return nothing.
-				//A bit hacky, but the engine accepts it :P
-				break;*/
-			//Other Tools "everything else"
-			/*case WP_1:
-				switch(rand()%13)
-				{
-					case 0: return TORSO_HANDGESTURE1;
-					case 1: return TORSO_HANDGESTURE2;
-					case 2: return TORSO_HANDGESTURE3;
-					case 3: return TORSO_HANDGESTURE4;
-					case 4: //PM_StartTorsoAnim( TORSO_HANDGESTURE5 ); break;
-					case 5: return TORSO_HANDGESTURE6;
-					case 6: return TORSO_HANDGESTURE7;
-					case 7: return TORSO_HANDGESTURE8;
-					case 8: return TORSO_HANDGESTURE9;
-					case 9: return TORSO_HANDGESTURE10;
-					case 10: return TORSO_HANDGESTURE11;
-					case 11: return TORSO_HANDGESTURE12;
-					case 12: return TORSO_HANDGESTURE13;
 				}
-				break;*/
 			case WP_4:
-				if (upper)
+				if (upper){
+					UI_LogFuncEnd();
 					return TORSO_COFFEE;
+				}
 				//break;
 			default:
-				if (upper)
+				if (upper){
+					UI_LogFuncEnd();
 					return TORSO_WEAPONREADY1;
-				else
+				}else{
+					UI_LogFuncEnd();
 					return BOTH_STAND1;
+				}
 				break;
 		}
 		break;
 
 		//When the player jumps
 		case ANIM_JUMP:
+			UI_LogFuncEnd();
 			return BOTH_JUMP1;
 
 		//When the player runs
@@ -695,17 +721,23 @@ int32_t UI_GetAnim ( int32_t anim, int32_t weapon, qboolean upper )
 				case WP_9:
 				case WP_6:
 				case WP_7:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return BOTH_RUN2;
-					else
+					}else{
+						UI_LogFuncEnd();
 						return BOTH_RUN1;
+					}
 					break;
 				case WP_4:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return TORSO_COFFEE;
+					}
 					//break;
 				//EVERYTHING ELSE
 				default:
+					UI_LogFuncEnd();
 					return BOTH_RUN1;
 			}
 			break;
@@ -723,10 +755,13 @@ int32_t UI_GetAnim ( int32_t anim, int32_t weapon, qboolean upper )
 					break;
 				//Other Tools "everything else"
 				case WP_4:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return TORSO_COFFEE;
+					}
 					//break;
 				default:
+					UI_LogFuncEnd();
 					return BOTH_WALK1;
 					break;
 			}
@@ -742,26 +777,34 @@ int32_t UI_GetAnim ( int32_t anim, int32_t weapon, qboolean upper )
 				case WP_9:
 				case WP_6:
 				case WP_7:
-					if ( upper )
+					if ( upper ){
+						UI_LogFuncEnd();
 						return BOTH_WALK4;
-					else
+					}else{
+						UI_LogFuncEnd();
 						return LEGS_WALKBACK1;
+					}
 					break;
 				case WP_4:
-					if (upper)
+					if (upper){
+						UI_LogFuncEnd();
 						return TORSO_COFFEE;
-					//break;
+					}
 				//Other Tools "everything else"
 				default:
-					if ( upper )
+					if ( upper ){
+						UI_LogFuncEnd();
 						return BOTH_WALK1;
-					else
+					}else{
+						UI_LogFuncEnd();
 						return LEGS_WALKBACK1;
+					}
 					break;
 			}
 			break;
 	}
 
+	UI_LogFuncEnd();
 	return BOTH_STAND1;
 }
 

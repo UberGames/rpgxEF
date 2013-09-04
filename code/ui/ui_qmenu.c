@@ -6,6 +6,7 @@
 	Quake's menu framework system.
 **********************************************************************/
 #include "ui_local.h"
+#include "ui_logger.h"
 
 sfxHandle_t menu_in_sound;
 sfxHandle_t menu_move_sound;
@@ -77,6 +78,7 @@ Text_Init
 */
 static void Text_Init( menutext_s *t )
 {
+	UI_LogFuncBegin();
 	int32_t		x,y,w=0,h;
 	char	buff[512];	
 	char	buff2[512];	
@@ -240,6 +242,7 @@ static void Text_Init( menutext_s *t )
 	t->generic.right  = x + w;
 	t->generic.top    = y;
 	t->generic.bottom = y + h;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -250,6 +253,7 @@ Text_Draw
 //static void Text_Draw( menutext_s *t )
 static void Text_Draw(menuframework_s *menu, menutext_s *t )
 {
+	UI_LogFuncBegin();
 	int32_t		x;
 	int32_t		y,incY;
 	char	buff[512];	
@@ -364,8 +368,7 @@ static void Text_Draw(menuframework_s *menu, menutext_s *t )
 		y +=incY;
 		UI_DrawProportionalString( x, y, buff3, t->style, color );
 	}
-
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -385,6 +388,7 @@ BText_Draw
 */
 static void BText_Draw( menutext_s *t )
 {
+	UI_LogFuncBegin();
 	int32_t		x;
 	int32_t		y;
 	float*	color;
@@ -398,6 +402,7 @@ static void BText_Draw( menutext_s *t )
 		color = t->color;
 
 	UI_DrawBannerString( x, y, t->string, t->style, color );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -407,6 +412,7 @@ PText_Init
 */
 static void PText_Init( menutext_s *t )
 {
+	UI_LogFuncBegin();
 	int32_t	x;
 	int32_t	y;
 	int32_t	w;
@@ -431,6 +437,7 @@ static void PText_Init( menutext_s *t )
 	t->generic.right  = x + w + PROP_GAP_WIDTH * sizeScale;
 	t->generic.top    = y;
 	t->generic.bottom = y + h;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -440,6 +447,7 @@ PText_Draw
 */
 static void PText_Draw( menutext_s *t )
 {
+	UI_LogFuncBegin();
 	int32_t		x;
 	int32_t		y;
 	float *	color;
@@ -469,6 +477,7 @@ static void PText_Draw( menutext_s *t )
 	}
 
 	UI_DrawProportionalString( x, y, t->string, style, color );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -478,6 +487,7 @@ Bitmap_Init
 */
 void Bitmap_Init( menubitmap_s *b )
 {
+	UI_LogFuncBegin();
 	int32_t	x;
 	int32_t	y;
 	int32_t	w;
@@ -510,6 +520,7 @@ void Bitmap_Init( menubitmap_s *b )
 
 	b->shader      = 0;
 	b->focusshader = 0;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -519,6 +530,7 @@ Bitmap_Draw
 */
 void Bitmap_Draw( menubitmap_s *b )
 {
+	UI_LogFuncBegin();
 	float	x;
 	float	y;
 	float	w;
@@ -684,7 +696,7 @@ void Bitmap_Draw( menubitmap_s *b )
 			UI_DrawProportionalString( x + b->textX, y + b->textY + incY , menu_button_text[b->textEnum2][0], textStyle, colorTable[colorI]);
 		}
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -694,21 +706,9 @@ Action_Init
 */
 static void Action_Init( menuaction_s *a )
 {
+	UI_LogFuncBegin();
 	int32_t x,y,w,h;
-/*	int32_t	len;
 
-	// calculate bounds
-	if (a->generic.name)
-		len = strlen(a->generic.name);
-	else
-		len = 0;
-
-	// left justify text
-	a->generic.left   = a->generic.x; 
-	a->generic.right  = a->generic.x + len*BIGCHAR_WIDTH;
-	a->generic.top    = a->generic.y;
-	a->generic.bottom = a->generic.y + BIGCHAR_HEIGHT;
-*/
 	x = a->generic.x;
 	y = a->generic.y;
 	w = a->width;
@@ -728,8 +728,7 @@ static void Action_Init( menuaction_s *a )
 	a->generic.top    = y;
 	a->generic.bottom = y + h;
 
-
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -739,9 +738,9 @@ Action_Draw
 */
 static void Action_Draw( menuaction_s *a )
 {
+	UI_LogFuncBegin();
 	int32_t		x, y;
 	int32_t		style;
-//	float*	color;
 	int32_t		textColor,buttonColor;
 
 	style = 0;
@@ -784,16 +783,8 @@ static void Action_Draw( menuaction_s *a )
 	x = a->generic.x;
 	y = a->generic.y;
 
-//	UI_DrawString( x, y, a->generic.name, UI_LEFT|style, color );
 	trap_R_SetColor( colorTable[buttonColor]);
 	UI_DrawHandlePic(x,y, a->width, a->height, uis.whiteShader);
-
-
-//	if ( a->generic.parent->cursor == a->generic.menuPosition )
-//	{
-//		// draw cursor
-//		UI_DrawChar( x - BIGCHAR_WIDTH, y, 13, UI_LEFT|UI_BLINK, color);
-//	}
 
 	// Draw button text
 	if (menu_button_text[a->textEnum][0])
@@ -817,7 +808,7 @@ static void Action_Draw( menuaction_s *a )
 		// Print second line of text
 		UI_DrawProportionalString( x + a->textX, y + a->textY + incY , menu_button_text[a->textEnum2][0], style, colorTable[textColor]);
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -827,6 +818,7 @@ RadioButton_Init
 */
 static void RadioButton_Init( menuradiobutton_s *rb )
 {
+	UI_LogFuncBegin();
 	int32_t	len;
 
 	// calculate bounds
@@ -839,6 +831,7 @@ static void RadioButton_Init( menuradiobutton_s *rb )
 	rb->generic.right  = rb->generic.x + 6*SMALLCHAR_WIDTH;
 	rb->generic.top    = rb->generic.y;
 	rb->generic.bottom = rb->generic.y + SMALLCHAR_HEIGHT;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -848,6 +841,7 @@ RadioButton_Key
 */
 static sfxHandle_t RadioButton_Key( menuradiobutton_s *rb, int32_t key )
 {
+	UI_LogFuncBegin();
 	switch (key)
 	{
 		case K_MOUSE1:
@@ -867,11 +861,12 @@ static sfxHandle_t RadioButton_Key( menuradiobutton_s *rb, int32_t key )
 			rb->curvalue = !rb->curvalue;
 			if ( rb->generic.callback )
 				rb->generic.callback( rb, QM_ACTIVATED );
-
+			UI_LogFuncEnd();
 			return (menu_move_sound);
 	}
 
 	// key not handled
+	UI_LogFuncEnd();
 	return 0;
 }
 
@@ -882,6 +877,7 @@ RadioButton_Draw
 */
 static void RadioButton_Draw( menuradiobutton_s *rb )
 {
+	UI_LogFuncBegin();
 	int32_t	x;
 	int32_t y;
 	float *color;
@@ -929,6 +925,7 @@ static void RadioButton_Draw( menuradiobutton_s *rb )
 		UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y + 2, 16, 16, uis.rb_on );
 		UI_DrawString( x + SMALLCHAR_WIDTH + 16, y, "on", style, color, qtrue );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -938,6 +935,7 @@ Slider_Init
 */
 static void Slider_Init( menuslider_s *s )
 {
+	UI_LogFuncBegin();
 	// Labels go on the left side.
 	if (s->picX)
 	{
@@ -968,6 +966,7 @@ static void Slider_Init( menuslider_s *s )
 	{
 		s->shader = trap_R_RegisterShaderNoMip( s->generic.name);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -977,6 +976,7 @@ Slider_Key
 */
 static sfxHandle_t Slider_Key( menuslider_s *s, int32_t key )
 {
+	UI_LogFuncBegin();
 	sfxHandle_t	sound;
 	int32_t			x;
 	int32_t			oldvalue;
@@ -1038,6 +1038,7 @@ static sfxHandle_t Slider_Key( menuslider_s *s, int32_t key )
 	if ( sound && s->generic.callback )
 		s->generic.callback( s, QM_ACTIVATED );
 
+	UI_LogFuncEnd();
 	return (sound);
 }
 
@@ -1049,6 +1050,7 @@ Slider_Draw
 */
 static void Slider_Draw( menuslider_s *s ) 
 {
+	UI_LogFuncBegin();
 	int32_t color;
 	int32_t textColor=CT_RED;
 	int32_t	thumbColor=CT_LTGREY,backgroundColor=CT_DKGREY;
@@ -1146,6 +1148,7 @@ static void Slider_Draw( menuslider_s *s )
 		trap_R_SetColor( colorTable[thumbColor]);
 		UI_DrawHandlePic( thumbX, s->generic.y, s->thumbWidth, s->thumbHeight, s->thumbShader); 
 	}
+	UI_LogFuncEnd();
 }
 #else
 /*
@@ -1155,6 +1158,7 @@ Slider_Draw
 */
 static void Slider_Draw( menuslider_s *s )
 {
+	UI_LogFuncBegin();
 	float *color;
 	int32_t	style;
 	int32_t	i;
@@ -1215,6 +1219,7 @@ static void Slider_Draw( menuslider_s *s )
 		style |= UI_BLINK;
 	}
 	UI_DrawChar( (int32_t)( x + 2*SMALLCHAR_WIDTH + (SLIDER_RANGE-1)*SMALLCHAR_WIDTH* s->range ), y, 131, UI_LEFT|style, color);
+	UI_LogFuncEnd();
 }
 #endif
 
@@ -1225,8 +1230,10 @@ SpinControl_Init
 */
 static void SpinControl_Init( menulist_s *s ) 
 {
+	UI_LogFuncBegin();
 	if ((!s->listnames) && (!s->itemnames))
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1262,10 +1269,11 @@ static void SpinControl_Init( menulist_s *s )
 		s->generic.top		= s->generic.y;
 		s->generic.bottom	= s->generic.y + s->focusHeight;
 	}
+	UI_LogFuncEnd();
 }
 
 static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
-
+	UI_LogFuncBegin();
 	if ( !s->generic.parent->displaySpinList ) {
 		if ( (s->generic.flags & QMF_HASMOUSEFOCUS) ) { //we clicked on the button, and the list wasn't open lol
 			//in case the data was changed, init the box height data and such again
@@ -1362,6 +1370,7 @@ static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
 			s->generic.parent->displaySpinList = s;
 			s->generic.parent->noNewSelecting = qtrue;
 
+			UI_LogFuncEnd();
 			return menu_move_sound;
 		}
 	}
@@ -1397,16 +1406,18 @@ static sfxHandle_t	SpinControl_InitListRender( menulist_s* s ) {
 			s->generic.parent->displaySpinList = NULL;
 			s->generic.parent->noNewSelecting = qfalse;
 
+			UI_LogFuncEnd();
 			return menu_out_sound;
 		}
 		else //clicked outside the box, so just cancel
 		{
 			s->generic.parent->displaySpinList = NULL;
 			s->generic.parent->noNewSelecting = qfalse;
+			UI_LogFuncEnd();
 			return menu_out_sound;
 		}
 	}
-
+	UI_LogFuncEnd();
 	return menu_move_sound;
 }
 
@@ -1417,6 +1428,7 @@ SpinControl_Key
 */
 static sfxHandle_t SpinControl_Key( menulist_s *s, int32_t key )
 {
+	UI_LogFuncBegin();
 	sfxHandle_t	sound;
 	qboolean	callback=qfalse;
 
@@ -1441,18 +1453,6 @@ static sfxHandle_t SpinControl_Key( menulist_s *s, int32_t key )
 				callback=qtrue;
 			}
 			break;
-			/*if (!(s->generic.flags & QMF_HASMOUSEFOCUS))
-			{
-				break;
-			}*/
-
-		/*case K_ENTER:
-		case K_KP_ENTER:
-			s->curvalue++;
-			if (s->curvalue >= s->numitems)
-				s->curvalue = 0;
-			sound = menu_move_sound;
-			break;*/
 		
 		case K_KP_LEFTARROW:
 		case K_LEFTARROW:
@@ -1482,6 +1482,7 @@ static sfxHandle_t SpinControl_Key( menulist_s *s, int32_t key )
 	if ( sound && s->generic.callback && callback)
 		s->generic.callback( s, QM_ACTIVATED );
 
+	UI_LogFuncEnd();
 	return (sound);
 }
 
@@ -1492,6 +1493,7 @@ SpinControl_Draw
 */
 static void SpinControl_Draw( menulist_s *s )
 {
+	UI_LogFuncBegin();
 	int32_t x,y,buttonColor,buttonTextColor;
 	int32_t boxWidth,color;
 	char text[64];
@@ -1650,7 +1652,7 @@ static void SpinControl_Draw( menulist_s *s )
 			}
 		}
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1660,6 +1662,7 @@ ScrollList_Init
 */
 static void ScrollList_Init( menulist_s *l )
 {
+	UI_LogFuncBegin();
 	int32_t		w;
 
 	l->oldvalue = 0;
@@ -1685,6 +1688,7 @@ static void ScrollList_Init( menulist_s *l )
 		l->generic.left -= w / 2;
 		l->generic.right -= w / 2;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1694,6 +1698,7 @@ ScrollList_Key
 */
 sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 {
+	UI_LogFuncBegin();
 	int32_t	x;
 	int32_t	y;
 	int32_t	w;
@@ -1731,12 +1736,14 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 						if (l->oldvalue != l->curvalue && l->generic.callback)
 						{
 							l->generic.callback( l, QM_GOTFOCUS );
+							UI_LogFuncEnd();
 							return (menu_move_sound);
 						}
 					}
 				}
 			
 				// absorbed, silent sound effect
+				UI_LogFuncEnd();
 				return (menu_null_sound);
 			}
 			break;
@@ -1750,8 +1757,10 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 			if (l->oldvalue != l->curvalue && l->generic.callback)
 			{
 				l->generic.callback( l, QM_GOTFOCUS );
+				UI_LogFuncEnd();
 				return (menu_move_sound);
 			}
+			UI_LogFuncEnd();
 			return (menu_buzz_sound);
 
 		case K_KP_END:
@@ -1771,13 +1780,16 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 			if (l->oldvalue != l->curvalue && l->generic.callback)
 			{
 				l->generic.callback( l, QM_GOTFOCUS );
+				UI_LogFuncEnd();
 				return (menu_move_sound);
 			}
+			UI_LogFuncEnd();
 			return (menu_buzz_sound);
 
 		case K_PGUP:
 		case K_KP_PGUP:
 			if( l->columns > 1 ) {
+				UI_LogFuncEnd();
 				return menu_null_sound;
 			}
 
@@ -1793,14 +1805,16 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 
 				if (l->generic.callback)
 					l->generic.callback( l, QM_GOTFOCUS );
-
+				UI_LogFuncEnd();
 				return (menu_move_sound);
 			}
+			UI_LogFuncEnd();
 			return (menu_buzz_sound);
 
 		case K_PGDN:
 		case K_KP_PGDN:
 			if( l->columns > 1 ) {
+				UI_LogFuncEnd();
 				return menu_null_sound;
 			}
 
@@ -1816,14 +1830,16 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 
 				if (l->generic.callback)
 					l->generic.callback( l, QM_GOTFOCUS );
-
+				UI_LogFuncEnd();
 				return (menu_move_sound);
 			}
+			UI_LogFuncEnd();
 			return (menu_buzz_sound);
 
 		case K_KP_UPARROW:
 		case K_UPARROW:
 			if( l->curvalue == 0 ) {
+				UI_LogFuncEnd();
 				return menu_buzz_sound;
 			}
 
@@ -1842,12 +1858,13 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 			if( l->generic.callback ) {
 				l->generic.callback( l, QM_GOTFOCUS );
 			}
-
+			UI_LogFuncEnd();
 			return (menu_move_sound);
 
 		case K_KP_DOWNARROW:
 		case K_DOWNARROW:
 			if( l->curvalue == l->numitems - 1 ) {
+				UI_LogFuncEnd();
 				return menu_buzz_sound;
 			}
 
@@ -1866,16 +1883,18 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 			if( l->generic.callback ) {
 				l->generic.callback( l, QM_GOTFOCUS );
 			}
-
+			UI_LogFuncEnd();
 			return menu_move_sound;
 
 		case K_KP_LEFTARROW:
 		case K_LEFTARROW:
 			if( l->columns == 1 ) {
+				UI_LogFuncEnd();
 				return menu_null_sound;
 			}
 
 			if( l->curvalue < l->height ) {
+				UI_LogFuncEnd();
 				return menu_buzz_sound;
 			}
 
@@ -1889,18 +1908,20 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 			if( l->generic.callback ) {
 				l->generic.callback( l, QM_GOTFOCUS );
 			}
-
+			UI_LogFuncEnd();
 			return menu_move_sound;
 
 		case K_KP_RIGHTARROW:
 		case K_RIGHTARROW:
 			if( l->columns == 1 ) {
+				UI_LogFuncEnd();
 				return menu_null_sound;
 			}
 
 			c = l->curvalue + l->height;
 
 			if( c >= l->numitems ) {
+				UI_LogFuncEnd();
 				return menu_buzz_sound;
 			}
 
@@ -1914,13 +1935,15 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 			if( l->generic.callback ) {
 				l->generic.callback( l, QM_GOTFOCUS );
 			}
-
+			UI_LogFuncEnd();
 			return menu_move_sound;
 	}
 
 	// cycle look for ascii key inside list items
-	if ( !Q_isprint( key ) )
+	if ( !Q_isprint( key ) ){
+		UI_LogFuncEnd();
 		return (0);
+	}
 
 	// force to lower for case insensitive compare
 	if ( Q_isupper( key ) )
@@ -1958,13 +1981,14 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int32_t key )
 				l->curvalue = j;
 				if (l->generic.callback)
 					l->generic.callback( l, QM_GOTFOCUS );
+				UI_LogFuncEnd();
 				return ( menu_move_sound );			
 			}
-
+			UI_LogFuncEnd();
 			return (menu_buzz_sound);
 		}
 	}
-
+	UI_LogFuncEnd();
 	return (menu_buzz_sound);
 }
 
@@ -1975,6 +1999,7 @@ ScrollList_Draw
 */
 void ScrollList_Draw( menulist_s *l )
 {
+	UI_LogFuncBegin();
 	int32_t			x;
 	int32_t			u;
 	int32_t			y;
@@ -2033,6 +2058,7 @@ void ScrollList_Draw( menulist_s *l )
 		}
 		x += (l->width + l->seperation) * SMALLCHAR_WIDTH;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2042,6 +2068,7 @@ Menu_AddItem
 */
 void Menu_AddItem( menuframework_s *menu, void *item )
 {
+	UI_LogFuncBegin();
 	menucommon_s	*itemptr;
 
 	if (menu->nitems >= MAX_MENUITEMS)
@@ -2105,6 +2132,7 @@ void Menu_AddItem( menuframework_s *menu, void *item )
 	}
 
 	menu->nitems++;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2114,10 +2142,13 @@ Menu_CursorMoved
 */
 void Menu_CursorMoved( menuframework_s *m )
 {
+	UI_LogFuncBegin();
 	void (*callback)( void *self, int32_t notification );
 	
-	if (m->cursor_prev == m->cursor)
+	if (m->cursor_prev == m->cursor){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	if (m->cursor_prev >= 0 && m->cursor_prev < m->nitems)
 	{
@@ -2132,6 +2163,7 @@ void Menu_CursorMoved( menuframework_s *m )
 		if (callback)
 			callback(m->items[m->cursor],QM_GOTFOCUS);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2141,9 +2173,11 @@ Menu_SetCursor
 */
 void Menu_SetCursor( menuframework_s *m, int32_t cursor )
 {
+	UI_LogFuncBegin();
 	if (((menucommon_s*)(m->items[cursor]))->flags & (QMF_GRAYED|QMF_INACTIVE))
 	{
 		// cursor can't go there
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -2151,6 +2185,7 @@ void Menu_SetCursor( menuframework_s *m, int32_t cursor )
 	m->cursor      = cursor;
 
 	Menu_CursorMoved( m );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2160,6 +2195,7 @@ Menu_SetCursorToItem
 */
 void Menu_SetCursorToItem( menuframework_s *m, void* ptr )
 {
+	UI_LogFuncBegin();
 	int32_t	i;
 
 	for (i=0; i<m->nitems; i++)
@@ -2167,9 +2203,11 @@ void Menu_SetCursorToItem( menuframework_s *m, void* ptr )
 		if (m->items[i] == ptr)
 		{
 			Menu_SetCursor( m, i );
+			UI_LogFuncEnd();
 			return;
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2180,6 +2218,7 @@ void Menu_SetCursorToItem( menuframework_s *m, void* ptr )
 ** slot.
 */
 void Menu_AdjustCursor( menuframework_s *m, int32_t dir ) {
+	UI_LogFuncBegin();
 	menucommon_s	*item = NULL;
 	qboolean		wrapped = qfalse;
 
@@ -2199,6 +2238,7 @@ wrap:
 			if ( m->wrapAround ) {
 				if ( wrapped ) {
 					m->cursor = m->cursor_prev;
+					UI_LogFuncEnd();
 					return;
 				}
 				m->cursor = 0;
@@ -2213,6 +2253,7 @@ wrap:
 			if ( m->wrapAround ) {
 				if ( wrapped ) {
 					m->cursor = m->cursor_prev;
+					UI_LogFuncEnd();
 					return;
 				}
 				m->cursor = m->nitems - 1;
@@ -2222,6 +2263,7 @@ wrap:
 			m->cursor = m->cursor_prev;
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2231,6 +2273,7 @@ Menu_Draw
 */
 void Menu_Draw( menuframework_s *menu )
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	menucommon_s	*itemptr;
 
@@ -2415,6 +2458,7 @@ void Menu_Draw( menuframework_s *menu )
 			}
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2424,9 +2468,12 @@ Menu_ItemAtCursor
 */
 void *Menu_ItemAtCursor( menuframework_s *m )
 {
-	if ( m->cursor < 0 || m->cursor >= m->nitems )
+	UI_LogFuncBegin();
+	if ( m->cursor < 0 || m->cursor >= m->nitems ){
+		UI_LogFuncEnd();
 		return 0;
-
+	}
+	UI_LogFuncEnd();
 	return m->items[m->cursor];
 }
 
@@ -2436,13 +2483,15 @@ Menu_ActivateItem
 =================
 */
 sfxHandle_t Menu_ActivateItem( menuframework_s *s, menucommon_s* item ) {
+	UI_LogFuncBegin();
 	if ( item->callback ) {
 		item->callback( item, QM_ACTIVATED );
 		if( !( item->flags & QMF_SILENT ) ) {
+			UI_LogFuncEnd();
 			return menu_move_sound;
 		}
 	}
-
+	UI_LogFuncEnd();
 	return 0;
 }
 
@@ -2453,6 +2502,7 @@ Menu_DefaultKey
 */
 sfxHandle_t Menu_DefaultKey( menuframework_s *m, int32_t key )
 {
+	UI_LogFuncBegin();
 	sfxHandle_t		sound = 0;
 	menucommon_s	*item;
 	int32_t				cursor_prev;
@@ -2466,17 +2516,20 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int32_t key )
 			if ( m->displaySpinList ) {
 				m->displaySpinList = NULL;
 				m->noNewSelecting = qfalse;
-				
+				UI_LogFuncEnd();
 				return menu_out_sound;
 			}
 			else {
 				UI_PopMenu();
+				UI_LogFuncEnd();
 				return menu_out_sound;
 			}
 	}
 
-	if (!m || !m->nitems)
+	if (!m || !m->nitems){
+		UI_LogFuncEnd();
 		return 0;
+	}
 
 	// route key stimulus to widget
 	item = Menu_ItemAtCursor( m );
@@ -2507,6 +2560,7 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int32_t key )
 
 		if (sound) {
 			// key was handled
+			UI_LogFuncEnd();
 			return sound;		
 		}
 	}
@@ -2553,8 +2607,10 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int32_t key )
 		case K_MOUSE4:
 		case K_MOUSE5:
 			if (item)
-				if ((item->flags & QMF_HASMOUSEFOCUS) && !(item->flags & (QMF_GRAYED|QMF_INACTIVE)))
+				if ((item->flags & QMF_HASMOUSEFOCUS) && !(item->flags & (QMF_GRAYED|QMF_INACTIVE))){
+					UI_LogFuncEnd();
 					return (Menu_ActivateItem( m, item ));
+				}
 			break;
 
 		case K_JOY1:
@@ -2580,11 +2636,13 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int32_t key )
 		case K_KP_ENTER:
 		case K_ENTER:
 			if (item)
-				if (!(item->flags & (QMF_MOUSEONLY|QMF_GRAYED|QMF_INACTIVE)))
+				if (!(item->flags & (QMF_MOUSEONLY|QMF_GRAYED|QMF_INACTIVE))){
+					UI_LogFuncEnd();
 					return (Menu_ActivateItem( m, item ));
+				}
 			break;
 	}
-
+	UI_LogFuncEnd();
 	return sound;
 }
 
@@ -2595,6 +2653,7 @@ Menu_Cache
 */
 void Menu_Cache( void )
 {
+	UI_LogFuncBegin();
 	int32_t i;
 	static  const char *smallNumbers[]= 
 	{
@@ -2664,7 +2723,7 @@ void Menu_Cache( void )
 	uis.menu_datadisp1_snd	= trap_S_RegisterSound( "sound/interface/button4.wav" );
 	uis.menu_datadisp2_snd	= trap_S_RegisterSound( "sound/interface/button7.wav" );
 	uis.menu_datadisp3_snd	= trap_S_RegisterSound( "sound/interface/button5.wav" );
-
+	UI_LogFuncEnd();
 }
 	
 /*
@@ -2674,6 +2733,7 @@ Mouse_Hide
 */
 void Mouse_Hide(void)
 {
+	UI_LogFuncBegin();
 	uis.cursorDraw = qfalse;
 }
 
@@ -2684,5 +2744,6 @@ Mouse_Show
 */
 void Mouse_Show(void)
 {
+	UI_LogFuncBegin();
 	uis.cursorDraw = qtrue;
 }

@@ -6,6 +6,7 @@
 	User interface building blocks and support functions.
 **********************************************************************/
 #include "ui_local.h"
+#include "ui_logger.h"
 #include "../qcommon/stv_version.h"
 
 uiStatic_t		uis;
@@ -56,10 +57,15 @@ menuframe_t s_menuframe;
 
 static qboolean UI_IsWidescreen( void )
 {
-	if ( ui_handleWidescreen.integer && uis.widescreen.ratio && uis.widescreen.state != WIDESCREEN_NONE )
+	UI_LogFuncBegin();
+	if ( ui_handleWidescreen.integer && uis.widescreen.ratio && uis.widescreen.state != WIDESCREEN_NONE ){
+		UI_LogFuncEnd();
 		return qtrue;
-
-	return qfalse;
+	}else{
+		UI_LogFuncEnd();
+		return qfalse;
+	}
+	UI_LogFuncEnd();
 }
 
 const char menuEmptyLine[] = " ";
@@ -70,9 +76,18 @@ UI_ClampCvar
 */
 float UI_ClampCvar( float min, float max, float value )
 {
-	if ( value < min ) return min;
-	if ( value > max ) return max;
-	return value;
+	UI_LogFuncBegin();
+	if ( value < min ){
+		UI_LogFuncEnd();
+		return min;
+	} else if ( value > max ){
+		UI_LogFuncEnd();
+		return max;
+	}else{
+		UI_LogFuncEnd();
+		return value;
+	}
+	UI_LogFuncEnd();
 }
 
 
@@ -83,6 +98,7 @@ UI_PushMenu
 */
 void UI_PushMenu( menuframework_s *menu )
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	menucommon_s*	item;
 
@@ -127,6 +143,7 @@ void UI_PushMenu( menuframework_s *menu )
 	}
 
 	uis.firstdraw = qtrue;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -136,6 +153,7 @@ UI_PopMenu
 */
 void UI_PopMenu (void)
 {
+	UI_LogFuncBegin();
 	trap_S_StartLocalSound( menu_out_sound, CHAN_LOCAL_SOUND );
 
 	uis.menusp--;
@@ -150,16 +168,19 @@ void UI_PopMenu (void)
 	else {
 		UI_ForceMenuOff ();
 	}
+	UI_LogFuncEnd();
 }
 
 void UI_ForceMenuOff (void)
 {
+	UI_LogFuncBegin();
 	uis.menusp     = 0;
 	uis.activemenu = NULL;
 
 	trap_Key_SetCatcher( trap_Key_GetCatcher() & ~KEYCATCH_UI );
 	trap_Key_ClearStates();
 	trap_Cvar_Set( "cl_paused", "0" );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -169,6 +190,7 @@ UI_LerpColor
 */
 static void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
 {
+	UI_LogFuncBegin();
 	int32_t i;
 
 	/* lerp and clamp each component */
@@ -180,6 +202,7 @@ static void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
 		else if (c[i] > 1.0)
 			c[i] = 1.0;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -236,6 +259,7 @@ UI_DrawBannerString
 */
 static void UI_DrawBannerString2( int32_t x, int32_t y, const char* str, vec4_t color )
 {
+	UI_LogFuncBegin();
 	const char* s;
 	char	ch;
 	float	ax;
@@ -276,6 +300,7 @@ static void UI_DrawBannerString2( int32_t x, int32_t y, const char* str, vec4_t 
 	}
 
 	trap_R_SetColor( NULL );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -284,6 +309,7 @@ UI_DrawBannerString
 =================
 */
 void UI_DrawBannerString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color ) {
+	UI_LogFuncBegin();
 	const char *	s;
 	int32_t				ch;
 	int32_t				width;
@@ -325,6 +351,7 @@ void UI_DrawBannerString( int32_t x, int32_t y, const char* str, int32_t style, 
 	}
 
 	UI_DrawBannerString2( x, y, str, color );
+	UI_LogFuncEnd();
 }
 
 
@@ -334,6 +361,7 @@ UI_ProportionalStringWidth
 =================
 */
 int32_t UI_ProportionalStringWidth( const char* str,int32_t style ) {
+	UI_LogFuncBegin();
 	const char *	s;
 	int32_t				ch;
 	int32_t				charWidth;
@@ -387,6 +415,7 @@ int32_t UI_ProportionalStringWidth( const char* str,int32_t style ) {
 		width -= PROP_GAP_WIDTH;
 	}
 
+	UI_LogFuncEnd();
 	return width;
 }
 
@@ -491,6 +520,7 @@ UI_DrawProportionalString2
 */
 static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, vec4_t color, int32_t style, qhandle_t charset )
 {
+	UI_LogFuncBegin();
 	const char* s;
 	unsigned char ch;
 	float	ax;
@@ -689,6 +719,7 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 	}
 
 	trap_R_SetColor( NULL );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -697,10 +728,13 @@ UI_ProportionalSizeScale
 =================
 */
 float UI_ProportionalSizeScale( int32_t style ) {
+	UI_LogFuncBegin();
 	if(  style & UI_SMALLFONT ) {
+		UI_LogFuncEnd();
 		return PROP_SMALL_SIZE_SCALE;
 	}
 
+	UI_LogFuncEnd();
 	return 1.00;
 }
 
@@ -711,13 +745,16 @@ UI_DrawProportionalString
 =================
 */
 void UI_DrawProportionalString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color ) {
+	UI_LogFuncBegin();
 	vec4_t	drawcolor;
 	int32_t		width;
 	float	sizeScale;
 	int32_t		charstyle=0;
 
-	if ((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1))
+	if ((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1)){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	/* Get char style */
 	if (style & UI_TINYFONT)
@@ -774,6 +811,7 @@ void UI_DrawProportionalString( int32_t x, int32_t y, const char* str, int32_t s
 		drawcolor[2] = color[2] * 0.7;
 		drawcolor[3] = color[3];
 		UI_DrawProportionalString2( x, y, str, drawcolor, sizeScale, uis.charsetProp );
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -789,6 +827,7 @@ void UI_DrawProportionalString( int32_t x, int32_t y, const char* str, int32_t s
 		drawcolor[2] = color[2];
 		drawcolor[3] = 0.5 + 0.5 * sin( uis.realtime / PULSE_DIVISOR );
 		UI_DrawProportionalString2( x, y, str, drawcolor, sizeScale, uis.charsetProp );
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -805,6 +844,7 @@ void UI_DrawProportionalString( int32_t x, int32_t y, const char* str, int32_t s
 	{
 		UI_DrawProportionalString2( x, y, str, color, charstyle, uis.charsetProp );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -814,6 +854,7 @@ UI_DrawString2
 */
 static void UI_DrawString2( int32_t x, int32_t y, const char* str, vec4_t color, int32_t charw, int32_t charh )
 {
+	UI_LogFuncBegin();
 	const char* s;
 	char	ch;
 	int32_t forceColor = qfalse; /* APSFIXME; */
@@ -825,9 +866,11 @@ static void UI_DrawString2( int32_t x, int32_t y, const char* str, vec4_t color,
 	float	frow;
 	float	fcol;
 
-	if (y < -charh)
+	if (y < -charh){
+		UI_LogFuncEnd();
 		/* offscreen */
 		return;
+	}
 
 	/* draw the colored text */
 	trap_R_SetColor( color );
@@ -885,6 +928,7 @@ static void UI_DrawString2( int32_t x, int32_t y, const char* str, vec4_t color,
 	}
 
 	trap_R_SetColor( NULL );
+	UI_LogFuncEnd();
 }
 
 
@@ -895,6 +939,7 @@ UI_DrawString
 */
 void UI_DrawString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t color, qboolean highRes )
 {
+	UI_LogFuncBegin();
 	int32_t		len;
 	int32_t		charw;
 	int32_t		charh;
@@ -904,11 +949,14 @@ void UI_DrawString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t
 	vec4_t	dropcolor;
 
 	if( !str ) {
+		UI_LogFuncEnd();
 		return;
 	}
 
-	if ((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1))
+	if ((style & UI_BLINK) && ((uis.realtime/BLINK_DIVISOR) & 1)){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	if (style & UI_TINYFONT)
 	{
@@ -988,6 +1036,8 @@ void UI_DrawString( int32_t x, int32_t y, const char* str, int32_t style, vec4_t
 	else
 		UI_DrawProportionalString( x, y, str, style, drawcolor );
 
+	UI_LogFuncEnd();
+
 }
 
 /*
@@ -997,6 +1047,7 @@ UI_DrawChar
 */
 void UI_DrawChar( int32_t x, int32_t y, int32_t ch, int32_t style, vec4_t color )
 {
+	UI_LogFuncBegin();
 	char	buff[2];
 
 	buff[0] = ch;
@@ -1006,18 +1057,22 @@ void UI_DrawChar( int32_t x, int32_t y, int32_t ch, int32_t style, vec4_t color 
 }
 
 qboolean UI_IsFullscreen( void ) {
+	UI_LogFuncEnd();
 	if ( uis.activemenu && ( trap_Key_GetCatcher() & KEYCATCH_UI ) ) {
+		UI_LogFuncEnd();
 		return uis.activemenu->fullscreen;
 	}
-
+	UI_LogFuncEnd();
 	return qfalse;
 }
 
 static void NeedCDAction( qboolean result ) {
+	UI_LogFuncEnd();
 	if ( !result ) {
 		/*trap_Cvar_Set ("rpg_playIntro", "1");*/
 		trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
 	}
+	UI_LogFuncEnd();
 }
 
 void UI_SetActiveMenu( uiMenuCommand_t menu ) {
@@ -1025,23 +1080,29 @@ void UI_SetActiveMenu( uiMenuCommand_t menu ) {
  	 * this should be the ONLY way the menu system is brought up, except for UI_ConsoleCommand below
 	 * enusure minumum menu data is cached 
 	 */
+	UI_LogFuncEnd();
 	Menu_Cache();
 
 	switch ( menu ) {
 	case UIMENU_NONE:
 		UI_ForceMenuOff();
+		UI_LogFuncEnd();
 		return;
 	case UIMENU_MAIN:
 		UI_MainMenu();
+		UI_LogFuncEnd();
 		return;
 	case UIMENU_NEED_CD:
 		UI_ConfirmMenu( menu_normal_text[MNT_INSERTCD], 0, NeedCDAction );
+		UI_LogFuncEnd();
 		return;
 	case UIMENU_INGAME:
 		trap_Cvar_Set( "cl_paused", "1" );
 		UI_InGameMenu();
+		UI_LogFuncEnd();
 		return;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1050,9 +1111,11 @@ UI_KeyEvent
 =================
 */
 void UI_KeyEvent( int32_t key ) {
+	UI_LogFuncBegin();
 	sfxHandle_t		s;
 
 	if (!uis.activemenu) {
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1063,6 +1126,8 @@ void UI_KeyEvent( int32_t key ) {
 
 	if ((s > 0) && (s != menu_null_sound))
 		trap_S_StartLocalSound( s, CHAN_LOCAL_SOUND );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1072,11 +1137,14 @@ UI_MouseEvent
 */
 void UI_MouseEvent( int32_t dx, int32_t dy )
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	menucommon_s*	m;
 
-	if (!uis.activemenu)
+	if (!uis.activemenu){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	/* update mouse screen position */
 	uis.cursorx += dx;
@@ -1103,8 +1171,10 @@ void UI_MouseEvent( int32_t dx, int32_t dy )
 		uis.cursory = SCREEN_HEIGHT;
 
 	/* RPG-X: TiM - Skip new selections if a spin control window is open */
-	if ( uis.activemenu->noNewSelecting )
+	if ( uis.activemenu->noNewSelecting ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	/* region test the active menu items */
 	for (i=0; i<uis.activemenu->nitems; i++)
@@ -1135,6 +1205,7 @@ void UI_MouseEvent( int32_t dx, int32_t dy )
 		}
 
 		((menucommon_s*)(uis.activemenu->items[uis.activemenu->cursor]))->flags |= QMF_HASMOUSEFOCUS;
+		UI_LogFuncEnd();
 		return;
 	}  
 
@@ -1142,22 +1213,27 @@ void UI_MouseEvent( int32_t dx, int32_t dy )
 		/* out of any region */
 		((menucommon_s*)(uis.activemenu->items[uis.activemenu->cursor]))->flags &= ~QMF_HASMOUSEFOCUS;
 	}
+	UI_LogFuncEnd();
 }
 
 char *UI_Argv( int32_t arg ) {
+	UI_LogFuncBegin();
 	static char	buffer[MAX_STRING_CHARS];
 
 	trap_Argv( arg, buffer, sizeof( buffer ) );
 
+	UI_LogFuncEnd();
 	return buffer;
 }
 
 
 char *UI_Cvar_VariableString( const char *var_name ) {
+	UI_LogFuncBegin();
 	static char	buffer[MAX_STRING_CHARS];
 
 	trap_Cvar_VariableStringBuffer( var_name, buffer, sizeof( buffer ) );
 
+	UI_LogFuncEnd();
 	return buffer;
 }
 
@@ -1168,6 +1244,8 @@ UI_Cache
 =================
 */
 static void UI_Cache_f( void ) {
+	UI_LogFuncBegin();
+
 	MainMenu_Cache();
 	InGame_Cache();
 	ConfirmMenu_Cache();
@@ -1184,12 +1262,6 @@ static void UI_Cache_f( void ) {
 	/*UI_DisplayOptionsMenu_Cache();*/
 	/*UI_SoundOptionsMenu_Cache();*/
 	UI_NetworkOptionsMenu_Cache();
-	/*UI_SPLevelMenu_Cache();*/
-	UI_SPSkillMenu_Cache();
-	UI_SPPostgameMenu_Cache();
-	/*TeamMain_Cache();*/
-	UI_AddBots_Cache();
-	UI_RemoveBots_Cache();
 	/*UI_LoadConfig_Cache();*/
 	/*UI_SaveConfigMenu_Cache();*/
 	UI_BotSelectMenu_Cache();
@@ -1212,6 +1284,9 @@ static void UI_Cache_f( void ) {
 	/*UI_LibraryMenu_Cache();*/
 	UI_PlayerEmotes_Cache();
     UI_MotdMenu_Cache();
+	UI_msdMenu_Cache();
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1220,6 +1295,7 @@ UI_ConsoleCommand
 =================
 */
 qboolean UI_ConsoleCommand( void ) {
+	UI_LogFuncBegin();
 	char	*cmd;
 	/*int32_t	i;*/
 
@@ -1228,33 +1304,21 @@ qboolean UI_ConsoleCommand( void ) {
 	/* ensure minimum menu data is available*/
 	Menu_Cache();
 
-	/*if ( Q_stricmp (cmd, "levelselect") == 0 ) {
-		UI_SPLevelMenu_f();
-		return qtrue;
-	}*/
-
-	if ( Q_stricmp (cmd, "postgame") == 0 ) {
-		UI_SPPostgameMenu_f();
-		return qtrue;
-	}
-
 	if ( Q_stricmp (cmd, "ui_cache") == 0 ) {
 		UI_Cache_f();
-		return qtrue;
-	}
-
-	if ( Q_stricmp (cmd, "ui_teamOrders") == 0 ) {
-		UI_TeamOrdersMenu_f();
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
 	if ( Q_stricmp (cmd, "ui_cdkey") == 0 ) {
 		UI_CDKeyMenu_f();
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
 	if ( Q_stricmp( cmd, "ui_emotes" ) == 0 ) {
 		UI_EmotesMenu( qtrue );
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
@@ -1265,27 +1329,32 @@ qboolean UI_ConsoleCommand( void ) {
 
 	if ( Q_stricmp( cmd, "ui_admin" ) == 0 ) {
 		UI_AdminMenu(qtrue);
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
 	if ( Q_stricmp( cmd, "ui_turbolift" ) == 0 ) {
 		UI_TurboliftMenu(atoi(UI_Argv( 1 )));
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
 	if ( Q_stricmp (cmd, "err_dialog") == 0 ) {
 		UI_ConfirmMenu( UI_Argv( 1 ), 0, 0);
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
     	/* RPG-X | Marcin | 15/12/2008 */
 	if ( Q_stricmp( cmd, "ui_motd" ) == 0 ) {
 		UI_MotdMenu();
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
 	if ( Q_stricmp( cmd, "ui_motd_reset" ) == 0 ) {
 		MotdReset();
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
@@ -1295,6 +1364,7 @@ qboolean UI_ConsoleCommand( void ) {
      */
     if ( Q_stricmp( cmd, "ui_motd_line" ) == 0 ) {
 		MotdReceiveLine( UI_Argv( 1 ) );
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
@@ -1311,34 +1381,41 @@ qboolean UI_ConsoleCommand( void ) {
 		trap_Argv( 9, ui_msd9, sizeof( ui_msd9 ) );
 		trap_Argv( 10, ui_msd10, sizeof( ui_msd10 ) );
 		UI_msdMenu( atoi(ui_msd1), atoi(ui_msd2), atoi(ui_msd3), atoi(ui_msd4), atoi(ui_msd5), atoi(ui_msd6), atoi(ui_msd7), atoi(ui_msd8), atoi(ui_msd9), ui_msd10);
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 	
 	if ( Q_stricmp( cmd, "ui_transporter" ) == 0 ) {
 		UI_TransporterMenu( atoi(UI_Argv( 1 )) );
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
 	if ( Q_stricmp( cmd, "holo_data" ) == 0 ) {
 		/*HoloDataReceived(UI_Argv(1));*/
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
 	if ( Q_stricmp( cmd, "ui_trdata" ) == 0 ) {
 		TransDataReceived(UI_Argv(1));
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
 	if ( Q_stricmp( cmd, "ui_holodeck" ) == 0) {
 		/*UI_HolodeckMenu( atoi(UI_Argv(1)) );*/
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
 	if ( Q_stricmp( cmd, "ui_sqlmenu") == 0) {
 		UI_sqlMenu();
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
+	UI_LogFuncEnd();
 	return qfalse;
 }
 
@@ -1348,6 +1425,8 @@ UI_Shutdown
 =================
 */
 void UI_Shutdown( void ) {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 	/*trap_Cvar_Set ("rpg_playIntro", "1");*/
 }
 
@@ -1356,6 +1435,7 @@ void UI_Shutdown( void ) {
 //--------------------------------------------
 static char *UI_ParseFontParms(char *buffer,int32_t	propArray[CHARMAX][3])
 {
+	UI_LogFuncBegin();
 	char	*token;
 	int32_t		i,i2;
 	
@@ -1377,6 +1457,7 @@ static char *UI_ParseFontParms(char *buffer,int32_t	propArray[CHARMAX][3])
 				else
 				{
 					trap_Print( va( S_COLOR_RED "UI_ParseFontParms : Invalid FONTS.DAT data, near character %d!\n",i));
+					UI_LogFuncEnd();
 					return(NULL);
 				}
 
@@ -1394,6 +1475,7 @@ static char *UI_ParseFontParms(char *buffer,int32_t	propArray[CHARMAX][3])
 				else
 				{
 					trap_Print( va( S_COLOR_RED "UI_ParseFontParms : Invalid FONTS.DAT data, near character %d!\n",i));
+					UI_LogFuncEnd();
 					return(NULL);
 				}
 			}
@@ -1406,6 +1488,7 @@ static char *UI_ParseFontParms(char *buffer,int32_t	propArray[CHARMAX][3])
 		}
 	}
 
+	UI_LogFuncEnd();
 	return(buffer);
 }
 
@@ -1418,6 +1501,7 @@ UI_LoadFonts
 */
 void UI_LoadFonts( void ) 
 {
+	UI_LogFuncBegin();
 	char buffer[FONT_BUFF_LENGTH];
 	int32_t len;
 	fileHandle_t	f;
@@ -1428,12 +1512,14 @@ void UI_LoadFonts( void )
 	if ( !f ) 
 	{
 		trap_Print( va( S_COLOR_RED "UI_LoadFonts : FONTS.DAT file not found!\n"));
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if (len > FONT_BUFF_LENGTH)
 	{
 		trap_Print( va( S_COLOR_RED "UI_LoadFonts : FONTS.DAT file bigger than %d!\n",FONT_BUFF_LENGTH));
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1453,96 +1539,6 @@ void UI_LoadFonts( void )
 }
 
 /*************************
-UI_LoadClassString
-
-TiM: We're in a server now,
-load the class data string
-and parse it up
-*************************/
-
-/*int32_t UI_LoadClassString( void ) {
-	char	buffer[MAX_TOKEN_CHARS];
-	int32_t		i, j;
-	char	*val;
-	char	*lineChar;
-	char	*lineCharEnd;
-	int32_t		classIndex=0;
-	char*	className;
-
-	if ( !ingameFlag ) {
-		return qfalse;
-	}
-
-	//get config string
-	trap_GetConfigString( CS_CLASS_DATA, buffer, sizeof( buffer ) );
-
-	if ( !buffer[0] ) {
-		Com_Printf( S_COLOR_RED "ERROR: Cannot load class data from config string.\n" );
-		return qfalse;
-	}
-
-	className = Info_ValueForKey( buffer, "n");
-
-	//already cached this class set
-	if ( !Q_stricmp( className, uis.classSetName ) ) {
-		return qtrue;
-	}
-
-	//purge present data in the class struct
-	memset( &uis.classData, 0, sizeof ( uis.classData ) );
-
-	for ( i = 0; i < MAX_CLASSES; i++ ) {
-		//load string
-		val = Info_ValueForKey( buffer, va( "c%i", i ) );
-
-		if (!val[0])
-			break;
-
-		//First slash = consoleName
-		lineChar = strstr( val, "|" );
-		lineChar++;
-
-		Q_strncpyz( uis.classData[classIndex].classNameConsole, val, ( strlen( val ) - strlen( lineChar ) ) );
-
-		//Com_Printf( S_COLOR_RED "%s\n", uis.classData[i].classNameConsole );
-
-		//next line should be formal name
-		lineCharEnd = strstr( lineChar, "|" );
-
-		val = lineChar;
-		val[ strlen(lineChar) - strlen(lineCharEnd) ] = '\0';
-
-		Q_strncpyz( uis.classData[classIndex].classNameFull, val, sizeof( uis.classData[classIndex].classNameFull ) );
-
-		//isolate the bits at the end and find out if 
-		//we're to show this rank or not in the menu
-		val = Info_ValueForKey( buffer, va( "c%i", i ) );
-		j = strlen( val );
-		
-		while ( j >= 0 && val[j] != '|' ) {
-			j--;
-		}
-
-		val = val + j + 1;
-
-		//Com_Printf( S_COLOR_RED "Val: %s\n", val );
-
-		//check if this is a noShow class. 
-		//skip it if it is
-		if ( atoi( val ) & 1 ) {
-			memset( uis.classData[classIndex].classNameConsole, 0, sizeof( uis.classData[classIndex].classNameConsole ) );
-			memset( uis.classData[classIndex].classNameFull, 0, sizeof( uis.classData[classIndex].classNameFull ) );
-		}
-		else
-			classIndex++;
-	}
-	
-	Q_strncpyz( uis.classSetName, className, sizeof( uis.classSetName ) );
-
-	return qtrue;
-}*/
-
-/*************************
 UI_LoadClassData
 
 TiM: Scopes out a class
@@ -1553,6 +1549,7 @@ in the UI
 *************************/
 
 int32_t UI_InitClassData( char* fileName ) {
+	UI_LogFuncBegin();
 	char			buffer[32000];
 	fileHandle_t	f;
 	int32_t				fileLen;
@@ -1563,6 +1560,7 @@ int32_t UI_InitClassData( char* fileName ) {
 
 	/* TiM - check if we've already loaded this file */
 	if ( !Q_stricmp( uis.classSetName, fileName ) ) {
+		UI_LogFuncEnd();
 		return qtrue;
 	}
 
@@ -1573,13 +1571,9 @@ int32_t UI_InitClassData( char* fileName ) {
 
 	if ( !fileLen ) {
 		Com_Printf( S_COLOR_RED "ERROR: File not found: %s\n", fileName );
+		UI_LogFuncEnd();
 		return qfalse;
 	}
-
-	/*if ( fileLen > sizeof(buffer)-1) {
-		Com_Printf( S_COLOR_RED "ERROR: File too large for buffer: %s\n", fileName );
-		return qfalse;		
-	}*/
 
 	/* init file buffer */
 	memset( buffer, 0, sizeof( buffer ) );
@@ -1588,6 +1582,7 @@ int32_t UI_InitClassData( char* fileName ) {
 
 	if ( !buffer[0] ) {
 		Com_Printf( S_COLOR_RED "ERROR: File could not be read: %s\n", fileName );
+		UI_LogFuncEnd();
 		return qfalse;		
 	}
 
@@ -1604,11 +1599,13 @@ int32_t UI_InitClassData( char* fileName ) {
 
 	if ( !token[0] ) {
 		Com_Printf( S_COLOR_RED "ERROR: File was loaded, but no data could be read: %s\n", fileName );
+		UI_LogFuncEnd();
 		return qfalse;
 	}
 
 	if ( Q_stricmpn( token, "{", 1 ) ) {
 		Com_Printf( S_COLOR_RED "ERROR: No opening brace { found in: %s\n", fileName );
+		UI_LogFuncEnd();
 		return qfalse;
 	}
 
@@ -1676,6 +1673,7 @@ int32_t UI_InitClassData( char* fileName ) {
 
 	Q_strncpyz( uis.classSetName, fileName, sizeof( uis.classSetName ) );
 
+	UI_LogFuncEnd();
 	return qtrue;
 }
 
@@ -1687,6 +1685,7 @@ formal names of the currently selected rankset.
 Used for choosing ranks in spin control menu items.
 *************************/
 int32_t UI_PopulateRanksArray( char* ranks[] ) {
+	UI_LogFuncBegin();
 	int32_t				i;
 	rankNames_t		*rank;
 
@@ -1702,6 +1701,7 @@ int32_t UI_PopulateRanksArray( char* ranks[] ) {
 	ranks[i] = "Other";
 	/*ranks[i+1] = 0; *//*IMPORTANT: Spin controls need these or else values bleed into different controls*/
 
+	UI_LogFuncEnd();
 	return i;
 }
 
@@ -1715,6 +1715,7 @@ rankset to that new data
 *************************/
 
 void UI_InitRanksData( char* ranksName ) {
+	UI_LogFuncBegin();
 	char	filePath[MAX_QPATH];
 
 	if ( !Q_stricmp( uis.rankSet.rankSetName, ranksName ) )
@@ -1753,9 +1754,11 @@ refreshRank:
 			}
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 int32_t	UI_PopulateRankSetArray( char *rankSets[] ) {
+	UI_LogFuncBegin();
 	int32_t	i;
 
 	for( i = 0; i < MAX_RANKSETS; i++ ) {
@@ -1767,6 +1770,7 @@ int32_t	UI_PopulateRankSetArray( char *rankSets[] ) {
 
 	rankSets[i] = 0;
 
+	UI_LogFuncEnd();
 	return i;
 }
 
@@ -1781,6 +1785,7 @@ settings menu, and the server settings menu.
 
 int32_t UI_GetRankSets( void )
 {
+	UI_LogFuncBegin();
 	int32_t		numFiles, i;
 	char		fileBuffer[2048];
 	char		*filePtr;
@@ -1822,6 +1827,7 @@ int32_t UI_GetRankSets( void )
 
 	trap_Print( va("%i ranksets detected\n", i ) );
 
+	UI_LogFuncEnd();
 	return i;
 }
 
@@ -1834,6 +1840,7 @@ hard stored char vals
 **********************/
 
 int32_t	UI_PopulateClassArray( char *classes[] ) {
+	UI_LogFuncBegin();
 	int32_t	i;
 
 	for( i = 0; i < MAX_CLASSES; i++ ) {
@@ -1846,6 +1853,7 @@ int32_t	UI_PopulateClassArray( char *classes[] ) {
 	classes[i] = "Other";
 	/*classes[i+1] = 0;*/
 
+	UI_LogFuncEnd();
 	return i;
 }
 
@@ -1859,6 +1867,7 @@ locally.
 
 int32_t UI_GetClassSets( void )
 {
+	UI_LogFuncBegin();
 	int32_t		numFiles, i;
 	char		fileBuffer[2048];
 	char		*filePtr;
@@ -1868,8 +1877,10 @@ int32_t UI_GetClassSets( void )
 	numFiles = trap_FS_GetFileList("ext_data/classes", ".classes", fileBuffer, sizeof(fileBuffer) );
 	/*Com_Printf( S_COLOR_RED "%s\n", filePtr);*/
 	
-	if ( numFiles == 1 )
+	if ( numFiles == 1 ){
+		UI_LogFuncEnd();
 		return 1;
+	}
 
 	memset( &uis.classList, 0, sizeof( uis.classList ) );
 
@@ -1900,6 +1911,7 @@ int32_t UI_GetClassSets( void )
 
 	trap_Print( va("%i class sets detected\n", i ) );
 
+	UI_LogFuncEnd();
 	return i;
 }
 
@@ -1911,6 +1923,7 @@ array with class set names
 *******************************/
 
 int32_t	UI_PopulateClassSetArray( char *classSets[] ) {
+	UI_LogFuncBegin();
 	int32_t	i;
 
 	for( i = 0; i < MAX_CLASSSETS; i++ ) {
@@ -1920,6 +1933,7 @@ int32_t	UI_PopulateClassSetArray( char *classSets[] ) {
 		classSets[i] = uis.classList[i];
 	}
 
+	UI_LogFuncEnd();
 	return i;
 }
 
@@ -1965,15 +1979,11 @@ UI_Init
 =================
 */
 void UI_Init( void ) {
+	UI_LogFuncBegin();
 
 	Com_Printf ("This is RPG-X version %s compiled by %s on %s.\n", RPGX_VERSION, RPGX_COMPILEDBY, RPGX_COMPILEDATE);
 
 	memset( &uis, 0, sizeof ( uis ) );
-
-	/*if ( !uis.playCinematic ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, "wait 5; wait 5; cinematic rpgx_intro.roq \n" );
-		uis.playCinematic = qtrue;
-	}*/
 
 	init_tonextint(qfalse);
 
@@ -2035,6 +2045,7 @@ void UI_Init( void ) {
 	UI_SecurityCodeSetup();
 
 	/* trap_Cvar_Create ("rpg_playIntro", "1", CVAR_ARCHIVE ); *//*RPG-X | Phenix | 25/02/2005 */
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2045,6 +2056,7 @@ Adjusted for resolution and screen aspect ratio
 ================
 */
 void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
+	UI_LogFuncBegin();
 	/* expect valid pointers */
 	/* *x = *x * uis.scale + uis.bias;*/
 	*x *= uis.scalex;
@@ -2062,30 +2074,38 @@ void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
 		if ( uis.widescreen.state  == WIDESCREEN_CENTER )
 			*x += uis.widescreen.bias;
 	}
+	UI_LogFuncEnd();
 }
 
 void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname ) {
+	UI_LogFuncBegin();
 	qhandle_t	hShader;
 
 	hShader = trap_R_RegisterShaderNoMip( picname );
 	UI_AdjustFrom640( &x, &y, &width, &height );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
+	UI_LogFuncEnd();
 }
 
 void UI_DrawHandleStretchPic( float x, float y, float w, float h, float s0, float t0, float s1, float t1, qhandle_t hShader ) {
+	UI_LogFuncBegin();
 	UI_AdjustFrom640( &x, &y, &w, &h );
 	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
+	UI_LogFuncEnd();
 }
 
 void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ) {
+	UI_LogFuncBegin();
 	float	s0;
 	float	s1;
 	float	t0;
 	float	t1;
 
 	/* TiM - security check */
-	if ( w == 0.0f || h == 0.0f )
+	if ( w == 0.0f || h == 0.0f ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	if( w < 0 ) {	/* flip about vertical */
 		w  = -w;
@@ -2109,6 +2129,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ) {
 	
 	UI_AdjustFrom640( &x, &y, &w, &h );
 	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2119,12 +2140,14 @@ Coordinates are 640*480 virtual values
 =================
 */
 void UI_FillRect( float x, float y, float width, float height, const float *color ) {
+	UI_LogFuncBegin();
 	trap_R_SetColor( color );
 
 	UI_AdjustFrom640( &x, &y, &width, &height );
 	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, uis.whiteShader );
 
 	trap_R_SetColor( NULL );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2135,6 +2158,7 @@ Coordinates are 640*480 virtual values
 =================
 */
 void UI_DrawRect( float x, float y, float width, float height, const float *color ) {
+	UI_LogFuncBegin();
 	trap_R_SetColor( color );
 
 	UI_AdjustFrom640( &x, &y, &width, &height );
@@ -2145,6 +2169,7 @@ void UI_DrawRect( float x, float y, float width, float height, const float *colo
 	trap_R_DrawStretchPic( x + width - 1, y, 1, height, 0, 0, 0, 0, uis.whiteShader );
 
 	trap_R_SetColor( NULL );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2154,6 +2179,7 @@ UI_Refresh
 */
 void UI_Refresh( int32_t realtime )
 {
+	UI_LogFuncBegin();
 	vec4_t color;
 
 	uis.frametime = realtime - uis.realtime;
@@ -2162,6 +2188,7 @@ void UI_Refresh( int32_t realtime )
 	/*trap_Cvar_Set( "sys_lastactive", uis.realtime );*/
 	
 	if ( !( trap_Key_GetCatcher() & KEYCATCH_UI ) ) {
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -2230,16 +2257,19 @@ void UI_Refresh( int32_t realtime )
 		trap_S_StartLocalSound( menu_in_sound, CHAN_LOCAL_SOUND );
 		m_entersound = qfalse;
 	}
+	UI_LogFuncEnd();
 }
 
 qboolean UI_CursorInRect (int32_t x, int32_t y, int32_t width, int32_t height)
 {
+	UI_LogFuncBegin();
 	if (uis.cursorx < x ||
 		uis.cursory < y ||
 		uis.cursorx > x+width ||
-		uis.cursory > y+height)
+		uis.cursory > y+height){
+		UI_LogFuncEnd();
 		return qfalse;
-
+	}UI_LogFuncEnd();
 	return qtrue;
 }
 
@@ -2253,13 +2283,16 @@ Take x,y positions as if 640 x 480 and scales them to the proper resolution
 */
 static void UI_DrawNumField (int32_t x, int32_t y, int32_t width, int32_t value,int32_t charWidth,int32_t charHeight)
 {
+	UI_LogFuncBegin();
 	char	num[16], *ptr;
 	int32_t		l;
 	int32_t		frame;
 	int32_t		xWidth;
 
-	if (width < 1)
+	if (width < 1){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	/* draw number string */
 	if (width > 15)
@@ -2296,9 +2329,6 @@ static void UI_DrawNumField (int32_t x, int32_t y, int32_t width, int32_t value,
 	ptr = num;
 	while (*ptr && l)
 	{
-/*if (*ptr == '-')
-	frame = STAT_MINUS;
-  else */
 			frame = *ptr -'0';
 
 		UI_DrawHandlePic( x,y, 16, 16, uis.smallNumbers[frame] );
@@ -2307,7 +2337,7 @@ static void UI_DrawNumField (int32_t x, int32_t y, int32_t width, int32_t value,
 		ptr++;
 		l--;
 	}
-
+	UI_LogFuncEnd();
 }
 
 
@@ -2318,6 +2348,7 @@ UI_PrintMenuGraphics
 */
 void UI_PrintMenuGraphics(menugraphics_s *menuGraphics,int32_t maxI)
 {
+	UI_LogFuncBegin();
 	int32_t i;
 	const char *text;
 
@@ -2371,6 +2402,7 @@ void UI_PrintMenuGraphics(menugraphics_s *menuGraphics,int32_t maxI)
 			;	/* Don't print anything */
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -2381,6 +2413,7 @@ UI_PrecacheMenuGraphics
 */
 void UI_PrecacheMenuGraphics(menugraphics_s *menuGraphics,int32_t maxI)
 {
+	UI_LogFuncBegin();
 	int32_t i;
 
 	for (i=0;i<maxI;++i)
@@ -2390,7 +2423,7 @@ void UI_PrecacheMenuGraphics(menugraphics_s *menuGraphics,int32_t maxI)
 			menuGraphics[i].graphic = trap_R_RegisterShaderNoMip(menuGraphics[i].file);
 		}
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2400,9 +2433,11 @@ MenuFrame_Cache
 */
 static void MenuFrame_Cache(void)
 {
+	UI_LogFuncBegin();
 	s_menuframe.cornerUpper = trap_R_RegisterShaderNoMip("menu/common/corner_ll_47_7.tga");
 	s_menuframe.cornerUpper2= trap_R_RegisterShaderNoMip("menu/common/corner_ul_47_7.tga");
 	s_menuframe.cornerLower = trap_R_RegisterShaderNoMip("menu/common/corner_ll_47_18.tga");
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2412,7 +2447,7 @@ UI_FrameTop_Graphics
 */
 static void UI_FrameTop_Graphics(menuframework_s *menu)
 {
-
+	UI_LogFuncBegin();
 	trap_R_SetColor( colorTable[CT_DKPURPLE2] );
 	UI_DrawHandlePic(  30,  24,  47,  54, uis.whiteShader);	/* Top left hand column */
 
@@ -2439,6 +2474,7 @@ static void UI_FrameTop_Graphics(menuframework_s *menu)
 		UI_DrawProportionalString( menu->titleX, menu->titleY ,menu_normal_text[menu->titleI],
 			 UI_RIGHT|UI_BIGFONT, colorTable[CT_LTORANGE]);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2448,6 +2484,7 @@ UI_FrameBottom_Graphics
 */
 static void UI_FrameBottom_Graphics(void)
 {
+	UI_LogFuncBegin();
 	trap_R_SetColor( colorTable[CT_DKBROWN1]);
 	UI_DrawHandlePic(  30, 147, 128,  64, s_menuframe.cornerUpper2); /* Top corner */
 	UI_DrawHandlePic(  50, 147,  99,   7, uis.whiteShader);
@@ -2475,6 +2512,7 @@ static void UI_FrameBottom_Graphics(void)
 	UI_DrawHandlePic( 96,  438, 268,  18, uis.whiteShader);	/* Bottom front Line */
 
 	trap_R_SetColor(NULL);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2484,6 +2522,7 @@ UI_MenuBottomLineEnd_Graphics
 */
 void UI_MenuBottomLineEnd_Graphics (const char *string,int32_t color, qboolean *space )
 {
+	UI_LogFuncBegin();
 	int32_t holdX,holdLength;
 
 	trap_R_SetColor( colorTable[color]);
@@ -2499,8 +2538,7 @@ void UI_MenuBottomLineEnd_Graphics (const char *string,int32_t color, qboolean *
 		else
 			*space = qtrue;
 	}
-
-	/* Com_Printf( S_COLOR_RED "Length: %i, Width: %i\n", holdLength, (UI_ProportionalStringWidth( Q3_VERSION,UI_TINYFONT)) ); */
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2510,6 +2548,7 @@ UI_MenuFrame
 */
 void UI_MenuFrame(menuframework_s *menu)
 {
+	UI_LogFuncBegin();
 	qboolean space=qtrue;
 
 	if (!s_menuframe.initialized)
@@ -2540,6 +2579,8 @@ void UI_MenuFrame(menuframework_s *menu)
 	/* Print version */
 	if ( space )
 		UI_DrawProportionalString(  371, 445, Q3_VERSION,UI_TINYFONT, colorTable[CT_BLACK]);
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2549,6 +2590,7 @@ UI_MenuFrame2
 */
 void UI_MenuFrame2(menuframework_s *menu)
 {
+	UI_LogFuncBegin();
 	qboolean space=qtrue;
 
 	if (!s_menuframe.initialized)
@@ -2594,50 +2636,9 @@ void UI_MenuFrame2(menuframework_s *menu)
 	/* Print version */
 	if ( space )
 		UI_DrawProportionalString(  371, 445, Q3_VERSION,UI_TINYFONT, colorTable[CT_BLACK]);
+
+	UI_LogFuncEnd();
 }
-
-/*
-=================
-UI_AntiPlagiarise
-RPG-X: TiM- After I noticed how Scott and his buddies
-were having a grand time renaming RPG-X to D4, I thought of this
-little function to make that a little harder from them.
-The function works in 2 phases:
-firstly, it scans each string that is parsed into the game
-and if either D4 or RPG-Y is seen, it quits the game right away, 
-giving them absolutely no reason why.  Hopefully if they're not too smart, 
-they'll think it's some other kind of error :D
-Secondly, (if the arg is 1) if the string 'RPG-X' is NOT present (Like in the main menu title),
-it quits as well. :)
-=================
-*/
-
-const char* illegalStrings[] = { "D4", "d4", "RPG-Y", "rpg-y", "AORP", "aorp" };
-
-/*static void UI_AntiPlagiarise ( const char *textLine, int32_t arg )
-{
-	int32_t i;
-	char language[32];
-
-	trap_Cvar_VariableStringBuffer( "g_language", language, 32 );
-
-	// If it's English then no extension
-	if (language[0]=='\0' || Q_stricmp ("ENGLISH",language)==0)
-	{
-		if (arg == 0 ) {
-			for (i = 0; i < 6; i++ ) {
-				if ( strstr( textLine, illegalStrings[i] ) != 0 ) 
-					trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
-			}
-		}
-
-		else if (arg == 1 ) {
-			if ( !strstr( textLine, "RPG-X" ) ) {
-				trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
-			}
-		}
-	}
-}*/
 
 #define MAXMENUTEXT 15000
 char	MenuText[MAXMENUTEXT];
@@ -2649,6 +2650,7 @@ UI_ParseMenuText
 */
 static void UI_ParseMenuText(void)
 {
+	UI_LogFuncBegin();
 	char *token;
 	char *buffer;
 	int32_t  i;
@@ -2658,9 +2660,6 @@ static void UI_ParseMenuText(void)
 	COM_BeginParseSession();
 
 	buffer = MenuText;
-
- 	 /* RPG-X: TiM - Stop any D3 menu hacks in their tracks :P */
-	/*UI_AntiPlagiarise( buffer, 0 );*/
 
 	i = 1;	/* Zero is null string */
 	while ( buffer ) 
@@ -2682,6 +2681,7 @@ static void UI_ParseMenuText(void)
 		if (i> MNT_MAX)
 		{
 			Com_Printf( S_COLOR_RED "UI_ParseMenuText : too many values! Needed %d but got %d.\n",MNT_MAX,i);
+			UI_LogFuncEnd();
 			return;
 		}
 	}
@@ -2692,11 +2692,7 @@ static void UI_ParseMenuText(void)
 			menu_normal_text[i] = "?";
 		}
 	}
-
-	/* RPG-X: TiM- If 'RPG-X' is missing from any of the main menu titles, kick it ;) */
-	/*for(j=1; j < 12; j++) {
-		UI_AntiPlagiarise( menu_normal_text[j], 1 );
-	}*/
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2706,6 +2702,7 @@ UI_LoadMenuText
 */
 void UI_LoadMenuText()
 {
+	UI_LogFuncBegin();
 	int32_t len;/*,i;*/
 	fileHandle_t	f;
 	char	filename[MAX_QPATH];
@@ -2717,12 +2714,14 @@ void UI_LoadMenuText()
 	if ( !f ) 
 	{
 		Com_Error( ERR_FATAL, "UI_LoadMenuText : MP_NORMALTEXT.DAT file not found!\n");
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( len > MAXMENUTEXT ) 
 	{
 		Com_Error( ERR_FATAL, "UI_LoadMenuText : MP_NORMALTEXT.DAT size (%d) > max (%d)!\n", len, MAXMENUTEXT );
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -2734,6 +2733,8 @@ void UI_LoadMenuText()
 	trap_FS_FCloseFile( f );
 
 	UI_ParseMenuText();
+
+	UI_LogFuncEnd();
 
 }
 
@@ -2747,6 +2748,7 @@ UI_ParseButtonText
 */
 static void UI_ParseButtonText(void)
 {
+	UI_LogFuncBegin();
 	char	*token;
 	char *buffer;
 	int32_t i;
@@ -2755,9 +2757,6 @@ static void UI_ParseButtonText(void)
 	COM_BeginParseSession();
 
 	buffer = ButtonText;
-
-	/* RPG-X: TiM - Stop any D3 menu hacks in their tracks :P */
-	/*UI_AntiPlagiarise( buffer, 0 );*/
 
 	i = 1;	/* Zero is null string */
 	while ( buffer ) 
@@ -2797,6 +2796,7 @@ static void UI_ParseButtonText(void)
 		if (i> MBT_MAX)
 		{
 			Com_Printf( S_COLOR_RED "UI_ParseButtonText : too many values! Needed %d but got %d.\n",MBT_MAX,i);
+			UI_LogFuncEnd();
 			return;
 		}
 	}
@@ -2808,6 +2808,7 @@ static void UI_ParseButtonText(void)
 			menu_button_text[i][1] = "?";
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2817,6 +2818,7 @@ UI_LoadButtonText
 */
 void UI_LoadButtonText()
 {
+	UI_LogFuncBegin();
 	char	filename[MAX_QPATH];
 	int32_t len,i;
 	fileHandle_t	f;
@@ -2828,12 +2830,14 @@ void UI_LoadButtonText()
 	if ( !f ) 
 	{
 		Com_Printf( S_COLOR_RED "UI_LoadButtonText : MP_BUTTONTEXT.DAT file not found!\n");
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( len > MAXBUTTONTEXT ) 
 	{
 		Com_Printf( S_COLOR_RED "UI_LoadButtonText : MP_BUTTONTEXT.DAT too big!\n");
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -2852,6 +2856,8 @@ void UI_LoadButtonText()
 
 	UI_ParseButtonText();
 
+	UI_LogFuncEnd();
+
 }
 
 /*
@@ -2861,6 +2867,7 @@ UI_InitSpinControl
 */
 void UI_InitSpinControl(menulist_s *spincontrol)
 {
+	UI_LogFuncBegin();
 	spincontrol->generic.type		= MTYPE_SPINCONTROL;
 	spincontrol->generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
 	spincontrol->textcolor			= CT_BLACK;
@@ -2869,6 +2876,7 @@ void UI_InitSpinControl(menulist_s *spincontrol)
 	spincontrol->color2				= CT_LTPURPLE1;
 	spincontrol->textX				= MENU_BUTTON_TEXT_X;
 	spincontrol->textY				= MENU_BUTTON_TEXT_Y;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2876,6 +2884,7 @@ UI_LanguageFilename - create a filename with an extension based on the value in 
 */
 void UI_LanguageFilename(char *baseName,char *baseExtension,char *finalName)
 {
+	UI_LogFuncBegin();
 	char	language[32];
 	fileHandle_t	file;
 
@@ -2902,6 +2911,7 @@ void UI_LanguageFilename(char *baseName,char *baseExtension,char *finalName)
 			trap_FS_FCloseFile( file );
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*=========================
@@ -2922,11 +2932,14 @@ generate a new key now
 
 static void SecurityFeedback( qboolean result )
 {
+	UI_LogFuncBegin();
 	trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
+	UI_LogFuncEnd();
 }
 
 void UI_SecurityCodeSetup ( void )
 {
+	UI_LogFuncBegin();
 	fileHandle_t			f;
 	byte					buffer[SECURITY_SIZE];
 	int32_t						fileLen;
@@ -2935,16 +2948,19 @@ void UI_SecurityCodeSetup ( void )
 	static qboolean			ui_SecuritySetup=qfalse;
 
 	/* QVM Hack */
-	if ( !ui_SecuritySetup )
+	if ( !ui_SecuritySetup ){
 		ui_SecuritySetup = qtrue;
-	else
+	}else{
+		UI_LogFuncEnd();
 		return;
+	}
 
 	fileLen = trap_FS_FOpenFile( SECURITY_FILE, &f, FS_READ );
 
 	if ( !f )
 	{
 		UI_ConfirmMenu( menu_normal_text[MNT_ID_NOTTHERE], 0, SecurityFeedback );
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -2952,6 +2968,7 @@ void UI_SecurityCodeSetup ( void )
 	{
 		Com_Printf( S_COLOR_RED "rpgxid.dat is wrong size. %i, should be %i\n", fileLen, SECURITY_SIZE );
 		UI_ConfirmMenu( menu_normal_text[MNT_ID_WRONGSIZE], 0, SecurityFeedback );
+		UI_LogFuncEnd();
 		return;		
 	}
 	
@@ -2974,11 +2991,9 @@ void UI_SecurityCodeSetup ( void )
 			Com_Printf( S_COLOR_RED "ID was %lu, should be %u\n", code->ID, SECURITY_ID );
 
 		UI_ConfirmMenu( menu_normal_text[MNT_ID_INVALID], 0, SecurityFeedback );
+		UI_LogFuncEnd();
 		return;
 	}
-
-	/*Com_Printf( S_COLOR_RED "FileID: %u, RealID: %u. FileHash: %u, ConsoleHash: %u, DefHash: %u. FileCode: %u, ConsoleCode: %u, DefCode: %u.\n",
-			code->ID, SECURITY_ID, code->hash, atoul( sv_securityHash.string ), SECURITY_HASH, code->playerID, atoul( sv_securityCode.string ), SECURITY_PID );*/
 
 	/* if hash is identical to console to default, then generate a new one */
 	if ( code->hash == atoul(sv_securityHash.string)
@@ -3042,32 +3057,13 @@ void UI_SecurityCodeSetup ( void )
 
 		trap_Cvar_Set( "sv_securityHash", va( "%lu", code->hash ) );
 	}
-	
-	/* TiM - NYARRR!!!!! ioEF has a weird config system which appears to trip this system. */
-	/*  *sigh* I guess for now we'll have to isolate this for now */
-
-	/*else if ( code->hash != SECURITY_HASH 
-				&& 
-			code->hash != atoul(sv_securityHash.string) )
-	{
-		//Com_Printf( S_COLOR_RED "code->hash: %u, sv: %u, Default: %u\n", code->hash, atoul(sv_securityHash.string), SECURITY_HASH );
-		UI_ConfirmMenu( menu_normal_text[MNT_ID_INVALID], 0, SecurityFeedback );
-		return;
-	}
-	else if ( code->playerID != SECURITY_PID
-				&&
-				code->playerID != atoul(sv_securityCode.string) )
-	{
-		//Com_Printf( S_COLOR_RED "code->PID: %u, sv: %u, Default: %u\n", code->playerID, atoul(sv_securityCode.string), SECURITY_PID );
-		UI_ConfirmMenu( menu_normal_text[MNT_ID_INVALID], 0, SecurityFeedback );
-		return;
-	}*/
 
 	/*
  	 * update the security code value and lock it each time
 	 * from here, it is subsequently sent to the server on player connect
 	 */
 	trap_Cvar_Set( "sv_securityCode", va( "%lu", code->playerID ) );
+	UI_LogFuncEnd();
 
 }
 

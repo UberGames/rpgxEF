@@ -10,6 +10,7 @@
 //
 //=================================================
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define	PIC_ARROW_UP		"menu/common/arrow_up_16.tga"
 #define	PIC_ARROW_DOWN		"menu/common/arrow_dn_16.tga"
@@ -195,9 +196,12 @@ Mental Note: Study Pointer Arithmetic more....
 static int32_t PlayerModel_CheckInFilter( char* string, filterData_t *filter, int32_t width, int32_t *num ) {
 	int32_t		i=0;
 
+	UI_LogFuncBegin();
+
 	while( filter[i].filterName[0] && i < width ) {
 		if ( !Q_stricmp( filter[i].filterName, string ) ) {
 			//Com_Printf( S_COLOR_RED "String %s already in cell %i\n", array[i], i );
+			UI_LogFuncEnd();
 			return i;
 		}
 
@@ -214,33 +218,9 @@ static int32_t PlayerModel_CheckInFilter( char* string, filterData_t *filter, in
 	
 	//Com_Printf( S_COLOR_RED "Added %s to cell %i", array[i], i );
 
+	UI_LogFuncEnd();
 	return i;
 }
-
-//static int32_t PlayerModel_CheckInArray( char* string, void *array, size_t length ) {
-//	int32_t		i=0;
-//	char	*str=NULL;
-//
-//	for (i = 0; i < length; i++ ) {
-//		str = ((char **)array)[i]; //funky, yet awesome use of the void type lol
-//		
-//		Com_Printf( S_COLOR_RED ": %s\n", str );
-//
-//		if ( !str )
-//			break;
-//
-//		if ( !Q_stricmp( str, string ) ) {
-//			return i;
-//		}
-//	}
-//
-//	if ( i < length )
-//	{
-//		Q_strncpyz( ((char **)array)[i], string, length );
-//	}
-//
-//	return i;
-//}
 
 /*
 =================
@@ -264,8 +244,12 @@ static int32_t PlayerModel_LoadAvailableModels( void ) {
 	char*	temp;
 	char	fileRoute[MAX_QPATH];
 
-	if ( s_playermodel.selectedChar == -1 )
+	UI_LogFuncBegin();
+
+	if ( s_playermodel.selectedChar == -1 ){
+		UI_LogFuncEnd();
 		return -1;
+	}
 
 	Com_sprintf( fileRoute, MAX_QPATH, 
 				"models/players_rpgx/%s", 
@@ -275,8 +259,10 @@ static int32_t PlayerModel_LoadAvailableModels( void ) {
 	memset( &fileList, 0, sizeof ( fileList ) );
 	numFiles = trap_FS_GetFileList( fileRoute, ".model", fileList, sizeof(fileList) );
 
-	if ( numFiles <=0 )
+	if ( numFiles <=0 ){
+		UI_LogFuncEnd();
 		return -1;
+	}
 
 	//Convert to ptr for easier manip
 	filePtr = fileList;
@@ -330,6 +316,7 @@ static int32_t PlayerModel_LoadAvailableModels( void ) {
 		s_playermodel.modelList[i] = Q_strupr( s_playermodel.modelNamesUpr[i] );
 	}
 
+	UI_LogFuncEnd();
 	return j;
 }
 
@@ -360,8 +347,12 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 	int32_t				starFlags;
 	char			skins[MAX_PLAYERSKINS][64];
 
-	if ( s_playermodel.selectedChar == -1 )
+	UI_LogFuncBegin();
+
+	if ( s_playermodel.selectedChar == -1 ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	/*memset( s_playermodel.skinNames,	0, sizeof( s_playermodel.skinNames ) );
 	memset( s_playermodel.skinNamesUpr,	0, sizeof( s_playermodel.skinNamesUpr ) );
@@ -392,6 +383,7 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 	if ( numFiles <= 0 )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: No Skinset files found!\n" );	
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -429,8 +421,10 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 	j = 0;
 	while ( j < MAX_PLAYERMODELS )
 	{
-		if ( !s_playermodel.modelNames[j][0] )
+		if ( !s_playermodel.modelNames[j][0] ){
+			UI_LogFuncEnd();
 			break;
+		}
 		
 		Com_sprintf( filePath, sizeof( filePath ),
 			"models/players_rpgx/%s/%s.model", 
@@ -442,11 +436,13 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 		
 		if ( fileLen <= 0 ) {
 			Com_Printf( S_COLOR_RED "File not found: %s\n", filePath );
+			UI_LogFuncEnd();
 			return;
 		}
 
 		if ( fileLen > 20000 ) {
 			Com_Printf( S_COLOR_RED "File exceeded maximum size: %s\n", filePath );
+			UI_LogFuncEnd();
 			return;
 		}
 
@@ -455,8 +451,10 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 
 		trap_FS_FCloseFile( f );
 
-		if ( !fileBuffer[0] )
+		if ( !fileBuffer[0] ){
+			UI_LogFuncEnd();
 			return;
+		}
 
 		filePtr = fileBuffer;
 
@@ -556,6 +554,7 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 		numSkins=0;
 		j++;
 	}
+	UI_LogFuncEnd();
 }
 
 static int32_t QDECL CharMediaList_Compare( const void *ptr1, const void *ptr2 )
@@ -563,21 +562,12 @@ static int32_t QDECL CharMediaList_Compare( const void *ptr1, const void *ptr2 )
 	const char *str1, *str2;
 	char chr1, chr2;
 
+	UI_LogFuncBegin();
+
 	str1 = (const char *)ptr1;
 	str2 = (const char *)ptr2;
 
 	//Com_Printf( "STR1: %s STR2: %s\n", str1, str2 );
-
-	//default data always comes first
-	//Actually... we came this far, let's just make it all alphabetic
-	/*if ( !Q_stricmp( str1, DEFAULT_SKIN ) || !Q_stricmp( str1, DEFAULT_MODEL ) )
-	{
-		return -1;
-	}
-	else if ( !Q_stricmp( str2, DEFAULT_SKIN ) || !Q_stricmp( str2, DEFAULT_MODEL ) )
-	{
-		return 1;
-	}*/
 
 	chr1 = *str1;
 	chr2 = *str2;
@@ -594,6 +584,7 @@ static int32_t QDECL CharMediaList_Compare( const void *ptr1, const void *ptr2 )
 	}
 
 	//based off of their ASCII order.
+	UI_LogFuncEnd();
 	return ((int32_t)chr1 - (int32_t)chr2);
 }
 
@@ -602,12 +593,16 @@ static int32_t QDECL FilterList_Compare( const void *ptr1, const void *ptr2 )
 	const char *str1, *str2;
 	char chr1, chr2;
 
+	UI_LogFuncBegin();
+
 	str1 = ((filterData_t *)ptr1)->filterName;
 	str2 = ((filterData_t *)ptr2)->filterName;
 
 	//hacky override. Make sure 'All' comes first.
-	if ( !Q_stricmp( str1, "ALL" ) )
+	if ( !Q_stricmp( str1, "ALL" ) ){
+		UI_LogFuncEnd();
 		return -1;
+	}
 
 	chr1 = *str1;
 	chr2 = *str2;
@@ -627,6 +622,7 @@ static int32_t QDECL FilterList_Compare( const void *ptr1, const void *ptr2 )
 	}
 
 	//based off of their ASCII order.
+	UI_LogFuncEnd();
 	return ((int32_t)chr1 - (int32_t)chr2);
 }
 
@@ -639,8 +635,11 @@ static int32_t PlayerModel_PopulateSkinsList ( void ) {
 	int32_t i;
 	int32_t j;
 
+	UI_LogFuncBegin();
+
 	if ( !s_playermodel.skinNames[s_playermodel.charModel.curvalue][0][0] ) {
 		Com_Printf( S_COLOR_RED "ERROR: No valid skins found.\n" );	
+		UI_LogFuncEnd();
 		return -1;
 	}
 
@@ -671,6 +670,7 @@ static int32_t PlayerModel_PopulateSkinsList ( void ) {
 		}
 	}
 
+	UI_LogFuncEnd();
 	return j;
 }
 
@@ -689,6 +689,8 @@ code area. :)
 static void PlayerModel_OffsetCharList( int32_t* offset ) {
 	char*	buffer; //intermediate value so performing strupr won't pwn our case sensitive data
 	int32_t		i;
+
+	UI_LogFuncBegin();
 
 	if ( *offset < 0 ) {
 		*offset = 0;
@@ -719,6 +721,7 @@ static void PlayerModel_OffsetCharList( int32_t* offset ) {
 
 		Q_strupr( s_playermodel.charMenu[i].textPtr );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -733,6 +736,8 @@ static void PlayerModel_RebuildCharMenu( void ) {
 	int32_t i;
 	qboolean	raceValid=qfalse;
 	qboolean	genderValid=qfalse;
+
+	UI_LogFuncBegin();
 
 	s_playermodel.numChars = 0;
 	memset( &s_playermodel.charNamesUpr, 0, sizeof( s_playermodel.charNamesUpr ) );
@@ -778,6 +783,7 @@ static void PlayerModel_RebuildCharMenu( void ) {
 
 	s_playermodel.scrollOffset = 0;
 	PlayerModel_OffsetCharList( &s_playermodel.scrollOffset );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -787,11 +793,13 @@ PlayerModel_SpinPlayer
 */
 static void PlayerModel_SpinPlayer( void* ptr, int32_t event)
 {
+	UI_LogFuncBegin();
 	if ( event == QM_ACTIVATED ) 
 	{
 		uis.spinView = qtrue;
 		uis.cursorpx = uis.cursorx;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -801,6 +809,8 @@ PlayerModel_UpdateModel
 */
 static void PlayerModel_UpdateModel( void )
 {
+	UI_LogFuncBegin();
+
 	vec3_t	viewangles;
 	vec3_t	moveangles;
 
@@ -813,7 +823,7 @@ static void PlayerModel_UpdateModel( void )
 
 	UI_PlayerInfo_SetModel( &s_playermodel.playerinfo, s_playermodel.modelData );
 	UI_PlayerInfo_SetInfo( &s_playermodel.playerinfo, BOTH_WALK1, BOTH_WALK1, viewangles, moveangles, WP_0, trap_Cvar_VariableValue( "height" ), trap_Cvar_VariableValue( "weight" ), qfalse );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -823,6 +833,8 @@ PlayerModel_SaveChanges
 */
 static void PlayerModel_SaveChanges( void )
 {
+	UI_LogFuncBegin();
+
 	trap_Cvar_Set( "model", va("%s/%s/%s", 
 					s_playermodel.charNames[s_playermodel.selectedChar].charName, 
 					s_playermodel.modelNames[s_playermodel.charModel.curvalue],
@@ -835,6 +847,7 @@ static void PlayerModel_SaveChanges( void )
 
 	Q_strncpyz( s_playermodel.modelData, UI_Cvar_VariableString( "model" ), sizeof ( s_playermodel.modelData ) );
 	PlayerModel_UpdateModel( );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -843,6 +856,8 @@ PlayerModel_CheckForChange
 ==================
 */
 static void PlayerModel_CheckForChange( void ) {
+	UI_LogFuncBegin();
+
 	qboolean enableSaveButton=qfalse;
 	
 	if ( s_playermodel.storedData.orgChar != s_playermodel.selectedChar )
@@ -866,6 +881,7 @@ static void PlayerModel_CheckForChange( void ) {
 	else {
 		s_playermodel.apply.generic.flags = QMF_INACTIVE | QMF_GRAYED;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -875,12 +891,15 @@ PlayerModel_SetupScrollBar
 */
 static void PlayerModel_SetupScrollBar( menuaction_s *bar )
 {
+	UI_LogFuncBegin();
+
 	int32_t height;
 
 	//first make sure it's worth enabling this at all
 	if ( s_playermodel.numChars <= MAX_MENULISTITEMS )
 	{
 		bar->generic.flags = QMF_INACTIVE | QMF_HIDDEN;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -909,7 +928,7 @@ static void PlayerModel_SetupScrollBar( menuaction_s *bar )
 
 	bar->height = height;
 	bar->generic.bottom = bar->generic.y + height;
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -919,9 +938,11 @@ PlayerModel_UpdateScrollBar
 */
 static void PlayerModel_UpdateScrollBar( menuaction_s *bar )
 {
+	UI_LogFuncBegin();
 	bar->generic.y = MAX_SCROLLTOP + s_playermodel.scrollOffset*(s_playermodel.scrollData.doubleStep ? 0.5 : 1);
 	bar->generic.top = bar->generic.y;
 	bar->generic.bottom = bar->generic.top + bar->height;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -931,9 +952,11 @@ PlayerModel_MenuEvent
 */
 static void PlayerModel_MenuEvent( void* ptr, int32_t event )
 {
-
-	if (event != QM_ACTIVATED)
+	UI_LogFuncBegin();
+	if (event != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 	
 	switch (((menucommon_s*)ptr)->id)
 	{
@@ -1072,6 +1095,7 @@ static void PlayerModel_MenuEvent( void* ptr, int32_t event )
 			break;
 	}
 	PlayerModel_CheckForChange();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1081,6 +1105,7 @@ PlayerModel_MenuKey
 */
 static sfxHandle_t PlayerModel_MenuKey( int32_t key )
 {
+	UI_LogFuncBegin();
 	switch( key )
 	{
 		case K_MOUSE1:
@@ -1093,6 +1118,7 @@ static sfxHandle_t PlayerModel_MenuKey( int32_t key )
 			break;
 	}
 	
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &s_playermodel.menu, key ) );
 }
 
@@ -1103,6 +1129,7 @@ PlayerModel_DrawPlayer
 */
 static void PlayerModel_DrawPlayer( void *self )
 {
+	UI_LogFuncBegin();
 	menubitmap_s*	b;
 	vec3_t			origin = {-40, 2.5, -4 }; //-3.8
 
@@ -1110,10 +1137,12 @@ static void PlayerModel_DrawPlayer( void *self )
 
 	if( trap_MemoryRemaining() <= LOW_MEMORY ) {
 		UI_DrawProportionalString( b->generic.x, b->generic.y + b->height / 2, "LOW MEMORY", UI_LEFT, color_red );
+		UI_LogFuncEnd();
 		return;
 	}
 
 	UI_DrawPlayer( (float)b->generic.x, (float)b->generic.y, (float)b->width, (float)b->height, origin, &s_playermodel.playerinfo, (int32_t)(uis.realtime/1.5) );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1132,6 +1161,7 @@ static int32_t QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2
 
 static void PlayerModel_BuildList( void )
 {
+	UI_LogFuncBegin();
 	int32_t			numdirs;
 	int32_t			numfiles;
 	char		dirlist[8192];
@@ -1238,27 +1268,6 @@ static void PlayerModel_BuildList( void )
 
 				//Com_Printf( S_COLOR_RED "Race %s Loaded\n", token );
 
-				//tempBuff->race = PlayerModel_CheckInArray( token, s_playermodel.raceNames, MAX_RACES );
-
-				//big dirty hack
-				/*for( k=0; k < MAX_RACES; k++ )
-				{
-					if ( !s_playermodel.raceNames[k].raceName[0] )
-					{
-						Q_strncpyz( s_playermodel.raceNames[k].raceName, token, sizeof( s_playermodel.raceNames[k].raceName ) );
-						tempBuff->race = s_playermodel.raceNames[k].raceIndex = k;
-						s_playermodel.numRaces++;
-
-						break;
-					}
-
-					if ( !Q_stricmp( s_playermodel.raceNames[k].raceName, token ) )
-					{
-						tempBuff->race = s_playermodel.raceNames[k].raceIndex = k;
-						break;
-					}
-				}*/
-
 				tempBuff->race = PlayerModel_CheckInFilter( token, s_playermodel.raceList, MAX_RACES, &s_playermodel.numRaces );
 				//Com_Printf( S_COLOR_RED "Number of races now: %i\n",  s_playermodel.numRaces );
 
@@ -1278,24 +1287,6 @@ static void PlayerModel_BuildList( void )
 		}
 	}
 
-	//TiM - Flip the array so it's the right order
-	/*
-	* RPG-X | Phenix | 27/03/2007
-	* Removed code for Task#39 (List was fliped to be Z-A!!!!)*/
-	//for ( i = 0; i < s_playermodel.numChars; i++ ) {
-	//	offset = ( ( s_playermodel.numChars - i ) - 1);
-
-	//	Q_strncpyz( s_playermodel.charNames[i].charName, 
-	//				tempBuff[offset].charName, 
-	//				sizeof( s_playermodel.charNames[i].charName ) );
-
-	//	s_playermodel.charNames[i].race = tempBuff[offset].race;
-	//	s_playermodel.charNames[i].gender = tempBuff[offset].gender;
-	//	s_playermodel.charNames[i].index = tempBuff[offset].index;
-
-	//	Q_strncpyz( s_playermodel.charNamesUpr[i], s_playermodel.charNames[i].charName, sizeof( s_playermodel.charNamesUpr[i] ) );
-	//}
-
 	//RPG-X | TiM | 30-4-2007
 	//This loop obviously isn't working well enough.
 	//Bringing out the big guns. Using the Windows/Q3
@@ -1307,6 +1298,7 @@ static void PlayerModel_BuildList( void )
 	//copy to the upper case list for rendering to the menu
 	for ( i = 0; i < s_playermodel.numChars; i++ )
 		Q_strncpyz( s_playermodel.charNamesUpr[i], s_playermodel.charNames[i].charName, sizeof( s_playermodel.charNamesUpr[i] ) ); 
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1323,6 +1315,7 @@ name.
 */
 static int32_t QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2 )
 {
+	UI_LogFuncBegin();
 	char			*chr1, *chr2;
 	int32_t				delta;
 
@@ -1338,8 +1331,10 @@ static int32_t QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2
 	delta = (int32_t)*chr1 - (int32_t)*chr2;
 	
 	//if characters weren't the same
-	if ( delta != 0 )
+	if ( delta != 0 ){
+		UI_LogFuncEnd();
 		return delta;
+	}
 
 	//else loop through the rest
 	while ( chr1 && chr2 && delta == 0 )
@@ -1350,6 +1345,7 @@ static int32_t QDECL PlayerListOrder_Compare( const void *ptr1, const void *ptr2
 		chr2++;
 	}
 
+	UI_LogFuncEnd();
 	return delta;
 }
 
@@ -1360,6 +1356,7 @@ PlayerModel_SetMenuItems
 */
 static void PlayerModel_SetMenuItems( void )
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	char*			temp;
 	//char			model[64];
@@ -1480,6 +1477,7 @@ static void PlayerModel_SetMenuItems( void )
 	s_playermodel.storedData.orgChar = s_playermodel.selectedChar;
 	s_playermodel.storedData.orgModel = s_playermodel.charModel.curvalue;
 	s_playermodel.storedData.orgSkin = s_playermodel.charSkin.curvalue;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1489,6 +1487,7 @@ PlayerModel_DrawScrollBar
 */
 static void PlayerModel_DrawScrollBar( void *self )
 {
+	UI_LogFuncBegin();
 	qboolean		focus;
 	menuaction_s	*bar;
 	int32_t				*y;
@@ -1509,18 +1508,23 @@ static void PlayerModel_DrawScrollBar( void *self )
 	UI_DrawHandlePic( bar->generic.x,  bar->generic.y,  bar->width,  bar->height, uis.whiteShader);
 	trap_R_SetColor( NULL );
 
-	if ( !s_playermodel.scrollData.mouseDown )
+	if ( !s_playermodel.scrollData.mouseDown ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	if ( !trap_Key_IsDown( K_MOUSE1 ) )
 	{
 		s_playermodel.scrollData.mouseDown = qfalse;
 		uis.activemenu->noNewSelecting = qfalse;
+		UI_LogFuncEnd();
 		return;
 	}
 
-	if ( uis.cursory == s_playermodel.scrollData.yStart )
+	if ( uis.cursory == s_playermodel.scrollData.yStart ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	y = &bar->generic.y;
 
@@ -1542,6 +1546,7 @@ static void PlayerModel_DrawScrollBar( void *self )
 	bar->generic.bottom = *y + bar->height;
 
 	s_playermodel.scrollData.yStart = uis.cursory;
+	UI_LogFuncEnd();
 }
 
 
@@ -1552,6 +1557,7 @@ PlayerSettingsMenu_Graphics
 */
 void PlayerModelMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	// Draw the basic screen layout
 	UI_MenuFrame2(&s_playermodel.menu);
 
@@ -1676,6 +1682,7 @@ void PlayerModelMenu_Graphics (void)
 			
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1685,9 +1692,11 @@ PlayerSettings_MenuDraw
 */
 static void PlayerModel_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	PlayerModelMenu_Graphics();
 
 	Menu_Draw( &s_playermodel.menu );
+	UI_LogFuncEnd();
 }
 /*
 =================
@@ -1696,6 +1705,7 @@ PlayerModel_MenuInit
 */
 static void PlayerModel_MenuInit(int32_t menuFrom)
 {
+	UI_LogFuncBegin();
 	int32_t			i;
 	//int32_t			j;
 	//int32_t			k;
@@ -2081,6 +2091,7 @@ static void PlayerModel_MenuInit(int32_t menuFrom)
 
 	// update user interface
 	PlayerModel_UpdateModel();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2090,6 +2101,7 @@ PlayerModel_Cache
 */
 void PlayerModel_Cache( void )
 {
+	UI_LogFuncBegin();
 	//int32_t	i;
 
 	s_playermodel.corner_ll_4_18	= trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_18");
@@ -2100,6 +2112,7 @@ void PlayerModel_Cache( void )
 
 	trap_R_RegisterShaderNoMip(PIC_ARROW_UP);
 	trap_R_RegisterShaderNoMip(PIC_ARROW_DOWN);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2109,6 +2122,7 @@ PlayerModel_DrawLoading
 */
 static void PlayerModel_DrawLoading( void )
 {
+	UI_LogFuncBegin();
 	//register the corners now
 	qhandle_t cornerPic = trap_R_RegisterShaderNoMip("menu/common/corner_ll_47_18.tga");
 	int32_t	y = 50;
@@ -2129,6 +2143,7 @@ static void PlayerModel_DrawLoading( void )
 	UI_DrawHandlePic(214,y+265,  261, 18, uis.whiteShader);		// Bottom
 
 	UI_DrawProportionalString(345,y+159,menu_normal_text[MNT_LOADING],UI_SMALLFONT | UI_CENTER,colorTable[CT_LTGOLD1]);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2138,6 +2153,7 @@ PlayerModel_Cache
 */
 void UI_PlayerModelMenu(int32_t menuFrom)
 {
+	UI_LogFuncBegin();
 	//TiM - Spawn a quick "loading" box
 	//Sometimes this gives me the eerie creeps the game froze
 	PlayerModel_DrawLoading();
@@ -2147,6 +2163,7 @@ void UI_PlayerModelMenu(int32_t menuFrom)
 	UI_PushMenu( &s_playermodel.menu );
 
 	//Menu_SetCursorToItem( &s_playermodel.menu, &s_playermodel.pics[s_playermodel.selectedmodel % MAX_MODELSPERPAGE] );
+	UI_LogFuncEnd();
 }
 
 

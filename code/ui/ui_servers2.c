@@ -10,6 +10,7 @@ MULTIPLAYER MENU (SERVER BROWSER)
 
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 
 static menubitmap_s			s_find_server;
@@ -65,54 +66,12 @@ static menubitmap_s			s_create_server;
 #define SORT_GAME			3
 #define SORT_PING			4
 
-/*#define GAMES_ALL			0
-#define GAMES_FFA			1
-#define GAMES_TEAMPLAY		2
-#define GAMES_TOURNEY		3
-#define GAMES_CTF			4
-#define GAMES_EXCESSIVE			5
-#define GAMES_FEDERATION			6
-#define GAMES_GLADIATOR			7
-#define GAMES_IN2TAGIB			8
-#define GAMES_PINBALL			9
-#define GAMES_Q32EF			10
-#define GAMES_RPG			11
-#define GAMES_TEAMELITE			12
-#define GAMES_RPGX			13*/
-
 #define GAMES_ALL			0
 #define GAMES_RPGX			1
 #define GAMES_FFA			2
 #define GAMES_TEAMPLAY		3
 #define GAMES_TOURNEY		4
 #define GAMES_CTF			5
-
-/*
-static const char *master_items[] = {
-	"Local",
-	"Mplayer",
-	"Internet",
-	"Favorites",
-	0
-};
-
-static const char *servertype_items[] = {
-	"All",
-	"Free For All",
-	"Team Deathmatch",
-	"Tournament",
-	"Capture the Flag",
-	0
-};
-static const char *sortkey_items[] = {
-	"Server Name",
-	"Map Name",
-	"Open Player Spots",
-	"Game Type",
-	"Ping Time",
-	0
-};
-*/
 
 static int32_t master_items[] = 
 {
@@ -135,14 +94,6 @@ static int32_t servertype_items[] =
 	MNT_SERVERTYPE_TEAM_DEATHMATCH,
 	MNT_SERVERTYPE_TOURNAMENT,
 	MNT_SERVERTYPE_CAPTURETHEFLAG,
-	/*MNT_SERVERTYPE_EXCESSIVE,
-	MNT_SERVERTYPE_FEDERATION,
-	MNT_SERVERTYPE_GLADIATOR,
-	MNT_SERVERTYPE_IN2TAGIB,
-	MNT_SERVERTYPE_PINBALL,
-	MNT_SERVERTYPE_Q32EF,
-	MNT_SERVERTYPE_RPG,
-	MNT_SERVERTYPE_TEAMELITE,*/
 	0
 };
 
@@ -180,15 +131,6 @@ char* gamenames[] = {
 	"SP ",	// single player
 	"TDM",	// team deathmatch
 	"CTF",	// capture the flag
-	/*"EXCESSIVE",
-	"FEDERATION",
-	"GLADIATOR",
-	"IN2TAGIB",
-	"PINBALL",
-	"Q32EF",
-	"RPG",
-	"TEAMELITE",
-	"RPG-X", //The best gametype of them all ;)*/
 	"???",
 };
 
@@ -199,7 +141,7 @@ static char* netnames[] = {
 	NULL
 };
 
-static char quake3worldMessage[] = "For more information, please visit :   www.rpg-x.net   www.ravensoft.com/eliteforce   www.startrek.com";
+static char quake3worldMessage[] = "For more information, please visit :   www.ubergames.net   www.ravensoft.com/eliteforce   www.startrek.com";
 
 typedef struct {
 	char	adrstr[MAX_ADDRESSLENGTH];
@@ -283,8 +225,6 @@ static servernode_t		g_localserverlist[MAX_LOCALSERVERS];
 static int32_t				g_numlocalservers;
 static servernode_t		g_favoriteserverlist[MAX_FAVORITESERVERS];
 static int32_t				g_numfavoriteservers;
-//static servernode_t		g_mplayerserverlist[MAX_GLOBALSERVERS];
-//static int32_t				g_nummplayerservers;
 static int32_t				g_servertype;
 static int32_t				g_gametype;
 static int32_t				g_sortkey;
@@ -298,12 +238,14 @@ ArenaServers_MaxPing
 =================
 */
 int32_t ArenaServers_MaxPing( void ) { /*static*/
+	UI_LogFuncBegin();
 	int32_t		maxPing;
 
 	maxPing = (int32_t)trap_Cvar_VariableValue( "cl_maxPing" );
 	if( maxPing < 100 ) {
 		maxPing = 100;
 	}
+	UI_LogFuncEnd();
 	return maxPing;
 }
 
@@ -314,6 +256,7 @@ ArenaServers_Compare
 =================
 */
 static int32_t QDECL ArenaServers_Compare( const void *arg1, const void *arg2 ) {
+	UI_LogFuncBegin();
 	float			f1;
 	float			f2;
 	servernode_t*	t1;
@@ -324,9 +267,11 @@ static int32_t QDECL ArenaServers_Compare( const void *arg1, const void *arg2 ) 
 
 	switch( g_sortkey ) {
 	case SORT_HOST:
+		UI_LogFuncEnd();
 		return Q_stricmp( t1->hostname, t2->hostname );
 
 	case SORT_MAP:
+		UI_LogFuncEnd();
 		return Q_stricmp( t1->mapname, t2->mapname );
 
 	case SORT_CLIENTS:
@@ -341,32 +286,41 @@ static int32_t QDECL ArenaServers_Compare( const void *arg1, const void *arg2 ) 
 		}
 
 		if( f1 < f2 ) {
+			UI_LogFuncEnd();
 			return 1;
 		}
 		if( f1 == f2 ) {
+			UI_LogFuncEnd();
 			return 0;
 		}
+		UI_LogFuncEnd();
 		return -1;
 
 	case SORT_GAME:
 		if( t1->gametype < t2->gametype ) {
+			UI_LogFuncEnd();
 			return -1;
 		}
 		if( t1->gametype == t2->gametype ) {
+			UI_LogFuncEnd();
 			return 0;
 		}
+		UI_LogFuncEnd();
 		return 1;
 
 	case SORT_PING:
 		if( t1->pingtime < t2->pingtime ) {
+			UI_LogFuncEnd();
 			return -1;
 		}
 		if( t1->pingtime > t2->pingtime ) {
+			UI_LogFuncEnd();
 			return 1;
 		}
+		UI_LogFuncEnd();
 		return Q_stricmp( t1->hostname, t2->hostname );
 	}
-
+	UI_LogFuncEnd();
 	return 0;
 }
 
@@ -377,12 +331,14 @@ ArenaServers_Go
 =================
 */
 static void ArenaServers_Go( void ) {
+	UI_LogFuncBegin();
 	servernode_t*	servernode;
 
 	servernode = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;
 	if( servernode ) {
 		trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", servernode->adrstr ) );
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -392,6 +348,7 @@ ArenaServers_UpdatePicture
 =================
 */
 static void ArenaServers_UpdatePicture( void ) {
+	UI_LogFuncBegin();
 	static char		picname[64];
 	servernode_t*	servernodeptr;
 	qhandle_t hpic;
@@ -415,6 +372,7 @@ static void ArenaServers_UpdatePicture( void ) {
 
 	// force shader update during draw
 	g_arenaservers.mappic.shader = 0;
+	UI_LogFuncEnd();
 }
 
 
@@ -424,6 +382,7 @@ ArenaServers_UpdateMenu
 =================
 */
 static void ArenaServers_UpdateMenu( void ) {
+	UI_LogFuncBegin();
 	int32_t				i;
 	int32_t				j;
 	int32_t				count;
@@ -517,6 +476,7 @@ static void ArenaServers_UpdateMenu( void ) {
 
 		// update picture
 		ArenaServers_UpdatePicture();
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -565,46 +525,6 @@ static void ArenaServers_UpdateMenu( void ) {
 			}
 			break;
 
-		/*case GAMES_EXCESSIVE:
-			if( Q_stricmp(servernodeptr->gamename, "excessive") ) {
-				continue;
-			}
-			break;
-		case GAMES_FEDERATION:
-			if( Q_stricmp(servernodeptr->gamename, "federation") ) {
-				continue;
-			}
-			break;
-		case GAMES_GLADIATOR:
-			if( Q_stricmp(servernodeptr->gamename, "gladiator") ) {
-				continue;
-			}
-			break;
-		case GAMES_IN2TAGIB:
-			if( Q_stricmp(servernodeptr->gamename, "in2tagib") ) {
-				continue;
-			}
-			break;
-		case GAMES_PINBALL:
-			if( Q_stricmp(servernodeptr->gamename, "pinball") ) {
-				continue;
-			}
-			break;
-		case GAMES_Q32EF:
-			if( Q_stricmp(servernodeptr->gamename, "q32ef") ) {
-				continue;
-			}
-			break;
-		case GAMES_RPG:
-			if( Q_stricmp(servernodeptr->gamename, "rpg") ) {
-				continue;
-			}
-			break;
-		case GAMES_TEAMELITE:
-			if( Q_stricmp(servernodeptr->gamename, "teamelite") ) {
-				continue;
-			}
-			break;*/
 		case GAMES_RPGX:
 			if( Q_stricmp(servernodeptr->gamename, RPGX_SERVERNAME ) ) {
 				continue;
@@ -655,6 +575,7 @@ static void ArenaServers_UpdateMenu( void ) {
 
 	// update picture
 	ArenaServers_UpdatePicture();
+	UI_LogFuncEnd();
 }
 
 
@@ -665,12 +586,15 @@ ArenaServers_Remove
 */
 static void ArenaServers_Remove( void )
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	servernode_t*	servernodeptr;
 	table_t*		tableptr;
 
-	if (!g_arenaservers.list.numitems)
+	if (!g_arenaservers.list.numitems){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	// remove selected item from display list
 	// items are in scattered order due to sort and cull
@@ -713,6 +637,7 @@ static void ArenaServers_Remove( void )
 
 	g_arenaservers.numqueriedservers = g_arenaservers.numfavoriteaddresses;
 	g_arenaservers.currentping       = g_arenaservers.numfavoriteaddresses;
+	UI_LogFuncEnd();
 }
 
 
@@ -723,6 +648,7 @@ ArenaServers_Insert
 */
 static void ArenaServers_Insert( char* adrstr, char* info, int32_t pingtime )
 {
+	UI_LogFuncBegin();
 	servernode_t*	servernodeptr;
 	char*			s;
 	int32_t				i;
@@ -730,6 +656,7 @@ static void ArenaServers_Insert( char* adrstr, char* info, int32_t pingtime )
 	if ((pingtime >= ArenaServers_MaxPing()) && (g_servertype != AS_FAVORITES))
 	{
 		// slow global or local servers do not get entered
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -798,6 +725,7 @@ static void ArenaServers_Insert( char* adrstr, char* info, int32_t pingtime )
 			Q_strncpyz( servernodeptr->gamename, gamenames[i], sizeof(servernodeptr->gamename) );
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -810,6 +738,7 @@ Insert nonresponsive address book entries into display lists.
 */
 void ArenaServers_InsertFavorites( void )
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 	int32_t		j;
 	char	info[MAX_INFO_STRING];
@@ -830,6 +759,7 @@ void ArenaServers_InsertFavorites( void )
 			ArenaServers_Insert( g_arenaservers.favoriteaddresses[i], info, ArenaServers_MaxPing() );
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -842,6 +772,7 @@ Load cvar address book entries into local lists.
 */
 void ArenaServers_LoadFavorites( void )
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	int32_t				j;
 	int32_t				numtempitems;
@@ -905,6 +836,7 @@ void ArenaServers_LoadFavorites( void )
 		// list will be automatically refreshed when selected
 		g_numfavoriteservers = 0;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -915,9 +847,12 @@ ArenaServers_StopRefresh
 */
 static void ArenaServers_StopRefresh( void )
 {
-	if (!g_arenaservers.refreshservers)
+	UI_LogFuncBegin();
+	if (!g_arenaservers.refreshservers){
 		// not currently refreshing
+		UI_LogFuncEnd();
 		return;
+	}
 
 	g_arenaservers.refreshservers = qfalse;
 
@@ -938,6 +873,7 @@ static void ArenaServers_StopRefresh( void )
 	qsort( g_arenaservers.serverlist, *g_arenaservers.numservers, sizeof( servernode_t ), ArenaServers_Compare);
 
 	ArenaServers_UpdateMenu();
+	UI_LogFuncEnd();
 }
 
 
@@ -948,6 +884,7 @@ ArenaServers_DoRefresh
 */
 static void ArenaServers_DoRefresh( void )
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 	int32_t		j;
 	int32_t		time;
@@ -963,6 +900,7 @@ static void ArenaServers_DoRefresh( void )
 			if (!trap_LAN_GetLocalServerCount())
 			{
 				// still waiting for response
+				UI_LogFuncEnd();
 				return;
 			}
 		}
@@ -971,6 +909,7 @@ static void ArenaServers_DoRefresh( void )
 			if (trap_LAN_GetGlobalServerCount() < 0)
 			{
 				// still waiting for master server response
+				UI_LogFuncEnd();
 				return;
 			}
 		}
@@ -979,6 +918,7 @@ static void ArenaServers_DoRefresh( void )
 	if (uis.realtime < g_arenaservers.nextpingtime)
 	{
 		// wait for time trigger
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1061,9 +1001,6 @@ static void ArenaServers_DoRefresh( void )
 			break;
 	}
 
-//	if (g_arenaservers.numqueriedservers > g_arenaservers.maxservers)
-//		g_arenaservers.numqueriedservers = g_arenaservers.maxservers;
-
 	// send ping requests in reasonable bursts
 	// iterate ping through all found servers
 	for (i=0; i<MAX_PINGREQUESTS && g_arenaservers.currentping < g_arenaservers.numqueriedservers; i++)
@@ -1117,11 +1054,13 @@ static void ArenaServers_DoRefresh( void )
 	{
 		// all pings completed
 		ArenaServers_StopRefresh();
+		UI_LogFuncEnd();
 		return;
 	}
 
 	// update the user interface with ping status
 	ArenaServers_UpdateMenu();
+	UI_LogFuncEnd();
 }
 
 
@@ -1132,6 +1071,7 @@ ArenaServers_StartRefresh
 */
 static void ArenaServers_StartRefresh( void )
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 	char	myargs[32];
 
@@ -1157,6 +1097,7 @@ static void ArenaServers_StartRefresh( void )
 
 	if( g_servertype == AS_LOCAL ) {
 		trap_Cmd_ExecuteText( EXEC_APPEND, "localservers\n" );
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1164,23 +1105,8 @@ static void ArenaServers_StartRefresh( void )
 	{
 		i = g_servertype - AS_GLOBAL1;
 
-//		if( g_servertype == AS_GLOBAL1 ) {
-//			i = 0;
-//		}
-//		else {
-//			i = 1;
-//		}
-
 		switch( g_arenaservers.gametype.curvalue ) {
 		default:
-		/*case GAMES_EXCESSIVE:
-		case GAMES_FEDERATION:
-		case GAMES_GLADIATOR:
-		case GAMES_IN2TAGIB:
-		case GAMES_PINBALL:
-		case GAMES_Q32EF:
-		case GAMES_RPG:
-		case GAMES_TEAMELITE:*/
 		case GAMES_RPGX:
 		case GAMES_ALL:
 			myargs[0] = 0;
@@ -1203,7 +1129,6 @@ static void ArenaServers_StartRefresh( void )
 			break;
 		}
 
-
 		if (g_emptyservers) {
 			strcat(myargs, " empty");
 		}
@@ -1214,6 +1139,7 @@ static void ArenaServers_StartRefresh( void )
 
 		trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d %d%s\n", i, (int32_t)trap_Cvar_VariableValue( "protocol" ), myargs ) );
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -1224,6 +1150,7 @@ ArenaServers_SaveChanges
 */
 void ArenaServers_SaveChanges( void )
 {
+	UI_LogFuncBegin();
 	int32_t	i;
 
 	for (i=0; i<g_arenaservers.numfavoriteaddresses; i++)
@@ -1231,6 +1158,8 @@ void ArenaServers_SaveChanges( void )
 
 	for (; i<MAX_FAVORITESERVERS; i++)
 		trap_Cvar_Set( va("server%d",i+1), "" );
+
+	UI_LogFuncEnd();
 }
 
 
@@ -1240,12 +1169,16 @@ ArenaServers_Sort
 =================
 */
 void ArenaServers_Sort( int32_t type ) {
+	UI_LogFuncBegin();
 	if( g_sortkey == type ) {
+		UI_LogFuncEnd();
 		return;
 	}
 
 	g_sortkey = type;
 	qsort( g_arenaservers.serverlist, *g_arenaservers.numservers, sizeof( servernode_t ), ArenaServers_Compare);
+
+	UI_LogFuncEnd();
 }
 
 
@@ -1256,10 +1189,13 @@ ArenaServers_SetType
 */
 void ArenaServers_SetType( int32_t type )
 {
+	UI_LogFuncBegin();
 	char IP[128];
 
-	if (g_servertype == type)
+	if (g_servertype == type){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	if (type == AS_GLOBAL1)
 	{
@@ -1351,13 +1287,6 @@ void ArenaServers_SetType( int32_t type )
 		g_arenaservers.numservers = &g_numfavoriteservers;
 		g_arenaservers.maxservers = MAX_FAVORITESERVERS;
 		break;
-
-//	case AS_MPLAYER:
-//		g_arenaservers.remove.generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
-//		g_arenaservers.serverlist = g_mplayerserverlist;
-//		g_arenaservers.numservers = &g_nummplayerservers;
-//		g_arenaservers.maxservers = MAX_GLOBALSERVERS;
-//		break;
 	}
 
 	if( !*g_arenaservers.numservers ) {
@@ -1370,6 +1299,7 @@ void ArenaServers_SetType( int32_t type )
 		ArenaServers_UpdateMenu();
 	}
 	strcpy(g_arenaservers.status.string,menu_normal_text[MNT_HITREFRESH]);
+	UI_LogFuncEnd();
 }
 
 
@@ -1382,12 +1312,15 @@ Add current server to favorites
 */
 void ArenaServers_Favorites_Add( void )
 {
+	UI_LogFuncBegin();
 	char	adrstr[128];
 	int32_t		i;
 	int32_t		best;
 
-	if (!g_arenaservers.table[g_arenaservers.list.curvalue].servernode->adrstr)
+	if (!g_arenaservers.table[g_arenaservers.list.curvalue].servernode->adrstr){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	best = 0;
 	for (i=0; i<MAX_FAVORITESERVERS; i++)
@@ -1397,6 +1330,7 @@ void ArenaServers_Favorites_Add( void )
 		if (!Q_stricmp(g_arenaservers.table[g_arenaservers.list.curvalue].servernode->adrstr,adrstr))
 		{
 			// already in list
+			UI_LogFuncEnd();
 			return;
 		}
 		
@@ -1407,6 +1341,8 @@ void ArenaServers_Favorites_Add( void )
 
 	if (best)
 		trap_Cvar_Set( va("server%d",best), g_arenaservers.table[g_arenaservers.list.curvalue].servernode->adrstr);
+
+	UI_LogFuncEnd();
 }
 
 
@@ -1417,12 +1353,14 @@ ArenaServers_Event
 =================
 */
 static void ArenaServers_Event( void* ptr, int32_t event ) {
+	UI_LogFuncBegin();
 	int32_t		id;
 
 	id = ((menucommon_s*)ptr)->id;
 
 	if( event != QM_ACTIVATED && id != ID_LIST ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1529,6 +1467,7 @@ static void ArenaServers_Event( void* ptr, int32_t event ) {
 		ArenaServers_UpdateMenu();
 		break;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -1540,6 +1479,7 @@ ArenaServers_Graphics
 */
 void ArenaServers_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame2(&g_arenaservers.menu);
 	trap_R_SetColor( colorTable[CT_LTBROWN1]);
 	UI_DrawHandlePic(  30, 203,  47, 186, uis.whiteShader);	// Left side of frame
@@ -1586,6 +1526,8 @@ void ArenaServers_Graphics (void)
 	UI_DrawHandlePic(g_arenaservers.back.generic.x - 14, g_arenaservers.back.generic.y, 
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
 
+	UI_LogFuncEnd();
+
 }
 
 /*
@@ -1595,6 +1537,7 @@ ArenaServers_MenuDraw
 */
 static void ArenaServers_MenuDraw( void )
 {
+	UI_LogFuncBegin();
 	ArenaServers_Graphics();
 
 	if (g_arenaservers.refreshservers)
@@ -1604,6 +1547,7 @@ static void ArenaServers_MenuDraw( void )
 
 	trap_R_SetColor( colorTable[CT_WHITE]);
 	Menu_Draw( &g_arenaservers.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -1613,8 +1557,10 @@ ArenaServers_MenuKey
 =================
 */
 static sfxHandle_t ArenaServers_MenuKey( int32_t key ) {
+	UI_LogFuncBegin();
 	if( key == K_SPACE  && g_arenaservers.refreshservers ) {
 		ArenaServers_StopRefresh();	
+		UI_LogFuncEnd();
 		return menu_move_sound;
 	}
 
@@ -1622,6 +1568,7 @@ static sfxHandle_t ArenaServers_MenuKey( int32_t key ) {
 		( Menu_ItemAtCursor( &g_arenaservers.menu) == &g_arenaservers.list ) ) {
 		ArenaServers_Remove();
 		ArenaServers_UpdateMenu();
+		UI_LogFuncEnd();
 		return menu_move_sound;
 	}
 
@@ -1630,7 +1577,7 @@ static sfxHandle_t ArenaServers_MenuKey( int32_t key ) {
 		ArenaServers_SaveChanges();
 	}
 
-
+	UI_LogFuncEnd();
 	return Menu_DefaultKey( &g_arenaservers.menu, key );
 }
 
@@ -1642,6 +1589,7 @@ ArenaServers_MenuInit
 */
 static void ArenaServers_MenuInit( void ) 
 {
+	UI_LogFuncBegin();
 	int32_t			i;
 	int32_t			type;
 	static char	statusbuffer[MAX_STATUSLENGTH];
@@ -1975,7 +1923,7 @@ static void ArenaServers_MenuInit( void )
 	{
 		g_arenaservers.favorite.generic.flags			&= ~QMF_GRAYED;
 	}
-
+	UI_LogFuncEnd();
 }
 
 
@@ -1999,6 +1947,7 @@ void UI_ArenaServersMenu( void )
 {
 	ArenaServers_MenuInit();
 	UI_PushMenu( &g_arenaservers.menu );
+	UI_LogFuncEnd();
 }						  
 
 
@@ -2019,6 +1968,7 @@ ChooseServerType_Graphics
 */
 void ChooseServerType_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&g_chooseservertype.menu);
 
 	trap_R_SetColor( colorTable[CT_LTPURPLE2]);
@@ -2042,7 +1992,7 @@ void ChooseServerType_Graphics (void)
 	trap_R_SetColor( colorTable[s_specific_server.color]);
 	UI_DrawHandlePic(s_specific_server.generic.x - 14, s_specific_server.generic.y, 
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2052,9 +2002,11 @@ ChooseServerType_MenuDraw
 */
 static void ChooseServerType_MenuDraw( void )
 {
+	UI_LogFuncBegin();
 	ChooseServerType_Graphics();
 
 	Menu_Draw( &g_chooseservertype.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2072,6 +2024,7 @@ ChooseServerType_MenuInit
 */
 static void ChooseServerType_MenuInit( void ) 
 {
+	UI_LogFuncBegin();
 	// zero set all our globals
 	memset( &g_chooseservertype, 0 ,sizeof(chooseservertype_t) );
 
@@ -2160,6 +2113,7 @@ static void ChooseServerType_MenuInit( void )
 	Menu_AddItem(&g_chooseservertype.menu, ( void * )&s_specific_server);
 
 	UI_ChooseServerTypeMenu_Cache();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2169,8 +2123,9 @@ UI_ChooseServerTypeMenu
 */
 void UI_ChooseServerTypeMenu( void ) 
 {
+	UI_LogFuncBegin();
 	ChooseServerType_MenuInit();
 	UI_PushMenu( &g_chooseservertype.menu );
-
+	UI_LogFuncEnd();
 }						  
 

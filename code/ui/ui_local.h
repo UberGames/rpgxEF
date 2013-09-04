@@ -1797,12 +1797,6 @@ extern void ConfirmMenu_Cache( void );
 extern void UI_ConfirmMenu( const char *question, void (*draw)( void ), void (*action)( qboolean result ) );
 
 //
-// ui_team.c
-//
-//extern void UI_TeamMainMenu( void );
-//extern void TeamMain_Cache( void );
-
-//
 // ui_connect.c
 //
 extern void UI_DrawConnectScreen( qboolean overlay );
@@ -1857,6 +1851,7 @@ extern void UI_LoginMenu( qboolean fromConsole );
 //
 // ui_msd.c
 //
+extern void UI_msdMenu_Cache( void );
 extern void UI_msdMenu(int32_t maxhull, int32_t currhull, int32_t maxshield, int32_t currshield, int32_t shieldstate, int32_t warpstate, int32_t turbostate, int32_t transstate, int32_t alertstate, char *model);
 
 //
@@ -2241,32 +2236,6 @@ extern qboolean		m_entersound;
 extern uiStatic_t	uis;
 
 //
-// ui_spLevel.c
-//
-void UI_SPLevelMenu_Cache( void );
-void UI_SPLevelMenu( void );
-void UI_SPLevelMenu_f( void );
-void UI_SPLevelMenu_ReInit( void );
-extern void UI_ResetGameMenu_Cache(void);
-
-//
-// ui_spArena.c
-//
-void UI_SPArena_Start( const char *arenaInfo );
-
-//
-// ui_spPostgame.c
-//
-void UI_SPPostgameMenu_Cache( void );
-void UI_SPPostgameMenu_f( void );
-
-//
-// ui_spSkill.c
-//
-void UI_SPSkillMenu( const char *arenaInfo );
-void UI_SPSkillMenu_Cache( void );
-
-//
 // ui_syscalls.c
 //
 void			trap_Print( const char *string );
@@ -2339,13 +2308,6 @@ void UI_AddBotsMenu( void );
 //
 void UI_RemoveBots_Cache( void );
 void UI_RemoveBotsMenu( void );
-
-//
-// ui_teamorders.c
-//
-extern void UI_TeamOrdersMenu( int32_t fromMenu );
-extern void UI_TeamOrdersMenu_f( void );
-extern void UI_TeamOrdersMenu_Cache( void );
 
 //
 // ui_display.c

@@ -10,6 +10,7 @@ CD KEY MENU
 
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define ID_CDKEY		10
 #define ID_ACCEPT		11
@@ -38,11 +39,13 @@ UI_CDKeyMenu_PreValidateKey
 */
 static int32_t UI_CDKeyMenu_PreValidateKey( const char *key ) 
 {
+	UI_LogFuncBegin();
 	int32_t		cnt, i;
 
 	// With dashes can't be more than 21 long
 	if( strlen( key ) > 22 ) 
 	{
+		UI_LogFuncEnd();
 		return -1;
 	}
 
@@ -60,10 +63,11 @@ static int32_t UI_CDKeyMenu_PreValidateKey( const char *key )
 
 	// Count without dashes (Should be 18 but 0's at the end weren't printed on the documentation so we're allowing 16 and adding the 0's in the keycheck)
 	if ((cnt < 16) || (cnt > 18))
-//	if (cnt != 18)
 	{
+		UI_LogFuncEnd();
 		return -1;
 	}
+	UI_LogFuncEnd();
 	return 0;
 }
 
@@ -75,8 +79,10 @@ UI_CDKeyMenu_Event
 */
 static void UI_CDKeyMenu_Event( void *ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -116,6 +122,7 @@ static void UI_CDKeyMenu_Event( void *ptr, int32_t event )
 		break;
 
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -126,6 +133,7 @@ UI_CDKeyMenu_DrawKey
 */
 static void UI_CDKeyMenu_DrawKey( void *self ) 
 {
+	UI_LogFuncBegin();
 	menufield_s		*f;
 	qboolean		focus;
 	int32_t				style;
@@ -171,7 +179,7 @@ static void UI_CDKeyMenu_DrawKey( void *self )
 
 		UI_DrawChar( x + f->field.cursor * SMALLCHAR_WIDTH, y, c, style, color_white );
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -181,6 +189,7 @@ CDKeyMenu_Graphics
 */
 void CDKeyMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	int32_t x,y;
 
 	// Draw the basic screen layout
@@ -216,7 +225,7 @@ void CDKeyMenu_Graphics (void)
 	}
 
 	UI_Setup_MenuButtons();
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -226,8 +235,10 @@ CDKey_MenuDraw
 */
 static void CDKey_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	CDKeyMenu_Graphics();
 	Menu_Draw( &cdkeyMenuInfo.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -237,6 +248,7 @@ UI_CDKeyMenu_Init
 */
 static void UI_CDKeyMenu_Init( void ) 
 {
+	UI_LogFuncBegin();
 	memset( &cdkeyMenuInfo, 0, sizeof(cdkeyMenuInfo) );
 
 	UI_CDKeyMenu_Cache();
@@ -293,6 +305,7 @@ static void UI_CDKeyMenu_Init( void )
 	} else {
 		cdkeyMenuInfo.keyResult = 1;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -303,7 +316,9 @@ UI_CDKeyMenu_Cache
 */
 void UI_CDKeyMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	cdkeyMenuInfo.halfround = trap_R_RegisterShaderNoMip( "menu/common/halfround_r_24.tga" );
+	UI_LogFuncEnd();
 }
 
 
@@ -314,8 +329,10 @@ UI_CDKeyMenu
 */
 void UI_CDKeyMenu( void ) 
 {
+	UI_LogFuncBegin();
 	UI_CDKeyMenu_Init();
 	UI_PushMenu( &cdkeyMenuInfo.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -326,11 +343,14 @@ M_CDKey2Menu_Key
 */
 sfxHandle_t M_CDKey2Menu_Key (int32_t key)
 {
+	UI_LogFuncBegin();
 	if (key == K_ESCAPE)
 	{
+		UI_LogFuncEnd();
 		return(0);
 	}
 
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &cdkeyMenuInfo.menu, key ) );
 }
 
@@ -341,6 +361,7 @@ CDKeyMenu2_Graphics
 */
 void CDKeyMenu2_Graphics (void)
 {
+	UI_LogFuncBegin();
 	int32_t x,y;
 
 	// Draw the basic screen layout
@@ -376,6 +397,7 @@ void CDKeyMenu2_Graphics (void)
 	{
 		UI_DrawProportionalString( x, y, menu_normal_text[MNT_CDKEY_INVALID], UI_CENTER|UI_SMALLFONT, colorTable[CT_RED]  );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -385,8 +407,10 @@ CDKey2_MenuDraw
 */
 static void CDKey2_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	CDKeyMenu2_Graphics();
 	Menu_Draw( &cdkeyMenuInfo.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -397,6 +421,7 @@ UI_CDKeyMenu2_Init
 */
 static void UI_CDKeyMenu2_Init( void ) 
 {//initial first time menu
+	UI_LogFuncBegin();
 	memset( &cdkeyMenuInfo, 0, sizeof(cdkeyMenuInfo) );
 
 	cdkeyMenuInfo.fromMenu = 1;
@@ -470,6 +495,7 @@ static void UI_CDKeyMenu2_Init( void )
 	} else {
 		cdkeyMenuInfo.keyResult = 1;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -479,8 +505,10 @@ UI_CDKeyMenu
 */
 void UI_CDKeyMenu2( void ) 
 {
+	UI_LogFuncBegin();
 	UI_CDKeyMenu2_Init();
 	UI_PushMenu( &cdkeyMenuInfo.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -490,5 +518,7 @@ UI_CDKeyMenu_f
 */
 void UI_CDKeyMenu_f( void ) 
 {
+	UI_LogFuncBegin();
 	UI_CDKeyMenu2();
+	UI_LogFuncEnd();
 }

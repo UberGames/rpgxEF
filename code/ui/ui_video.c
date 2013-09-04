@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "ui_local.h"
+#include "ui_logger.h"
 
 void UI_VideoDriverMenu( void );
 void VideoDriver_Lines(int32_t increment);
@@ -361,6 +362,8 @@ static void DriverInfo_MenuDraw( void )
 	int32_t	i;
 	int32_t	y;
 
+	UI_LogFuncBegin();
+
 	Menu_Draw( &s_driverinfo.menu );
 
 	UI_DrawString( 320, 80, "VENDOR", UI_CENTER|UI_SMALLFONT, color_red, qtrue );
@@ -382,6 +385,8 @@ static void DriverInfo_MenuDraw( void )
 
 	if (s_driverinfo.numstrings & 1)
 		UI_DrawString( 320, y, s_driverinfo.strings[s_driverinfo.numstrings-1], UI_CENTER|UI_SMALLFONT, text_color_normal, qtrue );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -404,6 +409,8 @@ static void UI_DriverInfo_Menu( void )
 	char*	eptr;
 	int32_t		i;
 	int32_t		len;
+
+	UI_LogFuncBegin();
 
 	// zero set all our globals
 	memset( &s_driverinfo, 0 ,sizeof(driverinfo_t) );
@@ -479,6 +486,8 @@ static void UI_DriverInfo_Menu( void )
 	Menu_AddItem( &s_driverinfo.menu, &s_driverinfo.back );
 
 	UI_PushMenu( &s_driverinfo.menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -590,6 +599,8 @@ GraphicsOptions_GetInitialVideo
 */
 static void GraphicsOptions_GetInitialVideo( void )
 {
+	UI_LogFuncBegin();
+
 	s_ivo.colordepth  = s_graphicsoptions.colordepth.curvalue;
 	s_ivo.mode        = s_graphicsoptions.mode.curvalue;
 	s_ivo.aspectRatio = s_graphicsoptions.aspectRatio.curvalue;
@@ -602,6 +613,8 @@ static void GraphicsOptions_GetInitialVideo( void )
 	s_ivo.texturebits = s_graphicsoptions.texturebits.curvalue;
 	s_ivo.simpleshaders = s_graphicsoptions.simpleshaders.curvalue;
 	s_ivo.compresstextures = s_graphicsoptions.compresstextures.curvalue;
+
+	UI_LogFuncEnd();
 }
 
 
@@ -613,6 +626,8 @@ GraphicsOptions_CheckConfig
 static void GraphicsOptions_CheckConfig( void )
 {
 	int32_t i;
+
+	UI_LogFuncBegin();
 
 	for ( i = 0; i < NUM_IVO_TEMPLATES; i++ )
 	{
@@ -640,9 +655,11 @@ static void GraphicsOptions_CheckConfig( void )
 //		if ( s_ivo_templates[i].texturebits != s_graphicsoptions.texturebits.curvalue )
 //			continue;
 		s_graphicsoptions.list.curvalue = i;
+		UI_LogFuncEnd();
 		return;
 	}
 	s_graphicsoptions.list.curvalue = 4;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -652,6 +669,7 @@ GraphicsOptions_UpdateMenuItems
 */
 static void GraphicsOptions_UpdateMenuItems( void )
 {
+	UI_LogFuncBegin();
 
 	if ( s_graphicsoptions.fs.curvalue == 0 )
 	{
@@ -769,6 +787,7 @@ static void GraphicsOptions_UpdateMenuItems( void )
 	}
 
 	GraphicsOptions_CheckConfig();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -778,10 +797,14 @@ ApplyChanges - Apply the changes from the video data screen
 */
 static void ApplyChanges2( void *unused, int32_t notification )
 {
-	if (notification != QM_ACTIVATED)
+	UI_LogFuncBegin();
+	if (notification != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
+	UI_LogFuncEnd();
 }
 /*
 =================
@@ -790,8 +813,12 @@ GraphicsOptions_ApplyChanges
 */
 static void GraphicsOptions_ApplyChanges( void *unused, int32_t notification )
 {
-	if (notification != QM_ACTIVATED)
+	UI_LogFuncBegin();
+
+	if (notification != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	switch ( s_graphicsoptions.texturebits.curvalue  )
 	{
@@ -877,6 +904,7 @@ static void GraphicsOptions_ApplyChanges( void *unused, int32_t notification )
 	}
 
 	trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -888,7 +916,10 @@ static void GraphicsOptions_Event( void* ptr, int32_t event )
 {
 	InitialVideoOptions_s *ivo;
 
+	UI_LogFuncBegin();
+
 	if( event != QM_ACTIVATED ) {
+		UI_LogFuncEnd();
 	 	return;
 	}
 
@@ -947,6 +978,7 @@ static void GraphicsOptions_Event( void* ptr, int32_t event )
 		UI_NetworkOptionsMenu();
 		break;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -958,9 +990,11 @@ GraphicsOptions_MenuDraw
 void GraphicsOptions_MenuDraw (void)
 {
 //APSFIX - rework this
+	UI_LogFuncBegin();
 	GraphicsOptions_UpdateMenuItems();
 
 	Menu_Draw( &s_graphicsoptions.menu );
+	UI_LogFuncEnd();
 }
 
 static qboolean GraphicsOptions_CheckWidescreen( void )
@@ -970,9 +1004,13 @@ static qboolean GraphicsOptions_CheckWidescreen( void )
 	int32_t						customHeight = trap_Cvar_VariableValue( "r_customHeight" );
 	videoResolutions_t		*v;
 
+	UI_LogFuncBegin();
+
 	//double check
-	if ( s_graphicsoptions.mode.curvalue >= 0 )
+	if ( s_graphicsoptions.mode.curvalue >= 0 ){
+		UI_LogFuncEnd();
 		return qfalse;
+	}
 
 	for ( j=0; j < s_wideScreenSets; j++ )
 	{
@@ -992,12 +1030,14 @@ static qboolean GraphicsOptions_CheckWidescreen( void )
 				s_graphicsoptions.mode.numitems = s_resolutionNums[s_graphicsoptions.aspectRatio.curvalue];
 
 				s_graphicsoptions.mode.curvalue = i;
+				UI_LogFuncEnd();
 				return qtrue;
 			}
 		}
 	}
 
 	//ffs... no luck
+	UI_LogFuncEnd();
 	return qfalse;
 }
 
@@ -1008,6 +1048,7 @@ GraphicsOptions_SetMenuItems
 */
 static void GraphicsOptions_SetMenuItems( void )
 {
+	UI_LogFuncBegin();
 
 	s_graphicsoptions.aspectRatio.curvalue	= ASPECTRATIO_4X3; //set aspect to 'Normal' for now
 
@@ -1090,6 +1131,7 @@ static void GraphicsOptions_SetMenuItems( void )
 	{
 		s_graphicsoptions.colordepth.curvalue = 0;
 	}
+	UI_LogFuncEnd();
 
 }
 
@@ -1097,10 +1139,12 @@ static void GraphicsOptions_SetMenuItems( void )
 
 void VideoSideButtonsAction( qboolean result )
 {
+	UI_LogFuncBegin();
 	if ( result )	// Yes - do it
 	{
 		Video_MenuEvent(holdControlPtr, holdControlEvent);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1110,9 +1154,12 @@ VideoSideButtons_MenuEvent
 */
 static void VideoSideButtons_MenuEvent (void* ptr, int32_t event)
 {
+	UI_LogFuncBegin();
 
-	if (event != QM_ACTIVATED)
+	if (event != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	holdControlPtr = ptr;
 	holdControlEvent = event;
@@ -1125,6 +1172,7 @@ static void VideoSideButtons_MenuEvent (void* ptr, int32_t event)
 	{
 		Video_MenuEvent (holdControlPtr, holdControlEvent);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1136,8 +1184,12 @@ static void Video_MenuEvent (void* ptr, int32_t event)
 {
 	menuframework_s*	m;
 
-	if (event != QM_ACTIVATED)
+	UI_LogFuncBegin();
+
+	if (event != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	m = ((menucommon_s*)ptr)->parent;
 
@@ -1207,6 +1259,7 @@ static void Video_MenuEvent (void* ptr, int32_t event)
 			break;
 
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1216,6 +1269,8 @@ M_VideoDataMenu_Graphics
 */
 void M_VideoDataMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
+
 	UI_MenuFrame(&s_videodata.menu);
 
 	UI_DrawProportionalString(  74,  66, "207",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -1248,6 +1303,8 @@ void M_VideoDataMenu_Graphics (void)
 	UI_DrawHandlePic(494,406, 128, 128, s_videodata.swooshBottom);		// Bottom swoosh
 
 	UI_DrawHandlePic(174,420, 320, 8, uis.whiteShader);	// Bottom line
+
+	UI_LogFuncEnd();
 }
 /*
 =================
@@ -1256,11 +1313,15 @@ VideoData_MenuDraw
 */
 static void VideoData_MenuDraw (void)
 {
+	UI_LogFuncBegin();
+
 	GraphicsOptions_UpdateMenuItems();
 
 	M_VideoDataMenu_Graphics();
 
 	Menu_Draw( &s_videodata.menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1270,10 +1331,12 @@ UI_VideoDataMenu_Cache
 */
 void UI_VideoDataMenu_Cache(void)
 {
+	UI_LogFuncBegin();
 	s_videodata.swooshTop = trap_R_RegisterShaderNoMip("menu/common/swoosh_top.tga");
 	s_videodata.swooshBottom= trap_R_RegisterShaderNoMip("menu/common/swoosh_bottom.tga");
 	s_videodata.swooshTopSmall= trap_R_RegisterShaderNoMip("menu/common/swoosh_topsmall.tga");
 	s_videodata.swooshBottomSmall= trap_R_RegisterShaderNoMip("menu/common/swoosh_bottomsmall.tga");
+	UI_LogFuncEnd();
 }
 
 
@@ -1285,6 +1348,8 @@ VideoData_MenuInit
 static void VideoData_MenuInit( void )
 {
 	int32_t x,y,width,inc;
+
+	UI_LogFuncBegin();
 
 	UI_VideoDataMenu_Cache();
 
@@ -1558,6 +1623,7 @@ static void VideoData_MenuInit( void )
 	{
 		s_graphicsoptions.driver.generic.flags |= QMF_HIDDEN|QMF_INACTIVE;
 	}*/
+	UI_LogFuncEnd();
 }
 
 
@@ -1568,9 +1634,11 @@ UI_VideoDataMenu
 */
 void UI_VideoDataMenu( void )
 {
+	UI_LogFuncBegin();
 	VideoData_MenuInit();
 
 	UI_PushMenu( &s_videodata.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1580,6 +1648,7 @@ Video_SideButtons
 */
 void Video_SideButtons(menuframework_s *menu,int32_t menuType)
 {
+	UI_LogFuncBegin();
 
 	// Button Data
 	s_video_data.generic.type				= MTYPE_BITMAP;
@@ -1687,6 +1756,7 @@ void Video_SideButtons(menuframework_s *menu,int32_t menuType)
 	Menu_AddItem( menu, ( void * )&s_video_data2);
 	Menu_AddItem( menu, ( void * )&s_video_drivers);
 
+	UI_LogFuncEnd();
 }
 
 
@@ -1699,6 +1769,8 @@ void VideoDriver_Lines(int32_t increment)
 {
 	int32_t		i,i2;
 
+	UI_LogFuncBegin();
+
 	s_videodriver.currentDriverLine += increment;
 
 	i=0;
@@ -1708,17 +1780,20 @@ void VideoDriver_Lines(int32_t increment)
 	if (i<0)
 	{
 		s_videodriver.currentDriverLine = 0;
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if (i>s_videodriver.driverCnt)
 	{
 		s_videodriver.currentDriverLine = (s_videodriver.driverCnt/2);
+		UI_LogFuncEnd();
 		return;
 	}
 	else if (i==s_videodriver.driverCnt)
 	{
 		s_videodriver.currentDriverLine = (s_videodriver.driverCnt/2) - 1;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1726,6 +1801,7 @@ void VideoDriver_Lines(int32_t increment)
 	{
 		s_videodriver.currentDriverLine -= increment;
 		s_videodriver.activeArrowDwn = qfalse;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1774,8 +1850,10 @@ void VideoDriver_Lines(int32_t increment)
 	if (!s_videodriver.drivers[i + 24])
 	{
 		s_videodriver.activeArrowDwn = qfalse;
+		UI_LogFuncEnd();
 		return;
 	}
+	UI_LogFuncEnd();
 
 }
 
@@ -1786,6 +1864,7 @@ VideoDriver_LineSetup
 */
 void VideoDriver_LineSetup(void)
 {
+	UI_LogFuncBegin();
 	char	*bufhold;
 	char	*eptr;
 	int32_t		i;
@@ -1829,6 +1908,7 @@ void VideoDriver_LineSetup(void)
 	}
 
 	s_videodriver.currentDriverLine = 0;
+	UI_LogFuncEnd();
 
 }
 
@@ -1853,6 +1933,7 @@ void M_VideoDriverMenu_Graphics (void)
 	float textColor[] = { 1, 1, 1, 1 };
 	int32_t x,y,x2;
 
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_videodriver.menu);
 
 	UI_DrawProportionalString(  74,  66, "207",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -1915,6 +1996,7 @@ void M_VideoDriverMenu_Graphics (void)
 	UI_DrawProportionalString( x, y, menu_normal_text[MNT_PIXELFORMAT], UI_LEFT|UI_TINYFONT, labelColor );
 	UI_DrawProportionalString( x2, y, va("color(%d-bits) Z(%d-bit) stencil(%d-bits)", uis.glconfig.colorBits, uis.glconfig.depthBits, uis.glconfig.stencilBits), UI_LEFT|UI_TINYFONT, textColor );
 
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1924,10 +2006,11 @@ VideoDriver_MenuDraw
 */
 static void VideoDriver_MenuDraw (void)
 {
-
+	UI_LogFuncBegin();
 	M_VideoDriverMenu_Graphics();
 
 	Menu_Draw( &s_videodriver.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1937,9 +2020,11 @@ UI_VideoDriverMenu_Cache
 */
 void UI_VideoDriverMenu_Cache(void)
 {
+	UI_LogFuncBegin();
 	s_videodriver.corner_ll_16_16 = trap_R_RegisterShaderNoMip("menu/common/corner_ll_16_16.tga");
 	s_videodriver.corner_ll_8_16 = trap_R_RegisterShaderNoMip("menu/common/corner_ll_8_16.tga");
 	s_videodriver.arrow_dn = trap_R_RegisterShaderNoMip("menu/common/arrow_dn_16.tga");
+	UI_LogFuncEnd();
 }
 
 
@@ -1952,6 +2037,7 @@ static void VideoDriver_MenuInit( void )
 {
 	int32_t		i,x,y,x2;
 
+	UI_LogFuncBegin();
 	UI_VideoDriverMenu_Cache();
 
 	s_videodriver.menu.nitems					= 0;
@@ -2042,6 +2128,7 @@ static void VideoDriver_MenuInit( void )
 
 	// Print extensions
 	VideoDriver_LineSetup();
+	UI_LogFuncEnd();
 }
 
 
@@ -2052,12 +2139,14 @@ UI_VideoDriverMenu
 */
 void UI_VideoDriverMenu( void )
 {
+	UI_LogFuncBegin();
 	if (!s_videodriver.menu.initialized)
 	{
 		VideoDriver_MenuInit();
 	}
 
 	UI_PushMenu( &s_videodriver.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2067,13 +2156,17 @@ GammaCallback2
 */
 void GammaCallback2( void *s, int32_t notification )
 {
-	if (notification != QM_ACTIVATED)
+	UI_LogFuncBegin();
+	if (notification != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	s_videodata2.apply_action2.generic.flags &= ~QMF_GRAYED;
 	s_videodata2.apply_action2.generic.flags |= QMF_BLINK;
 
 	GammaCallback(s,notification );
+	UI_LogFuncEnd();
 
 }
 
@@ -2087,6 +2180,7 @@ void M_VideoData2Menu_Graphics (void)
 {
 	int32_t y;
 
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_videodata2.menu);
 
 	UI_DrawProportionalString(  74,  66, "925",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -2130,6 +2224,7 @@ void M_VideoData2Menu_Graphics (void)
 	UI_DrawHandlePic(579,412, 32, -16, s_videodata2.top);	// Corner, LR
 
 	UI_DrawHandlePic(174,420, 408, 8, uis.whiteShader);	// Bottom line
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2139,10 +2234,11 @@ VideoData2_MenuDraw
 */
 static void VideoData2_MenuDraw (void)
 {
-
+	UI_LogFuncBegin();
 	M_VideoData2Menu_Graphics();
 
 	Menu_Draw( &s_videodata2.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -2153,10 +2249,12 @@ UI_VideoData2Menu_Cache
 */
 void UI_VideoData2Menu_Cache(void)
 {
+	UI_LogFuncBegin();
 	s_videodata2.top = trap_R_RegisterShaderNoMip("menu/common/corner_ur_8_30.tga");
 	s_videodata2.gamma = trap_R_RegisterShaderNoMip("menu/special/gamma_test.tga");
 	trap_R_RegisterShaderNoMip(PIC_MONBAR2);
 	trap_R_RegisterShaderNoMip(PIC_SLIDER);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2168,6 +2266,7 @@ static void VideoData2_MenuInit( void )
 {
 	int32_t x,y;
 
+	UI_LogFuncBegin();
 	UI_VideoData2Menu_Cache();
 
 	// Menu Data
@@ -2296,6 +2395,7 @@ static void VideoData2_MenuInit( void )
 	}
 	Menu_AddItem( &s_videodata2.menu, ( void * )&s_videodata2.screensize_slider);
 	Menu_AddItem( &s_videodata2.menu, ( void * )&s_videodata2.anisotropicfiltering);
+	UI_LogFuncEnd();
 
 }
 
@@ -2306,9 +2406,11 @@ UI_VideoData2SettingsGetCvars
 */
 static void	UI_VideoData2SettingsGetCvars(void)
 {
+	UI_LogFuncBegin();
 	s_videodata2.gamma_slider.curvalue = trap_Cvar_VariableValue( "r_gamma" ) *  10.0f;
 	s_videodata2.screensize_slider.curvalue = trap_Cvar_VariableValue( "cg_viewsize" );
 	s_videodata2.anisotropicfiltering.curvalue = trap_Cvar_VariableValue( "r_ext_texture_filter_anisotropic" );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2318,6 +2420,7 @@ UI_VideoData2SettingsMenu
 */
 void UI_VideoData2SettingsMenu( void )
 {
+	UI_LogFuncBegin();
 	UI_VideoData2SettingsGetCvars();
 
 	if (!s_videodata2.menu.initialized)
@@ -2326,5 +2429,6 @@ void UI_VideoData2SettingsMenu( void )
 	}
 
 	UI_PushMenu( &s_videodata2.menu );
+	UI_LogFuncEnd();
 }
 

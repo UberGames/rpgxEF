@@ -5,6 +5,7 @@
 **********************************************************************/
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 typedef struct {
 	menuframework_s menu;
@@ -30,6 +31,8 @@ M_sql_Event
 static void M_sql_Event(void *ptr, int32_t notification) {
 	int32_t id;
 
+	UI_LogFuncBegin();
+
 	id = ((menucommon_s*)ptr)->id;
 
 	switch (id)
@@ -47,6 +50,7 @@ static void M_sql_Event(void *ptr, int32_t notification) {
 	default:
 		break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -70,6 +74,7 @@ M_sqlMenu_Graphics
 */
 static void M_sqlMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	float bg[] = { 0, 0, 0, 0.7 };
 
 	trap_R_SetColor(bg);
@@ -87,6 +92,7 @@ static void M_sqlMenu_Graphics (void)
 	UI_DrawString(234, 132, "LCARS AUTH", UI_LEFT|UI_SMALLFONT, colorTable[CT_BLACK], qtrue); // TODO multi lang text
 
 	// TODO
+	UI_LogFuncEnd();
 }
 
 /*
@@ -96,8 +102,10 @@ UI_sqlMenu_Cache
 */
 void UI_sqlMenu_Cache (void)
 {	
+	UI_LogFuncBegin();
 	box_rounded = trap_R_RegisterShaderNoMip("menu/common/box_rounded.tga");
 	corner_lu = trap_R_RegisterShaderNoMip("menu/common/corner_lu.tga");
+	UI_LogFuncEnd();
 }
 
 /*
@@ -107,10 +115,12 @@ sqlMenu_Draw
 */
 static void sqlMenu_Draw(void)
 {
+	UI_LogFuncBegin();
 	// Draw graphics particular to Main Menu
 	M_sqlMenu_Graphics();
 	
 	Menu_Draw( &s_sql.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -120,6 +130,7 @@ msdMenu_Init
 */
 void sqlMenu_Init(void)
 {
+	UI_LogFuncBegin();
 	s_sql.menu.nitems				= 0;
 	s_sql.menu.draw					= sqlMenu_Draw;
 	s_sql.menu.key					= sqlMenu_Key;
@@ -181,6 +192,7 @@ void sqlMenu_Init(void)
 	Menu_AddItem( &s_sql.menu, &s_sql.quitmenu );
 	Menu_AddItem( &s_sql.menu, &s_sql.login );
 	Menu_AddItem( &s_sql.menu, &s_sql.user);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -189,6 +201,7 @@ UI_sqlMenu
 ===============
 */
 void UI_sqlMenu(void) {
+	UI_LogFuncBegin();
 	memset( &s_sql, 0, sizeof( s_sql ) );
 
 	uis.menusp = 0;
@@ -203,5 +216,6 @@ void UI_sqlMenu(void) {
 
 	UI_PushMenu( &s_sql.menu );
 
-	Menu_AdjustCursor( &s_sql.menu, 1 );	
+	Menu_AdjustCursor( &s_sql.menu, 1 );
+	UI_LogFuncEnd();
 }

@@ -9,6 +9,7 @@ NETWORK OPTIONS MENU
 */
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 
 #define ID_GRAPHICS			10
@@ -59,8 +60,10 @@ UI_NetworkOptionsMenu_Event
 */
 static void UI_NetworkOptionsMenu_Event( void* ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -108,6 +111,7 @@ static void UI_NetworkOptionsMenu_Event( void* ptr, int32_t event )
 		break;
 
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -118,6 +122,7 @@ M_NetworkMenu_Graphics
 */
 void M_NetworkMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&networkOptionsInfo.menu);
 
 	UI_Setup_MenuButtons();
@@ -152,7 +157,7 @@ void M_NetworkMenu_Graphics (void)
 	UI_DrawHandlePic(494,406, 128, 128, networkOptionsInfo.swooshBottom);		// Bottom swoosh
 
 	UI_DrawHandlePic(174,420, 320, 8, uis.whiteShader);	// Bottom line
-
+	UI_LogFuncEnd();
 
 }
 
@@ -163,10 +168,11 @@ Network_MenuDraw
 */
 static void Network_MenuDraw (void)
 {
-
+	UI_LogFuncBegin();
 	M_NetworkMenu_Graphics();
 
 	Menu_Draw( &networkOptionsInfo.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -176,6 +182,7 @@ UI_NetworkOptionsMenu_Init
 */
 static void UI_NetworkOptionsMenu_Init( void ) 
 {
+	UI_LogFuncBegin();
 	int32_t		rate;
 
 	memset( &networkOptionsInfo, 0, sizeof(networkOptionsInfo) );
@@ -238,6 +245,7 @@ static void UI_NetworkOptionsMenu_Init( void )
 	{
 		networkOptionsInfo.rate.curvalue = 4;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -248,8 +256,10 @@ UI_NetworkOptionsMenu_Cache
 */
 void UI_NetworkOptionsMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	networkOptionsInfo.swooshTop = trap_R_RegisterShaderNoMip("menu/common/swoosh_top.tga");
 	networkOptionsInfo.swooshBottom= trap_R_RegisterShaderNoMip("menu/common/swoosh_bottom.tga");
+	UI_LogFuncEnd();
 }
 
 
@@ -260,9 +270,10 @@ UI_NetworkOptionsMenu
 */
 void UI_NetworkOptionsMenu( void ) 
 {
-
+	UI_LogFuncBegin();
 	UI_NetworkOptionsMenu_Init();
 
 	UI_PushMenu( &networkOptionsInfo.menu );
+	UI_LogFuncEnd();
 
 }

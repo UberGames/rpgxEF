@@ -12,6 +12,7 @@ they want their characters to play ingame.
 */
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define ID_RECENT		1
 #define	ID_FAVORITES	2
@@ -64,14 +65,6 @@ static void PlayerEmotes_FillEmotesArray( int32_t emoteCategory );
 
 static void PlayerEmotes_UpdateScrollBar( menuaction_s *bar );
 static void PlayerEmotes_SetupScrollBar( menuaction_s *bar );
-
-//Un-necessary, emoteNum can be derived from
-//the order in the list
-/*typedef struct {
-	char	emoteNameUpr[16];
-
-	int32_t		emoteNum;
-} listEmote_t;*/
 
 //TiM - data necessary for a scroll bar
 typedef struct
@@ -157,11 +150,13 @@ Player_SpinPlayer
 */
 static void PlayerEmotes_SpinPlayer( void* ptr, int32_t event)
 {
+	UI_LogFuncBegin();
 	if ( event == QM_ACTIVATED ) 
 	{
 		uis.spinView = qtrue;
 		uis.cursorpx = uis.cursorx;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -171,6 +166,7 @@ Player_InitModel
 */
 static void PlayerEmotes_InitModel( void )
 {
+	UI_LogFuncBegin();
 	memset( &s_playerEmotes.playerInfo, 0, sizeof(playerInfo_t) );
 
 	UI_PlayerInfo_SetModel( &s_playerEmotes.playerInfo, UI_Cvar_VariableString( "model" ) );
@@ -192,6 +188,7 @@ static void PlayerEmotes_InitModel( void )
 							trap_Cvar_VariableValue( "height" ), 
 							trap_Cvar_VariableValue( "weight" ), 
 							qfalse );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -201,6 +198,7 @@ Player_DrawPlayer
 */
 static void PlayerEmotes_DrawPlayer( void ) //*self ) 
 {
+	UI_LogFuncBegin();
 	vec3_t			origin = {-20, 5, -4 };//{ 0, 3.8, 0};
 	char			buf[MAX_QPATH];
 
@@ -224,6 +222,7 @@ static void PlayerEmotes_DrawPlayer( void ) //*self )
 	}
 
 	UI_DrawPlayer( s_playerEmotes.playerMdl.generic.x, s_playerEmotes.playerMdl.generic.y, s_playerEmotes.playerMdl.width, s_playerEmotes.playerMdl.height, origin, &s_playerEmotes.playerInfo, uis.realtime );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -235,6 +234,7 @@ do the emote animation
 =================
 */
 static void Player_DoEmote( int32_t emoteNum ) {
+	UI_LogFuncBegin();
 	emoteList_t		*emote;
 	int32_t	torsoAnim	= BOTH_STAND1;
 	int32_t	legsAnim	= BOTH_STAND1;
@@ -245,8 +245,10 @@ static void Player_DoEmote( int32_t emoteNum ) {
 
 	//Com_Printf( S_COLOR_RED "Emote num: %i, Enum: %i, Legs time: %i\n", emoteNum, emote->enumName );
 
-	if ( !emote )
+	if ( !emote ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	if ( emote->bodyFlags & EMOTE_LOWER )
 	{
@@ -283,6 +285,7 @@ static void Player_DoEmote( int32_t emoteNum ) {
 
 	s_playerEmotes.viewAngles[YAW] = uis.lastYaw;
 	UI_PlayerInfo_SetInfo( &s_playerEmotes.playerInfo, legsAnim, torsoAnim, s_playerEmotes.viewAngles, vec3_origin, WP_0, trap_Cvar_VariableValue( "height" ), trap_Cvar_VariableValue( "weight" ), qfalse );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -296,17 +299,20 @@ well as when the arrow key is clicked
 */
 static void PlayerEmotes_BuildEmotesList( int32_t *emoteListOffset ) 
 {
+	UI_LogFuncBegin();
 	int32_t i;
 	int32_t offset;
 
 	//clamp the offset value 
 	if ( *emoteListOffset < 0 ) {
 		*emoteListOffset = 0;
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( s_playerEmotes.numEmotes > MAX_MENULISTITEMS && *emoteListOffset > s_playerEmotes.numEmotes - MAX_MENULISTITEMS ) {
 		*emoteListOffset = s_playerEmotes.numEmotes - MAX_MENULISTITEMS;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -331,6 +337,7 @@ static void PlayerEmotes_BuildEmotesList( int32_t *emoteListOffset )
 		s_playerEmotes.emotesMenu[i].generic.flags = QMF_HIGHLIGHT_IF_FOCUS;
 		s_playerEmotes.emotesMenu[i].textPtr = s_playerEmotes.emoteNames[i];
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -344,6 +351,7 @@ with these new emotes
 ===============
 */
 static void PlayerEmotes_FillEmotesArray( int32_t emoteCategory ) {
+	UI_LogFuncBegin();
 	int32_t	i;
 	emoteList_t	*emote;
 
@@ -483,6 +491,7 @@ static void PlayerEmotes_FillEmotesArray( int32_t emoteCategory ) {
 
 	s_playerEmotes.emoteListOffset = 0;
 	PlayerEmotes_BuildEmotesList( &s_playerEmotes.emoteListOffset );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -493,7 +502,8 @@ Now to handle the tonnes of button
 checks n' stuff
 ===============
 */
-static void PlayerEmotes_HandleNewEmote( int32_t buttonId ) {			
+static void PlayerEmotes_HandleNewEmote( int32_t buttonId ) {
+	UI_LogFuncBegin();
 	int32_t i;
 	int32_t	buttonPressed = buttonId - 100; //offset by 100 so they wouldn't get in the way
 	char binding[256];
@@ -542,6 +552,7 @@ static void PlayerEmotes_HandleNewEmote( int32_t buttonId ) {
 
 	//make our player character do teh emote
 	Player_DoEmote( s_playerEmotes.selectedEmote );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -550,13 +561,16 @@ PlayerEmotes_HandleFav
 ===============
 */
 static void PlayerEmotes_HandleFav( void ) {
+	UI_LogFuncBegin();
 	int32_t		i;
 	char*	cvar;
 
 
 	//safety net lol
-	if ( s_playerEmotes.selectedEmote < 0 )
+	if ( s_playerEmotes.selectedEmote < 0 ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	//this emote's been favved, so I guess we're unfaving it now
 	if ( s_playerEmotes.favvedEmote > 0 ) {
@@ -620,6 +634,7 @@ static void PlayerEmotes_HandleFav( void ) {
 			s_playerEmotes.addFav.textEnum = MBT_KILL_FAV_EMOTE;
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -628,12 +643,14 @@ PlayerEmotes_ExecuteOffset
 ===============
 */
 static void PlayerEmotes_ExecuteOffset( void ) {
+	UI_LogFuncBegin();
 	int32_t offset;
 
 	offset = atoi( s_playerEmotes.modelOffset.field.buffer );
 
 	if ( offset != s_playerEmotes.prevOffset )
 		trap_Cmd_ExecuteText( EXEC_APPEND, va( "modelOffset %i\n", offset ) );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -642,9 +659,12 @@ PlayerEmotes_Event
 ===============
 */
 static void PlayerEmotes_Event( void* ptr, int32_t event ) {
+	UI_LogFuncBegin();
 
-	if ( event != QM_ACTIVATED )
+	if ( event != QM_ACTIVATED ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	s_playerEmotes.keyBindActive = qfalse;
 
@@ -710,6 +730,7 @@ static void PlayerEmotes_Event( void* ptr, int32_t event ) {
 			UI_PopMenu();
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -718,6 +739,7 @@ PlayerEmotes_Draw
 ===============
 */
 static void PlayerEmotes_Draw( void ) {
+	UI_LogFuncBegin();
 	UI_MenuFrame( &s_playerEmotes.menu );
 
 	//Left side LCARS bars
@@ -855,6 +877,7 @@ static void PlayerEmotes_Draw( void ) {
 		s_playerEmotes.playEmote.textEnum = MBT_DO_EMOTE;
 
 	Menu_Draw( &s_playerEmotes.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -863,6 +886,7 @@ PlayerEmotes_DrawBinding
 ===============
 */
 static void PlayerEmotes_DrawBinding( void *self ) {
+	UI_LogFuncBegin();
 	qboolean		focus;
 	menuaction_s	*action;
 	int32_t				x,y;
@@ -936,6 +960,7 @@ static void PlayerEmotes_DrawBinding( void *self ) {
 	else
 		textColor = CT_WHITE;
 	UI_DrawProportionalString( x + action->textX, y + action->textY + MENU_BUTTON_MED_HEIGHT + 4, name, UI_CENTER | UI_SMALLFONT, colorTable[textColor] );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -945,6 +970,7 @@ PlayerEmotes_DrawScrollBar
 */
 static void PlayerEmotes_DrawScrollBar( void *self )
 {
+	UI_LogFuncBegin();
 	qboolean		focus;
 	menuaction_s	*bar;
 	int32_t				*y;
@@ -965,8 +991,10 @@ static void PlayerEmotes_DrawScrollBar( void *self )
 	UI_DrawHandlePic( bar->generic.x,  bar->generic.y,  bar->width,  bar->height, uis.whiteShader);
 	trap_R_SetColor( NULL );
 
-	if ( !s_playerEmotes.scrollData.mouseDown )
+	if ( !s_playerEmotes.scrollData.mouseDown ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	if ( !trap_Key_IsDown( K_MOUSE1 ) )
 	{
@@ -975,8 +1003,10 @@ static void PlayerEmotes_DrawScrollBar( void *self )
 		return;
 	}
 
-	if ( uis.cursory == s_playerEmotes.scrollData.yStart )
+	if ( uis.cursory == s_playerEmotes.scrollData.yStart ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	y = &bar->generic.y;
 
@@ -998,6 +1028,7 @@ static void PlayerEmotes_DrawScrollBar( void *self )
 	bar->generic.bottom = *y + bar->height;
 
 	s_playerEmotes.scrollData.yStart = uis.cursory;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1007,12 +1038,14 @@ PlayerEmotes_SetupScrollBar
 */
 static void PlayerEmotes_SetupScrollBar( menuaction_s *bar )
 {
+	UI_LogFuncBegin();
 	int32_t height;
 
 	//first make sure it's worth enabling this at all
 	if ( s_playerEmotes.numEmotes <= MAX_MENULISTITEMS )
 	{
 		bar->generic.flags = QMF_INACTIVE | QMF_HIDDEN;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1041,6 +1074,7 @@ static void PlayerEmotes_SetupScrollBar( menuaction_s *bar )
 
 	bar->height = height;
 	bar->generic.bottom = bar->generic.y + height;
+	UI_LogFuncEnd();
 
 }
 
@@ -1051,9 +1085,11 @@ PlayerEmotes_UpdateScrollBar
 */
 static void PlayerEmotes_UpdateScrollBar( menuaction_s *bar )
 {
+	UI_LogFuncBegin();
 	bar->generic.y = MAX_SCROLLTOP + s_playerEmotes.emoteListOffset*(s_playerEmotes.scrollData.doubleStep ? 0.5 : 1);
 	bar->generic.top = bar->generic.y;
 	bar->generic.bottom = bar->generic.top + bar->height;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1062,6 +1098,7 @@ PlayerEmotes_KeyEvent
 ===============
 */
 static sfxHandle_t PlayerEmotes_KeyEvent ( int32_t key ) {
+	UI_LogFuncBegin();
 	menucommon_s	*s;
 	int32_t				i;
 	char			command[256];
@@ -1099,6 +1136,7 @@ static sfxHandle_t PlayerEmotes_KeyEvent ( int32_t key ) {
 
 		s_playerEmotes.keyBindActive = qfalse;
 
+		UI_LogFuncEnd();
 		return ( menu_out_sound );
 	}
 	else {
@@ -1117,6 +1155,7 @@ static sfxHandle_t PlayerEmotes_KeyEvent ( int32_t key ) {
 							s_playerEmotes.bindValue = -1;
 						}
 					}
+					UI_LogFuncEnd();
 					return ( menu_out_sound );
 			}
 		}
@@ -1139,15 +1178,18 @@ static sfxHandle_t PlayerEmotes_KeyEvent ( int32_t key ) {
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait 5;emote %s\n", bg_emoteList[emoteId].name ) );
 
 			UI_ForceMenuOff();
+			UI_LogFuncEnd();
 			return menu_out_sound;
 		}
 	}
 
 end:
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &s_playerEmotes.menu, key ) );
 }
 
 void UI_PlayerEmotes_Cache( void ) {
+	UI_LogFuncBegin();
 	
 	s_playerEmotes.corner_ll_4_4	= trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_4");
 	s_playerEmotes.corner_ll_4_18	= trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_18");
@@ -1157,6 +1199,7 @@ void UI_PlayerEmotes_Cache( void ) {
 
 	trap_R_RegisterShaderNoMip(PIC_ARROW_UP);
 	trap_R_RegisterShaderNoMip(PIC_ARROW_DOWN);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1165,6 +1208,7 @@ PlayerEmotes_Init
 ===============
 */
 static void PlayerEmotes_Init( void ) {
+	UI_LogFuncBegin();
 	int32_t			x, y;
 	int32_t			i;
 	qboolean	showRecent = qfalse;
@@ -1557,6 +1601,7 @@ static void PlayerEmotes_Init( void ) {
 
 	PlayerEmotes_SetupScrollBar( &s_playerEmotes.scrollBar );
 	PlayerEmotes_UpdateScrollBar( &s_playerEmotes.scrollBar );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1565,6 +1610,7 @@ UI_EmotesMenu
 ===============
 */
 void UI_EmotesMenu( qboolean fromConsole ) {
+	UI_LogFuncBegin();
 	memset( &s_playerEmotes, 0, sizeof( s_playerEmotes ) );
 
 	s_playerEmotes.fromConsole = fromConsole;
@@ -1574,4 +1620,5 @@ void UI_EmotesMenu( qboolean fromConsole ) {
 	Mouse_Show();
 
 	UI_PushMenu( &s_playerEmotes.menu );
+	UI_LogFuncEnd();
 }

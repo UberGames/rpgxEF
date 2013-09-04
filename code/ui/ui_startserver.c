@@ -8,6 +8,7 @@ START SERVER MENU *****
 =============================================================================
 */
 #include "ui_local.h"
+#include "ui_logger.h"
 #include "../game/bg_misc.h"
 
 #define GAMESERVER_SELECT		"menu/art/maps_select"
@@ -212,6 +213,8 @@ static int32_t GametypeBits( char *string ) {
 	char	*p;
 	char	*token;
 
+	UI_LogFuncBegin();
+
 	bits = 0;
 	p = string;
 	while( 1 ) {
@@ -254,6 +257,7 @@ static int32_t GametypeBits( char *string ) {
 		}
 	}
 
+	UI_LogFuncEnd();
 	return bits;
 }
 
@@ -267,6 +271,8 @@ static void StartServer_Update( void ) {
 	int32_t				i;
 	int32_t				top;
 	static	char	picname[MAX_MAPSPERPAGE][64];
+
+	UI_LogFuncBegin();
 
 	top = s_startserver.page*MAX_MAPSPERPAGE;
 
@@ -319,6 +325,7 @@ static void StartServer_Update( void ) {
 	}
 
 	Q_strupr( s_startserver.mapname.string );
+	UI_LogFuncEnd();
 }
 
 
@@ -328,16 +335,21 @@ StartServer_MapEvent
 =================
 */
 static void StartServer_MapEvent( void* ptr, int32_t event ) {
+	UI_LogFuncBegin();
 	if( event != QM_ACTIVATED) {
+		UI_LogFuncEnd();
 		return;
 	}
 
 	s_startserver.currentmap = (s_startserver.page*MAX_MAPSPERPAGE) + (((menucommon_s*)ptr)->id - ID_PICTURES);
 	StartServer_Update();
+	UI_LogFuncEnd();
 }
 
 static void StartServer_Settings(void)
 {
+	UI_LogFuncBegin();
+
 	s_startserver.actionhero.curvalue= 0;
 	s_startserver.assimilation.curvalue= 0;
 	s_startserver.disintegration.curvalue= 0;
@@ -393,6 +405,7 @@ static void StartServer_Settings(void)
 	{
 		s_startserver.actionhero.generic.flags |= QMF_HIDDEN;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -408,10 +421,12 @@ static void StartServer_GametypeEvent( void* ptr, int32_t event ) {
 	int32_t			matchbits;
 	const char	*info;
 
+	UI_LogFuncBegin();
+
 	if( event != QM_ACTIVATED) {
+		UI_LogFuncEnd();
 		return;
 	}
-
 
 	count = UI_GetNumArenas();
 	s_startserver.nummaps = 0;
@@ -461,6 +476,7 @@ static void StartServer_GametypeEvent( void* ptr, int32_t event ) {
 	trap_Cvar_SetValue( "g_pModSpecialties", 0);
 
 	StartServerSetModButtons();
+	UI_LogFuncEnd();
 }
 
 
@@ -471,6 +487,7 @@ GetStartServerMods
 */
 void GetStartServerMods(void)
 {
+	UI_LogFuncBegin();
 
 	s_startserver.assimilation.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "g_pModAssimilation"));
 
@@ -484,7 +501,7 @@ void GetStartServerMods(void)
 
 	s_startserver.assimilation.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "g_pModAssimilation"));
 
-
+	UI_LogFuncEnd();
 }
 
 
@@ -495,7 +512,7 @@ SetServerButtons - where buttons are turned on/off or activated/grayed
 */
 void SetServerButtons(int32_t gameType,menulist_s *assimilation,menulist_s *specialties,menulist_s *disintegration,menulist_s *elimination,menulist_s *actionhero)
 {
-
+	UI_LogFuncBegin();
 	//Lots of checks because NULL  could be sent for one of the buttons
 
 	if  (gameType == GT_TEAM )
@@ -670,7 +687,7 @@ void SetServerButtons(int32_t gameType,menulist_s *assimilation,menulist_s *spec
 			}
 		}
 	}
-
+	UI_LogFuncEnd();
 }
 
 
@@ -684,7 +701,8 @@ ServerGameMods - where game mod rules are
 */
 void ServerGameMods(int32_t gametype,int32_t *pModAssimilation,int32_t *pModSpecialties,int32_t *pModDisintegration,int32_t *pModElimination,int32_t *pModActionHero)
 {
-//Check gametype first
+	UI_LogFuncBegin();
+	//Check gametype first
 	// Check assimilation
 	if ( gametype != GT_TEAM )
 	{
@@ -753,12 +771,13 @@ void ServerGameMods(int32_t gametype,int32_t *pModAssimilation,int32_t *pModSpec
 		trap_Cvar_SetValue( "g_pModElimination", 0);
 		trap_Cvar_SetValue( "g_pModDisintegration", 0);
 	}
-
+	UI_LogFuncEnd();
 }
 
 // Calls for the StartServer screen 
 void StartServerSetModButtons(void)
 {
+	UI_LogFuncBegin();
 		ServerGameMods(gametype_remap[s_startserver.gametype.curvalue],
 			&s_startserver.assimilation.curvalue,
 			&s_startserver.specialties.curvalue,
@@ -772,6 +791,8 @@ void StartServerSetModButtons(void)
 			&s_startserver.disintegration,
 			&s_startserver.elimination,
 			&s_startserver.actionhero);
+
+	UI_LogFuncEnd();
 }
 
 
@@ -781,7 +802,10 @@ StartServer_MenuEvent
 =================
 */
 static void StartServer_MenuEvent( void* ptr, int32_t event ) {
+	UI_LogFuncBegin();
+
 	if( event != QM_ACTIVATED ) {
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -846,6 +870,8 @@ static void StartServer_MenuEvent( void* ptr, int32_t event ) {
 		UI_MainMenu();
 		break;
 	}
+
+	UI_LogFuncEnd();
 }
 
 
@@ -860,9 +886,12 @@ static void StartServer_LevelshotDraw( void *self ) {
 	int32_t				y;
 	int32_t				n;
 
+	UI_LogFuncBegin();
+
 	b = (menubitmap_s *)self;
 
 	if( !b->generic.name ) {
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -898,6 +927,8 @@ static void StartServer_LevelshotDraw( void *self ) {
 	if( b->generic.flags & QMF_HIGHLIGHT ) {	
 		UI_DrawHandlePic( x, y, b->width, b->height + 28, b->focusshader );
 	}
+
+	UI_LogFuncEnd();
 }
 
 #define	START_X_POS 150 //25
@@ -908,6 +939,8 @@ StartServer_Graphics
 */
 void StartServer_Graphics (void)
 {
+	UI_LogFuncBegin();
+
 	UI_MenuFrame2(&s_startserver.menu);
 
 	trap_R_SetColor( colorTable[CT_LTBROWN1]);
@@ -940,10 +973,14 @@ void StartServer_Graphics (void)
 	UI_DrawHandlePic(565 ,65, -16, 16, uis.graphicBracket1CornerLU);
 	UI_DrawHandlePic(573, 81, 8, 276, uis.whiteShader);
 	UI_DrawHandlePic(565,357, -16, -16, uis.graphicBracket1CornerLU);
+
+	UI_LogFuncEnd();
 }
 
 static void MapName_Draw( void *self ) 
 {
+	UI_LogFuncBegin();
+
 	if (!Q_stricmp(s_startserver.mapname.string,menu_normal_text[MNT_NOMAPSFOUND]))
 	{
 		UI_DrawProportionalString(  s_startserver.mapname.generic.x,  s_startserver.mapname.generic.y,
@@ -954,8 +991,7 @@ static void MapName_Draw( void *self )
 		UI_DrawProportionalString(  s_startserver.mapname.generic.x,  s_startserver.mapname.generic.y,
 			s_startserver.maplongname[s_startserver.currentmap],s_startserver.mapname.style, s_startserver.mapname.color);
 	}
-
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -965,9 +1001,11 @@ StartServer_MenuDraw
 */
 static void StartServer_MenuDraw( void )
 {
+	UI_LogFuncBegin();
 	StartServer_Graphics();
 
 	Menu_Draw( &s_startserver.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -982,6 +1020,7 @@ static void StartServer_MenuInit(int32_t multiplayer) {
 	static char mapnamebuffer[64];
 	int32_t	picWidth,picHeight;
 
+	UI_LogFuncBegin();
 	// zero set all our globals
 	memset( &s_startserver, 0 ,sizeof(startserver_t) );
 
@@ -1287,6 +1326,7 @@ static void StartServer_MenuInit(int32_t multiplayer) {
 	StartServer_Settings();
 
 	StartServer_GametypeEvent( NULL, QM_ACTIVATED ); 
+	UI_LogFuncEnd();
 }
 
 
@@ -1297,6 +1337,7 @@ StartServer_Cache
 */
 void StartServer_Cache( void )
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	const char		*info;
 	qboolean		precache;
@@ -1339,6 +1380,7 @@ void StartServer_Cache( void )
 	}
 
 	s_startserver.maxpages = (s_startserver.nummaps + MAX_MAPSPERPAGE-1)/MAX_MAPSPERPAGE;
+	UI_LogFuncEnd();
 }
 
 
@@ -1349,9 +1391,11 @@ UI_StartServerMenu
 */
 void UI_StartServerMenu( qboolean multiplayer ) 
 {
+	UI_LogFuncBegin();
 	StartServer_MenuInit(multiplayer);
 	UI_PushMenu( &s_startserver.menu );
 	Menu_SetCursorToItem( &s_startserver.menu, &s_startserver.next);
+	UI_LogFuncEnd();
 }
 
 
@@ -1523,6 +1567,8 @@ BotAlreadySelected
 static qboolean BotAlreadySelected( const char *checkName ) {
 	int32_t		n;
 
+	UI_LogFuncBegin();
+
 	for( n = 1; n < PLAYER_SLOTS; n++ ) {
 		if( s_serveroptions.playerType[n].curvalue != 1 ) {
 			continue;
@@ -1536,10 +1582,12 @@ static qboolean BotAlreadySelected( const char *checkName ) {
 			continue;
 		}
 		if( Q_stricmp( checkName, s_serveroptions.playerNameBuffers[n] ) == 0 ) {
+			UI_LogFuncEnd();
 			return qtrue;
 		}
 	}
 
+	UI_LogFuncEnd();
 	return qfalse;
 }
 
@@ -1563,6 +1611,8 @@ static void ServerOptions_Start( void ) {
 
 	char pClass[MAX_QPATH];
 	char pRank[MAX_QPATH];
+
+	UI_LogFuncBegin();
 
 	timelimit	 = atoi( s_serveroptions.timelimit.field.buffer );
 	fraglimit	 = atoi( s_serveroptions.fraglimit.field.buffer );
@@ -1670,6 +1720,7 @@ static void ServerOptions_Start( void ) {
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait 5; class %s; rank %s \n", pClass, pRank ) );
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -1681,6 +1732,8 @@ ServerOptions_InitPlayerItems
 static void ServerOptions_InitPlayerItems( void ) {
 	int32_t		n;
 	int32_t		v;
+
+	UI_LogFuncBegin();
 
 	// init types
 	if( s_serveroptions.multiplayer ) {
@@ -1738,6 +1791,7 @@ static void ServerOptions_InitPlayerItems( void ) {
 			s_serveroptions.playerClass[n].generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -1749,6 +1803,8 @@ ServerOptions_SetPlayerItems
 static int32_t ServerOptions_SetPlayerItems( void ) {
 	int32_t		start;
 	int32_t		n,maxClients,holdmaxClients;
+
+	UI_LogFuncBegin();
 
 	// types
 //	for( n = 0; n < PLAYER_SLOTS; n++ ) {
@@ -1805,6 +1861,7 @@ static int32_t ServerOptions_SetPlayerItems( void ) {
 
 	// teams
 	if( s_serveroptions.gametype < GT_TEAM ) {
+		UI_LogFuncEnd();
 		return(maxClients);
 	}
 
@@ -1817,6 +1874,7 @@ static int32_t ServerOptions_SetPlayerItems( void ) {
 		}
 	}
 
+	UI_LogFuncEnd();
 	return(maxClients);
 }
 
@@ -1829,6 +1887,8 @@ ServerOptions_Event
 static void ServerOptions_Event( void* ptr, int32_t event ) 
 {
 	int32_t maxClients;
+
+	UI_LogFuncBegin();
 
 	switch( ((menucommon_s*)ptr)->id ) {
 
@@ -1881,14 +1941,18 @@ static void ServerOptions_Event( void* ptr, int32_t event )
 		UI_MainMenu();
 		break;
 	}
+	UI_LogFuncEnd();
 }
 
 
 static void ServerOptions_PlayerNameEvent( void* ptr, int32_t event ) {
 	int32_t		n;
 
+	UI_LogFuncBegin();
+
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1906,6 +1970,7 @@ static void ServerOptions_PlayerNameEvent( void* ptr, int32_t event ) {
 	{
 		UI_BotSelectMenu( s_serveroptions.playerNameBuffers[n] );
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -1929,6 +1994,8 @@ static void ServerOptions_LevelshotDraw( void *self ) {
 	menubitmap_s	*b;
 	int32_t				x;
 	int32_t				y;
+
+	UI_LogFuncBegin();
 
 	// Map background
 	trap_R_SetColor( colorTable[CT_DKGREY]);
@@ -1963,6 +2030,7 @@ static void ServerOptions_LevelshotDraw( void *self ) {
 	y += SMALLCHAR_HEIGHT;
 	//UI_DrawProportionalString( x, y, menu_normal_text[gametype_items[gametype_remap2[s_serveroptions.gametype]]], UI_CENTER|UI_SMALLFONT, colorTable[CT_DKBROWN1] );
 
+	UI_LogFuncEnd();
 }
 
 
@@ -1977,6 +2045,8 @@ static void ServerOptions_InitBotNames( void )
 	char		bots[MAX_INFO_STRING];
 	int32_t			max;
 
+	UI_LogFuncBegin();
+
 	if ( s_serveroptions.gametype >= GT_TEAM )
 	{
 		Q_strncpyz( s_serveroptions.playerNameBuffers[1], "Janeway", 16 );
@@ -1990,6 +2060,7 @@ static void ServerOptions_InitBotNames( void )
 		s_serveroptions.playerType[5].curvalue = 2;
 		s_serveroptions.playerType[10].curvalue = 2;
 		s_serveroptions.playerType[11].curvalue = 2;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -2059,6 +2130,7 @@ static void ServerOptions_InitBotNames( void )
 			s_serveroptions.playerType[count].curvalue = 2;
 //		}
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -2070,6 +2142,8 @@ ServerOptions_SetMenuItems
 static void ServerOptions_SetMenuItems( void )
 {
 	static char picname[64];
+
+	UI_LogFuncBegin();
 
 	switch( s_serveroptions.gametype )
 	{
@@ -2116,6 +2190,7 @@ static void ServerOptions_SetMenuItems( void )
 	// seed bot names
 	ServerOptions_InitBotNames();
 	ServerOptions_SetPlayerItems();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2130,6 +2205,8 @@ static void PlayerName_Draw( void *item )
 	int32_t			x, y;
 	int32_t			style;
 	qboolean	focus;
+
+	UI_LogFuncBegin();
 
 	s = (menutext_s *)item;
 
@@ -2167,6 +2244,7 @@ static void PlayerName_Draw( void *item )
 
 	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, style|UI_RIGHT, color, qtrue );
 	UI_DrawString( x + SMALLCHAR_WIDTH, y, s->string, style|UI_LEFT, color, qtrue );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2176,6 +2254,8 @@ ServerOptionsMenu_Graphics
 */
 void ServerOptionsMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
+
 	UI_MenuFrame2(&s_serveroptions.menu);
 
 	trap_R_SetColor( colorTable[CT_LTORANGE]);
@@ -2219,6 +2299,7 @@ void ServerOptionsMenu_Graphics (void)
 	UI_DrawProportionalString(  74,  278, "23",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  347, "68311",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  395, "34-5",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
+	UI_LogFuncEnd();
 }
 /*
 =================
@@ -2227,9 +2308,11 @@ ServerOptions_MenuDraw
 */
 static void ServerOptions_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	ServerOptionsMenu_Graphics();
 
 	Menu_Draw( &s_serveroptions.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2240,6 +2323,8 @@ ServerOptions_MenuInit2
 static void ServerOptions_MenuInit2( int32_t specialties) 
 {
 	int32_t	assim,n;
+
+	UI_LogFuncBegin();
 
 	assim = trap_Cvar_VariableValue( "g_pModAssimilation");
 
@@ -2276,6 +2361,7 @@ static void ServerOptions_MenuInit2( int32_t specialties)
 			s_serveroptions.playerClass[n].generic.flags	|= (QMF_INACTIVE|QMF_HIDDEN);
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2290,6 +2376,8 @@ static void ServerOptions_MenuInit( qboolean multiplayer )
 {
 	int32_t		x,y,yInc;
 	int32_t		n;
+
+	UI_LogFuncBegin();
 
 	memset( &s_serveroptions, 0 ,sizeof(serveroptions_t) );
 	s_serveroptions.multiplayer = multiplayer;
@@ -2677,6 +2765,8 @@ static void ServerOptions_MenuInit( qboolean multiplayer )
 
 	ServerOptions_SetMenuItems();
 	ServerOptions_MenuInit2(s_serveroptions.specialties);
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2686,6 +2776,8 @@ ServerOptions_Cache
 */
 void ServerOptions_Cache( void ) 
 {
+	UI_LogFuncBegin();
+
 	trap_R_RegisterShaderNoMip( GAMESERVER_SELECT );
 	trap_R_RegisterShaderNoMip( GAMESERVER_UNKNOWNMAP );
 
@@ -2702,6 +2794,8 @@ void ServerOptions_Cache( void )
 
 	s_serveroptions.teamShaders[SO_TEAM_BLUE] = trap_R_RegisterShaderNoMip( "sprites/team_blue" );
 	s_serveroptions.teamShaders[SO_TEAM_RED] = trap_R_RegisterShaderNoMip( "sprites/team_red" );
+
+	UI_LogFuncEnd();
 }
 
 
@@ -2712,8 +2806,10 @@ UI_ServerOptionsMenu
 */
 static void UI_ServerOptionsMenu( qboolean multiplayer ) 
 {
+	UI_LogFuncBegin();
 	ServerOptions_MenuInit( multiplayer );
 	UI_PushMenu( &s_serveroptions.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -2776,6 +2872,8 @@ static int32_t QDECL UI_BotSelectMenu_SortCompare( const void *arg1, const void 
 	const char	*info1, *info2;
 	const char	*name1, *name2;
 
+	UI_LogFuncBegin();
+
 	num1 = *(int32_t *)arg1;
 	num2 = *(int32_t *)arg2;
 
@@ -2785,6 +2883,7 @@ static int32_t QDECL UI_BotSelectMenu_SortCompare( const void *arg1, const void 
 	name1 = Info_ValueForKey( info1, "name" );
 	name2 = Info_ValueForKey( info2, "name" );
 
+	UI_LogFuncEnd();
 	return Q_stricmp( name1, name2 );
 }
 
@@ -2796,6 +2895,8 @@ UI_BotSelectMenu_BuildList
 */
 static void UI_BotSelectMenu_BuildList( void ) {
 	int32_t		n;
+
+	UI_LogFuncBegin();
 
 	botSelectInfo.modelpage = 0;
 	botSelectInfo.numBots = UI_GetNumBots();
@@ -2811,9 +2912,8 @@ static void UI_BotSelectMenu_BuildList( void ) {
 
 	// now sort it
 	qsort( botSelectInfo.sortedBotNums, botSelectInfo.numBots, sizeof(botSelectInfo.sortedBotNums[0]), UI_BotSelectMenu_SortCompare );
+	UI_LogFuncEnd();
 }
-
-extern void PlayerIcon( const char *modelAndSkin, char *iconName, int32_t iconNameMaxSize );	//from ui_splevel
 
 /*
 =================
@@ -2825,11 +2925,12 @@ static void UI_BotSelectMenu_UpdateGrid( void ) {
 	int32_t			i;
     int32_t			j,len;
 
+	UI_LogFuncBegin();
+
 	j = botSelectInfo.modelpage * MAX_MODELSPERPAGE;
 	for( i = 0; i < (PLAYERGRID_ROWS * PLAYERGRID_COLS); i++, j++) {
 		if( j < botSelectInfo.numBots ) { 
 			info = UI_GetBotInfoByNumber( botSelectInfo.sortedBotNums[j] );
-			PlayerIcon( Info_ValueForKey( info, "model" ), botSelectInfo.boticons[i], MAX_QPATH );
 			Q_strncpyz( botSelectInfo.botnames[i], Info_ValueForKey( info, "name" ), 16 );
 			Q_CleanStr( botSelectInfo.botnames[i] );
 
@@ -2900,6 +3001,7 @@ static void UI_BotSelectMenu_UpdateGrid( void ) {
 		botSelectInfo.left.generic.flags |= QMF_INACTIVE;
 		botSelectInfo.right.generic.flags |= QMF_INACTIVE;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -2914,6 +3016,8 @@ static void UI_BotSelectMenu_Default( char *bot ) {
 	int32_t			n;
 	int32_t			i;
 
+	UI_LogFuncBegin();
+
 	for( n = 0; n < botSelectInfo.numBots; n++ ) {
 		botInfo = UI_GetBotInfoByNumber( n );
 		test = Info_ValueForKey( botInfo, "name" );
@@ -2923,6 +3027,7 @@ static void UI_BotSelectMenu_Default( char *bot ) {
 	}
 	if( n == botSelectInfo.numBots ) {
 		botSelectInfo.selectedmodel = 0;
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -2933,10 +3038,12 @@ static void UI_BotSelectMenu_Default( char *bot ) {
 	}
 	if( i == botSelectInfo.numBots ) {
 		botSelectInfo.selectedmodel = 0;
+		UI_LogFuncEnd();
 		return;
 	}
 
 	botSelectInfo.selectedmodel = i;
+	UI_LogFuncEnd();
 }
 
 
@@ -2946,7 +3053,11 @@ UI_BotSelectMenu_LeftEvent
 =================
 */
 static void UI_BotSelectMenu_LeftEvent( void* ptr, int32_t event ) {
+	
+	UI_LogFuncBegin();
+
 	if( event != QM_ACTIVATED ) {
+		UI_LogFuncEnd();
 		return;
 	}
 	if( botSelectInfo.modelpage > 0 ) {
@@ -2954,6 +3065,7 @@ static void UI_BotSelectMenu_LeftEvent( void* ptr, int32_t event ) {
 		botSelectInfo.selectedmodel = botSelectInfo.modelpage * MAX_MODELSPERPAGE;
 		UI_BotSelectMenu_UpdateGrid();
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -2963,7 +3075,11 @@ UI_BotSelectMenu_RightEvent
 =================
 */
 static void UI_BotSelectMenu_RightEvent( void* ptr, int32_t event ) {
+
+	UI_LogFuncBegin();
+
 	if( event != QM_ACTIVATED ) {
+		UI_LogFuncEnd();
 		return;
 	}
 	if( botSelectInfo.modelpage < botSelectInfo.numpages - 1 ) {
@@ -2971,6 +3087,7 @@ static void UI_BotSelectMenu_RightEvent( void* ptr, int32_t event ) {
 		botSelectInfo.selectedmodel = botSelectInfo.modelpage * MAX_MODELSPERPAGE;
 		UI_BotSelectMenu_UpdateGrid();
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -2980,9 +3097,13 @@ UI_BotSelectMenu_BotEvent
 =================
 */
 static void UI_BotSelectMenu_BotEvent( void* ptr, int32_t event ) {
+
+	UI_LogFuncBegin();
+
 	int32_t		i;
 
 	if( event != QM_ACTIVATED ) {
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -2998,6 +3119,7 @@ static void UI_BotSelectMenu_BotEvent( void* ptr, int32_t event ) {
 	botSelectInfo.selectedmodel = botSelectInfo.modelpage * MAX_MODELSPERPAGE + i;
 
 	strcpy( botSelectInfo.chosenname.string, botSelectInfo.picnames[i].string);
+	UI_LogFuncEnd();
 
 }
 
@@ -3008,10 +3130,15 @@ UI_BotSelectMenu_BackEvent
 =================
 */
 static void UI_BotSelectMenu_BackEvent( void* ptr, int32_t event ) {
+
+	UI_LogFuncBegin();
+
 	if( event != QM_ACTIVATED ) {
+		UI_LogFuncEnd();
 		return;
 	}
 	UI_PopMenu();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3021,12 +3148,16 @@ UI_BotSelectMenu_MainMenuEvent
 */
 static void UI_BotSelectMenu_MainMenuEvent( void* ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
+
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
 	UI_MainMenu();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3036,14 +3167,18 @@ UI_BotSelectMenu_SelectEvent
 */
 static void UI_BotSelectMenu_SelectEvent( void* ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
+
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 	UI_PopMenu();
 
 	s_serveroptions.newBot = qtrue;
 	Q_strncpyz( s_serveroptions.newBotName, botSelectInfo.botnames[botSelectInfo.selectedmodel % MAX_MODELSPERPAGE], 16 );
+	UI_LogFuncEnd();
 }
 
 
@@ -3054,6 +3189,8 @@ M_BotSelectMenu_Graphics
 */
 void M_BotSelectMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
+
 	UI_MenuFrame2(&botSelectInfo.menu);
 
 	trap_R_SetColor( colorTable[CT_LTBROWN1]);
@@ -3090,6 +3227,7 @@ void M_BotSelectMenu_Graphics (void)
 	UI_DrawProportionalString(  74,  150, "4545",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  206, "3624",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  395, "34",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
+	UI_LogFuncEnd();
 
 }
 
@@ -3101,9 +3239,11 @@ BotSelect_MenuDraw
 */
 static void BotSelect_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_BotSelectMenu_Graphics();
 
 	Menu_Draw( &botSelectInfo.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3113,10 +3253,12 @@ UI_BotSelectMenu_Cache
 */
 void UI_BotSelectMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	trap_R_RegisterShaderNoMip( BOTSELECT_SELECT );
 	trap_R_RegisterShaderNoMip( BOTSELECT_SELECTED );
 
 	botSelectInfo.corner_ll_18_18 = trap_R_RegisterShaderNoMip("menu/common/corner_ll_18_18.tga");
+	UI_LogFuncEnd();
 }
 
 
@@ -3125,6 +3267,8 @@ static void UI_BotSelectMenu_Init( char *bot )
 	int32_t		i, j, k;
 	int32_t		x, y,len;
 	static char chosennamebuffer[64];
+
+	UI_LogFuncBegin();
 
 	memset( &botSelectInfo, 0 ,sizeof(botSelectInfo) );
 	botSelectInfo.menu.nitems = 0;
@@ -3305,6 +3449,7 @@ static void UI_BotSelectMenu_Init( char *bot )
 	UI_BotSelectMenu_Default( bot );
 	botSelectInfo.modelpage = botSelectInfo.selectedmodel / MAX_MODELSPERPAGE;
 	UI_BotSelectMenu_UpdateGrid();
+	UI_LogFuncEnd();
 }
 
 
@@ -3315,8 +3460,10 @@ UI_BotSelectMenu
 */
 void UI_BotSelectMenu( char *bot ) 
 {
+	UI_LogFuncBegin();
 	UI_BotSelectMenu_Init( bot );
 	UI_PushMenu( &botSelectInfo.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -3327,11 +3474,13 @@ SetPlayerMod
 */
 void SetPlayerMod(void)
 {
+	UI_LogFuncBegin();
 	trap_Cvar_SetValue( "g_pModAssimilation", s_startserver.assimilation.curvalue);
 	trap_Cvar_SetValue( "g_pModDisintegration", s_startserver.disintegration.curvalue);
 	trap_Cvar_SetValue( "g_pModActionHero", s_startserver.actionhero.curvalue);
 	trap_Cvar_SetValue( "g_pModSpecialties", s_startserver.specialties.curvalue);
 	trap_Cvar_SetValue( "g_pModElimination", s_startserver.elimination.curvalue);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3343,6 +3492,8 @@ static void AdvancedServer_Update( void)
 {
 	int32_t holdInt;
 	float holdFloat;
+
+	UI_LogFuncBegin();
 
 	// Set colors to normal
 	s_advancedserver.repawntime.field.titlecolor				= CT_DKGOLD1;
@@ -3365,6 +3516,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_RESPAWNTIME;
 		s_advancedserver.repawntime.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.repawntime);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "g_weaponrespawn", holdInt );
@@ -3376,6 +3528,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_MAXCLIENTS;
 		s_advancedserver.maxclients.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.maxclients);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "sv_maxclients", holdInt );
@@ -3387,6 +3540,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_RUNSPEED;
 		s_advancedserver.runspeed.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.runspeed);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "g_speed", holdInt );
@@ -3398,6 +3552,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_GRAVITY;
 		s_advancedserver.gravity.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.gravity);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "g_gravity", holdInt );
@@ -3409,6 +3564,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_KNOCKBACK;
 		s_advancedserver.knockback.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.knockback);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "g_knockback", holdInt );
@@ -3420,6 +3576,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_DMGMULT;
 		s_advancedserver.dmgmult.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.dmgmult);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "g_dmgmult", holdFloat );
@@ -3431,6 +3588,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_BOT_MINPLAYERS;
 		s_advancedserver.bot_minplayers.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.bot_minplayers);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "bot_minplayers", holdInt );
@@ -3443,6 +3601,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_FORCEPLAYERRESPAWN;
 		s_advancedserver.forceplayerrespawn.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.forceplayerrespawn);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "g_forcerespawn", holdInt );
@@ -3455,6 +3614,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_RESPAWNINVULNERABILITY;
 		s_advancedserver.respawninvulnerability.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.respawninvulnerability);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "g_ghostRespawn", holdInt );
@@ -3466,6 +3626,7 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_DOWARMUP;
 		s_advancedserver.dowarmup.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.dowarmup);
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -3487,11 +3648,13 @@ static void AdvancedServer_Update( void)
 		s_advancedserver.errorFlag = ERR_CLASSCHANGETIMEOUT;
 		s_advancedserver.classchangetimeout.field.titlecolor	= CT_LTRED1;
 		Menu_SetCursorToItem(&s_advancedserver.menu,&s_advancedserver.classchangetimeout);
+		UI_LogFuncEnd();
 		return;
 	}
 	trap_Cvar_SetValue( "g_classChangeDebounceTime", holdInt );
 
 	ServerOptions_MenuInit2(s_advancedserver.specialties.curvalue);
+	UI_LogFuncEnd();
 
 }
 
@@ -3499,6 +3662,8 @@ static void AdvancedServer_Update( void)
 // Calls for the AdvancedServer screen 
 void AdvancedServerSetModButtons(void)
 {
+	UI_LogFuncBegin();
+
 		ServerGameMods(gametype_remap[s_startserver.gametype.curvalue],
 			&s_advancedserver.assimilation.curvalue,
 			&s_advancedserver.specialties.curvalue,
@@ -3512,6 +3677,8 @@ void AdvancedServerSetModButtons(void)
 			&s_advancedserver.disintegration,
 			&s_advancedserver.elimination,
 			&s_advancedserver.actionhero);
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3523,8 +3690,11 @@ static void AdvancedServer_Event( void* ptr, int32_t notification )
 {
 	int32_t dmflags;
 
+	UI_LogFuncBegin();
+
 	if( notification != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -3622,6 +3792,7 @@ static void AdvancedServer_Event( void* ptr, int32_t notification )
 		}
 		break;
 	}
+	UI_LogFuncEnd();
 }
 
 #define ERROR_X_OFFSET	80
@@ -3632,6 +3803,8 @@ M_AdvancedServerMenu_Graphics
 */
 void M_AdvancedServerMenu_Graphics(void)
 {
+	UI_LogFuncBegin();
+
 	UI_MenuFrame2(&s_advancedserver.menu);
 
 	trap_R_SetColor( colorTable[CT_LTORANGE]);
@@ -3704,6 +3877,7 @@ void M_AdvancedServerMenu_Graphics(void)
 	trap_R_SetColor( colorTable[s_advancedserver.back.color]);
 	UI_DrawHandlePic(s_advancedserver.back.generic.x - 14, s_advancedserver.back.generic.y, 
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
+	UI_LogFuncEnd();
 
 }
 
@@ -3715,6 +3889,8 @@ ServerAdvanced_StatusBar
 static void ServerAdvanced_StatusBar( void* ptr ) 
 {
 	int32_t x,y;
+
+	UI_LogFuncBegin();
 
 	x = 265;
 	y = 400;
@@ -3775,9 +3951,11 @@ AdvanceServer_MenuDraw
 */
 static void AdvanceServer_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_AdvancedServerMenu_Graphics();
 
 	Menu_Draw( &s_advancedserver.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3788,6 +3966,8 @@ UI_AdvancedServerMenu_Init
 static void UI_AdvancedServerMenu_Init(int32_t fromMenu)
 {
 	int32_t x,y,pad,dmflags,holdInt;
+
+	UI_LogFuncBegin();
 
 	memset( &s_advancedserver, 0 ,sizeof(s_advancedserver) );
 
@@ -4369,6 +4549,7 @@ static void UI_AdvancedServerMenu_Init(int32_t fromMenu)
 	}
 
 	AdvancedServerSetModButtons();
+	UI_LogFuncEnd();
 
 }
 
@@ -4379,8 +4560,10 @@ UI_ServerAdvancedOptions
 */
 void UI_ServerAdvancedOptions(int32_t fromMenu)
 {
+	UI_LogFuncBegin();
 	UI_AdvancedServerMenu_Init(fromMenu);
 	UI_PushMenu( &s_advancedserver.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -4399,6 +4582,8 @@ void UI_BuildGroupTable(void)
 	char *max_place;
 	char *s;
 	char *marker;
+
+	UI_LogFuncBegin();
 
 	memset(skinsForRace,0,sizeof(skinsForRace));
 
@@ -4452,6 +4637,7 @@ void UI_BuildGroupTable(void)
 	}
 
 	UI_SearchGroupTable("NONE");	// Add this
+	UI_LogFuncEnd();
 
 }
 
@@ -4459,11 +4645,14 @@ static int32_t UI_SearchGroupTable(char *current_race)
 {
 	int32_t i;
 
+	UI_LogFuncBegin();
+
 	i=0;
 	while (skinsForRace[i][0])
 	{
 		if (!strcmp(current_race,skinsForRace[i]))
 		{
+			UI_LogFuncEnd();
 			return i;	
 		}
 		i++;
@@ -4472,11 +4661,14 @@ static int32_t UI_SearchGroupTable(char *current_race)
 	Q_strncpyz(skinsForRace[i],current_race,strlen(current_race)+1);
 	s_skinsForRace[i] = skinsForRace[i];
 
+	UI_LogFuncEnd();
 	return i;
 }
 
 static void UI_BlankGroupTable(void)
 {
+	UI_LogFuncBegin();
 	skinsForRace[0][0] = '\0';
 	s_skinsForRace[0] = skinsForRace[0];
+	UI_LogFuncEnd();
 }

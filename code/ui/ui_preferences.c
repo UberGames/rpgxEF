@@ -10,6 +10,7 @@ GAME OPTIONS MENU
 
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 
 #define NUM_CROSSHAIRS		12
@@ -103,17 +104,10 @@ int32_t s_voicelanguage_Names[] =
 	MNT_NONE
 };
 
-/*static int32_t teamoverlay_names[] =
-{
-	MNT_TO_OFF,
-	MNT_TO_UPPER_RIGHT,
-	MNT_TO_LOWER_RIGHT,
-	MNT_TO_LOWER_LEFT,
-	0
-};*/
-
 static void Preferences_SetMenuItems( void ) 
 {
+	UI_LogFuncBegin();
+
 	char buffer[32];
 	int32_t *language;
 
@@ -122,7 +116,6 @@ static void Preferences_SetMenuItems( void )
 	s_preferences.wallmarks.curvalue		= trap_Cvar_VariableValue( "cg_marks" ) != 0;
 	s_preferences.identifytarget.curvalue	= trap_Cvar_VariableValue( "cg_drawCrosshairNames" ) != 0;
 	s_preferences.dynamiclights.curvalue	= trap_Cvar_VariableValue( "r_dynamiclight" ) != 0;
-//	s_preferences.highqualitysky.curvalue	= trap_Cvar_VariableValue ( "r_fastsky" ) == 0;
 	s_preferences.synceveryframe.curvalue	= trap_Cvar_VariableValue( "r_finish" ) != 0;
 	s_preferences.forcemodel.curvalue		= trap_Cvar_VariableValue( "cg_forcemodel" ) != 0;
 	s_preferences.drawteamoverlay.curvalue	= Com_Clamp( 0, 3, trap_Cvar_VariableValue( "cg_drawTeamOverlay" ) );
@@ -171,25 +164,22 @@ static void Preferences_SetMenuItems( void )
 			s_preferences.voicelanguage.curvalue = 0;
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 
 static void Preferences_Event( void* ptr, int32_t notification ) 
 {
+	UI_LogFuncBegin();
 	if( notification != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
 	switch( ((menucommon_s*)ptr)->id ) 
 	{
 	case ID_CROSSHAIR:
-		/*s_preferences.currentcrosshair++;
-		if( s_preferences.currentcrosshair == NUM_CROSSHAIRS ) 
-		{
-			s_preferences.currentcrosshair = 0;
-		}*/
-		//trap_Cvar_SetValue( "cg_drawCrosshair", s_preferences.currentcrosshair );
 		trap_Cvar_SetValue( "cg_drawCrosshair", s_preferences.crosshair.curvalue );
 		break;
 
@@ -245,58 +235,8 @@ static void Preferences_Event( void* ptr, int32_t notification )
 		UI_PopMenu();
 		break;
 	}
+	UI_LogFuncEnd();
 }
-
-
-/*
-=================
-Crosshair_Draw
-=================
-*/
-/*
-static void Crosshair_Draw( void *self ) {
-	menulist_s	*s;
-	float		*color;
-	int32_t			x, y;
-	int32_t			style;
-	qboolean	focus;
-
-	s = (menulist_s *)self;
-	x = s->generic.x;
-	y =	s->generic.y;
-
-	style = UI_SMALLFONT;
-	focus = (s->generic.parent->cursor == s->generic.menuPosition);
-
-	if ( s->generic.flags & QMF_GRAYED )
-		color = text_color_disabled;
-	else if ( focus )
-	{
-		color = text_color_highlight;
-		style |= UI_PULSE;
-	}
-	else if ( s->generic.flags & QMF_BLINK )
-	{
-		color = text_color_highlight;
-		style |= UI_BLINK;
-	}
-	else
-		color = text_color_normal;
-
-	if ( focus )
-	{
-		// draw cursor
-		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color ); 
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
-	}
-
-	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, style|UI_RIGHT, color );
-	if( !s->curvalue ) {
-		return;
-	}
-	UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y - 4, 24, 24, s_preferences.crosshairShader[s->curvalue] );
-}
-*/
 
 /*
 =================
@@ -305,7 +245,7 @@ GameOptions_MenuDraw
 */
 static void GameOptions_MenuDraw( void )
 {
-	//int32_t x;
+	UI_LogFuncBegin();
 
 	UI_MenuFrame(&s_gameoptions.menu);
 
@@ -313,40 +253,6 @@ static void GameOptions_MenuDraw( void )
 
 	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
 	UI_DrawHandlePic(30,203,  47, 186, uis.whiteShader);	// Long left hand column square
-/*
-	UI_DrawHandlePic( 543, 171, 128,	32,	s_gameoptions.swooptop);
-	UI_DrawHandlePic( 543, 396, 128,	32,	s_gameoptions.swoopbottom);
-
-	UI_DrawHandlePic(548, 195,  64,	8,		uis.whiteShader);	// Top of right hand column
-	UI_DrawHandlePic(548, 389,  64,	7,		uis.whiteShader);	// Bottom of right hand column
-	UI_DrawHandlePic( 548, 206, 64, 180,    uis.whiteShader);	// 
-
-	UI_DrawHandlePic( 104, 171, 436, 12,    uis.whiteShader);	// Top
-	UI_DrawHandlePic( 104, 182, 16,  227,    uis.whiteShader);	// Side
-	UI_DrawHandlePic( 104, 408, 436, 12,    uis.whiteShader);	// Bottom
-*/
-	//RPG-X TiM : We can't customize our crosshairs no more. :'(
-
-//	trap_R_SetColor( colorTable[CT_DKBLUE1]);
-//	UI_DrawHandlePic(387, 245, 8,   87,	uis.whiteShader);		// Lefthand side of CROSSHAIR box
-//	UI_DrawHandlePic(513, 245, 8,   87,	uis.whiteShader);		// Righthand side of CROSSHAIR box
-//	UI_DrawHandlePic(395, 335, 116, 3,	uis.whiteShader);		// Bottom of CROSSHAIR box
-//	UI_DrawHandlePic( 387, 332, 16,  16,s_gameoptions.lswoop);	// lower left hand swoop
-//	UI_DrawHandlePic( 510, 332, 16,  16,s_gameoptions.lswoop2);	// lower right hand swoop
-//	
-//	UI_DrawHandlePic( 387, 224, 16,  32,  s_gameoptions.tallswoop);		// upper left hand swoop
-//	UI_DrawHandlePic( 507, 224, 16,  32,  s_gameoptions.tallswoop2);	// upper right hand swoop
-//	
-//	trap_R_SetColor( colorTable[CT_YELLOW]);
-//	x = 438;
-//	if (s_preferences.currentcrosshair)
-//	{
-//		UI_DrawHandlePic(x,270,  32, 32, s_preferences.crosshairShader[s_preferences.currentcrosshair]);	// Draw crosshair
-//	}
-//	else
-//	{
-//		UI_DrawProportionalString( 454, 275, menu_normal_text[MNT_CROSSHAIR_NONE],UI_CENTER|UI_SMALLFONT, colorTable[CT_LTGOLD1]);	// No crosshair
-//	}
 
 	// Menu frame numbers
 	UI_DrawProportionalString(  74,  66, "1776",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
@@ -356,6 +262,7 @@ static void GameOptions_MenuDraw( void )
 	UI_DrawProportionalString(  74,  395, "1001001",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 
 	Menu_Draw( &s_gameoptions.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -374,7 +281,7 @@ UI_GameOptionsMenu_Cache
 */
 void UI_GameOptionsMenu_Cache( void ) 
 {
-	//int32_t i;
+	UI_LogFuncBegin();
 
 	s_gameoptions.slant1 = trap_R_RegisterShaderNoMip("menu/lcarscontrols/slant1.tga");
 	s_gameoptions.slant2 = trap_R_RegisterShaderNoMip("menu/lcarscontrols/slant2.tga");
@@ -391,13 +298,7 @@ void UI_GameOptionsMenu_Cache( void )
 	s_gameoptions.tallswoop2 = trap_R_RegisterShaderNoMip("menu/lcarscontrols/tallswoop2.tga");
 
 	trap_R_RegisterShaderNoMip(PIC_BUTTON2);
-
-	// Precache crosshairs
-	/*for( i = 0; i < NUM_CROSSHAIRS; i++ ) 
-	{
-		s_preferences.crosshairShader[i] = trap_R_RegisterShaderNoMip( va("gfx/2d/crosshair%c", 'a' + i ) );
-	}*/
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -407,6 +308,7 @@ GameOptions_MenuInit
 */
 static void GameOptions_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	int32_t x,y,inc,width;
 
 	UI_GameOptionsMenu_Cache();
@@ -551,22 +453,6 @@ static void GameOptions_MenuInit( void )
 	s_preferences.crosshair.textcolor2					= CT_WHITE;
 	s_preferences.crosshair.listnames					= s_OffOnNone_Names;;
 
-	/*s_preferences.drawteamoverlay.generic.type		= MTYPE_SPINCONTROL;
-	s_preferences.drawteamoverlay.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_preferences.drawteamoverlay.generic.x				= x;
-	s_preferences.drawteamoverlay.generic.y				= y;
-	s_preferences.drawteamoverlay.generic.callback		= Preferences_Event;
-	s_preferences.drawteamoverlay.generic.id				= ID_DRAWTEAMOVERLAY;
-	s_preferences.drawteamoverlay.textEnum				= MBT_DRAWTEAMOVERLAY;
-	s_preferences.drawteamoverlay.textcolor				= CT_BLACK;
-	s_preferences.drawteamoverlay.textcolor2				= CT_WHITE;
-	s_preferences.drawteamoverlay.color					= CT_DKPURPLE1;
-	s_preferences.drawteamoverlay.color2					= CT_LTPURPLE1;
-	s_preferences.drawteamoverlay.textX					= MENU_BUTTON_TEXT_X;
-	s_preferences.drawteamoverlay.textY					= MENU_BUTTON_TEXT_Y;
-	s_preferences.drawteamoverlay.listnames				= teamoverlay_names;
-	s_preferences.drawteamoverlay.width					= width;*/
-
 	y += inc;
 	s_preferences.allowdownload.generic.type			= MTYPE_SPINCONTROL;
 	s_preferences.allowdownload.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
@@ -637,30 +523,12 @@ static void GameOptions_MenuInit( void )
 	s_preferences.voicelanguage.listnames					= s_voicelanguage_Names;
 	s_preferences.voicelanguage.width						= width;
 
-/*	s_preferences.crosshair.generic.type				= MTYPE_BITMAP;      
-	s_preferences.crosshair.generic.flags				= QMF_HIGHLIGHT_IF_FOCUS;
-	s_preferences.crosshair.generic.x					= 404;
-	s_preferences.crosshair.generic.y					= 224;
-	s_preferences.crosshair.generic.name				= PIC_BUTTON2;
-	s_preferences.crosshair.generic.id					= ID_CROSSHAIR;
-	s_preferences.crosshair.generic.callback			= Preferences_Event;
-	s_preferences.crosshair.width						= 100;
-	s_preferences.crosshair.height						= 32;
-	s_preferences.crosshair.color						= CT_DKBLUE1;
-	s_preferences.crosshair.color2						= CT_LTBLUE1;
-	s_preferences.crosshair.textX						= 20;
-	s_preferences.crosshair.textY						= 1;
-	s_preferences.crosshair.textEnum					= MBT_CROSSHAIR;
-	s_preferences.crosshair.textcolor					= CT_BLACK;
-	s_preferences.crosshair.textcolor2					= CT_WHITE;*/
-
 	Menu_AddItem( &s_gameoptions.menu, &s_preferences.flares );
 	Menu_AddItem( &s_gameoptions.menu, &s_preferences.wallmarks );
 	Menu_AddItem( &s_gameoptions.menu, &s_preferences.dynamiclights );
 	Menu_AddItem( &s_gameoptions.menu, &s_preferences.identifytarget );
 	Menu_AddItem( &s_gameoptions.menu, &s_preferences.synceveryframe );
 	Menu_AddItem( &s_gameoptions.menu, &s_preferences.forcemodel );
-	//Menu_AddItem( &s_gameoptions.menu, &s_preferences.drawteamoverlay );
 	Menu_AddItem( &s_gameoptions.menu, &s_preferences.allowdownload );
 	Menu_AddItem( &s_gameoptions.menu, &s_preferences.simpleitems );
 	Menu_AddItem( &s_gameoptions.menu, &s_preferences.textlanguage );
@@ -670,6 +538,7 @@ static void GameOptions_MenuInit( void )
 	s_gameoptions.menu.initialized = qtrue;		// Show we've been here
 
 	Preferences_SetMenuItems();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -679,9 +548,10 @@ UI_GameOptionsMenu
 */
 void UI_GameOptionsMenu( void )
 {
-
+	UI_LogFuncBegin();
 	GameOptions_MenuInit();
 
 	UI_PushMenu( &s_gameoptions.menu );
+	UI_LogFuncEnd();
 }
 

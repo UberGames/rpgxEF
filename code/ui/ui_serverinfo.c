@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define	MAX_VIDEODRIVER_LINES	20
 
@@ -78,14 +79,17 @@ Add current server to favorites
 */
 void Favorites_Add( void )
 {
+	UI_LogFuncBegin();
 	char	adrstr[128];
 	char	serverbuff[128];
 	int32_t		i;
 	int32_t		best;
 
 	trap_Cvar_VariableStringBuffer( "cl_currentServerAddress", serverbuff, sizeof(serverbuff) );
-	if (!serverbuff[0])
+	if (!serverbuff[0]){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	best = 0;
 	for (i=0; i<MAX_FAVORITESERVERS; i++)
@@ -94,6 +98,7 @@ void Favorites_Add( void )
 		if (!Q_stricmp(serverbuff,adrstr))
 		{
 			// already in list
+			UI_LogFuncEnd();
 			return;
 		}
 		
@@ -104,6 +109,8 @@ void Favorites_Add( void )
 
 	if (best)
 		trap_Cvar_Set( va("server%d",best), serverbuff);
+	UI_LogFuncEnd();
+
 }
 
 
@@ -114,6 +121,7 @@ ServerInfo_Event
 */
 static void ServerInfo_Event( void* ptr, int32_t event )
 {
+	UI_LogFuncBegin();
 	switch (((menucommon_s*)ptr)->id)
 	{
 		case ID_ADD:
@@ -167,6 +175,7 @@ static void ServerInfo_Event( void* ptr, int32_t event )
 			break;
 
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -176,6 +185,7 @@ ServerInfoMenu_Graphics
 */
 void ServerInfoMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	// Draw the basic screen layout
 	UI_MenuFrame2(&s_serverinfo.menu);
 
@@ -184,7 +194,7 @@ void ServerInfoMenu_Graphics (void)
 
 	trap_R_SetColor( colorTable[CT_LTPURPLE1]);
 	UI_DrawHandlePic(250,400,  180, 20, uis.whiteShader);
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -194,9 +204,11 @@ ServerInfo_MenuDraw
 */
 static void ServerInfo_MenuDraw( void )
 {
+	UI_LogFuncBegin();
 	ServerInfoMenu_Graphics();
 
 	Menu_Draw( &s_serverinfo.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -207,6 +219,7 @@ ServerInfo_LinePrep
 */
 static void ServerInfo_LinePrep( void)
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	const char		*s;
 	char			key[MAX_INFO_KEY];
@@ -234,6 +247,7 @@ static void ServerInfo_LinePrep( void)
 
 		s_serverinfo.lineCnt++;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -264,6 +278,7 @@ PlayerSettings_MenuInit
 */
 static void UI_ServerInfoMenu_Init(void) 
 {
+	UI_LogFuncBegin();
 	int32_t	i,x,y;
 	menutext_s	*hold_key,*hold_value;
 
@@ -405,7 +420,7 @@ static void UI_ServerInfoMenu_Init(void)
 	ServerInfo_LinePrep();
 
 	s_serverinfo.arrowup.generic.flags |= QMF_HIDDEN|QMF_INACTIVE;
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -415,10 +430,11 @@ UI_ServerInfoMenu
 */
 void UI_ServerInfoMenu( void )
 {
-
+	UI_LogFuncBegin();
 	UI_ServerInfoMenu_Init();
 
 	UI_PushMenu( &s_serverinfo.menu );
+	UI_LogFuncEnd();
 }
 
 

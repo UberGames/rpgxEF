@@ -7,6 +7,7 @@
 //
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define ID_MAINTOPICBUTTON1		11
 #define ID_MAINTOPICBUTTON2		12
@@ -239,6 +240,7 @@ UI_LanguageFilename - create a filename with an extension based on the value in 
 */
 void UI_LanguageFilename(char *baseName,char *baseExtension,char *finalName)
 {
+	UI_LogFuncBegin();
 	char	language[32];
 	fileHandle_t	file;
 
@@ -265,6 +267,7 @@ void UI_LanguageFilename(char *baseName,char *baseExtension,char *finalName)
 			trap_FS_FCloseFile( file );
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -274,6 +277,7 @@ CrewMenu_Blinkies
 */
 void LogMenu_Blinkies (void)
 {
+	UI_LogFuncBegin();
 	// Turning on description a line at a time
 	if ((logmenu_graphics[LMG_CURRENT_DESC].timer < uis.realtime) && (logmenu_graphics[LMG_CURRENT_DESC].type == MG_VAR))
 	{
@@ -292,7 +296,8 @@ void LogMenu_Blinkies (void)
 				logmenu_graphics[LMG_CURRENT_DESC].timer = uis.realtime + LOGWAITTIME;
 			}
 		}
-	}	
+	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -302,6 +307,7 @@ SplitLogDesc
 */
 static void SplitLogDesc(char *s,int32_t width)
 {
+	UI_LogFuncBegin();
 	int32_t	lineWidth,currentWidth,charCnt,currentLineI;
 	char *holds;
 	char holdChar[2];
@@ -375,7 +381,7 @@ static void SplitLogDesc(char *s,int32_t width)
 	++charCnt;  // So the NULL will be properly placed at the end of the string of Q_strncpyz
 	Q_strncpyz( logDesc[currentLineI], holds, charCnt);
 	logDesc[currentLineI][charCnt] = 0; //NULL
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -385,6 +391,7 @@ TurnOnLogDesc
 */
 static void TurnOnLogDesc(char *s,int32_t lineWidth,int32_t startY)
 {
+	UI_LogFuncBegin();
 	int32_t	y,i;
 
 	logmenu_graphics[LMG_BIO_DESC1].type = MG_STRING;
@@ -404,12 +411,12 @@ static void TurnOnLogDesc(char *s,int32_t lineWidth,int32_t startY)
 		logmenu_graphics[i].y = y;
 		y += 12;
 	}
-
-
+	UI_LogFuncEnd();
 }
 
 static void UI_Draw3DModel( float x, float y, float w, float h, qhandle_t model, vec3_t origin, vec3_t angles) 
 {
+	UI_LogFuncBegin();
 	refdef_t		refdef;
 	refEntity_t		ent;
 
@@ -422,11 +429,6 @@ static void UI_Draw3DModel( float x, float y, float w, float h, qhandle_t model,
 	
 	VectorCopy( origin, ent.origin );
 	ent.hModel = model;
-//	if (Cvar_VariableValue("r_dynamiclight") ) {
-//		ent.renderfx = RF_LOWLIGHT|RF_NOSHADOW;		// keep it dark, and no stencil shadows
-//	} else {
-//		ent.renderfx = RF_NOSHADOW;		// no stencil shadows
-//	}
 	refdef.rdflags = RDF_NOWORLDMODEL;
 
 	AxisClear( refdef.viewaxis );
@@ -450,10 +452,8 @@ static void UI_Draw3DModel( float x, float y, float w, float h, qhandle_t model,
 	trap_R_AddLightToScene( origin, 500, 1.0, 1.0, 1.0 );
 
 	trap_R_RenderScene( &refdef );
+	UI_LogFuncEnd();
 }
-
-//void Controls_DrawPlayer( void *self );
-//void Controls_UpdateModel( int32_t anim );
 
 /*
 ================
@@ -462,6 +462,7 @@ UI_LibraryDrawMD3Model
 */
 static void UI_LibraryDrawMD3Model(qhandle_t modelHandle,int32_t x, int32_t y,int32_t modelDistance,int32_t modelYaw,int32_t modelPitch,int32_t modelRoll,int32_t modelOriginY)
 {
+	UI_LogFuncBegin();
 	vec3_t	origin = {50,0,2};
 	vec3_t	angles;
 
@@ -505,6 +506,7 @@ static void UI_LibraryDrawMD3Model(qhandle_t modelHandle,int32_t x, int32_t y,in
 	}
 
 	UI_Draw3DModel( x, y, 447, 305, modelHandle, origin, angles);
+	UI_LogFuncEnd();
 
 }
 
@@ -515,12 +517,14 @@ ClearLibraryDesc
 */
 void ClearLibraryDesc(void)
 {
+	UI_LogFuncBegin();
 	int32_t i;
 
 	for (i=0;i<(LMG_MAX - LMG_BIO_DESC1);++i)
 	{
 		logmenu_graphics[LMG_BIO_DESC1 + i].type = MG_OFF;	// Turn off text
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -530,10 +534,12 @@ ChangeLibraryDesc
 */
 void ChangeLibraryDesc(int32_t id)
 {
+	UI_LogFuncBegin();
 	int32_t i,y,width;
 
 	if (s_library.subTopic == id)
 	{
+		UI_LogFuncEnd();
 		return;	//	Just hitting the same key again
 	}
 	else	// Turn off old description 
@@ -576,11 +582,7 @@ void ChangeLibraryDesc(int32_t id)
 	TurnOnLogDesc(libraryText[s_library.mainTopic].text[s_library.subTopic],
 		width,libraryText[s_library.mainTopic].textY[s_library.subTopic]);
 
-	//if ((libraryText[s_library.mainTopic].soundHandle[s_library.subTopic]) && 
-	//	(s_library.computerVoice.textEnum == MBT_COMPUTERVOICEON))
-	//{
-	//	trap_S_StartLocalSound( libraryText[s_library.mainTopic].soundHandle[s_library.subTopic], CHAN_MENU2 );
-//	}
+	UI_LogFuncEnd();
 
 }
 
@@ -591,11 +593,13 @@ M_Transporter_Event
 */
 void M_Library_Event (void* ptr, int32_t notification)
 {
+	UI_LogFuncBegin();
 	int32_t	id,i;
 	menubitmap_s	*holdSubTopicButton,*holdMainTopicButton;
 
 	if (notification != QM_ACTIVATED)
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -603,19 +607,6 @@ void M_Library_Event (void* ptr, int32_t notification)
 
 	switch (id)
 	{
-		/*case ID_COMPUTERVOICE:
-
-			if (s_library.computerVoice.textEnum == MBT_COMPUTERVOICEON)
-			{
-				s_library.computerVoice.textEnum = MBT_COMPUTERVOICEOFF;
-				trap_S_StartLocalSound( nullSound, CHAN_MENU2 );
-			}
-			else
-			{
-				s_library.computerVoice.textEnum = MBT_COMPUTERVOICEON;
-			}
-			break;
-		*/
 		case ID_ARROW1UP:
 			if ((s_library.topMainTopic - 1)  >= 0)
 			{
@@ -861,21 +852,12 @@ void M_Library_Event (void* ptr, int32_t notification)
 				++holdSubTopicButton;
 			}
 
-			// Highlight chosen button
-//			if (((id + s_library.topSubTopic - ID_SUBTOPICBUTTON1) > 0) &&
-//				((id + s_library.topSubTopic - ID_SUBTOPICBUTTON1) < MAXSUBTOPICDISPLAYED))
 			holdSubTopicButton = &s_library.subTopicButton1 + (id - ID_SUBTOPICBUTTON1);
 			holdSubTopicButton->textcolor	= CT_VLTGOLD1;
 
 			s_library.chosenButton = id - ID_SUBTOPICBUTTON1;
 
 			ChangeLibraryDesc(s_library.topSubTopic + (id-ID_SUBTOPICBUTTON1));
-
-//			if ((libraryText[s_library.mainTopic].soundHandle[s_library.subTopic]) && 
-//				(s_library.computerVoice.textEnum == MBT_COMPUTERVOICEON))
-//			{
-//				trap_S_StartLocalSound( libraryText[s_library.mainTopic].soundHandle[s_library.subTopic], CHAN_MENU2 );
-//			}
 
 			// If there's a .mdr
 			if (libraryText[s_library.mainTopic].modelLegs[s_library.subTopic])
@@ -898,44 +880,8 @@ void M_Library_Event (void* ptr, int32_t notification)
 
 			break;
 	}
+	UI_LogFuncEnd();
 }
-
-/*
-=================
-Library_StatusBar
-=================
-*/
-/*static void Library_StatusBar(void *itemptr) 
-{
-	int32_t		id;
-
-	id = ((menucommon_s*)itemptr)->id;
-
-	switch (id)
-	{
-		case ID_MAINTOPICBUTTON1:
-		case ID_MAINTOPICBUTTON2:
-		case ID_MAINTOPICBUTTON3:
-		case ID_MAINTOPICBUTTON4:
-			UI_DrawProportionalString( 320, 410, libraryText[id + s_library.topMainTopic-ID_MAINTOPICBUTTON1].mainTopicDesc, UI_CENTER|UI_SMALLFONT, colorTable[CT_VLTGOLD1]);
-			break;
-		case ID_SUBTOPICBUTTON1:
-		case ID_SUBTOPICBUTTON2:
-		case ID_SUBTOPICBUTTON3:
-		case ID_SUBTOPICBUTTON4:
-		case ID_SUBTOPICBUTTON5:
-		case ID_SUBTOPICBUTTON6:
-		case ID_SUBTOPICBUTTON7:
-		case ID_SUBTOPICBUTTON8:
-		case ID_SUBTOPICBUTTON9:
-		case ID_SUBTOPICBUTTON10:
-
-			UI_DrawProportionalString( 320, 410, 
-			libraryText[s_library.mainTopic].subTopicDesc[id + s_library.topSubTopic - ID_SUBTOPICBUTTON1], 
-			UI_CENTER|UI_SMALLFONT, colorTable[CT_VLTGOLD1]);
-			break;
-	}
-}*/
 
 /*
 =================
@@ -944,6 +890,7 @@ LibraryMenu_Key
 */
 sfxHandle_t LibraryMenu_Key (int32_t key)
 {
+	UI_LogFuncBegin();
 	if ( key == K_ESCAPE ) 
 	{
 		trap_S_StartLocalSound( nullSound, CHAN_MENU1 );
@@ -953,6 +900,7 @@ sfxHandle_t LibraryMenu_Key (int32_t key)
 		}
 	}
 
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &s_library.menu, key ) );
 }
 
@@ -963,6 +911,7 @@ M_LibraryMenu_Graphics
 */
 void M_LibraryMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	trap_R_SetColor( colorTable[CT_VDKPURPLE2]);
 	UI_DrawHandlePic( 30,  24,16,   32, s_library.leftRound);
 
@@ -1066,6 +1015,8 @@ void M_LibraryMenu_Graphics (void)
 
 	UI_PrintMenuGraphics(logmenu_graphics,LMG_MAX);
 
+	UI_LogFuncEnd();
+
 }
 
 /*
@@ -1075,9 +1026,12 @@ LibraryMenu_Draw
 */
 void LibraryMenu_Draw(void)
 {
+	UI_LogFuncBegin();
 	M_LibraryMenu_Graphics();
 	
 	Menu_Draw( &s_library.menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1087,6 +1041,7 @@ LibraryMenu_Init
 */
 void LibraryMenu_Init(void)
 {
+	UI_LogFuncBegin();
 	menubitmap_s	*holdMainTopicButton,*holdSubTopicButton;
 	int32_t				x,y,pad,i;
 
@@ -1167,26 +1122,11 @@ void LibraryMenu_Init(void)
 	s_library.subTopicArrowDown.color					= CT_DKORANGE;
 	s_library.subTopicArrowDown.color2					= CT_LTORANGE;
 
-/*	s_library.computerVoice.generic.type			= MTYPE_BITMAP;      
-	s_library.computerVoice.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_library.computerVoice.generic.x				= 360;
-	s_library.computerVoice.generic.y				= 368;
-	s_library.computerVoice.generic.name			= GRAPHIC_SQUARE;
-	s_library.computerVoice.generic.id				= ID_COMPUTERVOICE;
-	s_library.computerVoice.generic.callback		= M_Library_Event; 
-	s_library.computerVoice.width					= MENU_BUTTON_MED_WIDTH + 30;
-	s_library.computerVoice.height					= MENU_BUTTON_MED_HEIGHT;
-	s_library.computerVoice.color					= CT_DKORANGE;
-	s_library.computerVoice.CT_DKBROWN1					= CT_LTORANGE;
-	s_library.computerVoice.textEnum				= MBT_COMPUTERVOICEON;
-	s_library.computerVoice.textX					= MENU_BUTTON_TEXT_X + 10;*/
-
 	Menu_AddItem( &s_library.menu,	&s_library.quitMenu );
 	Menu_AddItem( &s_library.menu,	&s_library.topicArrowUp );
 	Menu_AddItem( &s_library.menu,	&s_library.topicArrowDown );
 	Menu_AddItem( &s_library.menu,	&s_library.subTopicArrowUp );
 	Menu_AddItem( &s_library.menu,	&s_library.subTopicArrowDown );
-//	Menu_AddItem( &s_library.menu,	&s_library.computerVoice );
 
 	holdMainTopicButton = &s_library.mainTopicButton1;
 	pad = 22;
@@ -1204,7 +1144,6 @@ void LibraryMenu_Init(void)
 		holdMainTopicButton->generic.name				= GRAPHIC_BUTTONRIGHT;
 		holdMainTopicButton->generic.id					= ID_MAINTOPICBUTTON1 + i;
 		holdMainTopicButton->generic.callback			= M_Library_Event; 
-//		holdMainTopicButton->generic.statusbarfunc		= Library_StatusBar;
 		holdMainTopicButton->width						= MENU_BUTTON_MED_WIDTH + 20;
 		holdMainTopicButton->height						= MENU_BUTTON_MED_HEIGHT;
 		holdMainTopicButton->color						= CT_DKORANGE;
@@ -1252,7 +1191,6 @@ void LibraryMenu_Init(void)
 		holdSubTopicButton->generic.name				= GRAPHIC_SQUARE;
 		holdSubTopicButton->generic.id					= ID_SUBTOPICBUTTON1 + i;
 		holdSubTopicButton->generic.callback			= M_Library_Event; 
-//		holdSubTopicButton->generic.statusbarfunc		= Library_StatusBar;
 		holdSubTopicButton->width						= MENU_BUTTON_MED_WIDTH;
 		holdSubTopicButton->height						= MENU_BUTTON_MED_HEIGHT;
 		holdSubTopicButton->color						= CT_LTORANGE;
@@ -1326,6 +1264,7 @@ void LibraryMenu_Init(void)
 
 	s_library.subTopic = -1;
 	ChangeLibraryDesc(0);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1335,6 +1274,7 @@ UI_ParseLibraryText
 */
 static void UI_ParseLibraryText()
 {
+	UI_LogFuncBegin();
 	char	*token;
 	char *buffer,*holdPtr;
 	int32_t len;
@@ -1540,6 +1480,7 @@ static void UI_ParseLibraryText()
 			*holdPtr = 0; //NULL
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1549,6 +1490,7 @@ UI_LibraryMenu_Cache
 */
 void UI_LibraryMenu_Cache (void)
 {
+	UI_LogFuncBegin();
 	//char	*buffer/*,*filePtr*/;
 //	char* buffer;
 	char	filename[MAX_QPATH];
@@ -1570,12 +1512,14 @@ void UI_LibraryMenu_Cache (void)
 	if ( !f ) 
 	{
 		Com_Error(ERR_FATAL, va("UI_LibraryMenu_Cache : sp_library.dat file not found!\n"));
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( len > MAXLIBRARYTEXT ) 
 	{
 		Com_Printf( S_COLOR_RED "UI_LibraryMenu_Cache : sp_library.dat size (%d) > max (%d)!\n", len, MAXLIBRARYTEXT);
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1601,6 +1545,7 @@ void UI_LibraryMenu_Cache (void)
 			}
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1610,7 +1555,9 @@ UI_Library_SpecialCache
 */
 void UI_Library_SpecialCache(void)
 {
+	UI_LogFuncBegin();
 	UI_LibraryMenu_Cache();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1620,7 +1567,9 @@ LibraryMenu_LoadText
 */
 void LibraryMenu_LoadText (void)
 {
+	UI_LogFuncBegin();
 	UI_LibraryMenu_Cache();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1630,6 +1579,8 @@ UI_LibraryMenu
 */
 void UI_LibraryMenu(void)
 {
+	UI_LogFuncBegin();
+
 	uis.menusp = 0;
 
 	ingameFlag = qtrue;	// true when in game menu is in use
@@ -1645,6 +1596,8 @@ void UI_LibraryMenu(void)
 	UI_PushMenu( &s_library.menu );
 
 	Menu_AdjustCursor( &s_library.menu, 1 );	
+
+	UI_LogFuncEnd();
 }
 
 
@@ -1655,6 +1608,8 @@ M_Accessing_Graphics
 */
 void LibraryAccessingMenu_Draw (void)
 {
+	UI_LogFuncBegin();
+
 	int32_t y;
 
 	y = 50;
@@ -1683,6 +1638,7 @@ void LibraryAccessingMenu_Draw (void)
 		UI_PopMenu();
 		UI_LibraryMenu();
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1692,7 +1648,9 @@ UI_AccessingMenu_Cache
 */
 void UI_AccessingMenu_Cache (void)
 {
+	UI_LogFuncBegin();
 	s_libraryaccessing.cornerPic = trap_R_RegisterShaderNoMip("menu/common/corner_ll_47_18.tga");
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1702,6 +1660,7 @@ AccessingMenu_Init
 */
 void AccessingMenu_Init(void)
 {
+	UI_LogFuncBegin();
 
 	UI_AccessingMenu_Cache();
 
@@ -1718,6 +1677,8 @@ void AccessingMenu_Init(void)
 	s_libraryaccessing.menu.footNoteEnum				= MNT_CREDITS;
 
 	s_libraryaccessing.timer = uis.realtime + 1000;
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1727,10 +1688,14 @@ UI_AccessingMenu
 */
 void UI_AccessingMenu()
 {
+	UI_LogFuncBegin();
+
 	ingameFlag = qtrue;	// true when in game menu is in use
 
 	Mouse_Hide();
 
 	AccessingMenu_Init(); 
 	UI_PushMenu( &s_libraryaccessing.menu );
+
+	UI_LogFuncEnd();
 }

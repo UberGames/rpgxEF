@@ -4,6 +4,7 @@
 	User interface trigger from within game
 **********************************************************************/
 #include "ui_local.h"
+#include "ui_logger.h"
 
 typedef struct
 {
@@ -87,6 +88,8 @@ static void M_Turbolift_Event (void* ptr, int32_t notification)
 
 	id = ((menucommon_s*)ptr)->id;
 
+	UI_LogFuncBegin();
+
 	/*if ( notification != QM_ACTIVATED )
 	{
 		return;
@@ -143,6 +146,7 @@ static void M_Turbolift_Event (void* ptr, int32_t notification)
 			}
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -170,6 +174,8 @@ static void M_TurboliftMenu_Graphics (void)
 	menubitmap_s	*holdDeck;
 	int32_t		i,length,xTurboStart;
 	int32_t		numColor,roundColor;
+
+	UI_LogFuncBegin();
 
 	// Draw the basic screen frame
 
@@ -290,6 +296,8 @@ static void M_TurboliftMenu_Graphics (void)
 		s_turbolift.quitmenu.generic.y, 
 		MENU_BUTTON_MED_HEIGHT, s_turbolift.quitmenu.height, uis.graphicButtonLeftEnd);
 
+	UI_LogFuncEnd();
+
 }
 
 /*
@@ -299,10 +307,14 @@ TurboliftMenu_Draw
 */
 static void TurboliftMenu_Draw(void)
 {
+	UI_LogFuncBegin();
+
 	// Draw graphics particular to Main Menu
 	M_TurboliftMenu_Graphics();
 	
 	Menu_Draw( &s_turbolift.menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -312,10 +324,14 @@ UI_TurboliftMenu_Cache
 */
 void UI_TurboliftMenu_Cache (void)
 {	
+	UI_LogFuncBegin();
+
 	leftRound = trap_R_RegisterShaderNoMip("menu/common/halfroundl_24.tga");
 	corner_ul_24_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ul_24_60.tga");
 	corner_ll_12_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ll_12_60.tga");
 	turbolift = trap_R_RegisterShaderNoMip("menu/common/lift_button.tga");
+
+	UI_LogFuncEnd();
 }
 
 
@@ -324,6 +340,8 @@ static int32_t QDECL SortDecks( const void *arg1, const void *arg2 )
 {
 	int32_t	deck1;
 	int32_t	deck2;
+
+	UI_LogFuncBegin();
 
 	deck1 = ( (deckData_t *)arg1)->deckNum;
 	deck2 = ( (deckData_t *)arg2)->deckNum;
@@ -334,12 +352,17 @@ static int32_t QDECL SortDecks( const void *arg1, const void *arg2 )
 	if ( deck2 < 0 )
 		deck2 = 0;
 
-	if ( deck1 > deck2 )
+	if ( deck1 > deck2 ){
+		UI_LogFuncEnd();
 		return 1;
+	}
 
-	if ( deck1 == deck2 )
+	if ( deck1 == deck2 ){
+		UI_LogFuncEnd();
 		return 0;
+	}
 	
+	UI_LogFuncEnd();
 	return -1;
 }
 
@@ -351,11 +374,15 @@ static void UI_TurboliftMenu_LoadDecks( void )
 
 	s_turbolift.numDecks = 0;
 
+	UI_LogFuncBegin();
+
 	//load the string
 	trap_GetConfigString( CS_TURBOLIFT_DATA, buffer, sizeof( buffer ) );
 
-	if ( !buffer[0] )
+	if ( !buffer[0] ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	memset( &s_turbolift.deckData, 0, sizeof( s_turbolift.deckData ) );
 
@@ -377,6 +404,7 @@ static void UI_TurboliftMenu_LoadDecks( void )
 
 	//TiM - sort the decks into their sequential order
 	qsort( s_turbolift.deckData, s_turbolift.numDecks, sizeof( deckData_t ), SortDecks );
+	UI_LogFuncEnd();
 }
 
 static void UI_ManageDeckLoading( void )
@@ -389,6 +417,8 @@ static void UI_ManageDeckLoading( void )
 	char			*textPtr;
 	char			buffer[20000];
 	char			*token;
+
+	UI_LogFuncBegin();
 
 	//get the map name
 	trap_GetConfigString( CS_SERVERINFO, info, sizeof( info ) );
@@ -403,6 +433,7 @@ static void UI_ManageDeckLoading( void )
 	{
 		//Com_Printf( S_COLOR_YELLOW "WARNING: Attempted to load %s, but wasn't found.\n", fileRoute );
 		UI_TurboliftMenu_LoadDecks();
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -413,6 +444,7 @@ static void UI_ManageDeckLoading( void )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Attempted to load %s, but no data was read.\n", fileRoute );
 		UI_TurboliftMenu_LoadDecks();
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -459,6 +491,7 @@ static void UI_ManageDeckLoading( void )
 	}
 
 	qsort( s_turbolift.deckData, s_turbolift.numDecks, sizeof( deckData_t ), SortDecks );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -471,6 +504,8 @@ void TurboliftMenu_Init(void)
 	int32_t	y,pad,x;
 	menubitmap_s	*holdDeck;
 	int32_t		i,width;
+
+	UI_LogFuncBegin();
 
 	UI_ManageDeckLoading();
 
@@ -573,6 +608,7 @@ void TurboliftMenu_Init(void)
 		}
 		holdDeck++;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -582,8 +618,12 @@ UI_TurboliftMenu
 */
 void UI_TurboliftMenu ( int32_t liftNum )
 {
-	if ( !liftNum )
+	UI_LogFuncBegin();
+
+	if ( !liftNum ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	memset( &s_turbolift, 0, sizeof( s_turbolift ) );
 
@@ -602,5 +642,6 @@ void UI_TurboliftMenu ( int32_t liftNum )
 	UI_PushMenu( &s_turbolift.menu );
 
 	Menu_AdjustCursor( &s_turbolift.menu, 1 );	
+	UI_LogFuncEnd();
 }
 

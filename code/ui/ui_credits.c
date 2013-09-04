@@ -8,6 +8,7 @@
 
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define MAX_DEVS			15	//Max number of developers per menu
 #define MAX_MENUS			9	//Max number of menus
@@ -326,146 +327,6 @@ static creditsInfo_t	creditsInfo[MAX_MENUS] =
 
 };
 
-/*char *ra_leads[11] =
-{
-	"PROJECT LEADS",
-	"Dominic 'Phenix' Black",
-	"Project Leader",
-	"Jason 'J2J' Griffith",
-	"Lead Programmer",
-	"Nazar 'Sharky' Surmai",
-	"Lead 2-D & Audio Artist",
-	"Timothy 'TiM' Oliver",
-	"Lead 3-D Artist",
-	"Sniper",
-	"Lead Level Designer"
-};
-
-char *ra_coders[11] =
-{
-	"PROGRAMMING",
-	"Jason 'J2J' Griffith",
-	"Lead Programmer",
-	"Dominic 'Phenix' Black",
-	"Primary Coding",
-	"Stephen 'RedTechie' Shamakian",
-	"Primary Coding",
-	"Timothy 'TiM' Oliver",
-	"Graphics Coding",
-	"Scooter",
-	"Additional Coding"
-};
-
-char *ra_2D[11] =
-{
-	"2-D ART",
-	"Nazar 'Sharky' Surmai",
-	"Lead 2-D Artist",
-	"Tom 'Simmo666' Simpson",
-	"Secondary 2-D Artist / LCARS Design Guru",
-	"Dominic 'Phenix' Black",
-	"Additional 2-D Art",
-	"Timothy 'TiM' Oliver",
-	"Additional 2-D Art",
-	"Steven Marriott",
-	"Rank Icons Creator"
-};
-
-char *ra_3D[7] =
-{
-	"3-D ART",
-	"Timothy 'TiM' Oliver",
-	"Lead 3-D Artist",
-	"Ralph Schoberth",
-	"Enterprise-E LightWave Mesh",
-	"Timothy 'TiM' Oliver",
-	"Opening Cinematic"
-};
-
-char *ra_mappers[17] = //urk! how the hell is this going to fit?!?!? O_o
-{
-	"LEVEL DESIGN",
-	"Sniper",
-	"Lead Level Artist",
-	"Anthony",
-	"Level Artist",
-	"Jack Amzadi",
-	"Level Artist",
-	"Johan",
-	"Level Artist",
-	"RED-RUM",
-	"Level Artist",
-	"Phenix",
-	"Level Artist",
-	"Scooter",
-	"Level Artist",
-	"William Riker",
-	"Level Artist",
-};
-
-char *ra_sounds[11] = 
-{
-	"AUDIO DESIGN",
-	"Nazar 'Sharky' Surmai",
-	"Audio Lead",
-	"Jaren",
-	"Additional Audio",
-	"Dominic 'Phenix' Black",
-	"Additional Audio",
-	"Timothy 'TiM' Oliver",
-	"Additional Audio",
-	"Scooter",
-	"Additional Audio"
-};
-
-char *ra_adds[11] = 
-{
-	"ADDITIONAL SUPPORT",
-	"Scooter",
-	"Canon Inspector",
-	"Highlander",
-	"Public Relations",
-	"Dominic 'Phenix' Black",
-	"Mod Documentation",
-	"Nazar 'Sharky' Surmai",
-	"Mod Documentation",
-	"Stephen 'RedTechie' Shamakian",
-	"Mod Documentation"
-};
-
-char *ra_betas[14] = 
-{
-	"BETA TESTERS",
-	"Alex L.",
-	"Alex Mcpherson",
-	"AlphaOmega",
-	"Andrew",
-	"Crusader",
-	"Diaz",
-	"Fred",
-	"Jake Conhale",
-	"Martin",
-	"Mr Fibbles",
-	"Myntz",
-	"Nuttycomputer",
-	"Rigs",
-};
-
-char *ra_thanks[11] =
-{
-	"SPECIAL THANKS",
-	"Gene Roddenberry",
-	"Creator of Star Trek",
-	"Raven Software",
-	"Creators of Elite Force",
-	"The EF RPG Community",
-	"For Suggestions and Additional Testing",
-	"Steve",
-	"Creator of the original EF RPG Mod",
-	"James Monroe",
-	"Our friend from RavenSoft"
-};*/
-
 /*
 =================
 UI_drawCreditNames
@@ -476,6 +337,7 @@ for each set
 */
 void UI_drawCreditNames( int32_t creditsIndex )
 {
+	UI_LogFuncBegin();
 	int32_t timeDeviation; //used to separate the times when each credit appears
 	int32_t yDeviation; //used to place each separate credit down the y-axis each loop
 	
@@ -560,7 +422,7 @@ void UI_drawCreditNames( int32_t creditsIndex )
 
 		}
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -570,6 +432,7 @@ Credits_MenuEvent
 */
 static void Credits_MenuEvent( void *ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
 	if( event != QM_ACTIVATED ) 
 	{
 		return;
@@ -596,6 +459,7 @@ static void Credits_MenuEvent( void *ptr, int32_t event )
 		s_credits.creditsNum = ((menucommon_s*)ptr)->id;
 		break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -605,7 +469,7 @@ C_MainMenu_Graphics
 */
 void CreditsMenu_Graphics (void)
 {
-
+	UI_LogFuncBegin();
 	// Draw the basic screen layout
 	UI_MenuFrame(&s_credits.menu);
 
@@ -627,17 +491,6 @@ void CreditsMenu_Graphics (void)
 	*/
 	trap_R_SetColor( colorTable[CT_WHITE]);
 	UI_DrawHandlePic(85, 169, 306, 256, spaceBackdrop);
-	
-	/*
-	// Grid over top of space map
-	trap_R_SetColor( colorTable[CT_LTBLUE1]);
-	UI_DrawHandlePic(  89, 234, 296,   1, uis.whiteShader);
-	UI_DrawHandlePic(  89, 296, 296,   1, uis.whiteShader);
-	UI_DrawHandlePic(  89, 364, 296,   1, uis.whiteShader);
-	UI_DrawHandlePic( 116, 169,   1, 256, uis.whiteShader);
-	UI_DrawHandlePic( 234, 169,   1, 256, uis.whiteShader);
-	UI_DrawHandlePic( 354, 169,   1, 256, uis.whiteShader);
-	*/
 
 	//Left Bracket around galaxy picture
 	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
@@ -703,10 +556,12 @@ void CreditsMenu_Graphics (void)
 	UI_DrawHandlePic(s_credits.betas.generic.x - 14, s_credits.betas.generic.y,MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
 	UI_DrawHandlePic(s_credits.thanks.generic.x - 14, s_credits.thanks.generic.y,MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
 
+	UI_LogFuncBegin();
 }
 
 static void UI_drawLogo ( void )
 {
+	UI_LogFuncBegin();
 	refdef_t		refdef;
 	refEntity_t		ent;
 	vec3_t			origin = {0.0, 0.0, 0.0};
@@ -774,6 +629,8 @@ static void UI_drawLogo ( void )
 	trap_R_AddRefEntityToScene( &ent );
 
 	trap_R_RenderScene( &refdef );
+
+	UI_LogFuncBegin();
 }
 
 /*
@@ -783,6 +640,7 @@ CreditsMenu_Draw
 */
 void CreditsMenu_Draw (void)
 {
+	UI_LogFuncBegin();
 
 	CreditsMenu_Graphics();
 
@@ -792,38 +650,7 @@ void CreditsMenu_Draw (void)
 
 	UI_drawCreditNames( s_credits.creditsNum-1 );
 
-	/*switch(s_credits.creditsNum)
-	{
-	case 0:
-		UI_drawCreditNames( ra_leads, 11 );
-		break;
-	case 1:
-		UI_drawCreditNames( ra_coders, 11 );
-		break;
-	case 2:
-		UI_drawCreditNames( ra_2D, 11 );
-		break;
-	case 3:
-		UI_drawCreditNames( ra_3D, 7 );
-		break;
-	case 4:
-		UI_drawCreditNames( ra_mappers, 17 );
-		break;
-	case 5:
-		UI_drawCreditNames( ra_sounds, 11 );
-		break;
-	case 6:
-		UI_drawCreditNames( ra_adds, 11 );
-		break;
-	case 7:
-		UI_drawCreditNames( ra_betas, 14 );
-		break;
-	case 8:
-		UI_drawCreditNames( ra_thanks, 11 );
-		break;
-	}*/
-
-	
+	UI_LogFuncBegin();
 }
 
 /*
@@ -833,10 +660,13 @@ UI_Credits_Cache
 */
 void UI_CreditsMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	s_credits.logoModel = trap_R_RegisterModel( MAIN_LOGO_MODEL );
 	s_credits.pingSound	= trap_S_RegisterSound( LCARS_BLIP );
 	cornerUpper			= trap_R_RegisterShaderNoMip( LCARS_CORNER_U );
 	spaceBackdrop		= trap_R_RegisterShaderNoMip( LCARS_LOGO_BACKDROP );
+	UI_LogFuncBegin();
+
 }
 
 /*
@@ -846,6 +676,7 @@ UI_Credits_MenuInit
 */
 static void UI_Credits_MenuInit( void ) 
 {
+	UI_LogFuncBegin();
 	memset( &s_credits, 0 ,sizeof(credits_t) );
 
 	s_credits.creditsNum	= ID_LEADS;
@@ -1045,6 +876,8 @@ static void UI_Credits_MenuInit( void )
 	Menu_AddItem( &s_credits.menu, &s_credits.extras );
 	Menu_AddItem( &s_credits.menu, &s_credits.betas );
 	Menu_AddItem( &s_credits.menu, &s_credits.thanks );
+	UI_LogFuncBegin();
+
 }
 
 /*
@@ -1054,8 +887,9 @@ UI_CreditsMenu
 */
 void UI_CreditsMenu( void ) 
 {
-
+	UI_LogFuncBegin();
 	UI_Credits_MenuInit();
 	UI_PushMenu( &s_credits.menu );
+	UI_LogFuncBegin();
 
 }

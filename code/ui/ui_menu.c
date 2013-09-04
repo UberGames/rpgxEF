@@ -10,6 +10,7 @@ MAIN MENU
 
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 extern void UI_SetupWeaponsMenu( void );
 
@@ -90,24 +91,6 @@ static struct
 
 #define	PIC_ARROW_UP		"menu/common/arrow_up_16.tga"
 #define	PIC_ARROW_DOWN		"menu/common/arrow_dn_16.tga"
-
-/*#define ID_FAVLIST				19
-#define ID_FAVREFRESH			20
-#define ID_FAVSTOP				21
-#define ID_FAVGO				22*/
-
-
-/*#define	ID_WEAPON1				215
-#define	ID_WEAPON2				216
-#define	ID_WEAPON3				217
-#define	ID_WEAPON4				218
-#define	ID_WEAPON5				219
-#define	ID_WEAPON6				220
-#define	ID_WEAPON7				221
-#define	ID_WEAPON8				222
-#define	ID_WEAPON9				223
-#define	ID_WEAPON10				224*/
-
 
 // Quit Menu
 #define	ID_PHASER_LABEL			301
@@ -207,21 +190,6 @@ typedef struct
 	menubitmap_s	refresh;
 	menubitmap_s	connect;
 
-/*	menubitmap_s	favRefresh;
-	menubitmap_s	favStop;
-	menubitmap_s	favGo; */
-
-/*	menubitmap_s	weapon1;
-	menubitmap_s	weapon2;
-	menubitmap_s	weapon3;
-	menubitmap_s	weapon4;
-	menubitmap_s	weapon5;
-	menubitmap_s	weapon6;
-	menubitmap_s	weapon7;
-	menubitmap_s	weapon8;
-	menubitmap_s	weapon9;*/
-
-
 	/*sfxHandle_t			weaponnamesnd[UI_NUM_WEAPONS];*/
 	int32_t					timer;
 	int32_t					currentWeapon;
@@ -263,78 +231,6 @@ typedef struct
 static mainmenu_t s_main;
 static menubitmap_s			s_main_playermdl; //RPG-X HACK
 
-
-//QVM - HACK!
-/*const char* prank_items_formal2[] = 
-{
-	"Crewman",
-	"Cadet 4th Class",
-	"Cadet 3rd Class",
-	"Cadet 2nd Class",
-	"Cadet 1st Class",
-	"Ensign",
-	"Lieutenant J.G",
-	"Lieutenant",
-	"Lt. Commander",
-	"Commander",
-	"Captain",
-	"Commodore",
-	"Rear Admiral",
-	"Vice Admiral",
-	"Admiral",
-	"Fleet Admiral",
-	0
-};
-
-const char* prank_items_actual2[] =
-{
-	"crewman",
-	"cadet1",
-	"cadet2",
-	"cadet3",
-	"cadet4",
-	"ensign",
-	"ltjg",
-	"lt",
-	"ltcmdr",
-	"cmdr",
-	"capt",
-	"cmmdr",
-	"adm2",
-	"adm3",
-	"adm4",
-	"adm5",
-	0
-};
-
-static void* g_weapons[] =
-{
-	&s_main.weapon1,
-	&s_main.weapon2,
-	&s_main.weapon3,
-	&s_main.weapon4,
-	&s_main.weapon5,
-	&s_main.weapon6,
-	&s_main.weapon7,
-	&s_main.weapon8,
-	&s_main.weapon9,
-	NULL,
-};
-
-
-static const char *weaponnamefiles [UI_NUM_WEAPONS] = 
-{
-	"sound/voice/computer/misc/phaser.wav",
-	"sound/voice/computer/misc/comprifle.wav",
-	"sound/voice/computer/misc/imod.wav",
-	"sound/voice/computer/misc/scavrifle.wav",
-	"sound/voice/computer/misc/stasisweap.wav",
-	"sound/voice/computer/misc/cgl.wav",
-	"sound/voice/computer/misc/tpd.wav",
-	"sound/voice/computer/misc/pptl.wav",
-	"sound/voice/computer/misc/arcwelder.wav"
-};*/
-
 // Data for LCARS out Menu
 static struct 
 {
@@ -361,25 +257,6 @@ typedef struct
 	menubitmap_s	yes;
 
 	qhandle_t		quitBanner;
-
-	/*menutext_s		voyager_label;
-	menubitmap_s	voyager_pic;
-	menutext_s		thrusters_label;
-	menubitmap_s	thrusters_pic;
-	menutext_s		nacelles_label;
-	menubitmap_s	nacelles_pic;
-	menutext_s		bussard_label;
-	menubitmap_s	bussard_pic;
-	menutext_s		midhull_label;
-	menubitmap_s	midhull_pic;
-	menutext_s		ventral_label;
-	menubitmap_s	ventral_pic;
-	menutext_s		torpedo_label;
-	menubitmap_s	torpedo_pic;
-	menutext_s		phaser_label;
-	menubitmap_s	phaser_pic;
-	menutext_s		bridge_label;
-	menubitmap_s	bridge_pic;*/
 
 	sfxHandle_t	pingsound;
 } quitmenu_t;
@@ -532,31 +409,7 @@ menugraphics_s quitmenu_graphics[QMG_MAX] =
 
 //	type		timer	x		y		width	height	file/text		graphic,	min	(desc)						max		target	(swoop)					inc		style						color
 	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		0,								0,		0,								0,		0,							0,				NULL },								// Q{ MG_LABEL_START
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		Q{ MG_BRIDGE_DESC1,				0,		Q{ MG_BRIDGE_SWOOP,				0,		0,							CT_DKBROWN1,	(void *) &s_quit.bridge_pic },	// Q{ MG_BRIDGE_LABEL
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		Q{ MG_PHASER_STRIP1_DESC1,		0,		Q{ MG_PHASER_STRIP1_SWOOP,		0,		0,							CT_DKBROWN1,	(void *) &s_quit.phaser_pic },	// Q{ MG_PHASER_LABEL
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		Q{ MG_TORPEDOS_DESC1,				0,		Q{ MG_TORPEDO_SWOOP,				0,		0,							CT_DKBROWN1,	(void *) &s_quit.torpedo_pic },	// Q{ MG_TORPEDOS_LABEL
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		Q{ MG_VENTRAL_DESC1,				0,		Q{ MG_VENTRAL_SWOOP,				0,		0,							CT_DKBROWN1,	(void *) &s_quit.ventral_pic },	// Q{ MG_VENTRAL_LABEL
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		Q{ MG_MIDHULL_DESC1,				0,		Q{ MG_MIDHULL_SWOOP,				0,		0,							CT_DKBROWN1,	(void *) &s_quit.midhull_pic },	// Q{ MG_MIDHULL_LABEL
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		Q{ MG_BUSSARD_DESC1,				0,		Q{ MG_BUSSARD_SWOOP,				0,		0,							CT_DKBROWN1,	(void *) &s_quit.bussard_pic },	// Q{ MG_BUSSARD_LABEL
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		Q{ MG_NACELLES_DESC1,				0,		Q{ MG_NACELLES_SWOOP,				0,		0,							CT_DKBROWN1,	(void *) &s_quit.nacelles_pic },	// Q{ MG_NACELLES_LABEL
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		Q{ MG_THRUSTERS_DESC1,			0,		Q{ MG_THRUSTERS_SWOOP,			0,		0,							CT_DKBROWN1,	(void *) &s_quit.thrusters_pic },	// Q{ MG_THRUSTERS_LABEL
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		Q{ MG_VOYAGER_DESC1,				0,		0,								0,		0,							CT_DKBROWN1,	(void *) &s_quit.voyager_pic },	// Q{ MG_VOYAGER_LABEL
 	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,		0,	0,		0,								0,		0,								0,		0,							0,				NULL },								// Q{ MG_LABEL_END
-
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,						0,	0,		0,		0,	0,								0,		0,							0,				NULL },	// Q{ MG_SWOOP_START
-//	{ MG_GRAPHIC,	0.0,	156,	198,	93,		1,		"menu/common/square.tga",	0,	0,		0,		0,	Q{ MG_BRIDGE_DESC1,				1,		0,							CT_WHITE,		NULL },	// Q{ MG_BRIDGE_SWOOP
-//	{ MG_GRAPHIC,	0.0,	155,	229,	16,		64,		"menu/voyager/swoop1.tga",	0,	0,		0,		0,	Q{ MG_PHASER_STRIP1_DESC1,		2,		0,							CT_WHITE,		NULL },	// Q{ MG_PHASER_STRIP1_SWOOP
-//	{ MG_GRAPHIC,	0.0,	252,	272,	32,		32,		"menu/voyager/swoop2.tga",	0,	0,		0,		0,	Q{ MG_TORPEDOS_DESC1,				1,		0,							CT_WHITE,		NULL },	// Q{ MG_TORPEDOS_SWOOP
-//	{ MG_GRAPHIC,	0.0,	318,	310,	32,		32,		"menu/voyager/swoop3.tga",	0,	0,		0,		0,	Q{ MG_VENTRAL_DESC1,				1,		0,							CT_WHITE,		NULL },	// Q{ MG_VENTRAL_SWOOP
-//	{ MG_GRAPHIC,	0.0,	366,	247,	16,		128,	"menu/voyager/swoop4.tga",	0,	0,		0,		0,	Q{ MG_MIDHULL_DESC1,				1,		0,							CT_WHITE,		NULL },	// Q{ MG_MIDHULL_SWOOP
-//	{ MG_GRAPHIC,	0.0,	457,	281,	64,		64,		"menu/voyager/swoop5.tga",	0,	0,		0,		0,	Q{ MG_BUSSARD_DESC1,				3,		0,							CT_WHITE,		NULL },	// Q{ MG_BUSSARD_SWOOP
-//	{ MG_GRAPHIC,	0.0,	563,	181,	64,		128,	"menu/voyager/swoop6.tga",	0,	0,		0,		0,	Q{ MG_NACELLES_DESC1,				2,		0,							CT_WHITE,		NULL },	// Q{ MG_NACELLES_SWOOP
-//	{ MG_GRAPHIC,	0.0,	288,	183,	64,		128,	"menu/voyager/swoop7.tga",	0,	0,		0,		0,	Q{ MG_THRUSTERS_DESC1,			1,		0,							CT_WHITE,		NULL },	// Q{ MG_THRUSTERS_SWOOP
-//	{ MG_VAR,		0.0,	0,		0,		0,		0,		NULL,						0,	0,		0,		0,	0,								0,		0,							0,				NULL },	// Q{ MG_SWOOP_END
-
-//	type		timer	x		y		width	height	file/text							graphic,	min	(desc)						max		target	(swoop)					inc		style						color
-//	{ MG_GRAPHIC,	0.0,	  0,	353,	8,		8,		"menu/common/square.tga",	0,		0,		77,		550,0,								12,		UI_TINYFONT,				CT_LTPURPLE1,	NULL },	// Q{ MG_BOTTOM_BLIP
-//	{ MG_GRAPHIC,	0.0,	  0,	167,	8,		8,		"menu/common/square.tga",	0,		0,		77,		550,0,								12,		UI_TINYFONT,				CT_LTPURPLE1,	NULL },	// Q{ MG_BOTTOM_BLIP2
 };
 
 
@@ -647,8 +500,10 @@ InitialSetup_Event
 */
 static void InitialSetup_Event( void* ptr, int32_t notification )
 {
+	UI_LogFuncBegin();
 	if (notification != QM_ACTIVATED)
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -666,6 +521,7 @@ static void InitialSetup_Event( void* ptr, int32_t notification )
 			trap_Cvar_Set( "k_language", s_keyboardlanguage_Names[s_initialsetup.keyboardlanguage.curvalue] );
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -675,8 +531,10 @@ InitialSetupApplyChanges -
 */
 static void InitialSetupApplyChanges( void *unused, int32_t notification )
 {
+	UI_LogFuncBegin();
 	if (notification != QM_ACTIVATED)
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -687,6 +545,7 @@ static void InitialSetupApplyChanges( void *unused, int32_t notification )
 
 	trap_Cvar_Set("ui_initialsetup", "1");	// so this won't come up again
 	UI_MainMenu();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -696,11 +555,14 @@ M_InitialSetupMenu_Key
 */
 static sfxHandle_t M_InitialSetupMenu_Key (int32_t key)
 {
+	UI_LogFuncBegin();
 	if (key == K_ESCAPE)
 	{
+		UI_LogFuncEnd();
 		return(0);
 	}
 
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &s_initialsetup.menu, key ) );
 }
 
@@ -711,6 +573,7 @@ M_InitialSetupMenu_Graphics
 */
 static void M_InitialSetupMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	int32_t y;
 
 	UI_MenuFrame2(&s_initialsetup.menu);
@@ -736,7 +599,7 @@ static void M_InitialSetupMenu_Graphics (void)
 		UI_DrawProportionalString( 178,  y + 5, menu_normal_text[MNT_GAMMA2_LINE1],UI_SMALLFONT, colorTable[CT_LTGOLD1]);
 		UI_DrawProportionalString( 178,  y + 25,menu_normal_text[MNT_GAMMA2_LINE2],UI_SMALLFONT, colorTable[CT_LTGOLD1]);
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -746,10 +609,12 @@ M_InitialSetupMenu_Draw
 */
 static void M_InitialSetupMenu_Draw (void)
 {	
+	UI_LogFuncBegin();
 	// Draw graphics particular to Main Menu
 	M_InitialSetupMenu_Graphics();
 
 	Menu_Draw( &s_initialsetup.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -759,6 +624,7 @@ InitialSetup_SetValues
 */
 static void InitialSetup_SetValues(void)
 {
+	UI_LogFuncBegin();
 	char buffer[32];
 	int32_t *language;
 
@@ -826,6 +692,7 @@ static void InitialSetup_SetValues(void)
 	}
 
 	s_initialsetup.gamma.curvalue = trap_Cvar_VariableValue( "r_gamma" ) *  10.0f;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -835,9 +702,9 @@ InitialSetupMenu_Cache
 */
 static void InitialSetupMenu_Cache( void ) 
 {
-
+	UI_LogFuncBegin();
 	s_initialsetup.test = trap_R_RegisterShaderNoMip("menu/special/gamma_test.tga");
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -847,6 +714,7 @@ InitialSetupMenu_Init
 */
 static void InitialSetupMenu_Init( void ) 
 {
+	UI_LogFuncBegin();
 	int32_t x = 179;
 	int32_t y = 260;
 
@@ -977,16 +845,19 @@ static void InitialSetupMenu_Init( void )
 	Menu_AddItem( &s_initialsetup.menu, &s_initialsetup.apply );
 
 	InitialSetup_SetValues();
+	UI_LogFuncEnd();
 }
 
 static void UI_InitialSetupMenu(void)
 {
+	UI_LogFuncBegin();
 	InitialSetupMenu_Init(); 
 
 	UI_PushMenu ( &s_initialsetup.menu );
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;
+	UI_LogFuncEnd();
 }
 
 //TiM - Functions needed for the quick connect stuff
@@ -999,6 +870,7 @@ MainArenaServers_Compare
 =================
 */
 static int32_t QDECL MainArenaServers_Compare( const void *arg1, const void *arg2 ) {
+	UI_LogFuncBegin();
 	float			f1;
 	float			f2;
 	table_t*		t1;
@@ -1024,11 +896,14 @@ static int32_t QDECL MainArenaServers_Compare( const void *arg1, const void *arg
 	}
 
 	if( f1 < f2 ) {
+		UI_LogFuncEnd();
 		return 1;
 	}
 	if( f1 == f2 ) {
+		UI_LogFuncEnd();
 		return 0;
 	}
+	UI_LogFuncEnd();
 	return -1;
 }
 
@@ -1038,6 +913,7 @@ MainArenaServers_UpdateMenu
 =================
 */
 static void MainArenaServers_UpdateMenu( void ) {
+	UI_LogFuncBegin();
 	int32_t				i;
 	//int32_t				j;
 	//int32_t				count;
@@ -1096,44 +972,9 @@ static void MainArenaServers_UpdateMenu( void ) {
 
 		for ( i = 0; i < MAX_FAVBUTTONS; i++ )
 			s_main.favMenu[i].generic.flags |= (QMF_HIDDEN | QMF_INACTIVE);
+		UI_LogFuncEnd();
 		return;
 	}
-
-	// build list box strings - apply culling filters
-	/*count         = s_main.networkParms.numservers;
-	for( i = 0, j = 0; i < count; i++ ) {
-		tableptr = &s_main.networkParms.table[j];
-		servernodeptr = &tableptr->servernode;
-		buff = tableptr->buff;
-
-		if( servernodeptr->pingtime < servernodeptr->minPing ) {
-			pingColor = S_COLOR_BLUE;
-		}
-		else if( servernodeptr->maxPing && servernodeptr->pingtime > servernodeptr->maxPing ) {
-			pingColor = S_COLOR_BLUE;
-		}
-		else if( servernodeptr->pingtime < 50 ) {
-			pingColor = S_COLOR_WHITE;
-		}
-		else if( servernodeptr->pingtime < 200 ) {
-			pingColor = S_COLOR_GREEN;
-		}
-		else if( servernodeptr->pingtime < 400 ) {
-			pingColor = S_COLOR_YELLOW;
-		}
-		else {
-			pingColor = S_COLOR_RED;
-		}
-
-		pongColor = S_COLOR_WHITE;
-		Com_sprintf( buff, MAX_LISTBOXWIDTH, "%s%-31.31s %s%-11.11s %2d/%2d %-8.8s %3d", //31.31
-			pongColor, servernodeptr->hostname, pingColor, servernodeptr->mapname, servernodeptr->numclients,
-	 		servernodeptr->maxclients, servernodeptr->gamename, servernodeptr->pingtime);
-		if (!servernodeptr->isPure) {	//prev length is 62, we can safely add 2 more chars.
-			strcat(buff, "*");	//mark this unpure server!
-		}
-		j++;
-	}*/
 
 //	Com_sprintf( g_arenaservers.status.string, MAX_STATUSLENGTH, "%d of %d Arena Servers.", j, *g_arenaservers.numservers );
 
@@ -1141,6 +982,7 @@ static void MainArenaServers_UpdateMenu( void ) {
 	{
 		s_main.connect.generic.flags			|= ( QMF_GRAYED | QMF_INACTIVE );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1150,6 +992,7 @@ MainArenaServers_Insert
 */
 static void MainArenaServers_Insert( char* adrstr, char* info, int32_t pingtime )
 {
+	UI_LogFuncBegin();
 	servernode_t*	servernodeptr;
 	char*			s;
 	int32_t				i;
@@ -1205,6 +1048,7 @@ static void MainArenaServers_Insert( char* adrstr, char* info, int32_t pingtime 
 			Q_strncpyz( servernodeptr->gamename, gamenames[i], sizeof(servernodeptr->gamename) );
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1214,9 +1058,12 @@ MainArenaServers_StopRefresh
 */
 static void MainArenaServers_StopRefresh( void )
 {
-	if (!s_main.networkParms.refreshservers)
+	UI_LogFuncBegin();
+	if (!s_main.networkParms.refreshservers){
 		// not currently refreshing
+		UI_LogFuncEnd();
 		return;
+	}
 
 	s_main.networkParms.refreshservers = qfalse;
 
@@ -1257,6 +1104,7 @@ static void MainArenaServers_StopRefresh( void )
 	//Com_Printf( S_COLOR_RED "OUTPUT: Name: %s, Map: %s\n", s_main.networkParms.table[1].servernode.hostname, s_main.networkParms.table[1].servernode.mapname );
 
 	MainArenaServers_UpdateMenu();
+	UI_LogFuncEnd();
 }
 
 
@@ -1268,6 +1116,7 @@ MainArenaServers_DoRefresh
 
 static void MainArenaServers_DoRefresh( void )
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 	int32_t		j;
 	int32_t		time;
@@ -1278,6 +1127,7 @@ static void MainArenaServers_DoRefresh( void )
 	if (uis.realtime < s_main.networkParms.nextpingtime)
 	{
 		// wait for time trigger
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1371,11 +1221,13 @@ static void MainArenaServers_DoRefresh( void )
 	{
 		// all pings completed
 		MainArenaServers_StopRefresh();
+		UI_LogFuncEnd();
 		return;
 	}
 
 	// update the user interface with ping status
 	MainArenaServers_UpdateMenu();
+	UI_LogFuncEnd();
 }
 
 
@@ -1386,6 +1238,7 @@ MainArenaServers_StartRefresh
 */
 static void MainArenaServers_StartRefresh( void )
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 	char	address[MAX_ADDRESSLENGTH];
 
@@ -1430,10 +1283,11 @@ Main_MenuEvent
 */
 static void Main_MenuEvent (void* ptr, int32_t event) 
 {
-	//void**		weaponptr;
+	UI_LogFuncBegin();
 
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -1453,10 +1307,6 @@ static void Main_MenuEvent (void* ptr, int32_t event)
 			UI_DemosMenu();
 			break;
 
-	//	case ID_CINEMATICS:
-	//		UI_CinematicsMenu();
-	//		break;
-
 		case ID_MODS:
 			UI_ModsMenu();
 			break;
@@ -1468,11 +1318,6 @@ static void Main_MenuEvent (void* ptr, int32_t event)
 		case ID_QUIT:
 			UI_PopMenu();
 			UI_QuitMenu();
-
-	//	case ID_FAVREFRESH:
-	//		Main_StartRefresh();
-
-	//		UI_ConfirmMenu( "EXIT GAME?", NULL, MainMenu_ExitAction );
 			break;
 
 		case ID_PLAYER_SETTINGS:
@@ -1532,35 +1377,8 @@ static void Main_MenuEvent (void* ptr, int32_t event)
 			case ID_BRIDGE_LABEL:
 				QuitMenuInterrupt(((menucommon_s*)ptr)->id);
 				break;
-			/*case ID_WEAPON1 :
-			case ID_WEAPON2 :
-			case ID_WEAPON3 :
-			case ID_WEAPON4 :
-			case ID_WEAPON5 :
-			case ID_WEAPON6 :
-			case ID_WEAPON7 :
-			case ID_WEAPON8 :
-			case ID_WEAPON9 :
-
-				trap_S_StartLocalSound( s_main.weaponnamesnd[((menucommon_s*)ptr)->id - ID_WEAPON1],CHAN_MENU1);	// Weapon name
-
-				trap_S_StartLocalSound( uis.menu_choice1_snd, CHAN_LOCAL_SOUND );
-
-				weaponptr = g_weapons[s_main.currentWeapon];	
-				((menubitmap_s*)weaponptr)->textcolor = CT_BLACK;
-
-				s_main.timer = uis.realtime + (WEAPON_WAIT * 2);
-				s_main.currentWeapon = (((menucommon_s*)ptr)->id - ID_WEAPON1);
-
-				weaponptr = g_weapons[s_main.currentWeapon];	
-				((menubitmap_s*)weaponptr)->textcolor = CT_LTGOLD1;
-
-				break;*/
-
-	//	case ID_EXIT:
-	//		UI_ConfirmMenu( "EXIT GAME?", NULL, MainMenu_ExitAction );
-	//		break;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -1571,6 +1389,7 @@ UI_MainMenuButtons
 */
 static void UI_MainMenuButtons(int32_t count)
 {
+	UI_LogFuncBegin();
 	int32_t i, j;
 
 	trap_R_SetColor( colorTable[CT_DKPURPLE1]);
@@ -1587,6 +1406,7 @@ static void UI_MainMenuButtons(int32_t count)
 		}
 		UI_DrawHandlePic(mm_buttons[i][0] - 14,mm_buttons[i][1], MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
 	}
+	UI_LogFuncEnd();
 }
 
 typedef struct
@@ -1606,139 +1426,9 @@ Phenix
 ==========================
 */
 
-/*static void UI_drawRPGXLogo ( void )
-{
-	refdef_t		refdef;
-	refEntity_t		ent;
-	vec3_t			origin = {0.0, 0.0, 0.0};
-	vec3_t			angles;
-	float			adjust;
-	float			x, y, w, h;
-	//vec4_t			color = {0.5, 0, 0, 1};
-
-	// setup the refdef
-
-	memset( &refdef, 0, sizeof( refdef ) );
-
-	refdef.rdflags = RDF_NOWORLDMODEL;
-
-	AxisClear( refdef.viewaxis );
-
-	x = 465; //440 // controls location of top left corner of ent
-	y = 309 - 146; //0
-
-	w = 139; //400; //640 //150 //TiM: I don't know exactly, but w and h seem to control the size of the region the model will be drawn in
-	h = 139; //480; //120 //150 //good going brainiac! ;P - TiM several months later ;)
-	UI_AdjustFrom640( &x, &y, &w, &h );
-	refdef.x = x;
-	refdef.y = y;
-	refdef.width = w;
-	refdef.height = h;
-
-	adjust = 0; // JDC: Kenneth asked me to stop this 1.0 * sin( (float)uis.realtime / 1000 );
-	refdef.fov_x = 10 + adjust; //60 //TiM: Controls width scale // yeah.... coz it's the FOV lol //17
-																//that being the case, we have to aim for a value of 10
-																//(10's what I use in MD3View... anything higher and it starts to distort)
-	refdef.fov_y = 10 + adjust; //19.6875 // like i said, 10 ;)
-
-	refdef.time = uis.realtime;
-
-	//TiM: Okay... several months later and I actually understand what this whacky array called 
-	//a 'vector' actually does. ;P
-	origin[0] = 930; //300 //TiM: Controls Overall Size //controls Z position (and hence, the scale coz it's either moving towards, or away from the camera)
-	origin[1] = 0; //TiM: Controls Horizontal Position //controls X
-	origin[2] = -27; //-32 //TiM: Controls vertical Position //controls Y
-
-	trap_R_ClearScene();
-
-	// add the model
-
-	memset( &ent, 0, sizeof(ent) );
-
-	adjust = 20.0/300.0 * uis.realtime; //5.0 * sin( (float)uis.realtime / 5000 );
-	VectorSet( angles, 0, 180 + adjust, 0 );
-	AnglesToAxis( angles, ent.axis );
-	ent.hModel = s_main.logoModel;
-
-	
-	if (trap_Cvar_VariableValue("r_dynamiclight") ) {
-		ent.renderfx = RF_LOWLIGHT|RF_NOSHADOW;		// keep it dark, and no stencil shadows //RF_LOWBRIGHT
-	} else {
-		ent.renderfx = RF_NOSHADOW;		// no stencil shadows
-	}
-	
-
-	VectorCopy( origin, ent.origin );
-	VectorCopy( origin, ent.lightingOrigin );
-	VectorCopy( ent.origin, ent.oldorigin );
-
-	origin[0] -= 50;	// + = behind, - = in front
-	origin[1] += 50;	// + = left, - = right
-	origin[2] += 50;	// + = above, - = below
-	trap_R_AddLightToScene( origin, 500, 1.0, 1.0, 1.0 );
-
-	trap_R_AddRefEntityToScene( &ent );
-
-	trap_R_RenderScene( &refdef );
-}
-
-void P_WeaponsMenu_Blinkies (void)
-{
-	int32_t i;
-
-	for (i=0;i<AMG_MAX;++i)
-	{
-		attackmenu_graphics1[i].color = CT_VDKPURPLE1;
-	}
-
-	if (attackmenu_graphics1[AMG_MIDLEFT].timer < uis.realtime)
-	{
-		attackmenu_graphics1[AMG_MIDLEFT].timer = uis.realtime + 500;
-		++attackmenu_graphics1[AMG_MIDLEFT].target;
-		if (attackmenu_graphics1[AMG_MIDLEFT].target > 7)
-		{
-			attackmenu_graphics1[AMG_MIDLEFT].target = 0;
-		}
-	}
-
-	switch (attackmenu_graphics1[AMG_MIDLEFT].target)
-	{
-		case 0:
-			attackmenu_graphics1[AMG_MIDLEFT].color = CT_LTPURPLE1;
-			break;
-		case 1:
-			attackmenu_graphics1[AMG_UPPERLEFT].color = CT_LTPURPLE1;
-			attackmenu_graphics1[AMG_LOWERLEFT].color = CT_LTPURPLE1;
-			break;
-		case 2:
-			attackmenu_graphics1[AMG_UPPERCORNER].color = CT_LTPURPLE1;
-			attackmenu_graphics1[AMG_LOWERCORNER].color = CT_LTPURPLE1;
-			break;
-		case 3:
-			attackmenu_graphics1[AMG_UPPERTOP1ST].color = CT_LTPURPLE1;
-			attackmenu_graphics1[AMG_LOWERTOP1ST].color = CT_LTPURPLE1;
-			break;
-		case 4:
-			attackmenu_graphics1[AMG_UPPERTOP2ND].color = CT_LTPURPLE1;
-			attackmenu_graphics1[AMG_LOWERTOP2ND].color = CT_LTPURPLE1;
-			break;
-		case 5:
-			attackmenu_graphics1[AMG_UPPERSWOOP].color = CT_LTPURPLE1;
-			attackmenu_graphics1[AMG_LOWERSWOOP].color = CT_LTPURPLE1;
-			break;
-		case 6:
-			attackmenu_graphics1[AMG_TOPRIGHT].color = CT_LTPURPLE1;
-			attackmenu_graphics1[AMG_BOTTOMRIGHT].color = CT_LTPURPLE1;
-			break;
-		case 7:
-			attackmenu_graphics1[AMG_PLAYERBKGRND].color = CT_LTPURPLE1;
-			break;
-	}
-
-}*/
-
 static void Player_DrawPlayer( void ) //*self ) 
 {
+	UI_LogFuncBegin();
 	menubitmap_s	*b;
 	vec3_t			viewangles;
 	vec3_t			origin = {-3, 5, -3 };//{ 0, 3.8, 0};
@@ -1759,15 +1449,11 @@ static void Player_DrawPlayer( void ) //*self )
 		viewangles[ROLL]  = 0;
 
 		UI_PlayerInfo_SetInfo( &s_main.playerinfo, BOTH_STAND1, BOTH_STAND1, viewangles, vec3_origin, WP_1, trap_Cvar_VariableValue( "height" ), trap_Cvar_VariableValue( "weight" ), qfalse );
-
-		//Player_UpdateModel( ANIM_IDLE ); //ADDDED 
-		//UI_PlayerInfo_SetInfo( &s_main.playerinfo, LEGS_IDLE, TORSO_STAND2, viewangles, vec3_origin, s_main.playerWeapon, qfalse );
 	}
 
 	b = &s_main_playermdl; //(menubitmap_s*) self;
 	UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, origin, &s_main.playerinfo, uis.realtime );
-	//UI_DrawPlayer( s_main_playermdl.generic.x, s_main_playermdl.generic.y, s_main_playermdl.width, s_main_playermdl.height, origin, &s_main.playerinfo, uis.realtime/2 );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1777,28 +1463,32 @@ Player_SpinPlayer
 */
 static void Player_SpinPlayer( void* ptr, int32_t event)
 {
+	UI_LogFuncBegin();
 	if ( event == QM_ACTIVATED ) 
 	{
 		uis.spinView = qtrue;
 		uis.cursorpx = uis.cursorx;
 	}
+	UI_LogFuncEnd();
 }
 
 static void Player_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	s_main_playermdl.generic.type			= MTYPE_BITMAP;
 	s_main_playermdl.generic.flags			= QMF_SILENT; //INACTIVE
 	s_main_playermdl.generic.callback		= Player_SpinPlayer;
-//	s_main_playermdl.generic.ownerdraw		= Player_DrawPlayer;
 	s_main_playermdl.generic.x				= 82; //440 //25
 	s_main_playermdl.generic.y				= 158; //95
 	s_main_playermdl.width					= 164; //32*6.6 //211.2 //246.2
 	s_main_playermdl.height					= 276; //56*6.6 //369.6 //404.6
 	s_main_playermdl.generic.id				= ID_PLAYER_REGION;
+	UI_LogFuncEnd();
 }
 
 static void Player_InitModel( void )
 {
+	UI_LogFuncBegin();
 	memset( &s_main.playerinfo, 0, sizeof(playerInfo_t) );
 
 	UI_PlayerInfo_SetModel( &s_main.playerinfo, UI_Cvar_VariableString( "model" ) );
@@ -1825,6 +1515,7 @@ static void Player_InitModel( void )
 							trap_Cvar_VariableValue( "height" ), 
 							trap_Cvar_VariableValue( "weight" ), 
 							qfalse );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1832,111 +1523,6 @@ static void Player_InitModel( void )
 END MOFICIATION
 ==========================
 */
-
-static weapongraphics_s weapon_graphics[UI_NUM_WEAPONS] =	//was WP_NUM_WEAPONS, but we added some more for vv
-{
-	{ 0, -15, -25 },		// WP_5
-	{ 0,  7,  -20 },		// WP_6
-	{ 0,  15, -10 },		// WP_1
-	{ 0,   8, -15 },		// WP_4
-	{ 0,  25,   0 },		// WP_10
-	{ 0,  18, -17 },		// WP_8
-	{ 0,   5, -25 },		// WP_TETRYON_DISRUPTOR
-	{ 0,  20, -10 },		// WP_PHOTON_BURST
-	{ 0,   5, -19 }			// WP_ARCWELDER
-};
-
-
-/*static void UI_Draw3DModel( float x, float y, float w, float h, qhandle_t model, vec3_t origin, vec3_t angles, vec3_t weaponMidpoint ) {
-	refdef_t		refdef;
-	refEntity_t		ent;
-
-	UI_AdjustFrom640( &x, &y, &w, &h );
-
-	memset( &refdef, 0, sizeof( refdef ) );
-
-	memset( &ent, 0, sizeof( ent ) );
-	AnglesToAxis( angles, ent.axis );
-
-	origin[0] -= 
-		weaponMidpoint[0] * ent.axis[0][0] +
-		weaponMidpoint[1] * ent.axis[1][0] +
-		weaponMidpoint[2] * ent.axis[2][0];
-	origin[1] -= 
-		weaponMidpoint[0] * ent.axis[0][1] +
-		weaponMidpoint[1] * ent.axis[1][1] +
-		weaponMidpoint[2] * ent.axis[2][1];
-	origin[2] -= 
-		weaponMidpoint[0] * ent.axis[0][2] +
-		weaponMidpoint[1] * ent.axis[1][2] +
-		weaponMidpoint[2] * ent.axis[2][2];
-	
-	VectorCopy( origin, ent.origin );
-	
-	ent.hModel = model;
-	if (trap_Cvar_VariableValue("r_dynamiclight") ) {
-		ent.renderfx = RF_LOWLIGHT|RF_NOSHADOW;		// keep it dark, and no stencil shadows
-	} else {
-		ent.renderfx = RF_NOSHADOW;		// no stencil shadows
-	}
-	refdef.rdflags = RDF_NOWORLDMODEL;
-
-	AxisClear( refdef.viewaxis );
-
-	refdef.fov_x = 40;
-	refdef.fov_y = 30;
-
-	refdef.x = x;
-	refdef.y = y;
-	refdef.width = w;
-	refdef.height = h;
-
-	refdef.time = uis.realtime;
-
-	trap_R_ClearScene();
-	trap_R_AddRefEntityToScene( &ent );
-
-	origin[0] -= 50;	// + = behind, - = in front
-	origin[1] += 50;	// + = left, - = right
-	origin[2] += 50;	// + = above, - = below
-	trap_R_AddLightToScene( origin, 500, 1.0, 1.0, 1.0 );
-
-	trap_R_RenderScene( &refdef );
-}*/
-
-/*
-================
-UI_DrawWeapon
-
-================
-*/
-static void CacheWeaponModel(int32_t i);
-/*static void UI_DrawWeapon(void)
-{
-	vec3_t	origin = {50,0,2};
-	vec3_t	angles;
-
-	origin[2] = 2; //+ = up, - = down
-	origin[1] = 0;
-	origin[0] = 60;
-
-	angles[PITCH] = weapon_graphics[s_main.currentWeapon].pitch;
-	angles[YAW]   = 20.0/300.0 * uis.realtime; //Rotates object
-	angles[ROLL]  = weapon_graphics[s_main.currentWeapon].roll;
-
-	if (!weapon_graphics[s_main.currentWeapon].modelhandle) 
-	{
-		CacheWeaponModel(s_main.currentWeapon);
-	}
-	UI_Draw3DModel( 113, 178, 358, 244, weapon_graphics[s_main.currentWeapon].modelhandle, origin, angles, weapon_graphics[s_main.currentWeapon].mid );
-
-	angles[PITCH] = 0;
-	angles[ROLL]  = 0;
-	UI_Draw3DModel( 113, 178, 358, 244, weapon_graphics[s_main.currentWeapon].modelhandle, origin, angles, weapon_graphics[s_main.currentWeapon].mid );
-
-	//BOOKMARK - 163
-	UI_DrawProportionalString( 289, 180, bg_itemlist[s_main.currentWeapon + 1].pickup_name,UI_CENTER|UI_SMALLFONT, colorTable[CT_YELLOW]);
-}*/
 
 /*
 =================
@@ -1949,8 +1535,8 @@ M_MainMenu_Graphics
 
 static void M_MainMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	int32_t y,pad; //i removed
-//	void**		weaponptr;
 	char string[256];
 	char temp[128];
 	int32_t i;
@@ -2256,6 +1842,7 @@ static void M_MainMenu_Graphics (void)
 
 	// Frame around model pictures
 	trap_R_SetColor( colorTable[CT_LTORANGE]);
+	UI_LogFuncEnd();
 }
 
 
@@ -2266,6 +1853,7 @@ Main_MenuDraw
 */
 static void Main_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	if ( s_main.networkParms.refreshservers == qtrue ) {
 		MainArenaServers_DoRefresh();
 	}
@@ -2275,20 +1863,9 @@ static void Main_MenuDraw (void)
 
 	Menu_Draw( &s_main.menu );
 
-	//UI_drawRPGXLogo();
+	UI_LogFuncEnd();
 }
 
-static void CacheWeaponModel(int32_t i)
-{
-//	vec3_t			mins, maxs;
-	//weapon_graphics[i].modelhandle = trap_R_RegisterModel( weapon_graphics[i].modelname);
-	
-	// offset the origin y and z to center the model
-	//trap_R_ModelBounds( weapon_graphics[i].modelhandle, mins, maxs );
-	//weapon_graphics[i].mid[0] = mins[0] + 0.5 * ( maxs[0] - mins[0]);
-	//weapon_graphics[i].mid[1] = mins[1] + 0.5 * ( maxs[1] - mins[1]);
-	//weapon_graphics[i].mid[2] = mins[2] + 0.5 * ( maxs[2] - mins[2]);
-}
 /*
 ===============
 MainMenu_Cache
@@ -2297,26 +1874,8 @@ MainMenu_Cache
 //extern vmCvar_t	ui_precacheweapons;
 void MainMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	int32_t i;
-	gitem_t *	item;
-
-	i = 0;
-	for ( item = bg_itemlist + 1 ; item->classname && (i < UI_NUM_WEAPONS) ; item++ ) 
-	{
-		if ( item->giType != IT_WEAPON ) 
-		{
-			continue;
-		}
-
-		weapon_graphics[i].modelname = item->world_model;
-		CacheWeaponModel(i);
-		i++;
-	}
-
-	/*for (i=0;i<UI_NUM_WEAPONS;i++)
-	{
-		s_main.weaponnamesnd[i] = trap_S_RegisterSound(weaponnamefiles[i]);
-	}*/
 
 	// Precache all menu graphics in array - Makes the graphics stay
 	for (i=0;i<AMG_MAX;++i)
@@ -2342,7 +1901,7 @@ void MainMenu_Cache( void )
 	//s_main.soundWaveform	= trap_R_RegisterShaderNoMip("menu/special/wave3.tga");
 
 	s_main.activateSound	= trap_S_RegisterSound( "sound/interface/button2.wav" );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2352,6 +1911,7 @@ UI_MainMenu_Init
 */
 static void UI_MainMenu_Init(void)
 {
+	UI_LogFuncBegin();
 	int32_t i;
 
 	memset( &s_main, 0, sizeof(mainmenu_t) );
@@ -2652,7 +2212,7 @@ static void UI_MainMenu_Init(void)
 
 	if ( s_HolomatchInmenu.menu.initialized )
 		trap_S_StartLocalSound( s_main.activateSound, CHAN_LOCAL );
-
+	UI_LogFuncEnd();
 }
 
 
@@ -2667,7 +2227,7 @@ and that local cinematics are killed
 */
 void UI_MainMenu( void ) 
 {
-
+	UI_LogFuncBegin();
 	trap_Cvar_Set( "sv_killserver", "1" );
 	ingameFlag = qfalse;	// true when ingame menu is in use
 
@@ -2675,6 +2235,7 @@ void UI_MainMenu( void )
 	if (!s_HolomatchInmenu.menu.initialized)	// Haven't played Holomatch In menu yet
 	{
 		UI_HolomatchIn_Menu();
+		UI_LogFuncEnd();
 		return;
 	}
 //#endif
@@ -2685,12 +2246,14 @@ void UI_MainMenu( void )
 	if (!uis.demoversion && !trap_Cvar_VariableValue( "ui_cdkeychecked" ))
 	{
 		UI_CDKeyMenu2();
+		UI_LogFuncEnd();
 		return;
 	}
 
 	if (!trap_Cvar_VariableValue( "ui_initialsetup" ))
 	{
 		UI_InitialSetupMenu();
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -2700,7 +2263,7 @@ void UI_MainMenu( void )
 	
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2718,12 +2281,14 @@ M_HolomatchIn_Key
 */
 static sfxHandle_t M_HolomatchIn_Key (int32_t key)
 {
+	UI_LogFuncBegin();
 	// Advance to Main Menu
 	if ((key == K_SPACE) || (key == K_ENTER) || (key == K_ESCAPE) || (key == K_MOUSE1))
 	{
 		UI_PopMenu();	// Get rid of whatever is ontop
 		UI_MainMenu();
 	}
+	UI_LogFuncEnd();
 	return ( menu_out_sound );
 }
 
@@ -2734,6 +2299,7 @@ HolomatchInMenu_Draw
 */
 static void HolomatchInMenu_Draw(void)
 {
+	UI_LogFuncBegin();
 	int32_t len,x,y;
 
 	x = 30;
@@ -2771,6 +2337,7 @@ static void HolomatchInMenu_Draw(void)
 		UI_PopMenu();	// Get rid of whatever is ontop
 		UI_MainMenu();
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2780,18 +2347,22 @@ HolomatchInMenu_Cache
 */
 void UI_HolomatchInMenu_Cache (void)
 {
+	UI_LogFuncBegin();
 	s_HolomatchInmenu.inSound = trap_S_RegisterSound( "sound/voice/computer/rpg-x/welcome.wav" );
 	s_HolomatchInmenu.logo = trap_R_RegisterShaderNoMip( "menu/special/rpgx_logo.tga" ); //menu/special/holo_logo.tga
 	s_HolomatchInmenu.halfround = trap_R_RegisterShaderNoMip( "menu/common/halfroundr_22.tga" );
+	UI_LogFuncEnd();
 }
 
 void UI_PlayIntroCinematic( void )
 {
+	UI_LogFuncBegin();
 	if ( !uis.playCinematic ) { //&& ( trap_Milliseconds() <=5000 ) 
 			uis.playCinematic = qtrue;	//FIXME: Duhhh I'm a stupid function that completely ignores the value of uis.playCinematic O_o						  
 			//Com_Printf( "qtrue" );								  
 			trap_Cmd_ExecuteText( EXEC_APPEND, "wait 5; wait 5; cinematic rpgx_intro.roq \n" ); 
 	}	
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2801,6 +2372,7 @@ HolomatchInMenu_Init
 */
 static void HolomatchInMenu_Init(void) 
 {
+	UI_LogFuncBegin();
 	UI_HolomatchInMenu_Cache();
 
 	s_HolomatchInmenu.menu.nitems					= 0;
@@ -2816,13 +2388,9 @@ static void HolomatchInMenu_Init(void)
 
 	s_HolomatchInmenu.menu.initialized = qtrue;
 
-	//trap_S_StartLocalSound( s_HolomatchInmenu.inSound,CHAN_MENU1);
-
 	federationTimer = uis.realtime + 12000; //12000
 
-	//if (trap_Cvar_VariableValue ("rpg_playIntro") == 1) { trap_Cvar_Set ("rpg_playIntro", "0"); UI_PlayIntroCinematic(); }
-
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2832,6 +2400,7 @@ UI_HolomatchIn_Menu
 */
 static void UI_HolomatchIn_Menu(void)
 {
+	UI_LogFuncBegin();
 
 	Mouse_Hide();
 
@@ -2840,6 +2409,8 @@ static void UI_HolomatchIn_Menu(void)
 	UI_PushMenu ( &s_HolomatchInmenu.menu );
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
+
+	UI_LogFuncEnd();
 
 }
 
@@ -2858,13 +2429,15 @@ M_LCARSOut_Key
 */
 static sfxHandle_t M_Leaving_Key (int32_t key)
 {
+	UI_LogFuncBegin();
 	// Get out now!!
 	if ((key == K_SPACE) || (key == K_ENTER) || (key == K_ESCAPE) || (key == K_MOUSE1))
 	{
 		federationTimer = 0;	// Get out of game now!!!
+		UI_LogFuncEnd();
 		return(0);
 	}
-
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &s_leaving_menu.menu, key ) );
 }
 
@@ -2875,6 +2448,7 @@ LeavingMenu_Draw
 */
 static void LeavingMenu_Draw(void)
 {
+	UI_LogFuncBegin();
 	int32_t len,x,y;
 
 	x = 30;
@@ -2908,6 +2482,7 @@ static void LeavingMenu_Draw(void)
 		//trap_Cvar_Set ("rpg_playIntro", "1");
 		trap_Cmd_ExecuteText( EXEC_NOW, "quit\n" );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2917,10 +2492,11 @@ LeavingMenu_Cache
 */
 void LeavingMenu_Cache (void)
 {
+	UI_LogFuncBegin();
 	s_leaving_menu.logo = trap_R_RegisterShaderNoMip("menu/special/rpgx_logo.tga"); 
 	s_leaving_menu.halfround = trap_R_RegisterShaderNoMip( "menu/common/halfroundr_22.tga" );
 	s_leaving_menu.logoutsnd = trap_S_RegisterSound( "sound/voice/computer/menu/logout.wav" );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2930,6 +2506,7 @@ LCARSOutMenu_Init
 */
 static void LeavingMenu_Init(void) 
 {
+	UI_LogFuncBegin();
 	LeavingMenu_Cache();
 
 	s_leaving_menu.menu.nitems					= 0;
@@ -2946,6 +2523,7 @@ static void LeavingMenu_Init(void)
 	federationTimer = uis.realtime + 3000;
 	//trap_Cvar_Set ("rpg_playIntro", "1");
 	trap_S_StartLocalSound( s_leaving_menu.logoutsnd, CHAN_MENU1 );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2955,12 +2533,15 @@ UI_Leaving_Menu
 */
 static void UI_Leaving_Menu(void)
 {
+	UI_LogFuncBegin();
 
 	LeavingMenu_Init(); 
 
 	UI_PushMenu ( &s_leaving_menu.menu );
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2970,6 +2551,8 @@ UI_Setup_MenuButtons
 */
 void UI_Setup_MenuButtons(void)
 {
+	UI_LogFuncBegin();
+
 	int32_t i,max;
 
 	trap_R_SetColor( colorTable[CT_DKPURPLE1]);
@@ -2980,133 +2563,8 @@ void UI_Setup_MenuButtons(void)
 	{
 		UI_DrawHandlePic(setup_menubuttons[i][0] - 14,setup_menubuttons[i][1], MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
 	}
-
+	UI_LogFuncEnd();
 }
-
-/*
-=================
-M_Quit_SplitDesc
-=================
-*/
-/*static void M_Quit_SplitDesc(int32_t descI)
-{
-	int32_t	lineWidth,currentWidth,charCnt,currentLineI;
-	const char *s, *holds;
-	char holdChar[2];
-
-	// Clean out any old data
-	memset(systemDesc,0,sizeof(systemDesc));
-
-	// Break into individual lines
-	s = menu_normal_text[quitmenu_graphics[descI].normaltextEnum];
-	holds = s;
-
-
-	lineWidth = 228;	// How long (in pixels) a line can be
-	currentWidth = 0;
-	holdChar[1] = '\0';
-	charCnt= 0;
-	currentLineI = 0;
-
-	while( *s ) 
-	{
-		charCnt++;
-		holdChar[0] = *s;
-		currentWidth += UI_ProportionalStringWidth(holdChar,UI_TINYFONT);
-		currentWidth +=1; // The space between characters
-
-		if ( currentWidth >= lineWidth )
-		{//Reached max length of this line
-			//step back until we find a space
-
-			while((currentWidth) && (*s != ' '))
-			{
-				holdChar[0] = *s;
-				currentWidth -= UI_ProportionalStringWidth(holdChar,UI_TINYFONT);
-				s--;
-				charCnt--;
-			}
-
-			Q_strncpyz( systemDesc[currentLineI], holds, charCnt);
-			systemDesc[currentLineI][charCnt] = 0;
-
-			currentLineI++;
-			currentWidth = 0;
-			charCnt = 0;
-
-			holds = s;
-			holds++;
-
-			if (currentLineI > SYSTEM_MAXDESC)
-			{
-				currentLineI = (SYSTEM_MAXDESC -1);
-				break;
-			}
-		}	
-		++s;
-	}
-
-	++charCnt;  // So the NULL will be properly placed at the end of the string of Q_strncpyz
-	Q_strncpyz( systemDesc[currentLineI], holds, charCnt);
-	systemDesc[currentLineI][charCnt] = 0;
-
-}*/
-
-/*
-=================
-QuitMenu_Label
-=================
-*/
-/*menutext_s *QuitMenu_Label(int32_t labelId)
-{
-	menutext_s *label;
-
-	switch(labelId)
-	{
-		case QMG_PHASER_LABEL :
-			label = &s_quit.phaser_label;
-			break;
-
-		case QMG_TORPEDO_LABEL :
-			label = &s_quit.torpedo_label;
-			break;
-
-		case QMG_VENTRAL_LABEL :
-			label = &s_quit.ventral_label;
-			break;
-
-		case QMG_MIDHULL_LABEL :
-			label = &s_quit.midhull_label;
-			break;
-
-		case QMG_BUSSARD_LABEL :
-			label = &s_quit.bussard_label;
-			break;
-
-		case QMG_NACELLES_LABEL :
-			label = &s_quit.nacelles_label;
-			break;
-
-		case QMG_THRUSTERS_LABEL :
-			label = &s_quit.thrusters_label;
-			break;
-
-		case QMG_BRIDGE_LABEL :
-			label = &s_quit.bridge_label;
-			break;
-
-		case QMG_VOYAGER_LABEL :
-			label = &s_quit.voyager_label;
-			break;
-
-		default:
-			label = &s_quit.bridge_label;
-			break;
-	}
-
-	return(label);
-}*/
-
 
 /*
 =================
@@ -3115,89 +2573,11 @@ QuitMenuInterrupt
 */
 static void QuitMenuInterrupt(int32_t labelId)
 {
+	UI_LogFuncBegin();
 	// ten seconds from now, start the auto animation again
 	quitmenu_graphics[QMG_ACTIVE_SYSTEM].timer = uis.realtime + 10000;
+	UI_LogFuncEnd();
 }
-
-/*
-=================
-QuitMenu_ChangeAreaFocus
-=================
-*/
-/*static void QuitMenu_ChangeAreaFocus(int32_t newSystem)
-{
-	int32_t swoopI;
-	int32_t descI;
-	int32_t oldSystem;
-	menubitmap_s *bitmap;
-	menutext_s *oldLabel,*newLabel;
-
-
-	// Turn off current system info
-	oldSystem = quitmenu_graphics[QMG_ACTIVE_SYSTEM].target;
-
-
-	// Turn old label brown
-	oldLabel = QuitMenu_Label(oldSystem);
-	oldLabel->color = colorTable[CT_DKBROWN1];
-
-	// Turn off swoop
-	swoopI = quitmenu_graphics[oldSystem].target;
-	if (swoopI)
-	{
-		quitmenu_graphics[swoopI].type = MG_OFF;
-	}
-
-	// Turn pic off
-	if (quitmenu_graphics[oldSystem].pointer)
-	{
-		bitmap = (menubitmap_s *) quitmenu_graphics[oldSystem].pointer;
-
-		if (oldSystem == QMG_VOYAGER_LABEL)	//Voyager graphic can't be hidden
-		{
-			bitmap->color = CT_LTBLUE1;	
-		}
-		else
-		{
-			bitmap->generic.flags |= QMF_HIDDEN;	
-		}
-	}
-
-	// Turning on the new system graphics
-	quitmenu_graphics[QMG_ACTIVE_SYSTEM].target = newSystem;
-
-	// Turn on new label
-	newLabel = QuitMenu_Label(newSystem);
-	newLabel->color = colorTable[CT_YELLOW];
-
-	// Turn on system description
-	descI = quitmenu_graphics[newSystem].min;
-	if (descI)
-	{
-		M_Quit_SplitDesc(descI);
-	}
-
-	// Turn on pic
-	if (quitmenu_graphics[newSystem].pointer)
-	{
-		bitmap = (menubitmap_s *) quitmenu_graphics[newSystem].pointer;
-		bitmap->generic.flags &= ~QMF_HIDDEN;	
-
-		if (newSystem == QMG_VOYAGER_LABEL)	//Voyager graphic can't be hidden
-		{
-			bitmap->color = CT_LTGOLD1;	
-		}
-	}
-
-	// Turn onswoop
-	swoopI = quitmenu_graphics[newSystem].target;
-	if (swoopI)
-	{
-		quitmenu_graphics[swoopI].type = MG_GRAPHIC;
-	}
-
-}*/
-
 
 /*
 ===============
@@ -3206,8 +2586,11 @@ M_Quit_Event
 */
 static void M_Quit_Event (void* ptr, int32_t notification)
 {
-	if (notification != QM_ACTIVATED)
+	UI_LogFuncBegin();
+	if (notification != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	switch (((menucommon_s*)ptr)->id)
 	{
@@ -3224,6 +2607,7 @@ static void M_Quit_Event (void* ptr, int32_t notification)
 //			trap_Cmd_ExecuteText( EXEC_NOW, "quit\n" );
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3233,6 +2617,7 @@ Quit_MenuKey
 */
 static sfxHandle_t Quit_MenuKey( int32_t key )
 {
+	UI_LogFuncBegin();
 	switch ( key )
 	{
 		case K_KP_LEFTARROW:
@@ -3252,7 +2637,7 @@ static sfxHandle_t Quit_MenuKey( int32_t key )
 			M_Quit_Event( &s_quit.yes, QM_ACTIVATED );
 			break;
 	}
-
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &s_quit.menu, key ) );
 }
 
@@ -3263,6 +2648,7 @@ Quit_MenuBlinkies
 */
 static void Quit_MenuBlinkies( void )
 {
+	UI_LogFuncBegin();
 	int32_t /*activeSystem,*/i;
 
 	// Move bottom blip
@@ -3270,45 +2656,8 @@ static void Quit_MenuBlinkies( void )
 	{
 		quitmenu_graphics[QMG_BOTTOM_BLIP].x += 7;
 		quitmenu_graphics[QMG_BOTTOM_BLIP2].x = quitmenu_graphics[QMG_BOTTOM_BLIP].x;
-
-		/*if (quitmenu_graphics[QMG_BOTTOM_BLIP].x > quitmenu_graphics[QMG_BOTTOM_BLIP].max)
-		{
-			trap_S_StartLocalSound(s_quit.pingsound, CHAN_MENU1);
-
-			quitmenu_graphics[QMG_BOTTOM_BLIP].x = quitmenu_graphics[QMG_BOTTOM_BLIP].min;
-			quitmenu_graphics[QMG_BOTTOM_BLIP2].x = quitmenu_graphics[QMG_BOTTOM_BLIP].min;
-		}*/
-
-		// Middle ping?
-		/*if ((quitmenu_graphics[QMG_BOTTOM_BLIP].x > 304) && 
-			(quitmenu_graphics[QMG_BOTTOM_BLIP].x < 314))
-		{
-			trap_S_StartLocalSound(s_quit.pingsound, CHAN_LOCAL);
-		}*/
-
 		quitmenu_graphics[QMG_BOTTOM_BLIP].timer = uis.realtime + 75;
 	}
-
-	// Time to change systems???
-	/*if ( quitmenu_graphics[QMG_ACTIVE_SYSTEM].timer < uis.realtime )
-	{
-		activeSystem = quitmenu_graphics[QMG_ACTIVE_SYSTEM].target;
-
-		// Change again in five seconds
-		quitmenu_graphics[QMG_ACTIVE_SYSTEM].timer = uis.realtime + 5000;
-
-		// Advance to next system
-		++activeSystem;
-		if (activeSystem >= QMG_LABEL_END)	// Past max strings
-		{
-			activeSystem = QMG_LABEL_START +1;	// Reset
-		}
-
-		QuitMenu_ChangeAreaFocus(activeSystem);
-
-		trap_S_StartLocalSound( uis.menu_choice1_snd, CHAN_MENU1 );	// Ping!
-
-	}*/
 
 	// Generate new numbers
 	if ((quitmenu_graphics[QMG_NUMBERS].timer < uis.realtime) && (quitmenu_graphics[QMG_NUMBERS].target==5))
@@ -3367,6 +2716,7 @@ static void Quit_MenuBlinkies( void )
 			quitmenu_graphics[QMG_NUMBERS].timer = uis.realtime + 6000;
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3376,6 +2726,7 @@ Quit_MenuDraw
 */
 static void Quit_MenuDraw( void )
 {
+	UI_LogFuncBegin();
 	int32_t i,y;
 
 	// Draw the basic screen layout
@@ -3420,15 +2771,6 @@ static void Quit_MenuDraw( void )
 	UI_DrawHandlePic(30, 164, 47, 3, uis.whiteShader);	// Upper left hand blip columns
 	UI_DrawHandlePic(30, 175, 47, 25, uis.whiteShader);	// Upper left hand blip columns
 
-	/*trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-	UI_DrawHandlePic(30, 167, 47, 8, uis.whiteShader);	// Blip columns
-	UI_DrawHandlePic(565, 167, 47, 8, uis.whiteShader);	// Blip columns
-
-
-	trap_R_SetColor( colorTable[CT_DKPURPLE2]);
-	UI_DrawHandlePic(30, 353, 47, 8, uis.whiteShader);	// Blip columns
-	UI_DrawHandlePic(565,353, 47, 8, uis.whiteShader);	// Blip columns*/
-
 	//RPG-X Fling
 	UI_DrawProportionalString(97, 380, menu_normal_text[MNT_STARTREK1], UI_SMALLFONT, colorTable[CT_LTBROWN1] );
 	UI_DrawProportionalString(97, 400, menu_normal_text[MNT_STARTREK2], UI_SMALLFONT, colorTable[CT_LTBROWN1] );
@@ -3456,6 +2798,7 @@ static void Quit_MenuDraw( void )
 		UI_DrawProportionalString(384, y, systemDesc[i],UI_TINYFONT,colorTable[CT_LTGOLD1]);
 		y += 12;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -3466,24 +2809,15 @@ UI_QuitMenu_Cache
 */
 void UI_QuitMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	s_quit.corner_ur	= trap_R_RegisterShaderNoMip("menu/common/corner_ur_18_60.tga");
 	s_quit.swoop1		= trap_R_RegisterShaderNoMip("menu/common/corner_ur_7_30.tga");
 	s_quit.swoop2		= trap_R_RegisterShaderNoMip("menu/common/corner_ul_7_15.tga");
 	s_quit.quitBanner	= trap_R_RegisterShaderNoMip("gfx/2d/quit_banner.tga");
-	//s_quit.pingsound	= trap_S_RegisterSound( "sound/interface/sensorping.wav" );
-
-	/*trap_R_RegisterShaderNoMip(PIC_PHASER_STRIP);
-	trap_R_RegisterShaderNoMip(PIC_PHOTON_LAUNCHER);
-	trap_R_RegisterShaderNoMip(PIC_BOTTOM_STRIP);
-	trap_R_RegisterShaderNoMip(PIC_MID_HULL);
-	trap_R_RegisterShaderNoMip(PIC_WARPNAC);
-	trap_R_RegisterShaderNoMip(PIC_BUSSARD);
-	trap_R_RegisterShaderNoMip(PIC_RCS);
-	trap_R_RegisterShaderNoMip(PIC_BRIDGE);
-	trap_R_RegisterShaderNoMip(PIC_VOYAGER);*/
 
 	// Precache all menu graphics in array
 	UI_PrecacheMenuGraphics(quitmenu_graphics,QMG_MAX);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -3493,6 +2827,7 @@ UI_QuitMenu
 */
 static void Quit_MenuInit(void)
 {
+	UI_LogFuncBegin();
 	int32_t y,x,i;
 
 	UI_QuitMenu_Cache(); 
@@ -3599,6 +2934,7 @@ static void Quit_MenuInit(void)
 	// Force numbers to change
 	quitmenu_graphics[QMG_NUMBERS].timer = 0;	// To get numbers right away
 	quitmenu_graphics[QMG_NUMBERS].target=5;
+	UI_LogFuncEnd();
 
 }
 
@@ -3609,11 +2945,10 @@ UI_QuitMenu
 */
 void UI_QuitMenu( void )
 {
+	UI_LogFuncBegin();
 
-//f (!s_quit.menu.initialized)
-//
-		Quit_MenuInit();
-//
+	Quit_MenuInit();
+
 
 	UI_PushMenu( &s_quit.menu );
 }

@@ -1,4 +1,5 @@
 #include "ui_local.h"
+#include "ui_logger.h"
 
 //===================================================================
 //
@@ -21,12 +22,6 @@ static int32_t currentFont;
 #define ID_FONT_GRID		304
 
 static menuframework_s	s_fonts_menu;
-//static menubitmap_s			s_cdkey_mainmenu;
-//static menubitmap_s			s_cdkey_controls;
-//static menubitmap_s			s_cdkey_video;
-//static menubitmap_s			s_cdkey_sound;
-//static menubitmap_s			s_cdkey_game;
-//static menubitmap_s			s_cdkey_cdkey;
 static menubitmap_s			s_fonts_small;
 static menubitmap_s			s_fonts_medium;
 static menubitmap_s			s_fonts_large;
@@ -39,6 +34,7 @@ M_GridFont_Graphics
 */
 void M_GridFont_Graphics (void)
 {
+	UI_LogFuncBegin();
 	int32_t x,y;
 	int32_t i,i2,xInc;
 	char	character[2];
@@ -67,6 +63,7 @@ void M_GridFont_Graphics (void)
 		}
 		y += (SMALLCHAR_HEIGHT * 1.25);
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -76,6 +73,7 @@ M_LargeFont_Graphics
 */
 void M_LargeFont_Graphics (void)
 {
+	UI_LogFuncBegin();
 	int32_t x,y,color;
 	int32_t i,i2,xInc;
 	char	character[2];
@@ -104,7 +102,7 @@ void M_LargeFont_Graphics (void)
 		}
 		y += 30;
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -114,6 +112,7 @@ M_MediumFont_Graphics
 */
 void M_MediumFont_Graphics (void)
 {
+	UI_LogFuncBegin();
 	int32_t x,y,color;
 	int32_t i,i2,xInc;
 	char	character[2];
@@ -142,6 +141,7 @@ void M_MediumFont_Graphics (void)
 		}
 		y += 24;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -151,6 +151,7 @@ M_SmallFont_Graphics
 */
 void M_SmallFont_Graphics (void)
 {
+	UI_LogFuncBegin();
 	int32_t x,y,color;
 	int32_t i,i2,xInc;
 	char	character[2];
@@ -179,6 +180,7 @@ void M_SmallFont_Graphics (void)
 		}
 		y += 16;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -189,7 +191,7 @@ M_Fonts_Graphics
 */
 void M_Fonts_Graphics (void)
 {
-
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_fonts_menu);
 
 	UI_Setup_MenuButtons();
@@ -213,7 +215,7 @@ void M_Fonts_Graphics (void)
 		M_GridFont_Graphics();
 		break;
 	}
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -223,9 +225,11 @@ M_Fonts_MenuDraw
 */
 void M_Fonts_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_Fonts_Graphics();
 
 	Menu_Draw( &s_fonts_menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -235,8 +239,11 @@ Fonts_MenuEvent
 */
 static void Fonts_MenuEvent( void* ptr, int32_t notification )
 {
-	if (notification != QM_ACTIVATED)
+	UI_LogFuncBegin();
+	if (notification != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	switch (((menucommon_s*)ptr)->id)
 	{
@@ -272,6 +279,7 @@ static void Fonts_MenuEvent( void* ptr, int32_t notification )
 			UI_PopMenu();
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -281,6 +289,8 @@ M_Fonts_MenuKey
 */
 static sfxHandle_t M_Fonts_MenuKey( int32_t key )
 {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 	return Menu_DefaultKey( &s_fonts_menu, key );
 }
 
@@ -292,7 +302,8 @@ UI_FontsMenu_Cache
 */
 void UI_FontsMenu_Cache( void ) 
 {
-	;
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 }
 
 
@@ -303,6 +314,7 @@ FontsMenu_Init
 */
 void FontsMenu_Init(void) 
 {
+	UI_LogFuncBegin();
 	UI_FontsMenu_Cache();
 
 	s_fonts_menu.nitems					= 0;
@@ -394,7 +406,7 @@ void FontsMenu_Init(void)
 	Menu_AddItem( &s_fonts_menu, ( void * )&s_fonts_grid);
 
 	currentFont = ID_FONT_SMALL;
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -404,9 +416,10 @@ UI_FontsMenu
 */
 void UI_FontsMenu( void) 
 {
-	
+	UI_LogFuncBegin();
 	FontsMenu_Init(); 
 
 	UI_PushMenu( &s_fonts_menu);
+	UI_LogFuncEnd();
 }
 

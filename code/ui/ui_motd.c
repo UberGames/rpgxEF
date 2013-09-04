@@ -7,6 +7,7 @@
 
 #include "../qcommon/stv_version.h"
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define ID_CONTINUE			10
 #define ID_DISCONNECT		11
@@ -41,7 +42,9 @@ M_Motd_Event
 */
 static void M_MotdMenu_Event( void *ptr, int32_t notification )
 {
+	UI_LogFuncBegin();
 	if( notification != QM_ACTIVATED )  {
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -62,7 +65,8 @@ static void M_MotdMenu_Event( void *ptr, int32_t notification )
 		if ( s_motdstuff.scrollnum + MIN_MOTD_LINES < motdtextnum ) {
 			s_motdstuff.scrollnum += 3;
 		}
-	}	
+	}
+	UI_LogFuncEnd();	
 }
 
 /*
@@ -72,6 +76,8 @@ MotdMenu_Key
 */
 sfxHandle_t MotdMenu_Key( int32_t key )
 {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
     return ( Menu_DefaultKey( &s_motdstuff.menu, key ) );
 }
 
@@ -82,6 +88,7 @@ M_MotdMenu_Graphics
 */
 static void M_MotdMenu_Graphics( void )
 {
+	UI_LogFuncBegin();
 	int32_t i;
     int32_t x = 15;
     int32_t y = 15;
@@ -111,6 +118,7 @@ static void M_MotdMenu_Graphics( void )
 	UI_DrawHandlePic( 319,  440, 25, 25, uis.halfroundr_22);
 
 	trap_R_SetColor(NULL);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -120,7 +128,9 @@ MotdMenu_Draw
 */
 static void MotdMenu_Draw( void )
 {
+	UI_LogFuncBegin();
     M_MotdMenu_Graphics();
+	UI_LogFuncEnd();
     Menu_Draw( &s_motdstuff.menu );
 }
 
@@ -131,7 +141,9 @@ UI_MotdMenu_Cache
 */
 void UI_MotdMenu_Cache( void )
 {
-		s_motdstuff.halfroundl_22 = trap_R_RegisterShaderNoMip( "menu/common/halfroundl_22.tga" );
+	UI_LogFuncBegin();
+	s_motdstuff.halfroundl_22 = trap_R_RegisterShaderNoMip( "menu/common/halfroundl_22.tga" );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -141,6 +153,7 @@ MotdMenu_Init
 */
 void MotdMenu_Init( void )
 {
+	UI_LogFuncBegin();
     s_motdstuff.menu.nitems         = 0;
     s_motdstuff.menu.draw           = MotdMenu_Draw;
     s_motdstuff.menu.key            = MotdMenu_Key;
@@ -222,6 +235,7 @@ void MotdMenu_Init( void )
 	Menu_AddItem( &s_motdstuff.menu, &s_motdstuff.disconnect );
 	Menu_AddItem( &s_motdstuff.menu, &s_motdstuff.arrowup );
 	Menu_AddItem( &s_motdstuff.menu, &s_motdstuff.arrowdwn );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -231,12 +245,14 @@ MotdReset
 */
 void MotdReset( void )
 {
+	UI_LogFuncBegin();
 	int32_t i;
 
 	motdtextnum = 0;
 	for ( i = 0; i < MAX_MOTD_LINES; ++i ) {
 		*motdtext[i] = '\0';
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -246,8 +262,10 @@ MotdReceiveLine
 */
 void MotdReceiveLine( const char *txt )
 {
+	UI_LogFuncBegin();
 	Q_strncpyz(motdtext[motdtextnum], txt, sizeof (motdtext[motdtextnum]));
 	motdtextnum++;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -257,6 +275,7 @@ UI_MotdMenu
 */
 void UI_MotdMenu( void )
 {
+	UI_LogFuncBegin();
     memset( &s_motdstuff, 0, sizeof( s_motdstuff ) );
 
     uis.menusp = 0;
@@ -272,4 +291,5 @@ void UI_MotdMenu( void )
     UI_PushMenu( &s_motdstuff.menu );
 
     Menu_AdjustCursor( &s_motdstuff.menu, 1 );
+	UI_LogFuncEnd();
 }

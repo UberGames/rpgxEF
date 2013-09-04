@@ -10,6 +10,7 @@ DEMOS MENU
 
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 
 #define MAX_DEMOS			128
@@ -107,6 +108,7 @@ of demos we have
 =================
 */
 void DemoMenu_PopulateList ( int32_t startingIndex ) {
+	UI_LogFuncBegin();
 	int32_t		i=0, len;
 	char*	demoName;
 	
@@ -148,6 +150,7 @@ void DemoMenu_PopulateList ( int32_t startingIndex ) {
 
 		i++;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -157,6 +160,7 @@ DemoMenu_Graphics
 */
 static void DemoMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	// Draw the basic screen layout
 	UI_MenuFrame(&s_demos.menu);
 
@@ -213,6 +217,7 @@ static void DemoMenu_Graphics (void)
 	UI_DrawProportionalString(  124,  67, "67B",UI_TINYFONT, colorTable[CT_BLACK]);
 
 	UI_DrawProportionalString( 220, 169, menu_normal_text[MNT_CURRENTDEMOSAVAILABLE], UI_SMALLFONT, colorTable[CT_BLACK]);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -222,11 +227,12 @@ Demos_MenuDraw
 */
 static void Demos_MenuDraw (void)
 {
-	
+	UI_LogFuncBegin();
 	// Draw graphics particular to Demo Menu
 	DemoMenu_Graphics();
 
 	Menu_Draw( &s_demos.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -237,10 +243,12 @@ Demos_MenuEvent
 */
 static void Demos_MenuEvent( void *ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
 	int32_t index;
 
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -298,6 +306,7 @@ static void Demos_MenuEvent( void *ptr, int32_t event )
 			UI_PopMenu();
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -308,6 +317,8 @@ UI_DemosMenu_Key
 */
 static sfxHandle_t UI_DemosMenu_Key( int32_t key ) 
 {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 	return Menu_DefaultKey( &s_demos.menu, key );
 }
 
@@ -318,6 +329,7 @@ UI_DemosMenu_Cache
 */
 void UI_DemosMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	s_demos.currentGameTopLeft = trap_R_RegisterShaderNoMip("menu/common/corner_ul_18_24.tga");
 	s_demos.currentGameBotLeft = trap_R_RegisterShaderNoMip("menu/common/corner_ll_18_18.tga");
 	s_demos.currentGameTopRight = trap_R_RegisterShaderNoMip("menu/common/corner_ur_18_24.tga");
@@ -328,7 +340,7 @@ void UI_DemosMenu_Cache( void )
 	trap_R_RegisterShaderNoMip( "menu/common/arrow_up_16.tga" );
 	trap_R_RegisterShaderNoMip( "menu/common/arrow_dn_16.tga" );
 	trap_R_RegisterShaderNoMip( PIC_UNDERLINE );
-
+	UI_LogFuncEnd();
 }
 
 
@@ -339,6 +351,7 @@ Demos_MenuInit
 */
 static void Demos_MenuInit( void ) 
 {
+	UI_LogFuncBegin();
 	int32_t		i,x,y;
 	int32_t		len;
 	char	*demoname;
@@ -529,6 +542,7 @@ static void Demos_MenuInit( void )
 	Menu_AddItem( &s_demos.menu, &s_demos.currentFile );
 	Menu_AddItem( &s_demos.menu, &s_demos.upArrow );
 	Menu_AddItem( &s_demos.menu, &s_demos.downArrow );
+	UI_LogFuncEnd();
 }
 
 
@@ -539,6 +553,8 @@ UI_DemosMenu
 */
 void UI_DemosMenu( void ) 
 {
+	UI_LogFuncBegin();
 	Demos_MenuInit();
 	UI_PushMenu( &s_demos.menu );
+	UI_LogFuncEnd();
 }

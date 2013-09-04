@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "ui_local.h"
+#include "ui_logger.h"
 
 
 extern int32_t rate_items[];
@@ -54,6 +55,7 @@ static soundOptionsInfo_t	soundOptionsInfo;
 
 static void SoundQualityAction( qboolean result ) 
 {
+	UI_LogFuncBegin();
 	if ( result ) 
 	{
 		soundOptionsInfo.holdSoundQuality = soundOptionsInfo.quality.curvalue; 
@@ -74,6 +76,7 @@ static void SoundQualityAction( qboolean result )
 	{
 		soundOptionsInfo.quality.curvalue =	soundOptionsInfo.holdSoundQuality; 
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -84,10 +87,12 @@ UI_SoundOptionsMenu_Event
 
 static void UI_SoundOptionsMenu_Event( void* ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
 	int32_t holdCurvalue;
 
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -146,6 +151,7 @@ static void UI_SoundOptionsMenu_Event( void* ptr, int32_t event )
 
 		break;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -157,6 +163,7 @@ M_Sound_Graphics
 */
 void M_Sound_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&soundOptionsInfo.menu);
 
 	trap_R_SetColor( colorTable[CT_LTBROWN1]);
@@ -215,7 +222,7 @@ void M_Sound_Graphics (void)
 	UI_DrawProportionalString(  74,  188, "45-009",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  206, "18856",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  395, "18857",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -225,9 +232,11 @@ M_Sound_MenuDraw
 */
 void M_Sound_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	M_Sound_Graphics();
 
 	Menu_Draw( &soundOptionsInfo.menu );
+	UI_LogFuncEnd();
 }
 
 
@@ -238,6 +247,8 @@ M_Sound_MenuKey
 */
 static sfxHandle_t M_Sound_MenuKey( int32_t key )
 {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 	return Menu_DefaultKey( &soundOptionsInfo.menu, key );
 }
 
@@ -249,10 +260,12 @@ SoundMenu_Cache
 */
 void UI_SoundMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	soundOptionsInfo.corner =  trap_R_RegisterShaderNoMip("menu/common/con_ssetup.tga");
 	soundOptionsInfo.grid	=  trap_R_RegisterShaderNoMip("menu/special/grid.tga");
 	soundOptionsInfo.wave1	=  trap_R_RegisterShaderNoMip("menu/special/sinwave_1.tga");
 	soundOptionsInfo.wave2	=  trap_R_RegisterShaderNoMip("menu/special/sinwave_2.tga");
+	UI_LogFuncEnd();
 }
 
 
@@ -263,6 +276,7 @@ SoundMenu_Init
 */
 void SoundMenu_Init(void) 
 {
+	UI_LogFuncBegin();
 	int32_t x,y;
 	int32_t	rate;
 
@@ -431,6 +445,7 @@ void SoundMenu_Init(void)
 	{
 		soundOptionsInfo.rate.curvalue = 4;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -440,12 +455,10 @@ UI_SoundMenu
 */
 void UI_SoundMenu( void) 
 {
-	
-//	if (!s_sound.menu.initialized)
-//	{
-		SoundMenu_Init(); 
-//	}
+	UI_LogFuncBegin();
+	SoundMenu_Init(); 
 
 	UI_PushMenu( &soundOptionsInfo.menu);
+	UI_LogFuncEnd();
 }
 

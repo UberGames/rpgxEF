@@ -12,6 +12,7 @@ ingame.
 */
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define	ID_MAINMENU		15
 #define	ID_ADMIN_MAIN		16

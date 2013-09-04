@@ -4,6 +4,7 @@
 	User interface trigger from within game
 **********************************************************************/
 #include "ui_local.h"
+#include "ui_logger.h"
 
 typedef struct {
 	char	weaponName[MAX_QPATH];
@@ -58,6 +59,8 @@ static void M_Tactical_Event (void* ptr, int32_t notification) {
 	int32_t id;
 	menubitmap_s	*holdWeapon;
 
+	UI_LogFuncBegin();
+
 	id = ((menucommon_s*)ptr)->id;
 
 	switch(id)
@@ -96,6 +99,7 @@ static void M_Tactical_Event (void* ptr, int32_t notification) {
 			}
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -122,6 +126,8 @@ M_TacticalMenu_Graphics
 static void M_TacticalMenu_Graphics (void) {
 	menubitmap_s *holdWeapon;
 
+	UI_LogFuncBegin();
+
 	vec4_t	bgColor = { 0.1, 0.1, 0.1, .75 };
 
 	// background
@@ -135,6 +141,7 @@ static void M_TacticalMenu_Graphics (void) {
 	trap_R_SetColor(colorTable[CT_DKPURPLE1]);
 	UI_DrawHandlePic(151, 376, 75, 50, corner_tact_ul);
 	UI_DrawHandlePic(218, 376, 270, 28, uis.whiteShader);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -144,10 +151,12 @@ TacticalMenu_Draw
 */
 static void TacticalMenu_Draw(void)
 {
+	UI_LogFuncBegin();
 	// Draw graphics particular to Main Menu
 	M_TacticalMenu_Graphics();
 	
 	Menu_Draw( &s_tactical.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -157,12 +166,14 @@ UI_TacticalMenu_Cache
 */
 void UI_TacticalMenu_Cache (void)
 {	
+	UI_LogFuncBegin();
 	leftRound = trap_R_RegisterShaderNoMip("menu/common/halfroundl_24.tga");
 	tactical = trap_R_RegisterShaderNoMip("menu/common/lift_button.tga");
 	square_rl = trap_R_RegisterShaderNoMip("menu/common/square_rounded_left.tga");
 	square_rr = trap_R_RegisterShaderNoMip("menu/common/square_rounded_right.tga");
 	corner_tact_ll = trap_R_RegisterShaderNoMip("menu/common/corner_tact_ll.tga");
 	corner_tact_ul = trap_R_RegisterShaderNoMip("menu/common/corner_ul_18_50.tga");
+	UI_LogFuncEnd();
 }
 
 static void UI_TacticalMenu_LoadWeapons( void )
@@ -171,13 +182,16 @@ static void UI_TacticalMenu_LoadWeapons( void )
 	int32_t		i;
 	char	*temp;
 
+	UI_LogFuncBegin();
 	s_tactical.numWeapons = 0;
 
 	//load the string
 	trap_GetConfigString( CS_TACTICAL_DATA, buffer, sizeof( buffer ) );
 
-	if ( !buffer[0] )
+	if ( !buffer[0] ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	memset( &s_tactical.weaponData, 0, sizeof( s_tactical.weaponData ) );
 
@@ -196,6 +210,7 @@ static void UI_TacticalMenu_LoadWeapons( void )
 		
 		s_tactical.numWeapons++;
 	}
+	UI_LogFuncEnd();
 }
 
 static void UI_ManageWeaponLoading( void )
@@ -209,6 +224,7 @@ static void UI_ManageWeaponLoading( void )
 	char			buffer[20000];
 	char			*token;
 
+	UI_LogFuncBegin();
 	//get the map name
 	trap_GetConfigString( CS_SERVERINFO, info, sizeof( info ) );
 	Com_sprintf( mapRoute, sizeof( fileRoute ), "maps/%s", Info_ValueForKey( info, "mapname" ) );
@@ -222,6 +238,7 @@ static void UI_ManageWeaponLoading( void )
 	{
 		//Com_Printf( S_COLOR_YELLOW "WARNING: Attempted to load %s, but wasn't found.\n", fileRoute );
 		UI_TacticalMenu_LoadWeapons();
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -232,6 +249,7 @@ static void UI_ManageWeaponLoading( void )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Attempted to load %s, but no data was read.\n", fileRoute );
 		UI_TacticalMenu_LoadWeapons();
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -278,6 +296,7 @@ static void UI_ManageWeaponLoading( void )
 
 
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -291,6 +310,7 @@ void TacticalMenu_Init(void)
 	menubitmap_s	*holdWeapon;
 	int32_t		i,width;
 
+	UI_LogFuncBegin();
 	UI_ManageWeaponLoading();
 
 	s_tactical.menu.fullscreen					= qfalse;
@@ -393,6 +413,7 @@ void TacticalMenu_Init(void)
 		}
 		holdWeapon++;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -402,6 +423,7 @@ UI_TacticalMenu
 */
 void UI_TacticalMenu ( void )
 {
+	UI_LogFuncBegin();
 	memset( &s_tactical, 0, sizeof( s_tactical ) );
 
 	uis.menusp = 0;
@@ -417,4 +439,5 @@ void UI_TacticalMenu ( void )
 	UI_PushMenu( &s_tactical.menu );
 
 	Menu_AdjustCursor( &s_tactical.menu, 1 );	
+	UI_LogFuncEnd();
 }

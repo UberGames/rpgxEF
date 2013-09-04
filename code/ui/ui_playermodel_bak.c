@@ -9,6 +9,7 @@
 //
 //=================================================
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define MODEL_SELECT		"menu/art/opponents_select"
 #define MODEL_SELECTED		"menu/art/opponents_selected"
@@ -171,6 +172,7 @@ time we refresh this, we'll need to update ourselves.
 =================
 */
 int32_t PlayerModel_LoadAvailableModels( char* charModels[] ) {
+	UI_LogFuncBegin();
 	int32_t		i;
 	int32_t		numFiles;
 	char	fileList[2048]; //Hopefully, this will never be exceed ROFL
@@ -182,8 +184,10 @@ int32_t PlayerModel_LoadAvailableModels( char* charModels[] ) {
 	memset( &fileList, 0, sizeof ( fileList ) );
 	numFiles = trap_FS_GetFileList( va( "models/players_rpgx/%s", s_playermodel.charNames[s_playermodel.selectedChar + s_playermodel.scrollOffset] ), ".model", fileList, sizeof(fileList) );
 
-	if ( !numFiles )
+	if ( !numFiles ){
+		UI_LogFuncEnd();
 		return 0;
+	}
 
 	//Convert to ptr for easier manip
 	filePtr = fileList;
@@ -203,7 +207,7 @@ int32_t PlayerModel_LoadAvailableModels( char* charModels[] ) {
 			charModels[i][strLen-6] = '\0';
 		}
 	}
-
+	UI_LogFuncEnd();
 	return i;
 }
 
@@ -217,6 +221,7 @@ Hoi... this could get complicated... O_o
 ================
 */
 int32_t	PlayerModel_LoadAvailableSkins( char* charSkins[] ) {
+	UI_LogFuncBegin();
 	int32_t				i=0;
 	int32_t				fileLen;
 	char			fileBuffer[2048];
@@ -235,18 +240,22 @@ int32_t	PlayerModel_LoadAvailableSkins( char* charSkins[] ) {
 	
 	if ( fileLen <= 0 ) {
 		Com_Printf( S_COLOR_RED "File not found: %s\n", filePath );
+		UI_LogFuncEnd();
 		return 0;
 	}
 
 	if ( fileLen > sizeof ( fileBuffer ) ) {
 		Com_Printf( S_COLOR_RED "File exceeded maximum size: %s\n", filePath );
+		UI_LogFuncEnd();
 		return 0;
 	}
 
 	trap_FS_Read( fileBuffer, sizeof( fileBuffer ), f );
 
-	if ( !fileBuffer[0] )
+	if ( !fileBuffer[0] ){
+		UI_LogFuncEnd();
 		return 0;
+	}
 
 	filePtr = fileBuffer;
 
@@ -268,6 +277,7 @@ int32_t	PlayerModel_LoadAvailableSkins( char* charSkins[] ) {
 		}
 	}
 
+	UI_LogFuncEnd();
 	return i;
 }
 
@@ -281,6 +291,7 @@ So it'll cycle the value of each one up and down.
 */
 
 void PlayerModel_OffsetCharList( int32_t* offset ) {
+	UI_LogFuncBegin();
 	char*	buffer; //intermediate value so performing strupr won't pwn our case sensitive data
 	int32_t		i;
 
@@ -303,78 +314,8 @@ void PlayerModel_OffsetCharList( int32_t* offset ) {
 		s_playermodel.charMenu[i].generic.flags = QMF_HIGHLIGHT_IF_FOCUS;
 		s_playermodel.charMenu[i].textPtr = Q_strupr( buffer );
 	}
+	UI_LogFuncEnd();
 }
-
-/*
-=================
-PlayerModel_UpdateGrid
-=================
-*/
-/*static void PlayerModel_UpdateGrid( void )
-{
-	int32_t	i;
-    int32_t	j;
-
-	j = s_playermodel.modelpage * MAX_MODELSPERPAGE;
-	for (i=0; i<PLAYERGRID_ROWS*PLAYERGRID_COLS; i++,j++)
-	{
-		if (j < s_playermodel.nummodels)
-		{ 
-			// model/skin portrait
- 			s_playermodel.pics[i].generic.name         = s_playermodel.modelnames[j];
-			s_playermodel.picbuttons[i].generic.flags &= ~QMF_INACTIVE;
-		}
-		else
-		{
-			// dead slot
- 			s_playermodel.pics[i].generic.name         = NULL;
-			s_playermodel.picbuttons[i].generic.flags |= QMF_INACTIVE;
-		}
-
- 		s_playermodel.pics[i].generic.flags       &= ~QMF_HIGHLIGHT;
- 		s_playermodel.pics[i].shader               = 0;
- 		s_playermodel.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
-	}
-
-	if (s_playermodel.selectedmodel/MAX_MODELSPERPAGE == s_playermodel.modelpage)
-	{
-		// set selected model
-		i = s_playermodel.selectedmodel % MAX_MODELSPERPAGE;
-
-		s_playermodel.pics[i].generic.flags       |= QMF_HIGHLIGHT;
-		s_playermodel.picbuttons[i].generic.flags &= ~QMF_PULSEIFFOCUS;
-
-	}
-
-	if (s_playermodel.numpages > 1)
-	{
-		if (s_playermodel.modelpage > 0)
-		{
-			s_playermodel.left.generic.flags &= ~QMF_INACTIVE; 
-			s_playermodel.left.generic.flags &= ~QMF_GRAYED;
-		}
-		else
-		{
-			s_playermodel.left.generic.flags |= QMF_INACTIVE | QMF_GRAYED;
-		}
-
-		if (s_playermodel.modelpage < s_playermodel.numpages-1)
-		{
-			s_playermodel.right.generic.flags &= ~QMF_INACTIVE;
-			s_playermodel.right.generic.flags &= ~QMF_GRAYED;
-		}
-		else
-		{
-			s_playermodel.right.generic.flags |= QMF_INACTIVE | QMF_GRAYED;
-		}
-	}
-	else
-	{
-		// hide left/right markers
-		s_playermodel.left.generic.flags |= QMF_INACTIVE | QMF_GRAYED;
-		s_playermodel.right.generic.flags |= QMF_INACTIVE | QMF_GRAYED;
-	}
-}*/
 
 /*
 =================
@@ -383,11 +324,13 @@ PlayerModel_SpinPlayer
 */
 static void PlayerModel_SpinPlayer( void* ptr, int32_t event)
 {
+	UI_LogFuncBegin();
 	if ( event == QM_ACTIVATED ) 
 	{
 		uis.spinView = qtrue;
 		uis.cursorpx = uis.cursorx;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -397,6 +340,7 @@ PlayerModel_UpdateModel
 */
 static void PlayerModel_UpdateModel( void )
 {
+	UI_LogFuncBegin();
 	vec3_t	viewangles;
 	vec3_t	moveangles;
 
@@ -415,7 +359,7 @@ static void PlayerModel_UpdateModel( void )
 
 	UI_PlayerInfo_SetModel( &s_playermodel.playerinfo, s_playermodel.modelData );
 	UI_PlayerInfo_SetInfo( &s_playermodel.playerinfo, BOTH_STAND4, BOTH_STAND4, viewangles, moveangles, WP_COMPRESSION_RIFLE, qfalse );
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -435,28 +379,14 @@ PlayerModel_MenuEvent
 */
 static void PlayerModel_MenuEvent( void* ptr, int32_t event )
 {
-
-	if (event != QM_ACTIVATED)
+	UI_LogFuncBegin();
+	if (event != QM_ACTIVATED){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	switch (((menucommon_s*)ptr)->id)
 	{
-		/*case ID_PREVPAGE:
-			if (s_playermodel.modelpage > 0)
-			{
-				s_playermodel.modelpage--;
-				PlayerModel_UpdateGrid();
-			}
-			break;
-
-		case ID_NEXTPAGE:
-			if (s_playermodel.modelpage < s_playermodel.numpages-1)
-			{
-				s_playermodel.modelpage++;
-				PlayerModel_UpdateGrid();
-			}
-			break;*/
-
 		case ID_BACK:
 			PlayerModel_SaveChanges();
 			UI_PopMenu();
@@ -504,12 +434,8 @@ static void PlayerModel_MenuEvent( void* ptr, int32_t event )
 
 			s_playermodel.playerIcon = trap_R_RegisterShaderNoMip( va( "models/players_rpgx/%s/model_icon.jpg", s_playermodel.charNames[s_playermodel.selectedChar] ) );
 			break;
-
-		//case ID_SKINFILTER:
-			//PlayerModel_BuildList();
-			//PlayerModel_UpdateGrid();
-			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -519,151 +445,17 @@ PlayerModel_MenuKey
 */
 static sfxHandle_t PlayerModel_MenuKey( int32_t key )
 {
-	//menucommon_s*	m;
-	//int32_t				picnum;
-
+	UI_LogFuncBegin();
 	switch (key)
-	{
-		/*case K_KP_LEFTARROW:
-		case K_LEFTARROW:
-			m = Menu_ItemAtCursor(&s_playermodel.menu);
-			picnum = m->id - ID_PLAYERPIC0;
-			if (picnum >= 0 && picnum <= 15)
-			{
-				if (picnum > 0)
-				{
-					Menu_SetCursor(&s_playermodel.menu,s_playermodel.menu.cursor-1);
-					return (menu_move_sound);
-					
-				}
-				else if (s_playermodel.modelpage > 0)
-				{
-					s_playermodel.modelpage--;
-					Menu_SetCursor(&s_playermodel.menu,s_playermodel.menu.cursor+15);
-					PlayerModel_UpdateGrid();
-					return (menu_move_sound);
-				}
-				else
-					return (menu_buzz_sound);
-			}
-			break;
-
-		case K_KP_RIGHTARROW:
-		case K_RIGHTARROW:
-			m = Menu_ItemAtCursor(&s_playermodel.menu);
-			picnum = m->id - ID_PLAYERPIC0;
-			if (picnum >= 0 && picnum <= 15)
-			{
-				if ((picnum < 15) && (s_playermodel.modelpage*MAX_MODELSPERPAGE + picnum+1 < s_playermodel.nummodels))
-				{
-					Menu_SetCursor(&s_playermodel.menu,s_playermodel.menu.cursor+1);
-					return (menu_move_sound);
-				}					
-				else if ((picnum == 15) && (s_playermodel.modelpage < s_playermodel.numpages-1))
-				{
-					s_playermodel.modelpage++;
-					Menu_SetCursor(&s_playermodel.menu,s_playermodel.menu.cursor-15);
-					PlayerModel_UpdateGrid();
-					return (menu_move_sound);
-				}
-				else
-					return (menu_buzz_sound);
-			}
-			break;*/
-			
+	{		
 		case K_MOUSE2:
 		case K_ESCAPE:
 			PlayerModel_SaveChanges();
 			break;
 	}
-
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &s_playermodel.menu, key ) );
 }
-
-/*
-=================
-PlayerModel_PicEvent
-=================
-*/
-/*static void PlayerModel_PicEvent( void* ptr, int32_t event )
-{
-	int32_t				modelnum;
-	int32_t				maxlen;
-	char*			buffptr;
-	char*			pdest;
-	int32_t				i;
-
-	if (event != QM_ACTIVATED)
-		return;
-
-	for (i=0; i<PLAYERGRID_ROWS*PLAYERGRID_COLS; i++)
-	{
-		// reset
- 		s_playermodel.pics[i].generic.flags       &= ~QMF_HIGHLIGHT;
- 		s_playermodel.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
-	}
-
-	// set selected
-	i = ((menucommon_s*)ptr)->id - ID_PLAYERPIC0;
-	s_playermodel.pics[i].generic.flags       |= QMF_HIGHLIGHT;
-	s_playermodel.picbuttons[i].generic.flags &= ~QMF_PULSEIFFOCUS;
-
-	// get model and strip icon_
-	modelnum = s_playermodel.modelpage*MAX_MODELSPERPAGE + i;
-	buffptr  = s_playermodel.modelnames[modelnum] + strlen("models/players2/");
-	pdest    = strstr(buffptr,"icon_");
-	if (pdest)
-	{
-		// track the whole model/skin name
-		Q_strncpyz(s_playermodel.modelData,buffptr,pdest-buffptr+1);
-		strcat(s_playermodel.modelData,pdest + 5);
-
-		// seperate the model name
-		maxlen = pdest-buffptr;
-		if (maxlen > 16)
-			maxlen = 16;
-		Q_strncpyz( s_playermodel.modelname.string, buffptr, maxlen );
-		Q_strupr( s_playermodel.modelname.string );
-
-		// seperate the skin name
-		maxlen = strlen(pdest+5)+1;
-		if (maxlen > 16)
-			maxlen = 16;
-		Q_strncpyz( s_playermodel.skinname.string, pdest+5, maxlen );
-		Q_strupr( s_playermodel.skinname.string );
-
-		s_playermodel.selectedmodel = modelnum;
-
-		// kef -- make sure something like "chell/nelson" doesn't occur
-		if (Q_stricmp( s_playermodel.skinname.string, "red") &&
-			Q_stricmp( s_playermodel.skinname.string, "blue") &&
-			Q_stricmp( s_playermodel.skinname.string, "black") &&
-			Q_stricmp( s_playermodel.skinname.string, "default"))
-		{
-			// assume something like "chell/nelson" has occurred
-			Q_strncpyz( s_playermodel.modelname.string, s_playermodel.skinname.string, strlen(s_playermodel.skinname.string)+1 );
-			Q_strncpyz( s_playermodel.skinname.string, "DEFAULT", 8 );
-		}
-
-		// Kind of a hack to display the externalized text
-		if (!Q_stricmp( s_playermodel.skinname.string, "red"))
-		{
-			Q_strncpyz( s_playermodel.skinnameviewed.string, menu_normal_text[MNT_RED], strlen(menu_normal_text[MNT_RED])+1 );
-		}	
-		else if (!Q_stricmp( s_playermodel.skinname.string, "blue")) 
-		{
-			Q_strncpyz( s_playermodel.skinnameviewed.string, menu_normal_text[MNT_BLUE], strlen(menu_normal_text[MNT_BLUE])+1 );
-		}
-		else if (!Q_stricmp( s_playermodel.skinname.string, "default"))
-		{
-			Q_strncpyz( s_playermodel.skinnameviewed.string, menu_normal_text[MNT_DEFAULT], strlen(menu_normal_text[MNT_DEFAULT])+1 );
-		}
-
-		if( trap_MemoryRemaining() > LOW_MEMORY ) {
-			PlayerModel_UpdateModel();
-		}
-	}
-}*/
 
 /*
 =================
@@ -672,6 +464,7 @@ PlayerModel_DrawPlayer
 */
 static void PlayerModel_DrawPlayer( void *self )
 {
+	UI_LogFuncBegin();
 	menubitmap_s*	b;
 	vec3_t			origin = {-15, 0, 0 }; //-3.8
 
@@ -679,45 +472,13 @@ static void PlayerModel_DrawPlayer( void *self )
 
 	if( trap_MemoryRemaining() <= LOW_MEMORY ) {
 		UI_DrawProportionalString( b->generic.x, b->generic.y + b->height / 2, "LOW MEMORY", UI_LEFT, color_red );
+		UI_LogFuncEnd();
 		return;
 	}
 
 	UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, origin, &s_playermodel.playerinfo, uis.realtime/2 );
+	UI_LogFuncEnd();
 }
-
-/*void precacheSpecificGroups(char *race_list)
-{
-	char current_race_name[125];
-	char *s = race_list;
-	char *max_place = race_list + strlen(race_list);
-	char *marker;
-
-
-	memset(current_race_name, 0, sizeof(current_race_name));
-	// look through the list till it's empty
-	while (s < max_place)
-	{
-		marker = s;
-		// figure out from where we are where the next ',' or 0 is
-		while (*s != ',' && *s != 0)
-		{
-			s++;
-		}
-
-		// copy just that name
-		Q_strncpyz(current_race_name, marker, s-marker+1);
-
-		// avoid the comma or increment us past the end of the string so we fail the main while loop
-		s++;
-
-		// register	the group wins announce sound
-		trap_S_RegisterSound( va( "sound/voice/computer/misc/%s_wins.wav",current_race_name  ) );
-
-		// register the blue and red flag images
-		trap_R_RegisterShaderNoMip( va( "models/flags/%s_red", current_race_name));
-		trap_R_RegisterShaderNoMip( va( "models/flags/%s_blue", current_race_name));
-	}
-}*/
 
 extern char* BG_RegisterRace( const char *name );
 
@@ -735,6 +496,7 @@ We'll work the rest out later
 */
 static void PlayerModel_BuildList( void )
 {
+	UI_LogFuncBegin();
 	int32_t		numdirs;
 	int32_t		numfiles;
 	char	dirlist[8192];
@@ -786,86 +548,8 @@ static void PlayerModel_BuildList( void )
 			Q_strncpyz( s_playermodel.charNames[s_playermodel.numChars], dirptr, sizeof( s_playermodel.charNames[s_playermodel.numChars] ) );
 			s_playermodel.numChars++;
 		}
-
-		
-
-		//fileptr  = filelist;
-		//for (j=0; j<numfiles && s_playermodel.nummodels < MAX_PLAYERMODELS;j++,fileptr+=filelen+1)
-		//{
-		//	filelen = strlen(fileptr);
-
-		//	COM_StripExtension(fileptr,skinname);
-
-		//	// look for icon_????
-		//	if (!Q_stricmpn(skinname,"icon_",5))
-		//	{	//inside here skinname is always "icon_*"
-		//		if (!precache) {
-		//			if (s_playermodel.skinfilter.curvalue == 0)
-		//			{
-		//				// no nelson/kenn team skins
-		//				if (Q_stricmp(skinname+5 ,"default"))
-		//				{
-		//					continue;
-		//				}
-		//				// No red team skins
-		//				if (!Q_stricmp(skinname+5 ,"red"))
-		//				{
-		//					continue;
-		//				}
-		//				// No blue team skins
-		//				if (!Q_stricmp(skinname+5 ,"blue"))
-		//				{
-		//					continue;
-		//				}
-		//			}
-		//			
-		//			if (s_playermodel.skinfilter.curvalue == 1)
-		//			{
-		//				// Only blue team skins
-		//				if (Q_stricmp(skinname+5 ,"blue"))
-		//				{
-		//					continue;
-		//				}
-		//			}
-		//			
-		//			if (s_playermodel.skinfilter.curvalue == 2)
-		//			{
-		//				// Only blue team skins
-		//				if (Q_stricmp(skinname+5 ,"red"))
-		//				{
-		//					continue;
-		//				}
-		//			}
-		//		}
-		//		//Com_sprintf( s_playermodel.modelnames[s_playermodel.nummodels++],
-		//			//sizeof( s_playermodel.modelnames[s_playermodel.nummodels] ),
-		//			//"models/players2/%s/%s", dirptr, skinname );
-		//		
-		//		/*if( precache ) {	//per skin type inside a dir
-		//			if( Q_stricmp( skinname+5, "default" ) == 0 ) {	//+5 to skip past "icon_"
-		//				continue;
-		//			}
-		//			if( Q_stricmp( skinname+5, "red" ) == 0 ) {
-		//				continue;
-		//			}
-		//			if( Q_stricmp( skinname+5, "blue" ) == 0 ) {
-		//				continue;
-		//			}
-		//			trap_S_RegisterSound( va( "sound/voice/computer/misc/%s_wins.wav",skinname+5 ) );
-		//		}*/
-		//	}
-		//}
-
-		/*if( precache ) {	//per modelname (dir)
-			trap_S_RegisterSound( va( "sound/voice/computer/misc/%s_wins.wav",dirptr ) );
-			trap_S_RegisterSound( va( "sound/voice/computer/misc/%s.wav", dirptr ) );
-			precacheSpecificGroups( BG_RegisterRace(va("models/players2/%s/groups.cfg", dirptr)));
-		}*/
-	}	
-
-	/*s_playermodel.numpages = s_playermodel.nummodels/MAX_MODELSPERPAGE;
-	if (s_playermodel.nummodels % MAX_MODELSPERPAGE)
-		s_playermodel.numpages++;*/
+	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -875,6 +559,7 @@ PlayerModel_SetMenuItems
 */
 static void PlayerModel_SetMenuItems( void )
 {
+	UI_LogFuncBegin();
 	int32_t				i;
 	//int32_t				maxlen;
 	//char			modelskin[64];
@@ -905,57 +590,14 @@ static void PlayerModel_SetMenuItems( void )
 			s_playermodel.selectedChar = i;
 			break;
 		}
-
-		// strip icon_
-		/*buffptr  = s_playermodel.charnames[i] + strlen("models/players2/");
-		pdest    = strstr(buffptr,"icon_");
-		if (pdest)
-		{
-			Q_strncpyz(modelskin,buffptr,pdest-buffptr+1);
-			strcat(modelskin,pdest + 5);
-		}
-		else
-			continue;
-
-		if (!Q_stricmp( s_playermodel.modelData, modelskin ))
-		{
-			// found pic, set selection here		
-			s_playermodel.selectedmodel = i;
-			s_playermodel.modelpage     = i/MAX_MODELSPERPAGE;
-
-			// seperate the model name
-			maxlen = pdest-buffptr;
-			if (maxlen > 16)
-				maxlen = 16;
-			Q_strncpyz( s_playermodel.modelname.string, buffptr, maxlen );
-			Q_strupr( s_playermodel.modelname.string );
-
-			// seperate the skin name
-			maxlen = strlen(pdest+5)+1;
-			if (maxlen > 16)
-				maxlen = 16;
-			Q_strncpyz( s_playermodel.skinname.string, pdest+5, maxlen );
-			Q_strupr( s_playermodel.skinname.string );
-
-			// kef -- make sure something like "chell/nelson" doesn't occur
-			if (Q_stricmp( s_playermodel.skinname.string, "red") &&
-				Q_stricmp( s_playermodel.skinname.string, "blue") &&
-				Q_stricmp( s_playermodel.skinname.string, "default"))
-			{
-				// assume something like "chell/nelson" has occurred
-				Q_strncpyz( s_playermodel.modelname.string, s_playermodel.skinname.string, strlen(s_playermodel.skinname.string)+1 );
-				Q_strncpyz( s_playermodel.skinname.string, "DEFAULT", 8 );
-			}
-
-			break;
-		}*/
 	}
 
 	//try to register the current shader icon
 	s_playermodel.playerIcon = trap_R_RegisterShaderNoMip( va( "models/players_rpgx/%s/model_icon", s_playermodel.modelName ) );
 
 	//Huh... guess whatever the hell's in the console, we don't have it on our list
-	if ( s_playermodel.selectedChar == -1 ) {	
+	if ( s_playermodel.selectedChar == -1 ) {
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -965,16 +607,7 @@ static void PlayerModel_SetMenuItems( void )
 		PlayerModel_OffsetCharList( &s_playermodel.scrollOffset );
 	}
 
-	//Set the model and skin data
-	/*{
-		char* buf[24];
-
-		s_playermodel.charModel.numitems = PlayerModel_LoadAvailableModels( buf );
-		s_playermodel.charModel.itemnames = buf;
-
-		s_playermodel.charSkin.numitems = PlayerModel_LoadAvailableSkins( buf );
-		s_playermodel.charSkin.itemnames = buf;
-	}*/
+	UI_LogFuncEnd();
 }
 
 /*
@@ -984,6 +617,7 @@ PlayerSettingsMenu_Graphics
 */
 void PlayerModelMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	// Draw the basic screen layout
 	UI_MenuFrame2(&s_playermodel.menu);
 
@@ -992,14 +626,6 @@ void PlayerModelMenu_Graphics (void)
 
 	// Frame around model pictures
 	trap_R_SetColor( colorTable[CT_LTORANGE]);
-	//UI_DrawHandlePic(  114,  50,   8,  -32, s_playermodel.corner_ll_4_18);	// UL Corner
-	//UI_DrawHandlePic(  114, 355,   8,  32, s_playermodel.corner_ll_4_18);	// LL Corner
-	//UI_DrawHandlePic(  411,  50,   8,  -32, s_playermodel.corner_lr_4_18);	// UR Corner
-	//UI_DrawHandlePic(  411, 355,   8,  32, s_playermodel.corner_lr_4_18);	// LR Corner
-	//UI_DrawHandlePic(  114,  81,   4, 284, uis.whiteShader);	// Left side
-	//UI_DrawHandlePic(  414,  81,   4, 284, uis.whiteShader);	// Right side
-	//UI_DrawHandlePic(  120,  62, 293,  18, uis.whiteShader);	// Top
-	//UI_DrawHandlePic(  120, 357, 293,  18, uis.whiteShader);	// Bottom
 
 	//TiM - Frame around the models selection list
 	UI_DrawHandlePic(  96,  50,   8,  -32, s_playermodel.corner_ll_4_18);	// UL Corner
@@ -1081,7 +707,7 @@ void PlayerModelMenu_Graphics (void)
 	UI_DrawProportionalString(  74,  206, "600",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(  74,  395, "3-44",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
 
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1091,9 +717,11 @@ PlayerSettings_MenuDraw
 */
 static void PlayerModel_MenuDraw (void)
 {
+	UI_LogFuncBegin();
 	PlayerModelMenu_Graphics();
 
 	Menu_Draw( &s_playermodel.menu );
+	UI_LogFuncEnd();
 }
 /*
 =================
@@ -1102,6 +730,7 @@ PlayerModel_MenuInit
 */
 static void PlayerModel_MenuInit(int32_t menuFrom)
 {
+	UI_LogFuncBegin();
 	int32_t			i;
 	//int32_t			j;
 	//int32_t			k;
@@ -1241,40 +870,6 @@ static void PlayerModel_MenuInit(int32_t menuFrom)
 		y += 24;
 	}
 
-	/*for (i=0,k=0; i<PLAYERGRID_ROWS; i++)
-	{
-		x =	129;
-		for (j=0; j<PLAYERGRID_COLS; j++,k++)
-		{
-			s_playermodel.pics[k].generic.type	   = MTYPE_BITMAP;
-			s_playermodel.pics[k].generic.flags    = QMF_LEFT_JUSTIFY|QMF_INACTIVE;
-			s_playermodel.pics[k].generic.x		   = x;
-			s_playermodel.pics[k].generic.y		   = y;
-			s_playermodel.pics[k].width  		   = 66;
-			s_playermodel.pics[k].height  		   = 66;
-			s_playermodel.pics[k].focuspic         = MODEL_SELECTED;
-			s_playermodel.pics[k].focuscolor       = colorTable[CT_WHITE];
-
-			s_playermodel.picbuttons[k].generic.type	 = MTYPE_BITMAP;
-			s_playermodel.picbuttons[k].generic.flags    = QMF_LEFT_JUSTIFY|QMF_NODEFAULTINIT|QMF_PULSEIFFOCUS;
-			s_playermodel.picbuttons[k].generic.id	     = ID_PLAYERPIC0+k;
-			s_playermodel.picbuttons[k].generic.callback = PlayerModel_PicEvent;
-			s_playermodel.picbuttons[k].generic.x    	 = x - 16;
-			s_playermodel.picbuttons[k].generic.y		 = y - 16;
-			s_playermodel.picbuttons[k].generic.left	 = x;
-			s_playermodel.picbuttons[k].generic.top		 = y;
-			s_playermodel.picbuttons[k].generic.right	 = x + 64;
-			s_playermodel.picbuttons[k].generic.bottom   = y + 64;
-			s_playermodel.picbuttons[k].width  		     = 128;
-			s_playermodel.picbuttons[k].height  		 = 128;
-			s_playermodel.picbuttons[k].focuspic  		 = MODEL_SELECT;
-			s_playermodel.picbuttons[k].focuscolor  	 = colorTable[CT_WHITE];
-
-			x += 64+6;
-		}
-		y += 64+8;
-	}*/
-
 	s_playermodel.playername.generic.type			= MTYPE_PTEXT;
 	s_playermodel.playername.generic.flags			= QMF_INACTIVE;
 	s_playermodel.playername.generic.x				= 444;
@@ -1298,14 +893,6 @@ static void PlayerModel_MenuInit(int32_t menuFrom)
 	s_playermodel.skinname.string					= skinname;
 	s_playermodel.skinname.style					= UI_RIGHT;
 	s_playermodel.skinname.color					= colorTable[CT_LTBLUE1];
-
-	/*s_playermodel.skinnameviewed.generic.type			= MTYPE_PTEXT;
-	s_playermodel.skinnameviewed.generic.flags			= QMF_INACTIVE;
-	s_playermodel.skinnameviewed.generic.x				= 323;
-	s_playermodel.skinnameviewed.generic.y				= 338;
-	s_playermodel.skinnameviewed.string					= skinnameviewed;
-	s_playermodel.skinnameviewed.style					= UI_RIGHT;
-	s_playermodel.skinnameviewed.color					= colorTable[CT_LTBLUE1];*/
 
 	s_playermodel.player.generic.type				= MTYPE_BITMAP;
 	s_playermodel.player.generic.flags				= QMF_SILENT;
@@ -1407,33 +994,11 @@ static void PlayerModel_MenuInit(int32_t menuFrom)
 	s_playermodel.apply.textcolor					= CT_BLACK;
 	s_playermodel.apply.textcolor2					= CT_WHITE;
 
-	/*s_playermodel.skinfilter.generic.type			= MTYPE_SPINCONTROL;
-	s_playermodel.skinfilter.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
-	s_playermodel.skinfilter.generic.x				= 190;
-	s_playermodel.skinfilter.generic.y				= 311;
-	s_playermodel.skinfilter.generic.id 			= ID_SKINFILTER;
-	s_playermodel.skinfilter.generic.callback		= PlayerModel_MenuEvent;
-	s_playermodel.skinfilter.textEnum				= MBT_GROUPFILTER;
-	s_playermodel.skinfilter.textcolor				= CT_BLACK;
-	s_playermodel.skinfilter.textcolor2				= CT_WHITE;
-	s_playermodel.skinfilter.color					= CT_DKPURPLE1;
-	s_playermodel.skinfilter.color2					= CT_LTPURPLE1;
-	s_playermodel.skinfilter.textX					= MENU_BUTTON_TEXT_X;
-	s_playermodel.skinfilter.textY					= MENU_BUTTON_TEXT_Y;
-	s_playermodel.skinfilter.listnames				= s_SkinFilter_Names;*/
-
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.model );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.data );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.player );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.playername );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.modelname );
-	//Menu_AddItem( &s_playermodel.menu,	&s_playermodel.skinfilter );
-
-	/*for (i=0; i<MAX_MODELSPERPAGE; i++)
-	{
-		Menu_AddItem( &s_playermodel.menu,	&s_playermodel.pics[i] );
-		Menu_AddItem( &s_playermodel.menu,	&s_playermodel.picbuttons[i] );
-	}*/
 
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.upArrow );
 	Menu_AddItem( &s_playermodel.menu,	&s_playermodel.dnArrow );
@@ -1456,8 +1021,8 @@ static void PlayerModel_MenuInit(int32_t menuFrom)
 	}
 
 	// update user interface
-	//PlayerModel_UpdateGrid();
 	PlayerModel_UpdateModel();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1467,7 +1032,7 @@ PlayerModel_Cache
 */
 void PlayerModel_Cache( void )
 {
-	//int32_t	i;
+	UI_LogFuncBegin();
 
 	s_playermodel.corner_ll_4_4		= trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_4");
 	s_playermodel.corner_ll_4_18	= trap_R_RegisterShaderNoMip("menu/common/corner_ll_4_18");
@@ -1477,18 +1042,7 @@ void PlayerModel_Cache( void )
 
 	trap_R_RegisterShaderNoMip(PIC_ARROW_UP);
 	trap_R_RegisterShaderNoMip(PIC_ARROW_DOWN);
-
-	/*for( i = 0; playermodel_artlist[i]; i++ ) 
-	{
-		trap_R_RegisterShaderNoMip( playermodel_artlist[i] );
-	}*/
-	
-	//PlayerModel_BuildList();
-
-	/*for( i = 0; i < s_playermodel.nummodels; i++ ) 
-	{
-		trap_R_RegisterShaderNoMip( s_playermodel.modelnames[i] );
-	}*/
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1498,11 +1052,13 @@ PlayerModel_Cache
 */
 void UI_PlayerModelMenu(int32_t menuFrom)
 {
+	UI_LogFuncBegin();
+
 	PlayerModel_MenuInit(menuFrom);
 
 	UI_PushMenu( &s_playermodel.menu );
 
-	//Menu_SetCursorToItem( &s_playermodel.menu, &s_playermodel.pics[s_playermodel.selectedmodel % MAX_MODELSPERPAGE] );
+	UI_LogFuncEnd();
 }
 
 

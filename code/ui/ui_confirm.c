@@ -10,6 +10,7 @@ CONFIRMATION MENU
 
 
 #include "ui_local.h"
+#include "ui_logger.h"
 
 
 #define ID_CONFIRM_NO		10
@@ -40,10 +41,12 @@ ConfirmMenu_Event
 */
 static void ConfirmMenu_Event( void* ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
 	qboolean	result;
 
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -62,6 +65,7 @@ static void ConfirmMenu_Event( void* ptr, int32_t event )
 	{
 		s_confirm.action( result );
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -72,6 +76,7 @@ ConfirmMenu_Key
 */
 static sfxHandle_t ConfirmMenu_Key( int32_t key ) 
 {
+	UI_LogFuncBegin();
 	switch ( key ) 
 	{
 	case K_KP_LEFTARROW:
@@ -92,6 +97,7 @@ static sfxHandle_t ConfirmMenu_Key( int32_t key )
 		break;
 	}
 
+	UI_LogFuncEnd();
 	return Menu_DefaultKey( &s_confirm.menu, key );
 }
 
@@ -103,6 +109,7 @@ ConfirmMenu_Draw
 */
 static void ConfirmMenu_Draw( void ) 
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame(&s_confirm.menu);
 
 	// End of upper line
@@ -187,6 +194,7 @@ static void ConfirmMenu_Draw( void )
 	{
 		s_confirm.draw();
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -197,49 +205,62 @@ ConfirmMenu_Cache
 */
 void ConfirmMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	s_confirm.cornerPic = trap_R_RegisterShaderNoMip("menu/common/corner_ll_47_18.tga");
+	UI_LogFuncEnd();
 }
 
 static const char* TranslateQuestion(const char *question) {
+	UI_LogFuncBegin();
 	static char translatedQuestion[128];
 
 	if (!strcmp(question, "Unpure client detected. Invalid .PK3 files referenced!")) {
+		UI_LogFuncEnd();
 		return menu_normal_text[MNT_UNPURECLIENT];
 	}
 
 	if (!strcmp(question, "Cannot validate pure client!")) {
+		UI_LogFuncEnd();
 		return menu_normal_text[MNT_CANNOTVALIDATE];
 	}
 
 	if (!strcmp(question, "kicked")) {
+		UI_LogFuncEnd();
 		return menu_normal_text[MNT_KICKED];
 	}
 
 	if (!strcmp(question, "timed out")) {
+		UI_LogFuncEnd();
 		return menu_normal_text[MNT_TIMEDOUT];
 	}
 
 	if (!strcmp(question, "server shut down")) {
+		UI_LogFuncEnd();
 		return menu_normal_text[MNT_SERVERSHUTDOWN];
 	}
 
 	if (!strcmp(question, "disconnected")) {
+		UI_LogFuncEnd();
 		return menu_normal_text[MNT_DISCONNECTED];
 	}
 
 	if (!strcmp(question, "broken download")) {
+		UI_LogFuncEnd();
 		return menu_normal_text[MNT_BROKENDOWNLOAD];
 	}
 
 	if (!strcmp(question, "Server command overflow")) {
+		UI_LogFuncEnd();
 		return menu_normal_text[MNT_SERVERCOMMANDOVERFLOW];
 	}
 
 	if (!strcmp(question, "Lost reliable commands")) {
+		UI_LogFuncEnd();
 		return menu_normal_text[MNT_LOSTRELIABLECOMMANDS];
 	}
 	
 	Q_strncpyz(translatedQuestion, question, sizeof(translatedQuestion));
+	UI_LogFuncEnd();
 	return translatedQuestion;
 }
 
@@ -250,7 +271,7 @@ UI_ConfirmMenu
 */
 void UI_ConfirmMenu( const char *question, void (*draw)( void ), void (*action)( qboolean result ) ) 
 {
-//	uiClientState_t	cstate;
+	UI_LogFuncBegin();
 
 	// zero set all our globals
 	memset( &s_confirm, 0, sizeof(s_confirm) );
@@ -274,17 +295,6 @@ void UI_ConfirmMenu( const char *question, void (*draw)( void ), void (*action)(
 	s_confirm.menu.titleI						= MNT_CONFIRMATIONMENU_TITLE;
 	s_confirm.menu.footNoteEnum					= MNT_CONFIRMATION;
 
-
-/*	trap_GetClientState( &cstate );
-	if ( cstate.connState >= CA_CONNECTED ) 
-	{
-		s_confirm.menu.fullscreen = qfalse;
-	}
-	else 
-	{
-		s_confirm.menu.fullscreen = qtrue;
-	}
-*/
 	s_confirm.yes.generic.type			= MTYPE_BITMAP;      
 	s_confirm.yes.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS; 
 	s_confirm.yes.generic.x				= 215;
@@ -327,4 +337,6 @@ void UI_ConfirmMenu( const char *question, void (*draw)( void ), void (*action)(
 	UI_PushMenu( &s_confirm.menu );
 
 	Menu_SetCursorToItem( &s_confirm.menu, &s_confirm.no );
+
+	UI_LogFuncEnd();
 }

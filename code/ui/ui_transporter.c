@@ -4,6 +4,7 @@
 	User interface trigger from within game
 **********************************************************************/
 #include "ui_local.h"
+#include "ui_logger.h"
 
 char *delayList[20] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 						"11", "12", "13", "14", "15", "20", "30", "60", 0 };
@@ -55,12 +56,15 @@ void TransDataReceived(const char *data) {
 	char *temp;
 	int32_t i;
 
+	UI_LogFuncBegin();
+
 	for(i = 0; i < 6; i++) {
 		temp = Info_ValueForKey(data, va("d%i", i));
 		if(!temp[0]) break;
 		Q_strncpyz(srvList[i], temp, sizeof(srvList[i]));
 		srvCount++;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -75,6 +79,8 @@ static void M_Transporter_Event (void* ptr, int32_t notification)
 	//menubitmap_s	*holdServer;
 
 	id = ((menucommon_s*)ptr)->id;
+
+	UI_LogFuncBegin();
 
 	/*if ( notification != QM_ACTIVATED )
 	{
@@ -130,6 +136,7 @@ static void M_Transporter_Event (void* ptr, int32_t notification)
 			}
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -163,6 +170,8 @@ static void M_TransporterMenu_Graphics (void)
 	//int32_t		i;
 	int32_t length,xTurboStart;
 	//int32_t		numColor, roundColor;
+
+	UI_LogFuncBegin();
 
 	// Draw the basic screen frame
 
@@ -256,6 +265,7 @@ static void M_TransporterMenu_Graphics (void)
 	UI_DrawProportionalString(596, 318, "67", UI_TINYFONT, colorTable[CT_BLACK]);
 	UI_DrawProportionalString(502, 405, "27", UI_TINYFONT, colorTable[CT_BLACK]);
 
+	UI_LogFuncEnd();
 }
 
 /*
@@ -265,11 +275,13 @@ TransporterMenu_Draw
 */
 static void TransporterMenu_Draw(void)
 {
+	UI_LogFuncBegin();
 	// Draw graphics particular to Main Menu
 
 	M_TransporterMenu_Graphics();
 	
 	Menu_Draw( &s_transporter.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -279,6 +291,7 @@ UI_TransporterMenu_Cache
 */
 void UI_TransporterMenu_Cache (void)
 {	
+	UI_LogFuncBegin();
 	leftRound = trap_R_RegisterShaderNoMip("menu/common/halfroundl_24.tga");
 	corner_ul_24_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ul_24_60.tga");
 	corner_ll_12_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ll_12_60.tga");
@@ -288,6 +301,7 @@ void UI_TransporterMenu_Cache (void)
 	loading3 = trap_R_RegisterShaderNoMip("menu/new/nav_lb.tga");
 	loading4 = trap_R_RegisterShaderNoMip("menu/new/nav_db.tga");
 	loading5 = trap_R_RegisterShaderNoMip("menu/new/nab_o.tga");
+	UI_LogFuncEnd();
 }
 
 /*
@@ -300,6 +314,8 @@ void TransporterMenu_Init(void)
 	int32_t y,pad,x;
 	//int32_t i;
 	int32_t width;
+
+	UI_LogFuncBegin();
 
 	AdminGeneric_InitLists();
 
@@ -433,6 +449,7 @@ void TransporterMenu_Init(void)
 	Menu_AddItem( &s_transporter.menu, &s_transporter.engage );
 	Menu_AddItem( &s_transporter.menu, &s_transporter.engage2 );
 	Menu_AddItem( &s_transporter.menu, &s_transporter.quitmenu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -443,11 +460,13 @@ SrvData_Init
 void SrvData_Init(void) {
 	int32_t		i;
 
+	UI_LogFuncBegin();
 	for(i = 0; i < 6; i++) {
 		if(!srvList[i][0]) break;
 		s_transporter.srvListPtr[i] = srvList[i];
 	}
 	s_transporter.srvListPtr[i+1] = 0;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -457,8 +476,12 @@ UI_TransporterMenu
 */
 void UI_TransporterMenu (int32_t trNum)
 {
-	if ( !trNum )
+	UI_LogFuncBegin();
+
+	if ( !trNum ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	memset( &s_transporter, 0, sizeof( s_transporter ) );
 
@@ -479,4 +502,6 @@ void UI_TransporterMenu (int32_t trNum)
 	UI_PushMenu( &s_transporter.menu );
 
 	Menu_AdjustCursor( &s_transporter.menu, 1 );	
+
+	UI_LogFuncEnd();
 }

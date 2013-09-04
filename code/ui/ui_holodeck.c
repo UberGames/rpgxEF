@@ -4,6 +4,7 @@
 	User interface trigger from within game
 **********************************************************************/
 #include "ui_local.h"
+#include "ui_logger.h"
 
 typedef struct {
 	char	name[5][MAX_QPATH];
@@ -33,12 +34,17 @@ typedef struct //static
 holodeck_t	s_holodeck;
 
 void HoloDataReceived(const char *data) {
+	UI_LogFuncBegin();
 	char *temp;
-	if(holoData.currentPart < 0) return;
+	if(holoData.currentPart < 0){
+		UI_LogFuncEnd();
+		return;
+	}
 	if(!holoData.numProgs) {
 		holoData.numProgs = atoi(data);
 		holoData.currentProg = 0;
 		holoData.currentPart = 0;
+		UI_LogFuncEnd();
 		return;
 	}
 	switch(holoData.currentPart) {
@@ -64,6 +70,7 @@ void HoloDataReceived(const char *data) {
 		holoData.currentProg = 0;
 		holoData.currentPart++;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -72,12 +79,14 @@ PrgmList_Init
 ===============
 */
 void PrgmList_Init(void) {
+	UI_LogFuncBegin();
 	int32_t i;
 
 	for(i = 0; i < holoData.numProgs; i++) {
 		s_holodeck.prgListPtr[i] = holoData.name[i];
 	}
 	s_holodeck.prgListPtr[holoData.numProgs] = 0;
+	UI_LogFuncEnd();
 }
 
 void HolodeckMenu_LoadText (void);
@@ -98,6 +107,7 @@ M_Holodeck_Event
 */
 static void M_Holodeck_Event (void* ptr, int32_t notification)
 {
+	UI_LogFuncBegin();
 	int32_t	id;
 	int32_t i;
 
@@ -121,6 +131,7 @@ static void M_Holodeck_Event (void* ptr, int32_t notification)
 			UI_HolodeckMenu(i);
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -130,6 +141,8 @@ HolodeckMenu_Key
 */
 sfxHandle_t HolodeckMenu_Key (int32_t key)
 {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &s_holodeck.menu, key ) );
 }
 
@@ -149,6 +162,7 @@ M_HolodeckMenu_Graphics
 */
 static void M_HolodeckMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	int32_t		i,length,xTurboStart;
 	int32_t		numColor,roundColor;
 
@@ -227,7 +241,7 @@ static void M_HolodeckMenu_Graphics (void)
 	UI_DrawHandlePic(592.5, 301, 22.5, 137, uis.whiteShader);
 
 	UI_DrawProportionalString(346, 289, va("%s", holoData.desc[0]), UI_TINYFONT, colorTable[CT_WHITE]);
-
+	UI_LogFuncEnd();
 }
 
 /*
@@ -237,10 +251,12 @@ HolodeckMenu_Draw
 */
 static void HolodeckMenu_Draw(void)
 {
+	UI_LogFuncBegin();
 	// Draw graphics particular to Main Menu
 	M_HolodeckMenu_Graphics();
 	
 	Menu_Draw( &s_holodeck.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -250,6 +266,7 @@ UI_HolodeckMenu_Cache
 */
 void UI_HolodeckMenu_Cache (void)
 {	
+	UI_LogFuncBegin();
 	leftRound = trap_R_RegisterShaderNoMip("menu/common/halfroundl_24.tga");
 	corner_ul_24_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ul_24_60.tga");
 	corner_ll_12_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ll_12_60.tga");
@@ -263,6 +280,7 @@ void UI_HolodeckMenu_Cache (void)
 		prgImage4 = trap_R_RegisterShaderNoMip(holoData.image[3]);
 	if(holoData.image[4][0])
 		prgImage5 = trap_R_RegisterShaderNoMip(holoData.image[4]);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -272,6 +290,7 @@ HolodeckMenu_Init
 */
 void HolodeckMenu_Init()
 {
+	UI_LogFuncBegin();
 	int32_t y,pad,x;
 	int32_t i,width;
 
@@ -351,6 +370,7 @@ void HolodeckMenu_Init()
 	Menu_AddItem( &s_holodeck.menu, &s_holodeck.progButton );
 	Menu_AddItem( &s_holodeck.menu, &s_holodeck.engage );
 	Menu_AddItem( &s_holodeck.menu, &s_holodeck.quitmenu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -360,8 +380,11 @@ UI_HolodeckMenu
 */
 void UI_HolodeckMenu (int32_t trNum)
 {
-	if ( !trNum )
+	UI_LogFuncBegin();
+	if ( !trNum ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	memset( &s_holodeck, 0, sizeof( s_holodeck ) );
 
@@ -380,5 +403,6 @@ void UI_HolodeckMenu (int32_t trNum)
 	UI_PushMenu( &s_holodeck.menu );
 
 	Menu_AdjustCursor( &s_holodeck.menu, 1 );	
+	UI_LogFuncEnd();
 }
 

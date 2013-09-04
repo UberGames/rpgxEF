@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "ui_local.h"
+#include "ui_logger.h"
 
 #define MAX_MODS			64
 #define NAMEBUFSIZE			( MAX_MODS * 48 )
@@ -46,8 +47,10 @@ Mods_MenuEvent
 */
 static void Mods_MenuEvent( void *ptr, int32_t event ) 
 {
+	UI_LogFuncBegin();
 	if( event != QM_ACTIVATED ) 
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -63,6 +66,7 @@ static void Mods_MenuEvent( void *ptr, int32_t event )
 		UI_PopMenu();
 		break;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -73,6 +77,7 @@ UI_Mods_ParseInfos
 */
 static void UI_Mods_ParseInfos( char *modDir, char *modDesc ) 
 {
+	UI_LogFuncBegin();
 	s_mods.fs_gameList[s_mods.list.numitems] = s_mods.fs_gamePtr;
 	Q_strncpyz( s_mods.fs_gamePtr, modDir, 16 );
 
@@ -83,48 +88,8 @@ static void UI_Mods_ParseInfos( char *modDir, char *modDesc )
 	s_mods.descriptionPtr += strlen( s_mods.descriptionPtr ) + 1;
 	s_mods.fs_gamePtr += strlen( s_mods.fs_gamePtr ) + 1;
 	s_mods.list.numitems++;
+	UI_LogFuncEnd();
 }
-
-
-/*
-===============
-UI_Mods_LoadModsFromFile
-===============
-*/
-/*
-static void UI_Mods_LoadModsFromFile( char *filename ) 
-{
-	int32_t				len;
-	fileHandle_t	f;
-	char			buf[1024];
-
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-	if ( !f ) 
-	{
-		trap_Print( va( S_COLOR_RED "File not found: %s\n", filename ) );
-		return;
-	}
-
-	if ( len >= sizeof(buf) ) 
-	{
-		trap_Print( va( S_COLOR_RED "File too large: %s is %i, max allowed is %i", filename, len, sizeof(buf) ));
-		trap_FS_FCloseFile( f );
-		return;
-	}
-
-	trap_FS_Read( buf, len, f );
-	buf[len] = 0;
-	trap_FS_FCloseFile( f );
-
-	len = strlen( filename );
-	if( !Q_stricmp(filename +  len - 4,".mod") ) 
-	{
-		filename[len-4] = '\0';
-	}
-
-	UI_Mods_ParseInfos( filename, buf );
-}
-*/
 
 /*
 ===============
@@ -133,6 +98,7 @@ Mods_LoadMods
 */
 static void Mods_LoadMods( void ) 
 {
+	UI_LogFuncBegin();
 	int32_t		numdirs;
 	char	dirlist[4096];
 	char	*dirptr;
@@ -164,6 +130,7 @@ static void Mods_LoadMods( void )
 	{
 		s_mods.list.numitems = MAX_MODS;
 	}
+	UI_LogFuncEnd();
 }
 
 
@@ -174,6 +141,7 @@ M_MainMenu_Graphics
 */
 void ModsMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	// Draw the basic screen layout
 	UI_MenuFrame(&s_mods.menu);
 
@@ -208,6 +176,7 @@ void ModsMenu_Graphics (void)
 	trap_R_SetColor( colorTable[CT_LTBROWN1]);
 	UI_DrawProportionalString(  152, 168, menu_normal_text[MNT_AVAILABLEMODS], UI_SMALLFONT, colorTable[CT_BLACK]); //colorTable[CT_LTPURPLE3] //210
 	UI_DrawProportionalString(  568, 170, "38-56",UI_RIGHT|UI_TINYFONT, colorTable[CT_BLACK]);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -217,10 +186,12 @@ ModsMenu_Draw
 */
 void ModsMenu_Draw (void)
 {
+	UI_LogFuncBegin();
 	// Draw graphics particular to Mods Menu
 	ModsMenu_Graphics();
 
 	Menu_Draw( &s_mods.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -230,10 +201,12 @@ UI_Mods_Cache
 */
 void UI_ModsMenu_Cache( void ) 
 {
+	UI_LogFuncBegin();
 	s_mods.corner_ul	= trap_R_RegisterShaderNoMip("menu/common/corner_ul_18_18.tga");
 	s_mods.corner_ur	= trap_R_RegisterShaderNoMip("menu/common/corner_ur_18_18.tga");
 	s_mods.corner_ll	= trap_R_RegisterShaderNoMip("menu/common/corner_ll_18_18.tga");
 	s_mods.corner_lr	= trap_R_RegisterShaderNoMip("menu/common/corner_lr_18_18.tga");
+	UI_LogFuncEnd();
 }
 
 /*
@@ -243,6 +216,7 @@ UI_Mods_MenuInit
 */
 static void UI_Mods_MenuInit( void ) 
 {
+	UI_LogFuncBegin();
 	// Menu Data
 	memset( &s_mods, 0 ,sizeof(mods_t) );
 	s_mods.menu.wrapAround					= qtrue;
@@ -307,6 +281,7 @@ static void UI_Mods_MenuInit( void )
 	Menu_AddItem( &s_mods.menu, &s_mods.mainmenu );
 	Menu_AddItem( &s_mods.menu, &s_mods.list );
 	Menu_AddItem( &s_mods.menu, &s_mods.go );
+	UI_LogFuncEnd();
 }
 
 
@@ -317,6 +292,8 @@ UI_ModsMenu
 */
 void UI_ModsMenu( void ) 
 {
+	UI_LogFuncBegin();
 	UI_Mods_MenuInit();
 	UI_PushMenu( &s_mods.menu );
+	UI_LogFuncEnd();
 }

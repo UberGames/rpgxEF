@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "ui_local.h"
+#include "ui_logger.h"
 
 /*
 ===============================================================================
@@ -18,6 +19,7 @@ static char			lastLoadingText[MAX_INFO_VALUE];
 
 static void UI_ReadableSize ( char *buf, int32_t bufsize, int32_t value )
 {
+	UI_LogFuncBegin();
 	if (value > 1024*1024*1024 ) { // gigs
 		Com_sprintf( buf, bufsize, "%d", value / (1024*1024*1024) );
 		Com_sprintf( buf+strlen(buf), bufsize-strlen(buf), ".%02d GB", 
@@ -31,10 +33,12 @@ static void UI_ReadableSize ( char *buf, int32_t bufsize, int32_t value )
 	} else { // bytes
 		Com_sprintf( buf, bufsize, "%d bytes", value );
 	}
+	UI_LogFuncEnd();
 }
 
 // Assumes time is in msec
 static void UI_PrintTime ( char *buf, int32_t bufsize, int32_t time ) {
+	UI_LogFuncBegin();
 	time /= 1000;  // change to seconds
 
 	if (time > 3600) { // in the hours range
@@ -44,10 +48,12 @@ static void UI_PrintTime ( char *buf, int32_t bufsize, int32_t time ) {
 	} else  { // secs
 		Com_sprintf( buf, bufsize, "%d sec", time );
 	}
+	UI_LogFuncEnd();
 }
 
 
 static void UI_DisplayDownloadInfo( const char *downloadName ) {
+	UI_LogFuncBegin();
 	const char *dlText	= menu_normal_text[MNT_DOWNLOADING];
 	const char *etaText	= menu_normal_text[MNT_ESTIMATEDTIMELEFT];
 	const char *xferText	= menu_normal_text[MNT_TRANSFERRATE];
@@ -129,6 +135,7 @@ static void UI_DisplayDownloadInfo( const char *downloadName ) {
 			UI_DrawProportionalString( leftWidth, xferYpos, va(xSeconds, xferRateBuf), style, color_white );
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -141,6 +148,7 @@ overlay is in cg_info.c, CG_DrawInformation
 ========================
 */
 void UI_DrawConnectScreen( qboolean overlay ) {
+	UI_LogFuncBegin();
 	const char		*s;
 	uiClientState_t	cstate;
 	char			info[MAX_INFO_VALUE];
@@ -149,9 +157,6 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	Menu_Cache();
 
 	if ( !overlay ) {
-		// draw the dialog background
-//		trap_R_SetColor( color_white );
-//		UI_DrawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.menuBackShader );
 
 		trap_R_SetColor( colorTable[CT_BLACK] );
 		UI_DrawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, uis.whiteShader );
@@ -264,20 +269,25 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 			trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof(downloadName) );
 			if (*downloadName) {
 				UI_DisplayDownloadInfo( downloadName );
+				UI_LogFuncEnd();
 				return;
 			}
 		}
 		s = menu_normal_text[MNT_AWAITINGGAMESTATE];
 		break;
 	case CA_LOADING:
+		UI_LogFuncEnd();
 		return;
 	case CA_PRIMED:
+		UI_LogFuncEnd();
 		return;
 	default:
+		UI_LogFuncEnd();
 		return;
 	}
 
 	UI_DrawProportionalString( 222, 442, s, UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_LTGOLD1]  );
+	UI_LogFuncEnd();
 
 	// password required / connection rejected information goes here
 }
@@ -289,8 +299,11 @@ UI_KeyConnect
 ===================
 */
 void UI_KeyConnect( int32_t key ) {
+	UI_LogFuncBegin();
 	if ( key == K_ESCAPE ) {
 		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
+		UI_LogFuncEnd();
 		return;
 	}
+	UI_LogFuncEnd();
 }

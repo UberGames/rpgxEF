@@ -12,6 +12,7 @@ ingame.
 */
 
 #include "ui_local.h"
+#include "ui_logger.h"
 // Defines
 //general
 #define	PIC_ARROW_UP		"menu/common/arrow_up_16.tga"
@@ -232,35 +233,6 @@ adminGeneric_t	s_adminGeneric;
 
 static char				*fxList[10];
 
-/*static char*				giveItems[] =
-{
-	"all",
-	"health",
-	"weapons",
-	"ammo",
-	"forcefield",
-	"transporter",
-	"phaser",
-	"phaser_rifle",
-	"coffee",
-	"disruptor",
-	"coffee",
-	"admin_gun",
-	"tr-116",
-	"photon_burst",
-	"dermal_regen",
-	"hypospray",
-	"toolkit",
-	"medkit",
-	"tricorder",
-	"padd",
-	"neutrino_probe",
-	"cloak",
-	"flight",
-	"god",
-	0
-};*/ /* hardcoded = blegh + 1 for 0 */
-
 /*
 ===============
 AdminGeneric_InitLists
@@ -271,6 +243,7 @@ we'll need for different menus
 ===============
 */
 void AdminGeneric_InitLists( void ) {
+	UI_LogFuncBegin();
 	int32_t		i;
 	char	info[MAX_TOKEN_CHARS];
 
@@ -311,6 +284,7 @@ void AdminGeneric_InitLists( void ) {
 		s_adminGeneric.numChars++;
 	}
 	s_adminGeneric.charListPtr[ s_adminGeneric.numChars ] = 0;
+	UI_LogFuncEnd();
 
 }
 
@@ -327,6 +301,7 @@ all of them. :)
 */
 
 static void AdminMenu_DrawLCARSBox ( int32_t x, int32_t y, int32_t w, int32_t h, vec4_t color, int32_t title ) {
+	UI_LogFuncBegin();
 	
 	trap_R_SetColor( color );
 
@@ -355,6 +330,7 @@ static void AdminMenu_DrawLCARSBox ( int32_t x, int32_t y, int32_t w, int32_t h,
 	if ( menu_normal_text[ title ] ) {
 		UI_DrawProportionalString( x + 15, y + 1, menu_normal_text[ title ], UI_LEFT | UI_SMALLFONT, colorTable[CT_BLACK] );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -364,6 +340,7 @@ AdminMenu_DrawCommon
 */
 
 static void AdminMenu_DrawCommon ( void ) {
+	UI_LogFuncBegin();
 
 	/* Left side LCARS bars */
 	trap_R_SetColor( colorTable[CT_LTBROWN1]); 
@@ -408,6 +385,7 @@ static void AdminMenu_DrawCommon ( void ) {
 	UI_DrawHandlePic( s_admin.adminMain.generic.x - 14, s_admin.adminMain.generic.y, 18, 18, uis.graphicButtonLeftEnd );
 	UI_DrawHandlePic( s_admin.adminClients.generic.x - 14, s_admin.adminClients.generic.y, 18, 18, uis.graphicButtonLeftEnd );
 	UI_DrawHandlePic( s_admin.adminAudio.generic.x - 14, s_admin.adminAudio.generic.y, 18, 18, uis.graphicButtonLeftEnd );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -417,6 +395,7 @@ AdminMenu_InitButtons
 */
 
 static void AdminMenu_InitButtons( menuframework_s *menu ) {
+	UI_LogFuncBegin();
 
 	s_admin.mainMenu.generic.type			= MTYPE_BITMAP;      
 	s_admin.mainMenu.generic.flags			= QMF_HIGHLIGHT_IF_FOCUS;
@@ -494,6 +473,7 @@ static void AdminMenu_InitButtons( menuframework_s *menu ) {
 	Menu_AddItem( menu, &s_admin.adminMain );
 	Menu_AddItem( menu, &s_admin.adminClients );
 	Menu_AddItem( menu, &s_admin.adminAudio );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -502,6 +482,7 @@ AdminMenu_Event
 ===============
 */
 static void AdminMenu_Event( void* ptr, int32_t event ) {
+	UI_LogFuncBegin();
 
 	if ( event != QM_ACTIVATED )
 		return;
@@ -651,6 +632,7 @@ static void AdminMenu_Event( void* ptr, int32_t event ) {
 			UI_PopMenu();
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -659,6 +641,7 @@ AdminMenu_Draw
 ===============
 */
 static void AdminMenu_Draw( void ) {
+	UI_LogFuncBegin();
 	vec_t*	color = colorTable[CT_LTORANGE];
 	char	msg1[36];
 	char	msg2[36];
@@ -711,9 +694,11 @@ static void AdminMenu_Draw( void ) {
 
 	/* Lines for player model frame */
 	Menu_Draw( &s_admin.menu );
+	UI_LogFuncEnd();
 }
 
 static sfxHandle_t AdminMenu_KeyEvent( int32_t key ) {
+	UI_LogFuncBegin();
 	int32_t				i, j;
 	menucommon_s	*s;
 	char			command[256];
@@ -795,15 +780,18 @@ static sfxHandle_t AdminMenu_KeyEvent( int32_t key ) {
 	}		
 
 end:
+	UI_LogFuncEnd();
 	return ( Menu_DefaultKey( &s_admin.menu, key ) );
 }
 
 void UI_AdminMenu_Cache( void ) {
+	UI_LogFuncBegin();
 	trap_R_RegisterShaderNoMip(PIC_ARROW_UP);
 	trap_R_RegisterShaderNoMip(PIC_ARROW_DOWN);
 
 	s_admin.corner_ll_4_18 = trap_R_RegisterShaderNoMip( "menu/common/corner_ll_4_18" );
 	s_admin.corner_ll_4_4 = trap_R_RegisterShaderNoMip( "menu/common/corner_ll_4_4" );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -818,6 +806,7 @@ are rendered.
 ===============
 */
 static void AdminMenu_DrawButton ( void *self ) {
+	UI_LogFuncBegin();
 	qboolean		focus;
 	menuaction_s*	action;
 	int32_t				color;
@@ -864,6 +853,7 @@ static void AdminMenu_DrawButton ( void *self ) {
 	if ( menu_button_text[action->textEnum][0] ) {
 		UI_DrawProportionalString( x + action->textX, y + action->textY, menu_button_text[action->textEnum][0], UI_SMALLFONT, colorTable[ textColor ] );
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -872,6 +862,7 @@ AdminMenu_DrawBinding
 ===============
 */
 static void AdminMenu_DrawBinding( void *self ) {
+	UI_LogFuncBegin();
 	qboolean		focus;
 	menuaction_s	*action;
 	int32_t				x,y;
@@ -945,6 +936,7 @@ static void AdminMenu_DrawBinding( void *self ) {
 	else
 		textColor = CT_WHITE;
 	UI_DrawProportionalString( x + width + 5, y+1, name, UI_SMALLFONT, colorTable[textColor] );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -953,6 +945,7 @@ AdminMenu_Init
 ===============
 */
 static void AdminMenu_Init( void ) {
+	UI_LogFuncBegin();
 	int32_t i, j;
 	char binding[256];
 
@@ -1518,6 +1511,7 @@ static void AdminMenu_Init( void ) {
 	 * ... could be the lack of null pointer at the end ROFL
 	 */
 	s_admin.reviveList.numitems = 2;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1526,6 +1520,7 @@ UI_AdminMenu
 ===============
 */
 void UI_AdminMenu( qboolean fromConsole ) {
+	UI_LogFuncBegin();
 	memset( &s_admin, 0, sizeof( s_admin ) );
 
 	s_admin.fromConsole = fromConsole;
@@ -1535,6 +1530,7 @@ void UI_AdminMenu( qboolean fromConsole ) {
 	Mouse_Show();
 
 	UI_PushMenu( &s_admin.menu );
+	UI_LogFuncEnd();
 }
 
 /*========================================================================*/
@@ -1590,6 +1586,7 @@ the currently selected player
 
 static void ClientAdmin_GetClient ( int32_t listNum ) 
 {
+	UI_LogFuncBegin();
 	/* get the currently selected client, and parse their info string */
 	char info[MAX_TOKEN_CHARS];
 
@@ -1613,6 +1610,7 @@ static void ClientAdmin_GetClient ( int32_t listNum )
 	Q_strncpyz( s_clientAdmin.clientStats.model, Info_ValueForKey( info, "model" ), sizeof( s_clientAdmin.clientStats.model ) );
 	Q_strncpyz( s_clientAdmin.clientStats.race, Info_ValueForKey( info, "race" ), sizeof( s_clientAdmin.clientStats.race ) );
 	Q_strncpyz( s_clientAdmin.clientStats.age, Info_ValueForKey( info, "age" ), sizeof( s_clientAdmin.clientStats.age ) );
+	UI_LogFuncEnd();
 
 }
 
@@ -1623,9 +1621,12 @@ ClientAdmin_Event
 */
 
 static void ClientAdmin_Event( void *ptr, int32_t event ) {
+	UI_LogFuncBegin();
 
-	if ( event != QM_ACTIVATED )
+	if ( event != QM_ACTIVATED ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	switch( ((menucommon_s *)ptr)->id ) {
 		case ID_CLIENT_SELECT:
@@ -1671,6 +1672,7 @@ static void ClientAdmin_Event( void *ptr, int32_t event ) {
 			break;
 
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1679,6 +1681,7 @@ ClientAdmin_Draw
 ===================
 */
 static void ClientAdmin_Draw( void ) {
+	UI_LogFuncBegin();
 	vec_t*	color = colorTable[CT_LTORANGE];
 	char	string[MAX_QPATH];
 	int32_t		x, y;
@@ -1745,6 +1748,7 @@ static void ClientAdmin_Draw( void ) {
 	AdminMenu_DrawCommon();
 
 	Menu_Draw( &s_clientAdmin.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1753,6 +1757,7 @@ ClientAdmin_Init
 ===================
 */
 static void ClientAdmin_Init( void ) {
+	UI_LogFuncBegin();
 
 	AdminGeneric_InitLists();
 
@@ -1987,6 +1992,7 @@ static void ClientAdmin_Init( void ) {
 	Menu_AddItem( &s_clientAdmin.menu, &s_clientAdmin.forceExecute );
 
 	ClientAdmin_GetClient( 0 );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -1996,12 +2002,14 @@ UI_ClientAdminMenu
 */
 
 void UI_ClientAdminMenu( void ) {
+	UI_LogFuncBegin();
 	memset( &s_clientAdmin, 0, sizeof( s_clientAdmin ) );
 
 	ClientAdmin_Init();
 	Mouse_Show();
 
 	UI_PushMenu( &s_clientAdmin.menu );
+	UI_LogFuncEnd();
 }
 
 /*****************************************************************************************/
@@ -2061,6 +2069,7 @@ when we click an arrow button
 
 static void AdminAudio_OffsetList ( soundList_t *soundList, int32_t *offset, int32_t numSounds, menubitmap_s *btnList )
 {
+	UI_LogFuncBegin();
 	int32_t		i;
 	char	*buffer;
 
@@ -2092,6 +2101,7 @@ static void AdminAudio_OffsetList ( soundList_t *soundList, int32_t *offset, int
 		btnList[i].generic.flags = QMF_HIGHLIGHT_IF_FOCUS;
 		btnList[i].textPtr = buffer;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2105,6 +2115,7 @@ for sound/music files
 */
 static void AdminAudio_InitFilesList ( void )
 {
+	UI_LogFuncBegin();
 	int32_t				numFiles;
 	char			buffer[20000];
 	char*			strPtr;
@@ -2350,6 +2361,7 @@ static void AdminAudio_InitFilesList ( void )
 			j++;
 		}
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2360,8 +2372,11 @@ AdminAudio_Event
 
 static void AdminAudio_Event( void *ptr, int32_t event )
 {
-	if ( event != QM_ACTIVATED )
+	UI_LogFuncBegin();
+	if ( event != QM_ACTIVATED ){
+		UI_LogFuncEnd();
 		return;
+	}
 
 	switch( ((menucommon_s *)ptr)->id )
 	{
@@ -2426,6 +2441,7 @@ static void AdminAudio_Event( void *ptr, int32_t event )
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "playSound %s.%s", s_adminAudio.soundList[s_adminAudio.selectedSound].fileRoute, s_adminAudio.soundList[s_adminAudio.selectedSound].format == TYPE_MP3 ? "mp3" : "wav" ) );
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2436,6 +2452,7 @@ AdminAudio_Draw
 
 static void AdminAudio_Draw( void )
 {
+	UI_LogFuncBegin();
 	int32_t i;
 	int32_t x, y, w, h;
 
@@ -2543,6 +2560,7 @@ static void AdminAudio_Draw( void )
 
 	AdminMenu_DrawCommon();
 	Menu_Draw( &s_adminAudio.menu );
+	UI_LogFuncEnd();
 }
 
 /*static void AdminAudio_Cache( void )
@@ -2559,6 +2577,7 @@ AdminAudio_Init
 
 static void AdminAudio_Init( void )
 {
+	UI_LogFuncBegin();
 	int32_t i, x, y;
 
 	s_adminAudio.selectedSong = -1;
@@ -2769,6 +2788,7 @@ static void AdminAudio_Init( void )
 
 	AdminAudio_OffsetList( s_adminAudio.musicList, &s_adminAudio.songOffset, s_adminAudio.numSongs, s_adminAudio.songButtons );
 	AdminAudio_OffsetList( s_adminAudio.soundList, &s_adminAudio.soundOffset, s_adminAudio.numSounds, s_adminAudio.soundButtons );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2779,12 +2799,14 @@ UI_AdminAudioMenu
 
 void UI_AdminAudioMenu( void )
 {
+	UI_LogFuncBegin();
 	memset( &s_adminAudio, 0, sizeof( s_adminAudio ) );
 
 	AdminAudio_Init();
 	Mouse_Show();
 
 	UI_PushMenu( &s_adminAudio.menu );
+	UI_LogFuncEnd();
 }
 
 /**********************************************************************
@@ -2819,7 +2841,9 @@ UI_LoginSetSqlkey
 =================
 */
 void UI_LoginSetSqlkey(int32_t key) {
+	UI_LogFuncBegin();
 	sqlkey = (byte)key;
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2828,6 +2852,7 @@ M_Login_Event
 =================
 */
 static void M_Login_Event(void* ptr, int32_t notification) {
+	UI_LogFuncBegin();
 	int32_t id;
 
 	id = ((menucommon_s*)ptr)->id;
@@ -2846,6 +2871,7 @@ static void M_Login_Event(void* ptr, int32_t notification) {
 			}
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2854,6 +2880,8 @@ LoginMenu_Key
 =================
 */
 sfxHandle_t LoginMenu_Key(int32_t key) {
+	UI_LogFuncBegin();
+	UI_LogFuncEnd();
 	return (Menu_DefaultKey(&s_login.menu, key));
 }
 
@@ -2863,6 +2891,7 @@ LoginMenu_Draw
 ===============
 */
 static void LoginMenu_Draw(void) {
+	UI_LogFuncBegin();
 	int32_t length;
 
 	AdminMenu_DrawCommon();
@@ -2889,6 +2918,7 @@ static void LoginMenu_Draw(void) {
 	}
 
 	Menu_Draw(&s_login.menu);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -2897,6 +2927,7 @@ LoginMenu_Init
 ===============
 */
 void LoginMenu_Init(void) {
+	UI_LogFuncBegin();
 	if( s_login.isAdmin || s_login.isSQL > 0){
 	UI_AdminMenu_Cache();
 
@@ -3003,6 +3034,7 @@ void LoginMenu_Init(void) {
 
 	AdminMenu_InitButtons( &s_login.menu );
 	}
+	UI_LogFuncEnd();
 
 }
 
@@ -3012,6 +3044,7 @@ UI_LoginMenu
 ===============
 */
 void UI_LoginMenu(qboolean fromConsole) {
+	UI_LogFuncBegin();
 	memset(&s_login, 0, sizeof(s_login));
 
 	uis.menusp = 0;
@@ -3031,4 +3064,5 @@ void UI_LoginMenu(qboolean fromConsole) {
 	UI_PushMenu(&s_login.menu);
 
 	Menu_AdjustCursor(&s_login.menu, 1);
+	UI_LogFuncEnd();
 }

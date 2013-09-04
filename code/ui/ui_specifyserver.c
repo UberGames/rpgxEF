@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "ui_local.h"
+#include "ui_logger.h"
 
 /*********************************************************************************
 	SPECIFY SERVER
@@ -37,10 +38,12 @@ SpecifyServer_Event
 */
 static void SpecifyServer_Event( void* ptr, int32_t event )
 {
+	UI_LogFuncBegin();
 	char	buff[256];
 
 	if (event != QM_ACTIVATED)
 	{
+		UI_LogFuncEnd();
 		return;
 	}
 
@@ -66,6 +69,7 @@ static void SpecifyServer_Event( void* ptr, int32_t event )
 			UI_PopMenu();
 			break;
 	}
+	UI_LogFuncEnd();
 }
 
 /*
@@ -75,6 +79,7 @@ SpecifyServer_Graphics
 */
 void SpecifyServer_Graphics (void)
 {
+	UI_LogFuncBegin();
 	UI_MenuFrame2(&s_specifyserver.menu);
 
 	trap_R_SetColor( colorTable[CT_LTBROWN1]);
@@ -122,6 +127,8 @@ void SpecifyServer_Graphics (void)
 	trap_R_SetColor( colorTable[s_specifyserver.back.color]);
 	UI_DrawHandlePic(s_specifyserver.back.generic.x - 14, s_specifyserver.back.generic.y, 
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd);
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -131,9 +138,12 @@ SpecifyServer_MenuDraw
 */
 static void SpecifyServer_MenuDraw( void )
 {
+	UI_LogFuncBegin();
 	SpecifyServer_Graphics();
 
 	Menu_Draw( &s_specifyserver.menu );
+
+	UI_LogFuncEnd();
 }
 
 /*
@@ -143,6 +153,7 @@ SpecifyServer_MenuInit
 */
 void SpecifyServer_MenuInit( void )
 {
+	UI_LogFuncBegin();
 	// zero set all our globals
 	memset( &s_specifyserver, 0 ,sizeof(specifyserver_t) );
 
@@ -241,6 +252,7 @@ void SpecifyServer_MenuInit( void )
 	Menu_AddItem( &s_specifyserver.menu, &s_specifyserver.back );
 
 	Com_sprintf( s_specifyserver.port.field.buffer, 6, "%i", 27960 );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -250,10 +262,12 @@ SpecifyServer_Cache
 */
 void SpecifyServer_Cache( void )
 {
+	UI_LogFuncBegin();
 	s_specifyserver.corner_ul = trap_R_RegisterShaderNoMip("menu/common/corner_ul_18_18.tga");
 	s_specifyserver.corner_ur = trap_R_RegisterShaderNoMip("menu/common/corner_ur_18_18.tga");
 	s_specifyserver.corner_ll = trap_R_RegisterShaderNoMip("menu/common/corner_ll_18_18.tga");
 	s_specifyserver.corner_lr = trap_R_RegisterShaderNoMip("menu/common/corner_lr_18_18.tga");
+	UI_LogFuncEnd();
 }
 
 /*
@@ -263,7 +277,9 @@ UI_SpecifyServerMenu
 */
 void UI_SpecifyServerMenu( void )
 {
+	UI_LogFuncBegin();
 	SpecifyServer_MenuInit();
 	UI_PushMenu( &s_specifyserver.menu );
+	UI_LogFuncEnd();
 }
 

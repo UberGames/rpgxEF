@@ -4,6 +4,7 @@
 	User interface trigger from within game
 **********************************************************************/
 #include "ui_local.h"
+#include "ui_logger.h"
 
 typedef struct //static
 {
@@ -37,6 +38,7 @@ M_msd_Event
 */
 static void M_msd_Event (void* ptr, int32_t notification)
 {
+	UI_LogFuncBegin();
 	int32_t	id;
 	//menubitmap_s	*holdLocation;
 	//menubitmap_s	*holdServer;
@@ -50,6 +52,7 @@ static void M_msd_Event (void* ptr, int32_t notification)
 
 	if ((id == ID_QUIT) && (notification == QM_ACTIVATED))
 		UI_PopMenu();
+	UI_LogFuncEnd();
 }
 
 /*
@@ -82,6 +85,7 @@ M_msdMenu_Graphics
 */
 static void M_msdMenu_Graphics (void)
 {
+	UI_LogFuncBegin();
 	/*Notes:
 	Color-Types in Frame:
 	trap_R_SetColor( colorTable[CT_DKPURPLE3]);
@@ -277,7 +281,8 @@ static void M_msdMenu_Graphics (void)
 		UI_DrawHandlePic( 386, 381,  88,  43, uis.whiteShader);
 		UI_DrawProportionalString(386, 382, "Transporter-ODN-", UI_TINYFONT, colorTable[CT_MDGREY]);
 		UI_DrawProportionalString(387, 397, "Update required", UI_TINYFONT, colorTable[CT_MDGREY]);
-	}		
+	}	
+	UI_LogFuncEnd();
 
 }
 
@@ -289,9 +294,11 @@ msdMenu_Draw
 static void msdMenu_Draw(void)
 {
 	// Draw graphics particular to Main Menu
+	UI_LogFuncBegin();
 	M_msdMenu_Graphics();
 	
 	Menu_Draw( &s_msd.menu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -301,6 +308,7 @@ UI_msdMenu_Cache
 */
 void UI_msdMenu_Cache (void)
 {	
+	UI_LogFuncBegin();
 	leftRound = trap_R_RegisterShaderNoMip("menu/common/halfroundl_24.tga");
 	corner_ul_24_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ul_24_60.tga");
 	corner_ll_12_60 = trap_R_RegisterShaderNoMip("menu/common/corner_ll_12_60.tga");
@@ -313,6 +321,7 @@ void UI_msdMenu_Cache (void)
 	yellowalert = trap_R_RegisterShaderNoMip("menu/alert/yellow");
 	bluealert = trap_R_RegisterShaderNoMip("menu/alert/blue");
 	model = trap_R_RegisterShaderNoMip(s_msd.model);
+	UI_LogFuncEnd();
 }
 
 /*
@@ -322,6 +331,7 @@ msdMenu_Init
 */
 void msdMenu_Init(void)
 {
+	UI_LogFuncBegin();
 	s_msd.menu.nitems				= 0;
 	s_msd.menu.draw					= msdMenu_Draw;
 	s_msd.menu.key					= msdMenu_Key;
@@ -350,6 +360,7 @@ void msdMenu_Init(void)
 	s_msd.quitmenu.textStyle		= UI_TINYFONT;
 
 	Menu_AddItem( &s_msd.menu, &s_msd.quitmenu );
+	UI_LogFuncEnd();
 }
 
 /*
@@ -359,6 +370,7 @@ UI_msdMenu
 */
 void UI_msdMenu(int32_t maxhull, int32_t currhull, int32_t maxshield, int32_t currshield, int32_t shieldstate, int32_t warpstate, int32_t turbostate, int32_t transstate, int32_t alertstate, char *model)
 {
+	UI_LogFuncBegin();
 	memset( &s_msd, 0, sizeof( s_msd ) );
 
 	s_msd.maxhull = maxhull;
@@ -385,4 +397,5 @@ void UI_msdMenu(int32_t maxhull, int32_t currhull, int32_t maxshield, int32_t cu
 	UI_PushMenu( &s_msd.menu );
 
 	Menu_AdjustCursor( &s_msd.menu, 1 );	
+	UI_LogFuncEnd();
 }
