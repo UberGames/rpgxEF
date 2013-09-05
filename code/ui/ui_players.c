@@ -938,7 +938,7 @@ static qboolean UI_ParseAnimationFile( const char *filename, animation_t *animat
 		return qfalse;
 	}
 	if ( len >= ( sizeof( text ) - 1 ) ) {
-		Com_Printf( "File %s too long\n", filename );
+		UI_Logger( LL_ERROR, "File %s too long\n", filename );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -991,7 +991,7 @@ static qboolean UI_ParseAnimationFile( const char *filename, animation_t *animat
 			break;
 		}
 
-		Com_Printf( "unknown token '%s' is %s\n", token, filename );
+		UI_Logger( LL_WARN, "unknown token '%s' is %s\n", token, filename );//Reclassn this as error?
 	}
 
 	// read information for each frame
@@ -1035,7 +1035,7 @@ static qboolean UI_ParseAnimationFile( const char *filename, animation_t *animat
 	}
 
 	if ( i != MAX_ANIMATIONS ) {
-		Com_Printf( "Error parsing animation file: %s", filename );
+		UI_Logger( LL_ERROR, "parsing animation file: %s", filename );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -1118,7 +1118,7 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 
 	if ( ( skinStar = strstr( skinSetFrame, "*" ) ) == NULL )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: No '*' specified in model skin set!\n" );
+		UI_Logger( LL_ERROR, "No '*' specified in model skin set!\n" );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -1138,13 +1138,13 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 		}
 		else
 		{
-			Com_Printf( "ERROR: The '*' in %s must be on either the start or end, not the middle.\n", skinSetFrame );
+			UI_Logger( LL_ERROR, "The '*' in %s must be on either the start or end, not the middle.\n", skinSetFrame );
 			UI_LogFuncEnd();
 			return qfalse;
 		}
 	}
 
-	//Com_Printf( S_COLOR_RED "DEBUG: skinSetName = %s \n", skinSetName );
+	//CUI_Logger( LL_DEBUG, "skinSetName = %s \n", skinSetName );
 
 	Com_sprintf( skinSetRoute, sizeof( skinSetRoute ), "models/players_rpgx/%s/%s.skinset", charName, skinSetName );
 
@@ -1152,14 +1152,14 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 
 	if ( len <= 0 )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Could not open file: %s\n", skinSetRoute );
+		UI_Logger( LL_ERROR, "Could not open file: %s\n", skinSetRoute );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
 
 	if ( len > sizeof( buffer) - 1 )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Imported file is too big for buffer: %s. Len is %i\n", skinSetRoute, len );
+		UI_Logger( LL_ERROR, "Imported file is too big for buffer: %s. Len is %i\n", skinSetRoute, len );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -1170,7 +1170,7 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 
 	if ( !buffer[0] )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Could not import data from %s\n", skinSetRoute );
+		UI_Logger( LL_ERROR, "Could not import data from %s\n", skinSetRoute );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -1183,7 +1183,7 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 
 	if ( Q_stricmp( token, "{" ) )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Skinset %s did not start with a '{'\n", skinSetRoute );
+		UI_Logger( LL_ERROR, "Skinset %s did not start with a '{'\n", skinSetRoute );
 		return qfalse;
 	}
 	else
@@ -1209,7 +1209,7 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 
 				if ( !noBlinking && !pi->headSkinBlink ) {
 					//We'll alert them, but not cancel the loop
-					Com_Printf( S_COLOR_RED "WARNING: Couldn't load headSkinBlink: %s\n", token);
+					UI_Logger( LL_WARN, "Couldn't load headSkinBlink: %s\n", token);
 				}
 				continue;
 			}
@@ -1232,7 +1232,7 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 				//the minimum time larger than the max time >.<
 				if ( n > i ) 
 				{
-					Com_Printf( S_COLOR_RED "ERROR: Minimum blink time was larger than maximum blink time.\n" );
+					UI_Logger( LL_ERROR, "Minimum blink time was larger than maximum blink time.\n" );
 					continue;
 				}
 
@@ -1250,7 +1250,7 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 
 				pi->torsoSkin = trap_R_RegisterSkin( token );
 				if (!pi->torsoSkin ) {
-					Com_Printf( S_COLOR_RED "ERROR: Couldn't load torsoSkin: %s\n", token);
+					UI_Logger( LL_ERROR, "Couldn't load torsoSkin: %s\n", token);
 				}
 				continue;
 			}
@@ -1262,7 +1262,7 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 
 				pi->legsSkin = trap_R_RegisterSkin( token );
 				if (!pi->legsSkin ) {
-					Com_Printf( S_COLOR_RED "ERROR: Couldn't load legsSkin: %s\n", token);
+					UI_Logger( LL_ERROR, "Couldn't load legsSkin: %s\n", token);
 				}
 				continue;
 			}
@@ -1281,7 +1281,7 @@ static qboolean UI_ParseSkinSetDataFile( playerInfo_t *pi, const char *skinSetFr
 
 				pi->headSkin = trap_R_RegisterSkin( token );
 				if ( !pi->headSkin ) {
-					Com_Printf( S_COLOR_RED "ERROR: Couldn't load headSkin: %s\n", token );
+					UI_Logger( LL_ERROR, "Couldn't load headSkin: %s\n", token );
 					return qfalse;
 				}
 				continue;
@@ -1336,7 +1336,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 	}
 	//Another error... if text is WAY bigger than our available buffer O_O
 	if ( file_len >= sizeof( charText ) - 1 ) {
-		Com_Printf( S_COLOR_RED "Model Data File %s too long... WAY too long\n", fileName );
+		UI_Logger( LL_ERROR, "Model Data File %s too long... WAY too long\n", fileName );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -1369,13 +1369,13 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 	//from the looks of this, I think we have to do this after
 	//every parse call. O_O
 	if ( !token[0] ) {
-		Com_Printf( S_COLOR_RED "No data found in model data buffer!\n");
+		UI_Logger( LL_ERROR, "No data found in model data buffer!\n");
 		UI_LogFuncEnd();
 		return qfalse;
 	}
 
 	if ( Q_stricmp(token, "{" ) ) {
-		Com_Printf(S_COLOR_RED "Missing { in %s\n", fileName);
+		UI_Logger( LL_ERROR, "Missing { in %s\n", fileName);
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -1401,7 +1401,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 			//no valid anim file found.  Don't give up hope though.
 			//We have a backup resort at the end if need be. :)
 			if ( ( didAnims = UI_ParseAnimationFile( token, pi->animations ) ) == qfalse ) {
-				Com_Printf( S_COLOR_RED "WARNING: Was unable to load file %s.\n", token );
+				UI_Logger( LL_WARN, "Was unable to load file %s.\n", token );
 			}
 			continue;
 		}
@@ -1430,7 +1430,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 
 			pi->legsModel = trap_R_RegisterModel( token );
 			if (!pi->legsModel) {
-				Com_Printf( S_COLOR_RED "ERROR: Unable to load legs model: %s\n", token);
+				UI_Logger( LL_ERROR, "Unable to load legs model: %s\n", token);
 				UI_LogFuncEnd();
 				return qfalse;
 			}
@@ -1450,10 +1450,10 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 				continue;
 			}
 			pi->torsoModel = trap_R_RegisterModel( token );
-			//Com_Printf("Torsomodel passed as %s, %i\n", token, (int32_t)ci->torsoModel);
+			//UI_Logger( LL_DEBUG, "Torsomodel passed as %s, %i\n", token, (int32_t)ci->torsoModel);
 
 			if (!pi->torsoModel) {
-				Com_Printf( S_COLOR_RED "ERROR: Unable to load torso model: %s\n", token);
+				UI_Logger( LL_ERROR, "Unable to load torso model: %s\n", token);
 				UI_LogFuncEnd();
 				return qfalse;
 			}
@@ -1470,7 +1470,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 
 			pi->headModel = trap_R_RegisterModel( token );
 			if (!pi->headModel) {
-				Com_Printf( S_COLOR_RED "ERROR: Unable to load head model: %s\n", token);
+				UI_Logger( LL_ERROR, "Unable to load head model: %s\n", token);
 				UI_LogFuncEnd();
 				return qfalse;
 			}
@@ -1510,7 +1510,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 								pi->boltonTags[i].tagModel = trap_R_RegisterModel( token );
 								
 								if (!pi->boltonTags[i].tagModel) {
-									Com_Printf( S_COLOR_RED "WARNING: Unable to load bolton model: %s\n", token);
+									UI_Logger( LL_WARN, "Unable to load bolton model: %s\n", token);
 								}
 
 								i++;
@@ -1521,7 +1521,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 							}
 						}
 
-						//Com_Printf("Index: %i, Name: %s, Handle: %i\n", ci->boltonTags[ci->numBoltOns].modelBase, ci->boltonTags[ci->numBoltOns].tagName, ci->boltonTags[ci->numBoltOns].tagModel  );
+						//UI_Logger( LL_DEBUG, "Index: %i, Name: %s, Handle: %i\n", ci->boltonTags[ci->numBoltOns].modelBase, ci->boltonTags[ci->numBoltOns].tagName, ci->boltonTags[ci->numBoltOns].tagModel  );
 						token = COM_Parse( &textPtr );
 						if ( !token[0] ) { 
 							break; 
@@ -1548,7 +1548,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 			
 			if ( !UI_ParseSkinSetDataFile( pi, token, charName, skinName ) )
 			{
-				Com_Printf( S_COLOR_RED "WARNING: Could not load data from specified skin set in char: %s. Attempting to load default.\n", charName );
+				UI_Logger( LL_WARN, "Could not load data from specified skin set in char: %s. Attempting to load default.\n", charName );
 			}
 			else
 			{
@@ -1563,19 +1563,19 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 	{
 		if ( !UI_ParseSkinSetDataFile( pi, va("%s_*", modelName ), charName, skinName ) )
 		{
-			Com_Printf( S_COLOR_RED "ERROR: Tried loading default skin set, however it failed.\n");
+			UI_Logger( LL_ERROR, "Tried loading default skin set, however it failed.\n");
 		}	
 	}
 
 	//if any of the models or skins were left blank, then output false. Coz we need them. :P
 	if (!pi->headModel || !pi->torsoModel || !pi->legsModel ) {
-		Com_Printf( S_COLOR_RED "One or more necessary model files weren't loaded from %s\n", fileName );
+		UI_Logger( LL_ERROR, "One or more necessary model files weren't loaded from %s\n", fileName );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
 
 	if (!pi->headSkin || !pi->torsoSkin || !pi->legsSkin ) {
-		Com_Printf( S_COLOR_RED "One or more necessary skin files weren't loaded from %s\n", fileName );
+		UI_Logger( LL_ERROR, "One or more necessary skin files weren't loaded from %s\n", fileName );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -1596,7 +1596,7 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 			//if we looped all the way to the end.... ie BAD
 			if (i <= 0) {
 				//we obviously have no animation directory :(
-				Com_Printf(S_COLOR_RED "ERROR: Was unable to calculate location of animation.cfg for %s\n", fileName);
+				UI_Logger( LL_ERROR, "Was unable to calculate location of animation.cfg for %s\n", fileName);
 				UI_LogFuncEnd();
 				return qfalse;
 			}
@@ -1613,18 +1613,18 @@ qboolean UI_ParseModelDataFile( playerInfo_t *pi, const char *charName,
 		//add animation.cfg to the end of the string
 		Q_strcat(legsFileRoute, sizeof(legsFileRoute), "animation.cfg");
 
-		//Com_Printf( S_COLOR_RED "WARNING: Failed to load animation file specified in model config, attempting to load %s\n", legsFileRoute );
+		//UI_Logger( LL_WARN, "Failed to load animation file specified in model config, attempting to load %s\n", legsFileRoute );
 
 		//Parse it
 		if ( !UI_ParseAnimationFile( legsFileRoute, pi->animations) ) {
-			Com_Printf( "Tried loading anim data from location %s, however nothing was valid.\n", legsFileRoute );
+			UI_Logger( LL_ERROR, "Tried loading anim data from location %s, however nothing was valid.\n", legsFileRoute );
 			UI_LogFuncEnd();
 			return qfalse;
 		}
 	}
 	else {
 		if ( !legsFileRoute[0] ) {
-			Com_Printf( S_COLOR_RED "Couldn't load/locate any player animation data for player: %s.\n", charName );
+			UI_Logger( LL_ERROR, "Couldn't load/locate any player animation data for player: %s.\n", charName );
 			UI_LogFuncEnd();
 			return qfalse;
 		}
@@ -1669,7 +1669,7 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 		len = strlen( modelSkinName );
 		Q_strncpyz( charName, modelSkinName, ((int32_t)len - (int32_t)strlen(model)) + 1 );
 	}
-	//Com_Printf("%s\n", newInfo.charName);
+	//UI_Logger( LL_DEBUG, "%s\n", newInfo.charName);
 
 	//slash = strchr( newInfo.modelName, '/' );
 	if ( !model || !model[1] ) {
@@ -1721,7 +1721,7 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 	//try loading the main model
 	if ( !UI_ParseModelDataFile( pi, charName, modelName, skinName ) ) 
 	{
-		Com_Printf( S_COLOR_RED "Was unable to parse model file for character: %s/%s/%s\n", charName, modelName, skinName );
+		UI_Logger( LL_WARN, "Was unable to parse model file for character: %s/%s/%s\n", charName, modelName, skinName );
 		//if that fails, try and load the model's default data at least
 		if ( !UI_ParseModelDataFile( pi, charName, DEFAULT_MODEL, DEFAULT_SKIN ) ) 
 		{

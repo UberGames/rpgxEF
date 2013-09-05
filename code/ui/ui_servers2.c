@@ -966,7 +966,7 @@ static void ArenaServers_DoRefresh( void )
 				
 				//TiM - testing the data output from this baby
 				//if ( !Q_stricmp( Info_ValueForKey( info, "game" ), "rpg-x" ) )
-					//Com_Printf( "%s", info );
+					//UI_Logger( LL_DEBUG, "%s", info );
 			}
 
 			// insert ping results

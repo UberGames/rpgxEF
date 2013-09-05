@@ -2126,7 +2126,7 @@ void Menu_AddItem( menuframework_s *menu, void *item )
 				break;
 
 			default:
-				//Com_Printf( S_COLOR_RED "Menu_Init: unknown type %d, ID was %i\n", itemptr->type, itemptr->id );
+				//UI_Logger( LL_ERROR, "Menu_Init: unknown type %d, ID was %i\n", itemptr->type, itemptr->id );
 				trap_Error( va("Menu_Init: unknown type %d, ID was %i", itemptr->type, itemptr->id) );
 		}
 	}

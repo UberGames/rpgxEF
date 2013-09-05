@@ -144,55 +144,55 @@ static qboolean PlayerSettings_SettingsAreDifferent ( void ) {
 
 	//Name
 	if ( Q_stricmp( s_playersettings.name.field.buffer, UI_Cvar_VariableString( "name" ) ) ) {
-		//Com_Printf( S_COLOR_RED "Name changed!\n");
+		//UI_Logger( LL_DEBUG, "Name changed!\n");
 		endResult = qtrue;
 	}
 
 	//Age
 	if ( Q_stricmp( s_playersettings.age.field.buffer, UI_Cvar_VariableString( "age" ) ) ) {
-		//Com_Printf( S_COLOR_RED "Age changed!\n");
+		//UI_Logger( LL_DEBUG, "Age changed!\n");
 		endResult = qtrue;
 	}
 
 	//Race
 	if ( Q_stricmp( s_playersettings.race.field.buffer, UI_Cvar_VariableString( "race" ) ) ) {
-		//Com_Printf( S_COLOR_RED "Race changed!\n");
+		//UI_Logger( LL_DEBUG, "Race changed!\n");
 		endResult = qtrue;
 	}
 
 	//playerClass field
 	if ( s_playersettings.pClass.curvalue != s_playersettings.initData.classIndex ) {
-		//Com_Printf( S_COLOR_RED "Class changed!\n");
+		//UI_Logger( LL_DEBUG, "Class changed!\n");
 		endResult = qtrue;
 	}
 
 	//playerRank field
 	if ( s_playersettings.pRank.curvalue != s_playersettings.initData.rankIndex ) {
-		//Com_Printf( S_COLOR_RED "Rank changed!\n");
+		//UI_Logger( LL_DEBUG, "Rank changed!\n");
 		endResult = qtrue;
 	}
 
 	//height... hackily normalized lol
 	if ( Q_stricmp( va( "%2.5f",s_playersettings.height.curvalue), va( "%2.5f", atof( UI_Cvar_VariableString( "height" ) ) ) ) ) {
-		//Com_Printf( S_COLOR_RED "Height changed!\n");
+		//UI_Logger( LL_DEBUG, "Height changed!\n");
 		endResult = qtrue;
 	}
 
 	//weight... see above rofl
 	if ( Q_stricmp( va( "%2.5f",s_playersettings.weight.curvalue), va( "%2.5f", atof( UI_Cvar_VariableString( "weight" ) ) ) ) ) {
-		//Com_Printf( S_COLOR_RED "Weight changed!\n");
+		//UI_Logger( LL_DEBUG, "Weight changed!\n");
 		endResult = qtrue;
 	}
 
 	//Class Text field
 	if ( s_playersettings.pClass.curvalue == s_playersettings.numClasses && Q_stricmp( s_playersettings.classTxt.field.buffer, UI_Cvar_VariableString( "ui_playerClass" ) ) ) {
-		//Com_Printf( S_COLOR_RED "Class text changed!\n");
+		//UI_Logger( LL_DEBUG, "Class text changed!\n");
 		endResult = qtrue;
 	}	
 
 	//Rank Text field
 	if ( s_playersettings.pRank.curvalue == s_playersettings.numRanks && Q_stricmp( s_playersettings.rankTxt.field.buffer, UI_Cvar_VariableString( "ui_playerRank" ) ) ) {
-		//Com_Printf( S_COLOR_RED "Rank text changed!\n");
+		//UI_Logger( LL_DEBUG, "Rank text changed!\n");
 		endResult = qtrue;
 	}
 	UI_LogFuncEnd();

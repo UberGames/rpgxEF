@@ -200,7 +200,7 @@ static int32_t PlayerModel_CheckInFilter( char* string, filterData_t *filter, in
 
 	while( filter[i].filterName[0] && i < width ) {
 		if ( !Q_stricmp( filter[i].filterName, string ) ) {
-			//Com_Printf( S_COLOR_RED "String %s already in cell %i\n", array[i], i );
+			//UI_Logger( LL_ERROR, "String %s already in cell %i\n", array[i], i );
 			UI_LogFuncEnd();
 			return i;
 		}
@@ -216,7 +216,7 @@ static int32_t PlayerModel_CheckInFilter( char* string, filterData_t *filter, in
 		*num = *num + 1; //aah I see. You can't call *num++ since that increments the address, not the value XD
 	}
 	
-	//Com_Printf( S_COLOR_RED "Added %s to cell %i", array[i], i );
+	//UI_Logger( LL_DEBUG, "Added %s to cell %i", array[i], i );
 
 	UI_LogFuncEnd();
 	return i;
@@ -382,7 +382,7 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 
 	if ( numFiles <= 0 )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: No Skinset files found!\n" );	
+		UI_Logger( LL_ERROR, "No Skinset files found!\n" );	
 		UI_LogFuncEnd();
 		return;
 	}
@@ -412,12 +412,12 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 			
 		Q_strncpyz( skins[j], token, sizeof( skins[j] ) );
 
-		//Com_Printf( S_COLOR_RED "%s\n", skins[j] );
+		//UI_Logger( LL_DEBUG, "%s\n", skins[j] );
 		j++;
 	}
-	//Com_Printf(  "Model Break\n", skins[j] );
+	//UI_Logger( LL_DEBUG, "Model Break\n", skins[j] );
 
-	//Com_Printf( "%s\n", s_playermodel.modelNames[2] );
+	//UI_Logger( LL_DEBUG, "%s\n", s_playermodel.modelNames[2] );
 	j = 0;
 	while ( j < MAX_PLAYERMODELS )
 	{
@@ -435,13 +435,13 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 		fileLen = trap_FS_FOpenFile( filePath, &f, FS_READ);
 		
 		if ( fileLen <= 0 ) {
-			Com_Printf( S_COLOR_RED "File not found: %s\n", filePath );
+			UI_Logger( LL_ERROR, "File not found: %s\n", filePath );
 			UI_LogFuncEnd();
 			return;
 		}
 
 		if ( fileLen > 20000 ) {
-			Com_Printf( S_COLOR_RED "File exceeded maximum size: %s\n", filePath );
+			UI_Logger( LL_ERROR, "File exceeded maximum size: %s\n", filePath );
 			UI_LogFuncEnd();
 			return;
 		}
@@ -485,7 +485,7 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 
 		if ( !strchr( skinSetFrame, '*' ) )
 		{
-			Com_Printf( S_COLOR_RED "ERROR: No '*' in skinset define for character: %s/%s\n", s_playermodel.charNames[s_playermodel.selectedChar].charName, s_playermodel.modelNames[j] );
+			UI_Logger( LL_ERROR, "No '*' in skinset define for character: %s/%s\n", s_playermodel.charNames[s_playermodel.selectedChar].charName, s_playermodel.modelNames[j] );
 			continue;
 		}
 
@@ -548,7 +548,7 @@ static void PlayerModel_LoadAvailableSkins( void ) {
 		for ( i = 0; i < numSkins; i++ )
 		{
 			Q_strncpyz( s_playermodel.skinNamesUpr[j][i], s_playermodel.skinNames[j][i], sizeof( s_playermodel.skinNamesUpr[j][i] ) );
-			//Com_Printf( S_COLOR_BLUE "%s\n", s_playermodel.skinNamesUpr[j][i] );
+			//UI_Logger( LL_DEBUG, "%s\n", s_playermodel.skinNamesUpr[j][i] );
 		}
 
 		numSkins=0;
@@ -567,7 +567,7 @@ static int32_t QDECL CharMediaList_Compare( const void *ptr1, const void *ptr2 )
 	str1 = (const char *)ptr1;
 	str2 = (const char *)ptr2;
 
-	//Com_Printf( "STR1: %s STR2: %s\n", str1, str2 );
+	//UI_Logger( LL_DEBUG, "STR1: %s STR2: %s\n", str1, str2 );
 
 	chr1 = *str1;
 	chr2 = *str2;
@@ -638,7 +638,7 @@ static int32_t PlayerModel_PopulateSkinsList ( void ) {
 	UI_LogFuncBegin();
 
 	if ( !s_playermodel.skinNames[s_playermodel.charModel.curvalue][0][0] ) {
-		Com_Printf( S_COLOR_RED "ERROR: No valid skins found.\n" );	
+		UI_Logger( LL_ERROR, "No valid skins found.\n" );	
 		UI_LogFuncEnd();
 		return -1;
 	}
@@ -704,7 +704,7 @@ static void PlayerModel_OffsetCharList( int32_t* offset ) {
 		buffer = s_playermodel.charNamesUpr[i + *offset];
 		//Q_strncpyz( buffer, s_playermodel.charNames[i + *offset], sizeof ( buffer ) );
 
-		//Com_Printf( "Buffer - %s, %s\n", buffer, s_playermodel.charNames[1] );
+		//UI_Logger( LL_DEBUG, "Buffer - %s, %s\n", buffer, s_playermodel.charNames[1] );
 
 		if ( !buffer[0] ) {
 			if ( s_playermodel.charMenu[i].generic.flags & ( QMF_INACTIVE | QMF_HIDDEN ) ) {
@@ -753,7 +753,7 @@ static void PlayerModel_RebuildCharMenu( void ) {
 		genderValid = s_playermodel.genderFilter.curvalue == 0 || 
 						( s_playermodel.genderList[s_playermodel.genderFilter.curvalue].filterIndex == s_playermodel.charNames[i].gender );
 		
-		//Com_Printf( "Char %s valid: %i %i\n", s_playermodel.charNames[i].charName, raceValid, genderValid );
+		//UI_Logger( LL_DEBUG, "Char %s valid: %i %i\n", s_playermodel.charNames[i].charName, raceValid, genderValid );
 
 		if ( raceValid && genderValid ) 
 		{
@@ -1049,7 +1049,7 @@ static void PlayerModel_MenuEvent( void* ptr, int32_t event )
 					s_playermodel.selectedChar = s_playermodel.charNames[ s_playermodel.selectedChar ].index;
 				}
 
-				//Com_Printf( S_COLOR_RED "%i %i\n", s_playermodel.selectedChar, s_playermodel.charNames[ s_playermodel.selectedChar ].index );
+				//UI_Logger( LL_DEBUG, "%i %i\n", s_playermodel.selectedChar, s_playermodel.charNames[ s_playermodel.selectedChar ].index );
 
 				//safety net. Without this, if a player held down 'enter', the game would overflow trying to load the same file over and over really fast. bad, really bad lol
 				if ( oldChar == s_playermodel.selectedChar && s_playermodel.selectedChar != -1  )
@@ -1180,7 +1180,7 @@ static void PlayerModel_BuildList( void )
 	numdirs = trap_FS_GetFileList("models/players_rpgx", "/", dirlist, sizeof(dirlist) );
 	dirptr  = dirlist;
 	
-	///Com_Printf("%i folders found\n", numdirs );
+	///UI_Logger( LL_DEBUG, "%i folders found\n", numdirs );
 
 	for (i=0; i<numdirs && s_playermodel.numChars < MAX_PLAYERCHARS; i++,dirptr+=dirlen+1)
 	{
@@ -1235,21 +1235,21 @@ static void PlayerModel_BuildList( void )
 				Com_sprintf( filePath, sizeof(filePath), "models/players_rpgx/%s/race.cfg", dirptr );
 				fileLength = trap_FS_FOpenFile( filePath, &f, FS_READ );
 
-				//Com_Printf( S_COLOR_RED "File %s loaded.\n", dirptr );
+				//UI_Logger( LL_DEBUG, "File %s loaded.\n", dirptr );
 
 				if ( !fileLength ) {
 					continue;
 				}
-				//Com_Printf( S_COLOR_RED "We have length.\n" );
+				//UI_Logger( LL_DEBUG, "We have length.\n" );
 
 				if ( fileLength > sizeof( buffer ) - 1 ) {
 					continue;
 				}
-				//Com_Printf( S_COLOR_RED "Good size.\n" );
+				//UI_Logger( LL_DEBUG, "Good size.\n" );
 
 				memset( &buffer, 0, sizeof( buffer ) );
 				trap_FS_Read( buffer, fileLength, f );
-				//Com_Printf( S_COLOR_RED "Loaded data...\n" );
+				//UI_Logger( LL_DEBUG, "Loaded data...\n" );
 
 				trap_FS_FCloseFile( f );
 
@@ -1266,20 +1266,20 @@ static void PlayerModel_BuildList( void )
 				if ( !token )
 					continue;
 
-				//Com_Printf( S_COLOR_RED "Race %s Loaded\n", token );
+				//UI_Logger( LL_DEBUG, "Race %s Loaded\n", token );
 
 				tempBuff->race = PlayerModel_CheckInFilter( token, s_playermodel.raceList, MAX_RACES, &s_playermodel.numRaces );
-				//Com_Printf( S_COLOR_RED "Number of races now: %i\n",  s_playermodel.numRaces );
+				//UI_Logger( LL_DEBUG, "Number of races now: %i\n",  s_playermodel.numRaces );
 
 				token = COM_Parse( &filePtr );
 				if ( !token )
 					continue;
-				//Com_Printf( S_COLOR_RED "Gender %s loaded\n", token );
+				//UI_Logger( LL_DEBUG, "Gender %s loaded\n", token );
 
 				//tempBuff->gender = PlayerModel_CheckInArray( token, s_playermodel.genderNames, MAX_GENDERS );
 				tempBuff->gender = PlayerModel_CheckInFilter( token, s_playermodel.genderList, MAX_GENDERS, &s_playermodel.numGenders );
 
-				//Com_Printf( S_COLOR_RED "%i\n", tempBuff[i].gender );
+				//UI_Logger( LL_DEBUG, "%i\n", tempBuff[i].gender );
 			}
 			
 			s_playermodel.numChars++;
@@ -1407,7 +1407,7 @@ static void PlayerModel_SetMenuItems( void )
 		}
 	}
 	
-	//Com_Printf( S_COLOR_RED "Load model is %s %s %s\n", s_playermodel.modelName, model, skin );
+	//UI_Logger( LL_DEBUG, "Load model is %s %s %s\n", s_playermodel.modelName, model, skin );
 
 	// find model in our list
 	for (i=0; i<s_playermodel.numChars; i++)
@@ -1674,7 +1674,7 @@ void PlayerModelMenu_Graphics (void)
 				( s_playermodel.charNames[i + s_playermodel.scrollOffset].index >= 0 && s_playermodel.charNames[i + s_playermodel.scrollOffset].index == s_playermodel.selectedChar )
 				)
 			{
-				//Com_Printf( S_COLOR_GREEN "%i %i %i\n", i, s_playermodel.selectedChar, s_playermodel.charNames[i + s_playermodel.scrollOffset].index );
+				//UI_Logger( LL_DEBUG, "%i %i %i\n", i, s_playermodel.selectedChar, s_playermodel.charNames[i + s_playermodel.scrollOffset].index );
 				s_playermodel.charMenu[i].textcolor = CT_WHITE;
 				s_playermodel.charMenu[i].textcolor2 = CT_WHITE;
 			}

@@ -243,7 +243,7 @@ static void Player_DoEmote( int32_t emoteNum ) {
 
 	emote = &bg_emoteList[ emoteNum ];
 
-	//Com_Printf( S_COLOR_RED "Emote num: %i, Enum: %i, Legs time: %i\n", emoteNum, emote->enumName );
+	//UI_Logger( LL_DEBUG, "Emote num: %i, Enum: %i, Legs time: %i\n", emoteNum, emote->enumName );
 
 	if ( !emote ){
 		UI_LogFuncEnd();

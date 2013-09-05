@@ -431,7 +431,7 @@ static void UI_ManageDeckLoading( void )
 
 	if ( file_len <= 1 )
 	{
-		//Com_Printf( S_COLOR_YELLOW "WARNING: Attempted to load %s, but wasn't found.\n", fileRoute );
+		//UI_Logger( LL_WARN, "Attempted to load %s, but wasn't found.\n", fileRoute );
 		UI_TurboliftMenu_LoadDecks();
 		UI_LogFuncEnd();
 		return;
@@ -442,7 +442,7 @@ static void UI_ManageDeckLoading( void )
 
 	if ( !buffer[0] )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Attempted to load %s, but no data was read.\n", fileRoute );
+		UI_Logger( LL_ERROR, "Attempted to load %s, but no data was read.\n", fileRoute );
 		UI_TurboliftMenu_LoadDecks();
 		UI_LogFuncEnd();
 		return;
@@ -455,7 +455,7 @@ static void UI_ManageDeckLoading( void )
 	COM_BeginParseSession();
 	textPtr = buffer;
 
-	//Com_Printf( S_COLOR_RED "Beginning Parse\n" );
+	//UI_Logger( LL_DEBUG, "Beginning Parse\n" );
 
 	//expected format is 'decknum' <space> 'deck Desc'
 	while( 1 )
@@ -464,7 +464,7 @@ static void UI_ManageDeckLoading( void )
 		if ( !token[0] )
 			break;
 
-		//Com_Printf( S_COLOR_RED "First Token: %s\n", token );
+		//UI_Logger( LL_DEBUG, "First Token: %s\n", token );
 
 		//in case of Scooter's EF SP style DAT files, which require 'DECK' in front of the number
 		if ( !Q_strncmp( token, "DECK", 4 ) )
@@ -477,7 +477,7 @@ static void UI_ManageDeckLoading( void )
 		if (!token[0])
 			continue;
 
-		//Com_Printf( S_COLOR_RED "Second Token: %s\n", token );
+		//UI_Logger( LL_DEBUG, "Second Token: %s\n", token );
 
 		Q_strncpyz( s_turbolift.deckData[s_turbolift.numDecks].deckDesc, 
 					token,

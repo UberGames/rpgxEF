@@ -1101,7 +1101,7 @@ static void MainArenaServers_StopRefresh( void )
 	if ( !s_main.networkParms.numservers )
 		s_main.networkParms.showNoServersAlert = qtrue;
 
-	//Com_Printf( S_COLOR_RED "OUTPUT: Name: %s, Map: %s\n", s_main.networkParms.table[1].servernode.hostname, s_main.networkParms.table[1].servernode.mapname );
+	//UI_Logger( LL_DEBUG, "OUTPUT: Name: %s, Map: %s\n", s_main.networkParms.table[1].servernode.hostname, s_main.networkParms.table[1].servernode.mapname );
 
 	MainArenaServers_UpdateMenu();
 	UI_LogFuncEnd();
@@ -1175,7 +1175,7 @@ static void MainArenaServers_DoRefresh( void )
 				
 				//TiM - testing the data output from this baby
 				//if ( !Q_stricmp( Info_ValueForKey( info, "game" ), "rpg-x" ) )
-					//Com_Printf( "%s", info );
+					//UI_Logger( LL_DEBUG, "%s", info );
 			}
 
 			// insert ping results
@@ -2359,7 +2359,7 @@ void UI_PlayIntroCinematic( void )
 	UI_LogFuncBegin();
 	if ( !uis.playCinematic ) { //&& ( trap_Milliseconds() <=5000 ) 
 			uis.playCinematic = qtrue;	//FIXME: Duhhh I'm a stupid function that completely ignores the value of uis.playCinematic O_o						  
-			//Com_Printf( "qtrue" );								  
+			//UI_Logger( LL_DEBUG, "qtrue" );								  
 			trap_Cmd_ExecuteText( EXEC_APPEND, "wait 5; wait 5; cinematic rpgx_intro.roq \n" ); 
 	}	
 	UI_LogFuncEnd();

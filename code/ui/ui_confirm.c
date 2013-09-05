@@ -161,7 +161,7 @@ static void ConfirmMenu_Draw( void )
 		height		= (SMALLCHAR_HEIGHT + 4) * numLines;
 		y			= 277 - (height * 0.5); //269
 
-		//Com_Printf( S_COLOR_RED "numLines: %i\n", numLines );
+		//UI_Logger( LL_DEBUG, "numLines: %i\n", numLines );
 
 		for ( i = 0; i < numLines; i++ )
 		{
@@ -179,7 +179,7 @@ static void ConfirmMenu_Draw( void )
 				spacePoint = strlen(message);
 
 			Q_strncpyz( buffer, message, spacePoint + 1 );
-			//Com_Printf( S_COLOR_RED "%s\n", buffer );
+			//UI_Logger( LL_DEBUG, "%s\n", buffer );
 
 			UI_DrawProportionalString( 345, y, buffer, UI_SMALLFONT | UI_CENTER, color_red );
 			

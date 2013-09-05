@@ -1518,7 +1518,7 @@ void UI_LibraryMenu_Cache (void)
 
 	if ( len > MAXLIBRARYTEXT ) 
 	{
-		Com_Printf( S_COLOR_RED "UI_LibraryMenu_Cache : sp_library.dat size (%d) > max (%d)!\n", len, MAXLIBRARYTEXT);
+		UI_Logger( LL_ERROR, "UI_LibraryMenu_Cache : sp_library.dat size (%d) > max (%d)!\n", len, MAXLIBRARYTEXT);
 		UI_LogFuncEnd();
 		return;
 	}

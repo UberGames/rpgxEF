@@ -582,7 +582,7 @@ static void AdminMenu_Event( void* ptr, int32_t event ) {
 					}
 				}
 
-				/* Com_Printf( "Cmd: %s\n", cmd ); */
+				/* UI_Logger( LL_DEBUG, "Cmd: %s\n", cmd ); */
 
 				trap_Cmd_ExecuteText( EXEC_APPEND, cmd );
 			}
@@ -1558,7 +1558,7 @@ static void ClientAdmin_GetClient ( int32_t listNum )
 	/* holy crap this is bad. */
 	/* This could happen if a selected player disconnected at exactly the wrong time lol */
 	if ( !info[0] ) {
-		Com_Printf( S_COLOR_RED "ERROR: Selected player was not found. Please try again." );
+		UI_Logger( LL_ERROR, "Selected player was not found. Please try again." );
 		/* Re-Init. If it were a dud player, this'll probably get rid of them */
 		s_clientAdmin.clientList.curvalue = 0;
 		AdminGeneric_InitLists();
@@ -2112,14 +2112,14 @@ static void AdminAudio_InitFilesList ( void )
 	strLen = trap_FS_FOpenFile( "ext_data/audioFileRoutes.dat", &f, FS_READ );
 	
 	if ( !strLen ) {
-		Com_Printf( S_COLOR_RED "Warning: ext_data/audioFileRoutes.dat could not be found.\n" );
+		UI_Logger( LL_WARN, "ext_data/audioFileRoutes.dat could not be found.\n" );
 		return;
 	}
 
 	trap_FS_Read( buffer, sizeof( buffer ), f );
 
 	if ( !buffer[0] ) {
-		Com_Printf( S_COLOR_RED "Warning: could not read ext_data/audio_dirs.dat\n" );
+		UI_Logger( LL_WARN, "could not read ext_data/audio_dirs.dat\n" );
 		return;
 	}
 
@@ -2162,7 +2162,7 @@ static void AdminAudio_InitFilesList ( void )
 			}
 			else
 			{
-				Com_Printf( "ERROR: musicFiles does not have an opening brace!\n" );
+				UI_Logger( LL_ERROR, "musicFiles does not have an opening brace!\n" );
 				continue;
 			}
 		}
@@ -2194,7 +2194,7 @@ static void AdminAudio_InitFilesList ( void )
 			}
 			else
 			{
-				Com_Printf( "ERROR: soundFiles does not have an opening brace!\n" );
+				UI_Logger( LL_ERROR, "soundFiles does not have an opening brace!\n" );
 				continue;
 			}
 		}
@@ -2210,7 +2210,7 @@ static void AdminAudio_InitFilesList ( void )
 
 		if ( !numFiles || !buffer[0] ) 
 		{
-			Com_Printf( S_COLOR_RED "WARNING: No songs found in directory: %s\n", musicDirs[i] );
+			UI_Logger( LL_WARN, "No songs found in directory: %s\n", musicDirs[i] );
 			continue;
 		}
 
@@ -2241,7 +2241,7 @@ static void AdminAudio_InitFilesList ( void )
 			}
 
 			Com_sprintf( s_adminAudio.musicList[s_adminAudio.numSongs].fileRoute, sizeof( s_adminAudio.musicList[s_adminAudio.numSongs].fileRoute ), "%s/%s", musicDirs[i], strPtr );
-			/*Com_Printf( S_COLOR_RED "%s\n", s_adminAudio.musicList[s_adminAudio.numSongs] );*/
+			/*UI_Logger( LL_DEBUG, "%s\n", s_adminAudio.musicList[s_adminAudio.numSongs] );*/
 			s_adminAudio.musicList[s_adminAudio.numSongs].format = TYPE_MP3;
 			s_adminAudio.numSongs++;
 
@@ -2286,7 +2286,7 @@ static void AdminAudio_InitFilesList ( void )
 			}
 
 			Com_sprintf( s_adminAudio.soundList[s_adminAudio.numSounds].fileRoute, sizeof( s_adminAudio.soundList[s_adminAudio.numSounds].fileRoute ), "%s/%s", soundDirs[i], strPtr );
-			/* Com_Printf( S_COLOR_RED "%s\n", s_adminAudio.soundList[s_adminAudio.numSounds] ); */
+			/*UI_Logger( LL_DEBUG, "%s\n", s_adminAudio.soundList[s_adminAudio.numSounds] ); */
 			s_adminAudio.soundList[s_adminAudio.numSounds].format = TYPE_MP3;
 			s_adminAudio.numSounds++;
 
@@ -2328,7 +2328,7 @@ static void AdminAudio_InitFilesList ( void )
 			}
 
 			Com_sprintf( s_adminAudio.soundList[s_adminAudio.numSounds].fileRoute, sizeof( s_adminAudio.soundList[s_adminAudio.numSounds].fileRoute ), "%s/%s", soundDirs[i], strPtr );
-			/* Com_Printf( S_COLOR_RED "%s\n", s_adminAudio.soundList[s_adminAudio.numSounds] ); */
+			/*UI_Logger( LL_DEBUG, "%s\n", s_adminAudio.soundList[s_adminAudio.numSounds] ); */
 			s_adminAudio.soundList[s_adminAudio.numSounds].format = TYPE_WAV;
 			s_adminAudio.numSounds++;
 

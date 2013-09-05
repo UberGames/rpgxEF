@@ -239,13 +239,13 @@ int32_t	PlayerModel_LoadAvailableSkins( char* charSkins[] ) {
 	fileLen = trap_FS_FOpenFile( filePath, &f, FS_READ);
 	
 	if ( fileLen <= 0 ) {
-		Com_Printf( S_COLOR_RED "File not found: %s\n", filePath );
+		UI_Logger( LL_ERROR, "File not found: %s\n", filePath );
 		UI_LogFuncEnd();
 		return 0;
 	}
 
 	if ( fileLen > sizeof ( fileBuffer ) ) {
-		Com_Printf( S_COLOR_RED "File exceeded maximum size: %s\n", filePath );
+		UI_Logger( LL_ERROR, "File exceeded maximum size: %s\n", filePath );
 		UI_LogFuncEnd();
 		return 0;
 	}
@@ -306,7 +306,7 @@ void PlayerModel_OffsetCharList( int32_t* offset ) {
 	for ( i = 0; i < MAX_MENULISTITEMS; i++ ) {
 		buffer = s_playermodel.charNames[i + *offset];
 
-		//Com_Printf( "Buffer - %s\n", buffer );
+		//UI_Logger( LL_DEBUG, "Buffer - %s\n", buffer );
 
 		if ( !buffer )
 			break;
@@ -520,7 +520,7 @@ static void PlayerModel_BuildList( void )
 	numdirs = trap_FS_GetFileList("models/players_rpgx", "/", dirlist, sizeof(dirlist) );
 	dirptr  = dirlist;
 	
-	///Com_Printf("%i folders found\n", numdirs );
+	///UI_Logger( LL_DEBUG, "%i folders found\n", numdirs );
 
 	for (i=0; i<numdirs && s_playermodel.numChars < MAX_PLAYERCHARS; i++,dirptr+=dirlen+1)
 	{
@@ -543,7 +543,7 @@ static void PlayerModel_BuildList( void )
 		numfiles = trap_FS_GetFileList( va("models/players_rpgx/%s",dirptr), ".model", filelist, sizeof(filelist) );
 
 		if ( numfiles > 0 && dirptr[0] ) {
-			//Com_Printf( "Hashed %s with %i model files\n", dirptr, numfiles);
+			//UI_Logger( LL_DEBUG, "Hashed %s with %i model files\n", dirptr, numfiles);
 
 			Q_strncpyz( s_playermodel.charNames[s_playermodel.numChars], dirptr, sizeof( s_playermodel.charNames[s_playermodel.numChars] ) );
 			s_playermodel.numChars++;

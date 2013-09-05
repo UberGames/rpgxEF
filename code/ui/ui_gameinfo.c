@@ -87,12 +87,12 @@ int32_t UI_ParseInfos( char *buf, int32_t max, char *infos[] ) {
 			break;
 		}
 		if ( strcmp( token, "{" ) ) {
-			Com_Printf( "Missing { in info file\n" );
+			UI_Logger( LL_ERROR, "Missing { in info file\n" );
 			break;
 		}
 
 		if ( count == max ) {
-			Com_Printf( "Max infos exceeded\n" );
+			UI_Logger( LL_ERROR, "Max infos exceeded\n" );
 			break;
 		}
 
@@ -100,7 +100,7 @@ int32_t UI_ParseInfos( char *buf, int32_t max, char *infos[] ) {
 		while ( 1 ) {
 			token = COM_ParseExt( &buf, qtrue );
 			if ( !token[0] ) {
-				Com_Printf( "Unexpected end of info file\n" );
+				UI_Logger( LL_ERROR, "Unexpected end of info file\n" );
 				break;
 			}
 			if ( !strcmp( token, "}" ) ) {

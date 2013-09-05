@@ -553,7 +553,7 @@ static void UI_DrawProportionalString2( int32_t x, int32_t y, const char* str, v
 			ax += uis.widescreen.bias;
 	}	
 	/*else
-		Com_Printf( S_COLOR_RED "CVAR: %i, Ratio: %f, State: %i\n", ui_handleWidescreen.integer, uis.widescreen.ratio, uis.widescreen.state );*/
+		UI_Logger( LL_DEBUG, "CVAR: %i, Ratio: %f, State: %i\n", ui_handleWidescreen.integer, uis.widescreen.ratio, uis.widescreen.state );*/
 
 	sizeScale = UI_ProportionalSizeScale( style );
 
@@ -1570,7 +1570,7 @@ int32_t UI_InitClassData( char* fileName ) {
 	fileLen = trap_FS_FOpenFile( filePath, &f, FS_READ );
 
 	if ( !fileLen ) {
-		Com_Printf( S_COLOR_RED "ERROR: File not found: %s\n", fileName );
+		UI_Logger( LL_ERROR, "File not found: %s\n", fileName );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -1581,7 +1581,7 @@ int32_t UI_InitClassData( char* fileName ) {
 	trap_FS_Read( buffer, fileLen, f );
 
 	if ( !buffer[0] ) {
-		Com_Printf( S_COLOR_RED "ERROR: File could not be read: %s\n", fileName );
+		UI_Logger( LL_ERROR, "File could not be read: %s\n", fileName );
 		UI_LogFuncEnd();
 		return qfalse;		
 	}
@@ -1598,13 +1598,13 @@ int32_t UI_InitClassData( char* fileName ) {
 	token = COM_Parse( &textPtr );
 
 	if ( !token[0] ) {
-		Com_Printf( S_COLOR_RED "ERROR: File was loaded, but no data could be read: %s\n", fileName );
+		UI_Logger( LL_ERROR, "File was loaded, but no data could be read: %s\n", fileName );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
 
 	if ( Q_stricmpn( token, "{", 1 ) ) {
-		Com_Printf( S_COLOR_RED "ERROR: No opening brace { found in: %s\n", fileName );
+		UI_Logger( LL_ERROR, "No opening brace { found in: %s\n", fileName );
 		UI_LogFuncEnd();
 		return qfalse;
 	}
@@ -1619,7 +1619,7 @@ int32_t UI_InitClassData( char* fileName ) {
 				/* formal Name */
 				if ( !Q_stricmpn( token, "formalName", 10 ) ) {
 					if ( COM_ParseString( &textPtr, &token ) ) {
-						Com_Printf( S_COLOR_RED "ERROR: Error parsing formalName parameter in file: %s.\n", fileName );
+						UI_Logger( LL_ERROR, "Error parsing formalName parameter in file: %s.\n", fileName );
 						continue;
 					}
 
@@ -1630,7 +1630,7 @@ int32_t UI_InitClassData( char* fileName ) {
 				/* console Name */
 				if ( !Q_stricmpn( token, "consoleName", 11 ) ) {
 					if ( COM_ParseString( &textPtr, &token ) ) {
-						Com_Printf( S_COLOR_RED "ERROR: Error parsing consoleName parameter in file: %s.\n", fileName );
+						UI_Logger( LL_ERROR, "Error parsing consoleName parameter in file: %s.\n", fileName );
 						continue;
 					}
 
@@ -1793,7 +1793,7 @@ int32_t UI_GetRankSets( void )
 	int32_t		fileLen;
 
 	numFiles = trap_FS_GetFileList("ext_data/ranksets", ".ranks", fileBuffer, sizeof(fileBuffer) );
-	/*Com_Printf( S_COLOR_RED "%s\n", filePtr);*/
+	/*UI_Logger( LL_DEBUG, "%s\n", filePtr);*/
 	
 	if ( numFiles == 1 )
 		return 1;
@@ -1817,7 +1817,7 @@ int32_t UI_GetRankSets( void )
 			filePtr[fileLen-6] = '\0';
 		}
 
-		/*Com_Printf( S_COLOR_RED "%s\n", filePtr );*/
+		/*UI_Logger( LL_DEBUG, "%s\n", filePtr );*/
 
 		Q_strncpyz( uis.rankSet.rankSetNames[i], filePtr, sizeof( uis.rankSet.rankSetNames[i] ) );
 		
@@ -1875,7 +1875,7 @@ int32_t UI_GetClassSets( void )
 	int32_t		fileLen;
 
 	numFiles = trap_FS_GetFileList("ext_data/classes", ".classes", fileBuffer, sizeof(fileBuffer) );
-	/*Com_Printf( S_COLOR_RED "%s\n", filePtr);*/
+	/*UI_Logger( LL_DEBUG, "%s\n", filePtr);*/
 	
 	if ( numFiles == 1 ){
 		UI_LogFuncEnd();
@@ -1901,7 +1901,7 @@ int32_t UI_GetClassSets( void )
 			filePtr[fileLen-8] = '\0';
 		}
 
-		/* Com_Printf( S_COLOR_RED "%s\n", filePtr ); */
+		/*UI_Logger( LL_DEBUG, "%s\n", filePtr ); */
 
 		Q_strncpyz( uis.classList[i], filePtr, sizeof( uis.classList[i] ) );
 		
@@ -1950,7 +1950,7 @@ int32_t	UI_PopulateClassSetArray( char *classSets[] ) {
 
 	numFiles = trap_FS_GetFileList("ext_data/ranksets", ".ranks", fileBuffer, sizeof(fileBuffer) );
 	filePtr = fileBuffer;
-	//Com_Printf( S_COLOR_RED "%s\n", filePtr);
+	//UI_Logger( LL_DEBUG, "%s\n", filePtr);
 
 	for ( i = 0, j = 0; i < numFiles && j < MAX_RANKSETS; i++, filePtr+=(int32_t)fileLen+1 ) {
 		fileLen = strlen(filePtr);
@@ -1981,7 +1981,7 @@ UI_Init
 void UI_Init( void ) {
 	UI_LogFuncBegin();
 
-	Com_Printf ("This is RPG-X version %s compiled by %s on %s.\n", RPGX_VERSION, RPGX_COMPILEDBY, RPGX_COMPILEDATE);
+	UI_Logger( LL_ALWAYS,"This is RPG-X version %s compiled by %s on %s.\n", RPGX_VERSION, RPGX_COMPILEDBY, RPGX_COMPILEDATE);
 
 	memset( &uis, 0, sizeof ( uis ) );
 
@@ -2676,18 +2676,18 @@ static void UI_ParseMenuText(void)
 		}
 
 		if (uis.debug)
-			Com_Printf( S_COLOR_RED "UI_ParseMenuText - Line: %i, String: %s\n", i-1, menu_normal_text[i-1] );
+			UI_Logger( LL_DEBUG, "UI_ParseMenuText - Line: %i, String: %s\n", i-1, menu_normal_text[i-1] );
 
 		if (i> MNT_MAX)
 		{
-			Com_Printf( S_COLOR_RED "UI_ParseMenuText : too many values! Needed %d but got %d.\n",MNT_MAX,i);
+			UI_Logger( LL_ERROR, "UI_ParseMenuText : too many values! Needed %d but got %d.\n",MNT_MAX,i);
 			UI_LogFuncEnd();
 			return;
 		}
 	}
 	if (i != MNT_MAX)
 	{
-		Com_Printf( S_COLOR_RED "UI_ParseMenuText : not enough lines. Read %d of %d!\n",i,MNT_MAX);
+		UI_Logger( LL_ERROR, "UI_ParseMenuText : not enough lines. Read %d of %d!\n",i,MNT_MAX);
 		for(;i<MNT_MAX;i++) {
 			menu_normal_text[i] = "?";
 		}
@@ -2791,18 +2791,18 @@ static void UI_ParseButtonText(void)
 		}
 
 		if (uis.debug)
-			Com_Printf( S_COLOR_RED "UI_ParseButtonText - Line: %i, String1: %s, String2: %s\n", i-1, menu_button_text[i-1][0], menu_button_text[i-1][1] );
+			UI_Logger( LL_DEBUG, "UI_ParseButtonText - Line: %i, String1: %s, String2: %s\n", i-1, menu_button_text[i-1][0], menu_button_text[i-1][1] );
 
 		if (i> MBT_MAX)
 		{
-			Com_Printf( S_COLOR_RED "UI_ParseButtonText : too many values! Needed %d but got %d.\n",MBT_MAX,i);
+			UI_Logger( LL_ERROR, "UI_ParseButtonText : too many values! Needed %d but got %d.\n",MBT_MAX,i);
 			UI_LogFuncEnd();
 			return;
 		}
 	}
 	if (i != MBT_MAX)
 	{
-		Com_Printf( S_COLOR_RED "UI_ParseButtonText : not enough lines. Read %d of %d!\n",i,MBT_MAX);
+		UI_Logger( LL_DEBUG, "UI_ParseButtonText : not enough lines. Read %d of %d!\n",i,MBT_MAX);
 		for(;i<MBT_MAX;i++) {
 			menu_button_text[i][0] = "?";
 			menu_button_text[i][1] = "?";
@@ -2829,14 +2829,14 @@ void UI_LoadButtonText()
 
 	if ( !f ) 
 	{
-		Com_Printf( S_COLOR_RED "UI_LoadButtonText : MP_BUTTONTEXT.DAT file not found!\n");
+		UI_Logger( LL_ERROR, "UI_LoadButtonText : MP_BUTTONTEXT.DAT file not found!\n");
 		UI_LogFuncEnd();
 		return;
 	}
 
 	if ( len > MAXBUTTONTEXT ) 
 	{
-		Com_Printf( S_COLOR_RED "UI_LoadButtonText : MP_BUTTONTEXT.DAT too big!\n");
+		UI_Logger( LL_ERROR, "UI_LoadButtonText : MP_BUTTONTEXT.DAT too big!\n");
 		UI_LogFuncEnd();
 		return;
 	}
@@ -2966,7 +2966,7 @@ void UI_SecurityCodeSetup ( void )
 
 	if ( fileLen != SECURITY_SIZE )
 	{
-		Com_Printf( S_COLOR_RED "rpgxid.dat is wrong size. %i, should be %i\n", fileLen, SECURITY_SIZE );
+		UI_Logger( LL_ERROR, "rpgxid.dat is wrong size. %i, should be %i\n", fileLen, SECURITY_SIZE );
 		UI_ConfirmMenu( menu_normal_text[MNT_ID_WRONGSIZE], 0, SecurityFeedback );
 		UI_LogFuncEnd();
 		return;		
@@ -2986,9 +2986,9 @@ void UI_SecurityCodeSetup ( void )
 	#endif
 	{
 		if ( !code )
-			Com_Printf( S_COLOR_RED "No data was able to be loaded\n" );
+			UI_Logger( LL_ERROR, "No data was able to be loaded\n" );
 		else
-			Com_Printf( S_COLOR_RED "ID was %lu, should be %u\n", code->ID, SECURITY_ID );
+			UI_Logger( LL_ERROR, "ID was %lu, should be %u\n", code->ID, SECURITY_ID );
 
 		UI_ConfirmMenu( menu_normal_text[MNT_ID_INVALID], 0, SecurityFeedback );
 		UI_LogFuncEnd();
@@ -3003,7 +3003,7 @@ void UI_SecurityCodeSetup ( void )
 		fileHandle_t		wf;
 		int32_t					i;
 
-		/*Com_Printf( S_COLOR_RED "Building new key!\n" );*/
+		/*UI_Logger( LL_DEBUG, "Building new key!\n" );*/
 
 		memset( &wCode, 0, sizeof( rpgxSecurityFile_t ) );
 

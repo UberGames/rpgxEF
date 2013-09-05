@@ -513,7 +513,7 @@ void UI_UpdateCvars( void ) {
 	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
 		if ( cv->vmCvar->handle >= 1024 || cv->vmCvar->handle <= 0 )
 		{
-			//Com_Printf( S_COLOR_RED "ERROR: CVAR: %s Handle: %i \n", cv->cvarName, cv->vmCvar->handle );
+			//UI_Logger( LL_ERROR, "CVAR: %s Handle: %i \n", cv->cvarName, cv->vmCvar->handle );
 		}
 		else
 			trap_Cvar_Update( cv->vmCvar );
