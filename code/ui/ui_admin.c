@@ -2139,7 +2139,7 @@ static void AdminAudio_InitFilesList ( void )
 	trap_FS_Read( buffer, sizeof( buffer ), f );
 
 	if ( !buffer[0] ) {
-		UI_Logger( LL_WARNING, "could not read ext_data/audio_dirs.dat\n" );
+		UI_Logger( LL_WARN, "could not read ext_data/audio_dirs.dat\n" );
 		return;
 	}
 
