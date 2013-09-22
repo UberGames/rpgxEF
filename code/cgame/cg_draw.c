@@ -2635,9 +2635,10 @@ static void CG_ScanForCrosshairEntity( void ) {
 		CG_Trace( &trace, start, vec3_origin, vec3_origin, end, 
 			cg.snap->ps.clientNum, MASK_SHOT ); //CONTENTS_SOLID|CONTENTS_BODY
 
-		if ( trace.entityNum >= MAX_CLIENTS && !cgs.clientinfo[cg.snap->ps.clientNum].isAdmin/*cg.predictedPlayerState.persistant[PERS_CLASS] != PC_ADMIN*/ ) {
-			return;
-		}
+		//This was causing Scanables for non-admins to be completely unscanable. I'm not sure about the legacy, so I'm keeping this in.
+		//if ( trace.entityNum >= MAX_CLIENTS && !cgs.clientinfo[cg.snap->ps.clientNum].isAdmin/*cg.predictedPlayerState.persistant[PERS_CLASS] != PC_ADMIN*/ ) {
+		//	return;
+		//}
 
 		// if the player is in fog, don't show it
 		int32_t content = trap_CM_PointContents( trace.endpos, 0 );
