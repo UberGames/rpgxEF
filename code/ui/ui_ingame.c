@@ -308,7 +308,7 @@ void InGame_Event( void *ptr, int notification )
 		break;
 
 	case ID_ADMIN:
-		UI_LoginMenu(qfalse);
+		UI_AdminMenu(qfalse);
 		break;
 
 	case ID_MOTD: // RPG-X | Marcin | 03/01/2008
@@ -419,8 +419,10 @@ static void UI_InGameMenu_Draw( void )
 	UI_DrawHandlePic( s_ingame.respawn.generic.x - 14, s_ingame.respawn.generic.y,
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd );
 
-	UI_DrawHandlePic( s_ingame.admin.generic.x - 14, s_ingame.admin.generic.y,
+	if ( s_ingame.isAdmin/*s_ingame.pclass == PC_ADMIN*/ ) {
+		UI_DrawHandlePic( s_ingame.admin.generic.x - 14, s_ingame.admin.generic.y,
 		MENU_BUTTON_MED_HEIGHT, MENU_BUTTON_MED_HEIGHT, uis.graphicButtonLeftEnd );
+	}
 	
 
 	trap_R_SetColor( colorTable[CT_VDKRED1] );
@@ -624,6 +626,8 @@ void InGame_MenuInit( void )
 
 	//TiM - Store current class
 	s_ingame.pclass = atoi( Info_ValueForKey( info, "p" ) );
+	s_ingame.isAdmin = atoi( Info_ValueForKey( info, "admin" ));
+	s_ingame.isSQL = atoi( Info_ValueForKey( info, "uid" ));
 
 	//TiM: flush the ranks data
 	trap_GetConfigString( CS_SERVERINFO, info_server, MAX_INFO_STRING );
@@ -755,6 +759,10 @@ void InGame_MenuInit( void )
 	s_ingame.admin.textEnum					= MBT_ADMIN_MENU;
 	s_ingame.admin.textcolor				= CT_BLACK;
 	s_ingame.admin.textcolor2				= CT_WHITE;
+
+	if ( !s_ingame.isAdmin/*s_ingame.pclass != PC_ADMIN*/ ) {
+		s_ingame.admin.generic.flags    |= (QMF_HIDDEN|QMF_INACTIVE|QMF_GRAYED);
+	}
 
 	/*y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.teamorders.generic.type		= MTYPE_BITMAP;

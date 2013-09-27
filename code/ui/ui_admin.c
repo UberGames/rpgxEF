@@ -12,82 +12,41 @@ ingame.
 */
 
 #include "ui_local.h"
-// Defines
-//general
+
+#define	ID_MAINMENU		15
+#define	ID_ADMIN_MAIN		16
+#define ID_ADMIN_CLIENTS	17
+#define ID_ADMIN_AUDIO		18
+
+#define	ID_GOD			20
+#define ID_NOCLIP		21
+#define	ID_CLOAK		22
+#define ID_FLIGHT		23
+
+#define ID_GIVE			24
+#define ID_REVIVE		25
+#define ID_MESSAGE		26
+#define ID_ENTITY		27
+
+#define ID_BEAM_LOC		28
+#define ID_BEAM_PLAYER		29
+
+#define	ID_FXGUNLIST		30
+#define ID_FXGUN		31
+
+#define ID_SPAWNCHAR		32
+#define ID_REMOVECHAR		33
+
+#define ID_BIND_SPAWN		40
+#define ID_BIND_USEENT		41
+#define ID_BIND_KICK		42
+
+#define	ID_CLIENT_SELECT	43
+#define ID_CLIENT_KICK		44
+#define ID_CLIENT_FORCE		45
+
 #define	PIC_ARROW_UP		"menu/common/arrow_up_16.tga"
 #define	PIC_ARROW_DOWN		"menu/common/arrow_dn_16.tga"
-
-// Head Menu (also includes pro forma defines)
-#define	ID_MAINMENU			10
-#define	ID_ADMIN_MAIN		11
-#define ID_ADMIN_CLIENTS	12
-#define ID_ADMIN_AUDIO		13
-#define ID_LOGIN_MENU		14
-
-//admin Main
-#define	ID_GOD				1111
-#define ID_NOCLIP			1112
-#define	ID_CLOAK			1113
-#define ID_FLIGHT			1114
-	
-#define ID_GIVE				1121
-#define ID_REVIVE			1122
-#define ID_MESSAGE			1123
-#define ID_ENTITY			1124
-
-#define ID_BEAM_LOC			1131
-#define ID_BEAM_PLAYER		1132
-
-#define	ID_FXGUNLIST		1141
-#define ID_FXGUN			1142
-
-#define ID_SPAWNCHAR		1151
-#define ID_REMOVECHAR		1152
-
-#define ID_BIND_SPAWN		1161
-#define ID_BIND_USEENT		1162
-#define ID_BIND_KICK		1163
-
-// admin client
-#define	ID_CLIENT_SELECT	1211
-#define ID_CLIENT_KICK		1212
-#define ID_CLIENT_FORCE		1213
-
-// admin audio
-#define MAX_SONGS				2048
-#define MAX_SOUNDS_				1024
-#define MAX_BUTTONS				7
-#define MAX_AUDIO_LOCATIONS		32
-
-/* menu choices defines */
-#define ID_SONGBUTTON0		13100
-#define ID_SONGBUTTON1		13101
-#define ID_SONGBUTTON2		13102
-#define ID_SONGBUTTON3		13103
-#define ID_SONGBUTTON4		13104
-#define ID_SONGBUTTON5		13105
-#define ID_SONGBUTTON6		13106
-
-#define	ID_PLAYSONG			1311
-#define ID_STOPSONG			1312
-#define ID_SONGUP			1313
-#define ID_SONGDN			1314
-
-#define ID_SNDBUTTON0		13200
-#define ID_SNDBUTTON1		13201
-#define ID_SNDBUTTON2		13202
-#define ID_SNDBUTTON3		13203
-#define ID_SNDBUTTON4		13204
-#define ID_SNDBUTTON5		13205
-#define ID_SNDBUTTON6		13206
-
-#define ID_PLAYSND			1321
-#define ID_SNDUP			1322
-#define ID_SNDDN			1323
-
-//Login Menu
-#define ID_ADMIN			1411
-#define ID_SQL				1412
 
 static void AdminMenu_Event( void* ptr, int event );
 void UI_ClientAdminMenu( void );
@@ -774,7 +733,7 @@ static sfxHandle_t AdminMenu_KeyEvent( int key ) {
 	else {
 		/* unbind the current key */
 		if ( s->id >= ID_BIND_SPAWN && s->id <= ID_BIND_KICK ) {
-			int id = s->id - 1161;
+			int id = s->id - 40;
 
 			switch ( key ) {
 				case K_BACKSPACE:
@@ -2007,6 +1966,37 @@ void UI_ClientAdminMenu( void ) {
 /*****************************************************************************************/
 /* TiM - Admin Audio Menu */
 
+#define MAX_SONGS			2048
+#define MAX_SOUNDS_			1024
+#define MAX_BUTTONS			7
+#define MAX_AUDIO_LOCATIONS		32
+
+/* menu choices defines */
+#define ID_SONGBUTTON0			100
+#define ID_SONGBUTTON1			101
+#define ID_SONGBUTTON2			102
+#define ID_SONGBUTTON3			103
+#define ID_SONGBUTTON4			104
+#define ID_SONGBUTTON5			105
+#define ID_SONGBUTTON6			106
+
+#define	ID_PLAYSONG			1
+#define ID_STOPSONG			2
+#define ID_SONGUP			3
+#define ID_SONGDN			4
+
+#define ID_SNDBUTTON0			200
+#define ID_SNDBUTTON1			201
+#define ID_SNDBUTTON2			202
+#define ID_SNDBUTTON3			203
+#define ID_SNDBUTTON4			204
+#define ID_SNDBUTTON5			205
+#define ID_SNDBUTTON6			206
+
+#define ID_PLAYSND			5
+#define ID_SNDUP			6
+#define ID_SNDDN			7
+
 typedef enum
 {
 	TYPE_WAV,
@@ -2236,14 +2226,13 @@ static void AdminAudio_InitFilesList ( void )
 			/* 
 			 * the API returns files in subfolders too
 			 * but we're not interested in that here
-			 
-			//Why not?
+			 */
 			if ( strchr( strPtr, '/' ) != NULL  )
 			{
 				strPtr += strLen + 1;
 				j++;
 				continue;
-			}*/
+			}
 
 			if ( !Q_stricmp( strPtr + strLen - 4, ".mp3" ) )
 			{
@@ -2324,13 +2313,13 @@ static void AdminAudio_InitFilesList ( void )
 			
 			strLen = strlen( strPtr );
 
-			/* no hierarchical files here 
+			/* no hierarchical files here */
 			if ( strchr( strPtr, '/' ) != NULL  )
 			{
 				strPtr += strLen + 1;
 				j++;
 				continue;
-			}*/
+			}
 
 			if ( !Q_stricmp( strPtr + strLen - 4, ".wav" ) )
 			{
@@ -2377,7 +2366,7 @@ static void AdminAudio_Event( void *ptr, int event )
 				if ( s_adminAudio.selectedSong < 0 )
 					s_adminAudio.playSong.generic.flags = QMF_HIGHLIGHT_IF_FOCUS;
 
-				s_adminAudio.selectedSong = s_adminAudio.songOffset + ( ((menucommon_s *)ptr)->id - 13100 );
+				s_adminAudio.selectedSong = s_adminAudio.songOffset + ( ((menucommon_s *)ptr)->id - 100 );
 			}
 
 			break;
@@ -2410,7 +2399,7 @@ static void AdminAudio_Event( void *ptr, int event )
 				if ( s_adminAudio.selectedSound < 0 )
 					s_adminAudio.playSound.generic.flags = QMF_HIGHLIGHT_IF_FOCUS;
 
-				s_adminAudio.selectedSound = s_adminAudio.soundOffset + ( ((menucommon_s *)ptr)->id - 13200 );
+				s_adminAudio.selectedSound = s_adminAudio.soundOffset + ( ((menucommon_s *)ptr)->id - 200 );
 			}
 			break;
 		case ID_SNDUP:
@@ -2787,248 +2776,3 @@ void UI_AdminAudioMenu( void )
 	UI_PushMenu( &s_adminAudio.menu );
 }
 
-/**********************************************************************
-	UI_LOGIN
-
-	User inferface for user login (sql)
-**********************************************************************/
-
-static byte sqlkey;
-uiClientState_t	cs;
-char	info[MAX_INFO_STRING];
-
-typedef struct {
-	menuframework_s menu;
-	sfxHandle_t		openingVoice;
-	menuaction_s	admin;
-	menuaction_s	sql;
-	menubitmap_s	quit;
-	menufield_s		apassword;
-	menufield_s		username;
-	menufield_s		password;
-	qboolean		fromConsole;
-	qboolean		isAdmin;
-	int				isSQL;
-} login_t;
-
-login_t s_login;
-
-/*
-=================
-UI_LoginSetSqlkey
-=================
-*/
-void UI_LoginSetSqlkey(int key) {
-	sqlkey = (byte)key;
-}
-
-/*
-=================
-M_Login_Event
-=================
-*/
-static void M_Login_Event(void* ptr, int notification) {
-	int id;
-
-	id = ((menucommon_s*)ptr)->id;
-
-	switch(id) {
-		case ID_SQL:
-			if(notification == QM_ACTIVATED) {
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "userlogin %s %s\n", s_login.username.field.buffer, s_login.password.field.buffer ));
-				UI_PopMenu();
-			}
-			break;
-		case ID_ADMIN:
-			if(notification == QM_ACTIVATED) {
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "adminlogin %s\n", s_login.apassword.field.buffer ));
-				UI_PopMenu();
-			}
-			break;
-	}
-}
-
-/*
-=================
-LoginMenu_Key
-=================
-*/
-sfxHandle_t LoginMenu_Key(int key) {
-	return (Menu_DefaultKey(&s_login.menu, key));
-}
-
-/*
-===============
-LoginMenu_Draw
-===============
-*/
-static void LoginMenu_Draw(void) {
-	int length;
-
-	AdminMenu_DrawCommon();
-	UI_MenuFrame2( &s_login.menu );
-
-	if( s_login.isAdmin || s_login.isSQL > 0){
-	length = UI_ProportionalStringWidth( "WELCOME TO",UI_BIGFONT);
-	UI_DrawProportionalString( 360 - ( length / 2 ), 130, "WELCOME TO", UI_BIGFONT, colorTable[CT_WHITE]);	;
-	length = UI_ProportionalStringWidth( "LCARS ODN BACKEND PROCESSING",UI_BIGFONT);
-	UI_DrawProportionalString( 360 - ( length / 2 ), 160, "LCARS ODN BACKEND PROCESSING", UI_BIGFONT, colorTable[CT_WHITE]);	
-	length = UI_ProportionalStringWidth( "ACCESS GRANTED",UI_BIGFONT);
-	UI_DrawProportionalString( 360 - ( length / 2 ), 190, "ACCESS GRANTED", UI_BIGFONT, colorTable[CT_GREEN]);
-	}else{
-	length = UI_ProportionalStringWidth( "LCARS ODN BACKEND PROCESSING",UI_BIGFONT);
-	UI_DrawProportionalString( 360 - ( length / 2 ), 130, "LCARS ODN BACKEND PROCESSING", UI_BIGFONT, colorTable[CT_WHITE]);	
-	length = UI_ProportionalStringWidth( "ACCESS DENIED",UI_BIGFONT);
-	UI_DrawProportionalString( 360 - ( length / 2 ), 160, "ACCESS DENIED", UI_BIGFONT, colorTable[CT_RED]);
-	length = UI_ProportionalStringWidth( "PLEASE ENTER AUTHORISATION CODE",UI_BIGFONT);
-	UI_DrawProportionalString( 360 - ( length / 2 ), 190, "PLEASE ENTER AUTHORISATION CODE", UI_BIGFONT, colorTable[CT_WHITE]);	
-
-	vec_t*	color = colorTable[CT_LTORANGE];
-	AdminMenu_DrawLCARSBox( 190, 268, 340, 70, color, MNT_BROADCAST_CMDS ); /* Admin Login */
-	AdminMenu_DrawLCARSBox( 190, 342, 340, 91, color, MNT_BROADCAST_CMDS ); /* SQL Login */
-	}
-
-	Menu_Draw(&s_login.menu);
-}
-
-/*
-===============
-LoginMenu_Init
-===============
-*/
-void LoginMenu_Init(void) {
-	if( s_login.isAdmin || s_login.isSQL > 0){
-	UI_AdminMenu_Cache();
-
-	s_login.menu.wrapAround			= qtrue;
-	s_login.menu.fullscreen			= qtrue;
-	s_login.menu.draw			= LoginMenu_Draw;
-	s_login.menu.descX			= MENU_DESC_X;
-	s_login.menu.descY			= MENU_DESC_Y;
-	s_login.menu.titleX			= MENU_TITLE_X;
-	s_login.menu.titleY			= MENU_TITLE_Y;
-	s_login.menu.footNoteEnum		= MNT_ADMIN;
-	s_login.menu.titleI			= MNT_ADMIN_MENU;
-	s_login.menu.key			= LoginMenu_Key;
-
-	AdminMenu_InitButtons( &s_login.menu );
-	}else{
-	UI_AdminMenu_Cache();
-
-	s_login.menu.wrapAround			= qtrue;
-	s_login.menu.fullscreen			= qtrue;
-	s_login.menu.draw			= LoginMenu_Draw;
-	s_login.menu.descX			= MENU_DESC_X;
-	s_login.menu.descY			= MENU_DESC_Y;
-	s_login.menu.titleX			= MENU_TITLE_X;
-	s_login.menu.titleY			= MENU_TITLE_Y;
-	s_login.menu.footNoteEnum		= MNT_ADMIN;
-	s_login.menu.titleI			= MNT_ADMIN_MENU;
-	s_login.menu.key			= LoginMenu_Key;
-
-	s_login.apassword.generic.type		= MTYPE_FIELD;
-	s_login.apassword.field.widthInChars	= 30;
-	s_login.apassword.field.maxchars		= MAX_TOKEN_CHARS; /* Freeking hell this is long... who coded this admin thing? O_O */
-	s_login.apassword.generic.x		= 200 + 5 + UI_ProportionalStringWidth( menu_button_text[MBT_ADMIN_MESSAGE][0], UI_SMALLFONT ); /* 159; */
-	s_login.apassword.generic.y		= 290;
-	s_login.apassword.field.style		= UI_SMALLFONT;
-	s_login.apassword.field.titleEnum		= MBT_ADMIN_MESSAGE;
-	s_login.apassword.field.titlecolor		= CT_WHITE;
-	s_login.apassword.field.textcolor		= CT_DKGOLD1;
-	s_login.apassword.field.textcolor2		= CT_LTGOLD1;	
-
-	s_login.admin.generic.type		= MTYPE_ACTION;
-	s_login.admin.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
-	s_login.admin.generic.callback		= M_Login_Event;
-	s_login.admin.generic.ownerdraw		= AdminMenu_DrawButton;
-	s_login.admin.generic.id			= ID_ADMIN;
-	s_login.admin.generic.x			= 200;
-	s_login.admin.generic.y			= 312;
-	s_login.admin.textX			= 9;
-	s_login.admin.textY			= 1;
-	s_login.admin.textEnum			= MBT_ADMIN_EXECUTE;
-	s_login.admin.color			= CT_DKPURPLE1;
-	s_login.admin.color2			= CT_LTPURPLE1;
-	s_login.admin.textcolor			= CT_BLACK;
-	s_login.admin.textcolor2			= CT_WHITE;
-	s_login.admin.width			= 100;
-	s_login.admin.height			= 18;
-
-	s_login.username.generic.type		= MTYPE_FIELD;
-	s_login.username.field.widthInChars	= 30;
-	s_login.username.field.maxchars		= MAX_TOKEN_CHARS; /* Freeking hell this is long... who coded this admin thing? O_O */
-	s_login.username.generic.x		= 200 + 5 + UI_ProportionalStringWidth( menu_button_text[MBT_ADMIN_MESSAGE][0], UI_SMALLFONT ); /* 159; */
-	s_login.username.generic.y		= 364;
-	s_login.username.field.style		= UI_SMALLFONT;
-	s_login.username.field.titleEnum		= MBT_ADMIN_MESSAGE;
-	s_login.username.field.titlecolor		= CT_WHITE;
-	s_login.username.field.textcolor		= CT_DKGOLD1;
-	s_login.username.field.textcolor2		= CT_LTGOLD1;
-
-	s_login.password.generic.type		= MTYPE_FIELD;
-	s_login.password.field.widthInChars	= 30;
-	s_login.password.field.maxchars		= MAX_TOKEN_CHARS; /* Freeking hell this is long... who coded this admin thing? O_O */
-	s_login.password.generic.x		= 200 + 5 + UI_ProportionalStringWidth( menu_button_text[MBT_ADMIN_MESSAGE][0], UI_SMALLFONT ); /* 159; */
-	s_login.password.generic.y		= 386;
-	s_login.password.field.style		= UI_SMALLFONT;
-	s_login.password.field.titleEnum		= MBT_ADMIN_MESSAGE;
-	s_login.password.field.titlecolor		= CT_WHITE;
-	s_login.password.field.textcolor		= CT_DKGOLD1;
-	s_login.password.field.textcolor2		= CT_LTGOLD1;	
-
-	s_login.sql.generic.type		= MTYPE_ACTION;
-	s_login.sql.generic.flags		= QMF_HIGHLIGHT_IF_FOCUS;
-	s_login.sql.generic.callback		= M_Login_Event;
-	s_login.sql.generic.ownerdraw		= AdminMenu_DrawButton;
-	s_login.sql.generic.id			= ID_SQL;
-	s_login.sql.generic.x			= 200;
-	s_login.sql.generic.y			= 408;
-	s_login.sql.textX			= 9;
-	s_login.sql.textY			= 1;
-	s_login.sql.textEnum			= MBT_ADMIN_EXECUTE;
-	s_login.sql.color			= CT_DKPURPLE1;
-	s_login.sql.color2			= CT_LTPURPLE1;
-	s_login.sql.textcolor			= CT_BLACK;
-	s_login.sql.textcolor2			= CT_WHITE;
-	s_login.sql.width			= 100;
-	s_login.sql.height			= 18;
-	
-
-	Menu_AddItem( &s_login.menu, &s_login.apassword);
-	Menu_AddItem( &s_login.menu, &s_login.admin );
-
-	Menu_AddItem( &s_login.menu, &s_login.username );
-	Menu_AddItem( &s_login.menu, &s_login.password );
-	Menu_AddItem( &s_login.menu, &s_login.sql );
-
-	AdminMenu_InitButtons( &s_login.menu );
-	}
-
-}
-
-/*
-===============
-UI_LoginMenu
-===============
-*/
-void UI_LoginMenu(qboolean fromConsole) {
-	memset(&s_login, 0, sizeof(s_login));
-
-	uis.menusp = 0;
-
-	ingameFlag = qtrue;
-
-	trap_GetClientState( &cs );
-	trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
-	s_login.isAdmin = atoi( Info_ValueForKey( info, "admin" ));
-	s_login.isSQL = atoi( Info_ValueForKey( info, "uid" ));
-	s_login.fromConsole = fromConsole;
-
-	Mouse_Show();
-
-	LoginMenu_Init();
-
-	UI_PushMenu(&s_login.menu);
-
-	Menu_AdjustCursor(&s_login.menu, 1);
-}
