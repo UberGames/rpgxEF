@@ -239,7 +239,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			((other != NULL) && (VectorCompare( vec3_origin, other->s.apos.trDelta ) == 0) && (other->s.apos.trType != TR_STATIONARY))))
 		{
 			//RPG-X: - Our forcefield killer :D
-			if(other && ((other->classname && !Q_stricmp(other->classname, "holdable_shield")))){
+			if(((other->classname && !Q_stricmp(other->classname, "holdable_shield")))){
 				if(IsAdmin(ent->parent)){
 					G_FreeEntity(ent);
 					G_Active_ShieldRemove(other);

@@ -12,7 +12,7 @@
 #include "bg_misc.h"
 
 extern void BG_LoadItemNames(void);
-extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[] );
+extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[], size_t size );
 
 //RPG-X: RedTechie
 int RPGEntityCount; //Global entity count varible
@@ -1754,12 +1754,12 @@ void G_InitGame( int levelTime, unsigned int randomSeed, int restart ) {
 	//Rank Loader
 	memset( fileName, 0, sizeof( fileName ) );
 	Com_sprintf( fileName, sizeof( fileName ), "ext_data/ranksets/%s.ranks", rpg_rankSet.string );
-	if ( !BG_ParseRankNames( fileName, g_rankNames ) )
+	if ( !BG_ParseRankNames( fileName, g_rankNames, sizeof(rankNames_t) * MAX_RANKS ))
 	{
 		G_Printf( S_COLOR_RED "ERROR: Could not load rankset %s. Reverting to default.\n", fileName );
 		trap_Cvar_Set( "rpg_rankSet", RANKSET_DEFAULT );
 
-		if ( !BG_ParseRankNames( va( "ext_data/ranksets/%s.ranks", RANKSET_DEFAULT ), g_rankNames ) )
+		if ( !BG_ParseRankNames( va( "ext_data/ranksets/%s.ranks", RANKSET_DEFAULT ), g_rankNames, sizeof(rankNames_t) * MAX_RANKS ) )
 		{
 			G_Error( "Could not load default rankset: %s", RANKSET_DEFAULT );
 		}

@@ -14,7 +14,7 @@ qboolean		m_entersound;		/* after a frame, so caching won't disrupt the sound */
 void UI_LanguageFilename(char *baseName,char *baseExtension,char *finalName);
 void BG_LoadItemNames(void);
 
-extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[] );
+extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[], size_t size );
 void UI_SecurityCodeSetup ( void );
 
 /* these are here so the functions in q_shared.c can link */
@@ -1728,10 +1728,10 @@ void UI_InitRanksData( char* ranksName ) {
 	Com_sprintf( filePath, sizeof( filePath ), "ext_data/ranksets/%s.ranks", ranksName );
 
 	/* attempt to parse */
-	if ( !BG_ParseRankNames( filePath, uis.rankSet.rankNames ) ) {
+	if ( !BG_ParseRankNames( filePath, uis.rankSet.rankNames , sizeof(rankNames_t) * MAX_RANKS ) ) {
 		
 		/* Rank attempt failed.  Try loading the defaults.  If we end up with no loaded ranks... many menu elements will start crapping. bad */
-		if ( !BG_ParseRankNames( va( "ext_data/ranksets/%s.ranks", RANKSET_DEFAULT), uis.rankSet.rankNames ) )
+		if ( !BG_ParseRankNames( va( "ext_data/ranksets/%s.ranks", RANKSET_DEFAULT), uis.rankSet.rankNames, sizeof(rankNames_t) * MAX_RANKS ) )
 			trap_Error( va( "UI_InitRanksData: Was unable to load default rankset: %s", RANKSET_DEFAULT ) ); 
 	}
 	else {  
@@ -1964,7 +1964,7 @@ int32_t	UI_PopulateClassSetArray( char *classSets[] ) {
 		
 		Com_sprintf( filePath, sizeof ( filePath ), "ext_data/ranksets/%s", filePtr );
 
-		if ( BG_ParseRankNames( filePath, uis.rankSets[j].rankNames ) )
+		if ( BG_ParseRankNames( filePath, uis.rankSets[j].rankNames, sizeof(rankNames_t) * MAX_RANKS ) )
 		{
 			j++;
 		}

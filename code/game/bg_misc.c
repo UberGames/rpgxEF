@@ -1701,7 +1701,7 @@ char* BG_RegisterRace( const char *name ) {
 /**
 *	Parses the rank names.
 */
-qboolean BG_ParseRankNames( char* fileName, rankNames_t rankNames[] ) {
+qboolean BG_ParseRankNames( char* fileName, rankNames_t rankNames[], size_t size ) {
 	fileHandle_t	f;
 	int				file_len;
 	char			charText[20000]; // TODO move to heap?
@@ -1721,7 +1721,7 @@ qboolean BG_ParseRankNames( char* fileName, rankNames_t rankNames[] ) {
 	}
 
 	memset( &charText, 0, sizeof( charText ) );
-	memset( rankNames, 0, sizeof( rankNames ) );
+	memset( rankNames, 0, sizeof( size ) );
 
 	trap_FS_Read( charText, file_len, f );
 

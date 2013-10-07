@@ -777,7 +777,7 @@ qboolean SetTeam( gentity_t *ent, char *s ) {
 
 char *ClassNameForValue( pclass_t pClass ) 
 {
-	char buffer[MAX_QPATH];
+	static char buffer[MAX_QPATH];
 	char *ptr;
 
 	trap_Cvar_VariableStringBuffer( va( "rpg_%sPass", g_classData[pClass].consoleName ), buffer, sizeof(buffer) );
