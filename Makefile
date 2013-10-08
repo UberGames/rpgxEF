@@ -1072,6 +1072,12 @@ echo_cmd=@echo
 Q=@
 endif
 
+LEX = flex
+define DO_LEX
+$(echo_cmd) "LEX $<"
+$(LEX) -o $@ $<
+endef
+
 define DO_CC
 $(echo_cmd) "CC $<"
 $(Q)$(CC) $(NOTSHLIBCFLAGS) $(CFLAGS) $(CLIENT_CFLAGS) $(OPTIMIZE) -o $@ -c $<
@@ -2104,7 +2110,7 @@ Q3CGOBJ_ = \
   \
   $(B)/$(BASEGAME)/cgame/q_math.o \
   $(B)/$(BASEGAME)/cgame/q_shared.o
-
+  
 Q3CGOBJ = $(Q3CGOBJ_) $(B)/$(BASEGAME)/cgame/cg_syscalls.o $(CGLUAOBJ)
 Q3CGVMOBJ = $(Q3CGOBJ_:%.o=%.asm)
 
@@ -2511,6 +2517,15 @@ endif
 ## GAME MODULE RULES
 #############################################################################
 
+$(B)/$(BASEGAME)/game/bg_lex.yy.o: $(GDIR)/bg_lex.yy.c
+	$(DO_CGAME_CC)
+
+$(B)/$(BASEGAME)/cgame/bg_lex.yy.o: $(GDIR)/bg_lex.yy.c
+	$(DO_CGAME_CC)
+
+$(GDIR)/bg_lex.yy.c: $(GDIR)/bg_lex.lex
+	$(DO_LEX)
+
 $(B)/$(BASEGAME)/cgame/bg_%.o: $(GDIR)/bg_%.c
 	$(DO_CGAME_CC)
 
@@ -2678,6 +2693,7 @@ clean2:
 	@rm -f $(OBJ)
 	@rm -f $(OBJ_D_FILES)
 	@rm -f $(TARGETS)
+	@rm -f $(GDIR)/bg_lex.yy.c
 
 toolsclean: toolsclean-debug toolsclean-release
 
