@@ -96,12 +96,13 @@ typedef enum {
 	LMT_VECTOR3,
 	LMT_VECTOR4,
 	LMT_SYMBOL,
-	LMT_IGNORE
+	LMT_IGNORE,
+	LMT_STRERROR
 } bgLexMorphemType;
 
 typedef struct bgLexMorphemData_s bgLexMorphemData;
 struct bgLexMorphemData_s {
-	char* str;
+	char str[1024];
 	bgLexSymbol symbol;
 	int numInteger;
 	double numDouble;

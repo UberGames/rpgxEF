@@ -19,9 +19,11 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 \"[^\"]*\" {
 	char *s = yytext; s++;
 	yyextra->type = LMT_STRING;
-	yyextra->data.str = malloc(strlen(yytext) - 1);
-	memset(yyextra->data.str, 0, strlen(yytext) - 1);
-	strncpy(yyextra->data.str, s, strlen(yytext) - 2);
+        if(strlen(yytext) > 1023) {
+		return LMT_STRERROR;
+        }
+	memset(yyextra->data.str, 0, 1024);
+	strcpy(yyextra->data.str, yytext);
 	yyextra->column += strlen(yytext);
 	return LMT_STRING;
 }
@@ -782,16 +784,16 @@ void bgLex_destroy(bgLex* lex) {
 int bgLex_lex(bgLex* lex) {
 	int res;
 
-	if(lex->morphem->data.str != NULL) {
-		free(lex->morphem->data.str);
-	}
-
 	/* skip LMT_IGNORE */
 	while(1) {
 		res = yylex(lex->lex);
 		if(lex->morphem->type != LMT_IGNORE) {
 			break;
 		}
+	}
+
+	if(res != LMT_STRING) {
+		memset(lex->morphem->data.str, 0, 1024);
 	}
 
 	return res;
