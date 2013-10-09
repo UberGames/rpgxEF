@@ -1320,6 +1320,7 @@ static void G_LoadLocationsFile( void )
 	free(serverInfo);
 
 	if (file_len == 0) {
+		G_Logger(LL_ERROR, "filelen=%d", file_len);
 		G_LogFuncEnd();
 		return;
 	}
