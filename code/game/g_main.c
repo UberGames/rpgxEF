@@ -10,6 +10,7 @@
 #include "g_items.h"
 #include "bg_lex.h"
 #include "bg_misc.h"
+#include "g_logger.h"
 
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[], size_t size );
@@ -1293,12 +1294,15 @@ static void G_LoadLocationsFile( void )
 	char			*desc;
 	int				rest = 0;
 
+	G_LogFuncBegin();
+
 	memset(fileRoute, 0, sizeof(fileRoute));
 	memset(mapRoute, 0, sizeof(mapRoute));
 	
-	serverInfo = (char *)malloc(MAX_INFO_STRING * sizeof(char));
-	if(!serverInfo) {
-		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", MAX_INFO_STRING * sizeof(char));
+	serverInfo = malloc(MAX_INFO_STRING * sizeof(char));
+	if(serverInfo == NULL) {
+		G_LocLogger(LL_ERROR, "Was unable to allocate %i bytes.\n", MAX_INFO_STRING * sizeof(char));
+		G_LogFuncEnd();
 		return;
 	}
 	memset(serverInfo, 0, sizeof(serverInfo));
@@ -1316,11 +1320,12 @@ static void G_LoadLocationsFile( void )
 	free(serverInfo);
 
 	if (file_len == 0) {
+		G_LogFuncEnd();
 		return;
 	}
 
 	buffer = (char *)malloc((file_len+1) * sizeof(char));
-	if(!buffer) {
+	if(buffer ==  NULL) {
 		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", (file_len+1) * sizeof(char));
 		trap_FS_FCloseFile(f);
 		return;
@@ -1330,41 +1335,45 @@ static void G_LoadLocationsFile( void )
 	trap_FS_Read( buffer, file_len, f );
 	if ( buffer[0] == 0 )
 	{
-		G_Printf( S_COLOR_RED "ERROR: Couldn't read in file: %s!\n", fileRoute );
+		G_LocLogger(LL_ERROR, "Couldn't read in file: %s!\n", fileRoute );
 		trap_FS_FCloseFile( f );
 		free(buffer);
+		G_LogFuncEnd();
 		return;
 	}
 
 	buffer[file_len] = '\0';
 	trap_FS_FCloseFile( f );
 
-	G_Printf( "Locations file %s located. Proceeding to load scan data.\n", fileRoute ); //GSIO01: why did this say "Usables file ..."? lol ;)
+	G_Logger(LL_INFO, "Locations file %s located. Proceeding to load scan data.\n", fileRoute); //GSIO01: why did this say "Usables file ..."? lol ;)
 
 	lex = bgLex_create(buffer);
 	if(lex == NULL) {
-		G_Printf(S_COLOR_RED "ERROR: Could not create bgLex to lex locations file.\n");
+		G_LocLogger(LL_ERROR, "Could not create bgLex to lex locations file.\n");
 		free(buffer);
+		G_LogFuncEnd();
 		return;
 	}
 
 	if(bgLex_lex(lex) != LMT_SYMBOL) {
-		G_Printf(S_COLOR_RED "ERROR: Expected locations file to begin with 'LocationsList' or 'LocationsList2'.\n");
+		G_LocLogger(LL_ERROR, "Expected locations file to begin with 'LocationsList' or 'LocationsList2'.\n");
 		free(buffer);
 		bgLex_destroy(lex);
+		G_LogFuncEnd();
 		return;
 	}
 
 	if(lex->morphem->data.symbol == LSYM_LOCATIONS_LIST || lex->morphem->data.symbol == LSYM_LOCATIONS_LIST_2) {
 		if(bgLex_lex(lex) == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_OBRACEC) {
 			if(bgLex_lex(lex) == 0) {
-				G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
+				G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
 				free(buffer);
 				bgLex_destroy(lex);
+				G_LogFuncEnd();
 				return;
 			}
 		} else {
-			G_Printf(S_COLOR_YELLOW "WARNING: LocationsList2 had no opening brace '{'!\n");
+			G_Logger(LL_WARN, "LocationsList2 had no opening brace '{'!\n");
 		}
 
 		while(qtrue) {
@@ -1375,18 +1384,20 @@ static void G_LoadLocationsFile( void )
 			if(lex->morphem->type == LMT_VECTOR3) {
 				VectorCopy(lex->morphem->data.vector3, origin);
 			} else {
-				G_Printf(S_COLOR_RED "ERROR: Expected vector at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 				free(buffer);
 				bgLex_destroy(lex);
+				G_LogFuncEnd();
 				return;
 			}
 
 			if(bgLex_lex(lex) == LMT_VECTOR3) {
 				VectorCopy(lex->morphem->data.vector3, angles);
 			} else {
-				G_Printf(S_COLOR_RED "ERROR: Expected vector at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 				free(buffer);
 				bgLex_destroy(lex);
+				G_LogFuncEnd();
 				return;
 			}
 
@@ -1406,33 +1417,37 @@ static void G_LoadLocationsFile( void )
 					desc = G_NewString(lex->morphem->data.str);
 
 					if(bgLex_lex(lex) == 0) {
-						G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
+						G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
 						free(buffer);
 						bgLex_destroy(lex);
+						G_LogFuncEnd();
 						return;
 					}
 				} else {
 					if(result == 0) {
-						G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
+						G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
 						free(buffer);
 						bgLex_destroy(lex);
+						G_LogFuncEnd();
 						return;
 					}
 				}
 			} else {
-				G_Printf(S_COLOR_RED "ERROR: Expected string at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "ERROR: Expected string at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 				free(buffer);
 				bgLex_destroy(lex);
+				G_LogFuncEnd();
 				return;
 			}
 
 			//create a new entity
 			ent = G_Spawn();
-			if ( !ent )
+			if ( ent == NULL )
 			{
-				G_Printf( S_COLOR_RED "Couldn't create entity in %s!\n", fileRoute );
+				G_LocLogger(LL_ERROR, "Couldn't create entity in %s!\n", fileRoute );
 				free(buffer);
 				bgLex_destroy(lex);
+				G_LogFuncEnd();
 				return;
 			}
 
@@ -1460,29 +1475,33 @@ static void G_LoadLocationsFile( void )
 
 			if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_SEMICOLON) {
 				if(bgLex_lex(lex) == 0) {
-					G_Printf(S_COLOR_RED "ERROR: Unexpected end of file.\n");
+					G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
 					free(buffer);
 					bgLex_destroy(lex);
+					G_LogFuncEnd();
 					return;
 				}
 			} else {
-				G_Printf(S_COLOR_YELLOW "WARNING: Missing ';' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_Logger(LL_WARN, "Missing ';' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 			}
 		}
 	} else {
-		G_Printf(S_COLOR_RED "ERROR: Unexpected token at %s:%d:%d. ", fileRoute, lex->morphem->line, lex->morphem->column);
-		G_Printf(S_COLOR_RED "Expected 'LocationsList' or 'LocationsList2'.\n");
+		G_LocLogger(LL_ERROR, "Unexpected token at %s:%d:%d.\n", fileRoute, lex->morphem->line, lex->morphem->column);
+		G_LocLogger(LL_ERROR, "Expected 'LocationsList' or 'LocationsList2'.\n");
 		free(buffer);
 		bgLex_destroy(lex);
+		G_LogFuncEnd();
 		return;
 	}
 
 	if(lex->morphem->type != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_CBRACEC) {
-		G_Printf(S_COLOR_YELLOW "WARNING: Missing closing brace '}'!\n");
+		G_Logger(LL_WARN, "Missing closing brace '}'!\n");
 	}
 
 	free(buffer);
 	bgLex_destroy(lex);
+
+	G_LogFuncEnd();
 }
 
 #define MAX_GROUP_FILE_SIZE	5000
