@@ -882,24 +882,29 @@ static void G_LoadTimedMessages(void) {
 	char*			buffer = NULL;
 	int				len;
 
+	G_LogFuncBegin();
+
 	len = trap_FS_FOpenFile("timedmessages.cfg", &f, FS_READ);
 	if(len == 0) {
+		G_LogFuncEnd();
 		return;
 	}
 
 	buffer = (char *)malloc(sizeof(char) * (len+1));
 	if(buffer == NULL) {
-		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i byte.\n", (len+1) * sizeof(char) );
+		G_LocLogger(LL_ERROR, "Was unable to allocate %i byte.\n", (len+1) * sizeof(char) );
 		trap_FS_FCloseFile(f);
+		G_LogFuncEnd();
 		return;
 	}
 	memset(buffer, 0, (size_t)((len + 1) * sizeof(char)));
 
 	level.timedMessages = create_list();
 	if(level.timedMessages == NULL) {
-		G_Printf(S_COLOR_RED "ERROR: Could not create list for timed messages.\n");
+		G_LocLogger(LL_ERROR, "Could not create list for timed messages.\n");
 		trap_FS_FCloseFile(f);
 		free(buffer);
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -909,8 +914,9 @@ static void G_LoadTimedMessages(void) {
 	lexer = bgLex_create(buffer);
 
 	if(lexer == NULL) {
-		G_Printf(S_COLOR_RED "ERROR: Could not create new bgLex to lex timed messages.\n");
+		G_LocLogger(LL_ERROR, "Could not create new bgLex to lex timed messages.\n");
 		free(buffer);
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -918,13 +924,15 @@ static void G_LoadTimedMessages(void) {
 		if(lexer->morphem->type == LMT_STRING) {
 			level.timedMessages->append(level.timedMessages, lexer->morphem->data.str, LT_STRING, strlen(lexer->morphem->data.str));
 		} else {
-			G_Printf(S_COLOR_YELLOW "WARNING: Unexpected token in timedmessages.cfg:%d:%d!\n", lexer->morphem->line, lexer->morphem->column);
+			G_Logger(LL_WARN, "Unexpected token in timedmessages.cfg:%d:%d!\n", lexer->morphem->line, lexer->morphem->column);
 		}
 	}
-	G_Printf("Loaded %d timed messages.\n", level.timedMessages->length);
+	G_Logger(LL_INFO, "Loaded %d timed messages.\n", level.timedMessages->length);
 
 	bgLex_destroy(lexer);
 	free(buffer);
+
+	G_LogFuncEnd();
 }
 
 holoData_t holoData;
@@ -1074,20 +1082,24 @@ static void G_LoadServerChangeFile(void) {
 	char*			buffer;
 	int				file_len;
 
+	G_LogFuncBegin();
+
 	memset(fileRoute, 0, sizeof(fileRoute));
 	BG_LanguageFilename("serverchange", "cfg", fileRoute);
 
 	file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
 	if(file_len == 0) {
+		G_LogFuncEnd();
 		return;
 	}
 
 	// TODO dynamic buffer size
-	buffer = (char *)malloc((file_len + 1) * sizeof(char));
-	if(!buffer) {
-		G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", (file_len + 1) * sizeof(char) );
+	buffer = malloc((file_len + 1) * sizeof(char));
+	if(buffer == NULL) {
+		G_LocLogger(LL_ERROR, "Was unable to allocate %i bytes.\n", (file_len + 1) * sizeof(char) );
 		trap_FS_FCloseFile(f);
+		G_LogFuncEnd();
 		return;
 	}
 	memset(buffer, 0, sizeof(buffer));
@@ -1095,9 +1107,10 @@ static void G_LoadServerChangeFile(void) {
 	trap_FS_Read(buffer, file_len, f);
 	if ( buffer[0] == 0 )
 	{
-		G_Printf( S_COLOR_RED "ERROR: Couldn't read in file: %s!\n", fileRoute );
+		G_LocLogger(LL_ERROR, "Couldn't read in file: %s!\n", fileRoute );
 		trap_FS_FCloseFile( f );
 		free(buffer);
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -1106,25 +1119,28 @@ static void G_LoadServerChangeFile(void) {
 
 	memset(&level.srvChangeData, 0, sizeof(&level.srvChangeData));
 
-	G_Printf("Loading ServerChangeConfig '%s'.\n", fileRoute);
+	G_Logger(LL_INFO, "Loading ServerChangeConfig '%s'.\n", fileRoute);
 
 	lex = bgLex_create(buffer);
 	if(lex == NULL) {
-		G_Printf(S_COLOR_RED "ERROR: Could not create bgLex to lex ServerChangeConfig.\n");
+		G_LocLogger(LL_ERROR, "Could not create bgLex to lex ServerChangeConfig.\n");
 		free(buffer);
+		G_LogFuncEnd();
 		return;
 	}
 
 	if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_SERVER_CHANGE_CONFIG) {
-		G_Printf(S_COLOR_RED "ERROR: Expected 'ServerChangeConfig' at beginning of %s.\n", fileRoute);
+		G_LocLogger(LL_ERROR, "Expected 'ServerChangeConfig' at beginning of %s.\n", fileRoute);
 		free(buffer);
 		bgLex_destroy(lex);
+		G_LogFuncEnd();
 		return;
 	}
 	if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_OBRACEC) {
-		G_Printf(S_COLOR_RED "ERROR: Missing '{' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+		G_LocLogger(LL_ERROR, "Missing '{' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 		free(buffer);
 		bgLex_destroy(lex);
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -1135,49 +1151,55 @@ static void G_LoadServerChangeFile(void) {
 
 		if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_SERVER) {
 			if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_OBRACESQ) {
-				G_Printf(S_COLOR_RED "ERROR: Missing '[' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Missing '[' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 				free(buffer);
 				bgLex_destroy(lex);
+				G_LogFuncEnd();
 				return;
 			}
 
 			if(bgLex_lex(lex) == LMT_STRING) {
 				strncpy(level.srvChangeData.ip[level.srvChangeData.count], lex->morphem->data.str, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
 			} else {
-				G_Printf(S_COLOR_RED "ERROR: Unexpected token at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 				free(buffer);
 				bgLex_destroy(lex);
+				G_LogFuncEnd();
 				return;
 			}
 
 			if(bgLex_lex(lex) == LMT_STRING) {
 				strncpy(level.srvChangeData.name[level.srvChangeData.count], lex->morphem->data.str, sizeof(level.srvChangeData.name[level.srvChangeData.count]));
 			} else {
-				G_Printf(S_COLOR_RED "ERROR: Unexpected token at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 				free(buffer);
 				bgLex_destroy(lex);
 				memset(level.srvChangeData.ip[level.srvChangeData.count], 0, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
+				G_LogFuncEnd();
 				return;
 			}
 
 			level.srvChangeData.count++;
 
 			if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_CBRACESQ) {
-				G_Printf(S_COLOR_RED "ERROR: Missing ']' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Missing ']' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
 				free(buffer);
 				bgLex_destroy(lex);
+				G_LogFuncEnd();
 				return;
 			}
 		} else {
-			G_Printf(S_COLOR_RED "ERROR: Unexpected token at %d:%d. Expected '}' or 'Server'\n", lex->morphem->line, lex->morphem->column);
+			G_LocLogger(LL_ERROR, "Unexpected token at %d:%d. Expected '}' or 'Server'\n", lex->morphem->line, lex->morphem->column);
 			free(buffer);
 			bgLex_destroy(lex);
+			G_LogFuncEnd();
 			return;
 		}
 	}
 
 	bgLex_destroy(lex);
 	free(buffer);
+	G_LogFuncEnd();
 }
 
 
@@ -1320,7 +1342,6 @@ static void G_LoadLocationsFile( void )
 	free(serverInfo);
 
 	if (file_len == 0) {
-		G_Logger(LL_ERROR, "filelen=%d", file_len);
 		G_LogFuncEnd();
 		return;
 	}
