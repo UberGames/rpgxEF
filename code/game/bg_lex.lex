@@ -19,9 +19,7 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 \"[^\"]*\" {
 	char *s = yytext; s++;
 	yyextra->type = LMT_STRING;
-	yyextra->data.str = malloc(strlen(yytext) - 1);
-	memset(yyextra->data.str, 0, strlen(yytext) - 1);
-	strncpy(yyextra->data.str, s, strlen(yytext) - 2);
+	yyextra->data.str = yytext;
 	yyextra->column += strlen(yytext);
 	return LMT_STRING;
 }
