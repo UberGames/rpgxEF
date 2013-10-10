@@ -706,6 +706,10 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->type = LMT_IGNORE;
 	return LMT_IGNORE;
 }
+<<EOF>> {
+	yyextra->type = LMT_EOF;
+	return LMT_EOF;
+}
 . {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
@@ -737,6 +741,10 @@ int main(int argc, char* argv[]) {
 bgLex* bgLex_create(char* data) {
 	bgLex* l = malloc(sizeof(bgLex));
 
+	/* HACK: prevent compiler warnings */
+	UNUSED(yyunput);
+	UNUSED(input);
+
 	if(l != NULL) {
 		l->morphem.line = 0;
 		l->morphem.column = 0;
@@ -766,10 +774,6 @@ void bgLex_destroy(bgLex* lex) {
 
 int bgLex_lex(bgLex* lex) {
 	int res;
-
-	if(lex->morphem.data.str != NULL) {
-		free(lex->morphem.data.str);
-	}
 
 	/* skip LMT_IGNORE */
 	while(1) {
@@ -884,7 +888,7 @@ bgLexSymbol bgLex_textToSymbol(char* text) {
 	}
 
 	if(strcmp("WP_COFFEE", text) == 0) {
-    return LSYM_WP_COFFEE;
+		return LSYM_WP_COFFEE;
 	}
 
 	if(strcmp("WP_PHASER", text) == 0) {

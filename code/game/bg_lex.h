@@ -95,6 +95,7 @@ typedef enum {
 } bgLexSymbol;
 
 typedef enum {
+	LMT_EOF,
 	LMT_STRING = 1,
 	LMT_INT,
 	LMT_DOUBLE,
