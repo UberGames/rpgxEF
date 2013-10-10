@@ -8,11 +8,6 @@
 extern char *yyget_text (void* yyscanner);
 #endif
 
-#ifndef YY_TYPEDEF_YY_SCANNER_T
-#define YY_TYPEDEF_YY_SCANNER_T
-typedef void* yyscan_t;
-#endif
-
 typedef enum {
 	LSYM_OBRACE,		/* ( */
 	LSYM_OBRACEC,		/* { */
@@ -124,8 +119,8 @@ struct bgLexMorphem_s {
 
 typedef struct bgLex_s bgLex;
 struct bgLex_s {
-	yyscan_t lex;
-	bgLexMorphem morphem;
+	void* lex;
+	bgLexMorphem* morphem;
 	void* buf;
 };
 

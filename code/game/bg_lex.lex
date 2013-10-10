@@ -737,11 +737,22 @@ int main(int argc, char* argv[]) {
 bgLex* bgLex_create(char* data) {
 	bgLex* l = malloc(sizeof(bgLex));
 
-	if(l != NULL) {
-		l->morphem.line = 0;
-		l->morphem.column = 0;
+	/* HACK HACK HACK ... get rid of some compiler warnings */
+	UNUSED(yyunput);
+	UNUSED(input);
 
-		yylex_init_extra(&l->morphem, &l->lex);
+	if(l != NULL) {
+		l->morphem = malloc(sizeof(bgLexMorphemData));
+
+		if(l->morphem == NULL) {
+			free(l);
+			return NULL;
+		}
+
+		l->morphem->line = 0;
+		l->morphem->column = 0;
+
+		yylex_init_extra(l->morphem, &l->lex);
 		l->buf = yy_scan_string(data,l->lex);
 	}
 
@@ -761,20 +772,24 @@ void bgLex_destroy(bgLex* lex) {
 		yylex_destroy(lex->lex);
 	}
 
+	if(lex->morphem != NULL) {
+		free(lex->morphem);
+	}
+
 	free(lex);
 }
 
 int bgLex_lex(bgLex* lex) {
 	int res;
 
-	if(lex->morphem.data.str != NULL) {
-		free(lex->morphem.data.str);
+	if(lex->morphem->data.str != NULL) {
+		free(lex->morphem->data.str);
 	}
 
 	/* skip LMT_IGNORE */
 	while(1) {
 		res = yylex(lex->lex);
-		if(lex->morphem.type != LMT_IGNORE) {
+		if(lex->morphem->type != LMT_IGNORE) {
 			break;
 		}
 	}
