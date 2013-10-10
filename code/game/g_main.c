@@ -921,10 +921,10 @@ static void G_LoadTimedMessages(void) {
 	}
 
 	while(bgLex_lex(lexer) != 0) {
-		if(lexer->morphem->type == LMT_STRING) {
-			level.timedMessages->append(level.timedMessages, lexer->morphem->data.str, LT_STRING, strlen(lexer->morphem->data.str));
+		if(lexer->morphem.type == LMT_STRING) {
+			level.timedMessages->append(level.timedMessages, lexer->morphem.data.str, LT_STRING, strlen(lexer->morphem.data.str));
 		} else {
-			G_Logger(LL_WARN, "Unexpected token in timedmessages.cfg:%d:%d!\n", lexer->morphem->line, lexer->morphem->column);
+			G_Logger(LL_WARN, "Unexpected token in timedmessages.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
 		}
 	}
 	G_Logger(LL_INFO, "Loaded %d timed messages.\n", level.timedMessages->length);
@@ -1129,15 +1129,15 @@ static void G_LoadServerChangeFile(void) {
 		return;
 	}
 
-	if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_SERVER_CHANGE_CONFIG) {
+	if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_SERVER_CHANGE_CONFIG) {
 		G_LocLogger(LL_ERROR, "Expected 'ServerChangeConfig' at beginning of %s.\n", fileRoute);
 		free(buffer);
 		bgLex_destroy(lex);
 		G_LogFuncEnd();
 		return;
 	}
-	if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_OBRACEC) {
-		G_LocLogger(LL_ERROR, "Missing '{' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+	if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_OBRACEC) {
+		G_LocLogger(LL_ERROR, "Missing '{' at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 		free(buffer);
 		bgLex_destroy(lex);
 		G_LogFuncEnd();
@@ -1145,13 +1145,13 @@ static void G_LoadServerChangeFile(void) {
 	}
 
 	while(bgLex_lex(lex) != 0) {
-		if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_CBRACEC) {
+		if(lex->morphem.type == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_CBRACEC) {
 			break;
 		}
 
-		if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_SERVER) {
-			if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_OBRACESQ) {
-				G_LocLogger(LL_ERROR, "Missing '[' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+		if(lex->morphem.type == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_SERVER) {
+			if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_OBRACESQ) {
+				G_LocLogger(LL_ERROR, "Missing '[' at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
 				G_LogFuncEnd();
@@ -1159,9 +1159,9 @@ static void G_LoadServerChangeFile(void) {
 			}
 
 			if(bgLex_lex(lex) == LMT_STRING) {
-				strncpy(level.srvChangeData.ip[level.srvChangeData.count], lex->morphem->data.str, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
+				strncpy(level.srvChangeData.ip[level.srvChangeData.count], lex->morphem.data.str, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
 			} else {
-				G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
 				G_LogFuncEnd();
@@ -1169,9 +1169,9 @@ static void G_LoadServerChangeFile(void) {
 			}
 
 			if(bgLex_lex(lex) == LMT_STRING) {
-				strncpy(level.srvChangeData.name[level.srvChangeData.count], lex->morphem->data.str, sizeof(level.srvChangeData.name[level.srvChangeData.count]));
+				strncpy(level.srvChangeData.name[level.srvChangeData.count], lex->morphem.data.str, sizeof(level.srvChangeData.name[level.srvChangeData.count]));
 			} else {
-				G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
 				memset(level.srvChangeData.ip[level.srvChangeData.count], 0, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
@@ -1181,15 +1181,15 @@ static void G_LoadServerChangeFile(void) {
 
 			level.srvChangeData.count++;
 
-			if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_CBRACESQ) {
-				G_LocLogger(LL_ERROR, "Missing ']' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+			if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_CBRACESQ) {
+				G_LocLogger(LL_ERROR, "Missing ']' at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
 				G_LogFuncEnd();
 				return;
 			}
 		} else {
-			G_LocLogger(LL_ERROR, "Unexpected token at %d:%d. Expected '}' or 'Server'\n", lex->morphem->line, lex->morphem->column);
+			G_LocLogger(LL_ERROR, "Unexpected token at %d:%d. Expected '}' or 'Server'\n", lex->morphem.line, lex->morphem.column);
 			free(buffer);
 			bgLex_destroy(lex);
 			G_LogFuncEnd();
@@ -1385,8 +1385,8 @@ static void G_LoadLocationsFile( void )
 		return;
 	}
 
-	if(lex->morphem->data.symbol == LSYM_LOCATIONS_LIST || lex->morphem->data.symbol == LSYM_LOCATIONS_LIST_2) {
-		if(bgLex_lex(lex) == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_OBRACEC) {
+	if(lex->morphem.data.symbol == LSYM_LOCATIONS_LIST || lex->morphem.data.symbol == LSYM_LOCATIONS_LIST_2) {
+		if(bgLex_lex(lex) == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_OBRACEC) {
 			if(bgLex_lex(lex) == 0) {
 				G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
 				free(buffer);
@@ -1399,14 +1399,14 @@ static void G_LoadLocationsFile( void )
 		}
 
 		while(qtrue) {
-			if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_CBRACEC) {
+			if(lex->morphem.type == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_CBRACEC) {
 				break;
 			}
 
-			if(lex->morphem->type == LMT_VECTOR3) {
-				VectorCopy(lex->morphem->data.vector3, origin);
+			if(lex->morphem.type == LMT_VECTOR3) {
+				VectorCopy(lex->morphem.data.vector3, origin);
 			} else {
-				G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
 				G_LogFuncEnd();
@@ -1414,9 +1414,9 @@ static void G_LoadLocationsFile( void )
 			}
 
 			if(bgLex_lex(lex) == LMT_VECTOR3) {
-				VectorCopy(lex->morphem->data.vector3, angles);
+				VectorCopy(lex->morphem.data.vector3, angles);
 			} else {
-				G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
 				G_LogFuncEnd();
@@ -1426,7 +1426,7 @@ static void G_LoadLocationsFile( void )
 			if(bgLex_lex(lex) == LMT_STRING) {
 				int result;
 
-				desc = G_NewString(lex->morphem->data.str);
+				desc = G_NewString(lex->morphem.data.str);
 
 				if(desc == NULL) {
 					free(buffer);
@@ -1436,7 +1436,7 @@ static void G_LoadLocationsFile( void )
 
 				if((result = bgLex_lex(lex)) == LMT_STRING) {
 					rest = atoi(desc);
-					desc = G_NewString(lex->morphem->data.str);
+					desc = G_NewString(lex->morphem.data.str);
 
 					if(bgLex_lex(lex) == 0) {
 						G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
@@ -1455,7 +1455,7 @@ static void G_LoadLocationsFile( void )
 					}
 				}
 			} else {
-				G_LocLogger(LL_ERROR, "ERROR: Expected string at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_LocLogger(LL_ERROR, "ERROR: Expected string at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
 				G_LogFuncEnd();
@@ -1495,7 +1495,7 @@ static void G_LoadLocationsFile( void )
 			ent = NULL;
 			rest = 0;
 
-			if(lex->morphem->type == LMT_SYMBOL && lex->morphem->data.symbol == LSYM_SEMICOLON) {
+			if(lex->morphem.type == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_SEMICOLON) {
 				if(bgLex_lex(lex) == 0) {
 					G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
 					free(buffer);
@@ -1504,11 +1504,11 @@ static void G_LoadLocationsFile( void )
 					return;
 				}
 			} else {
-				G_Logger(LL_WARN, "Missing ';' at %d:%d.\n", lex->morphem->line, lex->morphem->column);
+				G_Logger(LL_WARN, "Missing ';' at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 			}
 		}
 	} else {
-		G_LocLogger(LL_ERROR, "Unexpected token at %s:%d:%d.\n", fileRoute, lex->morphem->line, lex->morphem->column);
+		G_LocLogger(LL_ERROR, "Unexpected token at %s:%d:%d.\n", fileRoute, lex->morphem.line, lex->morphem.column);
 		G_LocLogger(LL_ERROR, "Expected 'LocationsList' or 'LocationsList2'.\n");
 		free(buffer);
 		bgLex_destroy(lex);
@@ -1516,7 +1516,7 @@ static void G_LoadLocationsFile( void )
 		return;
 	}
 
-	if(lex->morphem->type != LMT_SYMBOL || lex->morphem->data.symbol != LSYM_CBRACEC) {
+	if(lex->morphem.type != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_CBRACEC) {
 		G_Logger(LL_WARN, "Missing closing brace '}'!\n");
 	}
 
