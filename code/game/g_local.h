@@ -7,7 +7,7 @@
 #include "q_shared.h"
 #include "bg_public.h"
 #include "g_public.h"
-#include "list.h"
+#include "bg_list.h"
 
 //==================================================================
 

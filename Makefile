@@ -2070,6 +2070,7 @@ Q3CGOBJ_ = \
   $(B)/$(BASEGAME)/cgame/bg_pmove.o \
   $(B)/$(BASEGAME)/cgame/bg_slidemove.o \
   $(B)/$(BASEGAME)/cgame/bg_lex.yy.o \
+  $(B)/$(BASEGAME)/cgame/bg_list.o \
   $(B)/$(BASEGAME)/cgame/cg_consolecmds.o \
   $(B)/$(BASEGAME)/cgame/cg_draw.o \
   $(B)/$(BASEGAME)/cgame/cg_drawtools.o \
@@ -2220,6 +2221,7 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/bg_slidemove.o \
   $(B)/$(BASEGAME)/game/bg_oums.o \
   $(B)/$(BASEGAME)/game/bg_lex.yy.o \
+  $(B)/$(BASEGAME)/game/bg_list.o \
   $(B)/$(BASEGAME)/game/g_active.o \
   $(B)/$(BASEGAME)/game/g_arenas.o \
   $(B)/$(BASEGAME)/game/g_bot.o \
@@ -2261,7 +2263,6 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/lua_cvar.o \
   $(B)/$(BASEGAME)/game/sqlite3.o \
   $(B)/$(BASEGAME)/game/md5.o \
-  $(B)/$(BASEGAME)/game/list.o \
   \
   $(B)/$(BASEGAME)/game/q_math.o \
   $(B)/$(BASEGAME)/game/q_shared.o
@@ -2337,6 +2338,7 @@ $(B)/$(MISSIONPACK)/vm/qagame.qvm: $(MPGVMOBJ) $(GDIR)/g_syscalls.asm $(Q3ASM)
 Q3UIOBJ_ = \
   $(B)/$(BASEGAME)/ui/ui_main.o \
   $(B)/$(BASEGAME)/ui/bg_misc.o \
+  $(B)/$(BASEGAME)/ui/bg_list.o \
   $(B)/$(BASEGAME)/ui/ui_atoms.o \
   $(B)/$(BASEGAME)/ui/ui_cdkey.o \
   $(B)/$(BASEGAME)/ui/ui_confirm.o \

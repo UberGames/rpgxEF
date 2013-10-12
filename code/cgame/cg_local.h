@@ -5,7 +5,7 @@
 #include "tr_types.h"
 #include "../game/bg_public.h"
 #include "cg_public.h"
-#include "list.h"
+#include "../game/bg_list.h"
 
 #ifndef CG_LOCAL_H_
 #define CG_LOCAL_H_
