@@ -91,4 +91,14 @@ free fall from their spawn points
 */
 qboolean FinishSpawningDetpack( gentity_t* ent, int32_t itemIndex );
 
+//! Min ammount of weapons a player can have for each weapons
+extern vmCvar_t* Min_Weapons[];
+
+//! Max ammount of weapons a player can have for each weapons
+extern vmCvar_t* Max_Weapons[];
+
+//RPG-X: Marcin: for easier lookup - 30/12/2008
+int32_t Max_Weapon(int32_t num);
+int32_t Min_Weapon(int32_t num);
+
 #endif /* _G_ITEMS_H */

@@ -247,7 +247,7 @@
     <ClCompile Include="lgc.c" />
     <ClCompile Include="linit.c" />
     <ClCompile Include="liolib.c" />
-    <ClCompile Include="list.c" />
+    <ClCompile Include="bg_list.c" />
     <ClCompile Include="llex.c" />
     <ClCompile Include="lmathlib.c" />
     <ClCompile Include="lmem.c" />
@@ -510,10 +510,12 @@
     <ClInclude Include="g_local.h" />
     <ClInclude Include="g_lua.h" />
     <ClInclude Include="g_main.h" />
+    <ClInclude Include="g_missile.h" />
     <ClInclude Include="g_public.h" />
     <ClInclude Include="g_spawn.h" />
     <ClInclude Include="g_sql.h" />
     <ClInclude Include="g_team.h" />
+    <ClInclude Include="g_usable.h" />
     <ClInclude Include="g_weapon.h" />
     <ClInclude Include="g_logger.h" />
     <ClInclude Include="inv.h" />
@@ -525,7 +527,7 @@
     <ClInclude Include="ldo.h" />
     <ClInclude Include="lfunc.h" />
     <ClInclude Include="lgc.h" />
-    <ClInclude Include="list.h" />
+    <ClInclude Include="bg_list.h" />
     <ClInclude Include="llex.h" />
     <ClInclude Include="llimits.h" />
     <ClInclude Include="lmem.h" />

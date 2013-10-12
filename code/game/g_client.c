@@ -7,6 +7,7 @@
 #include "g_cmds.h"
 #include "g_main.h"
 #include "g_spawn.h"
+#include "g_items.h"
 
 reconData_t	g_reconData[MAX_RECON_NAMES]; //!< recon data for a limited ammount of clients
 int32_t		g_reconNum;

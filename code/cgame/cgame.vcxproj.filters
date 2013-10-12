@@ -146,7 +146,10 @@
     <ClCompile Include="lua_refent.c">
       <Filter>Source Files\lua</Filter>
     </ClCompile>
-    <ClCompile Include="list.c">
+    <ClCompile Include="cg_logger.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\bg_list.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,9 +164,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cg_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cg_logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cg_public.h">
@@ -190,7 +190,7 @@
     <ClInclude Include="cg_lua.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="list.h">
+    <ClInclude Include="..\game\bg_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

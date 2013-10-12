@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "g_usable.h"
 #include "g_spawn.h"
 #include "g_client.h"
 

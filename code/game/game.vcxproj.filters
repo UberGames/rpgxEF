@@ -270,9 +270,6 @@
     <ClCompile Include="lua_cvar.c">
       <Filter>Source Files\lua</Filter>
     </ClCompile>
-    <ClCompile Include="list.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="md5.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -286,6 +283,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="g_logger.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bg_list.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -464,9 +464,6 @@
     <ClInclude Include="g_weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="list.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="g_cinematic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -501,6 +498,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="g_logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bg_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="g_missile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="g_usable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

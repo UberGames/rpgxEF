@@ -3010,21 +3010,6 @@ int		trap_GeneticParentsAndChildSelection(int numranks, float* ranks, int* paren
 qboolean LineOfSight( gentity_t* ent1, gentity_t* ent2 ); //Phenix
 qboolean IsBorg( gentity_t* ent ); //GSIO01 | 08/05/2009
 
-//TiM - load usables scan text
-qboolean G_SetupUsablesStrings( void );
-
-//RPG-X: Marcin: for easier lookup - 30/12/2008
-int32_t Max_Weapon(int32_t num);
-int32_t Min_Weapon(int32_t num);
-//! Max ammount of weapons a player can have for each weapons
-extern vmCvar_t* Max_Weapons[];
-//! Min ammount of weapons a player can have for each weapons
-extern vmCvar_t* Min_Weapons[];
-
-// SP support
-void Touch_Multi(gentity_t* self, gentity_t* other, trace_t* trace);
-void Use_Multi(gentity_t* ent, gentity_t* other, gentity_t* activator);
-
 //OUMS
 
 /**	\typedef holoData_t
