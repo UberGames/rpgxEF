@@ -7,8 +7,7 @@
 #include "g_local.h"
 #include "g_weapon.h"
 #include "g_client.h"
-
-extern void G_MissileImpact( gentity_t *ent, trace_t *trace);
+#include "g_missile.h"
 
 #define MAX_BEAM_HITS	4
 
@@ -55,9 +54,9 @@ void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
 
 	for ( i = 0 ; i < 3 ; i++ ) {
 		if ( to[i] <= v[i] ) {
-			v[i] = (int)v[i];
+			v[i] = (int32_t)v[i];
 		} else {
-			v[i] = (int)v[i] + 1;
+			v[i] = (int32_t)v[i] + 1;
 		}
 	}
 }
@@ -90,16 +89,18 @@ void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
  * @param alt_fire was this alt fire mode?
  */
 static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
-	float		modifier;
+	double		modifier = 0.0;
 	struct list validEnts;
-	list_iter_p iter;
-	container_p cont;
+	list_iter_p iter = NULL;
+	container_p cont = NULL;
 	gentity_t*	e = NULL;
 	gentity_t*	nearest = NULL;
 	int32_t		count = 0;
-	float		nearestd = 65000;
-	vec3_t		dVec, end;
-	vec3_t		mins = { -40, -40, 0 }, maxs = { 40, 40, 0 };
+	double		nearestd = 65000.0;
+	vec3_t		dVec = { 0, 0, 0 };
+	vec3_t		end = { 0, 0, 0 };
+	vec3_t		mins = { -40, -40, 0 };
+	vec3_t		maxs = { 40, 40, 0 };
 	struct list	classnames;
 
 	/* prepare lists */
@@ -120,7 +121,7 @@ static void WP_FireHyperspanner(gentity_t *ent, qboolean alt_fire) {
 			e = cont->data;
 
 			// TODO: fix problems with small distance
-			if(e->spawnflags & 512) {
+			if((e->spawnflags & 512) != 0) {
 				VectorSubtract(ent->r.currentOrigin, e->s.angles2, dVec);
 				VectorMA(e->s.angles2, 1024, dVec, end);
 				trap_Trace(&tr, e->s.angles2, mins, maxs, end, e->s.number, MASK_SHOT);
@@ -195,36 +196,35 @@ static void WP_FirePhaser( gentity_t *ent, qboolean alt_fire )
 {
 	trace_t		tr;
 	vec3_t		end;
-	gentity_t	*traceEnt;
-	int		trEnts[NUM_PHASER_TRACES], i = 0;
-	float		trEntFraction[NUM_PHASER_TRACES];
-	int		damage = 0;
+	gentity_t	*traceEnt = NULL;
+	int32_t		trEnts[NUM_PHASER_TRACES];
+	int32_t		i = 0;
+	double		trEntFraction[NUM_PHASER_TRACES];
+	int32_t		damage = 0;
 
 	VectorMA (muzzle, MAXRANGE_PHASER, forward, end);
 	/* Add a subtle variation to the beam weapon's endpoint */
-	for (i = 0; i < 3; i ++ )
-	{
+	for (i = 0; i < 3; i ++ ) {
 		end[i] += crandom() * BEAM_VARIATION;
 	}
 
-	for (i = 0; i < NUM_PHASER_TRACES; i++)
-	{
+	for (i = 0; i < NUM_PHASER_TRACES; i++) {
 		trEnts[i] = -1;
 		trEntFraction[i] = 0.0;
 	}
 	/* Find out who we've hit */
 	trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
-	if (tr.entityNum != (MAX_GENTITIES-1))
-	{
+	if (tr.entityNum != (MAX_GENTITIES-1)) {
 		trEnts[0] = tr.entityNum;
 		trEntFraction[0] = tr.fraction;
 	}
-	if ( alt_fire && ent->client->ps.ammo[WP_5])
-	{	/* 
+
+	if ( alt_fire && (ent->client->ps.ammo[WP_5] > 0)) {	/* 
 		 * Use the ending point of the thin trace to do two more traces, 
 		 * one on either side, for actual damaging effect.
 		 */
-		vec3_t	vUp = {0,0,1}, vRight;
+		vec3_t vUp = { 0, 0, 1 };
+		vec3_t vRight = { 0, 0, 0 };
 
 		CrossProduct(forward, vUp, vRight);
 		VectorNormalize(vRight);
@@ -257,7 +257,7 @@ static void WP_FirePhaser( gentity_t *ent, qboolean alt_fire )
 		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 1) ) 
 		{
 			/*damage = (float)PHASER_DAMAGE*DMG_VAR*s_quadFactor;*/ /* No variance on phaser */
-			damage = (float)PHASER_DAMAGE;
+			damage = (double)PHASER_DAMAGE;
 
 			if (trEntFraction[i] <= PHASER_POINT_BLANK_FRAC)
 			{	/* Point blank!  Do up to double damage. */
@@ -265,10 +265,10 @@ static void WP_FirePhaser( gentity_t *ent, qboolean alt_fire )
 			}
 			else
 			{	/* Normal range */
-				damage -= (int)(trEntFraction[i]*5.0);
+				damage -= (int32_t)(trEntFraction[i]*5.0);
 			}
 
-			if (!ent->client->ps.ammo[WP_5])
+			if (ent->client->ps.ammo[WP_5] == 0)
 			{
 				damage *= .35; /* weak out-of-ammo phaser */
 			}
@@ -312,9 +312,7 @@ static void WP_FirePhaser( gentity_t *ent, qboolean alt_fire )
  */
 static void FirePrifleBullet( gentity_t *ent, vec3_t start, vec3_t dir )
 {
-	gentity_t	*bolt;
-
-	bolt = G_Spawn();
+	gentity_t	*bolt = G_Spawn();
 	
 	bolt->classname = "prifle_proj";
 	bolt->nextthink = level.time + 10000;
@@ -325,16 +323,14 @@ static void FirePrifleBullet( gentity_t *ent, vec3_t start, vec3_t dir )
 	bolt->r.ownerNum = ent->s.number;
 	bolt->parent = ent;
 
-	/* fixme  - remove */
-	{
-		/* Flags effect as being the full beefy version for the player */
-		bolt->count = 0;
-	}
+	/* Flags effect as being the full beefy version for the player */
+	bolt->count = 0;
 
-	if( rpg_dmgFlags.integer & 2) 
-		bolt->damage = CRIFLE_DAMAGE*DMG_VAR;
-	else
+	if((rpg_dmgFlags.integer & 2) != 0) { 
+		bolt->damage = CRIFLE_DAMAGE * DMG_VAR;
+	} else {
 		bolt->damage = 0;
+	}
 
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
@@ -388,8 +384,8 @@ static void WP_FireCompressionRifle ( gentity_t *ent, qboolean alt_fire )
 	{
 		trace_t		tr;
 		vec3_t		end;
-		gentity_t	*traceEnt;
-		int		damage = 0;
+		gentity_t	*traceEnt = NULL;
+		int32_t		damage = 0;
 
 		VectorMA (muzzle, MAXRANGE_PHASER, forward, end);
 
@@ -405,7 +401,7 @@ static void WP_FireCompressionRifle ( gentity_t *ent, qboolean alt_fire )
 
 		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 2) ) 
 		{
-			damage = (float)PHASER_DAMAGE;
+			damage = (double)PHASER_DAMAGE;
 
 			if (tr.fraction <= PHASER_POINT_BLANK_FRAC)
 			{	/* Point blank!  Do up to double damage. */
@@ -413,7 +409,7 @@ static void WP_FireCompressionRifle ( gentity_t *ent, qboolean alt_fire )
 			}
 			else
 			{	/* Normal range */
-				damage -= (int)(tr.fraction*5.0);
+				damage -= (int32_t)(tr.fraction*5.0);
 			}
 			
 			if (damage > 0)
@@ -439,13 +435,13 @@ static void WP_FireCompressionRifle ( gentity_t *ent, qboolean alt_fire )
 ----------------------------------------------
 */
 	
-#define STASIS_SPREAD			0.085f	/* Roughly equivalent to sin(5 deg).*/
+#define STASIS_SPREAD				0.085f	/* Roughly equivalent to sin(5 deg).*/
 #define STASIS_MAIN_MISSILE_BIG		1 
 #define STASIS_MAIN_MISSILE_SMALL	1 
 #define STASIS_ALT_RIGHT_OFS		0.10
-#define STASIS_ALT_UP_OFS		0.02
+#define STASIS_ALT_UP_OFS			0.02
 #define STASIS_ALT_MUZZLE_OFS		1
-#define MAXRANGE_ALT_STASIS		4096
+#define MAXRANGE_ALT_STASIS			4096
 
 /**
  * \brief Fires a disruptor missile.
@@ -457,24 +453,20 @@ static void WP_FireCompressionRifle ( gentity_t *ent, qboolean alt_fire )
  * @param dir the direction
  * @param size the size
  */
-static void FireDisruptorMissile( gentity_t *ent, vec3_t origin, vec3_t dir, int size )
+static void FireDisruptorMissile( gentity_t *ent, vec3_t origin, vec3_t dir, int32_t size )
 {
-	gentity_t *bolt;
-	int	  boltsize;
+	gentity_t *bolt = G_Spawn();
+	int32_t	  boltsize = 0;
 
-	bolt = G_Spawn();
 	bolt->classname = "disruptor_projectile";
-
-	
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_FreeEntity;
-
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_10;
 	bolt->r.ownerNum = ent->s.number;
 	bolt->parent = ent;
-	if ( rpg_dmgFlags.integer & 32 )
+	if ((rpg_dmgFlags.integer & 32) != 0)
 	{
 		bolt->damage = STASIS_DAMAGE*DMG_VAR;
 	}
@@ -488,9 +480,9 @@ static void FireDisruptorMissile( gentity_t *ent, vec3_t origin, vec3_t dir, int
 	bolt->clipmask = MASK_SHOT;
 
 	/* Set the size of the missile up */
-	boltsize=3*size;
+	boltsize= 3 * size;
 	VectorSet(bolt->r.maxs, boltsize>>1, boltsize, boltsize>>1);
-	boltsize=-boltsize;
+	boltsize = -boltsize;
 	VectorSet(bolt->r.mins, boltsize>>1, boltsize, boltsize>>1);
 
 	/* There are going to be a couple of different sized projectiles, so store 'em here */
@@ -530,9 +522,8 @@ static void WP_FireDisruptor( gentity_t *ent, qboolean alt_fire )
 	{
 		trace_t		tr;
 		vec3_t		end;
-		gentity_t	*traceEnt;
-		//int			i = 0;
-		int			damage = 0;
+		gentity_t	*traceEnt = NULL; 
+		int32_t		damage = 0;
 
 		VectorMA (muzzle, MAXRANGE_PHASER, forward, end);
 
@@ -548,7 +539,7 @@ static void WP_FireDisruptor( gentity_t *ent, qboolean alt_fire )
 
 		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 32) ) 
 		{
-			damage = (float)PHASER_DAMAGE;
+			damage = (double)PHASER_DAMAGE;
 
 			if (tr.fraction <= PHASER_POINT_BLANK_FRAC)
 			{	/* Point blank!  Do up to double damage. */
@@ -556,7 +547,7 @@ static void WP_FireDisruptor( gentity_t *ent, qboolean alt_fire )
 			}
 			else
 			{	/* Normal range */
-				damage -= (int)(tr.fraction*5.0);
+				damage -= (int32_t)(tr.fraction*5.0);
 			}
 			
 			if (damage > 0)
@@ -601,7 +592,7 @@ static void WP_FireDisruptor( gentity_t *ent, qboolean alt_fire )
  */
 static void grenadeExplode( gentity_t *ent )
 {
-	vec3_t		pos;
+	vec3_t		pos = { 0, 0, 0 };
 
 	VectorSet( pos, ent->r.currentOrigin[0], ent->r.currentOrigin[1], ent->r.currentOrigin[2] + 8 );
 
@@ -624,9 +615,8 @@ static void grenadeExplode( gentity_t *ent )
  */
 void grenadeSpewShrapnel( gentity_t *ent )
 {
-	gentity_t	*tent = NULL;
+	gentity_t	*tent = G_TempEntity( ent->r.currentOrigin, EV_GRENADE_SHRAPNEL_EXPLODE );
 
-	tent = G_TempEntity( ent->r.currentOrigin, EV_GRENADE_SHRAPNEL_EXPLODE );
 	tent->s.eventParm = DirToByte(ent->pos1);
 
 	// just do radius dmg for altfire
@@ -646,18 +636,19 @@ void grenadeSpewShrapnel( gentity_t *ent )
  */
 static void WP_FireGrenade( gentity_t *ent, qboolean alt_fire )
 {
-	gentity_t	*grenade;
+	gentity_t	*grenade = NULL;
 	gentity_t	*tripwire = NULL;
-	gentity_t	*tent = 0;
-	vec3_t		dir, start;
-	int		tripcount = 0;
-	int		foundTripWires[MAX_GENTITIES] = {ENTITYNUM_NONE};
-	int		tripcount_org;
-	int		lowestTimeStamp;
-	int		removeMe;
-	int		i;
+	gentity_t	*tent = NULL;
+	vec3_t		dir = { 0, 0, 0 };
+	vec3_t		start = { 0, 0, 0 };
+	int			tripcount = 0;
+	int			foundTripWires[MAX_GENTITIES] = { ENTITYNUM_NONE };
+	int			tripcount_org = 0;
+	int			lowestTimeStamp = 0;
+	int			removeMe = 0;
+	int			i = 0;
 	trace_t		tr;
-	vec3_t		end;
+	vec3_t		end = { 0, 0, 0 };
 
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
@@ -977,11 +968,11 @@ static void WP_FireGrenade( gentity_t *ent, qboolean alt_fire )
  * @param start the start point
  * @dir the direction
  */
-static void WP_FireTR116Bullet( gentity_t *ent, vec3_t start, vec3_t dir ) {
-	gentity_t	*traceEnt;
-	vec3_t 		end; 		/* end-point in trace */
-	vec3_t 		traceFrom;
-	trace_t	tr;
+static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
+	gentity_t*	traceEnt = NULL;
+	vec3_t 		end = { 0, 0, 0 }; 		/* end-point in trace */
+	vec3_t 		traceFrom = { 0, 0, 0 };
+	trace_t		tr;
 
 	VectorCopy( start, traceFrom );
 	VectorMA( traceFrom, MAX_TR_116_DIST, dir, end ); /* set trace end point */
@@ -1012,8 +1003,8 @@ static void WP_FireTR116( gentity_t *ent, qboolean alt_fire )
 /* (RPG-X: J2J MOdified to make it look and feel like tr116 */
 /* RPG-X: TiM - Modified even furthur */
 {
-	vec3_t	dir;
-	vec3_t	start;
+	vec3_t	dir = { 0, 0, 0 }; 	
+	vec3_t	start = { 0, 0, 0 }; 	
 
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
@@ -1030,7 +1021,7 @@ static void WP_FireTR116( gentity_t *ent, qboolean alt_fire )
 ----------------------------------------------
 */
 
-#define QUANTUM_SIZE		1 
+#define QUANTUM_SIZE			1 
 #define QUANTUM_ALT_THINK_TIME	300
 #define QUANTUM_ALT_SEARCH_TIME	100
 #define QUANTUM_ALT_SEARCH_DIST	4096
@@ -1044,11 +1035,10 @@ static void WP_FireTR116( gentity_t *ent, qboolean alt_fire )
  * @param start the start point
  * @param dir the direction
  */
-static void FireQuantumBurst( gentity_t *ent, vec3_t start, vec3_t dir )
+static void FireQuantumBurst( gentity_t* ent, vec3_t start, vec3_t dir )
 {
-	gentity_t	*bolt;
+	gentity_t	*bolt = G_Spawn();
 
-	bolt = G_Spawn();
 	bolt->classname = "quantum_projectile";
 	
 	bolt->nextthink = level.time + 6000;
@@ -1060,7 +1050,7 @@ static void FireQuantumBurst( gentity_t *ent, vec3_t start, vec3_t dir )
 	bolt->r.ownerNum = ent->s.number;
 	bolt->parent = ent;
 
-	if(rpg_dmgFlags.integer & 16) {
+	if((rpg_dmgFlags.integer & 16) != 0) {
 		bolt->damage = QUANTUM_DAMAGE*DMG_VAR;
 		bolt->splashDamage = QUANTUM_SPLASH_DAM;
 		bolt->splashRadius = QUANTUM_SPLASH_RAD;
@@ -1098,11 +1088,11 @@ static void FireQuantumBurst( gentity_t *ent, vec3_t start, vec3_t dir )
  * @param start start point
  * @param end end point
  */
-static qboolean SearchTarget(gentity_t *ent, vec3_t start, vec3_t end)
+static qboolean SearchTarget(gentity_t* ent, vec3_t start, vec3_t end)
 {
 	trace_t tr;
-	gentity_t *traceEnt;
-	vec3_t fwd;
+	gentity_t* traceEnt = NULL;
+	vec3_t fwd = { 0, 0, 0 };
 
 	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, MASK_SHOT );
 	traceEnt = &g_entities[ tr.entityNum ];
@@ -1130,10 +1120,16 @@ static qboolean SearchTarget(gentity_t *ent, vec3_t start, vec3_t end)
  *
  * @param ent the projectile
  */
-static void WP_QuantumAltThink(gentity_t *ent)
+static void WP_QuantumAltThink(gentity_t* ent)
 {
-	vec3_t start, newdir, targetdir, lup={0,0,1}, lright, search; 
-	float dot, dot2;
+	vec3_t start = { 0, 0, 0 };
+	vec3_t newdir  = { 0, 0, 0 };
+	vec3_t targetdir = { 0, 0, 0 };
+	vec3_t lup = { 0, 0, 1};
+	vec3_t lright = { 0, 0, 0 };
+	vec3_t search = { 0, 0, 0 }; 
+	double dot = 0.0;
+	double dot2 = 0.0;
 
 	ent->health--;
 	if (ent->health<=0)
@@ -1234,11 +1230,10 @@ static void WP_QuantumAltThink(gentity_t *ent)
  * @param start start point
  * @param dir the direction
  */
-static void FireQuantumBurstAlt( gentity_t *ent, vec3_t start, vec3_t dir )
+static void FireQuantumBurstAlt( gentity_t* ent, vec3_t start, vec3_t dir )
 {
-	gentity_t	*bolt;
+	gentity_t	*bolt = G_Spawn();
 
-	bolt = G_Spawn();
 	bolt->classname = "quantum_alt_projectile";
 	
 	bolt->nextthink = level.time + 100;
@@ -1252,7 +1247,7 @@ static void FireQuantumBurstAlt( gentity_t *ent, vec3_t start, vec3_t dir )
 	bolt->parent = ent;
 	bolt->s.eFlags |= EF_ALT_FIRING;
 
-	if(rpg_dmgFlags.integer & 16) {
+	if((rpg_dmgFlags.integer & 16) != 0) {
 		bolt->damage = QUANTUM_ALT_DAMAGE*DMG_VAR;
 		bolt->splashDamage = QUANTUM_ALT_SPLASH_DAM;
 		bolt->splashRadius = QUANTUM_ALT_SPLASH_RAD;
@@ -1289,9 +1284,10 @@ static void FireQuantumBurstAlt( gentity_t *ent, vec3_t start, vec3_t dir )
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
-static void WP_FireQuantumBurst( gentity_t *ent, qboolean alt_fire )
+static void WP_FireQuantumBurst( gentity_t* ent, qboolean alt_fire )
 {
-	vec3_t	dir, start;
+	vec3_t dir = { 0, 0, 0 };
+	vec3_t start = { 0, 0, 0 };
 
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
@@ -1308,7 +1304,7 @@ static void WP_FireQuantumBurst( gentity_t *ent, qboolean alt_fire )
 	G_LogWeaponFire(ent->s.number, WP_9);
 }
 
-qboolean G_Weapon_LogAccuracyHit( gentity_t *target, gentity_t *attacker ) {
+qboolean G_Weapon_LogAccuracyHit( gentity_t* target, gentity_t* attacker ) {
 	if( !target->takedamage ) {
 		return qfalse;
 	}
@@ -1342,12 +1338,13 @@ qboolean G_Weapon_LogAccuracyHit( gentity_t *target, gentity_t *attacker ) {
  * @param muzzlePoint the muzzle point
  * @param projsize projsize
  */
-static void CorrectForwardVector(gentity_t *ent, vec3_t fwd, vec3_t muzzlePoint, float projsize)
+static void CorrectForwardVector(gentity_t* ent, vec3_t fwd, vec3_t muzzlePoint, float projsize)
 {
 	trace_t		tr;
-	vec3_t		end;
-	vec3_t		eyepoint;
-	vec3_t		mins, maxs;
+	vec3_t		end = { 0, 0, 0 };
+	vec3_t		eyepoint = { 0, 0, 0 };
+	vec3_t		mins = { 0, 0, 0 };
+	vec3_t		maxs = { 0, 0, 0 };
 
 	/* Find the eyepoint. */
 	VectorCopy(ent->client->ps.origin, eyepoint);
@@ -1397,23 +1394,23 @@ set muzzle location relative to pivoting eye
  */
 static vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS] = 
 {/*	Fwd,	right,		up. 		*/
-	{0,	0,		0	},	/* WP_0, */
-	{29,	2,		-4	},	/* WP_5, */			
-	{25,	7,		-10	},	/* WP_6, */
-	{25,	4,		-5	},	/* WP_1, */				
-	{10,	14,		-8	},	/* WP_4, */	
-	{25,	5,		-8	},	/* WP_10, */			
-	{25,	5,		-10	},	/* WP_8, */	
-	{0,	0,		0	},	/* WP_7, */ /*{22,	4.5,	-8	}, //TiM : Visual FX aren't necessary now, so just screw it */
-	{5,	6,		-6	},	/* WP_9, */	
-	{29,	2,		-4	},	/* WP_13, */		
-	{29,	2,		-4	},	/* WP_12, */	
-	{29,	2,		-4	},	/* WP_14 */
-	{27,	8,		-10	},	/* WP_11 */
-	{29,	2,		-4	},	/* WP_2, */	
-	{29,	2,		-4	},	/* WP_3, */	
-	{29,	2,		-4	},	/* WP_15, */
-/*	{25,	7,		-10	},*/	/* WP_7 */
+	{0,		0,			 0	},	/* WP_0, */
+	{29,	2,			-4	},	/* WP_5, */			
+	{25,	7,			-10	},	/* WP_6, */
+	{25,	4,			-5	},	/* WP_1, */				
+	{10,	14,			-8	},	/* WP_4, */	
+	{25,	5,			-8	},	/* WP_10, */			
+	{25,	5,			-10	},	/* WP_8, */	
+	{0,		0,			 0	},	/* WP_7, */ /*{22,	4.5,	-8	}, //TiM : Visual FX aren't necessary now, so just screw it */
+	{5,		6,			-6	},	/* WP_9, */	
+	{29,	2,			-4	},	/* WP_13, */		
+	{29,	2,			-4	},	/* WP_12, */	
+	{29,	2,			-4	},	/* WP_14 */
+	{27,	8,			-10	},	/* WP_11 */
+	{29,	2,			-4	},	/* WP_2, */	
+	{29,	2,			-4	},	/* WP_3, */	
+	{29,	2,			-4	},	/* WP_15, */
+/*	{25,	7,			-10	},*/	/* WP_7 */
 };
 
 
@@ -1422,7 +1419,7 @@ static vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS] =
  * 
  * Table containing the size of each weapons projectiles.
  */
-static float WP_ShotSize[WP_NUM_WEAPONS] = 
+static double WP_ShotSize[WP_NUM_WEAPONS] = 
 {
 	0,				/* WP_0, */
 	0,				/* WP_5, */			
@@ -1448,7 +1445,7 @@ static float WP_ShotSize[WP_NUM_WEAPONS] =
  *
  * Table containing the size of each weapons alt projectiles.
  */
-static float WP_ShotAltSize[WP_NUM_WEAPONS] = 
+static double WP_ShotAltSize[WP_NUM_WEAPONS] = 
 {
 	0,				/* WP_0, */
 	PHASER_ALT_RADIUS,		/* WP_5, */			
@@ -1469,9 +1466,9 @@ static float WP_ShotAltSize[WP_NUM_WEAPONS] =
 /*	0,*/				/* WP_7 */
 };
 
-void G_Weapon_CalcMuzzlePoint ( gentity_t *ent, vec3_t fwd, vec3_t rt, vec3_t vup, vec3_t muzzlePoint, float projsize) 
+void G_Weapon_CalcMuzzlePoint ( gentity_t* ent, vec3_t fwd, vec3_t rt, vec3_t vup, vec3_t muzzlePoint, double projsize) 
 {
-	int weapontype;
+	int32_t weapontype;
 
 	weapontype = ent->s.weapon;
 	VectorCopy( ent->s.pos.trBase, muzzlePoint );
@@ -1512,12 +1509,14 @@ RPGX_SiteTOSiteData TransDat[MAX_CLIENTS];
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
-static void WP_TricorderScan (gentity_t *ent, qboolean alt_fire)
+static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 {
-	gentity_t	*tr_ent;
+	gentity_t	*tr_ent = NULL;
 	trace_t		tr;
-	vec3_t		mins, maxs, end;
-	int clientNum = ent->client->ps.clientNum;
+	vec3_t		mins = { 0, 0, 0 };
+	vec3_t		maxs = { 0, 0, 0 };
+	vec3_t		end = { 0, 0, 0 };
+	int32_t		clientNum = ent->client->ps.clientNum;
 
 	if ( rpg_rangetricorder.integer < 32 )
 	{
@@ -1608,13 +1607,15 @@ static void WP_TricorderScan (gentity_t *ent, qboolean alt_fire)
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
-static void WP_SprayVoyagerHypo( gentity_t *ent, qboolean alt_fire )
+static void WP_SprayVoyagerHypo( gentity_t* ent, qboolean alt_fire )
 {
-	gentity_t	*tr_ent;
-	trace_t		tr;
-	vec3_t		mins, maxs, end;
-	gentity_t	*t_ent;
-	playerState_t 	*tr_entPs;
+	gentity_t*		tr_ent = NULL;
+	trace_t			tr;
+	vec3_t			mins = { 0, 0, 0 };
+	vec3_t			maxs = { 0, 0, 0 };
+	vec3_t			end = { 0, 0, 0 };
+	gentity_t*		t_ent = NULL;
+	playerState_t *	tr_entPs = NULL;
 
 	if ( rpg_rangehypo.integer < 8 ) /*32*/
 	{
@@ -1693,9 +1694,9 @@ FireWeapon
 #define ACCURACY_TRACKING_DELAY			100 /* in ms */
 #define NUM_FAST_WEAPONS			3
 
-void FireWeapon( gentity_t *ent, qboolean alt_fire ) 
+void FireWeapon( gentity_t* ent, qboolean alt_fire ) 
 {
-	float			projsize;
+	double projsize;
 
 	ent->client->pers.teamState.lastFireTime = level.time;
 

@@ -3,6 +3,7 @@
 #include "g_local.h"
 #include "g_client.h"
 #include "g_spawn.h"
+#include "g_missile.h"
 
 #define	MISSILE_PRESTEP_TIME	50
 

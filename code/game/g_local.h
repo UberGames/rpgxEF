@@ -1473,7 +1473,7 @@ qboolean G_Weapon_LogAccuracyHit( gentity_t* target, gentity_t* attacker );
  * \param muzzlePoint the muzzle point
  * \param projsize projsize
  */
-void G_Weapon_CalcMuzzlePoint ( gentity_t* ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint, float projsize);
+void G_Weapon_CalcMuzzlePoint ( gentity_t* ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint, double projsize);
 
 /**
  * Round a vector to integers for more efficient network
