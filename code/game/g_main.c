@@ -12,6 +12,7 @@
 #include "bg_misc.h"
 #include "g_logger.h"
 #include "g_usable.h"
+#include "g_lua.h"
 
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames ( char* fileName, rankNames_t rankNames[], size_t size );

@@ -5,6 +5,7 @@
 #include "g_local.h"
 #include "g_spawn.h"
 #include "g_client.h"
+#include "g_lua.h"
 
 /*these look weired... I'd rather replace them with streight numbers.
 #define SF_SPECTATOR	(1<<0)

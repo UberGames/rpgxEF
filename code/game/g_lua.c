@@ -1079,8 +1079,9 @@ void LuaHook_G_EntitySpawn(char *function, int entnum)
 	}
 }
 
-void G_LuaNumThreads(void) {
+unsigned G_LuaNumThreads(void) {
 	lvm_t* vm = lVM[0];
+	unsigned num = 0;
 
 	if(vm) {
 		lua_State *p;
@@ -1098,8 +1099,11 @@ void G_LuaNumThreads(void) {
 				}
 			}
 		}
-		G_Printf("Total lua thread count: %d\n", cnt);
+
+		num = cnt;
 	}
+
+	return num;
 }
 
 void G_LuaCollectGarbage(void) {

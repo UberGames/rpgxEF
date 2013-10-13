@@ -7,6 +7,7 @@
 
 
 #include "g_local.h"
+#include "g_lua.h"
 
 /**
  * \brief Data structure for a singele shader remap.

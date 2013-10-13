@@ -6,6 +6,8 @@
 #include "g_spawn.h"
 #include "g_cmds.h"
 #include "g_items.h"
+#include "g_combat.h"
+#include "g_lua.h"
 
 extern void ammo_station_finish_spawning ( gentity_t *self );
 

@@ -1,2 +1,8 @@
+#ifndef G_COMBAT_H_
+#define G_COMBAT_H_
 
-int	borgAdaptHits[WP_NUM_WEAPONS];
+#include "g_local.h"
+
+qboolean IsBorg( gentity_t* ent ); //GSIO01 | 08/05/2009
+
+#endif /* G_COMBAT_H_ */
