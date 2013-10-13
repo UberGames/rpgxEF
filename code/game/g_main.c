@@ -590,7 +590,7 @@ void QDECL G_Error( const char *fmt, ... ) {
 	va_end (argptr);
 
 	#ifdef G_LUA
-	G_LuaShutdown();
+	G_Lua_Shutdown();
 	#endif
 
 	trap_Error( text );
@@ -1845,7 +1845,7 @@ void G_InitGame( int levelTime, unsigned int randomSeed, int restart ) {
 	}
 
 	#ifdef G_LUA
-	G_LuaInit();
+	G_Lua_Init();
 	#endif
 
 	G_LogWeaponInit();
@@ -1881,7 +1881,7 @@ void G_InitGame( int levelTime, unsigned int randomSeed, int restart ) {
 	ClearRegisteredItems();
 
 	// parse the map usables file
-	G_SetupUsablesStrings();
+	G_Usable_SetupUsablesStrings();
 
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString();
@@ -2013,7 +2013,7 @@ void G_ShutdownGame( int restart ) {
 
 	#ifdef G_LUA
 	LuaHook_G_Shutdown(restart);
-	G_LuaShutdown();
+	G_Lua_Shutdown();
 	#endif
 
 #if 0	// kef -- Pat sez this is causing some trouble these days

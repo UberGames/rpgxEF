@@ -197,11 +197,11 @@ static void G_MissileStick( gentity_t *ent, trace_t *trace )
 
 /*
 ================
-G_MissileImpact
+G_Missile_Impact
 
 ================
 */
-void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
+void G_Missile_Impact( gentity_t *ent, trace_t *trace ) {
 	gentity_t		*other = NULL, *tent = NULL;
 	//qboolean		hitClient = qfalse;
 
@@ -398,7 +398,7 @@ void G_Missile_Run( gentity_t *ent ) {
 			return;
 		}
 
-		G_MissileImpact( ent, &tr );
+		G_Missile_Impact( ent, &tr );
 		if ( (ent->s.eType != ET_MISSILE) && (ent->s.eType != ET_ALT_MISSILE) ) {
 			return;		// exploded
 		}

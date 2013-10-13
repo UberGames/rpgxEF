@@ -509,6 +509,12 @@
     <ClInclude Include="g_usable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="g_combat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="g_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">

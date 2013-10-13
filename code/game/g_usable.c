@@ -425,7 +425,7 @@ void SP_func_usable( gentity_t *self )
 *	\return sucessfully loaded?
 *	\author Ubergames - TiM
 */
-qboolean G_SetupUsablesStrings( void )
+qboolean G_Usable_SetupUsablesStrings( void )
 {
 	char			*serverInfo;
 	char			fileRoute[MAX_QPATH];

@@ -4,7 +4,7 @@
 #include "g_local.h"
 
 //TiM - load usables scan text
-qboolean G_SetupUsablesStrings( void );
+qboolean G_Usable_SetupUsablesStrings( void );
 
 #endif /* G_USABLE_H_ */
 

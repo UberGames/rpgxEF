@@ -43,16 +43,15 @@ extern lvm_t *lVM[NUM_VMS];
 
 void QDECL LUA_DEBUG(const char *fmt, ...);
 void QDECL LUA_LOG(const char *fmt, ...);
-qboolean G_LuaInit(void);
-qboolean G_LuaCall(lvm_t *vm, char *func, int nargs, int nresults);
-qboolean G_LuaResume(lvm_t *vm, lua_State *T, char *func, int nargs);
-qboolean G_LuaGetFunction(lvm_t *vm, char *name);
-qboolean G_LuaGetFunctionT(lua_State *T, char *name);
-qboolean G_LuaStartVM(lvm_t *vm);
-void G_LuaStopVM(lvm_t *vm);
-void G_LuaShutdown(void);
-void G_LuaStatus(gentity_t *ent);
-lvm_t* G_LuaGetVM(lua_State *L);
+qboolean G_Lua_Init(void);
+qboolean G_Lua_Call(lvm_t *vm, char *func, int nargs, int nresults);
+qboolean G_Lua_Resume(lvm_t *vm, lua_State *T, char *func, int nargs);
+qboolean G_Lua_GetFunction(lvm_t *vm, char *name);
+qboolean G_Lua_StartVM(lvm_t *vm);
+void G_Lua_StopVM(lvm_t *vm);
+void G_Lua_Shutdown(void);
+void G_Lua_Status(gentity_t *ent);
+lvm_t* G_Lua_GetVM(lua_State *L);
 
 // lua_entity.c
 typedef struct {
@@ -226,8 +225,8 @@ void LuaHook_G_EntityReached(char* function, int entnum);
  */
 void LuaHook_G_EntityReachedAngular(char* function, int entnum);
 
-unsigned G_LuaNumThreads(void);
+unsigned G_Lua_NumThreads(void);
 
-void G_LuaCollectGarbage(void);
+void G_Lua_CollectGarbage(void);
 
 #endif

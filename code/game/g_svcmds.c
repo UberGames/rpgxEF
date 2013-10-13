@@ -784,8 +784,8 @@ Svcmd_LuaRestart_f
 #ifdef G_LUA
 static void Svcmd_LuaRestart_f(void)
 {
-	G_LuaShutdown();
-	G_LuaInit();
+	G_Lua_Shutdown();
+	G_Lua_Init();
 }
 #endif
 
@@ -797,7 +797,7 @@ qboolean	ConsoleCommand( void ) { //void
 	#ifdef G_LUA
 	if(Q_stricmp(cmd, "lua_status") == 0)
 	{
-		G_LuaStatus(NULL);
+		G_Lua_Status(NULL);
 		return qtrue;
 	}
 

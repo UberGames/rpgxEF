@@ -8,10 +8,10 @@
 #define SQL_ROLLBACK_TRANSACTION 		"ROLLBACK TRANSACTION"
 #define SQL_COMMIT_TRANSACTION 			"COMMIT TRANSACTION"
 #define SQL_USER_CREATEUSERTABLE 		"CREATE TABLE IF NOT EXISTS rpgx_users ( \
-							id INTEGER PRIMARY KEY AUTOINCREMENT, \
-							username TEXT NOT NULL , \
-							password TEXT NOT NULL \
-							)"
+										id INTEGER PRIMARY KEY AUTOINCREMENT, \
+										username TEXT NOT NULL , \
+										password TEXT NOT NULL \
+										)"
 #define SQL_USER_CREATERIGHTSTABLE 		"CREATE TABLE IF NOT EXISTS rpgx_userRights ( \
 							id INT NOT NULL PRIMARY KEY, \
 							admin BIT NOT NULL, \

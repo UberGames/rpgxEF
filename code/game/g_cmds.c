@@ -7633,7 +7633,7 @@ void G_Client_Command( int clientNum )
 #ifdef G_LUA
 	if(Q_stricmp(cmd, "lua_status") == 0)
 	{
-		G_LuaStatus(ent);
+		G_Lua_Status(ent);
 		return;
 	}
 #endif

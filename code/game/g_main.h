@@ -3,9 +3,9 @@
 
 #include "g_local.h"
 
-extern int numKilled;
-extern holoData_t holoData;
-extern qboolean levelExiting;
-extern mapChangeData_t mapChangeData;
+extern int				numKilled;
+extern holoData_t		holoData;
+extern qboolean			levelExiting;
+extern mapChangeData_t	mapChangeData;
 
 #endif

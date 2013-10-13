@@ -21,5 +21,5 @@ void BotTeamAI(bot_state_t *bs);
 int BotGetTeamMateCTFPreference(bot_state_t *bs, int teammate);
 void BotSetTeamMateCTFPreference(bot_state_t *bs, int teammate, int preference);
 
-#endif AI_TEAM_H_
+#endif /* AI_TEAM_H_ */
 

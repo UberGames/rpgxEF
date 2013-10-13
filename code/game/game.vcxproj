@@ -505,6 +505,7 @@
     <ClInclude Include="g_cinematic.h" />
     <ClInclude Include="g_client.h" />
     <ClInclude Include="g_cmds.h" />
+    <ClInclude Include="g_combat.h" />
     <ClInclude Include="g_groups.h" />
     <ClInclude Include="g_items.h" />
     <ClInclude Include="g_local.h" />
@@ -516,6 +517,7 @@
     <ClInclude Include="g_sql.h" />
     <ClInclude Include="g_team.h" />
     <ClInclude Include="g_usable.h" />
+    <ClInclude Include="g_utils.h" />
     <ClInclude Include="g_weapon.h" />
     <ClInclude Include="g_logger.h" />
     <ClInclude Include="inv.h" />
