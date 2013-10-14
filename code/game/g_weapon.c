@@ -81,10 +81,7 @@ void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
 #define HYPERSPANNER_ALT_RATE		4
 
 /**
- * \brief Handles weapon fire of the Hyperspanner.
- *
- * Handles weapon fire of the Hyperspanner.
- * 
+ * @brief Handles weapon fire of the Hyperspanner.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
@@ -187,10 +184,7 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 #define PHASER_POINT_BLANK_FRAC		((float)PHASER_POINT_BLANK / (float)MAXRANGE_PHASER)
 
 /**
- * \brief Handles weapon fire of the phaser.
- *
- * Handles weapon fire of the phaser.
- *
+ * @brief Handles weapon fire of the phaser.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
@@ -307,10 +301,7 @@ static void WP_FirePhaser( gentity_t* ent, qboolean alt_fire )
 #define CRIFLE_SIZE			1  /* RPG-X | Marcin | 04/12/2008 */
 
 /**
- * \brief Fires a new compression rifle bullet.
- *
- * Creates a new compression rifle bullet entity.
- *
+ * @brief Fires a new compression rifle bullet.
  * @param ent the player
  * @param start start point
  * @param end end point
@@ -356,10 +347,7 @@ static void FirePrifleBullet( gentity_t* ent, vec3_t start, vec3_t dir )
 }
 
 /**
- * \brief Handles weapon fire of the compression rifle.
- *
- * Handles weapon fire of the compression rifle.
- *
+ * @brief Handles weapon fire of the compression rifle.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
@@ -514,12 +502,9 @@ static void FireDisruptorMissile( gentity_t* ent, vec3_t origin, vec3_t dir, int
 }
 
 /**
- * \brief Handles firing of the dirsuptor.
- *
- * Handles firing of the disruptor.
- *
- * @ent the player
- * @alt_fire was this alt fire mode?
+ * @brief Handles firing of the dirsuptor.
+ * @param ent the player
+ * @param alt_fire was this alt fire mode?
  */
 static void WP_FireDisruptor( gentity_t* ent, qboolean alt_fire )
 {
@@ -613,10 +598,7 @@ static void grenadeExplode( gentity_t* ent )
 }
 
 /**
- * \brief Handles grenade shrapnels.
- *
- * Handles grenade shrapnels.
- *
+ * @brief Handles grenade shrapnels.
  * @param ent the grenade
  */
 void grenadeSpewShrapnel( gentity_t* ent )
@@ -633,10 +615,7 @@ void grenadeSpewShrapnel( gentity_t* ent )
 }
 
 /**
- * \brief Handles firing the grenade launcher.
- *
- * Handles firing the grenade launcher.
- *
+ * @brief Handles firing the grenade launcher.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
@@ -972,7 +951,7 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
  *
  * @param ent the player
  * @param start the start point
- * @dir the direction
+ * @param dir the direction
  */
 static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
 	gentity_t*	traceEnt = NULL;
@@ -998,13 +977,10 @@ static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
 }
 
 /**
- * \brief Handles firing of the TR116 rifle.
- *
- * Handles firing of the TR116 rigle.
- *
+ * @brief Handles firing of the TR116 rifle.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
- * TODO rename me?
+ * @todo rename me?
  */
 static void WP_FireTR116( gentity_t* ent, qboolean alt_fire )
 /* (RPG-X: J2J MOdified to make it look and feel like tr116 */
@@ -1087,10 +1063,7 @@ static void FireQuantumBurst( gentity_t* ent, vec3_t start, vec3_t dir )
 }
 
 /**
- * \brief Search a target for quantum burst alt fire projectile.
- *
- * Search a target for the quantum burst alt fire mode projectile.
- *
+ * @brief Search a target for quantum burst alt fire projectile.
  * @param ent the projectile
  * @param start start point
  * @param end end point
@@ -1122,10 +1095,7 @@ static qboolean SearchTarget(gentity_t* ent, vec3_t start, vec3_t end)
 }
 
 /**
- * \brief Alt quantum burst projectile think functiom.
- *
- * Alt quantum burst projectile think function.
- *
+ * @brief Alt quantum burst projectile think functiom.
  * @param ent the projectile
  */
 static void WP_QuantumAltThink(gentity_t* ent)
@@ -1233,10 +1203,7 @@ static void WP_QuantumAltThink(gentity_t* ent)
 }
 
 /**
- * \brief Fire quantum burst alt fire mode.
- *
- * Fire quantum burst alt fire mode.
- *
+ * @brief Fire quantum burst alt fire mode.
  * @param ent the player
  * @param start start point
  * @param dir the direction
@@ -1288,10 +1255,7 @@ static void FireQuantumBurstAlt( gentity_t* ent, vec3_t start, vec3_t dir )
 }
 
 /**
- * \brief Handles firing of the quatum burst.
- * 
- * Handles firing of the quantum burst.
- *
+ * @brief Handles firing of the quatum burst.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
@@ -1342,8 +1306,7 @@ qboolean G_Weapon_LogAccuracyHit( gentity_t* target, gentity_t* attacker ) {
 #define MAX_FORWARD_TRACE	8192
 
 /**
- * \brief Corrects the forward vector.
- *
+ * @brief Corrects the forward vector.
  * @param ent entity
  * @param fwd the forward vector
  * @param muzzlePoint the muzzle point
@@ -1401,9 +1364,7 @@ set muzzle location relative to pivoting eye
 */
 
 /**
- * \brief Muzzle point table...
- *
- * Table containing the muzzle points for all weapons.
+ * @brief Table containing the muzzle points for all weapons.
  */
 static vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS] = 
 {/*	Fwd,	right,		up. 		*/
@@ -1428,9 +1389,7 @@ static vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS] =
 
 
 /**
- * \brief Shot size table.
- * 
- * Table containing the size of each weapons projectiles.
+ * @brief Table containing the size of each weapons projectiles.
  */
 static double WP_ShotSize[WP_NUM_WEAPONS] = 
 {
@@ -1454,9 +1413,7 @@ static double WP_ShotSize[WP_NUM_WEAPONS] =
 };
 
 /**
- * \brief Alt shot size table.
- *
- * Table containing the size of each weapons alt projectiles.
+ * @brief Table containing the size of each weapons alt projectiles.
  */
 static double WP_ShotAltSize[WP_NUM_WEAPONS] = 
 {
@@ -1479,6 +1436,15 @@ static double WP_ShotAltSize[WP_NUM_WEAPONS] =
 /*	0,*/				/* WP_7 */
 };
 
+/**
+ * @brief Calculate the muzzle point for weapons.
+ * @param ent The player.
+ * @param fwd Forward vector.
+ * @param rt Right vector.
+ * @param vup Up vector.
+ * @param muzzlePoint The muzzle point-
+ * @param projsize The projectile size.
+ */
 void G_Weapon_CalcMuzzlePoint ( gentity_t* ent, vec3_t fwd, vec3_t rt, vec3_t vup, vec3_t muzzlePoint, double projsize) 
 {
 	int32_t weapontype;
@@ -1515,10 +1481,7 @@ void G_Weapon_CalcMuzzlePoint ( gentity_t* ent, vec3_t fwd, vec3_t rt, vec3_t vu
 RPGX_SiteTOSiteData TransDat[MAX_CLIENTS];
 
 /**
- * \brief Handles firing of the Tricorder.
- *
- * Handles firing of the Tricorder.
- *
+ * @brief Handles firing of the Tricorder.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
@@ -1615,10 +1578,7 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 }
 
 /**
- * \brief Handles firing of the hypospray.
- *
- * Handles firing of the hypospray.
- *
+ * @brief Handles firing of the hypospray.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
  */
@@ -1710,6 +1670,12 @@ FireWeapon
 #define ACCURACY_TRACKING_DELAY		100 /* in ms */
 #define NUM_FAST_WEAPONS			3
 
+/**
+ * @brief Fire the players weapons.
+ * Does some basic setup and then calls specialized functions for the weapon currently used by the player-
+ * @param ent The player.
+ * @param alt_fire Whether alt fire is used.
+ */
 void FireWeapon( gentity_t* ent, qboolean alt_fire ) 
 {
 	double projsize;
