@@ -41,16 +41,131 @@ typedef struct {
 
 extern lvm_t *lVM[NUM_VMS];
 
+/**
+ * @brief A debug print function for Lua.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param fmt Describes the format to use.
+ *
+ */
 void QDECL LUA_DEBUG(const char *fmt, ...);
+
+/**
+ * @brief Lua logger.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param fmt Describes the format to use.
+ *
+ */
 void QDECL LUA_LOG(const char *fmt, ...);
+
+/**
+ * @brief Initialize Lua.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @return A qboolean indicating success of failure.
+ */
 qboolean G_Lua_Init(void);
+
+/**
+ * @brief A Lua function call.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] vm   If non-null, the virtual mashine.
+ * @param [in] func If non-null, the function.
+ * @param nargs		    Number of arguments.
+ * @param nresults	    Number of results.
+ *
+ * @return A qboolean indicating success or failure.
+ */
 qboolean G_Lua_Call(lvm_t *vm, char *func, int nargs, int nresults);
+
+/**
+ * @brief Resume execution of a Lua vm.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] vm   If non-null, the virtual mashine.
+ * @param [in] T    If non-null, the lua_State * to process.
+ * @param [in] func If non-null, the function.
+ * @param nargs		The nargs.
+ *
+ * @return A qboolean indicating success of failure.
+ */
 qboolean G_Lua_Resume(lvm_t *vm, lua_State *T, char *func, int nargs);
+
+/**
+ * @brief Get a Lua function.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] vm   If non-null, the virtual mashine.
+ * @param [in] name If non-null, the name.
+ *
+ * @return A qboolean.
+ */
 qboolean G_Lua_GetFunction(lvm_t *vm, char *name);
+
+/**
+ * @brief Start Lua VM.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] vm If non-null, the virtual mashine.
+ *
+ * @return A qboolean.
+ */
 qboolean G_Lua_StartVM(lvm_t *vm);
+
+/**
+ * @brief Stop Lua VM.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] vm If non-null, the virtual mashine.
+ */
 void G_Lua_StopVM(lvm_t *vm);
+
+/**
+ * @brief Shutdown Lua.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ */
 void G_Lua_Shutdown(void);
+
+/**
+ * @brief Print the lua status to a client console.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] ent If non-null, the client.
+ */
 void G_Lua_Status(gentity_t *ent);
+
+/**
+ * @brief Get the lua VM for a given Lua state.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] L If non-null, the lua_State * to process.
+ *
+ * @return null if it fails, else a lvm_t*.
+ */
 lvm_t* G_Lua_GetVM(lua_State *L);
 
 // lua_entity.c
@@ -58,11 +173,52 @@ typedef struct {
 	gentity_t *e;
 } lent_t;
 
+/**
+ * @brief Open lua entity library.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] L If non-null, the lua_State * to process.
+ *
+ * @return An int.
+ */
 int			Luaopen_Entity(lua_State *L);
+
+/**
+ * @brief Push an entity onto the lua stack.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] L   If non-null, the lua_State * to process.
+ * @param [in] ent If non-null, the entity to push.
+ */
 void		Lua_PushEntity(lua_State *L, gentity_t *ent);
+
+/**
+ * @brief Get an entity from the lua stack.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] L If non-null, the lua_State * to process.
+ * @param argNum	 The argument which is the entity.
+ *
+ * @return null if it fails, else a lent_t*.
+ */
 lent_t		*Lua_GetEntity(lua_State *L, int argNum);
 
-// lua_weapons.c
+/**
+ * @brief Open lua weapons library.
+ *
+ * @author GSIO01
+ * @date 14.10.2013
+ *
+ * @param [in] L If non-null, the lua_State * to process.
+ *
+ * @return An int.
+ */
 int			Luaopen_Weapons(lua_State *L);
 
 // lua_trace.c
@@ -225,8 +381,29 @@ void LuaHook_G_EntityReached(char* function, int entnum);
  */
 void LuaHook_G_EntityReachedAngular(char* function, int entnum);
 
+/**
+ * \fn unsigned G_Lua_NumThreads(void);
+ *
+ * \brief Get information about lua threads.
+ * 		  
+ * Prints status information about lua threads and returns the number of active lua threads.
+ *
+ * \author GSIO01
+ * \date 14.10.2013
+ *
+ * \return An unsigned.
+ */
+
 unsigned G_Lua_NumThreads(void);
 
+/**
+ * \fn void G_Lua_CollectGarbage(void);
+ *
+ * \brief Garbage collection of inactive lua threads.
+ *
+ * \author GSIO01
+ * \date 14.10.2013
+ */
 void G_Lua_CollectGarbage(void);
 
 #endif
