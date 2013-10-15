@@ -1,6 +1,7 @@
 #include "g_local.h"
 #include "g_spawn.h"
 #include "g_items.h"
+#include "g_logger.h"
 
 #define	ARM_ANGLE_RANGE		60
 #define	HEAD_ANGLE_RANGE	90
@@ -21,7 +22,7 @@
 #define	LARM_UOFS		-26.0f
 
 /**
- * \brief Turret's die function.
+ * @brief Turret's die function.
  *
  * Function called when a turret dies.
  *
@@ -31,41 +32,46 @@
  * @param damage the ammount of damage
  * @param meansOfDeath the means ot death
  */
-void turret_die ( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath )
+static void turret_die ( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t meansOfDeath )
 {
-	vec3_t	dir;
-	gentity_t	*owner, *te, *activator = self->activator;
+	vec3_t	dir = { 0, 0, 0 };
+	gentity_t* owner = NULL;
+	gentity_t* te = NULL;
+	gentity_t* activator = self->activator;
+
+	G_LogFuncBegin();
 
 	/* Turn off the thinking of the base & use it's targets */
 	activator->think = 0;
 	activator->nextthink = -1;
 	activator->use = 0;
-	if ( self->activator->target )
+	if ( self->activator->target != NULL )
 	{
 		G_UseTargets( activator, attacker );
 	}
 
 	/* Remove the arm */
-	if ( self->r.ownerNum >= 0 && self->r.ownerNum < ENTITYNUM_WORLD )
+	if ( (self->r.ownerNum >= 0) && (self->r.ownerNum < ENTITYNUM_WORLD) )
 	{
 		owner = &g_entities[self->r.ownerNum];
 		G_FreeEntity( owner );
 	}
 
 	/* clear my data */
-	self->die  = 0;
-	self->think = 0;
+	self->die  = NULL;
+	self->think = NULL;
 	self->nextthink = -1;
 	self->takedamage = qfalse;
-	self->health = 0;
+	self->health = NULL;
 
 	/* Throw some chunks */
 	/*AngleVectors( activator->r.currentAngles, dir, NULL, NULL );
 	  VectorNormalize( dir );
 	  CG_Chunks( self->s.number, self->r.currentOrigin, dir, Q_flrand(150, 300), irandom(3, 7), self->material, -1, 1.0 );*/
 
-	if ( self->splashDamage > 0 && self->splashRadius > 0 )
-	{/* FIXME: specify type of explosion?  (barrel, electrical, etc.) */
+	if ( (self->splashDamage > 0) && (self->splashRadius > 0) )
+	{
+		/* FIXME: specify type of explosion?  (barrel, electrical, etc.) */
 		G_RadiusDamage( self->r.currentOrigin, attacker, self->splashDamage, self->splashRadius, activator, DAMAGE_RADIUS, MOD_EXPLOSION );
 
 		te = G_TempEntity( self->r.currentOrigin, EV_MISSILE_MISS );
@@ -79,6 +85,8 @@ void turret_die ( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	activator->s.modelindex = activator->s.modelindex2;
 
 	G_FreeEntity( self );
+
+	G_LogFuncEnd();
 }
 
 #define FORGE_TURRET_DAMAGE		2
@@ -87,7 +95,7 @@ void turret_die ( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 #define FORGE_TURRET_VELOCITY		500
 
 /**
- * \brief Fire the turret.
+ * @brief Fire the turret.
  *
  * Creates a new projectile and set it up.
  *
@@ -95,13 +103,19 @@ void turret_die ( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
  * @param start start point
  * @param dir the direction
  */
-void turret_fire ( gentity_t *ent, vec3_t start, vec3_t dir )
+static void turret_fire ( gentity_t* ent, vec3_t start, vec3_t dir )
 {
-	gentity_t	*bolt;
+	gentity_t* bolt = G_Spawn();
 
-	bolt = G_Spawn();
+	G_LogFuncBegin();
+
+	if(bolt == NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn new entity.\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	bolt->classname = "red turret shot";
-
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_FreeEntity;
 
@@ -137,10 +151,12 @@ void turret_fire ( gentity_t *ent, vec3_t start, vec3_t dir )
 	/* kef -- need to keep the origin in something that'll reach the cgame side */
 	VectorCopy(start, bolt->s.angles2);
 	SnapVector( bolt->s.angles2 );			/* save net bandwidth */
+
+	G_LogFuncEnd();
 }
 
 /**
- * \Fires an fturret.
+ * @brief Fires an fturret.
  *
  * Creates and sets up a new projectile.
  *
@@ -148,12 +164,18 @@ void turret_fire ( gentity_t *ent, vec3_t start, vec3_t dir )
  * @param start the start point
  * @param dir the direction
  */
-void fturret_fire ( gentity_t *ent, vec3_t start, vec3_t dir )
+static void fturret_fire ( gentity_t* ent, vec3_t start, vec3_t dir )
 {
-	gentity_t	*bolt;
+	gentity_t* bolt = G_Spawn();
 
-	bolt = G_Spawn();
-	
+	G_LogFuncBegin();
+
+	if(bolt == NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn new entity.\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	bolt->classname = "red turret shot";
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_FreeEntity;
@@ -170,23 +192,25 @@ void fturret_fire ( gentity_t *ent, vec3_t start, vec3_t dir )
 	VectorScale( dir, 1100, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );		/* save net bandwidth */
 	VectorCopy( start, bolt->r.currentOrigin);
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Think function of the turrets head.
- *
- * Think function of the turrets head.
+ * @brief Think function of the turrets head.
  *
  * @param self the turrets head
  */
-void turret_head_think (gentity_t *self)
+static void turret_head_think (gentity_t* self)
 {
-	qboolean	fire_now = qfalse;
+	qboolean fire_now = qfalse;
 
-	if ( !(self->activator->spawnflags & 2) )
+	G_LogFuncBegin();
+
+	if ( (self->activator->spawnflags & 2) == 0 )
 	{/* because forge turret heads have no anims... sigh... */
 		/* animate */
-		if ( self->activator->enemy || self->pain_debounce_time > level.time || self->s.frame )
+		if ( self->activator->enemy != NULL || self->pain_debounce_time > level.time || self->s.frame != 0 )
 		{
 			self->s.frame++;
 			if ( self->s.frame > 10 )
@@ -210,15 +234,16 @@ void turret_head_think (gentity_t *self)
 	}
 
 	/* Fire */
-	if ( fire_now && self->activator->enemy && self->last_move_time < level.time )
-	{/* Only fire if ready to */
+	if ( fire_now && (self->activator->enemy != NULL) && (self->last_move_time < level.time) )
+	{
+		/* Only fire if ready to */
 		vec3_t	forward, right, up, muzzleSpot;
-		float	rOfs = 0;
+		double	rOfs = 0;
 
 		AngleVectors(self->r.currentAngles, forward, right, up);
 		VectorMA( self->r.currentOrigin, 16, forward, muzzleSpot );
 		VectorMA( self->r.currentOrigin, 8, up, muzzleSpot );
-		if ( !(self->activator->spawnflags & 2) )
+		if ( (self->activator->spawnflags & 2) == 0 )
 		{/* turrets have offsets */
 			if ( self->s.frame == 0 )
 			{/* Fire left barrel */
@@ -247,12 +272,12 @@ void turret_head_think (gentity_t *self)
 
 	/*next think*/
 	self->nextthink = level.time + self->wait;
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Puts the head and arm of a turret together.
- *
- * Puts the head and arm of an turret together.
+ * @brief Puts the head and arm of a turret together.
  *
  * @param arm the arm
  * @param head the head
@@ -260,9 +285,14 @@ void turret_head_think (gentity_t *self)
  * @param rtOfs right offset
  * @param upOfs up offset
  */
-void bolt_head_to_arm( gentity_t *arm, gentity_t *head, float fwdOfs, float rtOfs, float upOfs )
+static void bolt_head_to_arm( gentity_t* arm, gentity_t* head, double fwdOfs, double rtOfs, double upOfs )
 {
-	vec3_t	headOrg, forward, right, up;
+	vec3_t headOrg = { 0, 0, 0 };
+	vec3_t forward = { 0, 0, 0 };
+	vec3_t right = { 0, 0, 0 };
+	vec3_t up = { 0, 0, 0 };
+
+	G_LogFuncBegin();
 
 	AngleVectors( arm->r.currentAngles, forward, right, up );
 	VectorMA( arm->r.currentOrigin, fwdOfs, forward, headOrg );
@@ -271,12 +301,12 @@ void bolt_head_to_arm( gentity_t *arm, gentity_t *head, float fwdOfs, float rtOf
 	G_SetOrigin( head, headOrg );
 	head->r.currentAngles[1] = head->s.apos.trBase[1] = head->s.angles[1] = arm->r.currentAngles[1];
 	trap_LinkEntity( head );
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Puts the base and arm of a turret together.
- *
- * Puts the base and arm of a turret together.
+ * @brief Puts the base and arm of a turret together.
  *
  * @param base the base
  * @param arm the arm
@@ -284,9 +314,14 @@ void bolt_head_to_arm( gentity_t *arm, gentity_t *head, float fwdOfs, float rtOf
  * @param rtOfs right offset
  * @param upOfs up offset
  */
-void bolt_arm_to_base( gentity_t *base, gentity_t *arm, float fwdOfs, float rtOfs, float upOfs )
+void bolt_arm_to_base( gentity_t* base, gentity_t* arm, double fwdOfs, double rtOfs, double upOfs )
 {
-	vec3_t	headOrg, forward, right, up;
+	vec3_t headOrg = { 0, 0, 0 };
+	vec3_t forward = { 0, 0, 0 }; 
+	vec3_t right = { 0, 0, 0 };
+	vec3_t up = { 0, 0, 0 };
+
+	G_LogFuncBegin();
 
 	AngleVectors( base->r.currentAngles, forward, right, up );
 	VectorMA( base->r.currentOrigin, fwdOfs, forward, headOrg );
@@ -295,31 +330,44 @@ void bolt_arm_to_base( gentity_t *base, gentity_t *arm, float fwdOfs, float rtOf
 	G_SetOrigin( arm, headOrg );
 	trap_LinkEntity( arm );
 	VectorCopy( base->r.currentAngles, arm->s.apos.trBase );
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Put the turret together again.
+ * @brief Put the turret together again.
  *
  * If the turret has moved this function is used to update all of the turrets parts.
  *
  * @param the turrets base
  */
-void rebolt_turret( gentity_t *base )
+void rebolt_turret( gentity_t* base )
 {
-	vec3_t	headOrg, forward, right, up;
+	vec3_t headOrg = { 0, 0, 0 };
+	vec3_t forward = { 0, 0, 0 };
+	vec3_t right = { 0, 0, 0 }; 
+	vec3_t up = { 0, 0, 0 };
 	gentity_t *lastEnemy = base->lastEnemy;
 
-	if ( !lastEnemy )
-	{/* no arm */
+	G_LogFuncBegin();
+
+	if ( lastEnemy == NULL )
+	{
+		/* no arm */
+		G_LocLogger(LL_DEBUG, "no arm\n");
+		G_LogFuncEnd();
 		return;
 	}
 
-	if ( !lastEnemy->lastEnemy )
-	{/* no head */
+	if ( lastEnemy->lastEnemy == NULL )
+	{
+		/* no head */
+		G_LocLogger(LL_DEBUG, "no head\n");
+		G_LogFuncEnd();
 		return;
 	}
 
-	if ( base->spawnflags&2 )
+	if ( (base->spawnflags & 2) != 0 )
 	{
 		bolt_arm_to_base( base, lastEnemy, FARM_FOFS, FARM_ROFS, FARM_UOFS );
 		bolt_head_to_arm( lastEnemy, lastEnemy->lastEnemy, FTURR_FOFS, FTURR_ROFS, FTURR_UOFS );
@@ -338,31 +386,43 @@ void rebolt_turret( gentity_t *base )
 		/*lastEnemy->lastEnemy->r.currentAngles[1] = lastEnemy->lastEnemy->s.apos.trBase[1] = lastEnemy->lastEnemy->s.angles[1] = lastEnemy->r.currentAngles[1];*/
 		trap_LinkEntity( lastEnemy->lastEnemy );
 	}
+
+	G_LogFuncEnd();
 }
 
 
 /**
- * \brief Aims arm and head at enemy or neutral position.
- *
- * Aims arm and head at enemy or neutral position.
+ * @brief Aims arm and head at enemy or neutral position.
  *
  * @param self the turret
  */
-void turret_aim( gentity_t *self )
+static void turret_aim( gentity_t* self )
 {
-	vec3_t	enemyDir;
-	vec3_t	desiredAngles;
-	float	diffAngle, armAngleDiff, headAngleDiff;
-	int		yawTurn = 0;
-	gentity_t *lastEnemy = self->lastEnemy;
+	vec3_t		enemyDir = { 0, 0, 0 };
+	vec3_t		desiredAngles = { 0, 0, 0 };
+	double		diffAngle = 0;
+	double		armAngleDiff = 0;
+	double		headAngleDiff = 0;
+	int32_t		yawTurn = 0;
+	gentity_t*	lastEnemy = self->lastEnemy;
+
+	G_LogFuncBegin();
+
+	if(self == NULL) {
+		G_LocLogger(LL_ERROR, "self == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
 
 	if ( self->enemy )
-	{/* Aim at enemy */
+	{
+		/* Aim at enemy */
 		VectorSubtract( self->enemy->r.currentOrigin, self->r.currentOrigin, enemyDir );
 		vectoangles( enemyDir, desiredAngles );
 	}
 	else
-	{/* Return to front */
+	{
+		/* Return to front */
 		VectorCopy( self->r.currentAngles, desiredAngles );
 	}
 
@@ -396,7 +456,7 @@ void turret_aim( gentity_t *self )
 	VectorCopy( lastEnemy->r.currentAngles, lastEnemy->s.apos.trBase );
 
 	/* Now put the turret at the tip of the arm */
-	if ( self->spawnflags&2 )
+	if ( (self->spawnflags & 2) != 0 )
 	{
 		bolt_head_to_arm( lastEnemy, lastEnemy->lastEnemy, FTURR_FOFS, FTURR_ROFS, FTURR_UOFS );
 	}
@@ -409,7 +469,7 @@ void turret_aim( gentity_t *self )
  	 * pitch-aim head at enemy at speed
 	 * FIXME: noise when turning?
 	 */
-	if ( self->enemy )
+	if ( self->enemy != NULL )
 	{
 		VectorSubtract( self->enemy->r.currentOrigin, lastEnemy->lastEnemy->r.currentOrigin, enemyDir );
 		vectoangles( enemyDir, desiredAngles );
@@ -424,11 +484,13 @@ void turret_aim( gentity_t *self )
 	if ( diffAngle )
 	{
 		if ( fabs(diffAngle) < self->speed )
-		{/* Just set the angle */
+		{
+			/* Just set the angle */
 			lastEnemy->lastEnemy->r.currentAngles[0] = desiredAngles[0];
 		}
 		else
-		{/* Add the increment */
+		{
+			/* Add the increment */
 			lastEnemy->lastEnemy->r.currentAngles[0] += (diffAngle < 0) ? -self->speed : self->speed;
 		}
 	}
@@ -474,19 +536,29 @@ void turret_aim( gentity_t *self )
 		G_Sound(lastEnemy, G_SoundIndex("sound/enemies/turret/move.wav"));
 	}
 	*/
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Turn the turret off.
- *
- * Turns the turret off.
+ * @brief Turn the turret off.
  *
  * @param self the turret
  */
-void turret_turnoff (gentity_t *self)
+void turret_turnoff (gentity_t*self)
 {
+	G_LogFuncBegin();
+
+	if(self == NULL) {
+		G_LocLogger(LL_ERROR, "self == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	if ( self->enemy == NULL )
 	{
+		G_LocLogger(LL_DEBUG, "self->enemy == NULL\n");
+		G_LogFuncEnd();
 		return;
 	}
 	/* shut-down sound */
@@ -497,33 +569,40 @@ void turret_turnoff (gentity_t *self)
 
 	/* Clear enemy */
 	self->enemy = NULL;
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Think function of the turrets base.
- *
- * Think function of the turrets base.
+ * @brief Think function of the turrets base.
  *
  * @param self the turret
  */
-void turret_base_think (gentity_t *self)
+static void turret_base_think (gentity_t* self)
 {
-	vec3_t		enemyDir;
-	float		enemyDist;
-	gentity_t *lastEnemy;
+	vec3_t		enemyDir = { 0, 0, 0 };
+	double		enemyDist = 0;
+	gentity_t*	lastEnemy = NULL;
 	
-	if(!self) return;
+	G_LogFuncBegin();
+
+	if(self == NULL) {
+		G_LocLogger(LL_ERROR, "self == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
 
 	lastEnemy = self->lastEnemy;
 
 	self->nextthink = level.time + FRAMETIME;
 
-	if ( self->spawnflags & 1 )
-	{/* not turned on */
+	if ( (self->spawnflags & 1) != 0 )
+	{
+		/* not turned on */
 		turret_turnoff( self );
 		turret_aim( self );
 		/* No target */
-		if ( lastEnemy && lastEnemy->lastEnemy )
+		if ( lastEnemy != NULL && lastEnemy->lastEnemy != NULL )
 		{
 			lastEnemy->lastEnemy->flags |= FL_NOTARGET;
 		}
@@ -531,16 +610,17 @@ void turret_base_think (gentity_t *self)
 	}
 	else
 	{/* I'm all hot and bothered */
-		if ( lastEnemy && lastEnemy->lastEnemy )
+		if ( lastEnemy != NULL && lastEnemy->lastEnemy != NULL )
 		{
 			lastEnemy->lastEnemy->flags &= ~FL_NOTARGET;
 		}
 	}
 
-	if ( !self->enemy )
-	{/* Find one */
-		gentity_t	*target;
-		float		bestDist = self->random * self->random;
+	if ( self->enemy == NULL )
+	{
+		/* Find one */
+		gentity_t*	target = NULL;
+		double		bestDist = self->random * self->random;
 		struct list entity_list;
 		struct list ignore;
 		list_iter_p iter;
@@ -558,7 +638,7 @@ void turret_base_think (gentity_t *self)
 		list_init(&entity_list, free);
 		list_init(&ignore, free);
 
-		if(lastEnemy && lastEnemy->lastEnemy) {
+		if(lastEnemy != NULL && lastEnemy->lastEnemy != NULL) {
 			ignore.append_ptr(&ignore, lastEnemy->lastEnemy, LT_DATA);
 			G_RadiusList( self->r.currentOrigin, self->random, &ignore, qtrue, &entity_list );
 		} else {
@@ -579,13 +659,13 @@ void turret_base_think (gentity_t *self)
 				continue;
 			}
 
-			if ( target->takedamage && target->health > 0 && !(target->flags & FL_NOTARGET) )
+			if ( target->takedamage && target->health > 0 && (target->flags & FL_NOTARGET) == NULL )
 			{
-				if ( !target->client && target->team && atoi(target->team) == atoi(self->team) )
+				if ( target->client == NULL && target->team && atoi(target->team) == atoi(self->team) )
 				{/* Something of ours we don't want to destroy */
 					continue;
 				}
-				if ( target->client && target->client->sess.sessionTeam == atoi(self->team) )
+				if ( target->client != NULL && target->client->sess.sessionTeam == atoi(self->team) )
 				{/* A bot we don't want to shoot */
 					continue;
 				}
@@ -594,6 +674,7 @@ void turret_base_think (gentity_t *self)
 				{
 					trace_t	tr;
 
+					memset(&tr, 0, sizeof(trace_t);
 					trap_Trace( &tr, lastEnemy->lastEnemy->r.currentOrigin, NULL, NULL, target->r.currentOrigin, lastEnemy->lastEnemy->s.number, MASK_SHOT );
 
 					if ( !tr.allsolid && !tr.startsolid && (tr.fraction == 1.0 || tr.entityNum == target->s.number) )
@@ -621,7 +702,7 @@ void turret_base_think (gentity_t *self)
 		entity_list.clear(&entity_list);
 	}
 
-	if ( self->enemy )
+	if ( self->enemy != NULL )
 	{/* Check if still in random */
 		if ( self->enemy->health <= 0 )
 		{
@@ -637,8 +718,8 @@ void turret_base_think (gentity_t *self)
 			return;
 		}
 
-		if(lastEnemy) {
-			if(lastEnemy->lastEnemy) {
+		if(lastEnemy != NULL) {
+			if(lastEnemy->lastEnemy != NULL) {
 				if ( !trap_InPVS( lastEnemy->lastEnemy->r.currentOrigin, self->enemy->r.currentOrigin ) )
 				{
 					turret_turnoff( self );
@@ -652,8 +733,8 @@ void turret_base_think (gentity_t *self)
 		{
 			trace_t tr;
 
-			if(lastEnemy) {
-				if(lastEnemy->lastEnemy) {
+			if(lastEnemy != NULL) {
+				if(lastEnemy->lastEnemy != NULL) {
 					trap_Trace( &tr, lastEnemy->lastEnemy->r.currentOrigin, NULL, NULL, self->enemy->r.currentOrigin, lastEnemy->lastEnemy->s.number, MASK_SHOT );
 					if ( tr.allsolid || tr.startsolid || tr.fraction != 1.0 )
 					{
@@ -665,7 +746,7 @@ void turret_base_think (gentity_t *self)
 		}
 	}
 
-	if ( self->enemy )
+	if ( self->enemy != NULL )
 	{/* Aim */
 		/* Won't need to wind up turrets for a while */
 		self->last_move_time = level.time + 5000;
@@ -676,20 +757,25 @@ void turret_base_think (gentity_t *self)
 		/* Move arm and head back to neutral angles */
 		turret_aim( self );
 	}
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Use function of the turrets base.
- *
- * Use function of the turrets base.
+ * @brief Use function of the turrets base.
  *
  * @param self the turrets base
  * @param other another entity
  * @param the activator
  */
-void turret_base_use (gentity_t *self, gentity_t *other, gentity_t *activator)
-{/* Toggle on and off */
+static void turret_base_use (gentity_t* self, gentity_t* other, gentity_t* activator)
+{
+	/* Toggle on and off */
+	G_LogFuncBegin();
+
 	self->spawnflags = (self->spawnflags ^ 1);
+
+	G_LogFuncEnd();
 }
 
 /*QUAKED misc_turret (1 0 0) (-8 -8 -8) (8 8 8) START_OFF
@@ -717,20 +803,33 @@ target - What to use when destroyed
 */
 
 /**
- * \brief Spawn a turret.
+ * @brief Spawn a turret.
  *
  * The spawn function for turrets.
  *
  * @param base the turrets base
  */
-void SP_misc_turret (gentity_t *base)
-{
+void SP_misc_turret (gentity_t* base) {
 	/* We're the base, spawn the arm and head */
-	gentity_t *arm = G_Spawn();
-	gentity_t *head = G_Spawn();
-	vec3_t		fwd;
+	gentity_t*	arm = G_Spawn();
+	gentity_t*	head = G_Spawn();
+	vec3_t		fwd = { 0, 0, 0 };
+
+	G_LogFuncBegin();
 
 	base->type = ENT_MISC_TURRET;
+
+	if(arm == NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn arm entity.");
+		G_LogFuncEnd();
+		return;
+	}
+
+	if(head == NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn head entity.");
+		G_LogFuncEnd();
+		return;
+	}
 
 	/* Base */
 	/* Base does the looking for enemies and pointing the arm and head */
@@ -914,19 +1013,25 @@ void SP_misc_turret (gentity_t *base)
 	{
 		RegisterItem( BG_FindItemForWeapon( WP_4 ) );	/* precache the weapon */
 	}
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Fires the laser of a laser arm.
- * 
- * Fires the laser of a  laser arm.
+ * @brief Fires the laser of a laser arm.
  *
  * @param ent the laser arm
  */
-void laser_arm_fire (gentity_t *ent)
+static void laser_arm_fire (gentity_t* ent)
 {
-	vec3_t	start, end, fwd, rt, up;
+	vec3_t start = { 0, 0, 0 };
+	vec3_t end = { 0, 0, 0 };
+	vec3_t fwd = { 0, 0, 0 };
+	vec3_t rt = { 0, 0, 0 };
+	vec3_t up = { 0, 0, 0 };
 	trace_t	trace;
+
+	G_LogFuncBegin();
 
 	if ( ent->health < level.time && ent->booleanstate )
 	{
@@ -946,6 +1051,7 @@ void laser_arm_fire (gentity_t *ent)
 	/*VectorMA( start, -3, up, start );*/
 	VectorMA( start, 4096, fwd, end );
 	
+	memset(&trace, 0, sizeof(trace_t));
 	trap_Trace( &trace, start, NULL, NULL, end, -1, MASK_SHOT ); /* ignore */
 	
 	/* Only deal damage when in alt-fire mode */
@@ -990,10 +1096,12 @@ void laser_arm_fire (gentity_t *ent)
 
 		G_AddEvent( ent, EV_LASERTURRET_AIM, 0 );
 	}
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Use a laser arm.
+ * @brief Use a laser arm.
  *
  * Use function of the laser arm entity.
  *
@@ -1001,9 +1109,11 @@ void laser_arm_fire (gentity_t *ent)
  * @param other another entity
  * @param activator the activator
  */
-void laser_arm_use (gentity_t *self, gentity_t *other, gentity_t *activator)
+static void laser_arm_use (gentity_t* self, gentity_t* other, gentity_t* activator)
 {
-	vec3_t	newAngles;
+	vec3_t	newAngles = { 0, 0, 0 };
+
+	G_LogFuncBegin();
 
 	self->activator = activator;
 	switch( self->count )
@@ -1064,6 +1174,8 @@ void laser_arm_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 		G_Sound( self->lastEnemy->lastEnemy, G_SoundIndex( "sound/enemies/l_arm/move.wav" ) );
 		break;
 	}
+
+	G_LogFuncEnd();
 }
 
 /*QUAKED misc_laser_arm (1 0 0) (-8 -8 -8) (8 8 8) 
@@ -1092,36 +1204,52 @@ none
 */
 
 /**
- * \brief Start the laser arm.
- *
- * Start the laser arm.
+ * @brief Start the laser arm.
  *
  * @param base the laser arm's base
  */
-void laser_arm_start (gentity_t *base)
+void laser_arm_start (gentity_t* base)
 {
-	vec3_t	armAngles;
-	vec3_t	headAngles;
-	gentity_t *arm;
-	gentity_t *head;
+	vec3_t	armAngles = { 0, 0, 0 };
+	vec3_t	headAngles = { 0, 0, 0 };
+	gentity_t *arm = NULL;
+	gentity_t *head = NULL;
 
-	base->think = 0;
+	G_LogFuncBegin();
+
+	base->think = NULL;
 	/* We're the base, spawn the arm and head */
 	arm = G_Spawn();
 	head = G_Spawn();
 
+	if(arm == NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn arm entity.");
+		G_LogFuncEnd();
+		return;
+	}
+
+	if(head == NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn head entity.");
+		G_LogFuncEnd();
+		return;
+	}
+
 	VectorCopy( base->s.angles, armAngles );
 	VectorCopy( base->s.angles, headAngles );
-	if ( base->target && base->target[0] )
-	{/* Start out pointing at something */
+	if ( base->target != NULL && base->target[0] )
+	{
+		/* Start out pointing at something */
 		gentity_t *targ = G_Find( NULL, FOFS(targetname), base->target );
-		if ( !targ )
-		{/* couldn't find it! */
-			Com_Printf(S_COLOR_RED "ERROR : laser_arm can't find target %s!\n", base->target);
+		if ( targ == NULL )
+		{
+			/* couldn't find it! */
+			G_LocLogger(LL_ERROR, "ERROR : laser_arm can't find target %s!\n", base->target);
 		}
 		else
-		{/* point at it */
-			vec3_t	dir, angles;
+		{
+			/* point at it */
+			vec3_t dir = { 0, 0, 0 };
+			vec3_t angles = { 0, 0, 0 };
 
 			VectorSubtract(targ->r.currentOrigin, base->s.origin, dir );
 			vectoangles( dir, angles );
@@ -1225,10 +1353,12 @@ void laser_arm_start (gentity_t *base)
 	head->think = laser_arm_fire;
 	head->nextthink = level.time + FRAMETIME;
 	head->booleanstate = qfalse; /* Don't do damage until told to */
+
+	G_LogFuncEnd();
 }
 
 /**
- * \brief Spawn a laser arm.
+ * @brief Spawn a laser arm.
  *
  * Spawn function of the laser arm entity.
  *
@@ -1236,8 +1366,12 @@ void laser_arm_start (gentity_t *base)
  */
 void SP_laser_arm (gentity_t *base)
 {
+	G_LogFuncBegin();
+
 	base->type = ENT_LASER_ARM;
 	base->think = laser_arm_start;
 	base->nextthink = level.time + FRAMETIME;
+
+	G_LogFuncEnd();
 }
 
