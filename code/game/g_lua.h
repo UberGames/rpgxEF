@@ -183,7 +183,7 @@ typedef struct {
  *
  * @return An int.
  */
-int			Luaopen_Entity(lua_State *L);
+int	Luaopen_Entity(lua_State *L);
 
 /**
  * @brief Push an entity onto the lua stack.
@@ -194,7 +194,7 @@ int			Luaopen_Entity(lua_State *L);
  * @param [in] L   If non-null, the lua_State * to process.
  * @param [in] ent If non-null, the entity to push.
  */
-void		Lua_PushEntity(lua_State *L, gentity_t *ent);
+void Lua_PushEntity(lua_State *L, gentity_t *ent);
 
 /**
  * @brief Get an entity from the lua stack.
@@ -207,7 +207,7 @@ void		Lua_PushEntity(lua_State *L, gentity_t *ent);
  *
  * @return null if it fails, else a lent_t*.
  */
-lent_t		*Lua_GetEntity(lua_State *L, int argNum);
+lent_t* Lua_GetEntity(lua_State *L, int argNum);
 
 /**
  * @brief Open lua weapons library.
@@ -226,9 +226,9 @@ typedef struct {
 	trace_t *tr;
 } ltrace_t;
 
-void Lua_PushTrace(lua_State * L, trace_t * tr);
-ltrace_t *Lua_GetTrace(lua_State * L, int argNum);
-int Luaopen_Trace(lua_State *L);
+void Lua_PushTrace(lua_State* L, trace_t* tr);
+ltrace_t *Lua_GetTrace(lua_State* L, int argNum);
+int Luaopen_Trace(lua_State* L);
 
 // lua_game.c
 int			Luaopen_Game(lua_State *L);

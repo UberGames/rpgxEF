@@ -21,15 +21,40 @@ typedef enum {
 
 typedef struct
 {
-	char	*name;
-	int		ofs;
+	char*		name;
+	int			ofs;
 	fieldtype_t	type;
-	int		flags;
+	int			flags;
 } field_t;
 
+/**
+ * @brief Spawn player start entity.
+ *
+ * @author GSIO01
+ * @date 15.10.2013
+ *
+ * @param [in,out] ent If non-null, the entity.
+ */
 void SP_info_player_deathmatch(/*@shared@*/ gentity_t *ent);
+
+/**
+ * @brief Spawn function of intermission entity.
+ *
+ * @author GSIO01
+ * @date 15.10.2013
+ *
+ * @param [in,out] ent If non-null, the entity.
+ */
 void SP_info_player_intermission(/*@shared@*/ gentity_t *ent);
 
+/**
+ * @brief Spawn function of func_plat entity.
+ *
+ * @author GSIO01
+ * @date 15.10.2013
+ *
+ * @param [in,out] ent If non-null, the entity.
+ */
 void SP_func_plat (/*@shared@*/ gentity_t *ent);
 void SP_func_forcefield(/*@shared@*/ gentity_t *ent);
 void SP_func_static(/*@shared@*/ gentity_t *ent);
