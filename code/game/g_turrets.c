@@ -62,7 +62,7 @@ static void turret_die ( gentity_t* self, gentity_t* inflictor, gentity_t* attac
 	self->think = NULL;
 	self->nextthink = -1;
 	self->takedamage = qfalse;
-	self->health = NULL;
+	self->health = 0;
 
 	/* Throw some chunks */
 	/*AngleVectors( activator->r.currentAngles, dir, NULL, NULL );
@@ -659,7 +659,7 @@ static void turret_base_think (gentity_t* self)
 				continue;
 			}
 
-			if ( target->takedamage && target->health > 0 && (target->flags & FL_NOTARGET) == NULL )
+			if ( target->takedamage && target->health > 0 && (target->flags & FL_NOTARGET) == 0 )
 			{
 				if ( target->client == NULL && target->team && atoi(target->team) == atoi(self->team) )
 				{/* Something of ours we don't want to destroy */
@@ -674,7 +674,7 @@ static void turret_base_think (gentity_t* self)
 				{
 					trace_t	tr;
 
-					memset(&tr, 0, sizeof(trace_t);
+					memset(&tr, 0, sizeof(trace_t));
 					trap_Trace( &tr, lastEnemy->lastEnemy->r.currentOrigin, NULL, NULL, target->r.currentOrigin, lastEnemy->lastEnemy->s.number, MASK_SHOT );
 
 					if ( !tr.allsolid && !tr.startsolid && (tr.fraction == 1.0 || tr.entityNum == target->s.number) )
