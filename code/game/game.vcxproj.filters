@@ -515,6 +515,9 @@
     <ClInclude Include="g_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="g_trigger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">

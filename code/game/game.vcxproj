@@ -516,6 +516,7 @@
     <ClInclude Include="g_spawn.h" />
     <ClInclude Include="g_sql.h" />
     <ClInclude Include="g_team.h" />
+    <ClInclude Include="g_trigger.h" />
     <ClInclude Include="g_usable.h" />
     <ClInclude Include="g_utils.h" />
     <ClInclude Include="g_weapon.h" />

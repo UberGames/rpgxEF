@@ -6,8 +6,7 @@
 
 #include "g_local.h"
 #include "g_spawn.h"
-
-extern void InitTrigger(gentity_t *self);
+#include "g_trigger.h"
 
 /*QUAKED ui_transporter (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
 -----DESCRIPTION-----
