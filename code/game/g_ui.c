@@ -7,6 +7,7 @@
 #include "g_local.h"
 #include "g_spawn.h"
 #include "g_trigger.h"
+#include "g_logger.h"
 
 /*QUAKED ui_transporter (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
 -----DESCRIPTION-----
@@ -24,8 +25,10 @@ Opens the transporter UI.
 *	\param ent the ui_transporter entity
 *	\author Ubergames - GSIO01
 */
-void ui_transporter_think(gentity_t *ent) {
-	if(!ent->activator || ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */
+static void ui_transporter_think(gentity_t* ent) {
+	G_LogFuncBegin();
+
+	if(ent->activator == NULL || ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */
 		ent->sound1to2 = 0;
 		ent->count = 0;
 		ent->nextthink = -1;
@@ -33,6 +36,8 @@ void ui_transporter_think(gentity_t *ent) {
 		ent->nextthink = level.time + 2500;
 		ent->sound1to2 += 2500;
 	}
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -46,35 +51,45 @@ void ui_transporter_think(gentity_t *ent) {
 *
 *	\author Ubergames - GSIO01
 */
-void ui_transporter_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	gentity_t *target;
-	if(!Q_stricmp(ent->swapname, activator->target)) {
+static void ui_transporter_use(gentity_t* ent, gentity_t* other, gentity_t* activator) {
+	gentity_t* target = NULL;
+
+	G_LogFuncBegin();
+
+	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
 	} else {
-		if(ent->flags & FL_LOCKED || ent->count) return;
+		if((ent->flags & FL_LOCKED) != 0 || ent->count != 0) {
+			G_LogFuncEnd();
+			return;
+		}
+
 		target = ent->target_ent;
 		ent->count = 1; /* in use indicator */
 		ent->touched = activator;
 		trap_SendServerCommand(activator-g_entities, va("ui_transporter %i", target-g_entities));
 		ent->nextthink = level.time + 2500;
 	}
+
+	G_LogFuncEnd();
 }
 
 /**	
 *	\brief Continues setupt of ui_transporter entity after all other entites had time to spawn.
-*
 *	\param ent the ui_transporter entity
-*
 *	\author Ubergames - GSIO01
 */
-void ui_transporter_setup(gentity_t *ent) {
-	gentity_t *target = NULL;
+static void ui_transporter_setup(gentity_t* ent) {
+	gentity_t* target = NULL;
+
+	G_LogFuncBegin();
 
 	target = G_Find(target, FOFS(targetname), ent->target);
 
-	if(!target) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] ui_transporter without trigger_transporter as target at %s!\n", vtos(ent->s.origin)););
+	if(target == NULL) {
+		G_LocLogger(LL_ERROR, "ui_transporter without trigger_transporter as target at %s!\n", vtos(ent->s.origin));
 		G_FreeEntity(ent);
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -83,31 +98,33 @@ void ui_transporter_setup(gentity_t *ent) {
 
 	ent->nextthink = -1;
 	ent->think = ui_transporter_think;
+
+	G_LogFuncEnd();
 }
 
-/**
-*	\brief Spawn function of ui_transporter entity.
-*
-*	\param ent the ui_transporter entity
-*
-*	\author GSIO01
-*/
-void SP_ui_transporter(gentity_t *ent) {
+void SP_ui_transporter(gentity_t* ent) {
 	ent->type = ENT_UI_TRANSPORTER;
 	
-	if(!ent->target) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] ui_transporter without target at %s!\n", vtos(ent->s.origin)););
+	G_LogFuncBegin();
+
+	if(ent->target == NULL) {
+		G_LocLogger(LL_ERROR, "ui_transporter without target at %s!\n", vtos(ent->s.origin));
 		G_FreeEntity(ent);
+		G_LogFuncEnd();
 		return;
 	}
 
-	if(ent->spawnflags & 1)
+	if((ent->spawnflags & 1) != 0) {
 		ent->flags ^= FL_LOCKED;
+	}
+
 	ent->use = ui_transporter_use;
 	ent->think = ui_transporter_setup;
 	ent->nextthink = level.time + 500;
 	ent->count = 0;
 	trap_LinkEntity(ent);
+
+	G_LogFuncEnd();
 }
 
 /*QUAKED ui_msd (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
@@ -133,15 +150,29 @@ Opens a Master Systems Display. It will display data grabbed from a target_shiph
 *
 *	\author Ubergames - Harry Young
 */
-void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+static void ui_msd_use(gentity_t* ent, gentity_t* other, gentity_t* activator) {
 	gentity_t *target, *temp = NULL;
-	int maxhull, currhull, maxshield, currshield, shieldstate, warpstate= -2, turbostate= -2, transstate= -2, alertstate= -2;
-	const char *model;
+	int32_t maxhull = 0;
+	int32_t currhull = 0;
+	int32_t maxshield = 0;
+	int32_t currshield = 0;
+	int32_t shieldstate = 0;
+	int32_t warpstate= -2;
+	int32_t turbostate= -2;
+	int32_t transstate= -2;
+	int32_t alertstate= -2;
+	const char* model = NULL;
 
-	if(!Q_stricmp(ent->swapname, activator->target)) {
+	G_LogFuncBegin();
+
+	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
 	} else {
-		if(ent->flags & FL_LOCKED) return;
+		if((ent->flags & FL_LOCKED) != 0) {
+			G_LogFuncEnd();
+			return;
+		}
+
 		target = ent->target_ent;
 
 		maxhull = target->health;
@@ -149,74 +180,91 @@ void ui_msd_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 		maxshield = target->splashRadius;
 		currshield = target->n00bCount;
 		shieldstate = target->splashDamage;
-		if(target->falsetarget){
+
+		if(target->falsetarget != NULL){
 			while((temp = G_Find(temp, FOFS(truename), target->falsetarget)) != NULL){
 				if(temp->type == ENT_TARGET_WARP) {
+					G_LogFuncEnd();
 					break;
 				}
 			}
 			if(temp != NULL){
-				if(temp->sound2to1)//core ejected, we don't really care if it is online
+				if(temp->sound2to1 != 0) {
+					//core ejected, we don't really care if it is online
 					warpstate = 2;
-				if(!temp->sound2to1 && temp->sound1to2)//not ejected and not deactivated -> core active
+				}
+
+				if(temp->sound2to1 == 0 && temp->sound1to2 != 0) {
+					//not ejected and not deactivated -> core active
 					warpstate = 1;
-				if(!temp->sound2to1 && !temp->sound1to2)//not ejected and deactivated -> core inactive
+				}
+
+				if(temp->sound2to1 == 0 && temp->sound1to2 == 0) {
+					//not ejected and deactivated -> core inactive
 					warpstate = 0;
-			temp = NULL;
+				}
+				temp = NULL;
 			}
 		}
-		if(target->bluename){
+
+		if(target->bluename != NULL){
 			while((temp = G_Find(temp, FOFS(swapname), target->bluename)) != NULL){
 				if(temp->type == ENT_TARGET_TURBOLIFT) { 
 					break;
 				}
 			}
-			if(temp){
-				if (temp->flags & FL_LOCKED)
+			if(temp != NULL){
+				if ((temp->flags & FL_LOCKED) != 0) {
 					turbostate = 0;
-				else
+				} else {
 					turbostate = 1;
-			temp = NULL;
+				}
+				temp = NULL;
 			}
 		}
-		if(target->bluesound){
+
+		if(target->bluesound != NULL){
 			while((temp = G_Find(temp, FOFS(swapname), target->bluesound)) != NULL){
 				if(temp->type == ENT_UI_TRANSPORTER) {
 					break;
 				}
 			}
-			if(temp){
-				if (temp->flags & FL_LOCKED)
+			if(temp != NULL){
+				if ((temp->flags & FL_LOCKED) != 0) {
 					transstate = 0;
-				else
+				} else {
 					transstate = 1;
-			temp = NULL;
+				}
+				temp = NULL;
 			}
 		}
-		if(target->falsename){
+
+		if(target->falsename != NULL){
 			while((temp = G_Find(temp, FOFS(falsename), target->falsename)) != NULL){
 				if(temp->type == ENT_TARGET_ALERT) break;
 			}
-			if(temp){
-			alertstate = temp->damage;
-			temp = NULL;
+			if(temp != NULL) {
+				alertstate = temp->damage;
+				temp = NULL;
 			}
 		}
 		model = target->model;
 		trap_SendServerCommand(activator-g_entities, va("ui_msd %i %i %i %i %i %i %i %i %i %s", maxhull, currhull, maxshield, currshield, shieldstate, warpstate, turbostate, transstate, alertstate, model));
 		//Debugging G_Printf(S_COLOR_YELLOW "ui_msd G %i %i %i %i %i %i %i %i %i\n", maxhull, currhull, maxshield, currshield, shieldstate, warpstate, turbostate, transstate, alertstate);
 	}
+
+	G_LogFuncEnd();
 }
 
 /**	
 *	\brief Continues setupt of ui_msd entity after all other entites had time to spawn.
-*
 *	\param ent the ui_msd entity
-*
 *	\author Ubergames - GSIO01
 */
-void ui_msd_setup(gentity_t *ent) {
-	gentity_t *target = NULL;
+static void ui_msd_setup(gentity_t* ent) {
+	gentity_t* target = NULL;
+
+	G_LogFuncBegin();
 
 	while((target = G_Find(target, FOFS(targetname), ent->target)) != NULL){
 		if(target->type == ENT_TARGET_SHIPHEALTH) {
@@ -224,9 +272,10 @@ void ui_msd_setup(gentity_t *ent) {
 		}
 	}
 
-	if(!target) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] ui_msd without target_shiphealth as target at %s! Removing Entity.\n", vtos(ent->s.origin)););
+	if(target == NULL) {
+		G_LocLogger(LL_ERROR, "ui_msd without target_shiphealth as target at %s! Removing Entity.\n", vtos(ent->s.origin));
 		G_FreeEntity(ent);
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -235,31 +284,33 @@ void ui_msd_setup(gentity_t *ent) {
 
 	ent->nextthink = -1;
 	ent->think = 0;
+
+	G_LogFuncEnd();
 }
 
-/**
-*	\brief Spawn function of ui_msd entity.
-*
-*	\param ent the ui_msd entity
-*
-*	\author GSIO01
-*/
-void SP_ui_msd(gentity_t *ent) {
+void SP_ui_msd(gentity_t* ent) {
+	G_LogFuncBegin();
+
 	ent->type = ENT_UI_MSD;
 	
 	if(!ent->target) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] ui_msd without target at %s! Removing Entity.\n", vtos(ent->s.origin)););
+		G_LocLogger(LL_ERROR, "ui_msd without target at %s! Removing Entity.\n", vtos(ent->s.origin));
 		G_FreeEntity(ent);
+		G_LogFuncEnd();
 		return;
 	}
 
-	if(ent->spawnflags & 1)
+	if((ent->spawnflags & 1) != 0) {
 		ent->flags ^= FL_LOCKED;
+	}
+
 	ent->use = ui_msd_use;
 	ent->think = ui_msd_setup;
 	ent->nextthink = level.time + 500;
 	ent->count = 0;
 	trap_LinkEntity(ent);
+
+	G_LogFuncEnd();
 }
 
 /*QUAKED ui_holodeck (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
@@ -273,8 +324,10 @@ Will open  the holodeck UI once this is implemented. For now this will not spawn
 "swapname" - enables/disables entity(NO_ACTIVATOR/SELF flag must be checked for any entity using this)
 "target" - trigger_holodeck to use with this ui_holodeck
 */
-void ui_holodeck_think(gentity_t *ent) {
-	if(!ent->activator || ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */
+static void ui_holodeck_think(gentity_t *ent) {
+	G_LogFuncBegin();
+
+	if(ent->activator != 0 || ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */
 		ent->sound1to2 = 0;
 		ent->count = 0;
 		ent->nextthink = -1;
@@ -282,30 +335,44 @@ void ui_holodeck_think(gentity_t *ent) {
 		ent->nextthink = level.time + 2500;
 		ent->sound1to2 += 2500;
 	}
+
+	G_LogFuncEnd();
 }
 
-void ui_holodeck_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	gentity_t *target;
-	if(!Q_stricmp(ent->swapname, activator->target)) {
+static void ui_holodeck_use(gentity_t* ent, gentity_t* other, gentity_t* activator) {
+	gentity_t* target = NULL;
+
+	G_LogFuncBegin();
+
+	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
 	} else {
-		if(ent->flags & FL_LOCKED || ent->count) return;
+		if((ent->flags & FL_LOCKED) != 0 || ent->count != 0) {
+			G_LogFuncEnd();
+			return;
+		}
+
 		target = ent->target_ent;
 		ent->count = 1; /* in use indicator */
 		ent->touched = activator;
 		trap_SendServerCommand(activator-g_entities, va("ui_holodeck %i", target-g_entities));
 		ent->nextthink = level.time + 2500;
 	}
+
+	G_LogFuncEnd();
 }
 
-void ui_holodeck_setup(gentity_t *ent) {
-	gentity_t *target;
+static void ui_holodeck_setup(gentity_t* ent) {
+	gentity_t* target = NULL;
+
+	G_LogFuncBegin();
 
 	target = G_Find(NULL, FOFS(targetname), ent->target);
 
-	if(!target) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] ui_holodekc without trigger_holodeck as target at %s!\n", vtos(ent->s.origin)););
+	if(target == NULL) {
+		G_LocLogger(LL_ERROR, "ui_holodekc without trigger_holodeck as target at %s!\n", vtos(ent->s.origin));
 		G_FreeEntity(ent);
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -314,22 +381,33 @@ void ui_holodeck_setup(gentity_t *ent) {
 
 	ent->nextthink = -1;
 	ent->think = ui_holodeck_think;
+
+	G_LogFuncEnd();
 }
 
-void SP_ui_holodeck(gentity_t *ent) {
+void SP_ui_holodeck(gentity_t* ent) {
+
+	G_LogFuncBegin();
+
 	ent->type = ENT_UI_HOLODECK;
 
-	if(!ent->target) {
-		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] ui_holodeck without target at %s!\n", vtos(ent->s.origin)););
+	if(ent->target == NULL) {
+		G_LocLogger(LL_ERROR, "ui_holodeck without target at %s!\n", vtos(ent->s.origin));
 		G_FreeEntity(ent);
+		G_LogFuncEnd();
+		return;
 	}
 
-	if(ent->spawnflags & 1)
+	if((ent->spawnflags & 1) != 0) {
 		ent->flags ^= FL_LOCKED;
+	}
+
 	ent->use = ui_holodeck_use;
 	ent->think = ui_holodeck_setup;
 	ent->nextthink = level.time + 500;
 	ent->count = 0;
 	trap_LinkEntity(ent);
+
+	G_LogFuncEnd();
 }
 
