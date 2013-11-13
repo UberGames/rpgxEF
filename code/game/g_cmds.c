@@ -8,6 +8,7 @@
 #include "g_client.h"
 #include "g_logger.h"
 #include "g_lua.h"
+#include "g_cinematic.h"
 
 //#include <windows.h>
 
@@ -7423,28 +7424,34 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 }
 
 // CCAM
-extern void Cinematic_ActivateCameraMode(gentity_t *ent, gentity_t *target);
-extern void Cinematic_DeactivateCameraMode(gentity_t *ent);
 static void Cmd_Camtest_f(gentity_t *ent) {
 	gentity_t *targ;
 	char tname[256];
 
-	if(trap_Argc() < 1) return;
+	if(trap_Argc() < 1) {
+		return;
+	}
 
-	G_Printf("activate cam\n");
-
-	if(ent->flags & FL_CCAM) return;
+	if(ent->flags & FL_CCAM) {
+		return;
+	}
 
 	trap_Argv(1, tname, sizeof(tname));
 
 	targ = G_Find(NULL, FOFS(targetname), tname);
-	if(!targ) return;
+	if(targ == NULL) {
+		return;
+	}
+
+	G_Printf("activate cam\n");
+	G_Printf("original origin: %s\n", vtos(ent->r.currentOrigin));
+	G_Printf("cam origin: %s\n", vtos(targ->s.origin));
 
 	Cinematic_ActivateCameraMode(ent, targ);
 }
 
 void Cmd_CamtestEnd_f(gentity_t *ent) {
-	//Cinematic_DeactivateCameraMode(ent);
+	Cinematic_DeactivateCameraMode(ent);
 }
 // END CCAM
 

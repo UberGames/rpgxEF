@@ -47,10 +47,15 @@ void Cinematic_DeactivateCameraMode(gentity_t *ent) {
 	if(!ent || !ent->client || !(ent->flags & FL_CCAM)) return;
 	client =  ent->client;
 
-	ent->flags ^= FL_CCAM;
+	client->cam = NULL;
+
+	G_Printf("resetting origin to %s\n", vtos(client->origOrigin));
+
 	G_SetOrigin(ent, client->origOrigin);
+	VectorCopy(client->origOrigin, ent->client->ps.origin);
 	G_Client_SetViewAngle(ent, client->origViewAngles);
 	trap_LinkEntity(ent);
+
 }
 
 void Cinematic_ActivateGlobalCameraMode(gentity_t *target) {

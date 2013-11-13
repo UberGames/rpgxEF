@@ -1899,6 +1899,10 @@ static void SendPendingPredictableEvents( playerState_t *ps ) {
 
 static void ClientCamThink(gentity_t* client) {
 	if(client == NULL || client->client == NULL || client->client->cam == NULL) {
+		if(client->flags & FL_CCAM) {
+			client->flags ^= FL_CCAM;
+		}
+		client->client->ps.pm_type = PM_NORMAL;
 		return;
 	}
 
