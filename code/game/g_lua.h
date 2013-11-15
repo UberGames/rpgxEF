@@ -394,6 +394,8 @@ void LuaHook_G_EntityReachedAngular(char* function, int entnum);
  * \return An unsigned.
  */
 
+void LuaHook_G_CmdScriptCall(char* function);
+
 unsigned G_Lua_NumThreads(void);
 
 /**

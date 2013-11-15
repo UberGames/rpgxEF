@@ -1316,13 +1316,30 @@ static int Entity_GetAngle(lua_State *L) {
 
 	lent = Lua_GetEntity(L, 1);
 	if(lent == NULL || lent->e == NULL) {
-		LUA_DEBUG("ERROR - entity.GetAngle - entity NUL");
+		LUA_DEBUG("ERROR - entity.GetAngle - entity NULL");
 		lua_pushnumber(L, 0);
 		return 1;
 	}
 
 	lua_pushnumber(L, lent->e->angle);
 	LUA_DEBUG("END - entity.GetAngle");
+	return 1;
+}
+
+static int Entity_GetAngles(lua_State* L) {
+	lent_t* lent;
+
+	LUA_DEBUG("BEGIN - entity.GetAngles");
+
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.GetAngles - entity NULL");
+		lua_pushnil(L);
+		return 1;
+	}
+
+	Lua_PushVector(L, lent->e->s.angles);
+	LUA_DEBUG("END - entity.GetAngles");
 	return 1;
 }
 
@@ -1343,6 +1360,29 @@ static int Entity_SetAngle(lua_State *L) {
 
 	LUA_DEBUG("END - entity.SetAngle");
 	lua_pushboolean(L, qtrue);
+	return 1;
+}
+
+static int Entity_SetAngles(lua_State* L) {
+	lent_t* lent;
+	vec_t* vec;
+
+	LUA_DEBUG("BEGIN - entity.SetAngles");
+
+	lent = Lua_GetEntity(L, 1);
+	if(lent == NULL || lent->e == NULL) {
+		LUA_DEBUG("ERROR - entity.SetAngles - entity NULL");
+		return 1;
+	}
+
+	vec = Lua_GetVector(L, 2);
+	if(vec == NULL) {
+		LUA_DEBUG("ERROR - entity.SetAngles - vetor NULL");
+		return 1;
+	}
+
+	G_SetAngles(lent->e, vec);
+	LUA_DEBUG("END - entity.SetAngles");
 	return 1;
 }
 
@@ -4188,6 +4228,9 @@ static const luaL_Reg Entity_meta[] = {
 
 	{ "GetAngle",					Entity_GetAngle					}, // args: none; return: float
 	{ "SetAngle",					Entity_SetAngle					}, // args: float; return: nothing
+
+	{ "GetAngles",					Entity_GetAngles				},
+	{ "SetAngles",					Entity_SetAngles				},
 
 	{ "GetApos1",					Entity_GetApos1					}, // args: none; return: vec
 	{ "GetApos2",					Entity_GetApos2					}, // args: none; return: vec

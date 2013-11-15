@@ -947,6 +947,37 @@ void LuaHook_G_EntityReached(char *function, int entnum) {
 	}
 }
 
+void LuaHook_G_CmdScriptCall(char* function) {
+	int			i;
+	lvm_t*		vm;
+	lua_State*	t;
+
+	for(i = 0; i < NUM_VMS; i++) {
+		vm = lVM[i];
+		if(vm) {
+			if(vm->id < 0) {
+				continue;
+			}
+			t = lua_newthread(vm->L);
+			if(!t) {
+				if(!G_Lua_GetFunction(vm, function)) {
+					continue;
+				}
+				if(!G_Lua_Call(vm, function, 0, 0)) {
+					continue;
+				}
+			} else {
+				if(!G_Lua_GetFunctionT(t, function)) {
+					continue;
+				}
+				if(!G_Lua_Resume(vm, t, function, 0)) {
+					continue;
+				}
+			}
+		}
+	}
+}
+
 void LuaHook_G_EntityReachedAngular(char *function, int entnum) {
 	int			i;
 	lvm_t		*vm;

@@ -88,6 +88,132 @@ static int Vector_Clear(lua_State * L)
 	return 0;
 }
 
+static int Vector_X(lua_State* L) {
+	vec_t* vec;
+
+	LUA_DEBUG("BEGIN - vector.X");
+
+	vec = Lua_GetVector(L, 1);
+	if(vec == NULL) {
+		LUA_DEBUG("ERROR - vector.X - vector NULL");
+		return 1;
+	}
+
+	lua_pushnumber(L, vec[0]);
+	
+	LUA_DEBUG("END - vector.X");
+	return 1;
+}
+
+static int Vector_SetX(lua_State* L) {
+	vec_t* vec;
+	float value;
+
+	LUA_DEBUG("BEGIN - vector.SetX");
+
+	vec = Lua_GetVector(L, 1);
+	if(vec == NULL) {
+		LUA_DEBUG("ERROR - vector.SetX - vector NULL");
+		return 1;
+	}
+
+	if(lua_isnumber(L, 2)) {
+		value = lua_tonumber(L, 2);
+
+		vec[0] = value;
+	} else {
+		LUA_DEBUG("ERROR - vector.SetX - second arg is not a number");
+		return 1;
+	}
+
+	LUA_DEBUG("END - vector.SetX");
+	return 1;
+}
+
+static int Vector_Y(lua_State* L) {
+	vec_t* vec;
+
+	LUA_DEBUG("BEGIN - vector.Y");
+
+	vec = Lua_GetVector(L, 1);
+	if(vec == NULL) {
+		LUA_DEBUG("ERROR - vector.Y - vector NULL");
+		return 1;
+	}
+
+	lua_pushnumber(L, vec[1]);
+	
+	LUA_DEBUG("END - vector.Y");
+	return 1;
+}
+
+static int Vector_SetY(lua_State* L) {
+	vec_t* vec;
+	float value;
+
+	LUA_DEBUG("BEGIN - vector.SetY");
+
+	vec = Lua_GetVector(L, 1);
+	if(vec == NULL) {
+		LUA_DEBUG("ERROR - vector.SetY - vector NULL");
+		return 1;
+	}
+
+	if(lua_isnumber(L, 2)) {
+		value = lua_tonumber(L, 2);
+
+		vec[1] = value;
+	} else {
+		LUA_DEBUG("ERROR - vector.SetY - second arg is not a number");
+		return 1;
+	}
+
+	LUA_DEBUG("END - vector.SetY");
+	return 1;
+}
+
+static int Vector_Z(lua_State* L) {
+	vec_t* vec;
+
+	LUA_DEBUG("BEGIN - vector.Z");
+
+	vec = Lua_GetVector(L, 1);
+	if(vec == NULL) {
+		LUA_DEBUG("ERROR - vector.Z - vector NULL");
+		return 1;
+	}
+
+	lua_pushnumber(L, vec[2]);
+	
+	LUA_DEBUG("END - vector.Z");
+	return 1;
+}
+
+static int Vector_SetZ(lua_State* L) {
+	vec_t* vec;
+	float value;
+
+	LUA_DEBUG("BEGIN - vector.SetZ");
+
+	vec = Lua_GetVector(L, 1);
+	if(vec == NULL) {
+		LUA_DEBUG("ERROR - vector.SetZ - vector NULL");
+		return 1;
+	}
+
+	if(lua_isnumber(L, 2)) {
+		value = lua_tonumber(L, 2);
+
+		vec[2] = value;
+	} else {
+		LUA_DEBUG("ERROR - vector.SetZ - second arg is not a number");
+		return 1;
+	}
+
+	LUA_DEBUG("END - vector.SetZ");
+	return 1;
+}
+
 /***
 Add vector b to vector a and return the result.
 @function Add
@@ -375,7 +501,7 @@ static int Vector_ToString(lua_State *L) {
 }
 
 static const luaL_Reg vector_ctor[] = {
-	{ "New",					Vector_New			 },
+	{ "New",				Vector_New				 },
 	{ "Construct",			Vector_Construct		 },
 	{ "RotatePointAround",	Vector_RotatePointAround },
 	{ "Perpendicular",		Vector_Perpendicular	 },
@@ -385,7 +511,7 @@ static const luaL_Reg vector_ctor[] = {
 };
 
 static const luaL_Reg vector_meta[] = {
-	{ "__index",			Vector_Index		},
+	{ "__index",		Vector_Index			},
 	{ "__newindex",		Vector_NewIndex			},
 	{ "__add",			Vector_AddOperator		},
 	{ "__sub",			Vector_SubOperator		},
@@ -393,14 +519,20 @@ static const luaL_Reg vector_meta[] = {
 	{ "__unm",			Vector_NegateOperator	},
 	{ "__gc",			Vector_GC				},
 	{ "__tostring",		Vector_ToString			},
-	{ "Set",				Vector_Set			},
+	{ "Set",			Vector_Set				},
 	{ "Length",			Vector_Length			},
 	{ "Normalize",		Vector_Normalize		},
 	{ "NormalizeFast",	Vector_NormalizeFast	},
-	{ "Add",				Vector_Add			},
+	{ "Add",			Vector_Add				},
 	{ "Subtract",		Vector_Subtract			},	
 	{ "Scale",			Vector_Scale			},
 	{ "Clear",			Vector_Clear			},
+	{ "X",				Vector_X				},
+	{ "Y",				Vector_Y				},
+	{ "Z",				Vector_Z				},
+	{ "SetX",			Vector_SetX				},
+	{ "SetY",			Vector_SetY				},
+	{ "SetZ",			Vector_SetZ				},
 	{NULL,				NULL					}
 };
 

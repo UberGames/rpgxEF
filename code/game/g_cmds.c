@@ -7455,6 +7455,23 @@ void Cmd_CamtestEnd_f(gentity_t *ent) {
 }
 // END CCAM
 
+void Cmd_ScriptCall_f(gentity_t* ent) {
+	if(g_developer.integer != 0) {
+		char function[MAX_STRING_CHARS];
+		
+		if(trap_Argc() < 1) {
+			G_Logger(LL_ALWAYS, "Usage: script_call <function>\n");
+			return;
+		}
+
+		trap_Argv(1, function, MAX_STRING_CHARS);
+		
+		LuaHook_G_CmdScriptCall(function);
+	} else {
+		G_Logger(LL_ALWAYS, "Calling of lua functions is only allowed in development mode!\n");
+	}
+}
+
 void addShaderToList(list_p list, char *shader) {
 	char* s;
 	char* t;
@@ -7855,14 +7872,16 @@ void G_Client_Command( int clientNum )
 	// END CCAM
 	else if (Q_stricmp (cmd, "generatePrecacheFile") == 0) {
 		Cmd_GeneratePrecacheFile(ent);
-	}
-	else if (Q_stricmp (cmd, "testlogger") == 0) {
+	} else if (Q_stricmp (cmd, "testlogger") == 0) {
 		Cmd_TestLogger(ent);
-	}
-	else if (Q_strncmp (cmd, "\n", 1) == 0 || Q_strncmp (cmd, " ", 1) == 0 || Q_strncmp (cmd, "\0", 1) == 0) // sorry
+	} else if (Q_stricmp (cmd, "script_call") == 0) {
+		Cmd_ScriptCall_f(ent);
+	} else if (Q_strncmp (cmd, "\n", 1) == 0 || Q_strncmp (cmd, " ", 1) == 0 || Q_strncmp (cmd, "\0", 1) == 0) {
+		// sorry
 		(void)(0);
-	else
+	} else {
 		trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );
+	}
 }
 
 //--------

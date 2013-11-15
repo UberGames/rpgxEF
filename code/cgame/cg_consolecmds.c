@@ -927,5 +927,7 @@ void CG_InitConsoleCommands( void ) {
 
 	/* test new logger on game side */
 	trap_AddCommand("testlogger");
+
+	trap_AddCommand("scrip_call");
 }
 
