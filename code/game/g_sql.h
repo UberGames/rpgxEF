@@ -29,7 +29,12 @@
 #define SQL_USER_SET_PASSWORD 			"UPDATE rpgx_users SET password = :PASSWORD WHERE id = :ID"
 #define SQL_USER_GET_UID 			"SELECT id FROM rpgx_users WHERE username = :UNAME"
 #define SQL_USER_LOGIN 				"SELECT id FROM rpgx_users WHERE username = :UNAME AND password = :PASSWORD"
-
+#define SQL_STRING_CREATE_TABLE "CREATE TABLE IF NOT EXISTS rpgx_strings ( \
+										id INTEGER PRIMARY KEY AUTOINCREMENT, \
+										text TEXT NOT NULL, \
+										text_de TEXT NOT NULL, \
+										text_nl TEXT NOT NULL \
+								 )"
 /* Okay. I think this list is way too long and some things should be put together. Here is the original list for reference.
 typedef enum {
 	SQLF_GIVE				= 1,

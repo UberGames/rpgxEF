@@ -851,6 +851,8 @@ typedef struct {
 
 	// override rpg_calcLiftTravelDuration
 	int					overrideCalcLiftTravelDuration;			/*!< Indicated whether the level author wants to override rpg_calcLiftTravelDuration */
+
+	qboolean			sqlReady;
 } level_locals_t;
 
 

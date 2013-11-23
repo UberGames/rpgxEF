@@ -34,6 +34,10 @@ void QDECL G_Logger (int level, char* fmt, ...) {
 		G_Printf("[game]        - %s", text);
 		break;
 	}
+
+	if(fmt[strlen(fmt) - 1] != '\n') {
+		G_Printf("\n");
+	}
 }
 
 void QDECL _G_LocLogger (const char* file, int line, int level, char* fmt, ...) {
@@ -75,5 +79,9 @@ void QDECL _G_LocLogger (const char* file, int line, int level, char* fmt, ...) 
 		G_Printf("[game]       [%s:%d] - ", file, line);
 		G_Printf("%s", text);
 		break;
+	}
+
+	if(fmt[strlen(fmt) - 1] != '\n') {
+		G_Printf("\n");
 	}
 }

@@ -9,56 +9,57 @@
 #include "g_sql.h"
 #include "g_local.h"
 #include "md5.h"
+#include "g_logger.h"
 
-sqlite3	*user_db;
-qboolean sql_ready = qfalse;
+static sqlite3 *user_db;
+static sqlite3 *string_db;
 
-static qboolean G_Sql_Check_StepReturn(int r) {
+static qboolean G_Sql_Check_StepReturn(int32_t r) {
 	switch(r) {
 		case SQLITE_ROW:
 		case SQLITE_DONE:
 			return qfalse;
 		default:
-			G_Printf(S_COLOR_RED "SQL ERROR: %s\n", sqlite3_errmsg(user_db));
+			G_Logger(LL_ERROR, "SQL ERROR: %s\n", sqlite3_errmsg(user_db));
 			break;
 	}
 	return qtrue;
 }
 
-static qboolean G_Sql_Check_PrepareReturn(int r) {
+static qboolean G_Sql_Check_PrepareReturn(int32_t r) {
 	switch(r) {
 		case SQLITE_OK:
 			return qfalse;
 		default:
-			G_Printf(S_COLOR_RED "SQL ERROR: %s\n", sqlite3_errmsg(user_db));
+			G_Logger(LL_ERROR, "SQL ERROR: %s\n", sqlite3_errmsg(user_db));
 			break;
 	}
 	return qtrue;
 }
 
-static qboolean G_Sql_Check_BindReturn(int r) {
+static qboolean G_Sql_Check_BindReturn(int32_t r) {
 	switch(r) {
 		case SQLITE_OK:
 			return qfalse;
 		default:
-			G_Printf(S_COLOR_RED "SQL ERROR: %s\n", sqlite3_errmsg(user_db));
+			G_Logger(LL_ERROR, "SQL ERROR: %s\n", sqlite3_errmsg(user_db));
 			break;
 	}
 	return qtrue;
 }
 
-static char *G_Sql_Md5(const char *s) {
-	char *res;
+static char* G_Sql_Md5(const char* s) {
+	char* res = NULL;
 	unsigned char sig[16];
 	struct MD5Context md5c;
 
 	MD5Init(&md5c);
-	MD5Update(&md5c, (const unsigned char *)s, strlen(s));
+	MD5Update(&md5c, (const unsigned char*)s, strlen(s));
 	MD5Final(&md5c, sig);
 
-	res = (char *)malloc(sizeof(char)*MAX_QPATH);
-	if(!res) {
-		G_Printf(S_COLOR_RED "SQL ERROR: was unable to allocate %u byte\n", sizeof(char)*(strlen(s)+1));
+	res = (char*)malloc(sizeof(char) * MAX_QPATH);
+	if(res != NULL) {
+		G_LocLogger(LL_DEBUG, "SQL ERROR: was unable to allocate %u byte\n", sizeof(char) * (strlen(s) + 1));
 		return NULL;
 	}
 
@@ -69,28 +70,67 @@ static char *G_Sql_Md5(const char *s) {
 	return res;
 }
 
-qboolean G_Sql_Init(void) {
-	int res;
-	sqlite3_stmt *stmt;
+qboolean G_Sql_CreateStringDB(void) {
+	int res = 0;
+	sqlite3_stmt* stmt = NULL;
 
-	if(!sql_use.integer) return qtrue;
+	res = sqlite3_open(BASEPATH "/db/strings.db", &string_db);
+	if(res != SQLITE_OK) {
+		G_LocLogger(LL_ERROR, "%s\n", sqlite3_errmsg(string_db));
+		return qfalse;
+	}
+
+	res = sqlite3_prepare_v2(string_db, SQL_ENABLE_FOREIGN_KEY_CONSTRAINTS, -1, &stmt, 0);
+	if(G_Sql_Check_PrepareReturn(res)) {
+		sqlite3_close(string_db);
+		level.sqlReady = qfalse;
+		return qfalse;
+	}
+	res = sqlite3_step(stmt);
+	if(G_Sql_Check_StepReturn(res)) {
+		sqlite3_close(string_db);
+		level.sqlReady = qfalse;
+		return qfalse;
+	}
+	sqlite3_finalize(stmt);
+
+	res = sqlite3_prepare_v2(string_db, SQL_STRING_CREATE_TABLE, -1, &stmt, 0);
+	if(G_Sql_Check_PrepareReturn(res)) {
+		sqlite3_close(string_db);
+		level.sqlReady = qfalse;
+		return qfalse;
+	}
+	res = sqlite3_step(stmt);
+	if(G_Sql_Check_StepReturn(res)) {
+		sqlite3_close(string_db);
+		level.sqlReady = qfalse;
+		return qfalse;
+	}
+	sqlite3_finalize(stmt);
+
+	return qtrue;
+}
+
+qboolean G_Sql_CreateUserDB(void) {
+	int res = 0;
+	sqlite3_stmt* stmt = NULL;
 
 	res = sqlite3_open(BASEPATH "/db/users.db", &user_db);
 	if(res != SQLITE_OK) {
-		G_Printf(S_COLOR_RED "[SQL-Error] %s\n", sqlite3_errmsg(user_db));
+		G_LocLogger(LL_ERROR, "%s\n", sqlite3_errmsg(user_db));
 		return qfalse;
 	}
 
 	res = sqlite3_prepare_v2(user_db, SQL_ENABLE_FOREIGN_KEY_CONSTRAINTS, -1, &stmt, 0);
 	if(G_Sql_Check_PrepareReturn(res)) {
 		sqlite3_close(user_db);
-		sql_ready = qfalse;
+		level.sqlReady = qfalse;
 		return qfalse;
 	}
 	res = sqlite3_step(stmt);
 	if(G_Sql_Check_StepReturn(res)) {
 		sqlite3_close(user_db);
-		sql_ready = qfalse;
+		level.sqlReady = qfalse;
 		return qfalse;
 	}
 	sqlite3_finalize(stmt);
@@ -98,13 +138,13 @@ qboolean G_Sql_Init(void) {
 	res = sqlite3_prepare_v2(user_db, SQL_USER_CREATEUSERTABLE, -1, &stmt, 0);
 	if(G_Sql_Check_PrepareReturn(res)) {
 		sqlite3_close(user_db);
-		sql_ready = qfalse;
+		level.sqlReady = qfalse;
 		return qfalse;
 	}
 	res = sqlite3_step(stmt);
 	if(G_Sql_Check_StepReturn(res)) {
 		sqlite3_close(user_db);
-		sql_ready = qfalse;
+		level.sqlReady = qfalse;
 		return qfalse;
 	}
 	sqlite3_finalize(stmt);
@@ -112,47 +152,83 @@ qboolean G_Sql_Init(void) {
 	res = sqlite3_prepare_v2(user_db, SQL_USER_CREATERIGHTSTABLE, -1, &stmt, 0);
 	if(G_Sql_Check_PrepareReturn(res)) {
 		sqlite3_close(user_db);
-		sql_ready = qfalse;
+		level.sqlReady = qfalse;
 		return qfalse;
 	}
 	res = sqlite3_step(stmt);
 	if(G_Sql_Check_StepReturn(res)) {
 		sqlite3_close(user_db);
-		sql_ready = qfalse;
+		level.sqlReady = qfalse;
 		return qfalse;
 	}
 	sqlite3_finalize(stmt);
 
-	sql_ready = qtrue;
+	return qtrue;
+}
+
+qboolean G_Sql_Init(void) {
+	level.sqlReady = qfalse;
+
+	if(sql_use.integer == 0) {
+		return qtrue;
+	}
+
+	if(G_Sql_CreateUserDB() == qfalse) {
+		return qfalse;
+	}
+
+	if(G_Sql_CreateStringDB() == qfalse) {
+		return qfalse;
+	}
+
+	G_Logger(LL_ALWAYS, "SQL initialization complete\n");
+
+	level.sqlReady = qtrue;
 	return qtrue;
 }
 
 void G_Sql_Shutdown(void) {
 
-	if(!sql_use.integer) return;
-	if(sql_ready == qfalse) return;
+	G_Logger(LL_ALWAYS, "SQL shutdown\n");
 
-	sql_ready = qfalse;
+	if(sql_use.integer == 0) {
+		return;
+	}
+
+	if(level.sqlReady == qfalse) {
+		return;
+	}
+
+	level.sqlReady = qfalse;
 	sqlite3_close(user_db);
+	sqlite3_close(string_db);
 }
 
-qboolean G_Sql_UserDB_Del(const char *uName) {
-	sqlite3_stmt *stmt;
-	int res, id = -1;
+qboolean G_Sql_UserDB_Del(const char* username) {
+	sqlite3_stmt* stmt = NULL;
+	int32_t res = 0;
+	int32_t id = -1;
 
-	if(!sql_ready) {
-		G_Printf(S_COLOR_RED "[SQL-Error] SQL is not initialized!\n");
+	if(username == NULL) {
+		G_LocLogger(LL_ERROR, "username is NULL\n");
 		return qfalse;
 	}
 
-	res = sqlite3_prepare_v2(user_db, "SELECT id FROM rpgx_users WHERE username = :UNAME", -1, &stmt, 0);
+	if(!level.sqlReady) {
+		G_LocLogger(LL_ERROR, "SQL is not initialized!\n");
+		return qfalse;
+	}
+
+	res = sqlite3_prepare_v2(user_db, SQL_USER_GET_UID, -1, &stmt, 0);
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+
+	res = sqlite3_bind_text(stmt, 1, username, sizeof(username), SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
+
 	res = sqlite3_step(stmt);
 	if(G_Sql_Check_StepReturn(res)) {
 		return qfalse;
@@ -162,16 +238,17 @@ qboolean G_Sql_UserDB_Del(const char *uName) {
 	if(G_Sql_Check_StepReturn(res)) {
 		return qfalse;
 	}
+
 	if(res == SQLITE_ROW) {
 		id = sqlite3_column_int(stmt, 0);
 	} else if(res == SQLITE_DONE) {
-		G_Printf("SQL: User \'%s\' not found\n", uName);
+		G_Logger(LL_ALWAYS, "SQL: User \'%s\' not found\n", username);
 		return qfalse;
 	} 
 	sqlite3_finalize(stmt);
 
 	if(id == -1) {
-		G_Printf(S_COLOR_RED "[SQL-Error] No user %s found\n", uName);
+		G_LocLogger(LL_ERROR, "No user %s found\n", username);
 		return qfalse;
 	}
 
@@ -179,10 +256,12 @@ qboolean G_Sql_UserDB_Del(const char *uName) {
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
+
 	res = sqlite3_bind_int(stmt, 1, id);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
+
 	res = sqlite3_step(stmt);
 	if(G_Sql_Check_StepReturn(res)) {
 		return qfalse;
@@ -193,10 +272,12 @@ qboolean G_Sql_UserDB_Del(const char *uName) {
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+
+	res = sqlite3_bind_text(stmt, 1, username, sizeof(username), SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
+
 	res = sqlite3_step(stmt);
 	if(G_Sql_Check_StepReturn(res)) {
 		return qfalse;
@@ -206,13 +287,24 @@ qboolean G_Sql_UserDB_Del(const char *uName) {
 	return qtrue;
 }
 
-qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
-	sqlite3_stmt *stmt;
-	int res, id;
-	char *hashedpw;
+qboolean G_Sql_UserDB_Add(const char* username, const char* password) {
+	sqlite3_stmt* stmt = NULL;
+	int32_t res = 0;
+	int32_t id = 0;
+	char* hashedpw = NULL;
 
-	if(!sql_ready) {
-		G_Printf(S_COLOR_RED "[SQL-Error] SQL is not initialized!\n");
+	if(username == NULL) {
+		G_LocLogger(LL_ERROR, "username is NULL\n");
+		return qfalse;
+	}
+
+	if(password == NULL) {
+		G_LocLogger(LL_ERROR, "password is NULL\n");
+		return qfalse;
+	}
+
+	if(!level.sqlReady) {
+		G_LocLogger(LL_ERROR, "SQL is not initialized!\n");
 		return qfalse;
 	}
 
@@ -220,7 +312,7 @@ qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, username, sizeof(username), SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
@@ -230,19 +322,23 @@ qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 		return qfalse;
 	}
 	if(res == SQLITE_ROW) {
-		G_Printf("SQL: There already exists a user with username \'%s\'\n", uName);
-		G_Printf("SQL: If you lost your password please contact an admin with access to the database.\n");
+		G_Logger(LL_ALWAYS, "SQL: There already exists a user with username \'%s\'\n", username);
+		G_Logger(LL_ALWAYS, "SQL: If you lost your password please contact an admin with access to the database.\n");
 		sqlite3_finalize(stmt);
 		return qfalse;
 	}
 	sqlite3_finalize(stmt);
 
 	hashedpw = G_Sql_Md5(password);
+	if(hashedpw == NULL) {
+		return qfalse;
+	}
+
 	res = sqlite3_prepare_v2(user_db, SQL_USER_ADD, -1, &stmt, 0);
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, username, sizeof(username), SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
@@ -255,11 +351,15 @@ qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 		return qfalse;
 	}
 
+	if(hashedpw != NULL) {
+		free(hashedpw);
+	}
+
 	res = sqlite3_prepare_v2(user_db, SQL_USER_GET_UID, -1, &stmt, 0);
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, username, sizeof(username), SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
@@ -271,7 +371,7 @@ qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 	if(res == SQLITE_ROW) {
 		id = sqlite3_column_int(stmt, 0);
 	} else {
- 		G_Printf("SQL: There already exists a user with username \'%s\'\n", uName);
+		G_Logger(LL_ALWAYS, "SQL: There already exists a user with username \'%s\'\n", username);
 		sqlite3_finalize(stmt);
 		return qfalse;
 	}
@@ -295,11 +395,11 @@ qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 }
 
 qboolean G_Sql_UserDB_Login(const char *uName, const char *pwd, int clientnum) {
-	sqlite3_stmt *stmt;
+	sqlite3_stmt* stmt = NULL;
 	int res, id;
 	char *hashedpw;
 
-	if(!sql_ready) {
+	if(!level.sqlReady) {
 		G_Printf(S_COLOR_RED "[SQL-Error] SQL is not initialized!\n");
 		return qfalse;
 	}
@@ -323,6 +423,10 @@ qboolean G_Sql_UserDB_Login(const char *uName, const char *pwd, int clientnum) {
 	res = sqlite3_step(stmt);
 	if(G_Sql_Check_StepReturn(res)) {
 		return qfalse;
+	}
+
+	if(hashedpw != NULL) {
+		free(hashedpw);
 	}
 
 	if(res == SQLITE_ROW) {
@@ -366,7 +470,7 @@ qboolean G_Sql_UserDB_CheckRight(int uid, int right) {
 	int res;
 	long rights;
 
-	if(!sql_ready) {
+	if(!level.sqlReady) {
 		G_Printf(S_COLOR_RED "[SQL-Error] SQL is not initialized!\n");
 		return qfalse;
 	}
@@ -409,7 +513,7 @@ qboolean G_Sql_UserDB_AddRight(int uid, int right) {
 	int res;
 	long rights;
 
-	if(!sql_ready) {
+	if(!level.sqlReady) {
 		G_Printf(S_COLOR_RED "[SQL-Error] SQL is not initialized!\n");
 		return qfalse;
 	}
@@ -462,7 +566,7 @@ qboolean G_Sql_UserDB_RemoveRight(int uid, int right) {
 	int res;
 	long rights;
 
-	if(!sql_ready) {
+	if(!level.sqlReady) {
 		G_Printf(S_COLOR_RED "[SQL-Error] SQL is not initialized!\n");
 		return qfalse;
 	}
@@ -515,7 +619,7 @@ int	G_Sql_UserDB_GetUID(const char *uName) {
 	int res;
 	int uid;
 
-	if(!uName || !uName[0] || !sql_ready) {
+	if(!uName || !uName[0] || !level.sqlReady) {
 		return -1;
 	}
 
