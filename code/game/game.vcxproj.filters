@@ -288,6 +288,9 @@
     <ClCompile Include="bg_list.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bg_collision.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ai_chat.h">
@@ -516,6 +519,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="g_trigger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bg_collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,32 +6,14 @@
 void BG_LanguageFilename(char *baseName,char *baseExtension,char *finalName);
 char* BG_RegisterRace( const char *name );
 
-typedef struct bgRay_s bgRay_t;
-struct bgRay_s {
-	vec3_t origin;
-	vec3_t direction;
-	vec3_t inverse_direction;
-	int sign[3];
-};
-
 /**
- * @brief Prepares a ray with a given origin and direction.
- * @param ray The ray.
- * @param origin The origin.
- * @param dir The direction.
+ * @brief Calculates an approximate origin from a bounding box.
+ * Calculates an approximate origin from a bounding box. The bounding box is
+ * specified by it's minimal and maximal point.
+ * @param mins [in] Minimal point of the bounding box.
+ * @param maxs [in] Maxmimal point of the bounding box.
+ * @param origin [out] Three dimensional vector the origin should be stored into.
  */
-void BG_PrepareRay(bgRay_t* ray, vec3_t origin, vec3_t dir);
-
-typedef struct bgBBox_s bgBBox_t;
-struct bgBBox_s {
-	vec3_t bounds[2];
-};
-
-/**
- * @brief Checks is a given ray intersects with a given bounding box.
- * @param ray The ray.
- * @param bbox The bounding box.
- */
-int BG_RayIntersect(bgRay_t* ray, bgBBox_t* bbox);
+void BG_OriginFromBoundingBox(vec3_t mins, vec3_t maxs, vec_t* origin);
 
 #endif /* _BG_MISC_H */

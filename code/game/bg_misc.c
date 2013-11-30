@@ -1849,57 +1849,6 @@ char *EndWord(char *pos)
 	return pos;
 }
 
-void BG_PrepareRay(bgRay_t* ray, vec3_t origin, vec3_t dir) {
-	if(ray == NULL) {
-		return;
-	}
-
-	VectorCopy(origin, ray->origin);
-	VectorCopy(dir, ray->direction);
-	VectorCopy(dir, ray->inverse_direction);
-	VectorInverse(ray->inverse_direction);
-
-	ray->sign[0] = (ray->inverse_direction[0] < 0);
-	ray->sign[1] = (ray->inverse_direction[1] < 0);
-	ray->sign[2] = (ray->inverse_direction[2] < 0);
-}
-
-int BG_RayIntersect(bgRay_t* ray, bgBBox_t* bbox) {
-	double tmin = 0.0;
-	double tmax = 0.0;
-	double tymin = 0.0;
-	double tymax = 0.0;
-	double tzmin = 0.0;
-	double tzmax = 0.0;
-
-	if(ray == NULL || bbox == NULL) {
-		return 0;
-	}
-
-	tmin = (bbox->bounds[ray->sign[0]][0] - ray->origin[0]) * ray->inverse_direction[0];
-	tmax = (bbox->bounds[1 - ray->sign[0]][0] - ray->origin[0]) * ray->inverse_direction[0];
-	tymin = (bbox->bounds[ray->sign[1]][1] - ray->origin[1]) * ray->inverse_direction[1];
-	tymax = (bbox->bounds[1 - ray->sign[1]][1] - ray->origin[1]) * ray->inverse_direction[1];
-
-	if((tmin > tymax) || (tymin > tmax)) {
-		return 0;
-	}
-
-	if(tymin > tmin) {
-		tmin = tymin;
-	}
-
-	if(tymax < tmax) {
-		tmax = tymax;
-	}
-
-	tzmin = (bbox->bounds[ray->sign[2]][2] - ray->origin[2]) * ray->inverse_direction[2];
-	tzmax = (bbox->bounds[1 - ray->sign[2]][2] - ray->origin[2]) * ray->inverse_direction[2];
-
-	if((tmin > tzmax) || (tzmin > tmax)) {
-		return 0;
-	}
-
-	return 1;
+void BG_OriginFromBoundingBox(vec3_t mins, vec3_t maxs, vec_t* origin) {
 }
 

@@ -2071,6 +2071,7 @@ Q3CGOBJ_ = \
   $(B)/$(BASEGAME)/cgame/bg_slidemove.o \
   $(B)/$(BASEGAME)/cgame/bg_lex.yy.o \
   $(B)/$(BASEGAME)/cgame/bg_list.o \
+  $(B)/$(BASEGAME)/cgame/bg_collision.o \
   $(B)/$(BASEGAME)/cgame/cg_consolecmds.o \
   $(B)/$(BASEGAME)/cgame/cg_draw.o \
   $(B)/$(BASEGAME)/cgame/cg_drawtools.o \
@@ -2222,6 +2223,7 @@ Q3GOBJ_ = \
   $(B)/$(BASEGAME)/game/bg_oums.o \
   $(B)/$(BASEGAME)/game/bg_lex.yy.o \
   $(B)/$(BASEGAME)/game/bg_list.o \
+  $(B)/$(BASEGAME)/game/bg_collision.o \
   $(B)/$(BASEGAME)/game/g_active.o \
   $(B)/$(BASEGAME)/game/g_arenas.o \
   $(B)/$(BASEGAME)/game/g_bot.o \

@@ -231,6 +231,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="g_cinematic.c" />
+    <ClCompile Include="bg_collision.c" />
     <ClCompile Include="g_logger.c" />
     <ClCompile Include="lapi.c" />
     <ClCompile Include="lauxlib.c" />
@@ -493,6 +494,7 @@
     <ClInclude Include="be_ai_move.h" />
     <ClInclude Include="be_ai_weap.h" />
     <ClInclude Include="be_ea.h" />
+    <ClInclude Include="bg_collision.h" />
     <ClInclude Include="bg_lex.h" />
     <ClInclude Include="bg_lib.h" />
     <ClInclude Include="bg_local.h" />
