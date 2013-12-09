@@ -4,7 +4,7 @@
 #define QUADRANT_LEFT 0
 #define QUADRANT_RIGHT 1
 #define QUADRANT_MIDDLE 2
-qboolean BG_LineBoxIntersection(vec3_t mins, vec2_t maxs, vec3_t origin, vec3_t dir, vec_t* hit) {
+qboolean BG_LineBoxIntersection(vec3_t mins, vec3_t maxs, vec3_t origin, vec3_t dir, vec_t* hit) {
 	qboolean inside;
 	char quadrant[3];
 	int i;
@@ -63,4 +63,14 @@ qboolean BG_LineBoxIntersection(vec3_t mins, vec2_t maxs, vec3_t origin, vec3_t 
 	}
 
 	return qtrue;
+}
+
+qboolean BG_IsInBox(vec3_t pos, vec3_t mins, vec3_t maxs) {
+	if( pos[0] <= maxs[0] && pos[0] >= mins[0] &&
+		pos[1] <= maxs[1] && pos[1] >= mins[1] &&
+		pos[2] <= maxs[2] && pos[2] >= mins[2]) {
+			return qtrue;
+	}
+
+	return qfalse;
 }
