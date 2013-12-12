@@ -310,6 +310,11 @@ static void FirePrifleBullet( gentity_t* ent, vec3_t start, vec3_t dir )
 {
 	gentity_t* bolt = G_Spawn();
 	
+	if(bolt == NULL) {
+		// TODO Logging
+		return;
+	}
+
 	bolt->classname = "prifle_proj";
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_FreeEntity;
