@@ -2485,12 +2485,12 @@ Advances the non-player objects in the world
 */
 
 void CheckHealthInfoMessage( void );
-void G_RunFrame( int levelTime ) {
-	int			i;
-	gentity_t	*ent;
-	gclient_t	*client;
-	playerState_t *ps;
-	entityState_t *es;
+void G_RunFrame( int32_t levelTime ) {
+	int32_t			i;
+	gentity_t*		ent;
+	gclient_t*		client;
+	playerState_t*	ps;
+	entityState_t*	es;
 
 	// if we are waiting for the level to restart, do nothing
 	if ( level.restarted ) {
