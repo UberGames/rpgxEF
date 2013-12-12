@@ -8,6 +8,7 @@
 #include "g_weapon.h"
 #include "g_client.h"
 #include "g_missile.h"
+#include "g_logger.h"
 
 #define MAX_BEAM_HITS	4
 
@@ -311,7 +312,7 @@ static void FirePrifleBullet( gentity_t* ent, vec3_t start, vec3_t dir )
 	gentity_t* bolt = G_Spawn();
 	
 	if(bolt == NULL) {
-		// TODO Logging
+		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
 		return;
 	}
 
@@ -456,6 +457,11 @@ static void FireDisruptorMissile( gentity_t* ent, vec3_t origin, vec3_t dir, int
 {
 	gentity_t*	bolt = G_Spawn();
 	int32_t		boltsize = 0;
+
+	if (bolt == NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
+		return;
+	}
 
 	bolt->classname = "disruptor_projectile";
 	bolt->nextthink = level.time + 10000;
@@ -648,6 +654,11 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 		{
 			/* RPG-X: RedTechie - Moved here to stop entities from being sucked up */
 			grenade = G_Spawn();
+
+			if (grenade == NULL) {
+				G_LocLogger(LL_ERROR, "Could not spawn new entiy!\n");
+				return;
+			}
 			
 			/* kef -- make sure count is 0 so it won't get its bounciness removed like the tetrion projectile */
 			grenade->count = 0;
@@ -885,6 +896,11 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 				/* RPG-X: RedTechie - Moved here to stop entities from being sucked up */
 				grenade = G_Spawn();
 			
+				if (grenade == NULL) {
+					G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
+					return;
+				}
+
 				/* kef -- make sure count is 0 so it won't get its bounciness removed like the tetrion projectile */
 				grenade->count = 0;
 
@@ -1026,6 +1042,11 @@ static void WP_FireTR116( gentity_t* ent, qboolean alt_fire )
 static void FireQuantumBurst( gentity_t* ent, vec3_t start, vec3_t dir )
 {
 	gentity_t* bolt = G_Spawn();
+
+	if (bolt == NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
+		return;
+	}
 
 	bolt->classname = "quantum_projectile";
 	
@@ -1216,6 +1237,11 @@ static void WP_QuantumAltThink(gentity_t* ent)
 static void FireQuantumBurstAlt( gentity_t* ent, vec3_t start, vec3_t dir )
 {
 	gentity_t* bolt = G_Spawn();
+
+	if (bolt = NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
+		return;
+	}
 
 	bolt->classname = "quantum_alt_projectile";
 	
