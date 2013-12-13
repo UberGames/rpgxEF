@@ -1158,7 +1158,7 @@ void G_SetAngles( gentity_t* ent, vec3_t anlges ); //RPG-X | GSIO01 | 24.08.2009
  * \param ent_list List to store found entities in.
  * \return Count of entities found.
  */
-int G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDamage, list_p ent_list);
+int32_t G_RadiusList ( vec3_t origin, double radius, list_p ignore, qboolean takeDamage, list_p ent_list);
 
 /**
  *	Get a list of specified entity classes in a specified radius.
@@ -1173,7 +1173,7 @@ int G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDama
  *	\param ent_list list to store the results
  *	\return count of found entities
  */
-int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p ignore, list_p ent_list);
+int32_t G_RadiusListOfTypes(list_p classnames, vec3_t origin, double radius, list_p ignore, list_p ent_list);
 
 /**
  * Get the neares entity to an origin.
@@ -1185,7 +1185,7 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
  * \param takeDamage Only return entities that match this value for takeDamage.
  * \return Nearest entity found.
  */
-/*@shared@*/ /*@null@*/  gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, float radius, list_p ignore, qboolean takeDamage);
+/*@shared@*/ /*@null@*/  gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, double radius, list_p ignore, qboolean takeDamage);
 
 /**
  * Get the nearest player orund an origin.
@@ -1195,7 +1195,7 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
  * \param ignore List of entities to ignore.
  * \return Nearest player.
  */
-/*@shared@*/ /*@null@*/  gentity_t* G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore );
+/*@shared@*/ /*@null@*/  gentity_t* G_GetNearestPlayer(vec3_t origin, double radius, list_p ignore );
 
 /**
  * \author Ubergames - GSIO01

@@ -218,7 +218,7 @@ gentity_t* G_Find (gentity_t* from, size_t fieldofs, const char* match)
 	if (match == NULL) {
 		G_LocLogger(LL_ERROR, "match == NULL\n");
 		G_LogFuncEnd();
-		retur NULL;
+		return NULL;
 	}
 
 	if (from == NULL) {
