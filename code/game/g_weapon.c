@@ -53,6 +53,8 @@
 void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
 	int32_t i;
 
+	G_LogFuncBegin();
+
 	for ( i = 0 ; i < 3 ; i++ ) {
 		if ( to[i] <= v[i] ) {
 			v[i] = (int32_t)v[i];
@@ -60,6 +62,8 @@ void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
 			v[i] = (int32_t)v[i] + 1;
 		}
 	}
+
+	G_LogFuncEnd();
 }
 
 
@@ -85,6 +89,7 @@ void G_Weapon_SnapVectorTowards( vec3_t v, vec3_t to ) {
  * @brief Handles weapon fire of the Hyperspanner.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
+ * @todo additional logging messages
  */
 static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 	double		modifier = 0.0;
@@ -100,6 +105,8 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 	vec3_t		end = { 0, 0, 0 };
 	vec3_t		mins = { -40, -40, 0 };
 	vec3_t		maxs = { 40, 40, 0 };
+
+	G_LogFuncBegin();
 
 	/* prepare lists */
 	list_init(&classnames, free);
@@ -147,11 +154,13 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 			}
 		}
 	} else {
+		G_LogFuncEnd();
 		return;
 	}
 
 	if(nearest == NULL || nearest->inuse == qfalse) {
 		validEnts.clear(&validEnts);
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -170,6 +179,8 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 	}
 
 	validEnts.clear(&validEnts);
+
+	G_LogFuncEnd();
 }
 
 /*
@@ -188,6 +199,7 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
  * @brief Handles weapon fire of the phaser.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
+ * @todo additional logging messages
  */
 static void WP_FirePhaser( gentity_t* ent, qboolean alt_fire )
 {
@@ -198,6 +210,8 @@ static void WP_FirePhaser( gentity_t* ent, qboolean alt_fire )
 	int32_t		i = 0;
 	int32_t		damage = 0;
 	double		trEntFraction[NUM_PHASER_TRACES];
+
+	G_LogFuncBegin();
 
 	VectorMA (muzzle, MAXRANGE_PHASER, forward, end);
 	/* Add a subtle variation to the beam weapon's endpoint */
@@ -288,6 +302,8 @@ static void WP_FirePhaser( gentity_t* ent, qboolean alt_fire )
 			}
 		}
 	}
+
+	G_LogFuncEnd();
 }
 
 
@@ -311,8 +327,11 @@ static void FirePrifleBullet( gentity_t* ent, vec3_t start, vec3_t dir )
 {
 	gentity_t* bolt = G_Spawn();
 	
+	G_LogFuncBegin();
+
 	if(bolt == NULL) {
 		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -350,15 +369,20 @@ static void FirePrifleBullet( gentity_t* ent, vec3_t start, vec3_t dir )
 	VectorScale( dir, rpg_rifleSpeed.integer, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			/* save net bandwidth */
 	VectorCopy( start, bolt->r.currentOrigin);
+
+	G_LogFuncEnd();
 }
 
 /**
  * @brief Handles weapon fire of the compression rifle.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
+ * @todo additonal logging messages
  */
 static void WP_FireCompressionRifle ( gentity_t* ent, qboolean alt_fire )
 {
+	G_LogFuncBegin();
+
 	if ( !alt_fire )
 	{
 		vec3_t	dir, angles, temp_ang, temp_org;
@@ -394,6 +418,7 @@ static void WP_FireCompressionRifle ( gentity_t* ent, qboolean alt_fire )
 		
 		if (tr.entityNum == (MAX_GENTITIES - 1))
 		{
+			G_LogFuncEnd();
 			return;
 		}
 
@@ -419,6 +444,8 @@ static void WP_FireCompressionRifle ( gentity_t* ent, qboolean alt_fire )
 			}
 		}
 	}
+
+	G_LogFuncEnd();
 }
 
 /*
@@ -455,9 +482,12 @@ static void WP_FireCompressionRifle ( gentity_t* ent, qboolean alt_fire )
  */
 static void FireDisruptorMissile( gentity_t* ent, vec3_t origin, vec3_t dir, int32_t size )
 {
-	gentity_t*	bolt = G_Spawn();
+	gentity_t*	bolt = NULL;
 	int32_t		boltsize = 0;
 
+	G_LogFuncBegin();
+
+	bolt = G_Spawn();
 	if (bolt == NULL) {
 		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
 		return;
@@ -510,6 +540,8 @@ static void FireDisruptorMissile( gentity_t* ent, vec3_t origin, vec3_t dir, int
 	/* kef -- need to keep the origin in something that'll reach the cgame side */
 	VectorCopy(origin, bolt->s.angles2);
 	SnapVector( bolt->s.angles2 );			/* save net bandwidth */
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -519,6 +551,8 @@ static void FireDisruptorMissile( gentity_t* ent, vec3_t origin, vec3_t dir, int
  */
 static void WP_FireDisruptor( gentity_t* ent, qboolean alt_fire )
 {
+	G_LogFuncBegin();
+
 	/* This was moved out of the FireWeapon switch statement below to keep things more consistent */
 	if ( !alt_fire )
 	{
@@ -535,6 +569,8 @@ static void WP_FireDisruptor( gentity_t* ent, qboolean alt_fire )
 		
 		if (tr.entityNum == (MAX_GENTITIES - 1))
 		{
+			G_Logger(LL_DEBUG, "Invalid entity number.\n");
+			G_LogFuncEnd();
 			return;
 		}
 
@@ -566,6 +602,8 @@ static void WP_FireDisruptor( gentity_t* ent, qboolean alt_fire )
 	}
 
 	G_LogWeaponFire(ent->s.number, WP_10);
+
+	G_LogFuncEnd();
 }
 
 /*
@@ -597,6 +635,8 @@ static void grenadeExplode( gentity_t* ent )
 {
 	vec3_t pos = { 0, 0, 0 };
 
+	G_LogFuncBegin();
+
 	VectorSet( pos, ent->r.currentOrigin[0], ent->r.currentOrigin[1], ent->r.currentOrigin[2] + 8 );
 
 	G_TempEntity( pos, EV_GRENADE_EXPLODE );
@@ -606,6 +646,8 @@ static void grenadeExplode( gentity_t* ent )
 		G_RadiusDamage( pos, ent->parent, ent->splashDamage, ent->splashRadius, NULL, 0, ent->splashMethodOfDeath ); 
 	}
 	G_FreeEntity( ent );
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -614,7 +656,16 @@ static void grenadeExplode( gentity_t* ent )
  */
 void grenadeSpewShrapnel( gentity_t* ent )
 {
-	gentity_t* tent = G_TempEntity( ent->r.currentOrigin, EV_GRENADE_SHRAPNEL_EXPLODE );
+	gentity_t* tent = NULL;
+	
+	G_LogFuncBegin();
+	
+	tent = G_TempEntity(ent->r.currentOrigin, EV_GRENADE_SHRAPNEL_EXPLODE);
+	if (tent == NULL) {
+		G_LocLogger(LL_ERROR, "Could not spawn new temporal entity!\n");
+		G_LogFuncEnd();
+		return;
+	}
 
 	tent->s.eventParm = DirToByte(ent->pos1);
 
@@ -623,12 +674,15 @@ void grenadeSpewShrapnel( gentity_t* ent )
 		ent, 0, ent->splashMethodOfDeath );
 
 	G_FreeEntity(ent);
+
+	G_LogFuncEnd();
 }
 
 /**
  * @brief Handles firing the grenade launcher.
  * @param ent the player
  * @param alt_fire was this alt fire mode?
+ * @todo additional logging messages
  */
 static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 {
@@ -646,6 +700,8 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 	int32_t		i = 0;
 	trace_t		tr;
 
+	G_LogFuncBegin();
+
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
 
@@ -657,6 +713,7 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 
 			if (grenade == NULL) {
 				G_LocLogger(LL_ERROR, "Could not spawn new entiy!\n");
+				G_LogFuncEnd();
 				return;
 			}
 			
@@ -898,6 +955,7 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 			
 				if (grenade == NULL) {
 					G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
+					G_LogFuncEnd();
 					return;
 				}
 
@@ -952,6 +1010,8 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 		G_LogPrintf("RPG-X WARNING: Max entities about to be hit! Restart the server ASAP or suffer a server crash!\n");
 		trap_SendServerCommand( -1, va("print \"^1RPG-X WARNING: Max entities about to be hit! Restart the server ASAP or suffer a server crash!\n\""));
 	}
+
+	G_LogFuncEnd();
 }
 
 /*
@@ -980,6 +1040,8 @@ static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
 	vec3_t 		traceFrom = { 0, 0, 0 };
 	trace_t		tr;
 
+	G_LogFuncBegin();
+
 	VectorCopy( start, traceFrom );
 	VectorMA( traceFrom, MAX_TR_116_DIST, dir, end ); /* set trace end point */
 
@@ -995,6 +1057,7 @@ static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
 		}
 	}
 
+	G_LogFuncEnd();
 }
 
 /**
@@ -1007,6 +1070,8 @@ static void WP_FireTR116( gentity_t* ent, qboolean alt_fire )
 /* (RPG-X: J2J MOdified to make it look and feel like tr116 */
 /* RPG-X: TiM - Modified even furthur */
 {
+	G_LogFuncBegin();
+
 	vec3_t	dir = { 0, 0, 0 }; 	
 	vec3_t	start = { 0, 0, 0 }; 	
 
@@ -1016,6 +1081,8 @@ static void WP_FireTR116( gentity_t* ent, qboolean alt_fire )
 	WP_FireTR116Bullet( ent, start, dir );
 
 	G_LogWeaponFire(ent->s.number, WP_7);
+
+	G_LogFuncEnd();
 }
 
 
@@ -1041,10 +1108,14 @@ static void WP_FireTR116( gentity_t* ent, qboolean alt_fire )
  */
 static void FireQuantumBurst( gentity_t* ent, vec3_t start, vec3_t dir )
 {
-	gentity_t* bolt = G_Spawn();
+	gentity_t* bolt = NULL;
+	
+	G_LogFuncBegin();
 
+	bolt = G_Spawn();
 	if (bolt == NULL) {
 		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -1086,6 +1157,8 @@ static void FireQuantumBurst( gentity_t* ent, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );		/* save net bandwidth */
 	VectorCopy (start, bolt->r.currentOrigin);
 	VectorCopy (start, bolt->pos1);
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -1099,6 +1172,8 @@ static qboolean SearchTarget(gentity_t* ent, vec3_t start, vec3_t end)
 	trace_t		tr;
 	gentity_t*	traceEnt = NULL;
 	vec3_t		fwd = { 0, 0, 0 };
+
+	G_LogFuncBegin();
 
 	memset(&tr, 0, sizeof(trace_t));
 	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, MASK_SHOT );
@@ -1115,8 +1190,12 @@ static qboolean SearchTarget(gentity_t* ent, vec3_t start, vec3_t end)
 		VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);
 		ent->s.pos.trTime = level.time;
 		ent->nextthink = level.time + QUANTUM_ALT_THINK_TIME;
+
+		G_LogFuncEnd();
 		return qtrue;
 	}
+
+	G_LogFuncEnd();
 	return qfalse; 
 }
 
@@ -1135,10 +1214,14 @@ static void WP_QuantumAltThink(gentity_t* ent)
 	double dot = 0.0;
 	double dot2 = 0.0;
 
+	G_LogFuncBegin();
+
 	ent->health--;
 	if (ent->health <= 0)
 	{
 		G_FreeEntity(ent);
+		G_Logger(LL_DEBUG, "entities health <= 0\n");
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -1149,6 +1232,9 @@ static void WP_QuantumAltThink(gentity_t* ent)
 			ent->target_ent = NULL;
 			ent->nextthink = level.time + 1000;
 			ent->health -= 5;
+
+			G_Logger(LL_DEBUG, "entities health <= 0 or entitiy not in use\n");
+			G_LogFuncEnd();
 			return;
 		}
 		VectorSubtract(ent->target_ent->r.currentOrigin, ent->r.currentOrigin, targetdir);
@@ -1206,18 +1292,24 @@ static void WP_QuantumAltThink(gentity_t* ent)
 		search[2] += flrandom(-QUANTUM_ALT_SEARCH_DIST*0.075, QUANTUM_ALT_SEARCH_DIST*0.075);
 
 		if (SearchTarget(ent, start, search)) {
+			G_Logger(LL_DEBUG, "no valid entity found\n");
+			G_LogFuncEnd();
 			return;
 		}
 
 		/* Search to the right. */
 		VectorMA(search, QUANTUM_ALT_SEARCH_DIST*0.1, lright, search);
 		if (SearchTarget(ent, start, search)) {
+			G_Logger(LL_DEBUG, "no valid entity found\n");
+			G_LogFuncEnd();
 			return;
 		}
 		
 		/* Search to the left. */
 		VectorMA(search, -QUANTUM_ALT_SEARCH_DIST*0.2, lright, search);
 		if (SearchTarget(ent, start, search)) {
+			G_Logger(LL_DEBUG, "no valid entity found\n");
+			G_LogFuncEnd();
 			return;
 		}
 
@@ -1225,6 +1317,8 @@ static void WP_QuantumAltThink(gentity_t* ent)
 		ent->nextthink = level.time + QUANTUM_ALT_SEARCH_TIME;	/* Nothing at all spectacular happened, continue. */
 
 	}
+
+	G_LogFuncEnd();
 	return;
 }
 
@@ -1236,10 +1330,14 @@ static void WP_QuantumAltThink(gentity_t* ent)
  */
 static void FireQuantumBurstAlt( gentity_t* ent, vec3_t start, vec3_t dir )
 {
-	gentity_t* bolt = G_Spawn();
+	gentity_t* bolt = NULL;
+	
+	G_LogFuncBegin();
 
+	bolt = G_Spawn();
 	if (bolt = NULL) {
 		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -1283,6 +1381,8 @@ static void FireQuantumBurstAlt( gentity_t* ent, vec3_t start, vec3_t dir )
 	
 	SnapVector( bolt->s.pos.trDelta );			/* save net bandwidth */
 	VectorCopy (start, bolt->r.currentOrigin);
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -1294,6 +1394,8 @@ static void WP_FireQuantumBurst( gentity_t* ent, qboolean alt_fire )
 {
 	vec3_t dir = { 0, 0, 0 };
 	vec3_t start = { 0, 0, 0 };
+
+	G_LogFuncBegin();
 
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
@@ -1308,29 +1410,44 @@ static void WP_FireQuantumBurst( gentity_t* ent, qboolean alt_fire )
 	}
 
 	G_LogWeaponFire(ent->s.number, WP_9);
+
+	G_LogFuncEnd();
 }
 
 qboolean G_Weapon_LogAccuracyHit( gentity_t* target, gentity_t* attacker ) {
+	G_LogFuncBegin();
+
 	if( !target->takedamage ) {
+		G_Logger(LL_DEBUG, "target does not take damage\n");
+		G_LogFuncEnd();
 		return qfalse;
 	}
 
 	if ( target == attacker ) {
+		G_Logger(LL_DEBUG, "target = attacker\n");
+		G_LogFuncEnd();
 		return qfalse;
 	}
 
 	if( !target->client ) {
+		G_Logger(LL_DEBUG, "target not a client\n");
+		G_LogFuncEnd();
 		return qfalse;
 	}
 
 	if( !attacker->client ) {
+		G_Logger(LL_DEBUG, "attacker not a client\n");
+		G_LogFuncEnd();
 		return qfalse;
 	}
 
 	if( target->client->ps.stats[STAT_HEALTH] <= 0 ) {
+		G_Logger(LL_DEBUG, "target is dead\n");
+		G_LogFuncEnd();
 		return qfalse;
 	}
 
+	G_LogFuncEnd();
 	return qtrue;
 }
 
@@ -1350,6 +1467,8 @@ static void CorrectForwardVector(gentity_t* ent, vec3_t fwd, vec3_t muzzlePoint,
 	vec3_t		eyepoint = { 0, 0, 0 };
 	vec3_t		mins = { 0, 0, 0 };
 	vec3_t		maxs = { 0, 0, 0 };
+
+	G_LogFuncBegin();
 
 	/* Find the eyepoint. */
 	VectorCopy(ent->client->ps.origin, eyepoint);
@@ -1384,6 +1503,8 @@ static void CorrectForwardVector(gentity_t* ent, vec3_t fwd, vec3_t muzzlePoint,
 		VectorSubtract(tr.endpos, muzzlePoint, fwd);
 		VectorNormalize(fwd);
 	}
+
+	G_LogFuncEnd();
 }
 
 /*
@@ -1525,14 +1646,20 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 	vec3_t		end = { 0, 0, 0 };
 	int32_t		clientNum = ent->client->ps.clientNum;
 
+	G_LogFuncBegin();
+
 	if ( rpg_rangetricorder.integer < 32 )
 	{
+		G_Logger(LL_DEBUG, "rpg_rangetricorder < 32\n");
+		G_LogFuncEnd();
 		return;
 	}
 
 	/* Fix - Changed || to && in the below if statement! */
 	if ( IsAdmin( ent ) == qfalse )
 	{
+		G_Logger(LL_DEBUG, "player not an admin\n");
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -1579,6 +1706,8 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 			 */
 			if ( TransDat[tr_ent->client->ps.clientNum].beamTime > level.time ) {
 				trap_SendServerCommand( ent-g_entities, "chat \"Unable to comply. Subject is already within a transport cycle.\"");
+				G_Logger(LL_DEBUG, "target already in transport cycle\n");
+				G_LogFuncEnd();
 				return;
 			}
 
@@ -1605,6 +1734,8 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 			/*trap_SendConsoleCommand( EXEC_APPEND, va("echo Click again to confirm Transporter Location.") );*/
 			TransDat[clientNum].LastClick = level.time;
 		}
+
+		G_LogFuncEnd();
 	}
 }
 
@@ -1623,8 +1754,12 @@ static void WP_SprayVoyagerHypo( gentity_t* ent, qboolean alt_fire )
 	gentity_t*		t_ent = NULL;
 	playerState_t *	tr_entPs = NULL;
 
+	G_LogFuncBegin();
+
 	if ( rpg_rangehypo.integer < 8 ) /*32*/
 	{
+		G_Logger(LL_DEBUG, "rpg_rangehypo.integer < 8");
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -1640,7 +1775,9 @@ static void WP_SprayVoyagerHypo( gentity_t* ent, qboolean alt_fire )
 		if(RPGEntityCount != ENTITYNUM_MAX_NORMAL-20){
 			t_ent = G_TempEntity( muzzle, EV_HYPO_PUFF );
 			t_ent->s.eventParm = qfalse; /* TiM: Event parm is holding a qboolean value for color of spray */
-				VectorCopy( forward, t_ent->s.angles2 ); /* TiM: Holds the directional vector.  This is passed to CG so it can be rendered right */
+			VectorCopy( forward, t_ent->s.angles2 ); /* TiM: Holds the directional vector.  This is passed to CG so it can be rendered right */
+
+			G_LogFuncEnd();
 			return;
 		}else{
 			G_LogPrintf("RPG-X WARNING: Max entities about to be hit! Restart the server ASAP or suffer a server crash!\n");
@@ -1690,6 +1827,8 @@ static void WP_SprayVoyagerHypo( gentity_t* ent, qboolean alt_fire )
 	{
 		ent->health = ent->client->ps.stats[STAT_MAX_HEALTH];
 	}
+
+	G_LogFuncEnd();
 }
 
 /*
@@ -1710,6 +1849,8 @@ FireWeapon
 void FireWeapon( gentity_t* ent, qboolean alt_fire ) 
 {
 	double projsize;
+
+	G_LogFuncEnd();
 
 	ent->client->pers.teamState.lastFireTime = level.time;
 
@@ -1775,5 +1916,7 @@ void FireWeapon( gentity_t* ent, qboolean alt_fire )
 	default:
 		break;
 	}
+
+	G_LogFuncEnd();
 }
 
