@@ -8,6 +8,7 @@
 
 #include "g_local.h"
 #include "g_lua.h"
+#include "g_logger.h"
 
 /**
  * \brief Data structure for a singele shader remap.
@@ -28,27 +29,46 @@ typedef struct {
 #define MAX_SHADER_REMAPS 128
 
 /** Current count of remapped shaders  */
-static int remapCount = 0;
+static int32_t remapCount = 0;
 /** List of shader remaps */
 static shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
 
-void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
-	int i;
+void AddRemap(const char* oldShader, const char* newShader, float timeOffset) {
+	int32_t i;
+
+	G_LogFuncBegin();
+
+	if (oldShader == NULL) {
+		G_LocLogger(LL_ERROR, "oldShader == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
+
+	if (newShader == NULL) {
+		G_LocLogger(LL_ERROR, "newShader == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
 
 	for (i = 0; i < remapCount; i++) {
 		if (Q_stricmp(oldShader, remappedShaders[i].oldShader) == 0) {
 			/* found it, just update this one */
 			strcpy(remappedShaders[i].newShader,newShader);
 			remappedShaders[i].timeOffset = timeOffset;
+
+			G_LogFuncEnd();
 			return;
 		}
 	}
+
 	if (remapCount < MAX_SHADER_REMAPS) {
 		strcpy(remappedShaders[remapCount].newShader,newShader);
 		strcpy(remappedShaders[remapCount].oldShader,oldShader);
 		remappedShaders[remapCount].timeOffset = timeOffset;
 		remapCount++;
 	}
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -61,13 +81,17 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 const char *BuildShaderStateConfig(void) {
 	static char	buff[MAX_STRING_CHARS*4];
 	char out[(MAX_QPATH * 2) + 5];
-	int i;
+	int32_t i;
   
+	G_LogFuncBegin();
+
 	memset(buff, 0, MAX_STRING_CHARS);
 	for (i = 0; i < remapCount; i++) {
 		Com_sprintf(out, (MAX_QPATH * 2) + 5, "%s=%s:%5.2f@", remappedShaders[i].oldShader, remappedShaders[i].newShader, remappedShaders[i].timeOffset);
 		Q_strcat( buff, sizeof( buff ), out);
 	}
+
+	G_LogFuncEnd();
 	return buff;
 }
 
@@ -91,11 +115,13 @@ model / sound configstring indexes
  * 
  * @return The config strings index
  */
-int G_FindConfigstringIndex( char *name, int start, int max, qboolean create ) {
-	int		i;
+int32_t G_FindConfigstringIndex( char* name, int32_t start, int32_t max, qboolean create ) {
+	int32_t	i = 0;
 	char	s[MAX_STRING_CHARS];
 
-	if ( !name || !name[0] ) {
+	if ( name == NULL || name[0] == 0 ) {
+		G_LocLogger(LL_ERROR, "name == NULL\n");
+		G_LogFuncEnd();
 		return 0;
 	}
 
@@ -105,70 +131,120 @@ int G_FindConfigstringIndex( char *name, int start, int max, qboolean create ) {
 			break;
 		}
 		if ( !strcmp( s, name ) ) {
+			G_LogFuncEnd();
 			return i;
 		}
 	}
 
 	if ( !create ) {
+		G_LogFuncEnd();
 		return 0;
 	}
 
 	if ( i == max ) {
 		/*G_Error( "G_FindConfigstringIndex: overflow" );*/
-		G_Printf( S_COLOR_RED "G_FindConfigstringIndex: Full!! Could not add value: %s\n", name );
+		//G_Printf( S_COLOR_RED "G_FindConfigstringIndex: Full!! Could not add value: %s\n", name );
+		G_LocLogger(LL_ERROR, "G_FindConfigstringIndex: Full!! Could not add value: %s\n", name);
 	}
 
 	trap_SetConfigstring( start + i, name );
 
+	G_LogFuncEnd();
 	return i;
 }
 
-int G_ModelIndex( char *name ) {
-	return G_FindConfigstringIndex (name, CS_MODELS, MAX_MODELS, qtrue);
+int32_t G_ModelIndex( char* name ) {
+	int32_t res = 0;
+
+	G_LogFuncBegin();
+
+	res = G_FindConfigstringIndex (name, CS_MODELS, MAX_MODELS, qtrue);
+
+	G_LogFuncEnd();
+	return res;
 }
 
-int G_SoundIndex( char *name ) {
-	return G_FindConfigstringIndex (name, CS_SOUNDS, MAX_SOUNDS, qtrue);
+int32_t G_SoundIndex( char* name ) {
+	int32_t res = 0;
+
+	G_LogFuncBegin();
+
+	res = G_FindConfigstringIndex (name, CS_SOUNDS, MAX_SOUNDS, qtrue);
+
+	G_LogFuncEnd();
+	return res;
 }
 
-int G_TricStringIndex( char *name ) {
-	return G_FindConfigstringIndex (name, CS_TRIC_STRINGS, MAX_TRIC_STRINGS, qtrue);
+int32_t G_TricStringIndex( char* name ) {
+	int32_t res = 0;
+
+	G_LogFuncBegin();
+
+	res = G_FindConfigstringIndex (name, CS_TRIC_STRINGS, MAX_TRIC_STRINGS, qtrue);
+
+	G_LogFuncEnd();
+	return res;
 }
 
 //=====================================================================
 
-void G_TeamCommand( team_t team, char *cmd ) {
-	int		i;
+void G_TeamCommand( team_t team, char* cmd ) {
+	int32_t i;
+
+	G_LogFuncBegin();
+
+	if (cmd == NULL) {
+		G_LocLogger(LL_ERROR, "cmd == NULL\n");
+		G_LogFuncEnd();
+	}
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[i].pers.connected == CON_CONNECTED ) {
 			if ( level.clients[i].sess.sessionTeam == team ) {
-				trap_SendServerCommand( i, va("%s", cmd ));
+				trap_SendServerCommand(i, cmd);
 			}
 		}
 	}
+
+	G_LogFuncEnd();
 }
 
-gentity_t *G_Find (gentity_t *from, size_t fieldofs, const char *match)
+gentity_t* G_Find (gentity_t* from, size_t fieldofs, const char* match)
 {
-	char	*s;
+	char* s = NULL;
 
-	if (!from)
+	G_LogFuncBegin();
+
+	if (match == NULL) {
+		G_LocLogger(LL_ERROR, "match == NULL\n");
+		G_LogFuncEnd();
+		retur NULL;
+	}
+
+	if (from == NULL) {
 		from = g_entities;
-	else
+	} else {
 		from++;
+	}
 
 	for ( ; from < &g_entities[level.num_entities] ; from++)
 	{
-		if (!from->inuse)
+		if (!from->inuse) {
 			continue;
+		}
+
 		s = *(char **) ((byte *)from + fieldofs);
-		if (!s)
+		if (s == NULL) {
 			continue;
-		if (!Q_stricmp (s, match))
+		}
+
+		if (Q_stricmp(s, match) == 0) {
+			G_LogFuncEnd();
 			return from;
+		}
 	}
 
+	G_LogFuncEnd();
 	return NULL;
 }
 
@@ -176,15 +252,18 @@ gentity_t *G_Find (gentity_t *from, size_t fieldofs, const char *match)
 /** Maximum number of possible choices for G_PickTarget. */
 #define MAXCHOICES 	32
 
-gentity_t *G_PickTarget (char *targetname)
+gentity_t* G_PickTarget (char* targetname)
 {
-	gentity_t	*ent = NULL;
-	int		num_choices = 0;
-	gentity_t	*choice[MAXCHOICES];
+	gentity_t*	ent = NULL;
+	int32_t		num_choices = 0;
+	gentity_t*	choice[MAXCHOICES];
 
-	if (!targetname)
+	G_LogFuncBegin();
+
+	if (targetname == NULL)
 	{
-		G_Printf("G_PickTarget called with NULL targetname\n");
+		G_LocLogger(LL_ERROR, "G_PickTarget called with NULL targetname\n");
+		G_LogFuncEnd();
 		return NULL;
 	}
 
@@ -192,11 +271,14 @@ gentity_t *G_PickTarget (char *targetname)
 	while(1)
 	{
 		ent = G_Find (ent, FOFS(targetname), targetname);
-		if (!ent)
+		if (ent == NULL) {
 			break;
+		}
+
 		choice[num_choices++] = ent;
-		if (num_choices == MAXCHOICES)
+		if (num_choices == MAXCHOICES) {
 			break;
+		}
 	}
 
 	/*================
@@ -204,42 +286,54 @@ gentity_t *G_PickTarget (char *targetname)
 	Phenix
 	13/06/2004
 	================*/
-	if (!num_choices)
+	if (num_choices == 0)
 	{
 		while(1)
 		{
 			ent = G_Find (ent, FOFS(swapname), targetname);
-			if (!ent)
+			if (ent == NULL) {
 				break;
+			}
+
 			choice[num_choices++] = ent;
-			if (num_choices == MAXCHOICES)
+
+			if (num_choices == MAXCHOICES) {
 				break;
+			}
 		}
 	}
 	
-	if (!num_choices)
+	if (num_choices == 0)
 	{
 		while(1)
 		{
 			ent = G_Find (ent, FOFS(truename), targetname);
-			if (!ent)
+			if (ent == NULL) {
 				break;
+			}
+
 			choice[num_choices++] = ent;
-			if (num_choices == MAXCHOICES)
+
+			if (num_choices == MAXCHOICES) {
 				break;
+			}
 		}
 	}
 
-	if (!num_choices)
+	if (num_choices == 0)
 	{
 		while(1)
 		{
 			ent = G_Find (ent, FOFS(falsename), targetname);
-			if (!ent)
+			if (ent == NULL) {
 				break;
+			}
+
 			choice[num_choices++] = ent;
-			if (num_choices == MAXCHOICES)
+
+			if (num_choices == MAXCHOICES) {
 				break;
+			}
 		}
 	}
 
@@ -247,36 +341,43 @@ gentity_t *G_PickTarget (char *targetname)
 	End Modification
 	================*/
 
-	if (!num_choices)
+	if (num_choices == 0)
 	{
-		G_Printf("G_PickTarget: target %s not found\n", targetname);
+		G_LocLogger(LL_ERROR, "G_PickTarget: target %s not found\n", targetname);
+		G_LogFuncEnd();
 		return NULL;
 	}
 
+	G_LogFuncEnd();
 	return choice[rand() % num_choices];
 }
 
-void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
-	gentity_t		*t;
-	
-	if ( !ent ) {
+void G_UseTargets2( gentity_t* ent, gentity_t* activator, char* target ) {
+	gentity_t* t = NULL;
+
+	G_LogFuncBegin();
+
+	if ( ent == NULL ) {
+		G_LocLogger(LL_ERROR, "ent == NULL\n");
+		G_LogFuncEnd();
 		return;
 	}
 
-	if (ent->targetShaderName && ent->targetShaderNewName) {
+	if (ent->targetShaderName != NULL && ent->targetShaderNewName != NULL) {
 		float f = level.time * 0.001;
 		AddRemap(ent->targetShaderName, ent->targetShaderNewName, f);
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 	}
 
-	if ( !target ) {
+	if ( target == NULL ) {
+		G_LogFuncEnd();
 		return;
 	}
 
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(targetname), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, activator);
@@ -296,7 +397,8 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LogFuncEnd();
 			return;
 		}
 	}
@@ -309,7 +411,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(swapname), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, activator);
@@ -329,7 +431,8 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LogFuncEnd();
 			return;
 		}
 	}
@@ -337,7 +440,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(truename), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, activator);
@@ -357,7 +460,8 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LogFuncEnd();
 			return;
 		}
 	}
@@ -365,7 +469,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	t = NULL;
 	while ( (t = G_Find (t, FOFS(falsename), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, activator);
@@ -385,7 +489,8 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LogFuncEnd();
 			return;
 		}
 	}
@@ -400,7 +505,7 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 	t = NULL;
 	while( (t = G_Find(t, FOFS(bluename), target)) != NULL ) {
 		if ( t == ent ) {
-			G_Printf ("WARNING: Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i used itself.\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
 		} else {
 			if ( t->use ) {
 				t->use (t, ent, ent);
@@ -420,23 +525,34 @@ void G_UseTargets2( gentity_t *ent, gentity_t *activator, char *target ) {
 			}
 		}
 		if ( !ent->inuse ) {
-			G_Printf("Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LocLogger(LL_WARN, "Entity %i was removed while using targets\n", t->s.number); /* RPG-X | GSIO01 | 22.10.09: a little bit more information for the mapper */
+			G_LogFuncEnd();
 			return;
 		}
 	}
+
+	G_LogFuncEnd();
 }
 
-void G_UseTargets( gentity_t *ent, gentity_t *activator ) {
-	if ( !ent ) {
+void G_UseTargets( gentity_t* ent, gentity_t* activator ) {
+	G_LogFuncBegin();
+
+	if ( ent == NULL ) {
+		G_LocLogger(LL_ERROR, "ent == NULL\n");
 		return;
 	}
+
 	G_UseTargets2( ent, activator, ent->target );
+
+	G_LogFuncEnd();
 }
 
-float	*tv( float x, float y, float z ) {
-	static	int		index;
+float* tv( float x, float y, float z ) {
+	static	int32_t	index;
 	static	vec3_t	vecs[8];
-	float	*v;
+	float*	v = NULL;
+
+	G_LogFuncBegin();
 
 	/*
  	 *  use an array so that multiple tempvectors won't collide
@@ -449,13 +565,16 @@ float	*tv( float x, float y, float z ) {
 	v[1] = y;
 	v[2] = z;
 
+	G_LogFuncEnd();
 	return v;
 }
 
-char *vtos( const vec3_t v ) {
-	static	int		index;
+char* vtos( const vec3_t v ) {
+	static	int32_t	index;
 	static	char	str[8][32];
-	char	*s;
+	char*	s = NULL;
+
+	G_LogFuncBegin();
 
 	/* use an array so that multiple vtos won't collide */
 	s = str[index];
@@ -463,6 +582,7 @@ char *vtos( const vec3_t v ) {
 
 	Com_sprintf (s, 32, "(%i %i %i)", (int)v[0], (int)v[1], (int)v[2]);
 
+	G_LogFuncEnd();
 	return s;
 }
 
@@ -472,6 +592,8 @@ void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
 	static vec3_t VEC_DOWN		= {0, -2, 0};
 	static vec3_t MOVEDIR_DOWN	= {0, 0, -1};
 
+	G_LogFuncBegin();
+
 	if ( VectorCompare (angles, VEC_UP) ) {
 		VectorCopy (MOVEDIR_UP, movedir);
 	} else if ( VectorCompare (angles, VEC_DOWN) ) {
@@ -480,11 +602,15 @@ void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
 		AngleVectors (angles, movedir, NULL, NULL);
 	}
 	VectorClear( angles );
+
+	G_LogFuncEnd();
 }
 
 float vectoyaw( const vec3_t vec ) {
 	float	yaw;
 	
+	G_LogFuncBegin();
+
 	if (vec[YAW] == 0 && vec[PITCH] == 0) {
 		yaw = 0;
 	} else {
@@ -500,23 +626,35 @@ float vectoyaw( const vec3_t vec ) {
 		}
 	}
 
+	G_LogFuncEnd();
 	return yaw;
 }
 
-void G_InitGentity( gentity_t *e ) {
+void G_InitGentity( gentity_t* e ) {
+	G_LogFuncBegin();
+
+	if (e == NULL) {
+		G_LocLogger(LL_ERROR, "e == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	e->inuse = qtrue;
 	e->classname = "noclass";
 	e->s.number = e - g_entities;
 	e->r.ownerNum = ENTITYNUM_NONE;
+
+	G_LogFuncEnd();
 }
 
-gentity_t *G_Spawn( void ) {
-	int			i, force;
-	gentity_t	*e;
+gentity_t* G_Spawn( void ) {
+	int32_t		i = 0;
+	int32_t		force = 0;
+	gentity_t*	e = NULL;
 	/* RPG-X: RedTechie - Get rid of tripmines first */
-	gentity_t	*tripwire = NULL;
-	int			foundTripWires[MAX_GENTITIES] = {ENTITYNUM_NONE};
-	int			tripcount = 0;
+	gentity_t*	tripwire = NULL;
+	int32_t		foundTripWires[MAX_GENTITIES] = {ENTITYNUM_NONE};
+	int32_t		tripcount = 0;
 
 	e = NULL;	/* shut up warning */
 	i = 0;		/* shut up warning */
@@ -524,6 +662,11 @@ gentity_t *G_Spawn( void ) {
 		/* if we go through all entities and can't find one to free, */
 		/* override the normal minimum times before use */
 		e = &g_entities[MAX_CLIENTS];
+
+		if (e == NULL) {
+			continue;
+		}
+
 		for ( i = MAX_CLIENTS ; i<level.num_entities ; i++, e++) {
 			if ( e->inuse ) {
 				continue;
@@ -587,10 +730,19 @@ gentity_t *G_Spawn( void ) {
 		&level.clients[0].ps, sizeof( level.clients[0] ) );
 
 	G_InitGentity( e );
+	G_LogFuncEnd();
 	return e;
 }
 
-void G_FreeEntity( gentity_t *ed ) {
+void G_FreeEntity( gentity_t* ed ) {
+	G_LogFuncBegin();
+
+	if (ed == NULL) {
+		G_LocLogger(LL_ERROR, "ed == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	trap_UnlinkEntity (ed);		/* unlink from world */
 
 	if ( ed->neverFree ) {
@@ -599,7 +751,7 @@ void G_FreeEntity( gentity_t *ed ) {
 
 	#ifdef G_LUA
 	/* Lua API callbacks */
-	if(ed->luaFree && !ed->client)
+	if(ed->luaFree != NULL && !ed->client)
 	{
 		LuaHook_G_EntityFree(ed->luaFree, ed->s.number);
 	}
@@ -610,13 +762,23 @@ void G_FreeEntity( gentity_t *ed ) {
 	ed->freetime = level.time;
 	ed->inuse = qfalse;
 	ed->type = ENT_FREE;
+
+	G_LogFuncEnd();
 }
 
-gentity_t *G_TempEntity( vec3_t origin, int event ) {
-	gentity_t		*e;
+gentity_t* G_TempEntity( vec3_t origin, int event ) {
+	gentity_t*	e = NULL;
 	vec3_t		snapped;
 
+	G_LogFuncBegin();
+
 	e = G_Spawn();
+
+	if (e == NULL) {
+		G_LocLogger(LL_ERROR, "e == NULL\n");
+		G_LogFuncEnd();
+		return NULL;
+	}
 	e->s.eType = ET_EVENTS + event;
 
 	e->classname = "tempEntity";
@@ -630,6 +792,7 @@ gentity_t *G_TempEntity( vec3_t origin, int event ) {
 	/* find cluster for PVS */
 	trap_LinkEntity( e );
 
+	G_LogFuncEnd();
 	return e;
 }
 
@@ -643,11 +806,15 @@ Kill box
 ==============================================================================
 */
 
-void G_KillBox (gentity_t *ent) {
-	int		i, num;
-	int		touch[MAX_GENTITIES];
-	gentity_t	*hit;
-	vec3_t		mins, maxs;
+void G_KillBox (gentity_t* ent) {
+	int32_t		i = 0;
+	int32_t		num = 0;
+	int32_t		touch[MAX_GENTITIES];
+	gentity_t*	hit = NULL;
+	vec3_t		mins = { 0, 0, 0 };
+	vec3_t		maxs = { 0, 0, 0 };
+
+	G_LogFuncBegin();
 
 	VectorAdd( ent->client->ps.origin, ent->r.mins, mins );
 	VectorAdd( ent->client->ps.origin, ent->r.maxs, maxs );
@@ -655,7 +822,7 @@ void G_KillBox (gentity_t *ent) {
 
 	for (i=0 ; i<num ; i++) {
 		hit = &g_entities[touch[i]];
-		if ( !hit->client ) {
+		if ( hit->client == NULL ) {
 			continue;
 		}
 	
@@ -664,17 +831,28 @@ void G_KillBox (gentity_t *ent) {
 			100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 	}
 
+	G_LogFuncEnd();
 }
 
-qboolean G_MoveBox (gentity_t *ent )
+qboolean G_MoveBox (gentity_t* ent)
 {
-	int		i, num;
-	int		touch[MAX_GENTITIES];
-	gentity_t	*hit;
-	vec3_t		mins, maxs;
-	vec3_t		dir;
+	int32_t		i = 0;
+	int32_t		num = 0;
+	int32_t		touch[MAX_GENTITIES];
+	gentity_t*	hit = 0;
+	vec3_t		mins = { 0, 0, 0 };
+	vec3_t		maxs = { 0, 0, 0 };
+	vec3_t		dir = { 0, 0, 0 };
 	qboolean	movedPlayer = qfalse;
 	
+	G_LogFuncBegin();
+
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL\n");
+		G_LogFuncEnd();
+		return qfalse;
+	}
+
 	VectorAdd( ent->client->ps.origin, ent->r.mins, mins );
 	VectorAdd( ent->client->ps.origin, ent->r.maxs, maxs );
 
@@ -683,7 +861,12 @@ qboolean G_MoveBox (gentity_t *ent )
 	for (i=0 ; i<num ; i++) 
 	{
 		hit = &g_entities[touch[i]];
-		if ( !hit->client || hit->client->ps.clientNum == ent->client->ps.clientNum ) 
+
+		if (hit == NULL) {
+			continue;
+		}
+
+		if ( hit->client == NULL || hit->client->ps.clientNum == ent->client->ps.clientNum ) 
 		{
 			continue;
 		}
@@ -697,24 +880,49 @@ qboolean G_MoveBox (gentity_t *ent )
 		movedPlayer = qtrue;
 	}
 
+	G_LogFuncEnd();
 	return movedPlayer;	
 }
 
 //==============================================================================
 
-void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm ) {
-	if ( !ent->client ) {
+void G_AddPredictableEvent( gentity_t* ent, int32_t event, int32_t eventParm ) {
+	G_LogFuncBegin();
+
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL\n");
+		G_LogFuncEnd();
 		return;
 	}
+
+	if ( ent->client == NULL ) {
+		G_LocLogger(LL_ERROR, "ent->client == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	BG_AddPredictableEventToPlayerstate( event, eventParm, &ent->client->ps );
+
+	G_LogFuncEnd();
 }
 
-void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
-	int		bits;
-	playerState_t *ps = &ent->client->ps;
+void G_AddEvent( gentity_t* ent, int32_t event, int32_t eventParm ) {
+	int32_t			bits;
+	playerState_t*	ps = NULL;
+	
+	G_LogFuncBegin();
 
-	if ( !event ) {
-		G_Printf( "G_AddEvent: zero event added for entity %i\n", ent->s.number );
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
+
+	ps = &ent->client->ps;
+
+	if ( event == 0 ) {
+		G_LocLogger(LL_ERROR, "G_AddEvent: zero event added for entity %i\n", ent->s.number );
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -732,19 +940,46 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 		ent->s.eventParm = eventParm;
 	}
 	ent->eventTime = level.time;
+
+	G_LogFuncEnd();
 }
 
-void G_Sound( gentity_t *ent, int soundIndex ) {
-	gentity_t	*te;
+void G_Sound( gentity_t* ent, int32_t soundIndex ) {
+	gentity_t* te = NULL;
+
+	G_LogFuncBegin();
+
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
 
 	te = G_TempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND );
+	
+	if (te == NULL) {
+		G_LocLogger(LL_ERROR, "te == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
+	
 	te->s.eventParm = soundIndex;
+
+	G_LogFuncEnd();
 }
 
 
 //==============================================================================
 
-void G_SetOrigin( gentity_t *ent, vec3_t origin ) {
+void G_SetOrigin( gentity_t* ent, vec3_t origin ) {
+	G_LogFuncBegin();
+
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	// lets try this to fix setting origins for brush ents without origin brush
 	VectorCopy(origin, ent->pos1); // needs testing
 	
@@ -756,9 +991,19 @@ void G_SetOrigin( gentity_t *ent, vec3_t origin ) {
 
 	VectorCopy( origin, ent->r.currentOrigin );
 	VectorCopy( origin, ent->s.origin); /* RPG-X | GSIO01 | 24.08.2009 */
+
+	G_LogFuncEnd();
 }
 
-void G_SetAngles(gentity_t *ent, vec3_t angles) {
+void G_SetAngles(gentity_t* ent, vec3_t angles) {
+	G_LogFuncBegin();
+
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	VectorCopy(angles, ent->s.apos.trBase);
 	ent->s.apos.trType = TR_STATIONARY;
 	ent->s.apos.trTime = 0;
@@ -767,6 +1012,8 @@ void G_SetAngles(gentity_t *ent, vec3_t angles) {
 
 	VectorCopy(angles, ent->r.currentAngles);
 	VectorCopy(angles, ent->s.angles);
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -782,21 +1029,27 @@ void G_SetAngles(gentity_t *ent, vec3_t angles) {
  *
  * @return the number of found entities in the list
  */
-int G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDamage, list_p ent_list)					  
+int32_t G_RadiusList ( vec3_t origin, double radius, list_p ignore, qboolean takeDamage, list_p ent_list)					  
 {
-	float		dist;
-	gentity_t*	ent;
+	double		dist = 0.0;
+	gentity_t*	ent = NULL;
 	gentity_t*	t = NULL;
-	int			entityList[MAX_GENTITIES];
-	int			numListedEntities;
-	int			i, e;
-	vec3_t		mins, maxs;
-	vec3_t		v;
-	list_iter_p	iter;
-	container_p c;
+	int32_t		entityList[MAX_GENTITIES];
+	int32_t		numListedEntities = 0;
+	int32_t		i = 0;
+	int32_t		e = 0;
+	vec3_t		mins = { 0, 0, 0 };
+	vec3_t		maxs = { 0, 0, 0 };
+	vec3_t		v = { 0, 0, 0 };
+	list_iter_p	iter = NULL;
+	container_p c = NULL;
 	qboolean	n = qfalse;
 
+	G_LogFuncBegin();
+
 	if(ent_list == NULL) {
+		G_LocLogger(LL_ERROR, "ent_list == NULL\n");
+		G_LogFuncEnd();
 		return 0;
 	}
 
@@ -817,6 +1070,10 @@ int G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDama
 	{
 		n = qfalse;
 		ent = &g_entities[entityList[e]];
+
+		if (ent == NULL) {
+			continue;
+		}
 
 		if (!(ent->inuse) || ent->takedamage != takeDamage) {
 			continue;
@@ -867,29 +1124,43 @@ int G_RadiusList ( vec3_t origin, float radius,	list_p ignore, qboolean takeDama
 		/* ok, we are within the radius, add us to the incoming list */
 		ent_list->append_ptr(ent_list, ent, LT_DATA);
 	}
+	
+	G_LogFuncEnd();
 	/*  we are done, return how many we found */
 	return ent_list->length;
 }
 
-int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p ignore, list_p ent_list) {
-	float		dist;
-	gentity_t	*ent;
-	gentity_t	*t = NULL;
-	int			entityList[MAX_GENTITIES];
-	int			numListedEntities;
-	vec3_t		mins, maxs;
-	vec3_t		v;
-	int			i, e;
+int32_t G_RadiusListOfTypes(list_p classnames, vec3_t origin, double radius, list_p ignore, list_p ent_list) {
+	double		dist = 0.0;
+	gentity_t*	ent = NULL;
+	gentity_t*	t = NULL;
+	int32_t		entityList[MAX_GENTITIES];
+	int32_t		numListedEntities = 0;
+	vec3_t		mins = { 0, 0, 0 };
+	vec3_t		maxs = { 0, 0, 0 };
+	vec3_t		v = { 0, 0, 0 };
+	int32_t		i = 0;
+	int32_t		e = 0;
 	qboolean	valid = qfalse;
-	list_iter_p	iter;
-	container_p c;
+	list_iter_p	iter = NULL;
+	container_p c = NULL;
 	qboolean	n = qfalse;
 
+	G_LogFuncBegin();
+
 	if(ent_list == NULL) {
+		G_LocLogger(LL_ERROR, "ent_list == NULL\n");
+		G_LogFuncEnd();
 		return 0;
 	}
 
-	if(classnames == NULL || classnames->length == 0) {
+	if(classnames == NULL) {
+		G_LocLogger(LL_ERROR, "classnames == NULL\n");
+		G_LogFuncEnd();
+		return 0;
+	}
+
+	if (classnames->length == 0) {
 		return 0;
 	}
 
@@ -910,6 +1181,10 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
 	{
 		n = qfalse;
 		ent = &g_entities[entityList[e]];
+
+		if (ent == NULL) {
+			continue;
+		}
 
 		if(!(ent->inuse)) {
 			continue;
@@ -975,6 +1250,8 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
 
 		valid = qfalse;
 	}
+
+	G_LogFuncEnd();
 	/*  we are done, return how many we found */
 	return ent_list->length;
 }
@@ -992,16 +1269,19 @@ int G_RadiusListOfTypes(list_p classnames, vec3_t origin, float radius, list_p i
  *
  * @return the nearest entity
  */
-gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, list_p ignore, qboolean takeDamage) {
+gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, double radius, list_p ignore, qboolean takeDamage) {
 	gentity_t*	nearest = NULL;
 	gentity_t*	t = NULL;
-	float		distance, minDist;
-	vec3_t		dist;
+	double		distance = 0.0;
+	double		minDist = 0.0;
+	vec3_t		dist = { 0, 0, 0 };
 	struct list entList;
-	list_iter_p iter;
-	container_p c;
+	list_iter_p iter = NULL;
+	container_p c = NULL;
 
-	if(!radius) { /* we don't care how far it is away */
+	G_LogFuncBegin();
+
+	if(radius <= 0.0) { /* we don't care how far it is away */
 		radius = 9999999;
 	}
 	minDist = radius;
@@ -1043,6 +1323,7 @@ gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, list_p 
 	destroy_iterator(iter);
 	entList.clear(&entList);
 
+	G_LogFuncEnd();
 	return nearest;
 }
 
@@ -1057,16 +1338,19 @@ gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, list_p 
  *
  * @return the nearest player
  */
-gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore ) {
+gentity_t* G_GetNearestPlayer(vec3_t origin, double radius, list_p ignore ) {
 	gentity_t*	nearest = NULL;
-	gentity_t*	t;
-	float		distance, minDist;
-	vec3_t		dist;
+	gentity_t*	t = NULL;
+	double		distance = 0.0;
+	double		minDist = 0.0;
+	vec3_t		dist = { 0, 0, 0 };
 	struct list entList;
-	list_iter_p iter;
-	container_p c;
+	list_iter_p iter = NULL;
+	container_p c = NULL;
 
-	if(!radius) {
+	G_LogFuncBegin();
+
+	if(radius <= 0.0) {
 		radius = 999999;
 	}
 	minDist = radius;
@@ -1096,63 +1380,106 @@ gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore ) {
 	destroy_iterator(iter);
 	entList.clear(&entList);
 
+	G_LogFuncEnd();
 	return nearest;
 }
 
-int G_GetEntityByTargetname(const char *targetname, list_p entities) {
-	int i;
-	gentity_t *t;
+int32_t G_GetEntityByTargetname(const char* targetname, list_p entities) {
+	int32_t i = 0;
+	gentity_t* t = NULL;
+
+	G_LogFuncBegin();
 
 	if(entities == NULL) {
+		G_LocLogger(LL_ERROR, "entities == NULL\n");
+		G_LogFuncEnd();
+		return 0;
+	}
+
+	if (targetname == NULL) {
+		G_LogFuncEnd();
 		return 0;
 	}
 
 	for(i = MAX_GENTITIES - 1; i > -1; i--) {
-		if(!&g_entities[i]) continue;
+		if (&g_entities[i] == NULL) {
+			continue;
+		}
+
 		t = &g_entities[i];
+		
 		if(t->targetname && !Q_strncmp(t->targetname, targetname, strlen(targetname))) {
 			entities->append_ptr(entities, t, LT_DATA);
 		}
 	}
 
+	G_LogFuncEnd();
 	return entities->length;
 }
 
-int G_GetEntityByTarget(const char *target, list_p entities) {
-	int i;
-	gentity_t *t;
+int32_t G_GetEntityByTarget(const char* target, list_p entities) {
+	int32_t i = 0;
+	gentity_t* t = NULL;
 
-	if(entities == NULL) {
+	G_LogFuncBegin();
+
+	if (entities == NULL) {
+		G_LocLogger(LL_ERROR, "entities == NULL\n");
+		G_LogFuncEnd();
+		return 0;
+	}
+
+	if (target == NULL) {
+		G_LogFuncEnd();
 		return 0;
 	}
 
 	for(i = MAX_GENTITIES - 1; i > -1; i--) {
-		if(!&g_entities[i]) continue;
+		if (&g_entities[i] == NULL) {
+			continue;
+		}
+
 		t = &g_entities[i];
+
 		if(t->target && !Q_strncmp(t->target, target, strlen(target))) {
 			entities->append_ptr(entities, t, LT_DATA);
 		}
 	}
 
+	G_LogFuncEnd();
 	return entities->length;
 }
 
-int G_GetEntityByBmodel(char *bmodel, list_p entities) {
-	int i;
-	gentity_t *t;
+int32_t G_GetEntityByBmodel(char* bmodel, list_p entities) {
+	int32_t i = 0;
+	gentity_t* t = NULL;
 
-	if(entities == NULL) {
+	G_LogFuncBegin();
+
+	if (entities == NULL) {
+		G_LocLogger(LL_ERROR, "entities == NULL\n");
+		G_LogFuncEnd();
+		return 0;
+	}
+
+	if (bmodel == NULL) {
+		G_LogFuncEnd();
 		return 0;
 	}
 
 	for(i = MAX_GENTITIES - 1; i > -1; i--) {
-		if(!&g_entities[i]) continue;
+		if (&g_entities[i] == NULL) {
+			continue;
+		}
+
 		t = &g_entities[i];
+
 		if(t->model && !Q_strncmp(t->model, bmodel, strlen(bmodel))) {
 			entities->append_ptr(entities, t, LT_DATA);
 		}
 	}
 
+	G_LogFuncEnd();
 	return entities->length;
 }
 
@@ -1167,15 +1494,20 @@ int G_GetEntityByBmodel(char *bmodel, list_p entities) {
 *
 *	@return is line of sight blocked?
 */
-qboolean LineOfSight( gentity_t *ent1, gentity_t *ent2 ) {
-	trace_t         trace;
+qboolean LineOfSight( gentity_t* ent1, gentity_t* ent2 ) {
+	trace_t trace;
 
+	G_LogFuncBegin();
+
+	memset(&trace, 0, sizeof(trace_t));
 	trap_Trace (&trace, ent1->s.pos.trBase, NULL, NULL, ent2->s.pos.trBase, ent1->s.number, MASK_SHOT );
 
 	if ( trace.contents & CONTENTS_SOLID ) {
+		G_LogFuncEnd();
 		return qfalse;
 	}
 	
+	G_LogFuncEnd();
 	return qtrue;
 }
 
