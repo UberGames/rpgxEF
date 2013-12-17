@@ -2,10 +2,21 @@
 #include "g_usable.h"
 #include "g_spawn.h"
 #include "g_client.h"
+#include "g_logger.h"
 
-extern void InitMover( gentity_t *ent );
-extern gentity_t *G_TestEntityPosition( gentity_t *ent );
-void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator);
+#define USABLE_START_OFF		1
+#define USABLE_AUTOANIM			2
+#define USABLE_ALWAYS_ON		8
+#define USABLE_NOBLOCKCHECK		16
+#define USABLE_ADMIN_ONLY		256
+#define USABLE_NO_ACTIVATOR		512
+#define USABLE_NO_AREAPORTAL	1024
+#define USABLE_DEACTIVATED		2048
+
+extern void InitMover( gentity_t *ent ); // TODO: add g_mover.h once it is ready
+extern gentity_t *G_TestEntityPosition( gentity_t *ent ); // TODO: add g_mover.h once it is ready
+
+void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator);
 
 /**
  * \brief Try to get solid again.
@@ -15,11 +26,20 @@ void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator);
  *
  * @param self the entity itself
  */
-void func_wait_return_solid( gentity_t *self )
+void func_wait_return_solid( gentity_t* self )
 {
+	G_LogFuncBegin();
+
+	if (self != NULL) {
+		/* this is very unlikely to happen, anyway safety first */
+		G_LocLogger(LL_ERROR, "self == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	/* once a frame, see if it's clear. */
 	self->clipmask = CONTENTS_BODY;
-	if ( !(self->spawnflags&16) || G_TestEntityPosition( self ) == NULL )
+	if ((self->spawnflags & USABLE_NOBLOCKCHECK) == 0 || G_TestEntityPosition(self) == NULL)
 	{
 		trap_SetBrushModel( self, self->model );
 		InitMover( self );
@@ -29,13 +49,8 @@ void func_wait_return_solid( gentity_t *self )
 		self->s.eFlags &= ~EF_NODRAW;
 		self->use = func_usable_use;
 		self->clipmask = 0;
-		/*
-		if ( self->s.eFlags & EF_ANIM_ONCE )
-		{//Start our anim
-			self->s.frame = 0;
-		}
-		*/
-		if ( !(self->spawnflags&1) && !(self->spawnflags & 1024) )
+
+		if ((self->spawnflags & USABLE_START_OFF) == 0 && (self->spawnflags & USABLE_NO_AREAPORTAL) == 0)
 		{/* START_OFF doesn't effect area portals */
 			trap_AdjustAreaPortalState( self, qfalse );
 		}
@@ -46,6 +61,8 @@ void func_wait_return_solid( gentity_t *self )
 		self->think = func_wait_return_solid;
 		self->nextthink = level.time + FRAMETIME;
 	}
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -55,15 +72,25 @@ void func_wait_return_solid( gentity_t *self )
  *
  * @param self the entity itself
  */
-void func_usable_think( gentity_t *self )
+void func_usable_think( gentity_t* self )
 {
-	if ( self->spawnflags & 8 )
+	G_LogFuncBegin();
+
+	if (self != NULL) {
+		/* this is very unlikely to happen, anyway safety first */
+		G_LocLogger(LL_ERROR, "self == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
+	if ((self->spawnflags & USABLE_ALWAYS_ON) != 0)
 	{
-		/*self->r.svFlags |= SVF_PLAYER_USABLE;*/ /* Replace the usable flag */
 		self->use = func_usable_use;
-		self->think = NULL; /*NULL*/
+		self->think = NULL;
 		self->nextthink = -1;
 	}
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -75,56 +102,72 @@ void func_usable_think( gentity_t *self )
  * @param another entity
  * @param activator the activating entity
  */
-void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
-{/* Toggle on and off */
+void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator)
+{
+	G_LogFuncBegin();
+
+	if (self != NULL) {
+		/* this is very unlikely to happen, anyway safety first */
+		G_LocLogger(LL_ERROR, "self == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
+	/* Toggle on and off */
 	/* Remap shader */
-	if(self->targetShaderName && self->targetShaderNewName) {
-		float f = level.time * 0.001;
+	if(self->targetShaderName != NULL && self->targetShaderNewName != NULL) {
+		double f = level.time * 0.001;
 		AddRemap(self->targetShaderName, self->targetShaderNewName, f);
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 	}
 
 
 	/* RPG-X | GSIO01 | 09/05/2009: */
-	if(self->spawnflags & 256) { /* ADMINS_ONLY */
-		if(!IsAdmin(activator))
+	if ((self->spawnflags & USABLE_ADMIN_ONLY) != 0) { /* ADMINS_ONLY */
+		if (!IsAdmin(activator)) {
+			G_Logger(LL_DEBUG, "activator not a player or not admin\n");
+			G_LogFuncEnd();
 			return;
+		}
 	}
 
-	if(self->flags & FL_LOCKED) /*  Deactivated */
+	if ((self->flags & FL_LOCKED) != 0) {
+		/*  Deactivated */
+		G_Logger(LL_DEBUG, "is deactivated\n");
+		G_LogFuncEnd();
 		return;
+	}
 
-	if ( self->spawnflags & 8 )		/* fixme: uurrgh!!!!  that's disgusting */
-	{/* ALWAYS_ON */
+	if ((self->spawnflags & USABLE_ALWAYS_ON) != 0)		/* fixme: uurrgh!!!!  that's disgusting */
+	{
+		/* ALWAYS_ON */
 		/* Remove the ability to use the entity directly */
 		/*self->r.svFlags &= ~SVF_PLAYER_USABLE;*/
 		/*also remove ability to call any use func at all!*/
 		self->use = NULL; /*NULL*/
 
-		if(self->target && self->target[0])
+		if(self->target != NULL && self->target[0] != 0)
 		{
-			if(self->spawnflags & 512) {
+			if ((self->spawnflags & USABLE_NO_ACTIVATOR) != 0) {
 				G_UseTargets(self, self);
 			} else {
 				G_UseTargets(self, activator);
 			}
 		} 
 		
-		if ( self->wait )
+		if ( self->wait > 0.0 )
 		{
 			self->think = func_usable_think;
 			self->nextthink = level.time + ( self->wait * 1000 );
 		}
 
+		G_LogFuncEnd();
 		return;
-	}
-	else if ( !self->count )
-	{/*become solid again*/
+	} else if ( self->count == 0 ) {
+		/*become solid again*/
 		self->count = 1;
 		func_wait_return_solid( self );
-	}
-	else
-	{
+	} else {
 		self->s.solid = 0;
 		self->r.contents = 0;
 		self->clipmask = 0;
@@ -132,20 +175,24 @@ void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 		self->s.eFlags |= EF_NODRAW;
 		self->count = 0;
 
-		if(self->target && self->target[0])
-		{
-			if(self->spawnflags & 512)
+		if(self->target != NULL && self->target[0] != 0) {
+			if ((self->spawnflags & 512) != 0) {
 				G_UseTargets(self, self);
-			else
+			} else {
 				G_UseTargets(self, activator);
+			}
 		}
+
 		self->think = 0; /*NULL*/
 		self->nextthink = -1;
-		if ( !(self->spawnflags&1) && !(self->spawnflags & 1024))
-		{/* START_OFF doesn't effect area portals */
+
+		if ((self->spawnflags & USABLE_START_OFF) == 0 && (self->spawnflags & USABLE_NO_AREAPORTAL) == 0) {
+			/* START_OFF doesn't effect area portals */
 			trap_AdjustAreaPortalState( self, qtrue );
 		}
 	}
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -157,9 +204,20 @@ void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
  * @param attacker the attacking entiy
  * @param damage the ammount of damage
  */
-void func_usable_pain(gentity_t *self, gentity_t *attacker, int damage)
+void func_usable_pain(gentity_t* self, gentity_t* attacker, int damage)
 {
+	G_LogFuncBegin();
+
+	if (self != NULL) {
+		/* this is very unlikely to happen, anyway safety first */
+		G_LocLogger(LL_ERROR, "self == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	self->use( self, attacker, attacker );
+
+	G_LogFuncEnd();
 }
 
 /**
@@ -173,10 +231,21 @@ void func_usable_pain(gentity_t *self, gentity_t *attacker, int damage)
  * @param damage ammount of damage
  * @param mod means of death
  */
-void func_usable_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
+void func_usable_die(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int mod)
 {
+	G_LogFuncBegin();
+
+	if (self != NULL) {
+		/* this is very unlikely to happen, anyway safety first */
+		G_LocLogger(LL_ERROR, "self == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	self->takedamage = qfalse;
 	self->use( self, inflictor, attacker );
+
+	G_LogFuncEnd();
 }
 
 /*QUAKED func_usable (0 .5 .8) ? STARTOFF AUTOANIM x ALWAYS_ON NOBLOCKCHECK x x x ADMIN_ONLY NO_ACTIVATOR NO_AREAPORTAL DEACTIVATED
@@ -270,18 +339,26 @@ Also if you have a (morer or less) generic console that you want to fire generic
  *
  * @param self the entity itself
  */
-void SP_func_usable( gentity_t *self ) 
+void SP_func_usable(gentity_t* self)
 {
+	G_LogFuncBegin();
+
+	if (self != NULL) {
+		/* this is very unlikely to happen, anyway safety first */
+		G_LocLogger(LL_ERROR, "self == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	self->type = ENT_FUNC_USABLE;
 
-	trap_SetBrushModel( self, self->model );
-	InitMover( self );
-	VectorCopy( self->s.origin, self->s.pos.trBase );
-	VectorCopy( self->s.origin, self->r.currentOrigin );
+	trap_SetBrushModel(self, self->model);
+	InitMover(self);
+	VectorCopy(self->s.origin, self->s.pos.trBase);
+	VectorCopy(self->s.origin, self->r.currentOrigin);
 
 	self->count = 1;
-	if (self->spawnflags & 1)
-	{
+	if ((self->spawnflags & USABLE_START_OFF) != 0)	{
 		self->s.solid = 0;
 		self->r.contents = 0;
 		self->clipmask = 0;
@@ -290,55 +367,50 @@ void SP_func_usable( gentity_t *self )
 		self->count = 0;
 	}
 
-	if (self->spawnflags & 2)
-	{
+	if ((self->spawnflags & USABLE_AUTOANIM) != 0) {
 		self->s.eFlags |= EF_ANIM_ALLFAST;
 	}
 
 	/*
-	if (self->spawnflags & 4)
-	{//FIXME: need to be able to do change to something when it's done?  Or not be usable until it's done?
+	if ((self->spawnflags & 4) != 0) {
+		//FIXME: need to be able to do change to something when it's done?  Or not be usable until it's done?
 		self->s.eFlags |= EF_ANIM_ONCE;
 	}
 	*/
 
 	self->use = func_usable_use;
 
-	if ( self->health )
-	{
+	if (self->health != 0) {
 		self->takedamage = qtrue;
 		self->die = func_usable_die;
 		self->pain = func_usable_pain;
 	}
-	
+
 	/*if the map has a usables file, get the data of of that*/
-	if ( rpg_scannablePanels.integer )
-	{
-		if ( level.hasScannableFile )
-		{
-			int i = 0;
-			int j = 0;
-			int	messageNum=0;
-			int entityNum = self - g_entities;
+	if (rpg_scannablePanels.integer != 0)	{
+		if (level.hasScannableFile) {
+			int32_t i = 0;
+			int32_t j = 0;
+			int32_t	messageNum = 0;
+			int32_t entityNum = self - g_entities;
 
 			self->s.weapon = 0;
 
 			/*TiM - check for a message integer*/
-			G_SpawnInt( "messageNum", "0", &messageNum );
+			G_SpawnInt("messageNum", "0", &messageNum);
 
-			if(self->luaEntity)
+			if (self->luaEntity) {
 				messageNum = self->damage;
+			}
 
-			if ( messageNum > 0 )
-			{
-				while( i < MAX_SCANNABLES )
-				{
-					if ( level.g_scannables[i] == 0 )
+			if (messageNum > 0) {
+				while (i < MAX_SCANNABLES) {
+					if (level.g_scannables[i] == 0) {
 						break;
+					}
 
-					if ( level.g_scannables[i] == messageNum )
-					{
-						self->s.weapon = i+1; /*+1 offset so 0 becomes the default error*/
+					if (level.g_scannables[i] == messageNum) {
+						self->s.weapon = i + 1; /*+1 offset so 0 becomes the default error*/
 						break;
 					}
 
@@ -347,75 +419,74 @@ void SP_func_usable( gentity_t *self )
 			}
 
 			/*if no match was found, try the entities list if possible*/
-			if ( self->s.weapon == 0 && level.hasEntScannableFile )
-			{
-				i=0;
-				while( i < MAX_ENTSCANNABLES )
-				{
-					if ( !level.g_entScannables[i][0] && !level.g_entScannables[i][1] )
-						break; 
+			if (self->s.weapon == 0 && level.hasEntScannableFile) {
+				i = 0;
 
-					if( level.g_entScannables[i][0] == entityNum )
-					{
-						j=0;
-						while ( j < MAX_SCANNABLES )
-						{
-							if ( level.g_scannables[j] == 0 )
+				while (i < MAX_ENTSCANNABLES) {
+					if (level.g_entScannables[i][0] == 0 && level.g_entScannables[i][1] == 0) {
+						break;
+					}
+
+					if (level.g_entScannables[i][0] == entityNum) {
+						j = 0;
+
+						while (j < MAX_SCANNABLES) {
+							if (level.g_scannables[j] == 0) {
 								break;
+							}
 
-							if ( level.g_scannables[j] == level.g_entScannables[i][1] )
-							{
-								self->s.weapon = j+1;
-								i = MAX_ENTSCANNABLES+1; /*break the outer loop hehe*/
+							if (level.g_scannables[j] == level.g_entScannables[i][1]) {
+								self->s.weapon = j + 1;
+								i = MAX_ENTSCANNABLES + 1; /*break the outer loop hehe*/
 								break;
 							}
 
 							j++;
 						}
 					}
-					
+
 					i++;
 				}
 			}
 
-			if ( self->s.weapon > 0 )
-			{
+			if (self->s.weapon > 0)	{
 				self->s.eType = ET_TRIC_STRING;
-				
+
 				/*DEBUG*/
 				/*G_Printf( S_COLOR_RED "Entry found for entity: %i!\n", self-g_entities );*/
 
 				/*Set bounding box for maxs/mins on tricorder rendering*/
-				VectorCopy( self->r.mins, self->s.origin2 ); /*mins dimension*/
-				VectorCopy( self->r.maxs, self->s.angles2 ); /*maxs*/
+				VectorCopy(self->r.mins, self->s.origin2); /*mins dimension*/
+				VectorCopy(self->r.maxs, self->s.angles2); /*maxs*/
 			}
-		}
-		else
-		{
+		} else {
 			/*
- 			 * TiM: Humm... hopefully in my infinite hackiness, this won't screw anything up lol.
+			 * TiM: Humm... hopefully in my infinite hackiness, this won't screw anything up lol.
 			 * Apparently this is the cause of Atlantis dying. The amount of scannable ents is making too
 			 * much data for Q3 to handle.
 			 * I've CVAR'd it off for now. Hopefully if/when the map gets fixed, it can be put back online.
 			 */
-			if ( self->message ) { /* If there is a message here, we gotz to get it over to CG */
+			if (self->message) { /* If there is a message here, we gotz to get it over to CG */
 				self->s.eType = ET_TRIC_STRING; /* Set a special type we can use to identify this over on CG */
 
 				/*Com_Printf( S_COLOR_RED "USABLE MESSAGE: %s\n", self->message );*/
-				self->s.time2 = G_TricStringIndex( self->message ); /* encode the message into an info string */
+				self->s.time2 = G_TricStringIndex(self->message); /* encode the message into an info string */
 				/* Set bounding box for maxs/mins on tricorder rendering */
-				VectorCopy( self->r.mins, self->s.origin2 ); /* mins dimension */
-				VectorCopy( self->r.maxs, self->s.angles2 ); /* maxs */
+				VectorCopy(self->r.mins, self->s.origin2); /* mins dimension */
+				VectorCopy(self->r.maxs, self->s.angles2); /* maxs */
 			}
 		}
 	}
 
-	if(self->spawnflags & 2048)
+	if ((self->spawnflags & USABLE_DEACTIVATED) != 0) {
 		self->flags ^= FL_LOCKED;
+	}
 
 	trap_LinkEntity (self);
 
 	level.numBrushEnts++;
+
+	G_LogFuncEnd();
 }
 
 /**
