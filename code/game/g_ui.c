@@ -9,6 +9,7 @@
 #include "g_trigger.h"
 #include "g_logger.h"
 
+#define UI_DIABLED 1
 /*QUAKED ui_transporter (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED
 -----DESCRIPTION-----
 Opens the transporter UI.
@@ -27,6 +28,12 @@ Opens the transporter UI.
 */
 static void ui_transporter_think(gentity_t* ent) {
 	G_LogFuncBegin();
+
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
 
 	if(ent->activator == NULL || ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */
 		ent->sound1to2 = 0;
@@ -56,6 +63,18 @@ static void ui_transporter_use(gentity_t* ent, gentity_t* other, gentity_t* acti
 
 	G_LogFuncBegin();
 
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
+	if (activator == NULL) {
+		G_LocLogger(LL_ERROR, "activator == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
 	} else {
@@ -84,6 +103,12 @@ static void ui_transporter_setup(gentity_t* ent) {
 
 	G_LogFuncBegin();
 
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	target = G_Find(target, FOFS(targetname), ent->target);
 
 	if(target == NULL) {
@@ -107,6 +132,12 @@ void SP_ui_transporter(gentity_t* ent) {
 	
 	G_LogFuncBegin();
 
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	if(ent->target == NULL) {
 		G_LocLogger(LL_ERROR, "ui_transporter without target at %s!\n", vtos(ent->s.origin));
 		G_FreeEntity(ent);
@@ -114,7 +145,7 @@ void SP_ui_transporter(gentity_t* ent) {
 		return;
 	}
 
-	if((ent->spawnflags & 1) != 0) {
+	if ((ent->spawnflags & UI_DIABLED) != 0) {
 		ent->flags ^= FL_LOCKED;
 	}
 
@@ -164,6 +195,18 @@ static void ui_msd_use(gentity_t* ent, gentity_t* other, gentity_t* activator) {
 	const char* model = NULL;
 
 	G_LogFuncBegin();
+
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
+	if (activator == NULL) {
+		G_LocLogger(LL_ERROR, "activator == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
 
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
@@ -266,6 +309,12 @@ static void ui_msd_setup(gentity_t* ent) {
 
 	G_LogFuncBegin();
 
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	while((target = G_Find(target, FOFS(targetname), ent->target)) != NULL){
 		if(target->type == ENT_TARGET_SHIPHEALTH) {
 			break;
@@ -291,6 +340,12 @@ static void ui_msd_setup(gentity_t* ent) {
 void SP_ui_msd(gentity_t* ent) {
 	G_LogFuncBegin();
 
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	ent->type = ENT_UI_MSD;
 	
 	if(!ent->target) {
@@ -300,7 +355,7 @@ void SP_ui_msd(gentity_t* ent) {
 		return;
 	}
 
-	if((ent->spawnflags & 1) != 0) {
+	if ((ent->spawnflags & UI_DIABLED) != 0) {
 		ent->flags ^= FL_LOCKED;
 	}
 
@@ -327,7 +382,13 @@ Will open  the holodeck UI once this is implemented. For now this will not spawn
 static void ui_holodeck_think(gentity_t *ent) {
 	G_LogFuncBegin();
 
-	if(ent->activator != 0 || ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
+	if(ent->activator != NULL|| ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */
 		ent->sound1to2 = 0;
 		ent->count = 0;
 		ent->nextthink = -1;
@@ -343,6 +404,18 @@ static void ui_holodeck_use(gentity_t* ent, gentity_t* other, gentity_t* activat
 	gentity_t* target = NULL;
 
 	G_LogFuncBegin();
+
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
+	if (activator == NULL) {
+		G_LocLogger(LL_ERROR, "activator == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
 
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
@@ -367,6 +440,12 @@ static void ui_holodeck_setup(gentity_t* ent) {
 
 	G_LogFuncBegin();
 
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	target = G_Find(NULL, FOFS(targetname), ent->target);
 
 	if(target == NULL) {
@@ -389,6 +468,12 @@ void SP_ui_holodeck(gentity_t* ent) {
 
 	G_LogFuncBegin();
 
+	if (ent == NULL) {
+		G_LocLogger(LL_ERROR, "ent == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
 	ent->type = ENT_UI_HOLODECK;
 
 	if(ent->target == NULL) {
@@ -398,7 +483,7 @@ void SP_ui_holodeck(gentity_t* ent) {
 		return;
 	}
 
-	if((ent->spawnflags & 1) != 0) {
+	if ((ent->spawnflags & UI_DIABLED) != 0) {
 		ent->flags ^= FL_LOCKED;
 	}
 
