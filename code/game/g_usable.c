@@ -498,19 +498,25 @@ void SP_func_usable(gentity_t* self)
 */
 qboolean G_Usable_SetupUsablesStrings( void )
 {
-	char			*serverInfo;
+	char*			serverInfo = NULL;
 	char			fileRoute[MAX_QPATH];
-	char			*buffer;
-	int				file_len;
-	char			*textPtr, *token;
-	fileHandle_t	f;
-	int				i, j;
+	char*			buffer = NULL;
+	int32_t			file_len = 0;
+	char*			textPtr = NULL;
+	char*			token = NULL;
+	fileHandle_t	f = 0;
+	int32_t			i = 0;
+	int32_t			j = 0;
+
+	G_LogFuncBegin();
 
 	level.hasScannableFile = qfalse;
 	level.hasEntScannableFile = qfalse;
 
 	serverInfo = (char *)malloc(MAX_TOKEN_CHARS * sizeof(char));
-	if(!serverInfo) {
+	if(serverInfo == NULL) {
+		G_LocLogger(LL_ERROR, "could not allocate %d byte\n", MAX_TOKEN_CHARS);
+		G_LogFuncEnd();
 		return qfalse;
 	}	
 
@@ -522,19 +528,24 @@ qboolean G_Usable_SetupUsablesStrings( void )
 
 	file_len = trap_FS_FOpenFile( fileRoute, &f, FS_READ );
 
-	free(serverInfo);
+	if (serverInfo != NULL) {
+		free(serverInfo);
+	}
 
 	/* It's assumed most maps won't have this feature, so just exit 'gracefully' */
 	if ( file_len<=1 )
 	{
 		trap_FS_FCloseFile( f );
 		/* G_Printf( S_COLOR_YELLOW "WARNING: No file named %s was found.\n", fileRoute ); */
+		G_LogFuncEnd();
 		return qfalse;
 	}
 
 	buffer = (char *)malloc(32000 * sizeof(char));
-	if(!buffer) {
+	if(buffer == NULL) {
 		trap_FS_FCloseFile(f);
+		G_LocLogger(LL_ERROR, "Was not able to allocate 32000 byte\n");
+		G_LogFuncEnd();
 		return qfalse;
 	}
 
@@ -544,32 +555,30 @@ qboolean G_Usable_SetupUsablesStrings( void )
 
 	trap_FS_FCloseFile( f );
 	
-	if ( !buffer[0] )
-	{
-		G_Printf( S_COLOR_RED "ERROR: Attempted to load %s, but no data was inside!\n", fileRoute );
+	if ( buffer == NULL || buffer[0] == 0 )	{
+		G_LocLogger(LL_ERROR, "ERROR: Attempted to load %s, but no data was inside!\n", fileRoute );
 		free(buffer);
+		G_LogFuncEnd();
 		return qfalse;
 	}
 
-	G_Printf( "Usables file %s located. Proceeding to load scan data.\n", fileRoute );
+	G_Logger(LL_INFO, "Usables file %s located. Proceeding to load scan data.\n", fileRoute );
 
 	COM_BeginParseSession();
 	textPtr = buffer;
 
 	i = 0;	/* used for the main arrays indices */
 
-	while( 1 )
-	{
+	while( 1 ) {
 		token = COM_Parse( &textPtr );
-		if ( !token[0] )
+		if (token == NULL || token[0] == 0) {
 			break;
+		}
 
-		if ( !Q_strncmp( token, "UsableDescriptions", 18 ) )
-		{
+		if ( Q_strncmp( token, "UsableDescriptions", 18 ) == 0 ) {
 			token = COM_Parse( &textPtr );
-			if ( Q_strncmp( token, "{", 1 ) != 0 )
-			{
-				G_Printf( S_COLOR_RED "ERROR: UsableDescriptions had no opening brace ( { )!\n" );
+			if ( Q_strncmp( token, "{", 1 ) != 0 ) {
+				G_LocLogger(LL_WARN, "UsableDescriptions had no opening brace ( { )!\n" );
 				continue;
 			}
 
@@ -578,17 +587,15 @@ qboolean G_Usable_SetupUsablesStrings( void )
 			token = COM_Parse( &textPtr );
 
 			/* expected format is 'id' <space> 'string' */
-			while ( Q_strncmp( token, "}", 1 ) )
-			{
-				if ( !token[0] )
+			while ( Q_strncmp( token, "}", 1 ) != 0 ) {
+				if (token == NULL || token[0] == 0) {
 					break;
+				}
 
-				if ( !Q_strncmp( token, "UsableEntities", 14 ) )
-				{
+				if ( Q_strncmp( token, "UsableEntities", 14 ) == 0 ) {
 					token = COM_Parse( &textPtr );
-					if ( Q_strncmp( token, "{", 1 ) )
-					{
-						G_Printf( S_COLOR_RED "ERROR: UsableEntities had no opening brace ( { )!\n" );
+					if ( Q_strncmp( token, "{", 1 ) ) {
+						G_LocLogger(LL_WARN, "UsableEntities had no opening brace ( { )!\n" );
 						continue;
 					}
 
@@ -597,13 +604,12 @@ qboolean G_Usable_SetupUsablesStrings( void )
 					token = COM_Parse( &textPtr );
 
 					j = 0;
-					while( Q_strncmp( token, "}", 1 ) )
-					{
-						if ( !token[0] )
+					while( Q_strncmp( token, "}", 1 ) != 0 ) {
+						if (token == NULL || token[0] == 0) {
 							break;
+						}
 
-						if ( token[0] != 'e' )
-						{
+						if ( token[0] != 'e' ) {
 							SkipRestOfLine( &textPtr );
 							continue;
 						}
@@ -615,19 +621,19 @@ qboolean G_Usable_SetupUsablesStrings( void )
 						level.g_entScannables[j][1] = atoi( token );
 
 						/* there's no way clients are scannable in here, so just validate the entry b4 proceeding */
-						if ( level.g_entScannables[j][0] > MAX_CLIENTS-1 && level.g_entScannables[j][1] > 0 )
+						if (level.g_entScannables[j][0] > MAX_CLIENTS - 1 && level.g_entScannables[j][1] > 0) {
 							j++;
+						}
 
 						token = COM_Parse( &textPtr );
 					}
-				}
-				else
-				{
+				} else {
 					level.g_scannables[i] = atoi( token );
 
 					/* ensure a valid number was passed, else ignore it */
-					if ( level.g_scannables[i] > 0 )
+					if (level.g_scannables[i] > 0) {
 						i++;
+					}
 
 					/* we don't need the text on the server side */
 					SkipRestOfLine( &textPtr );
@@ -639,6 +645,7 @@ qboolean G_Usable_SetupUsablesStrings( void )
 	}
 
 	free(buffer);
+	G_LogFuncEnd();
 	return qtrue;
 }
 
