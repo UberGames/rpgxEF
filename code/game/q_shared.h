@@ -218,6 +218,8 @@ void Sys_PumpEvents( void );
 #define UNUSED(x)	((void)(x))
 #endif
 
+#define VARNAME(varname) #varname
+
 #define SOUND_DIR		"sound/weapons/"
 
 //=============================================================

@@ -2906,4 +2906,15 @@ typedef struct {
 	int		numShaders;
 } target_alert_Shaders_s;
 
+/*
+* @brief Checks if a pointer is NULL and returns result.
+* If the pointer is NULL a message get's logged as error
+* and the function returns qtrue else the function returns
+* qfalse.
+* @param ptr The pointer to check.
+* @return Whether the pointer is NULL or not.
+*/
+qboolean _G_Assert(void* ptr, const char* varname, const char* function);
+#define G_Assert(ptr) _G_Assert(ptr, #ptr, __FUNCTION__)
+
 #endif //_G_LOCAL_H_

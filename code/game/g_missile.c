@@ -4,10 +4,12 @@
 #include "g_client.h"
 #include "g_spawn.h"
 #include "g_missile.h"
+#include "g_logger.h"
 
 #define	MISSILE_PRESTEP_TIME	50
 
 // ick
+// TODO: create g_weapon.h
 extern void grenadeSpewShrapnel( gentity_t *ent );
 
 /*
@@ -17,10 +19,16 @@ G_BounceMissile
   returns true if a bounce sound should be played
 ================
 */
-static qboolean G_BounceMissile( gentity_t *ent, trace_t *trace ) {
-	vec3_t	velocity;
-	float	dot;
-	int		hitTime;
+static qboolean G_BounceMissile( gentity_t* ent, trace_t* trace ) {
+	vec3_t	velocity = { 0, 0, 0 };
+	double	dot = 0.0;
+	int32_t	hitTime = 0;
+
+	G_LogFuncBegin();
+
+	if (G_Assert(ent) || G_Assert(trace)) {
+		return qfalse;
+	}
 
 	// reflect the velocity on the trace plane
 	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
@@ -28,12 +36,13 @@ static qboolean G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	dot = DotProduct( velocity, trace->plane.normal );
 	VectorMA( velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta );
 
-	if ( ent->s.eFlags & EF_BOUNCE_HALF ) {
+	if ( (ent->s.eFlags & EF_BOUNCE_HALF) != 0 ) {
 		VectorScale( ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta );
 		ent->s.pos.trDelta[2]*=0.5f;
 		// check for stop
 		if ( trace->plane.normal[2] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 ) {
 			G_SetOrigin( ent, trace->endpos );
+			G_LogFuncEnd();
 			return qfalse;
 		}
 	}
@@ -42,34 +51,48 @@ static qboolean G_BounceMissile( gentity_t *ent, trace_t *trace ) {
 	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
 	SnapVector( ent->s.pos.trBase );			// save net bandwidth
 	ent->s.pos.trTime = level.time;
+
+	G_LogFuncEnd();
 	return qtrue;
 }
 
-void TouchStickyGrenade(gentity_t *ent, gentity_t *other, trace_t *trace)
+static void TouchStickyGrenade(gentity_t* ent, gentity_t* other, trace_t* trace)
 {
 	// if the guy that touches this grenade can take damage, he's about to.
 	//RPG-X: RedTechie - Fixed bug when other admins walk threw other admins grenades it kills them
+
+	G_LogFuncBegin();
+
+	if (G_Assert(ent) || G_Assert(other)) {
+		return;
+	}
+
 	if (IsAdmin( other ) == qfalse) {
-		if (other->takedamage)
-		{
-			if (ent->parent != other)
-			{
+		if (other->takedamage) {
+			if (ent->parent != other) {
 				ent->touch = 0;
 				ent->nextthink = level.time + FRAMETIME;
 				ent->think = grenadeSpewShrapnel;
 			}
 		}
 	}
+
+	G_LogFuncEnd();
 }
 
-//---------------------------------------------------------
-void tripwireThink ( gentity_t *ent )
-//---------------------------------------------------------
-{
-	gentity_t	*traceEnt;
-	vec3_t		start;
-	vec3_t		end;
+void tripwireThink ( gentity_t* ent ) {
+	gentity_t*	traceEnt = NULL;
+	vec3_t		start = { 0, 0, 0 };
+	vec3_t		end = { 0, 0, 0 };
 	trace_t		tr;
+
+	G_LogFuncBegin();
+
+	if (G_Assert(ent)) {
+		return;
+	}
+
+	memset(&tr, 0, sizeof(trace_t));
 
 	ent->s.eFlags |= EF_FIRING;
 	ent->r.contents = CONTENTS_TRIGGER; //RPG-X: - RedTechie added
@@ -86,42 +109,41 @@ void tripwireThink ( gentity_t *ent )
 	// Find the main impact point
 	VectorMA ( ent->s.pos.trBase, 1024, ent->movedir, end );
 
-//RPG-X: J2J - Replaced the NULL,NULL, with actual vectors contains origin info, to prevent game from crashing.
+	//RPG-X: J2J - Replaced the NULL,NULL, with actual vectors contains origin info, to prevent game from crashing.
 	trap_Trace ( &tr, start, NULL, NULL, end, ent->s.number, MASK_SHOT );
 
 
 	traceEnt = &g_entities[ tr.entityNum ];
 
-//RPG-X: J2J If statment fixed so that touching a mine won't crash the game.
+	//RPG-X: J2J If statment fixed so that touching a mine won't crash the game.
 	
-	if ( traceEnt->client )
-	{
+	if ( traceEnt->client != NULL )	{
 
-//RPG-X: RedTechie - Admin Class go threw
-//RPG-X: J2J - Mistake made here, was checking if the _owner_ was in admin at the time, not the player tripping the mine, FIXED.
+		//RPG-X: RedTechie - Admin Class go threw
+		//RPG-X: J2J - Mistake made here, was checking if the _owner_ was in admin at the time, not the player tripping the mine, FIXED.
 		
-		if (IsAdmin( traceEnt ) == qfalse)
-		{
+		if (IsAdmin( traceEnt ) == qfalse) {
 				grenadeSpewShrapnel( ent );
 		}	
 	}
 
+	G_LogFuncEnd();
+
 }
 
-void tripmine_explode( gentity_t *self )
-{
-		G_TempEntity ( self->s.origin, EV_GRENADE_EXPLODE );
-		G_RadiusDamage( self->s.origin, self->enemy?self->enemy:self->parent, self->splashDamage, self->splashRadius, self, DAMAGE_ALL_TEAMS, MOD_GRENADE_ALT_SPLASH );
-		//FIXME: clear me from owner's list of tripmines
-		G_FreeEntity(self);
-}
+static void tripmine_delayed_explode( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t meansOfDeath ) {
+	G_LogFuncBegin();
 
-void tripmine_delayed_explode( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath )
-{
+	if (G_Assert(self)) {
+		return;
+	}
+
 	self->enemy = attacker;
 	self->think = grenadeSpewShrapnel;
 	self->nextthink = level.time + FRAMETIME;
 	self->takedamage = qfalse;
+
+	G_LogFuncEnd();
 }
 
 /*
@@ -131,18 +153,30 @@ G_MissileStick
 ================
 */
 #define GRENADE_ALT_STICK_TIME		2500
-static void G_MissileStick( gentity_t *ent, trace_t *trace )
+static void G_MissileStick( gentity_t* ent, trace_t* trace )
 {
-	vec3_t	org, dir;
-	gentity_t	*other = NULL;
+	vec3_t		org = { 0, 0, 0 };
+	vec3_t		dir = { 0, 0, 0 };
+	gentity_t*	other = NULL;
+
+	if (G_Assert(ent) || G_Assert(trace)) {
+		return;
+	}
 
 	other = &g_entities[trace->entityNum];
 
-	if (other->takedamage)
-	{
+	if (other == NULL) {
+		G_LocLogger(LL_ERROR, "other == NULL!\n");
+		G_LogFuncEnd();
+		return;
+	}
+
+	if (other->takedamage) {
 		// using grenade as a direct fire weapon. hit someone. explode.
 		ent->splashMethodOfDeath = MOD_GRENADE_ALT;
 		grenadeSpewShrapnel(ent);
+
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -166,8 +200,8 @@ static void G_MissileStick( gentity_t *ent, trace_t *trace )
 	SnapVector( ent->s.angles );			// save net bandwidth
 
 	// check FX_GrenadeShrapnelBits() to make sure this nextthink coincides with that killtime
-	if ( ent->count )
-	{//a tripwire
+	if ( ent->count ) {
+		//a tripwire
 		//add draw line flag
 		//RPG-X: Redtechie - hidden grenades
 		VectorCopy( trace->plane.normal, ent->movedir );
@@ -182,9 +216,7 @@ static void G_MissileStick( gentity_t *ent, trace_t *trace )
 
 		ent->die = tripmine_delayed_explode;
 		ent->touch = TouchStickyGrenade;//?
-	}
-	else
-	{
+	} else {
 		ent->touch = TouchStickyGrenade;
 		ent->r.contents = CONTENTS_TRIGGER;
 		ent->nextthink = level.time + GRENADE_ALT_STICK_TIME;
@@ -192,6 +224,8 @@ static void G_MissileStick( gentity_t *ent, trace_t *trace )
 	}
 
 	ent->s.groundEntityNum = trace->entityNum;
+
+	G_LogFuncEnd();
 }
 
 
@@ -201,17 +235,22 @@ G_Missile_Impact
 
 ================
 */
-void G_Missile_Impact( gentity_t *ent, trace_t *trace ) {
-	gentity_t		*other = NULL, *tent = NULL;
-	//qboolean		hitClient = qfalse;
+void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
+	gentity_t* other = NULL;
+	gentity_t* tent = NULL;
+
+	if (G_Assert(ent) || G_Assert(trace)) {
+		return;
+	}
 
 	other = &g_entities[trace->entityNum];
 
+	if (G_Assert(other)) {
+		return;
+	}
+
 	// check for bounce
-	if (	other != NULL &&
-			!other->takedamage &&
-			(ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF )) )
-	{
+	if (	other != NULL && !other->takedamage && (ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF )) != 0 ) {
 		// Check to see if there is a bounce count
 		if ( ent->count ) {
 			// decrement number of bounces and then see if it should be done bouncing
@@ -221,8 +260,7 @@ void G_Missile_Impact( gentity_t *ent, trace_t *trace ) {
 			}
 		}
 
-		if (G_BounceMissile( ent, trace ))
-		{
+		if (G_BounceMissile( ent, trace )) {
 			tent = G_TempEntity( trace->endpos, EV_GRENADE_BOUNCE );
 			tent->s.weapon = ent->s.weapon;
 			VectorCopy(trace->plane.normal, tent->s.angles2);

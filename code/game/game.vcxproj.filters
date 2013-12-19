@@ -291,6 +291,9 @@
     <ClCompile Include="bg_collision.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="g_local.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ai_chat.h">
