@@ -2914,7 +2914,7 @@ typedef struct {
 * @param ptr The pointer to check.
 * @return Whether the pointer is NULL or not.
 */
-qboolean _G_Assert(void* ptr, const char* varname, const char* function);
-#define G_Assert(ptr) _G_Assert(ptr, #ptr, __FUNCTION__)
+qboolean _G_Assert(void* ptr, const char* varname, const char* function, const char* file, int line);
+#define G_Assert(ptr) _G_Assert(ptr, #ptr, __FUNCTION__, __FILE__, __LINE__)
 
 #endif //_G_LOCAL_H_
