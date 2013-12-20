@@ -2274,6 +2274,15 @@ void CG_ResetThirdPersonViewDamp ( void );
 void trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 void CG_ShaderStateChanged(void);
 
+/*
+* @brief Checks if a pointer is NULL. If it is NULL it exits the function with the given return value.
+* Prints an error message if ptr is NULL and prints function exit message on LL_TRACE. For void return use "(void)0"
+* @param ptr The pointer to check.
+* @param ret The return value.
+* @return Whether the pointer is NULL or not.
+*/
+#define CG_Assert(ptr, ret) 	if (ptr == NULL) { _CG_LocLogger(__FILE__, __LINE__, LL_ERROR, "%s == NULL!\n", #ptr); _CG_LocLogger(__FILE__, __LINE__, LL_TRACE, "%s - End\n", __FUNCTION__); return ret; }
+
 #endif /* CG_LOCAL_H_ */
 
 

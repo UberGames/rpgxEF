@@ -2418,4 +2418,13 @@ typedef struct {
 
 } adminGeneric_t;
 
+/*
+* @brief Checks if a pointer is NULL. If it is NULL it exits the function with the given return value.
+* Prints an error message if ptr is NULL and prints function exit message on LL_TRACE. For void return use "(void)0"
+* @param ptr The pointer to check.
+* @param ret The return value.
+* @return Whether the pointer is NULL or not.
+*/
+#define UI_Assert(ptr, ret) 	if (ptr == NULL) { _UI_LocLogger(__FILE__, __LINE__, LL_ERROR, "%s == NULL!\n", #ptr); _UI_LocLogger(__FILE__, __LINE__, LL_TRACE, "%s - End\n", __FUNCTION__); return ret; }
+
 #endif
