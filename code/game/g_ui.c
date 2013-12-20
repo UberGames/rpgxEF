@@ -29,11 +29,7 @@ Opens the transporter UI.
 static void ui_transporter_think(gentity_t* ent) {
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	if(ent->activator == NULL || ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */
 		ent->sound1to2 = 0;
@@ -63,17 +59,8 @@ static void ui_transporter_use(gentity_t* ent, gentity_t* other, gentity_t* acti
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
-
-	if (activator == NULL) {
-		G_LocLogger(LL_ERROR, "activator == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
+	G_Assert(activator, (void)0);
 
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
@@ -103,11 +90,7 @@ static void ui_transporter_setup(gentity_t* ent) {
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	target = G_Find(target, FOFS(targetname), ent->target);
 
@@ -132,11 +115,7 @@ void SP_ui_transporter(gentity_t* ent) {
 	
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	if(ent->target == NULL) {
 		G_LocLogger(LL_ERROR, "ui_transporter without target at %s!\n", vtos(ent->s.origin));
@@ -196,17 +175,8 @@ static void ui_msd_use(gentity_t* ent, gentity_t* other, gentity_t* activator) {
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
-
-	if (activator == NULL) {
-		G_LocLogger(LL_ERROR, "activator == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
+	G_Assert(activator, (void)0);
 
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
@@ -309,11 +279,7 @@ static void ui_msd_setup(gentity_t* ent) {
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	while((target = G_Find(target, FOFS(targetname), ent->target)) != NULL){
 		if(target->type == ENT_TARGET_SHIPHEALTH) {
@@ -340,15 +306,11 @@ static void ui_msd_setup(gentity_t* ent) {
 void SP_ui_msd(gentity_t* ent) {
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	ent->type = ENT_UI_MSD;
 	
-	if(!ent->target) {
+	if(ent->target == NULL) {
 		G_LocLogger(LL_ERROR, "ui_msd without target at %s! Removing Entity.\n", vtos(ent->s.origin));
 		G_FreeEntity(ent);
 		G_LogFuncEnd();
@@ -382,11 +344,7 @@ Will open  the holodeck UI once this is implemented. For now this will not spawn
 static void ui_holodeck_think(gentity_t *ent) {
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	if(ent->activator != NULL|| ent->sound1to2 >= 10000) { /* player disconnect or was idle more than 10 seconds */
 		ent->sound1to2 = 0;
@@ -405,17 +363,8 @@ static void ui_holodeck_use(gentity_t* ent, gentity_t* other, gentity_t* activat
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
-
-	if (activator == NULL) {
-		G_LocLogger(LL_ERROR, "activator == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
+	G_Assert(activator, (void)0);
 
 	if(Q_stricmp(ent->swapname, activator->target) == 0) {
 		ent->flags ^= FL_LOCKED;
@@ -440,11 +389,7 @@ static void ui_holodeck_setup(gentity_t* ent) {
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	target = G_Find(NULL, FOFS(targetname), ent->target);
 
@@ -468,11 +413,7 @@ void SP_ui_holodeck(gentity_t* ent) {
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	ent->type = ENT_UI_HOLODECK;
 
