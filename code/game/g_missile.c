@@ -26,9 +26,8 @@ static qboolean G_BounceMissile( gentity_t* ent, trace_t* trace ) {
 
 	G_LogFuncBegin();
 
-	if (G_Assert(ent) || G_Assert(trace)) {
-		return qfalse;
-	}
+	G_Assert(ent, qfalse)
+	G_Assert(trace, qfalse)
 
 	// reflect the velocity on the trace plane
 	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
@@ -63,9 +62,8 @@ static void TouchStickyGrenade(gentity_t* ent, gentity_t* other, trace_t* trace)
 
 	G_LogFuncBegin();
 
-	if (G_Assert(ent) || G_Assert(other)) {
-		return;
-	}
+	G_Assert(ent, (void)0)
+	G_Assert(other, (void)0)
 
 	if (IsAdmin( other ) == qfalse) {
 		if (other->takedamage) {
@@ -88,9 +86,7 @@ void tripwireThink ( gentity_t* ent ) {
 
 	G_LogFuncBegin();
 
-	if (G_Assert(ent)) {
-		return;
-	}
+	G_Assert(ent, (void)0)
 
 	memset(&tr, 0, sizeof(trace_t));
 
@@ -134,9 +130,7 @@ void tripwireThink ( gentity_t* ent ) {
 static void tripmine_delayed_explode( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t meansOfDeath ) {
 	G_LogFuncBegin();
 
-	if (G_Assert(self)) {
-		return;
-	}
+	G_Assert(self, (void)0)
 
 	self->enemy = attacker;
 	self->think = grenadeSpewShrapnel;
@@ -159,17 +153,14 @@ static void G_MissileStick( gentity_t* ent, trace_t* trace )
 	vec3_t		dir = { 0, 0, 0 };
 	gentity_t*	other = NULL;
 
-	if (G_Assert(ent) || G_Assert(trace)) {
-		return;
-	}
+	G_LogFuncBegin();
+
+	G_Assert(ent, (void)0)
+	G_Assert(trace, (void)0)
 
 	other = &g_entities[trace->entityNum];
 
-	if (other == NULL) {
-		G_LocLogger(LL_ERROR, "other == NULL!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(other, (void)0)
 
 	if (other->takedamage) {
 		// using grenade as a direct fire weapon. hit someone. explode.
@@ -200,7 +191,7 @@ static void G_MissileStick( gentity_t* ent, trace_t* trace )
 	SnapVector( ent->s.angles );			// save net bandwidth
 
 	// check FX_GrenadeShrapnelBits() to make sure this nextthink coincides with that killtime
-	if ( ent->count ) {
+	if ( ent->count != 0) {
 		//a tripwire
 		//add draw line flag
 		//RPG-X: Redtechie - hidden grenades
@@ -239,22 +230,21 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 	gentity_t* other = NULL;
 	gentity_t* tent = NULL;
 
-	if (G_Assert(ent) || G_Assert(trace)) {
-		return;
-	}
+	G_LogFuncBegin();
+
+	G_Assert(ent, (void)0)
+	G_Assert(trace, (void)0)
 
 	other = &g_entities[trace->entityNum];
 
-	if (G_Assert(other)) {
-		return;
-	}
+	G_Assert(other, (void)0)
 
 	// check for bounce
-	if (	other != NULL && !other->takedamage && (ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF )) != 0 ) {
+	if ( !other->takedamage && (ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF )) != 0 ) {
 		// Check to see if there is a bounce count
-		if ( ent->count ) {
+		if ( ent->count > 0 ) {
 			// decrement number of bounces and then see if it should be done bouncing
-			if ( !(--ent->count) ) {
+			if ( (--ent->count) == 0 ) {
 				// He (or she) will bounce no more (after this current bounce, that is).
 				ent->s.eFlags &= ~( EF_BOUNCE | EF_BOUNCE_HALF );
 			}
@@ -266,6 +256,8 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 			VectorCopy(trace->plane.normal, tent->s.angles2);
 			VectorShort(tent->s.angles2);
 		}
+
+		G_LogFuncEnd();
 		return;
 	}
 
@@ -273,15 +265,17 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 	if ( ( ent->s.eFlags & EF_MISSILE_STICK ) ) 
 	{
 		// kinda cheap, but if a sticky grenade hits a forcefield or a moving, explode
-		if ( (other != NULL) && (((other->classname != NULL) && !Q_stricmp(other->classname, "holdable_shield")) || 
-			((other != NULL) && (VectorCompare( vec3_origin, other->s.pos.trDelta) == 0) && (other->s.pos.trType != TR_STATIONARY)) || 
-			((other != NULL) && (VectorCompare( vec3_origin, other->s.apos.trDelta ) == 0) && (other->s.apos.trType != TR_STATIONARY))))
+		if ( (((other->classname != NULL) && !Q_stricmp(other->classname, "holdable_shield")) || 
+			((VectorCompare( vec3_origin, other->s.pos.trDelta) == 0) && (other->s.pos.trType != TR_STATIONARY)) || 
+			((VectorCompare( vec3_origin, other->s.apos.trDelta ) == 0) && (other->s.apos.trType != TR_STATIONARY))))
 		{
 			//RPG-X: - Our forcefield killer :D
-			if(((other->classname && !Q_stricmp(other->classname, "holdable_shield")))){
+			if(((other->classname != NULL && !Q_stricmp(other->classname, "holdable_shield")))){
 				if(IsAdmin(ent->parent)){
 					G_FreeEntity(ent);
 					G_Active_ShieldRemove(other);
+
+					G_LogFuncEnd();
 					return;
 				}else{
 					// can't call grenadeSpewShrapnel right here or G_Missile_Run will puke
@@ -289,27 +283,33 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 					// set our next think to right now. our think fn will get called this frame.
 					ent->nextthink = level.time;
 					trap_LinkEntity( ent );
+
+					G_LogFuncEnd();
 					return;
 				}
-			}else{
+			} else {
 				// can't call grenadeSpewShrapnel right here or G_Missile_Run will puke
 				ent->think = grenadeSpewShrapnel;
 				// set our next think to right now. our think fn will get called this frame.
 				ent->nextthink = level.time;
 				trap_LinkEntity( ent );
+
+				G_LogFuncEnd();
 				return;
 			}
 		}
 
 		G_MissileStick( ent, trace );
 		G_AddEvent( ent, EV_MISSILE_STICK, 0 );
+
+		G_LogFuncEnd();
 		return;
 	}
 
 	// impact damage
 	if (other->takedamage) {
 		// FIXME: wrong damage direction?
-		if ( ent->damage ) {
+		if ( ent->damage > 0) {
 			vec3_t	velocity;
 			int		flags = 0;
 
@@ -330,7 +330,7 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 	// is it cheaper in bandwidth to just remove this ent and create a new
 	// one, rather than changing the missile into the explosion?
 
-	if ( other->takedamage && other->client )
+	if ( other->takedamage && other->client != NULL )
 	{
 		G_AddEvent( ent, EV_MISSILE_HIT, DirToByte( trace->plane.normal ) );
 		ent->s.otherEntityNum = other->s.number;
@@ -350,11 +350,13 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 	G_SetOrigin( ent, trace->endpos );
 
 	// splash damage (doesn't apply to person directly hit)
-	if ( ent->splashDamage ) {
+	if ( ent->splashDamage > 0 ) {
 		G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, other, 0, ent->splashMethodOfDeath );
 	}
 
 	trap_LinkEntity( ent );
+
+	G_LogFuncEnd();
 }
 
 /*
@@ -364,9 +366,13 @@ G_ExplodeMissile
 Explode a missile without an impact
 ================
 */
-void G_ExplodeMissile( gentity_t *ent ) {
-	vec3_t		dir;
-	vec3_t		origin;
+void G_ExplodeMissile( gentity_t* ent ) {
+	vec3_t		dir = { 0, 0, 0 };
+	vec3_t		origin = { 0, 0, 0 };
+
+	G_LogFuncBegin();
+
+	G_Assert(ent, (void)0)
 
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 	SnapVector( origin );
@@ -382,42 +388,59 @@ void G_ExplodeMissile( gentity_t *ent ) {
 	ent->freeAfterEvent = qtrue;
 
 	// splash damage
-	if ( ent->splashDamage ) {
+	if ( ent->splashDamage > 0 ) {
 		G_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage, ent->splashRadius, NULL, 0, ent->splashMethodOfDeath );
 	}
 
 	trap_LinkEntity( ent );
+
+	G_LogFuncEnd();
 }
 
-static void G_RunStuckMissile( gentity_t *ent )
+static void G_RunStuckMissile( gentity_t* ent )
 {
+	G_LogFuncBegin();
+
+	G_Assert(ent, (void)0)
+
 	if ( ent->takedamage )
 	{
 		if ( ent->s.groundEntityNum >= 0 && ent->s.groundEntityNum < ENTITYNUM_WORLD )
 		{
-			gentity_t *other = &g_entities[ent->s.groundEntityNum];
+			gentity_t* other = &g_entities[ent->s.groundEntityNum];
 
-			if ( (!VectorCompare( vec3_origin, other->s.pos.trDelta ) && other->s.pos.trType != TR_STATIONARY) || 
-				(!VectorCompare( vec3_origin, other->s.apos.trDelta ) && other->s.apos.trType != TR_STATIONARY) )
+			G_Assert(other, (void)0)
+
+			if ( (VectorCompare( vec3_origin, other->s.pos.trDelta ) == 0 && other->s.pos.trType != TR_STATIONARY) || 
+				(VectorCompare( vec3_origin, other->s.apos.trDelta ) == 0 && other->s.apos.trType != TR_STATIONARY) )
 			{//thing I stuck to is moving or rotating now, kill me
 				G_Damage( ent, other, other, NULL, NULL, 99999, 0, MOD_CRUSH );
+
+				G_LogFuncEnd();
 				return;
 			}
 		}
 	}
 	// check think function
 	G_RunThink( ent );
+
+	G_LogFuncEnd();
 }
 
-void G_Missile_Run( gentity_t *ent ) {
-	vec3_t		origin;
+void G_Missile_Run( gentity_t* ent ) {
+	vec3_t		origin = { 0, 0, 0 };
 	trace_t		tr;
+
+	G_LogFuncBegin();
+
+	G_Assert(ent, (void)0)
 
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 
 	// trace a line from the previous position to the current position,
 	// ignoring interactions with the missile owner
+	memset(&tr, 0, sizeof(trace_t));
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, 
 		ent->r.ownerNum, ent->clipmask );
 
@@ -433,11 +456,15 @@ void G_Missile_Run( gentity_t *ent ) {
 		// never explode or bounce on sky
 		if ( tr.surfaceFlags & SURF_NOIMPACT ) {
 			G_FreeEntity( ent );
+
+			G_LogFuncEnd();
 			return;
 		}
 
 		G_Missile_Impact( ent, &tr );
 		if ( (ent->s.eType != ET_MISSILE) && (ent->s.eType != ET_ALT_MISSILE) ) {
+
+			G_LogFuncEnd();
 			return;		// exploded
 		}
 	}
@@ -445,21 +472,31 @@ void G_Missile_Run( gentity_t *ent ) {
 	if ( ent->s.pos.trType == TR_STATIONARY && (ent->s.eFlags&EF_MISSILE_STICK) )
 	{//stuck missiles should check some special stuff
 		G_RunStuckMissile( ent );
+
+		G_LogFuncEnd();
 		return;
 	}
 	// check think function after bouncing
 	G_RunThink( ent );
+
+	G_LogFuncEnd();
 }
 
 
 //=============================================================================
 
-gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t dir) {
-	gentity_t	*bolt;
+gentity_t* fire_plasma (gentity_t* self, vec3_t start, vec3_t dir) {
+	gentity_t* bolt = NULL;
+
+	G_LogFuncBegin();
+
+	G_Assert(self, NULL)
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
+	G_Assert(bolt, NULL)
+
 	bolt->classname = "plasma";
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_ExplodeMissile;
@@ -484,15 +521,22 @@ gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t dir) {
 
 	VectorCopy (start, bolt->r.currentOrigin);
 
+	G_LogFuncEnd();
 	return bolt;
 }
 
-gentity_t *fire_comprifle(gentity_t *self, vec3_t start, vec3_t dir) {
-	gentity_t *bolt;
+gentity_t* fire_comprifle(gentity_t* self, vec3_t start, vec3_t dir) {
+	gentity_t* bolt = NULL;
+
+	G_LogFuncBegin();
+
+	G_Assert(self, NULL)
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
+	G_Assert(bolt, NULL)
+
 	bolt->classname = "plasma";
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_ExplodeMissile;
@@ -519,17 +563,24 @@ gentity_t *fire_comprifle(gentity_t *self, vec3_t start, vec3_t dir) {
 
 	G_AddEvent(self, EV_SHOOTER_SOUND, WP_6);
 
+	G_LogFuncEnd();
 	return bolt;
 }
 
 //=============================================================================
 
-gentity_t *fire_quantum (gentity_t *self, vec3_t start, vec3_t dir) {
-	gentity_t	*bolt;
+gentity_t* fire_quantum (gentity_t* self, vec3_t start, vec3_t dir) {
+	gentity_t* bolt = NULL;
+
+	G_LogFuncBegin();
+	
+	G_Assert(self, NULL)
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
+	G_Assert(bolt, NULL)
+
 	bolt->classname = "plasma";
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_ExplodeMissile;
@@ -556,17 +607,24 @@ gentity_t *fire_quantum (gentity_t *self, vec3_t start, vec3_t dir) {
 
 	G_AddEvent(self, EV_SHOOTER_SOUND, WP_9);
 
+	G_LogFuncEnd();
 	return bolt;
 }	
 
 //=============================================================================
 
-gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
-	gentity_t	*bolt;
+gentity_t* fire_grenade (gentity_t* self, vec3_t start, vec3_t dir) {
+	gentity_t* bolt = NULL;
+
+	G_LogFuncBegin();
+
+	G_Assert(self, NULL)
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
+	G_Assert(bolt, NULL)
+
 	bolt->classname = "grenade";
 	bolt->nextthink = level.time + 2500;
 	bolt->think = G_ExplodeMissile;
@@ -594,18 +652,25 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 
 	G_AddEvent(self, EV_SHOOTER_SOUND, WP_8);
 
+	G_LogFuncEnd();
 	return bolt;
 }
 
 
 //=============================================================================
 
-gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir) {
-	gentity_t	*bolt;
+gentity_t* fire_rocket (gentity_t* self, vec3_t start, vec3_t dir) {
+	gentity_t* bolt = NULL;
+
+	G_LogFuncBegin();
+	
+	G_Assert(self, NULL)
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
+	G_Assert(bolt, NULL)
+
 	bolt->classname = "rocket";
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_ExplodeMissile;
@@ -631,6 +696,7 @@ gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir) {
 
 	G_AddEvent(self, EV_SHOOTER_SOUND, WP_10);
 
+	G_LogFuncEnd();
 	return bolt;
 }
 
