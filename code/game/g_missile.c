@@ -26,8 +26,8 @@ static qboolean G_BounceMissile( gentity_t* ent, trace_t* trace ) {
 
 	G_LogFuncBegin();
 
-	G_Assert(ent, qfalse)
-	G_Assert(trace, qfalse)
+	G_Assert(ent, qfalse);
+	G_Assert(trace, qfalse);
 
 	// reflect the velocity on the trace plane
 	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
@@ -62,8 +62,8 @@ static void TouchStickyGrenade(gentity_t* ent, gentity_t* other, trace_t* trace)
 
 	G_LogFuncBegin();
 
-	G_Assert(ent, (void)0)
-	G_Assert(other, (void)0)
+	G_Assert(ent, (void)0);
+	G_Assert(other, (void)0);
 
 	if (IsAdmin( other ) == qfalse) {
 		if (other->takedamage) {
@@ -86,7 +86,7 @@ void tripwireThink ( gentity_t* ent ) {
 
 	G_LogFuncBegin();
 
-	G_Assert(ent, (void)0)
+	G_Assert(ent, (void)0);
 
 	memset(&tr, 0, sizeof(trace_t));
 
@@ -130,7 +130,7 @@ void tripwireThink ( gentity_t* ent ) {
 static void tripmine_delayed_explode( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t meansOfDeath ) {
 	G_LogFuncBegin();
 
-	G_Assert(self, (void)0)
+	G_Assert(self, (void)0);
 
 	self->enemy = attacker;
 	self->think = grenadeSpewShrapnel;
@@ -155,12 +155,12 @@ static void G_MissileStick( gentity_t* ent, trace_t* trace )
 
 	G_LogFuncBegin();
 
-	G_Assert(ent, (void)0)
-	G_Assert(trace, (void)0)
+	G_Assert(ent, (void)0);
+	G_Assert(trace, (void)0);
 
 	other = &g_entities[trace->entityNum];
 
-	G_Assert(other, (void)0)
+	G_Assert(other, (void)0);
 
 	if (other->takedamage) {
 		// using grenade as a direct fire weapon. hit someone. explode.
@@ -232,12 +232,12 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 
 	G_LogFuncBegin();
 
-	G_Assert(ent, (void)0)
-	G_Assert(trace, (void)0)
+	G_Assert(ent, (void)0);
+	G_Assert(trace, (void)0);
 
 	other = &g_entities[trace->entityNum];
 
-	G_Assert(other, (void)0)
+	G_Assert(other, (void)0);
 
 	// check for bounce
 	if ( !other->takedamage && (ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF )) != 0 ) {
@@ -372,7 +372,7 @@ void G_ExplodeMissile( gentity_t* ent ) {
 
 	G_LogFuncBegin();
 
-	G_Assert(ent, (void)0)
+	G_Assert(ent, (void)0);
 
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 	SnapVector( origin );
@@ -401,7 +401,7 @@ static void G_RunStuckMissile( gentity_t* ent )
 {
 	G_LogFuncBegin();
 
-	G_Assert(ent, (void)0)
+	G_Assert(ent, (void)0);
 
 	if ( ent->takedamage )
 	{
@@ -409,7 +409,7 @@ static void G_RunStuckMissile( gentity_t* ent )
 		{
 			gentity_t* other = &g_entities[ent->s.groundEntityNum];
 
-			G_Assert(other, (void)0)
+			G_Assert(other, (void)0);
 
 			if ( (VectorCompare( vec3_origin, other->s.pos.trDelta ) == 0 && other->s.pos.trType != TR_STATIONARY) || 
 				(VectorCompare( vec3_origin, other->s.apos.trDelta ) == 0 && other->s.apos.trType != TR_STATIONARY) )
@@ -433,7 +433,7 @@ void G_Missile_Run( gentity_t* ent ) {
 
 	G_LogFuncBegin();
 
-	G_Assert(ent, (void)0)
+	G_Assert(ent, (void)0);
 
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
@@ -490,12 +490,12 @@ gentity_t* fire_plasma (gentity_t* self, vec3_t start, vec3_t dir) {
 
 	G_LogFuncBegin();
 
-	G_Assert(self, NULL)
+	G_Assert(self, NULL);
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
-	G_Assert(bolt, NULL)
+	G_Assert(bolt, NULL);
 
 	bolt->classname = "plasma";
 	bolt->nextthink = level.time + 10000;
@@ -530,12 +530,12 @@ gentity_t* fire_comprifle(gentity_t* self, vec3_t start, vec3_t dir) {
 
 	G_LogFuncBegin();
 
-	G_Assert(self, NULL)
+	G_Assert(self, NULL);
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
-	G_Assert(bolt, NULL)
+	G_Assert(bolt, NULL);
 
 	bolt->classname = "plasma";
 	bolt->nextthink = level.time + 10000;
@@ -574,12 +574,12 @@ gentity_t* fire_quantum (gentity_t* self, vec3_t start, vec3_t dir) {
 
 	G_LogFuncBegin();
 	
-	G_Assert(self, NULL)
+	G_Assert(self, NULL);
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
-	G_Assert(bolt, NULL)
+	G_Assert(bolt, NULL);
 
 	bolt->classname = "plasma";
 	bolt->nextthink = level.time + 10000;
@@ -618,12 +618,12 @@ gentity_t* fire_grenade (gentity_t* self, vec3_t start, vec3_t dir) {
 
 	G_LogFuncBegin();
 
-	G_Assert(self, NULL)
+	G_Assert(self, NULL);
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
-	G_Assert(bolt, NULL)
+	G_Assert(bolt, NULL);
 
 	bolt->classname = "grenade";
 	bolt->nextthink = level.time + 2500;
@@ -664,12 +664,12 @@ gentity_t* fire_rocket (gentity_t* self, vec3_t start, vec3_t dir) {
 
 	G_LogFuncBegin();
 	
-	G_Assert(self, NULL)
+	G_Assert(self, NULL);
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
-	G_Assert(bolt, NULL)
+	G_Assert(bolt, NULL);
 
 	bolt->classname = "rocket";
 	bolt->nextthink = level.time + 10000;

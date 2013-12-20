@@ -108,11 +108,7 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	/* prepare lists */
 	list_init(&classnames, free);
@@ -143,20 +139,20 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 				VectorMA(e->s.origin, 1024, dVec, end);
 				trap_Trace(&tr, e->s.origin, mins, maxs, end, e->s.number, MASK_SHOT);
 			}
-			//G_Printf("Checking entity: %d\n", i);
+
 			if(tr.entityNum != ent->s.number) {
 				continue;
 			}
-			//G_Printf("Nothing is blocking view ...\n");
+
 			if((e->spawnflags & 512) != 0) {
 				VectorSubtract(ent->r.currentOrigin, e->s.angles2, dVec);
 			} else {
 				VectorSubtract(ent->r.currentOrigin, e->s.origin, dVec);
 			}
+
 			if(VectorLength(dVec) < nearestd) {
 				nearest = e;
 				nearestd = VectorLength(dVec);
-				//G_Printf("New nearest Entity is %d with a distance of %d\n", nearest, nearestd);
 			}
 		}
 	} else {
@@ -219,11 +215,7 @@ static void WP_FirePhaser( gentity_t* ent, qboolean alt_fire )
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	VectorMA (muzzle, MAXRANGE_PHASER, forward, end);
 	/* Add a subtle variation to the beam weapon's endpoint */
@@ -255,27 +247,20 @@ static void WP_FirePhaser( gentity_t* ent, qboolean alt_fire )
 		VectorNormalize(vRight);
 		VectorCopy(tr.endpos, end);
 		trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, (CONTENTS_PLAYERCLIP|CONTENTS_BODY) );
-		if (	(tr.entityNum != (MAX_GENTITIES-1)) &&
-				(tr.entityNum != trEnts[0]) )
-		{
+		if ((tr.entityNum != (MAX_GENTITIES-1)) && (tr.entityNum != trEnts[0]))	{
 			trEnts[1] = tr.entityNum;
 			trEntFraction[1] = tr.fraction;
 		}
 
 		trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, (CONTENTS_PLAYERCLIP|CONTENTS_BODY) );
-		if (	(tr.entityNum != (MAX_GENTITIES-1)) &&
-				(tr.entityNum != trEnts[0]) &&
-				(tr.entityNum != trEnts[1]))
-		{
+		if ((tr.entityNum != (MAX_GENTITIES-1)) && (tr.entityNum != trEnts[0]) && (tr.entityNum != trEnts[1])) {
 			trEnts[2] = tr.entityNum;
 			trEntFraction[2] = tr.fraction;
 		}
 	}
 
-	for (i = 0; i < NUM_PHASER_TRACES; i++)
-	{
-		if (-1 == trEnts[i])
-		{
+	for (i = 0; i < NUM_PHASER_TRACES; i++)	{
+		if (-1 == trEnts[i]) {
 			continue;
 		}
 		traceEnt = &g_entities[ trEnts[i] ];
@@ -285,34 +270,27 @@ static void WP_FirePhaser( gentity_t* ent, qboolean alt_fire )
 			continue;
 		}
 
-		if ( traceEnt->takedamage && ((rpg_dmgFlags.integer & 1) != 0) ) 
-		{
+		if ( traceEnt->takedamage && ((rpg_dmgFlags.integer & 1) != 0) ) {
 			/*damage = (float)PHASER_DAMAGE*DMG_VAR*s_quadFactor;*/ /* No variance on phaser */
-			damage = (double)PHASER_DAMAGE;
+			damage = PHASER_DAMAGE;
 
-			if (trEntFraction[i] <= PHASER_POINT_BLANK_FRAC)
-			{	/* Point blank!  Do up to double damage. */
+			if (trEntFraction[i] <= PHASER_POINT_BLANK_FRAC) {	
+				/* Point blank!  Do up to double damage. */
 				damage += damage * (1.0 - (trEntFraction[i]/PHASER_POINT_BLANK_FRAC));
-			}
-			else
-			{	/* Normal range */
+			} else {
+				/* Normal range */
 				damage -= (int32_t)(trEntFraction[i]*5.0);
 			}
 
-			if (ent->client->ps.ammo[WP_5] == 0)
-			{
+			if (ent->client->ps.ammo[WP_5] == 0) {
 				damage *= .35; /* weak out-of-ammo phaser */
 			}
 			
-			if (damage > 0)
-			{
-				if ( alt_fire ) 
-				{
+			if (damage > 0)	{
+				if ( alt_fire )	{
 					G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
 								DAMAGE_NO_KNOCKBACK | DAMAGE_NOT_ARMOR_PIERCING, MOD_PHASER_ALT );
-				}
-				else
-				{
+				} else {
 					G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
 								DAMAGE_NO_KNOCKBACK | DAMAGE_ARMOR_PIERCING, MOD_PHASER );
 				}
@@ -346,18 +324,10 @@ static void FirePrifleBullet( gentity_t* ent, vec3_t start, vec3_t dir )
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
-
+	G_Assert(ent, (void)0);
+	
 	bolt = G_Spawn();
-	if(bolt == NULL) {
-		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(bolt, (void)0);
 
 	bolt->classname = "prifle_proj";
 	bolt->nextthink = level.time + 10000;
@@ -407,20 +377,17 @@ static void WP_FireCompressionRifle ( gentity_t* ent, qboolean alt_fire )
 {
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
-	if ( !alt_fire )
-	{
-		vec3_t	dir, angles, temp_ang, temp_org;
-		vec3_t	start;
+	if ( !alt_fire ) {
+		vec3_t dir = { 0, 0, 0 };
+		vec3_t angles = { 0, 0, 0 };
+		vec3_t temp_ang = { 0, 0, 0 };
+		vec3_t temp_org = { 0, 0, 0 };
+		vec3_t start = { 0, 0, 0 };
 
 		VectorCopy( forward, dir );
 		VectorCopy( muzzle, start );
-
 
 		vectoangles( dir, angles );
 		VectorSet( temp_ang, angles[0], angles[1], angles[2] );
@@ -432,11 +399,9 @@ static void WP_FireCompressionRifle ( gentity_t* ent, qboolean alt_fire )
 		FirePrifleBullet( ent, temp_org, dir ); /* temp_org */
 
 		G_LogWeaponFire(ent->s.number, WP_6);
-	}
-	else
-	{
+	} else {
 		trace_t		tr;
-		vec3_t		end;
+		vec3_t		end = { 0, 0, 0 };
 		gentity_t*  traceEnt = NULL;
 		int32_t		damage = 0;
 
@@ -446,35 +411,26 @@ static void WP_FireCompressionRifle ( gentity_t* ent, qboolean alt_fire )
 		memset(&tr, 0, sizeof(trace_t));
 		trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
 		
-		if (tr.entityNum == (MAX_GENTITIES - 1))
-		{
+		if (tr.entityNum == (MAX_GENTITIES - 1)) {
 			G_LogFuncEnd();
 			return;
 		}
 
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		if (traceEnt == NULL) {
-			G_LocLogger(LL_ERROR, "traceEnt == NULL\n");
-			G_LogFuncEnd();
-			return;
-		}
+		G_Assert(traceEnt, (void)0);
 
-		if ( traceEnt->takedamage && ((rpg_dmgFlags.integer & 2) != 0) ) 
-		{
+		if ( traceEnt->takedamage && ((rpg_dmgFlags.integer & 2) != 0) ) {
 			damage = (double)PHASER_DAMAGE;
 
-			if (tr.fraction <= PHASER_POINT_BLANK_FRAC)
-			{	/* Point blank!  Do up to double damage. */
+			if (tr.fraction <= PHASER_POINT_BLANK_FRAC)	{	
+				/* Point blank!  Do up to double damage. */
 				damage += damage * (1.0 - (tr.fraction/PHASER_POINT_BLANK_FRAC));
-			}
-			else
-			{	/* Normal range */
+			} else {	/* Normal range */
 				damage -= (int32_t)(tr.fraction * 5.0);
 			}
 			
-			if (damage > 0)
-			{
+			if (damage > 0)	{
 				G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
 					DAMAGE_NO_KNOCKBACK | DAMAGE_ARMOR_PIERCING, MOD_CRIFLE_ALT ); /* GSIO01: was MOD_PHASER */
 			}
@@ -523,17 +479,10 @@ static void FireDisruptorMissile( gentity_t* ent, vec3_t origin, vec3_t dir, int
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	bolt = G_Spawn();
-	if (bolt == NULL) {
-		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
-		return;
-	}
+	G_Assert(bolt, (void)0);
 
 	bolt->classname = "disruptor_projectile";
 	bolt->nextthink = level.time + 10000;
@@ -543,14 +492,13 @@ static void FireDisruptorMissile( gentity_t* ent, vec3_t origin, vec3_t dir, int
 	bolt->s.weapon = WP_10;
 	bolt->r.ownerNum = ent->s.number;
 	bolt->parent = ent;
-	if ((rpg_dmgFlags.integer & 32) != 0)
-	{
+
+	if ((rpg_dmgFlags.integer & 32) != 0) {
 		bolt->damage = STASIS_DAMAGE*DMG_VAR;
-	}
-	else
-	{
+	} else {
 		bolt->damage = 0;
 	}
+
 	bolt->splashDamage = 0;
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_STASIS_ALT; /* GSIO01: was MOD_TETRION_ALT */
@@ -595,17 +543,13 @@ static void WP_FireDisruptor( gentity_t* ent, qboolean alt_fire )
 {
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	/* This was moved out of the FireWeapon switch statement below to keep things more consistent */
 	if ( !alt_fire )
 	{
 		trace_t		tr;
-		vec3_t		end;
+		vec3_t		end = { 0, 0, 0 };
 		gentity_t*	traceEnt = NULL; 
 		int32_t		damage = 0;
 
@@ -624,34 +568,24 @@ static void WP_FireDisruptor( gentity_t* ent, qboolean alt_fire )
 
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		if (traceEnt == NULL) {
-			G_LocLogger(LL_ERROR, "traceEnt == NULL\n");
-			G_LogFuncEnd();
-			return;
-		}
+		G_Assert(traceEnt, (void)0);
 
-		if ( traceEnt->takedamage && ((rpg_dmgFlags.integer & 32) != 0) ) 
-		{
+		if ( traceEnt->takedamage && ((rpg_dmgFlags.integer & 32) != 0) ) {
 			damage = (double)PHASER_DAMAGE;
 
-			if (tr.fraction <= PHASER_POINT_BLANK_FRAC)
-			{	/* Point blank!  Do up to double damage. */
+			if (tr.fraction <= PHASER_POINT_BLANK_FRAC)	{	
+				/* Point blank!  Do up to double damage. */
 				damage += damage * (1.0 - (tr.fraction/PHASER_POINT_BLANK_FRAC));
-			}
-			else
-			{	/* Normal range */
+			} else {	/* Normal range */
 				damage -= (int32_t)(tr.fraction*5.0);
 			}
 			
-			if (damage > 0)
-			{
+			if (damage > 0) {
 				G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
 					DAMAGE_NO_KNOCKBACK | DAMAGE_ARMOR_PIERCING, MOD_STASIS ); /* GSIO01: was MOD_TETRION_ALT */
 			}
 		}
-	}
-	else
-	{
+	} else {
 		FireDisruptorMissile(ent, muzzle, forward, STASIS_MAIN_MISSILE_BIG);
 	}
 
@@ -691,11 +625,7 @@ static void grenadeExplode( gentity_t* ent )
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	VectorSet( pos, ent->r.currentOrigin[0], ent->r.currentOrigin[1], ent->r.currentOrigin[2] + 8 );
 
@@ -720,18 +650,10 @@ void grenadeSpewShrapnel( gentity_t* ent )
 	
 	G_LogFuncBegin();
 	
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	tent = G_TempEntity(ent->r.currentOrigin, EV_GRENADE_SHRAPNEL_EXPLODE);
-	if (tent == NULL) {
-		G_LocLogger(LL_ERROR, "Could not spawn new temporal entity!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(tent, (void)0);
 
 	tent->s.eventParm = DirToByte(ent->pos1);
 
@@ -768,57 +690,45 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
 
-	if(RPGEntityCount != ENTITYNUM_MAX_NORMAL - 20){
-		if ( alt_fire )
-		{
+	if(RPGEntityCount != ENTITYNUM_MAX_NORMAL - 20) {
+		if ( alt_fire )	{
 			/* RPG-X: RedTechie - Moved here to stop entities from being sucked up */
 			grenade = G_Spawn();
-
-			if (grenade == NULL) {
-				G_LocLogger(LL_ERROR, "Could not spawn new entiy!\n");
-				G_LogFuncEnd();
-				return;
-			}
+			G_Assert(grenade, (void)0);
 			
 			/* kef -- make sure count is 0 so it won't get its bounciness removed like the tetrion projectile */
 			grenade->count = 0;
 
 			/* RPG-X: RedTechie - Forced Tripwires */
-			if ( rpg_invisibletripmines.integer == 1 )
-			{
+			if ( rpg_invisibletripmines.integer == 1 ) {
 				/* 
  				 * limit to 10 placed at any one time
 				 * see how many there are now
 				 */
-				while ( (tripwire = G_Find( tripwire, FOFS(classname), "tripwire" )) != NULL )
-				{
-					if ( tripwire->parent != ent )
-					{
+
+				while ( (tripwire = G_Find( tripwire, FOFS(classname), "tripwire" )) != NULL ) {
+					if ( tripwire->parent != ent ) {
 						continue;
 					}
 					foundTripWires[tripcount++] = tripwire->s.number;
 				}
+
 				/* now remove first ones we find until there are only 9 left */
 				tripwire = NULL;
 				tripcount_org = tripcount;
 				lowestTimeStamp = level.time;
+
 				/* RPG-X: RedTechie - Added 51 tripwires for each person */
-				while ( tripcount > 50 ) /* 9 */
-				{
+				while ( tripcount > 50 ) { /* 9 */
 					removeMe = -1;
-					for ( i = 0; i < tripcount_org; i++ )
-					{
-						if ( foundTripWires[i] == ENTITYNUM_NONE )
-						{
+
+					for ( i = 0; i < tripcount_org; i++ ) {
+						if ( foundTripWires[i] == ENTITYNUM_NONE ) {
 							continue;
 						}
 						tripwire = &g_entities[foundTripWires[i]];
@@ -828,31 +738,26 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 							continue;
 						}
 
-						if ( tripwire && tripwire->timestamp < lowestTimeStamp )
-						{
+						if ( tripwire && tripwire->timestamp < lowestTimeStamp ) {
 							removeMe = i;
 							lowestTimeStamp = tripwire->timestamp;
 						}
 					}
-					if ( removeMe != -1 )
-					{
+
+					if ( removeMe != -1 ) {
 						/* remove it... or blow it? */
-						if ( &g_entities[foundTripWires[removeMe]] == NULL )
-						{
+						if ( &g_entities[foundTripWires[removeMe]] == NULL ) {
 							break;
-						}
-						else
-						{
+						} else {
 							G_FreeEntity( &g_entities[foundTripWires[removeMe]] );
 						}
 						foundTripWires[removeMe] = ENTITYNUM_NONE;
 						tripcount--;
-					}
-					else
-					{
+					} else {
 						break;
 					}
 				}
+
 				/* now make the new one */
 				grenade->classname = "tripwire";
 				if((rpg_dmgFlags.integer & 8) != 0) { 
@@ -863,15 +768,15 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 					grenade->splashRadius = 0;
 
 				}
+
 				grenade->s.pos.trType = TR_LINEAR;
 				grenade->nextthink = level.time + 1000; /* How long 'til she blows */
 				grenade->count = 1; 			/* tell it it's a tripwire for when it sticks */
 				grenade->timestamp = level.time; 	/* remember when we placed it */
 				grenade->s.otherEntityNum2 = ent->client->sess.sessionTeam;
-			}
-			else
-			{
+			} else {
 				grenade->classname = "grenade_alt_projectile";
+
 				if((rpg_dmgFlags.integer & 8) != 0) {
 					grenade->splashDamage = GRENADE_SPLASH_DAM;
 					grenade->splashRadius = GRENADE_SPLASH_RAD;
@@ -879,6 +784,7 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 					grenade->splashDamage = 0;
 					grenade->splashRadius = 0;
 				}
+
 				grenade->s.pos.trType = TR_GRAVITY;
 				grenade->nextthink = level.time + GRENADE_ALT_TIME; /* How long 'til she blows */
 			}
@@ -910,12 +816,9 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 			VectorCopy (start, grenade->r.currentOrigin);
 
 			VectorCopy( start, grenade->pos2 );
-		}
-		else
-		{
+		} else {
 			/* RPG-X: RedTechie - Check to see if there admin if so grant them effects gun */
-			if( IsAdmin(ent) && (rpg_effectsgun.integer == 1))
-			{
+			if( IsAdmin(ent) && (rpg_effectsgun.integer == 1)) {
 				VectorMA (muzzle, MAXRANGE_CRIFLE, forward, end);
 				trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
 
@@ -924,18 +827,13 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 				 * Okay... screw the generic args. it's giving me a headache
 				 * Case in this case... harhar is teh solution
 				 */
-				if ( ent->client->fxGunData.eventNum > 0 ) 
-				{
+				if ( ent->client->fxGunData.eventNum > 0 ) {
 					fxGunData_t *fxGunData = &ent->client->fxGunData;
 
 					/* set the entity event */
 					tent = G_TempEntity( tr.endpos, fxGunData->eventNum );
 
-					if (tent == NULL) {
-						G_LocLogger(LL_ERROR, "tent == NULL\n");
-						G_LogFuncEnd();
-						return;
-					}
+					G_Assert(tent, (void)0);
 					
 					/* based on the event, add additional args */
 					switch ( fxGunData->eventNum ) {
@@ -1025,42 +923,27 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 
 						te = G_TempEntity( tr.endpos, EV_GLOBAL_SOUND );
 
-						if (te == NULL) {
-							G_LocLogger(LL_ERROR, "te == NULL\n");
-							G_LogFuncEnd();
-							return;
-						}
+						G_Assert(te, (void)0);
 					
 						te->s.eventParm = G_SoundIndex( "sound/weapons/explosions/detpakexplode.wav" );
 						te->r.svFlags |= SVF_BROADCAST;
 					}
-				}
-				else {
+				} else {
 					tent = G_TempEntity( tr.endpos, EV_EFFECTGUN_SHOOT );
 
-					if (tent == NULL) {
-						G_LocLogger(LL_ERROR, "tent == NULL\n");
-						G_LogFuncEnd();
-						return;
-					}
+					G_Assert(tent, (void)0);
 				}
 				
 				tent->s.eFlags |= EF_FIRING;
 				
-			}else{
+			} else {
 				/* RPG-X: RedTechie - Moved here to stop entities from being sucked up */
 				grenade = G_Spawn();
 			
-				if (grenade == NULL) {
-					G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
-					G_LogFuncEnd();
-					return;
-				}
+				G_Assert(grenade, (void)0);
 
 				/* kef -- make sure count is 0 so it won't get its bounciness removed like the tetrion projectile */
 				grenade->count = 0;
-
-
 				grenade->classname = "grenade_projectile";
 				grenade->nextthink = level.time + GRENADE_TIME; /* How long 'til she blows */
 				grenade->think = grenadeExplode;
@@ -1104,7 +987,7 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 		}
 
 		G_LogWeaponFire(ent->s.number, WP_8);
-	}else{
+	} else {
 		G_LogPrintf("RPG-X WARNING: Max entities about to be hit! Restart the server ASAP or suffer a server crash!\n");
 		trap_SendServerCommand( -1, va("print \"^1RPG-X WARNING: Max entities about to be hit! Restart the server ASAP or suffer a server crash!\n\""));
 	}
@@ -1140,11 +1023,7 @@ static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	VectorCopy( start, traceFrom );
 	VectorMA( traceFrom, MAX_TR_116_DIST, dir, end ); /* set trace end point */
@@ -1156,13 +1035,9 @@ static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
 
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		if (traceEnt == NULL) {
-			G_LocLogger(LL_ERROR, "traceEnt == NULL\n");
-			G_LogFuncEnd();
-			return;
-		}
+		G_Assert(traceEnt, (void)0);
 
-		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 4)) {
+		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 4) != 0) {
 			G_Damage( traceEnt, ent, ent, dir, tr.endpos, TETRION_DAMAGE, 0, MOD_TETRION_ALT );
 		}
 	}
@@ -1170,6 +1045,8 @@ static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
 	G_LogFuncEnd();
 }
 
+/* (RPG-X: J2J MOdified to make it look and feel like tr116 */
+/* RPG-X: TiM - Modified even furthur */
 /**
  * @brief Handles firing of the TR116 rifle.
  * @param ent the player
@@ -1177,16 +1054,10 @@ static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
  * @todo rename me?
  */
 static void WP_FireTR116( gentity_t* ent, qboolean alt_fire )
-/* (RPG-X: J2J MOdified to make it look and feel like tr116 */
-/* RPG-X: TiM - Modified even furthur */
 {
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	vec3_t	dir = { 0, 0, 0 }; 	
 	vec3_t	start = { 0, 0, 0 }; 	
@@ -1228,18 +1099,10 @@ static void FireQuantumBurst( gentity_t* ent, vec3_t start, vec3_t dir )
 	
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	bolt = G_Spawn();
-	if (bolt == NULL) {
-		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(bolt, (void)0);
 
 	bolt->classname = "quantum_projectile";
 	
@@ -1297,21 +1160,13 @@ static qboolean SearchTarget(gentity_t* ent, vec3_t start, vec3_t end)
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, qfalse);
 
 	memset(&tr, 0, sizeof(trace_t));
 	trap_Trace (&tr, start, NULL, NULL, end, ent->s.number, MASK_SHOT );
 	traceEnt = &g_entities[ tr.entityNum ];
 
-	if (traceEnt == NULL) {
-		G_LocLogger(LL_ERROR, "traceEnt == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(traceEnt, qfalse);
 
 	if (traceEnt->takedamage && traceEnt->client) 
 	{
@@ -1350,25 +1205,21 @@ static void WP_QuantumAltThink(gentity_t* ent)
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	ent->health--;
-	if (ent->health <= 0)
-	{
+	if (ent->health <= 0) {
 		G_FreeEntity(ent);
 		G_Logger(LL_DEBUG, "entities health <= 0\n");
 		G_LogFuncEnd();
 		return;
 	}
 
-	if (ent->target_ent)
-	{	/* Already have a target, start homing. */
-		if (ent->health <= 0 || !ent->inuse)
-		{	/* No longer target this */
+	if (ent->target_ent) {	
+		/* Already have a target, start homing. */
+		
+		if (ent->health <= 0 || !ent->inuse) {	
+			/* No longer target this */
 			ent->target_ent = NULL;
 			ent->nextthink = level.time + 1000;
 			ent->health -= 5;
@@ -1383,30 +1234,27 @@ static void WP_QuantumAltThink(gentity_t* ent)
 		/* Now the rocket can't do a 180 in space, so we'll limit the turn to about 45 degrees. */
 		dot = DotProduct(targetdir, ent->movedir);
 		/* a dot of 1.0 means right-on-target. */
-		if (dot < 0.0)
-		{	/* Go in the direction opposite, start a 180. */
+		if (dot < 0.0) {	
+			/* Go in the direction opposite, start a 180. */
 			CrossProduct(ent->movedir, lup, lright);
 			dot2 = DotProduct(targetdir, lright);
-			if (dot2 > 0)
-			{	/* Turn 45 degrees right. */
+			
+			if (dot2 > 0) {	
+				/* Turn 45 degrees right. */
 				VectorAdd(ent->movedir, lright, newdir);
-			}
-			else
-			{	/* Turn 45 degrees left. */
+			} else {	
+				/* Turn 45 degrees left. */
 				VectorSubtract(ent->movedir, lright, newdir);
 			}
+
 			/* Yeah we've adjusted horizontally, but let's split the difference vertically, so we kinda try to move towards it. */
 			newdir[2] = (targetdir[2] + ent->movedir[2]) * 0.5;
 			VectorNormalize(newdir);
-		}
-		else if (dot < 0.7)
-		{	/* Need about one correcting turn.  Generate by meeting the target direction "halfway". */
+		} else if (dot < 0.7) {	/* Need about one correcting turn.  Generate by meeting the target direction "halfway". */
 			/* Note, this is less than a 45 degree turn, but it is sufficient.  We do this because the rocket may have to go UP. */
 			VectorAdd(ent->movedir, targetdir, newdir);
 			VectorNormalize(newdir);
-		}
-		else
-		{	/* else adjust to right on target. */
+		} else {	/* else adjust to right on target. */
 			VectorCopy(targetdir, newdir);
 		}
 
@@ -1419,9 +1267,7 @@ static void WP_QuantumAltThink(gentity_t* ent)
 
 		/* Home at a reduced frequency. */
 		ent->nextthink = level.time + QUANTUM_ALT_THINK_TIME;	/* Nothing at all spectacular happened, continue. */
-	}
-	else
-	{	/* Search in front of the missile for targets. */
+	} else {	/* Search in front of the missile for targets. */
 		VectorCopy(ent->r.currentOrigin, start);
 		CrossProduct(ent->movedir, lup, lright);
 
@@ -1474,18 +1320,10 @@ static void FireQuantumBurstAlt( gentity_t* ent, vec3_t start, vec3_t dir )
 	
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	bolt = G_Spawn();
-	if (bolt = NULL) {
-		G_LocLogger(LL_ERROR, "Could not spawn new entity!\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(bolt, (void)0);
 
 	bolt->classname = "quantum_alt_projectile";
 	
@@ -1543,21 +1381,14 @@ static void WP_FireQuantumBurst( gentity_t* ent, qboolean alt_fire )
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	VectorCopy( forward, dir );
 	VectorCopy( muzzle, start );
 
-	if ( alt_fire )
-	{
+	if ( alt_fire ) {
 		FireQuantumBurstAlt( ent, start, dir );
-	}
-	else
-	{
+	} else {
 		FireQuantumBurst( ent, start, dir );
 	}
 
@@ -1569,17 +1400,8 @@ static void WP_FireQuantumBurst( gentity_t* ent, qboolean alt_fire )
 qboolean G_Weapon_LogAccuracyHit( gentity_t* target, gentity_t* attacker ) {
 	G_LogFuncBegin();
 
-	if (target == NULL) {
-		G_LocLogger(LL_ERROR, "target == NULL\n");
-		G_LogFuncEnd();
-		return qfalse;
-	}
-
-	if (attacker == NULL) {
-		G_LocLogger(LL_ERROR, "attacker == NULL\n");
-		G_LogFuncEnd();
-		return qfalse;
-	}
+	G_Assert(target, qfalse);
+	G_Assert(attacker, qfalse);
 
 	if( !target->takedamage ) {
 		G_Logger(LL_DEBUG, "target does not take damage\n");
@@ -1634,11 +1456,7 @@ static void CorrectForwardVector(gentity_t* ent, vec3_t fwd, vec3_t muzzlePoint,
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	/* Find the eyepoint. */
 	VectorCopy(ent->client->ps.origin, eyepoint);
@@ -1647,24 +1465,18 @@ static void CorrectForwardVector(gentity_t* ent, vec3_t fwd, vec3_t muzzlePoint,
 	memset(&tr, 0, sizeof(trace_t));
 
 	/* First we must trace from the eyepoint to the muzzle point, to make sure that we have a legal muzzle point. */
-	if (projsize>0)
-	{
+	if (projsize > 0) {
 		VectorSet(mins, -projsize, -projsize, -projsize);
 		VectorSet(maxs, projsize, projsize, projsize);
 		trap_Trace(&tr, eyepoint, mins, maxs, muzzlePoint, ent->s.number, MASK_SHOT);
-	}
-	else
-	{
+	} else {
 		trap_Trace(&tr, eyepoint, NULL, NULL, muzzlePoint, ent->s.number, MASK_SHOT);
 	}
 
-	if (tr.fraction < 1.0)
-	{	/* We hit something here...  Stomp the muzzlePoint back to the eye... */
+	if (tr.fraction < 1.0) {	/* We hit something here...  Stomp the muzzlePoint back to the eye... */
 		VectorCopy(eyepoint, muzzlePoint);
 		/* Keep the forward vector where it is, 'cause straight forward from the eyeball is right where we want to be. */
-	}
-	else
-	{
+	} else {
 		/* figure out what our crosshairs are on... */
 		VectorMA(eyepoint, MAX_FORWARD_TRACE, forward, end);
 		trap_Trace (&tr, eyepoint, NULL, NULL, end, ent->s.number, MASK_SHOT );
@@ -1773,27 +1585,23 @@ void G_Weapon_CalcMuzzlePoint ( gentity_t* ent, vec3_t fwd, vec3_t rt, vec3_t vu
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	weapontype = ent->s.weapon;
 	VectorCopy( ent->s.pos.trBase, muzzlePoint );
 
 #if 1
-	if (weapontype > WP_0 && weapontype < WP_NUM_WEAPONS)
-	{	/* Use the table to generate the muzzlepoint; */
+	if (weapontype > WP_0 && weapontype < WP_NUM_WEAPONS) {	
+		/* Use the table to generate the muzzlepoint; */
 		{	/* Crouching.  Use the add-to-Z method to adjust vertically. */
 			VectorMA(muzzlePoint, WP_MuzzlePoint[weapontype][0], fwd, muzzlePoint);
 			VectorMA(muzzlePoint, WP_MuzzlePoint[weapontype][1], rt, muzzlePoint);
 			if ( ent->client->ps.eFlags & EF_FULL_ROTATE && Q_fabs( ent->client->ps.viewangles[PITCH] > 89.0f ) ) {
 				muzzlePoint[2] -= 20 + WP_MuzzlePoint[weapontype][2];
-			}
-			else
+			} else {
 				muzzlePoint[2] += ent->client->ps.viewheight + WP_MuzzlePoint[weapontype][2];
-			/* VectorMA(muzzlePoint, ent->client->ps.viewheight + WP_MuzzlePoint[weapontype][2], vup, muzzlePoint);*/
+				/* VectorMA(muzzlePoint, ent->client->ps.viewheight + WP_MuzzlePoint[weapontype][2], vup, muzzlePoint);*/
+			}
 		}
 	}
 #else	/* Test code */
@@ -1828,22 +1636,16 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
-	if ( rpg_rangetricorder.integer < 32 )
-	{
+	if ( rpg_rangetricorder.integer < 32 ) {
 		G_Logger(LL_DEBUG, "rpg_rangetricorder < 32\n");
 		G_LogFuncEnd();
 		return;
 	}
 
 	/* Fix - Changed || to && in the below if statement! */
-	if ( IsAdmin( ent ) == qfalse )
-	{
+	if ( IsAdmin( ent ) == qfalse ) {
 		G_Logger(LL_DEBUG, "player not an admin\n");
 		G_LogFuncEnd();
 		return;
@@ -1866,15 +1668,13 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 	tr_ent = &g_entities[tr.entityNum];
 
 	/* BOOKMARK J2J */
-	if ( alt_fire )
-	{
+	if ( alt_fire ) {
 		/* 
  		 * RPG-X: J2J - New Transporter Tricorder Code (custom spawn points)
 		 */
 		/* if( TransDat[clientNum].Used == qfalse )*/
 		if ( VectorCompare( vec3_origin, TransDat[clientNum].storedCoord[TPT_TRICORDER].origin ) &&
-			VectorCompare( vec3_origin, TransDat[clientNum].storedCoord[TPT_TRICORDER].angles ) )
-		{
+			VectorCompare( vec3_origin, TransDat[clientNum].storedCoord[TPT_TRICORDER].angles ) ) {
 			/*VectorCopy(ent->client->ps.origin, TransDat[clientNum].TransCoord);*/
 			/*VectorCopy(ent->client->ps.viewangles, TransDat[clientNum].TransCoordRot);*/
 			VectorCopy( ent->client->ps.origin, TransDat[clientNum].storedCoord[TPT_TRICORDER].origin );
@@ -1882,8 +1682,7 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 			/*TransDat[clientNum].Used = qtrue;*/
 		}
 
-		if ( tr_ent && tr_ent->client && tr_ent->health > 0 )
-		{
+		if ( tr_ent && tr_ent->client && tr_ent->health > 0 ) {
 			/*gentity_t	*tent;*/
 			/*
  			 * TiM: If we're already in a transport sequence, don't try another one.
@@ -1903,8 +1702,7 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 							TransDat[clientNum].storedCoord[TPT_TRICORDER].angles );				return;
 		}
 		/* If they clicked within 5 seconds ago */
-		if((level.time - TransDat[clientNum].LastClick) <= 5000)
-		{
+		if((level.time - TransDat[clientNum].LastClick) <= 5000) {
 			VectorCopy( ent->client->ps.origin, TransDat[clientNum].storedCoord[TPT_TRICORDER].origin );
 			VectorCopy( ent->client->ps.viewangles, TransDat[clientNum].storedCoord[TPT_TRICORDER].angles );
 
@@ -1913,9 +1711,7 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 			TransDat[clientNum].LastClick = level.time-5000;
 			trap_SendServerCommand( ent-g_entities, "chat \"Location Confirmed.\"");
 			/*trap_SendConsoleCommand( EXEC_APPEND, va("echo Location Confirmed.") );*/
-		}
-		else
-		{
+		} else {
 			trap_SendServerCommand( ent-g_entities, "chat \"Click again to confirm Transporter Location.\"");
 			/*trap_SendConsoleCommand( EXEC_APPEND, va("echo Click again to confirm Transporter Location.") );*/
 			TransDat[clientNum].LastClick = level.time;
@@ -1942,11 +1738,7 @@ static void WP_SprayVoyagerHypo( gentity_t* ent, qboolean alt_fire )
 
 	G_LogFuncBegin();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	if ( rpg_rangehypo.integer < 8 ) /*32*/
 	{
@@ -1963,7 +1755,7 @@ static void WP_SprayVoyagerHypo( gentity_t* ent, qboolean alt_fire )
 	memset(&tr, 0, sizeof(trace_t));
 	trap_Trace ( &tr, muzzle, mins, maxs, end, ent->s.number, MASK_OPAQUE|CONTENTS_BODY|CONTENTS_ITEM|CONTENTS_CORPSE ); /*MASK_SHOT*/
 	
-	if(rpg_effectsgun.integer == 1 && IsAdmin(ent) && alt_fire == qtrue && ent->s.weapon == WP_12){
+	if(rpg_effectsgun.integer == 1 && IsAdmin(ent) && alt_fire == qtrue && ent->s.weapon == WP_12) {
 		if(RPGEntityCount != ENTITYNUM_MAX_NORMAL-20){
 			t_ent = G_TempEntity( muzzle, EV_HYPO_PUFF );
 			t_ent->s.eventParm = qfalse; /* TiM: Event parm is holding a qboolean value for color of spray */
@@ -1971,19 +1763,14 @@ static void WP_SprayVoyagerHypo( gentity_t* ent, qboolean alt_fire )
 
 			G_LogFuncEnd();
 			return;
-		}else{
+		} else {
 			G_LogPrintf("RPG-X WARNING: Max entities about to be hit! Restart the server ASAP or suffer a server crash!\n");
 			trap_SendServerCommand( -1, va("print \"^1RPG-X WARNING: Max entities about to be hit! Restart the server ASAP or suffer a server crash!\n\""));
 		}
 	}
 
 	tr_ent = &g_entities[tr.entityNum];
-
-	if (tr_ent == NULL) {
-		G_LocLogger(LL_ERROR, "tr_ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(tr_ent, (void)0);
 
 	/* RPG-X: RedTechie - Medics can revive dead people */
 	if( (tr_ent && tr_ent->client) && (tr_ent->health == 1) && (tr_ent->client->ps.pm_type == PM_DEAD)){ 		
@@ -2051,11 +1838,7 @@ void FireWeapon( gentity_t* ent, qboolean alt_fire )
 
 	G_LogFuncEnd();
 
-	if (ent == NULL) {
-		G_LocLogger(LL_ERROR, "ent == NULL\n");
-		G_LogFuncEnd();
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	ent->client->pers.teamState.lastFireTime = level.time;
 
