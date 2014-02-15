@@ -668,7 +668,7 @@ void InGame_MenuInit( void )
 	s_ingame.admin.textEnum					= MBT_ADMIN_MENU;
 	s_ingame.admin.textcolor				= CT_BLACK;
 	s_ingame.admin.textcolor2				= CT_WHITE;
-	if( atoi( Info_ValueForKey( info, "admin" )) == 0 ) {	
+	if( atoi( Info_ValueForKey( info, "admin" )) == 1 ) {	
 		s_ingame.admin.generic.flags = QMF_HIGHLIGHT_IF_FOCUS;
 	} else {	
 		s_ingame.admin.generic.flags = QMF_GRAYED;
