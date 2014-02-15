@@ -643,7 +643,7 @@ static void AdminMenu_Event( void* ptr, int event ) {
 		case ID_BIND_SPAWN:
 		case ID_BIND_USEENT:
 		case ID_BIND_KICK:
-			s_admin.keyBindActive = ((menucommon_s *) ptr)->id - 40;
+			s_admin.keyBindActive = ((menucommon_s *) ptr)->id - ID_BIND_SPAWN;
 			s_admin.menu.noNewSelecting = qtrue;
 			break;
 
@@ -888,7 +888,7 @@ static void AdminMenu_DrawBinding( void *self ) {
 
 	focus = ( Menu_ItemAtCursor( action->generic.parent ) == action );
 
-	bind =  s_admin.binds[ action->generic.id - 40 ];
+	bind =  s_admin.binds[ action->generic.id - ID_BIND_SPAWN ];
 
 	/* Get bind name */
 	if ( bind <= 0 || bind >=256 ) {
