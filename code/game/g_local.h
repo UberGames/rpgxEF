@@ -581,6 +581,8 @@ struct gclient_s {
 	// for selfdestruct and shiphealth
 	int					nokilli;						//!< if 1 this player won't be killed if the ship is killed
 	int					myship;							//!< entnum of the shiphealth entity this client currently holds info from
+
+	int					respawnDisabledTime;
 };
 
 
