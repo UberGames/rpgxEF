@@ -5524,18 +5524,30 @@ GSIO01 | 12/05/2009
 =================
 */
 static void Cmd_Respawn_f(gentity_t *ent) {
-	gentity_t *tent;
-	if(!ent)
+	int secondsToWait = 0;
+	
+	if (ent == NULL) {
 		return;
-	if(!ent->client)
-		return;
-
-	G_Client_Spawn(ent, 0, qfalse);
-	if(ent->client->sess.sessionTeam != TEAM_SPECTATOR) {
-		ent->client->ps.powerups[PW_QUAD] = level.time + 4000;
-		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TRANSPORT_IN );
-		tent->s.clientNum = ent->s.clientNum;
 	}
+
+	if (ent->client == NULL) {
+		return;
+	}
+
+	if (level.time <= ent->client->respawnDisabledTime) {
+		secondsToWait = ent->client->respawnDisabledTime - level.time;
+		secondsToWait /= 1000;
+
+		if (secondsToWait) {
+			G_PrintfClient(ent, "You just have respawned. Please wait %d seconds to respawn again.\n", secondsToWait);
+		} else {
+			G_PrintfClient(ent, "You just have respawned. Please wait. You will be able to respawn very soon.\n");
+		}
+		return;
+	}
+
+	G_Client_Begin(ent->client - level.clients, qfalse, qfalse, qfalse);
+	ent->client->respawnDisabledTime = level.time += 5000;
 }
 
 /*
