@@ -8,7 +8,7 @@
 
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
-#define RPGX_VERSION		"RPG-X V 2.3 CB 4"
+#define RPGX_VERSION		"RPG-X V 2.3.3d"
 #define RPGX_COMPILEDATE	"20/05/11"
 #define RPGX_COMPILEDBY		"GSIO01"
 #define GAME_VERSION		"RPG-X v" RPGX_VERSION
