@@ -11,7 +11,7 @@
 
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
-#define RPGX_VERSION		"RPG-X V 2.3 CB 4"
+#define RPGX_VERSION		"RPG-X V 2.3.3ua"
 #define RPGX_COMPILEDATE	__DATE__ " " __TIME__
 #define RPGX_COMPILEDBY		"Jenkins Buildserver"
 #define GAME_VERSION		"RPG-X v" RPGX_VERSION

@@ -3,7 +3,7 @@
 #ifndef STV_VERSION_H_
 #define STV_VERSION_H_
 
-#define	Q3_VERSION		"RPG-X V 2.3 CB 4"
+#define	Q3_VERSION		"RPG-X V 2.3.3ua"
 
 #endif /* STV_VERSION_H_ */
 

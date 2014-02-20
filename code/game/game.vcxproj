@@ -481,6 +481,7 @@
     <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\qcommon\stv_version.h" />
     <ClInclude Include="ai_chat.h" />
     <ClInclude Include="ai_cmd.h" />
     <ClInclude Include="ai_dmnet.h" />
