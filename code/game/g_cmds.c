@@ -984,6 +984,7 @@ static void Cmd_Team_f( gentity_t *ent ) {
 	char		send[100];
 	gentity_t	*other;
 	clientSession_t *sess = &ent->client->sess;
+	qboolean voted = qfalse;
 
 	//RPG-X: Redtechie - haha to stupid to change teams!
 	if ( g_classData[sess->sessionClass].isn00b )
@@ -1029,8 +1030,16 @@ static void Cmd_Team_f( gentity_t *ent ) {
 		sess->losses++;
 	}
 
+	// check and save if this player has already voted
+	voted = ent->client->ps.eFlags & EF_VOTED;
+
 	//if this is a manual change, not an assimilation, uninitialize the clInitStatus data
-	SetTeam( ent, s );
+	SetTeam(ent, s);
+
+	// restore previous vote state if a vote is running
+	if (voted && level.voteTime) {
+		ent->client->ps.eFlags |= EF_VOTED;
+	}
 
 	ent->client->switchTeamTime = level.time + 2000;
 }
