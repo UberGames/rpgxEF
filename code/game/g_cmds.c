@@ -418,69 +418,59 @@ static void Cmd_Give_f(gentity_t *ent) {
 	}
 }
 
-/*
-==================
-Cmd_God_f
-
-Sets client to godmode
-
-argv(0) god
-==================
-*/
-static void Cmd_God_f(gentity_t *ent) {
+/**
+ * \brief Sets client to godmode.
+ * \param ent The player.
+ */
+static void Cmd_God_f(gentity_t* ent) {
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_GOD) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropiate rights.\n");
 		return;
 	}
 #endif
 
 	ent->flags ^= FL_GODMODE;
-	if (!(ent->flags & FL_GODMODE))
+	if ((ent->flags & FL_GODMODE) == 0) {
 		G_PrintfClient(ent, "%s", "godmode OFF\n");
-	else
+	} else {
 		G_PrintfClient(ent, "%s", "godmode ON\n");
+	}
 }
 
-/*
-==================
-Cmd_Notarget_f
-
-Sets client to notarget
-
-argv(0) notarget
-==================
-*/
+/**
+ * \brief Sets client to notarget.
+ * \param The player.
+ */
 // Harry -- Do we need this? I believe this is for bots only.
-static void Cmd_Notarget_f(gentity_t *ent) {
+// most likely not - GSIO
+static void Cmd_Notarget_f(gentity_t* ent) {
 
 	if (IsAdmin(ent) == qfalse) {
 		return;
 	}
 
 	ent->flags ^= FL_NOTARGET;
-	if (!(ent->flags & FL_NOTARGET))
+	if ((ent->flags & FL_NOTARGET) == 0) {
 		G_PrintfClient(ent, "%s", "notarget OFF\n");
-	else
+	} else {
 		G_PrintfClient(ent, "%s", "notarget ON\n");
+	}
 }
 
 
-/*
-==================
-Cmd_Noclip_f
-
-argv(0) noclip
-==================
-*/
-static void Cmd_Noclip_f(gentity_t *ent) {
-	gclient_t *client;
+/**
+ * \brief Disables clipping.
+ * \param ent The player.
+ */
+static void Cmd_Noclip_f(gentity_t* ent) {
+	gclient_t* client = NULL;
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
