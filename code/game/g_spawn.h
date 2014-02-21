@@ -482,5 +482,10 @@ qboolean G_SpawnVector4( const char* key, const char* defaultString, /*@out@*/ f
  */
 void G_SpawnEntitiesFromString( void );
 
+/**
+ * \brief Calls the spawn function for an entity.
+ */
+qboolean G_CallSpawn(gentity_t *ent);
+
 #endif /* _G_SPAWN_H */
 

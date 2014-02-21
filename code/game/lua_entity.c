@@ -3,8 +3,6 @@
 #include "g_lua.h"
 #include "g_spawn.h"
 
-extern qboolean G_CallSpawn(gentity_t *ent);
-
 #ifdef G_LUA
 
 /***

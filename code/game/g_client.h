@@ -153,4 +153,6 @@ void G_Client_AddScore( gentity_t* ent, int score );
  */
 void G_Client_CalculateRanks( qboolean fromExit );
 
+extern clInitStatus_t clientInitialStatus[MAX_CLIENTS];
+
 #endif /* _G_CLIENT_H */

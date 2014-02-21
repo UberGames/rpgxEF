@@ -9,17 +9,9 @@ pclass_t ValueNameForClass ( char* s );
 void BroadcastClassChange( gclient_t *client, pclass_t oldPClass );
 
 /**
- * Concatenate all arguments for this string.
- *
- * \param start start from the given argument
- * \return String containing concatenated command arguments.
- */
-char* ConcatArgs( int start );
-
-/**
  * Request current scoreboard information.
  */
-void Cmd_Score_f (gentity_t* ent);
+void DeathmatchScoreboardMessage(gentity_t* ent);
 
 /**
  * If the client being followed leaves the game, or you just want to drop

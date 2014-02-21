@@ -598,7 +598,7 @@ void G_Client_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 			}
 		}
 
-		Cmd_Score_f( self );		// show scores
+		DeathmatchScoreboardMessage(self);		// show scores
 		// send updated scores to any clients that are following this one,
 		// or they would get stale scoreboards
 		for ( i = 0 ; i < level.maxclients ; i++ ) {
@@ -612,7 +612,7 @@ void G_Client_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 				continue;
 			}
 			if ( client->sess.spectatorClient == self->s.number ) {
-				Cmd_Score_f( g_entities + i );
+				DeathmatchScoreboardMessage(g_entities + i);
 			}
 		}
 
