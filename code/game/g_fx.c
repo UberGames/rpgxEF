@@ -1143,7 +1143,7 @@ static void fx_torpedo_use(gentity_t *ent, /*@unused@*/ gentity_t *other, gentit
 	
 		if(ent->count > 0) {
 			ent->count--;
-			trap_SendServerCommand(activator-g_entities, va("print \"Torpedos: %i of %i left.\n\"", ent->count, ent->damage));
+			trap_SendServerCommand(activator-g_entities, va("print \"Torpedos: %i of %i left.\n\"", ent->count, ent->methodOfDeath));
 			G_AddEvent(ent, EV_GENERAL_SOUND, ent->s.time);
 		} 
 
@@ -1200,7 +1200,7 @@ static void fx_torpedo_link(gentity_t *ent) {
 		ent->count = -1;
 	} 
 
-	ent->damage = ent->count;
+	ent->methodOfDeath = ent->count;
 
 	if((ent->spawnflags & 4) != 0) {
 		ent->flags |= FL_LOCKED;

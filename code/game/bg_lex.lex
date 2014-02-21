@@ -19,7 +19,8 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 \"[^\"]*\" {
 	char *s = yytext; s++;
 	yyextra->type = LMT_STRING;
-	yyextra->data.str = yytext;
+	yytext[strlen(yytext)-1] = '\0';
+	yyextra->data.str = yytext + 1;
 	yyextra->column += strlen(yytext);
 	return LMT_STRING;
 }

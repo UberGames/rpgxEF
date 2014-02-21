@@ -5787,6 +5787,7 @@ static void Cmd_reloadtorpedos_f(gentity_t *ent) {
 	gentity_t	*torpedo = NULL;
 	char		arg[16];
 	char		target[512];
+	int32_t		i = 0;
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
@@ -5822,18 +5823,28 @@ static void Cmd_reloadtorpedos_f(gentity_t *ent) {
 		return;
 	}
 
-	while ((torpedo = G_Find(torpedo, FOFS(classname), "fx_torpedo")) != NULL) {
-		if (!Q_stricmp(torpedo->targetname, target) || !Q_stricmp(target, "all")) { //this entity is generally affectable
-			if (torpedo->damage > 0) { //we only need to consider this for restock if it is restockable
-				if (atoi(arg) == -1 || atoi(arg) > torpedo->damage)
-					torpedo->count = torpedo->damage;
-				else if (atoi(arg) == -2)
+	for (i = 0; i < MAX_GENTITIES; i++) {
+		torpedo = &g_entities[i];
+
+		if (torpedo == NULL || torpedo->inuse == qfalse) {
+			continue;
+		}
+
+		if (torpedo->type != ENT_FX_TORPEDO) {
+			continue;
+		}
+
+		if (Q_stricmp(torpedo->targetname, target) == 0 || Q_stricmp(target, "all") == 0) {
+			if (torpedo->methodOfDeath > 0) { //we only need to consider this for restock if it is restockable
+				if (atoi(arg) == -1 || atoi(arg) > torpedo->methodOfDeath) {
+					torpedo->count = torpedo->methodOfDeath;
+				} else if (atoi(arg) == -2) {
 					torpedo->count = 0;
-				else
+				} else {
 					torpedo->count = atoi(arg);
+				}
 			}
 		}
-		return;
 	}
 }
 

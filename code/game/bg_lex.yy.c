@@ -1018,14 +1018,15 @@ YY_RULE_SETUP
 {
 	char *s = yytext; s++;
 	yyextra->type = LMT_STRING;
-	yyextra->data.str = yytext;
+	yytext[strlen(yytext)-1] = '\0';
+	yyextra->data.str = yytext + 1;
 	yyextra->column += strlen(yytext);
 	return LMT_STRING;
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 26 "code/game/bg_lex.lex"
+#line 27 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_INT;
 	yyextra->data.numInteger = atoi(yytext);
@@ -1035,7 +1036,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 32 "code/game/bg_lex.lex"
+#line 33 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_DOUBLE;
 	yyextra->data.numDouble = atof(yytext);
@@ -1045,7 +1046,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 38 "code/game/bg_lex.lex"
+#line 39 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = bgLex_textToSymbol(yytext);
@@ -1055,7 +1056,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 44 "code/game/bg_lex.lex"
+#line 45 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1071,7 +1072,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 57 "code/game/bg_lex.lex"
+#line 58 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1087,7 +1088,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 69 "code/game/bg_lex.lex"
+#line 70 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1103,7 +1104,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 81 "code/game/bg_lex.lex"
+#line 82 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1119,7 +1120,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 93 "code/game/bg_lex.lex"
+#line 94 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1135,7 +1136,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 105 "code/game/bg_lex.lex"
+#line 106 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1151,7 +1152,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 117 "code/game/bg_lex.lex"
+#line 118 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1167,7 +1168,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 129 "code/game/bg_lex.lex"
+#line 130 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1183,7 +1184,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 141 "code/game/bg_lex.lex"
+#line 142 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1199,7 +1200,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 154 "code/game/bg_lex.lex"
+#line 155 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1215,7 +1216,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 166 "code/game/bg_lex.lex"
+#line 167 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1231,7 +1232,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 178 "code/game/bg_lex.lex"
+#line 179 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1247,7 +1248,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 190 "code/game/bg_lex.lex"
+#line 191 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1263,7 +1264,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 202 "code/game/bg_lex.lex"
+#line 203 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1279,7 +1280,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 214 "code/game/bg_lex.lex"
+#line 215 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1295,7 +1296,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 226 "code/game/bg_lex.lex"
+#line 227 "code/game/bg_lex.lex"
 {
 	double a, b, c;
 
@@ -1311,7 +1312,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 238 "code/game/bg_lex.lex"
+#line 239 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1328,7 +1329,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 251 "code/game/bg_lex.lex"
+#line 252 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1345,7 +1346,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 264 "code/game/bg_lex.lex"
+#line 265 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1362,7 +1363,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 277 "code/game/bg_lex.lex"
+#line 278 "code/game/bg_lex.lex"
 { 
 	double a, b, c, d;
 
@@ -1379,7 +1380,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 290 "code/game/bg_lex.lex"
+#line 291 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1396,7 +1397,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 303 "code/game/bg_lex.lex"
+#line 304 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1413,7 +1414,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 316 "code/game/bg_lex.lex"
+#line 317 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1430,7 +1431,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 329 "code/game/bg_lex.lex"
+#line 330 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1447,7 +1448,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 342 "code/game/bg_lex.lex"
+#line 343 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1464,7 +1465,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 355 "code/game/bg_lex.lex"
+#line 356 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1481,7 +1482,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 368 "code/game/bg_lex.lex"
+#line 369 "code/game/bg_lex.lex"
 { 
 	double a, b, c, d;
 
@@ -1498,7 +1499,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 381 "code/game/bg_lex.lex"
+#line 382 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1515,7 +1516,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 394 "code/game/bg_lex.lex"
+#line 395 "code/game/bg_lex.lex"
 { 
 	double a, b, c, d;
 
@@ -1532,7 +1533,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 407 "code/game/bg_lex.lex"
+#line 408 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1549,7 +1550,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 420 "code/game/bg_lex.lex"
+#line 421 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1566,7 +1567,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 433 "code/game/bg_lex.lex"
+#line 434 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1583,7 +1584,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 446 "code/game/bg_lex.lex"
+#line 447 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1600,7 +1601,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 459 "code/game/bg_lex.lex"
+#line 460 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1617,7 +1618,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 472 "code/game/bg_lex.lex"
+#line 473 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1634,7 +1635,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 485 "code/game/bg_lex.lex"
+#line 486 "code/game/bg_lex.lex"
 { 
 	double a, b, c, d;
 
@@ -1651,7 +1652,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 498 "code/game/bg_lex.lex"
+#line 499 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1668,7 +1669,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 511 "code/game/bg_lex.lex"
+#line 512 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1685,7 +1686,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 524 "code/game/bg_lex.lex"
+#line 525 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1702,7 +1703,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 537 "code/game/bg_lex.lex"
+#line 538 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1719,7 +1720,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 550 "code/game/bg_lex.lex"
+#line 551 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1736,7 +1737,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 563 "code/game/bg_lex.lex"
+#line 564 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1753,7 +1754,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 576 "code/game/bg_lex.lex"
+#line 577 "code/game/bg_lex.lex"
 { 
 	double a, b, c, d;
 
@@ -1770,7 +1771,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 589 "code/game/bg_lex.lex"
+#line 590 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1787,7 +1788,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 602 "code/game/bg_lex.lex"
+#line 603 "code/game/bg_lex.lex"
 { 
 	double a, b, c, d;
 
@@ -1804,7 +1805,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 615 "code/game/bg_lex.lex"
+#line 616 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1821,7 +1822,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 628 "code/game/bg_lex.lex"
+#line 629 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1838,7 +1839,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 641 "code/game/bg_lex.lex"
+#line 642 "code/game/bg_lex.lex"
 {
 	double a, b, c, d;
 
@@ -1855,7 +1856,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 654 "code/game/bg_lex.lex"
+#line 655 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACEC;
@@ -1865,7 +1866,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 660 "code/game/bg_lex.lex"
+#line 661 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACEC;
@@ -1875,7 +1876,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 666 "code/game/bg_lex.lex"
+#line 667 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACE;
@@ -1885,7 +1886,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 672 "code/game/bg_lex.lex"
+#line 673 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACE;
@@ -1895,7 +1896,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 678 "code/game/bg_lex.lex"
+#line 679 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_OBRACESQ;
@@ -1905,7 +1906,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 684 "code/game/bg_lex.lex"
+#line 685 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_CBRACESQ;
@@ -1915,7 +1916,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 690 "code/game/bg_lex.lex"
+#line 691 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_SYMBOL;
 	yyextra->data.symbol = LSYM_SEMICOLON;
@@ -1925,7 +1926,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 696 "code/game/bg_lex.lex"
+#line 697 "code/game/bg_lex.lex"
 {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
@@ -1935,7 +1936,7 @@ YY_RULE_SETUP
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
-#line 701 "code/game/bg_lex.lex"
+#line 702 "code/game/bg_lex.lex"
 {
 	yyextra->line++;
 	yyextra->column = 0;
@@ -1944,7 +1945,7 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 707 "code/game/bg_lex.lex"
+#line 708 "code/game/bg_lex.lex"
 {
 	yyextra->type = LMT_EOF;
 	return LMT_EOF;
@@ -1952,7 +1953,7 @@ case YY_STATE_EOF(INITIAL):
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 711 "code/game/bg_lex.lex"
+#line 712 "code/game/bg_lex.lex"
 {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
@@ -1961,10 +1962,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 716 "code/game/bg_lex.lex"
+#line 717 "code/game/bg_lex.lex"
 ECHO;
 	YY_BREAK
-#line 1968 "code/game/bg_lex.yy.c"
+#line 1969 "code/game/bg_lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -3117,7 +3118,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 716 "code/game/bg_lex.lex"
+#line 717 "code/game/bg_lex.lex"
 
 
 

@@ -30,7 +30,7 @@ void func_wait_return_solid( gentity_t* self )
 {
 	G_LogFuncBegin();
 
-	if (self != NULL) {
+	if (self == NULL) {
 		/* this is very unlikely to happen, anyway safety first */
 		G_LocLogger(LL_ERROR, "self == NULL!\n");
 		G_LogFuncEnd();
@@ -76,7 +76,7 @@ void func_usable_think( gentity_t* self )
 {
 	G_LogFuncBegin();
 
-	if (self != NULL) {
+	if (self == NULL) {
 		/* this is very unlikely to happen, anyway safety first */
 		G_LocLogger(LL_ERROR, "self == NULL!\n");
 		G_LogFuncEnd();
@@ -106,7 +106,7 @@ void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator)
 {
 	G_LogFuncBegin();
 
-	if (self != NULL) {
+	if (self == NULL) {
 		/* this is very unlikely to happen, anyway safety first */
 		G_LocLogger(LL_ERROR, "self == NULL!\n");
 		G_LogFuncEnd();
@@ -208,7 +208,7 @@ void func_usable_pain(gentity_t* self, gentity_t* attacker, int damage)
 {
 	G_LogFuncBegin();
 
-	if (self != NULL) {
+	if (self == NULL) {
 		/* this is very unlikely to happen, anyway safety first */
 		G_LocLogger(LL_ERROR, "self == NULL!\n");
 		G_LogFuncEnd();
@@ -343,7 +343,7 @@ void SP_func_usable(gentity_t* self)
 {
 	G_LogFuncBegin();
 
-	if (self != NULL) {
+	if (self == NULL) {
 		/* this is very unlikely to happen, anyway safety first */
 		G_LocLogger(LL_ERROR, "self == NULL!\n");
 		G_LogFuncEnd();
