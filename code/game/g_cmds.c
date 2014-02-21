@@ -413,8 +413,9 @@ static void Cmd_Give_f(gentity_t *ent) {
 	}
 
 	//What the absolute fudge?! What the hell is causing the EVA Suit to activate!?
-	if (!(ent->flags & FL_EVOSUIT))
+	if ((ent->flags & FL_EVOSUIT) == 0) {
 		ps->powerups[PW_EVOSUIT] = 0;
+	}
 }
 
 /*
