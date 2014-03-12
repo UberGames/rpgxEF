@@ -23,12 +23,12 @@ static int Vector_New(lua_State *L) {
 
 	v = (vec_t *)lua_newuserdata(L, sizeof(vec3_t));
 
-	luaL_getmetatable(L, "vector");
+	luaL_getmetatable(L, "game.vector");
 	lua_setmetatable(L, -2);
 
 	VectorClear(v);
 
-	return 0;
+	return 1;
 }
 
 /***
@@ -41,17 +41,20 @@ Create a new vector with the given values.
 */
 static int Vector_Construct(lua_State *L) {
 	vec_t *v;
+	float x = luaL_optnumber(L, 1, 0);
+	float y = luaL_optnumber(L, 2, 0);
+	float z = luaL_optnumber(L, 3, 0);
 
 	v = (vec_t *)lua_newuserdata(L, sizeof(vec3_t));
 
-	luaL_getmetatable(L, "vector");
+	luaL_getmetatable(L, "game.vector");
 	lua_setmetatable(L, -2);
 
-	v[0] = luaL_optnumber(L, 1, 0);
-	v[1] = luaL_optnumber(L, 2, 0);
-	v[2] = luaL_optnumber(L, 3, 0);
+	v[0] = x;
+	v[1] = y;
+	v[2] = z;
 
-	return 0;
+	return 1;
 }
 
 /***
@@ -67,8 +70,8 @@ static int Vector_Set(lua_State *L) {
 	v = Lua_GetVector(L, 1);
 
 	v[0] = luaL_optnumber(L, 2, 0);
-	v[0] = luaL_optnumber(L, 3, 0);
-	v[0] = luaL_optnumber(L, 4, 0);
+	v[1] = luaL_optnumber(L, 3, 0);
+	v[2] = luaL_optnumber(L, 4, 0);
 
 	return 0;
 }
@@ -511,8 +514,8 @@ static const luaL_Reg vector_ctor[] = {
 };
 
 static const luaL_Reg vector_meta[] = {
-	{ "__index",		Vector_Index			},
-	{ "__newindex",		Vector_NewIndex			},
+	//{ "__index",		Vector_Index			},
+	//{ "__newindex",		Vector_NewIndex		},
 	{ "__add",			Vector_AddOperator		},
 	{ "__sub",			Vector_SubOperator		},
 	{ "__mul",			Vector_DotOperator		},
@@ -537,7 +540,11 @@ static const luaL_Reg vector_meta[] = {
 };
 
 int Luaopen_Vector(lua_State *L) {
-	luaL_newmetatable(L, "vector");
+	luaL_newmetatable(L, "game.vector");
+
+	lua_pushstring(L, "__index");
+	lua_pushvalue(L, -2);
+	lua_settable(L, -3);
 
 	luaL_register(L, NULL, vector_meta);
 	luaL_register(L, "vector", vector_ctor);
@@ -550,7 +557,7 @@ void Lua_PushVector(lua_State *L, vec3_t v) {
 
 	vec = (vec_t *)lua_newuserdata(L, sizeof(vec3_t));
 
-	luaL_getmetatable(L, "vector");
+	luaL_getmetatable(L, "game.vector");
 	lua_setmetatable(L, -2);
 
 	VectorCopy(v, vec);
@@ -560,7 +567,7 @@ vec_t *Lua_GetVector(lua_State * L, int argNum)
 {
 	void           *ud;
 
-	ud = luaL_checkudata(L, argNum, "vector");
+	ud = luaL_checkudata(L, argNum, "game.vector");
 	luaL_argcheck(L, ud != NULL, argNum, "`vector' expected");
 	return (vec_t *) ud;
 }
@@ -573,7 +580,7 @@ int Lua_IsVector(lua_State * L, int idx)
 	{
 		if(lua_getmetatable(L, idx))
 		{
-			ud = luaL_checkudata(L, idx, "vector");
+			ud = luaL_checkudata(L, idx, "game.vector");
 			return (ud != NULL);
 		}
 	}
