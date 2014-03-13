@@ -403,6 +403,7 @@ static int Vector_AngleVectors(lua_State *L) {
 	return 0;
 }
 
+#if 0
 static int Vector_Index(lua_State *L) {
 	vec_t		*v;
 	const char	*i;
@@ -437,6 +438,7 @@ static int Vector_NewIndex(lua_State *L) {
 
 	return 1;
 }
+#endif
 
 static int Vector_AddOperator(lua_State *L) {
 	vec_t	*a, *b;

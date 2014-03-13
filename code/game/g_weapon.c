@@ -9,6 +9,7 @@
 #include "g_client.h"
 #include "g_missile.h"
 #include "g_logger.h"
+#include "g_lua.h"
 
 #define MAX_BEAM_HITS	4
 
@@ -1854,6 +1855,10 @@ void FireWeapon( gentity_t* ent, qboolean alt_fire )
 		projsize = WP_ShotSize[ent->s.weapon];
 	}
 	G_Weapon_CalcMuzzlePoint ( ent, forward, right, up, muzzle, projsize);
+
+#ifdef G_LUA
+	LuaHook_G_FireWeapon(ent - g_entities, muzzle, forward, (int)alt_fire, ent->s.weapon);
+#endif
 
 	/* fire the specific weapon */
 	switch( ent->s.weapon )

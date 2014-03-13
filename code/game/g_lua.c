@@ -456,6 +456,33 @@ lvm_t       *G_Lua_GetVM(lua_State * L)
 	return NULL;
 }
 
+void LuaHook_G_FireWeapon(int ent, vec3_t muzzle, vec3_t forward, int alt_fire, int weapon) {
+	int i;
+	lvm_t* vm = NULL;
+
+	for (i = 0; i < NUM_VMS; i++) {
+		vm = lVM[i];
+		if (vm != NULL) {
+			if (vm->id < 0) {
+				continue;
+			}
+
+			if (!G_Lua_GetFunction(vm, "FireWeapon")) {
+				continue;
+			}
+
+			lua_pushinteger(vm->L, ent);
+			Lua_PushVector(vm->L, muzzle);
+			Lua_PushVector(vm->L, forward);
+			lua_pushboolean(vm->L, alt_fire);
+			lua_pushinteger(vm->L, weapon);
+			if (!G_Lua_Call(vm, "FireWeapon", 5, 0)) {
+				continue;
+			}
+		}
+	}
+}
+
 void LuaHook_G_InitGame(int levelTime, unsigned int randomSeed, int restart)
 {
 	int             i;

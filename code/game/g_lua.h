@@ -262,6 +262,17 @@ int			Luaopen_Sound(lua_State *L);
 void LuaHook_G_InitGame(int leveltime, unsigned int randomseed, int restart);
 
 /**
+ * Lua hook for weapon firing.
+ *
+ * \param ent The player.
+ * \param muzzle The muzzle point.
+ * \param forwar The forward vector.
+ * \param alt_fire Indicator whether the shot is alternative fire mode.
+ * \param weapon Weapon number.
+ */
+void LuaHook_G_FireWeapon(int ent, vec3_t muzzle, vec3_t forward, int alt_fire, int weapon);
+
+/**
  *	Lua hook for Shutdown event.
  *
  *	\param restart is this a map restart?
