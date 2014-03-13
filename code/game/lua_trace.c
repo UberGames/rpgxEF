@@ -234,6 +234,45 @@ int Luaopen_Trace(lua_State *L) {
 	luaL_register(L, NULL, Trace_meta);
 	luaL_register(L, "trace", lib_trace);
 
+	/* Add constants */
+	lua_pushstring(L, "CONSTANTS");
+	lua_newtable(L);
+	Lua_RegConstInteger(L, CONTENTS_NONE);
+	Lua_RegConstInteger(L, CONTENTS_SOLID);
+	Lua_RegConstInteger(L, CONTENTS_LAVA);
+	Lua_RegConstInteger(L, CONTENTS_SLIME);
+	Lua_RegConstInteger(L, CONTENTS_WATER);
+	Lua_RegConstInteger(L, CONTENTS_FOG);
+	Lua_RegConstInteger(L, CONTENTS_LADDER);
+	Lua_RegConstInteger(L, CONTENTS_AREAPORTAL);
+	Lua_RegConstInteger(L, CONTENTS_PLAYERCLIP);
+	Lua_RegConstInteger(L, CONTENTS_MONSTERCLIP);
+	Lua_RegConstInteger(L, CONTENTS_SHOTCLIP);
+	Lua_RegConstInteger(L, CONTENTS_TELEPORTER);
+	Lua_RegConstInteger(L, CONTENTS_JUMPPAD);
+	Lua_RegConstInteger(L, CONTENTS_ITEM);
+	Lua_RegConstInteger(L, CONTENTS_CLUSTERPORTAL);
+	Lua_RegConstInteger(L, CONTENTS_DONOTENTER);
+	Lua_RegConstInteger(L, CONTENTS_BOTCLIP);
+	Lua_RegConstInteger(L, CONTENTS_ORIGIN);
+	Lua_RegConstInteger(L, CONTENTS_BODY);
+	Lua_RegConstInteger(L, CONTENTS_CORPSE);
+	Lua_RegConstInteger(L, CONTENTS_DETAIL);
+	Lua_RegConstInteger(L, CONTENTS_STRUCTURAL);
+	Lua_RegConstInteger(L, CONTENTS_TRANSLUCENT);
+	Lua_RegConstInteger(L, CONTENTS_TRIGGER);
+	Lua_RegConstInteger(L, CONTENTS_NODROP);
+	Lua_RegConstInteger(L, MASK_ALL);
+	Lua_RegConstInteger(L, MASK_SOLID);
+	Lua_RegConstInteger(L, MASK_PLAYERSOLID);
+	Lua_RegConstInteger(L, MASK_DEADSOLID);
+	Lua_RegConstInteger(L, MASK_WATER);
+	Lua_RegConstInteger(L, MASK_OPAQUE);
+	Lua_RegConstInteger(L, MASK_SHOT);
+	Lua_RegConstInteger(L, MASK_ONLYPLAYER);
+	Lua_RegConstInteger(L, MASK_BRUSHES);
+	lua_settable(L, -3);
+
 	return 1;
 }
 

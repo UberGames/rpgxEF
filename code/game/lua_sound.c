@@ -1,6 +1,7 @@
 // sound lib for lua
 
 #include "g_lua.h"
+#include "q_shared.h"
 
 #ifdef G_LUA
 
@@ -43,6 +44,21 @@ static const luaL_Reg lib_sound[] = {
 
 int Luaopen_Sound(lua_State *L) {
 	luaL_register(L, "sound", lib_sound);
+
+	/* add contants */
+	lua_pushstring(L, "CONSTANTS");
+	lua_newtable(L);
+	Lua_RegConstInteger(L, CHAN_ANNOUNCER);
+	Lua_RegConstInteger(L, CHAN_AUTO);
+	Lua_RegConstInteger(L, CHAN_BODY);
+	Lua_RegConstInteger(L, CHAN_ITEM);
+	Lua_RegConstInteger(L, CHAN_LOCAL);
+	Lua_RegConstInteger(L, CHAN_LOCAL_SOUND);
+	Lua_RegConstInteger(L, CHAN_MENU1);
+	Lua_RegConstInteger(L, CHAN_VOICE);
+	Lua_RegConstInteger(L, CHAN_WEAPON);
+	lua_settable(L, -3);
+
 	return 1;
 }
 #endif
