@@ -29,9 +29,7 @@ void DeathmatchScoreboardMessage(gentity_t* ent) {
 	int32_t	numSorted = 0;
 	int32_t scoreFlags = 0;
 
-	if (ent == NULL) {
-		return;
-	}
+	G_Assert(ent, (void)0);
 
 	// send the latest information on all clients
 	memset(entry, 0, 1024);
@@ -47,6 +45,8 @@ void DeathmatchScoreboardMessage(gentity_t* ent) {
 		int32_t	ping = 0;
 
 		cl = &level.clients[level.sortedClients[i]];
+
+		G_Assert(cl, (void)0);
 
 		if (cl->pers.connected == CON_CONNECTING) {
 			ping = -1;
@@ -83,6 +83,9 @@ void DeathmatchScoreboardMessage(gentity_t* ent) {
  * \return Whether cheats are allowed for the player or not.
  */
 static qboolean	CheatsOk(gentity_t* ent) {
+
+	G_Assert(ent, qfalse);
+
 	if (g_cheats.integer == 0 || IsAdmin(ent) == qfalse) {
 		G_PrintfClient(ent, "You can't use cheats in a Roleplay Session!\n");
 		return qfalse;
@@ -138,6 +141,10 @@ static char* ConcatArgs(int32_t start) {
  * \param out Sanitized string.
  */
 static void SanitizeString(char* in, char* out) {
+
+	G_Assert(in, (void)0);
+	G_Assert(out, (void)0);
+
 	while (*in) {
 		if (*in == 27) {
 			in += 2;		// skip color code
@@ -165,6 +172,9 @@ static int ClientNumberFromString(gentity_t* to, char* s) {
 	int32_t idnum = 0;
 	char s2[MAX_STRING_CHARS];
 	char n2[MAX_STRING_CHARS];
+
+	G_Assert(to, -1);
+	G_Assert(s, -1);
 
 	memset(s2, 0, MAX_STRING_CHARS);
 	memset(n2, 0, MAX_STRING_CHARS);
@@ -224,9 +234,8 @@ static void Cmd_Give_f(gentity_t *ent) {
 	gclient_t* client = NULL;
 	playerState_t* ps = NULL;
 
-	if (ent == NULL || ent->client == NULL) {
-		return;
-	}
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	memset(arg, 0, 64);
 	client = ent->client;
@@ -424,6 +433,8 @@ static void Cmd_Give_f(gentity_t *ent) {
  */
 static void Cmd_God_f(gentity_t* ent) {
 
+	G_Assert(ent, (void)0);
+
 #ifndef SQL
 	if (!IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
@@ -452,6 +463,8 @@ static void Cmd_God_f(gentity_t* ent) {
 // most likely not - GSIO
 static void Cmd_Notarget_f(gentity_t* ent) {
 
+	G_Assert(ent, (void)0);
+
 	if (IsAdmin(ent) == qfalse) {
 		return;
 	}
@@ -471,6 +484,9 @@ static void Cmd_Notarget_f(gentity_t* ent) {
  */
 static void Cmd_Noclip_f(gentity_t* ent) {
 	gclient_t* client = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
@@ -510,15 +526,17 @@ and sends over a command to the client to resize the view,
 hide the scoreboard, and take a special screenshot
 ==================
 */
-static void Cmd_LevelShot_f(gentity_t *ent) {
+static void Cmd_LevelShot_f(gentity_t* ent) {
+
+	G_Assert(ent, (void)0);
+
 	if (!CheatsOk(ent)) {
 		return;
 	}
 
 	// doesn't work in single player
 	if (g_gametype.integer != 0) {
-		trap_SendServerCommand(ent - g_entities,
-							   "print \"Must be in g_gametype 0 for levelshot\n\"");
+		G_PrintfClient(ent, "Must be in g_gametype 0 for levelshot\n");
 		return;
 	}
 
@@ -539,18 +557,26 @@ instead of making a new
 func, we can just tweak this one a bit. :)
 =================
 */
-int lastKillTime[MAX_CLIENTS];
-static void Cmd_Kill_f(gentity_t *ent) {
-	int		meansOfDeath = MOD_SUICIDE;		//Means of death set to suicide by default
-	char	deathMsg[MAX_STRING_TOKENS];	//The death message will never be this long, but just to be sure....
-	clientSession_t *sess = &ent->client->sess;
-	int		clientNum = ent->client->ps.clientNum;
-	playerState_t *ps = &ent->client->ps;
-	clientPersistant_t *pers = &ent->client->pers;
+int32_t lastKillTime[MAX_CLIENTS];
+static void Cmd_Kill_f(gentity_t* ent) {
+	int32_t	meansOfDeath = MOD_SUICIDE;		//Means of death set to suicide by default
+	char deathMsg[MAX_STRING_TOKENS];	//The death message will never be this long, but just to be sure....
+	clientSession_t* sess = NULL;
+	int32_t	clientNum = 0;
+	playerState_t* ps = NULL;
+	clientPersistant_t* pers = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	sess = &ent->client->sess;
+	clientNum = ent->client->ps.clientNum;
+	ps = &ent->client->ps;
+	pers = &ent->client->pers;
 
 	//RPG-X: Redtechie - haha too stupid to kill them selves!
 	if (g_classData[sess->sessionClass].isn00b) {
-		trap_SendServerCommand(ent - g_entities, "print \"Sorry, you're too n00bish to handle this command.\n\"");
+		G_PrintfClient(ent, "Sorry, you're too n00bish to handle this command.\n");
 		return;
 	}
 
@@ -579,7 +605,7 @@ static void Cmd_Kill_f(gentity_t *ent) {
 			meansOfDeath = MOD_CUSTOM_DIE;
 
 			//broadcast the message
-			trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " %s\n\" ", ent->client->pers.netname, deathMsg));
+			G_PrintfClientAll("%s" S_COLOR_WHITE " %s\n", ent->client->pers.netname, deathMsg);
 		}
 	}
 
@@ -605,12 +631,19 @@ static void Cmd_Kill_f(gentity_t *ent) {
 	}
 }
 
-void BroadcastTeamChange(gclient_t *client, int oldTeam) {
-	clientSession_t *sess = &client->sess;
-	clientPersistant_t *pers = &client->pers;
+void BroadcastTeamChange(gclient_t* client, int32_t oldTeam) {
+	clientSession_t* sess = NULL;
+	clientPersistant_t* pers = NULL;
+
+	G_Assert(client, (void)0);
+
+	sess = &client->sess;
+	pers = &client->pers;
+
 	if (levelExiting) {//no need to do this during level changes
 		return;
 	}
+
 	if (sess->sessionTeam == TEAM_RED) {
 		char	red_team[MAX_QPATH];
 		trap_GetConfigstring(CS_RED_GROUP, red_team, sizeof(red_team));
@@ -641,7 +674,10 @@ BroadCastClassChange
 Let everyone know about a team change
 =================
 */
-void BroadcastClassChange(gclient_t *client, pclass_t oldPClass) {
+void BroadcastClassChange(gclient_t* client, pclass_t oldPClass) {
+
+	G_Assert(client, (void)0);
+
 	if (levelExiting) {//no need to do this during level changes
 		return;
 	}
@@ -650,17 +686,20 @@ void BroadcastClassChange(gclient_t *client, pclass_t oldPClass) {
 		trap_SendServerCommand(-1, va("cp \"%.15s" S_COLOR_WHITE "%s\n\"", client->pers.netname, g_classData[client->sess.sessionClass].message));
 }
 
-qboolean SetTeam(gentity_t *ent, char *s) {
-	int					team, oldTeam;
-	gclient_t			*client;
-	int					clientNum;
-	spectatorState_t	specState;
-	int					specClient;
-	int					isBot;
-	char				info[MAX_INFO_STRING];
-	clientSession_t		*sess;
+qboolean SetTeam(gentity_t* ent, char* s) {
+	int32_t	team = 0;
+	int32_t oldTeam = 0;
+	gclient_t* client = NULL;
+	int32_t	clientNum = -1;
+	spectatorState_t specState;
+	int32_t specClient = 0;
+	int32_t isBot = 0;
+	char info[MAX_INFO_STRING];
+	clientSession_t* sess = NULL;
 	isBot = atoi(Info_ValueForKey(info, "skill"));
 
+	G_Assert(ent, qfalse);
+	G_Assert(s, qfalse);
 
 	//
 	// see what change is requested
@@ -668,28 +707,27 @@ qboolean SetTeam(gentity_t *ent, char *s) {
 	client = ent->client;
 
 	clientNum = client - level.clients;
-	specClient = 0;
 
 	specState = SPECTATOR_NOT;
 
 	sess = &client->sess;
 
-	if (g_gametype.integer >= GT_TEAM && !isBot) {
-		if (!(!Q_stricmp(s, "spectator") || !Q_stricmp(s, "s") || !Q_stricmp(s, "red") || !Q_stricmp(s, "r") || !Q_stricmp(s, "blue") || !Q_stricmp(s, "b"))) {
+	if (g_gametype.integer >= GT_TEAM && isBot == 0) {
+		if (!(Q_stricmp(s, "spectator") == 0 || Q_stricmp(s, "s") == 0 || Q_stricmp(s, "red") == 0 || Q_stricmp(s, "r") == 0 || Q_stricmp(s, "blue") == 0 || Q_stricmp(s, "b") == 0)) {
 			return qfalse;
 		}
 	}
 
-	if (!Q_stricmp(s, "spectator") || !Q_stricmp(s, "s")) {
+	if (Q_stricmp(s, "spectator") == 0 || Q_stricmp(s, "s") == 0) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
 		client->noclip = (qboolean)1;
 	} else if (g_gametype.integer >= GT_TEAM) {
 		// if running a team game, assign player to one of the teams
 		specState = SPECTATOR_NOT;
-		if (!Q_stricmp(s, "red") || !Q_stricmp(s, "r")) {
+		if (Q_stricmp(s, "red") == 0 || Q_stricmp(s, "r") == 0) {
 			team = TEAM_RED;
-		} else if (!Q_stricmp(s, "blue") || !Q_stricmp(s, "b")) {
+		} else if (Q_stricmp(s, "blue") == 0 || Q_stricmp(s, "b") == 0) {
 			team = TEAM_BLUE;
 		} else {
 			// pick the team with the least number of players
@@ -705,11 +743,9 @@ qboolean SetTeam(gentity_t *ent, char *s) {
 	}
 
 	// override decision if limiting the players
-	if (g_gametype.integer == GT_TOURNAMENT
-		&& level.numNonSpectatorClients >= 2) {
+	if (g_gametype.integer == GT_TOURNAMENT && level.numNonSpectatorClients >= 2) {
 		team = TEAM_SPECTATOR;
-	} else if (g_maxGameClients.integer > 0 &&
-			   level.numNonSpectatorClients >= g_maxGameClients.integer) {
+	} else if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer) {
 		team = TEAM_SPECTATOR;
 	}
 
@@ -735,6 +771,7 @@ qboolean SetTeam(gentity_t *ent, char *s) {
 		G_Client_Die(ent, NULL, NULL, 100000, MOD_RESPAWN);
 
 	}
+
 	// they go to the end of the line for tournements
 	if (team == TEAM_SPECTATOR) {
 		sess->spectatorTime = level.time;
@@ -754,9 +791,9 @@ qboolean SetTeam(gentity_t *ent, char *s) {
 	return qtrue;
 }
 
-char *ClassNameForValue(pclass_t pClass) {
+char* ClassNameForValue(pclass_t pClass) {
 	static char buffer[MAX_QPATH];
-	char *ptr;
+	char *ptr = NULL;
 
 	trap_Cvar_VariableStringBuffer(va("rpg_%sPass", g_classData[pClass].consoleName), buffer, sizeof(buffer));
 
@@ -779,11 +816,11 @@ More effective code recycling. :)
 
 pclass_t ValueNameForClass(char* s) {
 
-	pclass_t	pclass;
-	char		buffer[MAX_QPATH];
+	pclass_t pclass;
+	char buffer[MAX_QPATH];
 
 	for (pclass = 0; pclass < MAX_CLASSES; pclass++) {
-		if (!g_classData[pclass].consoleName[0])
+		if (g_classData[pclass].consoleName[0] == 0)
 			break;
 
 		trap_Cvar_VariableStringBuffer(va("rpg_%sPass", g_classData[pclass].consoleName), buffer, sizeof(buffer));
@@ -816,14 +853,14 @@ static char* ClassForValueName(pclass_t pclass) {
 SetClass
 =================
 */
-qboolean SetClass(gentity_t *ent, char *s, /*@null@*/ char *teamName, qboolean SaveToCvar) {
-	int					pclass, oldPClass;
-	gclient_t			*client;
-	int					clientNum;
-	qboolean			wasAdmin = ent->client->LoggedAsAdmin;
-	clientSession_t		*sess;
-	playerState_t		*ps;
-	//int OldType;
+qboolean SetClass(gentity_t* ent, char* s, /*@null@*/ char* teamName, qboolean SaveToCvar) {
+	int32_t pclass = 0;
+	int32_t oldPClass = 0;
+	gclient_t* client = NULL;
+	int32_t clientNum = -1;
+	qboolean wasAdmin = ent->client->LoggedAsAdmin;
+	clientSession_t* sess = NULL;
+	playerState_t* ps = NULL;
 
 	//FIXME: check for appropriate game mod being on first
 
@@ -833,9 +870,9 @@ qboolean SetClass(gentity_t *ent, char *s, /*@null@*/ char *teamName, qboolean S
 	// see what change is requested
 	//
 
-	if (s == NULL || ent == NULL) {
-		return qfalse;
-	}
+	G_Assert(ent, qfalse);
+	G_Assert(s, qfalse);
+	G_Assert(ent->client, qfalse);
 
 	client = ent->client;
 
@@ -931,9 +968,16 @@ qboolean SetClass(gentity_t *ent, char *s, /*@null@*/ char *teamName, qboolean S
 	return qtrue;
 }
 
-void StopFollowing(gentity_t *ent) {
-	playerState_t *ps = &ent->client->ps;
-	clientSession_t *sess = &ent->client->sess;
+void StopFollowing(gentity_t* ent) {
+	playerState_t* ps = NULL;
+	clientSession_t* sess = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	ps = &ent->client->ps;
+	sess = &ent->client->sess;
+
 	ps->persistant[PERS_TEAM] = TEAM_SPECTATOR;
 	sess->sessionTeam = TEAM_SPECTATOR;
 	sess->spectatorState = SPECTATOR_FREE;
@@ -949,13 +993,17 @@ void StopFollowing(gentity_t *ent) {
 Cmd_Team_f
 =================
 */
-static void Cmd_Team_f(gentity_t *ent) {
-	int			oldTeam;
-	char		s[MAX_TOKEN_CHARS];
-	char		send[100];
-	gentity_t	*other;
-	clientSession_t *sess = &ent->client->sess;
+static void Cmd_Team_f(gentity_t* ent) {
+	int32_t oldTeam = 0;
+	char s[MAX_TOKEN_CHARS];
+	char send[100];
+	gentity_t* other = NULL;
+	clientSession_t* sess = NULL;
 	qboolean voted = qfalse;
+
+	G_Assert(ent, (void)0);
+
+	sess = &ent->client->sess;
 
 	//RPG-X: Redtechie - haha to stupid to change teams!
 	if (g_classData[sess->sessionClass].isn00b) {
@@ -1009,7 +1057,7 @@ static void Cmd_Team_f(gentity_t *ent) {
 	SetTeam(ent, s);
 
 	// restore previous vote state if a vote is running
-	if (voted && level.voteTime) {
+	if (voted && level.voteTime != 0) {
 		ent->client->ps.eFlags |= EF_VOTED;
 	}
 
@@ -1030,10 +1078,13 @@ Cmd_Ready_f
 *	when all clients have signaled ready, the game continues to the next match.
 *  \param ent A player.
 */
-void Cmd_Ready_f(gentity_t *ent) {
-	gclient_t *client;
-	client = ent->client;
+void Cmd_Ready_f(gentity_t* ent) {
+	gclient_t* client = NULL;
 
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	client = ent->client;
 	client->readyToExit = qtrue;
 }
 
@@ -1042,29 +1093,30 @@ void Cmd_Ready_f(gentity_t *ent) {
 Cmd_Class_f
 =================
 */
-static void Cmd_Class_f(gentity_t *ent) {
-	int			OldScoreclass;
-	char		s[MAX_TOKEN_CHARS];
-	char		send[100];
-	gentity_t	*other;
-	char		*className;
-	gclient_t	*client;
-	clientSession_t *sess;
-	playerState_t *ps;
+static void Cmd_Class_f(gentity_t* ent) {
+	int32_t	OldScoreclass = 0;
+	char s[MAX_TOKEN_CHARS];
+	char send[100];
+	gentity_t* other = NULL;
+	char* className = NULL;
+	gclient_t* client = NULL;
+	clientSession_t* sess = NULL;
+	playerState_t* ps = NULL;
 
-	if (!ent || !ent->client)
-		return;
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
-	if (ent->flags & FL_CLAMPED)
+	if ((ent->flags & FL_CLAMPED) != 0) {
 		return;
+	}
 
 	client = ent->client;
 	sess = &client->sess;
 	ps = &client->ps;
 
 	//RPG-X: Marcin - fragger respawn prevention - 03/01/2009
-	if ((ent->s.eFlags & EF_DEAD) && (client->fraggerTime != -1) && (client->fraggerTime > level.time)) {
-		trap_SendServerCommand(ent - g_entities, "print \"Sorry, you can't directly respawn after having been caught fragging.\n\"");
+	if ((ent->s.eFlags & EF_DEAD) != 0 && (client->fraggerTime != -1) && (client->fraggerTime > level.time)) {
+		G_PrintfClient(ent, "Sorry, you can't directly respawn after having been caught fragging.\n");
 		return;
 	}
 
@@ -1081,7 +1133,7 @@ static void Cmd_Class_f(gentity_t *ent) {
 			}
 		}
 
-		trap_SendServerCommand(ent - g_entities, "print \"Sorry, you're too n00bish to handle this command.\n\"");
+		G_PrintfClient(ent, "Sorry, you're too n00bish to handle this command.\n");
 		return;
 	}
 
@@ -1090,7 +1142,7 @@ static void Cmd_Class_f(gentity_t *ent) {
 	if (trap_Argc() == 1) {
 		className = g_classData[sess->sessionClass].formalName;
 
-		trap_SendServerCommand(ent - g_entities, va("print \"\nCurrent Class: %s\nUsage: Changes the user to a different class\nCommand: Class <Class Name>\n\nType '/classlist' into the console for a more complete list\n\"", className));
+		G_PrintfClient(ent, "\nCurrent Class : %s\nUsage : Changes the user to a different class\nCommand : Class <Class Name>\n\nType '/classlist' into the console for a more complete list\n", className);
 		return;
 	}
 
@@ -1112,19 +1164,21 @@ static void Cmd_Class_f(gentity_t *ent) {
 Cmd_Cloak_f
 =================
 */
-static void Cmd_Cloak_f(gentity_t *ent) {
-	char			arg[16];
-	char			*msg;
-	playerState_t	*ps;
+static void Cmd_Cloak_f(gentity_t* ent) {
+	char arg[16];
+	char* msg = NULL;
+	playerState_t* ps = NULL;
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CLOAK) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropiate rights.\n")
 		return;
 	}
 #endif
@@ -1132,7 +1186,7 @@ static void Cmd_Cloak_f(gentity_t *ent) {
 	ps = &ent->client->ps;
 
 	trap_Argv(1, arg, sizeof(arg));
-	if (!arg[0]) {
+	if (arg[0] == 0) {
 		G_PrintfClient(ent, "Usage: cloak 1 = cloak silent, cloak 0 = qflash\n");
 		return;
 	}
@@ -1140,7 +1194,7 @@ static void Cmd_Cloak_f(gentity_t *ent) {
 	G_AddEvent(ent, EV_SET_CLOAK, atoi(arg)); //GSIO01 I know this sucks but at least it works
 
 	ent->flags ^= FL_CLOAK;
-	if (!(ent->flags & FL_CLOAK)) {
+	if ((ent->flags & FL_CLOAK) == 0) {
 		msg = "Cloak Is Off\n";
 		ps->powerups[PW_INVIS] = level.time;
 	} else {
@@ -1148,8 +1202,7 @@ static void Cmd_Cloak_f(gentity_t *ent) {
 		ps->powerups[PW_INVIS] = INT_MAX;
 	}
 
-	trap_SendServerCommand(ent - g_entities, va("print \"%s\"", msg));
-
+	G_PrintfClient(ent, "%s", msg);
 }
 
 /*
@@ -1160,9 +1213,11 @@ Phenix - 8/8/2004
 =================
 */
 // Harry -- Can not call this from ingame...
-static void Cmd_EvoSuit_f(gentity_t *ent) {
-	char		*msg;
-	playerState_t *ps;
+static void Cmd_EvoSuit_f(gentity_t* ent) {
+	char* msg = NULL;
+	playerState_t* ps = NULL;
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
@@ -1179,7 +1234,7 @@ static void Cmd_EvoSuit_f(gentity_t *ent) {
 	ps = &ent->client->ps;
 
 	ent->flags ^= FL_EVOSUIT;
-	if (!(ent->flags & FL_EVOSUIT)) {
+	if ((ent->flags & FL_EVOSUIT) == 0) {
 		msg = "You have taken an EVA Suit off\n";
 		ps->powerups[PW_EVOSUIT] = 0; //level.time;   //eh? who put this here? -J2J
 	} else {
