@@ -4457,10 +4457,6 @@ static const luaL_Reg Entity_meta[] = {
 	{ NULL,							NULL							}
 };
 
-/*void dummy(gentity_t *ent) {
-	ent->timestamp;
-}*/
-
 int Luaopen_Entity(lua_State * L)
 {
 	luaL_newmetatable(L, "game.entity");
