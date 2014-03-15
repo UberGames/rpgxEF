@@ -247,7 +247,7 @@ static void Cmd_Give_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_GIVE) ) {
-		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropiate rights.\n");
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -391,32 +391,32 @@ static void Cmd_Give_f(gentity_t *ent) {
 
 		case TYPE_POWERUP:
 		{
-			int32_t flag = 0;
-			int32_t arrayNum = 0;
+							 int32_t flag = 0;
+							 int32_t arrayNum = 0;
 
-			if (!Q_stricmp(item->consoleName, "god")) {
-				flag = FL_GODMODE;
-				arrayNum = -1;
-			} else if (!Q_stricmp(item->consoleName, "cloak")) {
-				flag = FL_CLOAK;
-				arrayNum = PW_INVIS;
-			} else if (!Q_stricmp(item->consoleName, "flight")) {
-				flag = FL_FLY;
-				arrayNum = PW_FLIGHT;
-			} else if (!Q_stricmp(item->consoleName, "evasuit")) {
-				flag = FL_FLY;
-				arrayNum = PW_FLIGHT;
-			}
+							 if (!Q_stricmp(item->consoleName, "god")) {
+								 flag = FL_GODMODE;
+								 arrayNum = -1;
+							 } else if (!Q_stricmp(item->consoleName, "cloak")) {
+								 flag = FL_CLOAK;
+								 arrayNum = PW_INVIS;
+							 } else if (!Q_stricmp(item->consoleName, "flight")) {
+								 flag = FL_FLY;
+								 arrayNum = PW_FLIGHT;
+							 } else if (!Q_stricmp(item->consoleName, "evasuit")) {
+								 flag = FL_FLY;
+								 arrayNum = PW_FLIGHT;
+							 }
 
-			targEnt->flags ^= flag;
+							 targEnt->flags ^= flag;
 
-			if (arrayNum >= 0) {
-				if (targEnt->flags & flag) {
-					ps->powerups[arrayNum] = level.time + 10000000;
-				} else {
-					ps->powerups[arrayNum] = level.time;
-				}
-			}
+							 if (arrayNum >= 0) {
+								 if (targEnt->flags & flag) {
+									 ps->powerups[arrayNum] = level.time + 10000000;
+								 } else {
+									 ps->powerups[arrayNum] = level.time;
+								 }
+							 }
 		}
 			break;
 	}
@@ -442,7 +442,7 @@ static void Cmd_God_f(gentity_t* ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_GOD) ) {
-		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropiate rights.\n");
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -495,7 +495,7 @@ static void Cmd_Noclip_f(gentity_t* ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_NOCLIP) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" ") );
 		return;
 	}
 #endif
@@ -1178,8 +1178,8 @@ static void Cmd_Cloak_f(gentity_t* ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CLOAK) ) {
-		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropiate rights.\n")
-		return;
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n")
+			return;
 	}
 #endif
 
@@ -1226,7 +1226,7 @@ static void Cmd_EvoSuit_f(gentity_t* ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_EVOSUIT) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" ") );
 		return;
 	}
 #endif
@@ -1252,9 +1252,11 @@ static void Cmd_EvoSuit_f(gentity_t* ent) {
 Cmd_Flight_f
 =================
 */
-static void Cmd_Flight_f(gentity_t *ent) {
-	char		*msg;
-	playerState_t *ps;
+static void Cmd_Flight_f(gentity_t* ent) {
+	char* msg = NULL;
+	playerState_t* ps = NULL;
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
@@ -1263,7 +1265,7 @@ static void Cmd_Flight_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FLIGHT) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" ") );
 		return;
 	}
 #endif
@@ -1271,7 +1273,7 @@ static void Cmd_Flight_f(gentity_t *ent) {
 	ps = &ent->client->ps;
 
 	ent->flags ^= FL_FLY;
-	if (!(ent->flags & FL_FLY)) {
+	if ((ent->flags & FL_FLY) == 0) {
 		msg = "Flight Is Off\n";
 		ps->powerups[PW_FLIGHT] = level.time;
 	} else {
@@ -1281,12 +1283,15 @@ static void Cmd_Flight_f(gentity_t *ent) {
 	trap_SendServerCommand(ent - g_entities, va("print \"%s\"", msg));
 }
 
-void Cmd_FollowCycle_f(gentity_t *ent, int dir) {
-	int		clientnum;
-	int		original;
-	clientSession_t *sess;
+void Cmd_FollowCycle_f(gentity_t* ent, int32_t dir) {
+	int32_t clientnum = -1;
+	int32_t original = 0;
+	clientSession_t* sess = NULL;
 
-	if (ent->r.svFlags&SVF_BOT) {//bots can't follow!
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	if ((ent->r.svFlags & SVF_BOT) != 0) {//bots can't follow!
 		return;
 	}
 
@@ -1342,19 +1347,27 @@ void Cmd_FollowCycle_f(gentity_t *ent, int dir) {
 Same Class
 ==================
 */
-static qboolean OnSameClass(gentity_t *ent1, gentity_t *ent2) {
-	gclient_t *client1 = ent1->client;
-	gclient_t *client2 = ent2->client;
-	clientSession_t *sess1 = &client1->sess;
-	clientSession_t *sess2 = &client2->sess;
+static qboolean OnSameClass(gentity_t* ent1, gentity_t* ent2) {
+	gclient_t* client1 = NULL;
+	gclient_t* client2 = NULL;
+	clientSession_t* sess1 = NULL;
+	clientSession_t* sess2 = NULL;
 
-	if (!client1 || !client2) {
-		if (!client1 && !client2) {
-			if (ent1->classname && ent2->classname && atoi(ent1->classname) == atoi(ent2->classname)) {
+	G_Assert(ent1, qfalse);
+	G_Assert(ent2, qfalse);
+
+	client1 = ent1->client;
+	client2 = ent2->client;
+	sess1 = &ent1->client->sess;
+	sess2 = &ent2->client->sess;
+
+	if (client1 == NULL || client2 == NULL) {
+		if (client1 == NULL && client2 == NULL) {
+			if (ent1->classname != NULL && ent2->classname != NULL && atoi(ent1->classname) == atoi(ent2->classname)) {
 				return qtrue;
 			}
-		} else if (!client1) {
-			if (ent1->classname && atoi(ent1->classname) == sess2->sessionClass) {
+		} else if (client1 == NULL) {
+			if (ent1->classname != NULL && atoi(ent1->classname) == sess2->sessionClass) {
 				return qtrue;
 			}
 		} else {
@@ -1388,16 +1401,16 @@ G_Say
 #define SAY_TELL2	6
 #define SAY_AREA	7
 
-static void G_SayTo(gentity_t *ent, gentity_t *other, int mode, int color, const char *name, const char *message) {
-	clientSession_t *sess;
+static void G_SayTo(gentity_t* ent, gentity_t* other, int32_t mode, int32_t color, const char* name, const char* message) {
+	clientSession_t*sess = NULL;
 
-	if (!other) {
-		return;
-	}
+	G_Assert(ent, (void)0);
+	G_Assert(other, (void)0);
+	G_Assert(other->client, (void)0);
+	G_Assert(name, (void)0);
+	G_Assert(message, (void)0);
+
 	if (!other->inuse) {
-		return;
-	}
-	if (!other->client) {
 		return;
 	}
 
@@ -1417,8 +1430,8 @@ static void G_SayTo(gentity_t *ent, gentity_t *other, int mode, int color, const
 	}
 
 	//RPG-X: RedTechie - N00B's cant chat at all
-	if (g_classData[sess->sessionClass].isn00b/*ent->client->sess.sessionClass == PC_N00B*/) {
-		trap_SendServerCommand(ent - g_entities, "print \"[You're too stupid to use this command]\n\"");
+	if (g_classData[sess->sessionClass].isn00b) {
+		G_PrintfClient(ent, "[You're too stupid to use this command]\n");
 		return;
 	}
 
@@ -1428,24 +1441,29 @@ static void G_SayTo(gentity_t *ent, gentity_t *other, int mode, int color, const
 		return;
 	}
 
-	trap_SendServerCommand(other - g_entities, va("%s \"%s%c%c%s\"",
-		mode == SAY_TEAM ? "tchat" : "chat",
-		name, Q_COLOR_ESCAPE, color, message));
+	trap_SendServerCommand(other - g_entities, va("%s \"%s%c%c%s\"", mode == SAY_TEAM ? "tchat" : "chat", name, Q_COLOR_ESCAPE, color, message));
 }
 
-static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatText) {
-	int			j;
-	gentity_t	*other;
-	int			color;
-	char		name[80];
-	char		text[150];
-	char		location[64];
-	char		*className;
-	gclient_t	*entClient = ent->client;
-	gclient_t	*tarClient = NULL;
-	clientPersistant_t *entPers = &entClient->pers;
+static void G_Say(gentity_t* ent, gentity_t* target, int32_t mode, const char* chatText) {
+	int32_t j = 0;
+	gentity_t* other = NULL;
+	int32_t color = 0;
+	char name[80];
+	char text[150];
+	char location[64];
+	char* className = NULL;
+	gclient_t* entClient = NULL;
+	gclient_t* tarClient = NULL;
+	clientPersistant_t *entPers = NULL;
 	clientPersistant_t *tarPers = NULL;
-	clientSession_t *entSess = &entClient->sess;
+	clientSession_t *entSess = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	entClient = ent->client;
+	entPers = &ent->client->pers;
+	entSess = &ent->client->sess;
 
 	if (target && target->client) {
 		tarClient = target->client;
@@ -1465,7 +1483,7 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
 	}
 
 	if (ent->voiceChatSquelch >= 30000) {
-		trap_SendServerCommand(ent - g_entities, "print \"^1Spam Protection^7: Chat Ignored\n\"");
+		G_PrintfClient(ent, "^1Spam Protection^7: Chat Ignored\n");
 		if (rpg_kickspammers.integer > 0) {
 			entPers->kickCount++;
 			if (entPers->kickCount >= rpg_kickspammers.integer) {
@@ -1536,23 +1554,27 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
 
 	Q_strncpyz(text, chatText, sizeof(text));
 
-	if (target) {
+	if (target != NULL) {
 		G_SayTo(ent, target, mode, color, name, text);
 		return;
 	}
 
 	// echo the text to the console
-	if (g_dedicated.integer) {
+	if (g_dedicated.integer != 0) {
 		G_Printf("%s%s\n", name, text);
 	}
 
 	// send it to all the apropriate clients
 	for (j = level.maxclients - 1; j > -1; j--) { //GSIO changed from i++ to i--
 		other = &g_entities[j];
-		if (!other)
+
+		if (other == NULL) {
 			continue;
-		if (!other->client)
+		}
+
+		if (other->client == NULL) {
 			continue;
+		}
 
 		G_SayTo(ent, other, mode, color, name, text);
 	}
@@ -1564,12 +1586,17 @@ Cmd_SayArea
 ==================
 */
 //RPG-X: J2J - Wrote the say area function becuase the Say function is bloated and wierd memory errors appear.
-static void Cmd_SayArea(gentity_t *ent, char* text) {
+static void Cmd_SayArea(gentity_t* ent, char* text) {
+	gentity_t* OtherPlayer = NULL;			//Entity pointers to other players in game (used in loop)
+	int32_t i = 0;						//Loop Counter
+	gclient_t* client = NULL;
+	clientPersistant_t* pers = NULL;
 
-	gentity_t*			OtherPlayer;			//Entity pointers to other players in game (used in loop)
-	int					i;						//Loop Counter
-	gclient_t*			client = ent->client;
-	clientPersistant_t* pers = &client->pers;
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	client = ent->client;
+	pers = &ent->client->pers;
 
 	if (g_dedicated.integer) {
 		G_Printf("%s said to area: %s\n", pers->netname, text);
@@ -1613,8 +1640,10 @@ static void Cmd_SayArea(gentity_t *ent, char* text) {
 Cmd_Say_f
 ==================
 */
-static void Cmd_Say_f(gentity_t *ent, int mode, qboolean arg0) {
-	char		*p;
+static void Cmd_Say_f(gentity_t* ent, int32_t mode, qboolean arg0) {
+	char* p = NULL;
+
+	G_Assert(ent, (void)0);
 
 	if (trap_Argc() < 2 && !arg0) {
 		return;
@@ -1637,11 +1666,14 @@ static void Cmd_Say_f(gentity_t *ent, int mode, qboolean arg0) {
 Cmd_Tell_f
 ==================
 */
-static void Cmd_Tell_f(gentity_t *ent) {
-	int			targetNum;
-	gentity_t	*target;
-	char		*p;
-	char		arg[MAX_TOKEN_CHARS];
+static void Cmd_Tell_f(gentity_t* ent) {
+	int32_t targetNum = 0;
+	gentity_t* target = NULL;
+	char* p = NULL;
+	char arg[MAX_TOKEN_CHARS];
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	if (trap_Argc() < 2) {
 		return;
@@ -1654,7 +1686,11 @@ static void Cmd_Tell_f(gentity_t *ent) {
 	}
 
 	target = &g_entities[targetNum];
-	if (!target || !target->inuse || !target->client) {
+
+	G_Assert(target, (void)0);
+	G_Assert(target->client, (void)0);
+
+	if (!target->inuse) {
 		return;
 	}
 
@@ -1667,7 +1703,7 @@ static void Cmd_Tell_f(gentity_t *ent) {
 }
 
 
-static char	*gc_orders[] = {
+static char* gc_orders[] = {
 	"hold your position",
 	"hold this position",
 	"come here",
@@ -1677,10 +1713,12 @@ static char	*gc_orders[] = {
 	"report"
 };
 
-static void Cmd_GameCommand_f(gentity_t *ent) {
-	int		player;
-	int		order;
-	char	str[MAX_TOKEN_CHARS];
+static void Cmd_GameCommand_f(gentity_t* ent) {
+	int32_t	player = 0;
+	int32_t	order = 0;
+	char str[MAX_TOKEN_CHARS];
+
+	G_Assert(ent, (void)0);
 
 	trap_Argv(1, str, sizeof(str));
 	player = atoi(str);
@@ -1703,7 +1741,8 @@ Cmd_Where_f
 ==================
 */
 static void Cmd_Where_f(gentity_t *ent) {
-	trap_SendServerCommand(ent - g_entities, va("print \"%s\n\"", vtos(ent->s.origin)));
+	G_Assert(ent, (void)0);
+	G_PrintfClient(ent, "%s\n", vtos(ent->s.origin));
 }
 
 
@@ -1712,18 +1751,20 @@ static void Cmd_Where_f(gentity_t *ent) {
 Cmd_CallVote_f
 ==================
 */
-static void Cmd_CallVote_f(gentity_t *ent) {
-	int		i;
-	char	arg1[MAX_STRING_TOKENS];
-	char	arg2[MAX_STRING_TOKENS];
+static void Cmd_CallVote_f(gentity_t* ent) {
+	int32_t i = 0;
+	char arg1[MAX_STRING_TOKENS];
+	char arg2[MAX_STRING_TOKENS];
 
-	if (!g_allowVote.integer) {
-		trap_SendServerCommand(ent - g_entities, "print \"Voting not allowed here.\n\"");
+	G_Assert(ent, (void)0);
+
+	if (g_allowVote.integer == 0) {
+		G_PrintfClient(ent, "Voting not allowed here.\n");
 		return;
 	}
 
-	if (level.voteTime) {
-		trap_SendServerCommand(ent - g_entities, "print \"A vote is already in progress.\n\"");
+	if (level.voteTime != 0) {
+		G_PrintfClient(ent, "A vote is already in progress.\n");
 		return;
 	}
 
@@ -1731,40 +1772,40 @@ static void Cmd_CallVote_f(gentity_t *ent) {
 	trap_Argv(1, arg1, sizeof(arg1));
 	trap_Argv(2, arg2, sizeof(arg2));
 
-	if (strchr(arg1, ';') || strchr(arg2, ';')) {
-		trap_SendServerCommand(ent - g_entities, "print \"Invalid Vote.\n\"");
+	if (strchr(arg1, ';') != NULL || strchr(arg2, ';') != NULL) {
+		G_PrintfClient(ent, "Invalid Vote.\n");
 		return;
 	}
 
-	if (!Q_stricmp(arg1, "map_restart")) {
-	} else if (!Q_stricmp(arg1, "map")) {
-	} else if (!Q_stricmp(arg1, "kick") && rpg_allowvote.integer > 0) {
+	if (Q_stricmp(arg1, "map_restart") == 0) {
+	} else if (Q_stricmp(arg1, "map") == 0) {
+	} else if (Q_stricmp(arg1, "kick") == 0 && rpg_allowvote.integer > 0) {
 	} else {
-		trap_SendServerCommand(ent - g_entities, "print \"Invalid Vote Command.\n\"");
+		G_PrintfClient(ent, "Invalid Vote Command.\n");
 		return;
 	}
 
 	if (rpg_allowspmaps.integer != 1) {
-		if (!Q_stricmp(arg1, "map") &&
-			(!Q_stricmp(arg2, "_brig")
-			|| !Q_stricmp(arg2, "_holodeck_camelot") || !Q_stricmp(arg2, "_holodeck_firingrange") || !Q_stricmp(arg2, "_holodeck_garden") || !Q_stricmp(arg2, "_holodeck_highnoon") || !Q_stricmp(arg2, "_holodeck_minigame") || !Q_stricmp(arg2, "_holodeck_proton") || !Q_stricmp(arg2, "_holodeck_proton2") || !Q_stricmp(arg2, "_holodeck_temple") || !Q_stricmp(arg2, "_holodeck_warlord")
-			|| !Q_stricmp(arg2, "borg1") || !Q_stricmp(arg2, "borg2") || !Q_stricmp(arg2, "borg3") || !Q_stricmp(arg2, "borg4") || !Q_stricmp(arg2, "borg5") || !Q_stricmp(arg2, "borg6")
-			|| !Q_stricmp(arg2, "dn1") || !Q_stricmp(arg2, "dn2") || !Q_stricmp(arg2, "dn3") || !Q_stricmp(arg2, "dn4") || !Q_stricmp(arg2, "dn5") || !Q_stricmp(arg2, "dn6") || !Q_stricmp(arg2, "dn8")
-			|| !Q_stricmp(arg2, "forge1") || !Q_stricmp(arg2, "forge2") || !Q_stricmp(arg2, "forge3") || !Q_stricmp(arg2, "forge4") || !Q_stricmp(arg2, "forge5") || !Q_stricmp(arg2, "forgeboss")
-			|| !Q_stricmp(arg2, "holodeck")
-			|| !Q_stricmp(arg2, "scav1") || !Q_stricmp(arg2, "scav2") || !Q_stricmp(arg2, "scav3") || !Q_stricmp(arg2, "scav3b") || !Q_stricmp(arg2, "scav4") || !Q_stricmp(arg2, "scav5") || !Q_stricmp(arg2, "scavboss")
-			|| !Q_stricmp(arg2, "stasis1") || !Q_stricmp(arg2, "stasis2") || !Q_stricmp(arg2, "stasis3")
-			|| !Q_stricmp(arg2, "tour/deck01") || !Q_stricmp(arg2, "tour/deck02") || !Q_stricmp(arg2, "tour/deck03") || !Q_stricmp(arg2, "tour/deck04") || !Q_stricmp(arg2, "tour/deck05") || !Q_stricmp(arg2, "tour/deck08") || !Q_stricmp(arg2, "tour/deck09") || !Q_stricmp(arg2, "tour/deck10") || !Q_stricmp(arg2, "tour/deck11") || !Q_stricmp(arg2, "tour/deck15")
-			|| !Q_stricmp(arg2, "tutorial")
-			|| !Q_stricmp(arg2, "voy1") || !Q_stricmp(arg2, "voy13") || !Q_stricmp(arg2, "voy14") || !Q_stricmp(arg2, "voy15") || !Q_stricmp(arg2, "voy16") || !Q_stricmp(arg2, "voy17") || !Q_stricmp(arg2, "voy2") || !Q_stricmp(arg2, "voy20") || !Q_stricmp(arg2, "voy3") || !Q_stricmp(arg2, "voy4") || !Q_stricmp(arg2, "voy5") || !Q_stricmp(arg2, "voy6") || !Q_stricmp(arg2, "voy7") || !Q_stricmp(arg2, "voy8") || !Q_stricmp(arg2, "voy9"))) {
-			trap_SendServerCommand(ent - g_entities, "print \"Invalid Map.\n\"");
+		if (Q_stricmp(arg1, "map") == 0 &&
+			(Q_stricmp(arg2, "_brig") == 0
+			|| Q_stricmp(arg2, "_holodeck_camelot") == 0 || Q_stricmp(arg2, "_holodeck_firingrange") == 0 || Q_stricmp(arg2, "_holodeck_garden") == 0 || Q_stricmp(arg2, "_holodeck_highnoon") == 0 || Q_stricmp(arg2, "_holodeck_minigame") == 0 || Q_stricmp(arg2, "_holodeck_proton") == 0 || Q_stricmp(arg2, "_holodeck_proton2") == 0 || Q_stricmp(arg2, "_holodeck_temple") == 0 || Q_stricmp(arg2, "_holodeck_warlord") == 0
+			|| Q_stricmp(arg2, "borg1") == 0 || Q_stricmp(arg2, "borg2") == 0 || Q_stricmp(arg2, "borg3") == 0 || Q_stricmp(arg2, "borg4") == 0 || Q_stricmp(arg2, "borg5") == 0 || Q_stricmp(arg2, "borg6") == 0
+			|| Q_stricmp(arg2, "dn1") == 0 || Q_stricmp(arg2, "dn2") == 0 || Q_stricmp(arg2, "dn3") == 0 || Q_stricmp(arg2, "dn4") == 0 || Q_stricmp(arg2, "dn5") == 0 || Q_stricmp(arg2, "dn6") == 0 || Q_stricmp(arg2, "dn8") == 0
+			|| Q_stricmp(arg2, "forge1") == 0 || Q_stricmp(arg2, "forge2") == 0 || Q_stricmp(arg2, "forge3") == 0 || Q_stricmp(arg2, "forge4") == 0 || Q_stricmp(arg2, "forge5") == 0 || Q_stricmp(arg2, "forgeboss") == 0
+			|| Q_stricmp(arg2, "holodeck") == 0
+			|| Q_stricmp(arg2, "scav1") == 0 || Q_stricmp(arg2, "scav2") == 0 || Q_stricmp(arg2, "scav3") == 0 || Q_stricmp(arg2, "scav3b") == 0 || Q_stricmp(arg2, "scav4") == 0 || Q_stricmp(arg2, "scav5") == 0 || Q_stricmp(arg2, "scavboss") == 0
+			|| Q_stricmp(arg2, "stasis1") == 0 || Q_stricmp(arg2, "stasis2") == 0 || Q_stricmp(arg2, "stasis3") == 0
+			|| Q_stricmp(arg2, "tour/deck01") == 0 || Q_stricmp(arg2, "tour/deck02") == 0 || Q_stricmp(arg2, "tour/deck03") == 0 || Q_stricmp(arg2, "tour/deck04") == 0 || Q_stricmp(arg2, "tour/deck05") == 0 || Q_stricmp(arg2, "tour/deck08") == 0 || Q_stricmp(arg2, "tour/deck09") == 0 || Q_stricmp(arg2, "tour/deck10") == 0 || Q_stricmp(arg2, "tour/deck11") == 0 || Q_stricmp(arg2, "tour/deck15") == 0
+			|| Q_stricmp(arg2, "tutorial") == 0
+			|| Q_stricmp(arg2, "voy1") == 0 || Q_stricmp(arg2, "voy13") == 0 || Q_stricmp(arg2, "voy14") == 0 || Q_stricmp(arg2, "voy15") == 0 || Q_stricmp(arg2, "voy16") == 0 || Q_stricmp(arg2, "voy17") == 0 || Q_stricmp(arg2, "voy2") == 0 || Q_stricmp(arg2, "voy20") == 0 || Q_stricmp(arg2, "voy3") == 0 || Q_stricmp(arg2, "voy4") == 0 || Q_stricmp(arg2, "voy5") == 0 || Q_stricmp(arg2, "voy6") == 0 || Q_stricmp(arg2, "voy7") == 0 || Q_stricmp(arg2, "voy8") == 0 || Q_stricmp(arg2, "voy9") == 0)) {
+			G_PrintfClient(ent, "Invalid Map.\n");
 			return;
 		}
 	}
 
-	if (!Q_stricmp(arg1, "kick")) {
+	if (Q_stricmp(arg1, "kick") == 0) {
 		//TiM - if we're callvoting to kick an admin, deny it
-		int id = ClientNumberFromString(ent, arg2);
+		int32_t id = ClientNumberFromString(ent, arg2);
 
 		//Harry Young - Check if clientnum is valid, else we get a crash
 		if (id == -1) {
@@ -1783,7 +1824,7 @@ static void Cmd_CallVote_f(gentity_t *ent) {
 
 	ent->client->pers.voteCount++;
 
-	if (!Q_stricmp(arg1, "map")) {
+	if (Q_stricmp(arg1, "map") == 0) {
 		char	s[MAX_STRING_CHARS];
 		trap_Cvar_VariableStringBuffer("nextmap", s, sizeof(s));
 		if (*s) {
@@ -1791,7 +1832,7 @@ static void Cmd_CallVote_f(gentity_t *ent) {
 		} else {
 			Com_sprintf(level.voteString, sizeof(level.voteString), "%s %s", arg1, arg2);
 		}
-	} else if (!Q_stricmp(arg1, "map_restart")) {
+	} else if (Q_stricmp(arg1, "map_restart") == 0) {
 		char	serverInfo[MAX_TOKEN_CHARS];
 		trap_GetServerinfo(serverInfo, sizeof(serverInfo));
 		Com_sprintf(level.voteString, sizeof(level.voteString), "%s %s", "map", Info_ValueForKey(serverInfo, "mapname"));
@@ -1822,23 +1863,26 @@ static void Cmd_CallVote_f(gentity_t *ent) {
 Cmd_Vote_f
 ==================
 */
-static void Cmd_Vote_f(gentity_t *ent) {
-	char		msg[64];
+static void Cmd_Vote_f(gentity_t* ent) {
+	char msg[64];
 
-	if (!level.voteTime) {
-		trap_SendServerCommand(ent - g_entities, "print \"No vote in progress.\n\"");
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	if (level.voteTime == 0) {
+		G_PrintfClient(ent, "No vote in progress.\n");
 		return;
 	}
-	if (ent->client->ps.eFlags & EF_VOTED) {
-		trap_SendServerCommand(ent - g_entities, "print \"Vote already cast.\n\"");
+	if ((ent->client->ps.eFlags & EF_VOTED) != 0) {
+		G_PrintfClient(ent, "Vote already cast.\n");
 		return;
 	}
 	if (ent->client->sess.sessionTeam == TEAM_SPECTATOR) {
-		trap_SendServerCommand(ent - g_entities, "print \"Spectators cannot vote.\n\"");
+		G_PrintfClient(ent, "Spectators cannot vote.\n");
 		return;
 	}
 
-	trap_SendServerCommand(ent - g_entities, "print \"Vote cast.\n\"");
+	G_PrintfClient(ent, "Vote cast.\n");
 
 	ent->client->ps.eFlags |= EF_VOTED;
 
@@ -1860,41 +1904,46 @@ static void Cmd_Vote_f(gentity_t *ent) {
 Cmd_ForceVote_f
 ==================
 */
-static void Cmd_ForceVote_f(gentity_t *ent) {
-	char		msg[64];
-	gclient_t	*client = ent->client;
+static void Cmd_ForceVote_f(gentity_t* ent) {
+	char msg[64];
+	gclient_t* client = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	client = ent->client;
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEVOTE) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
 
-	if (!rpg_adminVoteOverride.integer) { // vote override?
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: Overwrite is not allowed on this server.\n\" "));
+	if (rpg_adminVoteOverride.integer == 0) { // vote override?
+		G_PrintfClient(ent, "ERROR: Overwrite is not allowed on this server.\n");
 		return;
 	}
 
-	if (!level.voteTime) {
-		trap_SendServerCommand(ent - g_entities, "print \"No vote in progress.\n\"");
+	if (level.voteTime == 0) {
+		G_PrintfClient(ent, "No vote in progress.\n");
 		return;
 	}
-	if (client->ps.eFlags & EF_VOTED) {
-		trap_SendServerCommand(ent - g_entities, "print \"Vote already cast.\n\"");
+	if ((client->ps.eFlags & EF_VOTED) != 0) {
+		G_PrintfClient(ent, "Vote already cast.\n");
 		return;
 	}
 	if (client->sess.sessionTeam == TEAM_SPECTATOR) {
-		trap_SendServerCommand(ent - g_entities, "print \"Spectators cannot vote.\n\"");
+		G_PrintfClient(ent, "Spectators cannot vote.\n");
 		return;
 	}
 
-	trap_SendServerCommand(ent - g_entities, "print \"Vote force cast.\n\"");
+	G_PrintfClient(ent, "Vote force cast.\n");
 
 	client->ps.eFlags |= EF_VOTED;
 
@@ -1903,11 +1952,11 @@ static void Cmd_ForceVote_f(gentity_t *ent) {
 	if (msg[0] == 'y' || msg[1] == 'Y' || msg[1] == '1') {
 		level.voteYes += 999;
 		trap_SetConfigstring(CS_VOTE_YES, va("%i", level.voteYes));
-		trap_SendServerCommand(ent - g_entities, "print \"You have overridden the vote with yes.\n\"");
+		G_PrintfClient(ent, "You have overridden the vote with yes.\n");
 	} else {
 		level.voteNo += 999;
 		trap_SetConfigstring(CS_VOTE_NO, va("%i", level.voteNo));
-		trap_SendServerCommand(ent - g_entities, "print \"You have overridden the vote with no.\n\"");
+		G_PrintfClient(ent, "You have overridden the vote with no.\n");
 	}
 
 }
@@ -1918,17 +1967,20 @@ static void Cmd_ForceVote_f(gentity_t *ent) {
 Cmd_SetViewpos_f
 =================
 */
-static void Cmd_SetViewpos_f(gentity_t *ent) {
-	vec3_t		origin, angles;
-	char		buffer[MAX_TOKEN_CHARS];
-	int			i;
+static void Cmd_SetViewpos_f(gentity_t* ent) {
+	vec3_t origin = { 0, 0, 0 };
+	vec3_t angles = { 0, 0, 0 };
+	char buffer[MAX_TOKEN_CHARS];
+	int32_t	i = 0;
 
-	if (!g_cheats.integer && !IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"Cheats are not enabled on this server.\n\""));
+	G_Assert(ent, (void)0);
+
+	if (g_cheats.integer == 0 && !IsAdmin(ent)) {
+		G_PrintfClient(ent, "Cheats are not enabled on this server.\n");
 		return;
 	}
 	if (trap_Argc() != 5) {
-		trap_SendServerCommand(ent - g_entities, va("print \"usage: setviewpos x y z yaw\n\""));
+		G_PrintfClient(ent, "usage: setviewpos x y z yaw\n");
 		return;
 	}
 
@@ -1949,24 +2001,26 @@ static void Cmd_SetViewpos_f(gentity_t *ent) {
 Cmd_ForceName_f
 =================
 */
-static void Cmd_ForceName_f(gentity_t *ent) {
-	gclient_t	*cl;
-	gentity_t *other;
-	gentity_t *sayA;
-	int j;
+static void Cmd_ForceName_f(gentity_t* ent) {
+	gclient_t* cl = NULL;
+	gentity_t* other = NULL;
+	gentity_t* sayA = NULL;
+	int32_t j = 0;
 	char send[100];
-	char  str[MAX_TOKEN_CHARS];
-	char  *str2;
+	char str[MAX_TOKEN_CHARS];
+	char* str2 = NULL;
 	char clientCmd[MAX_INFO_STRING];
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent,"ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -1974,16 +2028,16 @@ static void Cmd_ForceName_f(gentity_t *ent) {
 	// find the player
 	trap_Argv(1, str, sizeof(str));
 
-	if (!str[0]) { //if user added no args (ie wanted the parameters)
-		trap_SendServerCommand(ent->client->ps.clientNum, va("print \"\nUsage: User forces another player's name to what they specify\nCommand: ForceName <Player's ID Number> \"[New Name]\"\n\" "));
+	if (str[0] == 0) { //if user added no args (ie wanted the parameters)
+		G_PrintfClient(ent, "\nUsage: User forces another player's name to what they specify\nCommand: ForceName <Player's ID Number> \"[New Name]\"\n");
 		return;
 	}
 
 	cl = ClientForString(str);
-	if (!cl) {
-		return;
-	}
+	G_Assert(cl, (void)0);
+
 	other = g_entities + cl->ps.clientNum;
+	G_Assert(other, (void)0);
 
 	//Get there new name
 	str2 = ConcatArgs(2);
@@ -1996,6 +2050,11 @@ static void Cmd_ForceName_f(gentity_t *ent) {
 	for (j = MAX_GENTITIES - 1; j > -1; j--) { // GSIO change from i++ for to i--, uses MAX_GENTITIES now
 		if (g_entities[j].client) {
 			sayA = &g_entities[j];
+
+			if (sayA == NULL) {
+				continue;
+			}
+
 			G_SayTo(ent, sayA, SAY_ADMIN, COLOR_CYAN, "^7Server: ", send);
 		}
 	}
@@ -2025,20 +2084,22 @@ All this is doing is contributing to un-necessary procs
 and potentially adding more lag to the game O_o
 =================
 */
-static void Cmd_ShakeCamera_f(gentity_t *ent) {
+static void Cmd_ShakeCamera_f(gentity_t* ent) {
 	char arg_intensity[5];
 	char arg_duration[5];
-	int duration;
-	int intensity;
+	int32_t duration = 0;
+	int32_t intensity = 0;
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -2046,8 +2107,8 @@ static void Cmd_ShakeCamera_f(gentity_t *ent) {
 	trap_Argv(1, arg_intensity, sizeof(arg_intensity));
 
 	//TiM : More userfriendly
-	if (!arg_intensity[0]) { //if user added no args (ie wanted the parameters)
-		trap_SendServerCommand(ent->client->ps.clientNum, va("print \"\nUsage: User makes every player's screen shake for X seconds\nCommand: Shake [Intensity] [Duration]\n\" "));
+	if (arg_intensity[0] = 0) { //if user added no args (ie wanted the parameters)
+		G_PrintfClient(ent, "\nUsage: User makes every player's screen shake for X seconds\nCommand: Shake [Intensity] [Duration]\n");
 		return;
 	}
 
@@ -2086,15 +2147,17 @@ Cmd_ForceClass_f
 =================
 */
 // Harry -- How to call this one?
-static void Cmd_ForceClass_f(gentity_t *ent) {
-	int			targetNum;
-	int			j;
+static void Cmd_ForceClass_f(gentity_t* ent) {
+	int32_t targetNum = 0;
+	int32_t	j = 0;
 	gentity_t	*target;
 	gentity_t	*other;
-	char		send[80];
-	char		arg[MAX_TOKEN_CHARS];
-	char		s[MAX_TOKEN_CHARS];
-	int			OldScoreclass;
+	char send[80];
+	char arg[MAX_TOKEN_CHARS];
+	char s[MAX_TOKEN_CHARS];
+	int32_t	OldScoreclass = 0;
+
+	G_Assert(ent, (void)0);
 
 	if (trap_Argc() < 2) {
 		return;
@@ -2102,12 +2165,12 @@ static void Cmd_ForceClass_f(gentity_t *ent) {
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -2120,7 +2183,9 @@ static void Cmd_ForceClass_f(gentity_t *ent) {
 	}
 
 	target = &g_entities[targetNum];
-	if (!target || !target->inuse || !target->client) {
+	G_Assert(target, (void)0);
+	G_Assert(target->client, (void)0);
+	if (!target->inuse) {
 		return;
 	}
 
@@ -2132,7 +2197,7 @@ static void Cmd_ForceClass_f(gentity_t *ent) {
 
 		className = g_classData[ent->client->sess.sessionClass].formalName;
 
-		trap_SendServerCommand(ent - g_entities, va("print \"\nCurrent Class: %s\nUsage: Changes the user to a different class\nCommand: Class <Class Name>\n\nType '/classlist' into the console for a more complete list\n\"", className));
+		G_PrintfClient(ent, "\nCurrent Class: %s\nUsage: Changes the user to a different class\nCommand: Class <Class Name>\n\nType '/classlist' into the console for a more complete list\n", className);
 		return;
 	}
 
@@ -2142,7 +2207,7 @@ static void Cmd_ForceClass_f(gentity_t *ent) {
 	//if this is a manual change, not an assimilation, uninitialize the clInitStatus data
 	clientInitialStatus[target->s.number].initialized = qfalse;
 	if (!SetClass(target, s, NULL, qfalse)) {
-		trap_SendServerCommand(ent - g_entities, "print \"ERROR: Was unable to change class\n\" ");
+		G_PrintfClient(ent, "ERROR: Was unable to change class\n");
 		return;
 	}
 
@@ -2166,23 +2231,25 @@ static void Cmd_ForceClass_f(gentity_t *ent) {
 Cmd_ForceKill_f					//J2J to others: PLEASE CAN  WE COMMENT THE CODE!!!! :P
 =================
 */
-static void Cmd_ForceKill_f(gentity_t *ent) {
-	int			targetNum;
-	int			j;
-	char		send[80];
-	gentity_t	*target = NULL;
-	gentity_t	*other;
-	char		arg[MAX_TOKEN_CHARS];
-	playerState_t *ps;
+static void Cmd_ForceKill_f(gentity_t* ent) {
+	int32_t targetNum = 0;
+	int32_t j = 0;
+	gentity_t* target = NULL;
+	gentity_t* other = NULL;
+	playerState_t* ps = NULL;
+	char send[80];
+	char arg[MAX_TOKEN_CHARS];
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEKILL) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -2202,7 +2269,10 @@ static void Cmd_ForceKill_f(gentity_t *ent) {
 
 		for (p = 0; p < level.maxclients; p++) {
 			target = &g_entities[p];
-			if (!target || !target->inuse || !target->client) {
+
+			G_Assert(target, (void)0);
+			G_Assert(target->client, (void)0);
+			if (!target->inuse) {
 				return;
 			}
 
@@ -2223,9 +2293,7 @@ static void Cmd_ForceKill_f(gentity_t *ent) {
 			}
 		} // end iterations
 
-		if (target == NULL) {
-			return;
-		}
+		G_Assert(target, (void)0);
 
 		Com_sprintf(send, sizeof(send), "%s ^7forced %s^7's death", ent->client->pers.netname, target->client->pers.netname);
 
@@ -2243,7 +2311,9 @@ static void Cmd_ForceKill_f(gentity_t *ent) {
 
 	{
 		target = &g_entities[targetNum];
-		if (!target || !target->inuse || !target->client) {
+		G_Assert(target, (void)0);
+		G_Assert(target->client, (void)0);
+		if (!target->inuse) {
 			return;
 		}
 
@@ -2282,19 +2352,25 @@ ForceKillRadius			(RPG-X: J2J)
 =================
 */
 //Array used to store each players last use of the FKR command. (though only applies to admins)
-int LastFKRadius[MAX_CLIENTS];
+int32_t LastFKRadius[MAX_CLIENTS];
 
-static void Cmd_ForceKillRadius_f(gentity_t *ent) {
-	gentity_t* OtherPlayer;					//Entity pointers to other players in game (used in loop)
-	char		arg[MAX_TOKEN_CHARS];		//Arguments
-	int i;									//Loop Counter
-	float DistanceVector[2];				//Distance Vector from client caller to victim
-	float Distance;							//Real Distance from client caller to victim
-	float range;
-	int kill_self;
-	int clientNum = ent->client->ps.clientNum;
-	playerState_t *ePs = &ent->client->ps;
-	playerState_t *oPs;
+static void Cmd_ForceKillRadius_f(gentity_t* ent) {
+	int32_t i = 0;									//Loop Counter
+	int32_t clientNum = -1;
+	int32_t kill_self;
+	double DistanceVector[2] = { 0, 0 };				//Distance Vector from client caller to victim
+	double range = 0;
+	double Distance = 0;							//Real Distance from client caller to victim
+	char arg[MAX_TOKEN_CHARS];		//Arguments
+	gentity_t* OtherPlayer = NULL;					//Entity pointers to other players in game (used in loop)
+	playerState_t* ePs = NULL;
+	playerState_t* oPs = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	clientNum = ent->client->ps.clientNum;
+	ePs = &ent->client->ps;
 
 	memset(arg, 0, MAX_TOKEN_CHARS);			//Clear aray.
 
@@ -2312,12 +2388,12 @@ static void Cmd_ForceKillRadius_f(gentity_t *ent) {
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEKILL) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -2346,7 +2422,7 @@ static void Cmd_ForceKillRadius_f(gentity_t *ent) {
 		G_SayTo(ent, OtherPlayer, SAY_ADMIN, COLOR_CYAN, "^7Server: ", va("%s has triggred a force kill radius command", ent->client->pers.netname));
 
 		//Check is OtherPlayer is valid
-		if (!OtherPlayer || !OtherPlayer->inuse || !OtherPlayer->client) {
+		if (OtherPlayer == NULL || !OtherPlayer->inuse || OtherPlayer->client == NULL) {
 			continue;
 		}
 
@@ -2416,22 +2492,27 @@ static void Cmd_ForceKillRadius_f(gentity_t *ent) {
 TargetKick			(RPG-X: J2J)
 =================
 */
-static void Cmd_TargetKick_f(gentity_t *ent) {
-	gentity_t	*target, *other;		//Target entity, and other used to tell the
-	trace_t		trace;					//Used to trace target
-	vec3_t		src, dest, vf;			//Used to find target
-	int i;								//Loop counter
+static void Cmd_TargetKick_f(gentity_t* ent) {
+	gentity_t* target = NULL;
+	gentity_t* other = NULL;
+	trace_t trace;
+	vec3_t src = { 0, 0, 0 };
+	vec3_t dest = { 0, 0, 0 };
+	vec3_t vf = { 0, 0, 0 };
+	int32_t i = 0;
+
+	G_Assert(ent, (void)0);
 
 	//Disallow if not in admin class
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_KICK) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -2458,7 +2539,10 @@ static void Cmd_TargetKick_f(gentity_t *ent) {
 
 	target = &g_entities[trace.entityNum];
 
-	if (!target->client || trace.entityNum > MAX_CLIENTS) {
+	G_Assert(target, (void)0);
+	G_Assert(target->client, (void)0);
+
+	if (trace.entityNum > MAX_CLIENTS) {
 		trap_SendConsoleCommand(EXEC_APPEND, va("echo That target cannot be kicked."));
 		return;
 	}
@@ -2483,14 +2567,14 @@ Drag			(RPG-X: J2J)
 RPGX_DragData DragDat[MAX_CLIENTS];
 // /DragPlayer <ID> <range>
 // This will start a drag on a player or adjust the range of a drag if its allready started
-static void Cmd_Drag_f(gentity_t *ent) {
-	char		arg[MAX_TOKEN_CHARS];		//Arguments
-	int			ID, i;
-	float		range;
-	int			clientNum;
+static void Cmd_Drag_f(gentity_t* ent) {
+	char arg[MAX_TOKEN_CHARS];		//Arguments
+	int32_t ID = 0;
+	int32_t i = 0;
+	double range = 0;
+	int32_t clientNum = -1;
 
-	if (!ent || !ent->client)
-		return;
+	G_Assert(ent, (void)0);
 
 	//If client isn't in admin class, exit and disallow command.
 
@@ -2501,7 +2585,7 @@ static void Cmd_Drag_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DRAG) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" ") );
 		return;
 	}
 #endif
@@ -2592,24 +2676,25 @@ UnDrag			(RPG-X: J2J)
 // If a client ID is supplied then that play will be droped (by anyone)
 // If no parameters are given, the calling player will be undraged.
 // 
-static void Cmd_UnDrag_f(gentity_t *ent) {
-	char		arg[MAX_TOKEN_CHARS];		//Arguments
-	int			ID, i;
-	int			clientNum;
+static void Cmd_UnDrag_f(gentity_t* ent) {
+	char arg[MAX_TOKEN_CHARS];		//Arguments
+	int32_t	ID = 0;
+	int32_t i = 0;
+	int32_t clientNum = -1;
 
-	if (!ent || !ent->client)
-		return;
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	//If client isn't in admin class, exit and disallow command.
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DRAG) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -2683,16 +2768,17 @@ DragCheck			(RPG-X: J2J)
 */
 //This is used internally and run every frame to check for clients that need to be draged by someone.
 void DragCheck(void) {
-	gentity_t	*ent = NULL;
-	gentity_t	*target = NULL;
-	int i;
-	playerState_t *ePs;
-	playerState_t *tPs;
+	gentity_t* ent = NULL;
+	gentity_t* target = NULL;
+	int32_t i = 0;
+	playerState_t* ePs = NULL;
+	playerState_t* tPs = NULL;
 
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		//If the admin id is < 0 then they are not being draged.
-		if (DragDat[i].AdminId < 0)
+		if (DragDat[i].AdminId < 0) {
 			continue;
+		}
 
 		//If the starting admin is no longer in admin class:
 		if (IsAdmin(&g_entities[DragDat[i].AdminId]) == qfalse) {
@@ -2709,11 +2795,13 @@ void DragCheck(void) {
 
 		//Error checking
 
-		if (!target || !target->client)
+		if (target == NULL || target->client == NULL) {
 			continue;
+		}
 
-		if (!ent || !ent->client)
+		if (ent == NULL || ent->client == NULL) {
 			continue;
+		}
 
 		//If the target has gone to spec, stop dragging.
 		if (target->client->sess.sessionTeam == TEAM_SPECTATOR) {
@@ -2741,30 +2829,32 @@ Disarm Tripmines			(RPG-X: RedTechie)
 =================
 */
 // Harry -- What's the command...
-static void Cmd_disarm_f(gentity_t *ent) {
+static void Cmd_disarm_f(gentity_t* ent) {
 	// /disarm_tripmines <0 or 1 (yours or all)>
-	gentity_t	*tripwire = NULL;
-	int			foundTripWires[MAX_GENTITIES] = { ENTITYNUM_NONE };
-	int			tripcount = 0;
-	char		arg[MAX_TOKEN_CHARS];
+	gentity_t* tripwire = NULL;
+	int32_t foundTripWires[MAX_GENTITIES] = { ENTITYNUM_NONE };
+	int32_t	tripcount = 0;
+	char arg[MAX_TOKEN_CHARS];
 
 	//If client isn't in admin class, exit and disallow command.
 
+	G_Assert(ent, (void)0);
+
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DISARM) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
 
 	trap_Argv(1, arg, sizeof(arg));
 
-	if (arg == NULL) { //J2J
+	if (arg[0] == 0) { //J2J
 		//Just mine
 		while ((tripwire = G_Find(tripwire, FOFS(classname), "tripwire")) != NULL) {
 			if (tripwire->parent != ent) {
@@ -2794,33 +2884,32 @@ static void Cmd_disarm_f(gentity_t *ent) {
 				foundTripWires[i] = ENTITYNUM_NONE;
 			}
 		}
-		trap_SendServerCommand(ent->client->ps.clientNum, va("print \"Disarmed %i tripmines\n\"", tripcount));
+		G_PrintfClient(ent, "Disarmed %i tripmines\n", tripcount);
 	} else {
-		trap_SendServerCommand(ent->client->ps.clientNum, va("print \"No tripmines to disarm\n\""));
+		G_PrintfClient(ent, "No tripmines to disarm\n");
 	}
 }
 
 
-static void Cmd_Rank_f(gentity_t *ent) {
-	//	const char *info;
-	int OldScore;
+static void Cmd_Rank_f(gentity_t* ent) {
 	char ArgStr[50]; //Argument String
-	int i;
-	int newScore = -1;
-
 	char tmpScore[MAX_QPATH]; // TiM
-	qboolean	MaxRankHit = qfalse;
+	int32_t OldScore = 0;
+	int32_t i = 0;
+	int32_t newScore = -1;
+	qboolean MaxRankHit = qfalse;
 
 	//Still not sure how the hell this condition would ever get tripped O_o			
-	if (!ent || !ent->client)
-		return;
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
-	if (ent->flags & FL_CLAMPED)
+	if ((ent->flags & FL_CLAMPED) != 0) {
 		return;
+	}
 
 	//TiM | Okay. Ranks are enabled, but only admins can change them
-	if (!rpg_changeRanks.integer) {
-		trap_SendServerCommand(ent - g_entities, "print \"You cannot change your rank yourself on this server.\n\"");
+	if (rpg_changeRanks.integer == 0) {
+		G_PrintfClient(ent, "You cannot change your rank yourself on this server.\n\"");
 		return;
 	}
 
@@ -2829,11 +2918,11 @@ static void Cmd_Rank_f(gentity_t *ent) {
 
 	trap_Argv(1, ArgStr, sizeof(ArgStr));					//Get the raw arguments
 
-	if (!ArgStr[0]) { //If no arguments (ie player wants to see current rank)
+	if (ArgStr[0] == 0) { //If no arguments (ie player wants to see current rank)
 
 		Com_sprintf(tmpScore, sizeof(tmpScore), "%s - %s", g_rankNames[OldScore].formalName, g_rankNames[OldScore].consoleName); //Put OldScore in a string variable
 
-		trap_SendServerCommand(ent - g_entities, va("print \"\nCurrent Rank: %s\nUsage: Changes user to the specified rank\nCommand: Rank <New rank>\n\nType '/ranklist' into the console for a full list of ranks\" ", tmpScore));
+		G_PrintfClient(ent, "\nCurrent Rank: %s\nUsage: Changes user to the specified rank\nCommand: Rank <New rank>\n\nType '/ranklist' into the console for a full list of ranks", tmpScore);
 		return;
 	}
 
@@ -2848,11 +2937,12 @@ static void Cmd_Rank_f(gentity_t *ent) {
 	ent->client->UpdateScore = qtrue;
 
 	for (i = 0; (g_rankNames[i].consoleName[0] && i < MAX_RANKS); i++) {
-		if (!Q_stricmp(ArgStr, g_rankNames[i].consoleName)) {
+		if (Q_stricmp(ArgStr, g_rankNames[i].consoleName) == 0) {
 			newScore = i;
 
-			if (newScore == OldScore)
+			if (newScore == OldScore) {
 				return;
+			}
 
 			if (!MaxRankHit) {
 				SetScore(ent, newScore);
@@ -2860,31 +2950,31 @@ static void Cmd_Rank_f(gentity_t *ent) {
 				break;
 			} else {
 				if (!MaxRankHit)
-					trap_SendServerCommand(ent - g_entities, va("print \"This rank is disabled\n\""));
+					G_PrintfClient(ent, "This rank is disabled\n");
 				else
-					trap_SendServerCommand(ent - g_entities, va("print \"You cannot set your rank that high on this server.\n\""));
+					G_PrintfClient(ent, "You cannot set your rank that high on this server.\n");
 
 				return;
 			}
 		}
 
 		//Okay... we've hit the highest rank we're allowed to go.  If the player tries to change their rank to above this, they'll be pwned lol
-		if (rpg_maxRank.string[0] && !Q_stricmp(g_rankNames[i].consoleName, rpg_maxRank.string) && IsAdmin(ent)) {
+		if (rpg_maxRank.string[0] != 0 && Q_stricmp(g_rankNames[i].consoleName, rpg_maxRank.string) == 0 && IsAdmin(ent)) {
 			MaxRankHit = qtrue;
 		}
 	}
 
 	//if we didn't get find a matching name. >.<
 	if (newScore < 0) {
-		trap_SendServerCommand(ent - g_entities, va("print \"This rank doesn't exist on this server!\n\"\n"));
+		G_PrintfClient(ent, "This rank doesn't exist on this server!\n\n");
 		SetScore(ent, OldScore);
 		return;
 	}
 
 	if (OldScore > ent->client->ps.persistant[PERS_SCORE]) {
-		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " was demoted to %s\n\"", ent->client->pers.netname, g_rankNames[i].formalName));
+		G_PrintfClientAll("%s" S_COLOR_WHITE " was demoted to %s\n", ent->client->pers.netname, g_rankNames[i].formalName);
 	} else {
-		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " was promoted to %s\n\"", ent->client->pers.netname, g_rankNames[i].formalName));
+		G_PrintfClientAll("%s" S_COLOR_WHITE " was promoted to %s\n", ent->client->pers.netname, g_rankNames[i].formalName);
 	}
 }
 
@@ -2895,36 +2985,36 @@ static void Cmd_Rank_f(gentity_t *ent) {
 Force Rank			(RPG-X: J2J & RedTechie)
 =================
 */
-static void Cmd_ForceRank_f(gentity_t *ent) {
-	int OldScore;
+static void Cmd_ForceRank_f(gentity_t* ent) {
 	char ArgStr[MAX_TOKEN_CHARS];							//Argument String
-	int targetNum;
-	gentity_t *other;
 	char send[100];
-	int i;
-	gentity_t *sayA;
-	int newScore = -1;
+	int32_t OldScore = 0;
+	int32_t targetNum = 0;
+	int32_t i = 0;
+	int32_t newScore = -1;
+	gentity_t* other = NULL;
+	gentity_t* sayA = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent,  "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
 
-	if (!ent || !ent->client)
-		return;
-
 	// find the player
 	trap_Argv(1, ArgStr, sizeof(ArgStr));
 
-	if (!ArgStr[0]) { //if user added no args (ie wanted the parameters)
-		trap_SendServerCommand(ent - g_entities, va("print \"\nUsage: User forces another player into a specific rank\nCommand: ForceRank [Player ID] <Rank Name>\n\nType 'rankList' into the console for a full list of ranks\" "));
+	if (ArgStr[0] == 0) { //if user added no args (ie wanted the parameters)
+		G_PrintfClient(ent, "\nUsage: User forces another player into a specific rank\nCommand: ForceRank [Player ID] <Rank Name>\n\nType 'rankList' into the console for a full list of ranks");
 		return;
 	}
 
@@ -2935,7 +3025,9 @@ static void Cmd_ForceRank_f(gentity_t *ent) {
 
 	other = &g_entities[targetNum];
 
-	if (other == NULL || !other->inuse || other->client == NULL) {
+	G_Assert(other, (void)0);
+	G_Assert(other->client, (void)0);
+	if (!other->inuse) {
 		return;
 	}
 
@@ -2948,7 +3040,7 @@ static void Cmd_ForceRank_f(gentity_t *ent) {
 	other->client->UpdateScore = qtrue;
 
 	for (i = 0; (g_rankNames[i].consoleName && i < MAX_RANKS); i++) {
-		if (!Q_stricmp(ArgStr, g_rankNames[i].consoleName)) {
+		if (Q_stricmp(ArgStr, g_rankNames[i].consoleName) == 0) {
 			newScore = i;//1 << i;
 
 			SetScore(other, newScore);
@@ -2959,15 +3051,15 @@ static void Cmd_ForceRank_f(gentity_t *ent) {
 
 	//if we didn't get find a matching name. >.<
 	if (newScore < 0) {
-		trap_SendServerCommand(ent - g_entities, va("print \"This rank doesn't exist on this server!\n\"\n"));
+		G_PrintfClient(ent, "This rank doesn't exist on this server!\n\n");
 		SetScore(other, OldScore);
 		return;
 	}
 
 	if (OldScore > ent->client->ps.persistant[PERS_SCORE]) {
-		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " was demoted to %s\n\"", other->client->pers.netname, g_rankNames[i].formalName));
+		G_PrintfClientAll("%s" S_COLOR_WHITE " was demoted to %s\n", other->client->pers.netname, g_rankNames[i].formalName);
 	} else {
-		trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " was promoted to %s\n\"", other->client->pers.netname, g_rankNames[i].formalName));
+		G_PrintfClientAll("%s" S_COLOR_WHITE " was promoted to %s\n", other->client->pers.netname, g_rankNames[i].formalName);
 	}
 
 	G_LogPrintf("%s changed %s's rank to %s (%s)\n", ent->client->pers.netname, other->client->pers.netname, ArgStr, ent->client->pers.ip);
@@ -2988,19 +3080,29 @@ RPG-X | Phenix | 21/11/2004
 =================
 */
 
-static void Cmd_Admins_f(gentity_t *ent) {
-	char		send[MAX_TOKEN_CHARS];
-	int			j;
-	gentity_t	*target;
+static void Cmd_Admins_f(gentity_t* ent) {
+	char send[MAX_TOKEN_CHARS];
+	int32_t	j = 0;
+	gentity_t* target = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	Q_strncpyz(send, "The following players are logged in as admins: \n", sizeof(send));
 	for (j = 0; j < level.maxclients; j++) {
 		target = &g_entities[j];
-		if (g_classData[target->client->sess.sessionClass].isAdmin)
-			Q_strncpyz(send, va("%s %s \n", send, target->client->pers.netname), sizeof(send));
 
-		if ((target->client->LoggedAsAdmin == qtrue) && (IsAdmin(ent) == qtrue))
+		if (target == NULL || target->client == NULL) {
+			continue;
+		}
+
+		if (g_classData[target->client->sess.sessionClass].isAdmin) {
+			Q_strncpyz(send, va("%s %s \n", send, target->client->pers.netname), sizeof(send));
+		}
+
+		if ((target->client->LoggedAsAdmin == qtrue) && (IsAdmin(ent) == qtrue)) {
 			Q_strncpyz(send, va("%s %s (hidden) \n", send, target->client->pers.netname), sizeof(send));
+		}
 	}
 
 	trap_SendServerCommand(ent->client->ps.clientNum, va("print \"%s\n\"", send));
@@ -3011,23 +3113,26 @@ static void Cmd_Admins_f(gentity_t *ent) {
 AdminLogin
 =================
 */
-static void Cmd_AdminLogin_f(gentity_t *ent) {
-	char		arg[MAX_TOKEN_CHARS];
-	char		send[MAX_TOKEN_CHARS];
-	char		classPass[MAX_TOKEN_CHARS];
-	int			j;
-	gentity_t	*sayA;
+static void Cmd_AdminLogin_f(gentity_t* ent) {
+	char arg[MAX_TOKEN_CHARS];
+	char send[MAX_TOKEN_CHARS];
+	char classPass[MAX_TOKEN_CHARS];
+	int32_t j = 0;
+	gentity_t* sayA = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	trap_Argv(1, arg, sizeof(arg));
 
 	//logout if no argument and player is admin
-	if (!arg[0] && ent->client->LoggedAsAdmin) {
+	if (arg[0] == 0 && ent->client->LoggedAsAdmin) {
 		ent->client->LoggedAsAdmin = qfalse;
-		trap_SendServerCommand(ent - g_entities, va("print \"You are now logged out.\n\""));
+		G_PrintfClient(ent, "You are now logged out.\n");
 		G_Client_UserinfoChanged(ent - g_entities);
 		return;
-	} else if (!arg[0]) { //if user added no args (ie wanted the parameters)
-		trap_SendServerCommand(ent - g_entities, va("print \"\nUsage: Allows a player to login as an admin\nCommand: AdminLogin <Admin Password>\nWARNING: Entering an incorrect password 3 times will automatically kick you from the server!\nEntering AdminLogin without password will log you out if you are locked in\n\" "));
+	} else if (arg[0] == 0) { //if user added no args (ie wanted the parameters)
+		G_PrintfClient(ent, "\nUsage: Allows a player to login as an admin\nCommand: AdminLogin <Admin Password>\nWARNING: Entering an incorrect password 3 times will automatically kick you from the server!\nEntering AdminLogin without password will log you out if you are locked in\n");
 		return;
 	}
 
@@ -3035,14 +3140,14 @@ static void Cmd_AdminLogin_f(gentity_t *ent) {
 	for (j = 0; g_classData[j].consoleName[0] && j < MAX_CLASSES; j++) {
 		trap_Cvar_VariableStringBuffer(va("rpg_%sPass", g_classData[j].consoleName), classPass, sizeof(classPass));
 
-		if (g_classData[j].isAdmin && !Q_stricmp(classPass, arg)) {
+		if (g_classData[j].isAdmin && Q_stricmp(classPass, arg) == 0) {
 			if (IsAdmin(ent) == qfalse) {
 				ent->client->LoggedAsAdmin = qtrue;
-				trap_SendServerCommand(ent - g_entities, va("print \"You are logged in as an admin.\n\""));
+				G_PrintfClient(ent, "You are logged in as an admin.\n");
 				G_Client_UserinfoChanged(ent - g_entities);
 				return;
 			} else {
-				trap_SendServerCommand(ent - g_entities, va("print \"You are already logged in as an admin or in the admin class.\n\""));
+				G_PrintfClient(ent, "You are already logged in as an admin or in the admin class.\n");
 				return;
 			}
 			break;
@@ -3062,7 +3167,7 @@ static void Cmd_AdminLogin_f(gentity_t *ent) {
 		trap_DropClient(ent->s.number, "Kicked: Too many bad passwords!");
 	} else {
 		//Give the client another warning
-		trap_SendServerCommand(ent - g_entities, va("print \"You have entered an incorrect password, if you enter a wrong password %i more times you will be kicked.\n\"", (3 - ent->client->AdminFailed)));
+		G_PrintfClient(ent, "You have entered an incorrect password, if you enter a wrong password %i more times you will be kicked.\n", (3 - ent->client->AdminFailed));
 
 		//Send warning to other admins
 		Com_sprintf(send, sizeof(send), "%s tried to login as an admin and got an incorrect password, %i tries left.\n", ent->client->pers.netname, (3 - ent->client->AdminFailed));
@@ -3078,30 +3183,30 @@ static void Cmd_AdminLogin_f(gentity_t *ent) {
 Revive			(RPG-X: RedTechie)
 =================
 */
-static void Cmd_Revive_f(gentity_t *ent) {
+static void Cmd_Revive_f(gentity_t* ent) {
 	char pla_str[50];	//Argument String
-	gentity_t *other;
-	playerState_t *ps;
-	clientPersistant_t *pers;
+	gentity_t* other = NULL;
+	playerState_t* ps = NULL;
+	clientPersistant_t* pers = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent) || !rpg_medicsrevive.integer) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+	if (!IsAdmin(ent) || rpg_medicsrevive.integer == 0) {
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_REVIVE) || !rpg_medicsrevive.integer ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_REVIVE) || rpg_medicsrevive.integer == 0 ) {
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
 
-	if (!ent || !ent->client)
-		return;
-
 	//If for some strange reason medic revive is turned off
 	if (rpg_medicsrevive.integer <= 0) {
-		trap_SendServerCommand(ent - g_entities, va("print \"Medics' Revive is disabled on this server!\n\""));
+		G_PrintfClient(ent, "Medics' Revive is disabled on this server!\n");
 		return;
 	}
 
@@ -3109,29 +3214,31 @@ static void Cmd_Revive_f(gentity_t *ent) {
 	trap_Argv(1, pla_str, sizeof(pla_str));
 
 	//If player entered no args AND is alive (So as to not screw up reviving yourself ;) )
-	if (!pla_str[0] && (ent && ent->client) && !(ent->health <= 1) && !(ent->client->ps.pm_type == PM_DEAD)) { //if user added no args (ie wanted the parameters)
-		trap_SendServerCommand(ent - g_entities, va("print \"\nUsage: User revives incapacitated players\nCommand: Revive {Nothing = Revive Self} OR [Player ID] OR 'all'\n\" "));
+	if (pla_str[0] == 0 && !(ent->health <= 1) && !(ent->client->ps.pm_type == PM_DEAD)) { //if user added no args (ie wanted the parameters)
+		G_PrintfClient(ent, "\nUsage: User revives incapacitated players\nCommand: Revive {Nothing = Revive Self} OR [Player ID] OR 'all'\n");
 		return;
 	}
 
 	pers = &ent->client->pers;
 
-	if (!Q_strncmp(pla_str, "all", 3)) {
+	if (Q_strncmp(pla_str, "all", 3) == 0) {
 		//Loop threw all clients
-		int j;
-		int i;
-		gentity_t *sayA;
 		char send[100];
+		int32_t j = 0;
+		int32_t i = 0;
+		gentity_t* e = NULL;
 
 		for (i = MAX_CLIENTS - 1; i > -1; i--) //eherm MAX_CLIENTS is 128 no 1023, changed from i++ to i--
 		{
-			if ((g_entities[i].client) && (g_entities[i].health == 1) && (g_entities[i].client->ps.pm_type == PM_DEAD)) {
-				G_Client_Spawn(&g_entities[i], 1, qtrue);
+			e = &g_entities[i];
 
-				ps = &g_entities[i].client->ps;
+			if ((e != NULL) && (e->client != NULL) && (e->health == 1) && (e->client->ps.pm_type == PM_DEAD)) {
+				G_Client_Spawn(e, 1, qtrue);
+
+				ps = &e->client->ps;
 
 				//TiM: Push any users out of the way, and then play a 'getup' emote
-				g_entities[i].r.contents = CONTENTS_NONE;
+				e->r.contents = CONTENTS_NONE;
 				ps->stats[LEGSANIM] = ((ps->stats[LEGSANIM] & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | BOTH_GET_UP1;
 				ps->stats[TORSOANIM] = ((ps->stats[TORSOANIM] & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | BOTH_GET_UP1;
 				ps->stats[TORSOTIMER] = 1700;
@@ -3149,15 +3256,16 @@ static void Cmd_Revive_f(gentity_t *ent) {
 		Com_sprintf(send, sizeof(send), "%s revived everyone\n", pers->netname);
 
 		for (j = MAX_CLIENTS - 1; j > -1; j--) { // again j++ to j-- and 1023 to MAX_CLIENTS
-			if (g_entities[j].client) {
-				sayA = &g_entities[j];
-				G_SayTo(ent, sayA, SAY_ADMIN, COLOR_CYAN, "^7Server: ", send);
+			e = &g_entities[j];
+
+			if (e != NULL && e->client != NULL) {
+				G_SayTo(ent, e, SAY_ADMIN, COLOR_CYAN, "^7Server: ", send);
 			}
 		}
 	} else {
-		if (!pla_str[0]) {
+		if (pla_str[0] = 0) {
 			//Just me
-			if ((ent && ent->client) && (ent->health <= 1) && (ent->client->ps.pm_type == PM_DEAD)) {
+			if ((ent->health <= 1) && (ent->client->ps.pm_type == PM_DEAD)) {
 				G_Client_Spawn(ent, 1, qtrue);
 
 				ps = &ent->client->ps;
@@ -3175,9 +3283,9 @@ static void Cmd_Revive_f(gentity_t *ent) {
 			}
 		} else {
 			//Specific user
-			int targetNum;
-			gentity_t *sayA;
 			char send[100];
+			int32_t targetNum = 0;
+			gentity_t* e = NULL;
 
 			targetNum = atoi(pla_str);
 			if (targetNum < 0 || targetNum >= level.maxclients) {
@@ -3185,11 +3293,13 @@ static void Cmd_Revive_f(gentity_t *ent) {
 			}
 
 			other = &g_entities[targetNum];
-			if (!other || !other->inuse || !other->client) {
+			G_Assert(other, (void)0);
+			G_Assert(other->client, (void)0);
+			if (!other->inuse) {
 				return;
 			}
 
-			if ((other && other->client) && (other->health == 1) && (other->client->ps.pm_type == PM_DEAD)) {
+			if ((other->health == 1) && (other->client->ps.pm_type == PM_DEAD)) {
 				int j = MAX_CLIENTS;
 
 				G_Client_Spawn(other, 1, qtrue);
@@ -3213,9 +3323,10 @@ static void Cmd_Revive_f(gentity_t *ent) {
 
 				for (j = MAX_CLIENTS - 1; j > -1; j--) // j++ to j-- and 1023 to MAX_CLIENTS
 				{
-					if (g_entities[j].client) {
-						sayA = &g_entities[j];
-						G_SayTo(ent, sayA, SAY_ADMIN, COLOR_CYAN, "^7Server: ", send);
+					e = &g_entities[j];
+
+					if (e != NULL && e->client != NULL) {
+						G_SayTo(ent, e, SAY_ADMIN, COLOR_CYAN, "^7Server: ", send);
 					}
 				}
 			}
@@ -3228,48 +3339,42 @@ static void Cmd_Revive_f(gentity_t *ent) {
 N00b			(RPG-X: Phenix)
 =================
 */
-static void Cmd_n00b_f(gentity_t *ent) {
+static void Cmd_n00b_f(gentity_t* ent) {
 	char arg[MAX_TOKEN_CHARS];
-	int targetNum;
-	int timeToBe;
-	gentity_t *target;
-	int i;
+	int32_t targetNum = 0;
+	int32_t timeToBe = 0;
+	int32_t i = 0;
+	gentity_t* target = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	//If client isn'tin admin class, exit and disallow command.
-
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_NOOB) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
-
-	if (!ent || !ent->client) {
-		return;		// not fully in game yet
-	}
 
 	memset(arg, 0, MAX_TOKEN_CHARS);
 	trap_Argv(1, arg, sizeof(arg));
 
 	//User Friendly
-	if (!arg[0]) { //if user added no args (ie wanted the parameters)
-		trap_SendServerCommand(ent - g_entities, va("print \"\nUsage: User places another player in n00b class for X seconds\nCommand: n00b [Player ID] [Seconds to be in n00b class]\n\" "));
+	if (arg[0] == 0) { //if user added no args (ie wanted the parameters)
+		G_PrintfClient(ent, "\nUsage: User places another player in n00b class for X seconds\nCommand: n00b [Player ID] [Seconds to be in n00b class]\n");
 		return;
 	}
 
 	targetNum = atoi(arg);
-
 	memset(arg, 0, MAX_TOKEN_CHARS);
 	trap_Argv(2, arg, sizeof(arg));
-
-
 	timeToBe = atoi(arg);
-
 	target = g_entities + targetNum;
 
 	for (i = 0; g_classData[i].consoleName[0] && i < MAX_CLASSES; i++) {
@@ -3307,7 +3412,7 @@ static void Cmd_admin_message(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MESSAGE) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -3357,7 +3462,7 @@ static void Cmd_ForceModel_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -3418,7 +3523,7 @@ static void Cmd_PlayMusic_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -3456,7 +3561,7 @@ static void Cmd_StopMusic_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -3482,7 +3587,7 @@ static void Cmd_PlaySound_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -3549,7 +3654,7 @@ static void Cmd_UseEnt_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_USEENT) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -3625,7 +3730,7 @@ static void Cmd_EntList_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_USEENT) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -3694,7 +3799,7 @@ static void Cmd_BeamToLoc_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -3848,7 +3953,7 @@ static void Cmd_ForcePlayer_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -3951,7 +4056,7 @@ static void Cmd_BeamToPlayer_f(gentity_t	*ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -4399,7 +4504,7 @@ static void Cmd_fxGun_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -4621,7 +4726,7 @@ static void Cmd_flushFX_f(gentity_t	*ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -4645,7 +4750,7 @@ static void Cmd_spawnChar_f(gentity_t	*ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CHARS) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -4677,7 +4782,7 @@ static void Cmd_fluchChars_f(gentity_t *ent) //GSIO01: fluch Chars ehhh? you kno
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CHARS) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -4756,7 +4861,7 @@ static void Cmd_Kick2_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_KICK) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -4845,7 +4950,7 @@ static void Cmd_ClampInfo_f(gentity_t* ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CLAMP) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5162,7 +5267,7 @@ static void Cmd_lockDoor_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5238,7 +5343,7 @@ static void Cmd_ffColor_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FFSTUFF) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5322,7 +5427,7 @@ static void Cmd_unlockAll_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5388,7 +5493,7 @@ static void Cmd_lockAll_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5422,7 +5527,7 @@ static void Cmd_changeFreq(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FFSTUFF) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5470,7 +5575,7 @@ static void Cmd_alert_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_ALERT) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5547,7 +5652,7 @@ static void Cmd_zonelist_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5609,7 +5714,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5710,7 +5815,7 @@ static void Cmd_shipdamage_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5851,7 +5956,7 @@ static void Cmd_reloadtorpedos_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5919,7 +6024,7 @@ static void Cmd_torpedolist_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -5963,7 +6068,7 @@ static void Cmd_admin_centerprint_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MESSAGE) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6003,7 +6108,7 @@ static void Cmd_getBrushEntCount_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6027,7 +6132,7 @@ static void Cmd_listSPs(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6059,7 +6164,7 @@ static void Cmd_getEntInfo_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6103,7 +6208,7 @@ static void Cmd_getOrigin_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6151,7 +6256,7 @@ static void Cmd_getEntByTargetname_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6187,7 +6292,7 @@ static void Cmd_getEntByTarget_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6231,7 +6336,7 @@ static void Cmd_getEntByBmodel_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6259,7 +6364,7 @@ static void Cmd_setOrigin(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6304,7 +6409,7 @@ static void Cmd_flushTentities_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_TESS) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -6368,7 +6473,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_TESS) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
@@ -7215,7 +7320,7 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
-		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropiate rights.\n\" ") );
+		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}
 #endif
