@@ -2107,7 +2107,7 @@ static void Cmd_ShakeCamera_f(gentity_t* ent) {
 	trap_Argv(1, arg_intensity, sizeof(arg_intensity));
 
 	//TiM : More userfriendly
-	if (arg_intensity[0] = 0) { //if user added no args (ie wanted the parameters)
+	if (arg_intensity[0] == 0) { //if user added no args (ie wanted the parameters)
 		G_PrintfClient(ent, "\nUsage: User makes every player's screen shake for X seconds\nCommand: Shake [Intensity] [Duration]\n");
 		return;
 	}
@@ -3000,7 +3000,7 @@ static void Cmd_ForceRank_f(gentity_t* ent) {
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		G_PrintfClient(ent,  "ERROR: You are not logged in as an admin.\n");
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
@@ -3263,7 +3263,7 @@ static void Cmd_Revive_f(gentity_t* ent) {
 			}
 		}
 	} else {
-		if (pla_str[0] = 0) {
+		if (pla_str[0] == 0) {
 			//Just me
 			if ((ent->health <= 1) && (ent->client->ps.pm_type == PM_DEAD)) {
 				G_Client_Spawn(ent, 1, qtrue);
@@ -3396,8 +3396,11 @@ Admin Message
 RPG-X | Phenix | 08/06/2005
 =================
 */
-static void Cmd_admin_message(gentity_t *ent) {
-	char *arg;
+static void Cmd_admin_message(gentity_t* ent) {
+	char* arg = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	if (trap_Argc() < 1) {
 		return;
@@ -3407,24 +3410,20 @@ static void Cmd_admin_message(gentity_t *ent) {
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MESSAGE) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
 
-	if (!ent || !ent->client) {
-		return;		// not fully in game yet
-	}
-
 	arg = ConcatArgs(1);
 
-	if (!arg[0]) { //if user added no args (ie wanted the parameters)
-		trap_SendServerCommand(ent - g_entities, va("print \"\nUsage: Admin broadcasts a message to all users on the server that stays for several seconds\nCommand: Msg \"<Message>\"\n\" "));
+	if (arg[0] == 0) { //if user added no args (ie wanted the parameters)
+		G_PrintfClient(ent, "\nUsage: Admin broadcasts a message to all users on the server that stays for several seconds\nCommand: Msg \"<Message>\"\n");
 		return;
 	}
 
@@ -3433,7 +3432,7 @@ static void Cmd_admin_message(gentity_t *ent) {
 	}
 
 	//RPG-X: Marcin: changed to -1
-	trap_SendServerCommand(-1, va("print \"%s\n\" ", arg));
+	G_PrintfClientAll("%s\n", arg);
 
 	trap_SendServerCommand(-1, va("servermsg \"%s\"", arg));
 
@@ -3444,25 +3443,27 @@ static void Cmd_admin_message(gentity_t *ent) {
 Cmd_ForceModel_f
 =================
 */
-static void Cmd_ForceModel_f(gentity_t *ent) {
-	gclient_t	*cl;
-	gentity_t *other;
-	gentity_t *sayA;
-	int j;
+static void Cmd_ForceModel_f(gentity_t* ent) {
 	char send[100];
-	char  str[MAX_TOKEN_CHARS];
-	char  *str2;
+	char str[MAX_TOKEN_CHARS];
+	char* str2 = NULL;
 	char clientCmd[64];
-	clientPersistant_t *pers;
+	int32_t j = 0;
+	gclient_t* cl = NULL;
+	gentity_t* other = NULL;
+	gentity_t* sayA = NULL;
+	clientPersistant_t* pers = NULL;
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -3470,17 +3471,16 @@ static void Cmd_ForceModel_f(gentity_t *ent) {
 	//get the first arg
 	trap_Argv(1, str, sizeof(str));
 
-	if (!str[0]) { //if user added no args (ie wanted the parameters)
-		trap_SendServerCommand(ent - g_entities, va("print \"\nUsage: User forces another player into a specific character model\n\nCommand: ForceModel [Player ID] <Model Name>/<Model Skin Name>\n\" "));
+	if (str[0] == 0) { //if user added no args (ie wanted the parameters)
+		G_PrintfClient(ent, "\nUsage: User forces another player into a specific character model\n\nCommand: ForceModel [Player ID] <Model Name>/<Model Skin Name>\n");
 		return;
 	}
 
 	// find the player
 	cl = ClientForString(str);
-	if (!cl) {
-		return;
-	}
+	G_Assert(cl, (void)0);
 	other = g_entities + cl->ps.clientNum;
+	G_Assert(other, (void)0);
 
 	//Get the new model
 	str2 = ConcatArgs(2);
@@ -3510,40 +3510,39 @@ static void Cmd_ForceModel_f(gentity_t *ent) {
 Cmd_PlayMusic_f
 =================
 */
-static void Cmd_PlayMusic_f(gentity_t *ent) {
+static void Cmd_PlayMusic_f(gentity_t* ent) {
 	char songIntro[MAX_TOKEN_CHARS];
 	char songLoop[MAX_TOKEN_CHARS];
 
 	//standard checks
 
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
-
-	if (!ent || !ent->client)
-		return;
 
 	//Load the arguments
 	trap_Argv(1, songIntro, sizeof(songIntro));
 	trap_Argv(2, songLoop, sizeof(songLoop));
 
 	//Output the isntructions if no arguments
-	if (!songIntro[0]) {
-		trap_SendServerCommand(ent - g_entities, va("print \"\nUsage: Plays music throughout the level\n\nCommand: playMusic [songIntro] <songLoop>\n\" "));
+	if (songIntro[0] == 0) {
+		G_PrintfClient(ent, "\nUsage: Plays music throughout the level\n\nCommand: playMusic [songIntro] <songLoop>\n");
 		return;
 	}
 
 	//Broadcast the command
 	trap_SetConfigstring(CS_MUSIC, va("%s %s", songIntro, songLoop));
-
 }
 
 /*
@@ -3551,23 +3550,23 @@ static void Cmd_PlayMusic_f(gentity_t *ent) {
 Cmd_StopMusic_f
 =================
 */
-static void Cmd_StopMusic_f(gentity_t *ent) {
+static void Cmd_StopMusic_f(gentity_t* ent) {
 	//standard checks
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
-
-	if (!ent || !ent->client)
-		return;
 
 	trap_SetConfigstring(CS_MUSIC, "");
 }
@@ -3577,30 +3576,30 @@ static void Cmd_StopMusic_f(gentity_t *ent) {
 Cmd_PlaySound_f
 =================
 */
-static void Cmd_PlaySound_f(gentity_t *ent) {
+static void Cmd_PlaySound_f(gentity_t* ent) {
 	char soundAddress[MAX_TOKEN_CHARS];
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
-
-	if (!ent || !ent->client)
-		return;
 
 	//Load the arguments
 	trap_Argv(1, soundAddress, sizeof(soundAddress));
 
 	//Output the isntructions if no arguments
-	if (!soundAddress[0]) {
-		trap_SendServerCommand(ent - g_entities, va("print \"\nUsage: Plays a sound file throughout the level\n\nCommand: playSound [File Address]\n\" "));
+	if (soundAddress[0] == 0) {
+		G_PrintfClient(ent, "\nUsage: Plays a sound file throughout the level\n\nCommand: playSound [File Address]\n");
 		return;
 	}
 
@@ -3614,14 +3613,17 @@ static void Cmd_PlaySound_f(gentity_t *ent) {
 Cmd_Bolton_f
 =================
 */
-static void Cmd_Bolton_f(gentity_t *ent) {
-	gclient_t	*client;
-	char		*msg;
+static void Cmd_Bolton_f(gentity_t* ent) {
+	char* msg = NULL;
+	gclient_t* client = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	client = ent->client;
 
 	ent->flags ^= FL_HOLSTER;
-	if (!(ent->flags & FL_HOLSTER)) {
+	if ((ent->flags & FL_HOLSTER) == 0) {
 		msg = "You took your equipment off.\n";
 		client->ps.powerups[PW_BOLTON] = level.time;
 	} else {
@@ -3629,7 +3631,7 @@ static void Cmd_Bolton_f(gentity_t *ent) {
 		client->ps.powerups[PW_BOLTON] = INT_MAX;
 	}
 
-	trap_SendServerCommand(ent - g_entities, va("print \"%s\"", msg));
+	G_PrintfClient(ent, "%s", msg);
 }
 
 /*
@@ -3641,20 +3643,23 @@ Cmd_UseEnt_f
 //if no argument, it'll 'use' the entity the player's looking at
 //Addendum: if player enters targetname, (checked to make sure it's no valid int in the ent list)
 //activate that one.
-static void Cmd_UseEnt_f(gentity_t *ent) {
-	char		entArg[MAX_TOKEN_CHARS];
-	gentity_t	*targetEnt;
-	int			index;
-	playerState_t *ps;
+static void Cmd_UseEnt_f(gentity_t* ent) {
+	int	index = 0;
+	char entArg[MAX_TOKEN_CHARS];
+	gentity_t* targetEnt = NULL;
+	playerState_t* ps = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_USEENT) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -3664,9 +3669,13 @@ static void Cmd_UseEnt_f(gentity_t *ent) {
 	ps = &ent->client->ps;
 
 	//No arguments - Do a trace 
-	if (!entArg[0]) {
-		vec3_t start, forward, end;
+	if (entArg[0] == 0) {
+		vec3_t start = { 0, 0, 0 };
+		vec3_t forward = { 0, 0, 0 };
+		vec3_t end = { 0, 0, 0 };
 		trace_t tr;
+
+		memset(&tr, 0, sizeof(trace_t));
 
 		//calc start
 		VectorCopy(ent->r.currentOrigin, start);
@@ -3689,7 +3698,7 @@ static void Cmd_UseEnt_f(gentity_t *ent) {
 		targetEnt = G_Find(NULL, FOFS(targetname), entArg);
 
 		//STILL no dice?? Gah... just eff it then lol.
-		if (!targetEnt) {
+		if (targetEnt == NULL) {
 			return;
 		}
 	} else {
@@ -3707,7 +3716,7 @@ static void Cmd_UseEnt_f(gentity_t *ent) {
 
 		targetEnt->use(targetEnt, ent, ent); //Activate the Ent
 	} else { //otherwise berrate the user for being n00bish
-		trap_SendServerCommand(ent - g_entities, va(" print \"Entity %i cannot be activated in that way.\n\" ", index));
+		G_PrintfClient(ent, "Entity %i cannot be activated in that way.\n", index);
 	}
 }
 
@@ -3717,20 +3726,22 @@ Cmd_EntList_f
 =================
 TiM: Displays as many ents it can in the console without pwning the network code in the process
 */
-static void Cmd_EntList_f(gentity_t *ent) {
-	int			i;
-	gentity_t	*mapEnt;
-	char		entBuffer[128];
-	char		mainBuffer[1024]; //16384
+static void Cmd_EntList_f(gentity_t* ent) {
+	char entBuffer[128];
+	char mainBuffer[1024]; //16384
+	int32_t i = 0;
+	gentity_t* mapEnt = NULL;
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_USEENT) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -3747,7 +3758,7 @@ static void Cmd_EntList_f(gentity_t *ent) {
 			if (mapEnt->use) {
 				memset(&entBuffer, 0, sizeof(entBuffer));
 
-				if (mapEnt->targetname) {
+				if (mapEnt->targetname != NULL) {
 					Com_sprintf(entBuffer, sizeof(entBuffer), "ClassName: '%s', TargetName: '%s', ID: %i\n", mapEnt->classname, mapEnt->targetname, i);
 				} else {
 					Com_sprintf(entBuffer, sizeof(entBuffer), "ClassName: '%s', ID: %i\n", mapEnt->classname, i);
@@ -3763,9 +3774,9 @@ static void Cmd_EntList_f(gentity_t *ent) {
 	}
 
 	if (strlen(mainBuffer) > 0) {
-		trap_SendServerCommand(ent - g_entities, va("print \"%s\" ", mainBuffer));
+		G_PrintfClient(ent, "%s", mainBuffer);
 	} else {
-		trap_SendServerCommand(ent - g_entities, va("print \"No activatable entities detected.\n\" "));
+		G_PrintfClient(ent, "No activate able entities detected.\n");
 	}
 }
 
@@ -3780,33 +3791,35 @@ beamTo: <location index>
 beamTo: <clientID> <location index>
 */
 // Harry -- Get the command...
-static void Cmd_BeamToLoc_f(gentity_t *ent) {
-	char		argStr[MAX_TOKEN_CHARS];
-	gentity_t	*locEnt;
-	gentity_t	*targEnt;
-	gentity_t	*beamTarget;
-	int			i;
-	int			clientNum = 0, locIndex = 0;
-	char		*strLoc = NULL;
-	qboolean	all = qfalse;
+static void Cmd_BeamToLoc_f(gentity_t* ent) {
+	char argStr[MAX_TOKEN_CHARS];
+	char* strLoc = NULL;
+	int32_t i = 0;
+	int32_t clientNum = 0;
+	int32_t locIndex = 0;
+	qboolean all = qfalse;
+	gentity_t* locEnt = NULL;
+	gentity_t* targEnt = NULL;
+	gentity_t* beamTarget = NULL;
+
+	G_Assert(ent, (void)0);
 
 	//Has to be an admin.. if anyone had it, the brig would become useless.
-
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
 
 	trap_Argv(1, argStr, sizeof(argStr));
-	if (!argStr[0]) {
-		trap_SendServerCommand(ent - g_entities, va("print \"Usage: Allows you to beam yourself to any 'target_location' entity that has a compatible beam-in point\nCommand: (For yourself) - beamToLocation <Index or name of target_location ent> \n(For other players) - beamTo <player ID> <Index or name of target_location ent>\nType '/beamList' into the console for a list of the 'target_location' indexes.\n\" "));
+	if (argStr[0] == 0) {
+		G_PrintfClient(ent, "Usage: Allows you to beam yourself to any 'target_location' entity that has a compatible beam-in point\nCommand: (For yourself) - beamToLocation <Index or name of target_location ent> \n(For other players) - beamTo <player ID> <Index or name of target_location ent>\nType '/beamList' into the console for a list of the 'target_location' indexes.\n");
 		return;
 	}
 
@@ -3815,7 +3828,7 @@ static void Cmd_BeamToLoc_f(gentity_t *ent) {
 	//must be an int coz it's the clientNum, anything else is not valid.
 	if (trap_Argc() > 2 && (unsigned char)argStr[0] >= '0' && (unsigned char)argStr[0] <= '9') {
 		//beam all?
-		if (!Q_stricmp(argStr, "all")) {
+		if (Q_stricmp(argStr, "all") == 0) {
 			all = qtrue;
 		} else {
 			//Get Client ID
@@ -3823,13 +3836,13 @@ static void Cmd_BeamToLoc_f(gentity_t *ent) {
 		}
 
 		if (clientNum < 0 || clientNum >= MAX_CLIENTS) {
-			trap_SendServerCommand(ent - g_entities, va("chat \"Invalid Client ID Number.\n\" "));
+			G_PrintfClient(ent, "Invalid Client ID Number.\n");
 			return;
 		}
 
 		beamTarget = &g_entities[clientNum];
-		if (!beamTarget || !beamTarget->client) {
-			trap_SendServerCommand(ent - g_entities, va("chat \"No valid client found.\n\" "));
+		if (beamTarget == NULL || beamTarget->client == NULL) {
+			G_PrintfClient(ent, "No valid client found.\n");
 			return;
 		}
 
@@ -3857,7 +3870,7 @@ static void Cmd_BeamToLoc_f(gentity_t *ent) {
 	//if it's an invalid index, then I'm guessing the player specified location by name then
 	if (locIndex < 1 || locIndex >= MAX_LOCATIONS) {
 		if (!strLoc) {
-			trap_SendServerCommand(ent - g_entities, va("chat \"Invalid Location Index.\n\" "));
+			G_PrintfClient(ent, "Invalid Location Index.\n");
 			return;
 		}
 	}
@@ -3881,19 +3894,19 @@ static void Cmd_BeamToLoc_f(gentity_t *ent) {
 	}
 
 	if ((locEnt == NULL) || (locEnt->type != ENT_TARGET_LOCATION)) {
-		trap_SendServerCommand(ent - g_entities, va("chat \"Invalid Beam Entity.\n\" "));
+		G_PrintfClient(ent, "Invalid Beam Entity.\n");
 		return;
 	}
 
 	//locEnt
-	if (locEnt->target) {
+	if (locEnt->target != NULL) {
 		targEnt = G_PickTarget(locEnt->target);
 	} else {
 		targEnt = locEnt;
 	}
 
-	if (targEnt /*&& TransDat[beamTarget->client->ps.clientNum].beamTime == 0*/) {
-		vec3_t	destPoint;
+	if (targEnt != NULL) {
+		vec3_t destPoint = { 0, 0, 0 };
 		//TiM : Leeched this code off elsewhere.  instead of hard-coding a value, align it to the ent's bbox.
 		//In case they don't use notnulls but something else.
 		VectorCopy(targEnt->s.origin, destPoint);
@@ -3906,8 +3919,14 @@ static void Cmd_BeamToLoc_f(gentity_t *ent) {
 			if (!all) {
 				G_InitTransport(beamTarget->client->ps.clientNum, destPoint, targEnt->s.angles);
 			} else {
+				gentity_t* e = NULL;
 				for (i = 0; i < MAX_CLIENTS && i < g_maxclients.integer; i++) {
-					if (!&g_entities[i] || !&g_entities[i].client) continue;
+					e = &g_entities[i];
+
+					if (e == NULL || e->client == NULL) {
+						continue;
+					}
+
 					G_InitTransport(g_entities[i].client->ps.clientNum, destPoint, g_entities[i].s.angles);
 					targEnt = G_PickTarget(locEnt->target);
 				}
@@ -3934,26 +3953,28 @@ that are too simple to require their own specific
 function.
 Although, name and model could be changed here too...
 */
-static void Cmd_ForcePlayer_f(gentity_t *ent) {
-	gclient_t	*cl;
-	gentity_t *other;
-	gentity_t *sayA;
-	int j;
+static void Cmd_ForcePlayer_f(gentity_t* ent) {
 	char send[100];
-	char  str[MAX_TOKEN_CHARS];
-	char  *str2;
+	char str[MAX_TOKEN_CHARS];
+	char* str2 = NULL;
 	char userinfo[MAX_INFO_STRING];
 	char clientCmd[MAX_INFO_STRING];
-	clientPersistant_t *pers;
+	int32_t j = 0;
+	gclient_t* cl = NULL;
+	gentity_t* other = NULL;
+	gentity_t* sayA = NULL;
+	clientPersistant_t* pers = NULL;
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -3961,27 +3982,26 @@ static void Cmd_ForcePlayer_f(gentity_t *ent) {
 	// find the player
 	trap_Argv(1, str, sizeof(str));
 
-	if (!str[0]) { //if user added no args (ie wanted the parameters)
-		trap_SendServerCommand(ent - g_entities, va("print \"\nUsage: User force changes a parameter in another player's configuration settings on the server.\nCommand: ForcePlayer <Player's ID Number> \"[Setting to be changed]\" \"[New Value]\"\n\n\" "));
+	if (str[0] == 0) { //if user added no args (ie wanted the parameters)
+		G_PrintfClient(ent, "\nUsage: User force changes a parameter in another player's configuration settings on the server.\nCommand: ForcePlayer <Player's ID Number> \"[Setting to be changed]\" \"[New Value]\"\n\n");
 		return;
 	}
 
 	cl = ClientForString(str);
-	if (!cl) {
-		return;
-	}
+	G_Assert(cl, (void)0);
 	other = g_entities + cl->ps.clientNum;
+	G_Assert(other, (void)0);
 
 	//Get the key
 	trap_Argv(2, str, sizeof(str));
-	if (!str[0]) {
+	if (str[0] == 0) {
 		return;
 	}
 
 	//get client's data
 	trap_GetUserinfo(cl->ps.clientNum, userinfo, sizeof(userinfo));
-	if (!strstr(userinfo, str)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: Invalid setting specified.\n\" "));
+	if (strstr(userinfo, str) == NULL) {
+		G_PrintfClient(ent, "ERROR: Invalid setting specified.\n");
 		return;
 	}
 
@@ -4020,50 +4040,44 @@ Marcin : Implemented an 'all' option. (11/12/2008)
 */
 #define PLAYER_BEAM_DIST	50
 
-static void Cmd_BeamToPlayer_f(gentity_t	*ent) {
-	char		argStr[MAX_TOKEN_CHARS];
-	gentity_t	*target;
-	gentity_t	*beamee;
-	int			clientNum = 0;
-	int			bClientNum = 0;
-	vec3_t		mins = { -12, -12, -24 }; //for the volume trace -//12
-	vec3_t		maxs = { 12, 12, 56 }; //44
-	int			i, j = 0;
-	vec3_t		origin, angles, zOrigin;
-	trace_t		tr;
-	qboolean	validTraceFound = qfalse;
-	int			startPoint;
-	int			totalCount;
-	int			offsetRA[8][2] = { { 1, 0 }, //offsets for each beam test location
-	{ 1, -1 },
-	{ 0, -1 },
-	{ -1, -1 },
-	{ -1, 0 },
-	{ -1, 1 },
-	{ 0, 1 },
-	{ 1, 1 }
-	};
-	int			viewAngleHeading[8] = { 180, 135, 90, 45, 0, -45, -90, -135 };
-	qboolean    everyone = qfalse;
+static void Cmd_BeamToPlayer_f(gentity_t* ent) {
+	char argStr[MAX_TOKEN_CHARS];
+	int32_t clientNum = 0;
+	int32_t bClientNum = 0;
+	int32_t i = 0;
+	int32_t j = 0;
+	int32_t startPoint = 0;
+	int32_t totalCount = 0;
+	int32_t	viewAngleHeading[8] = { 180, 135, 90, 45, 0, -45, -90, -135 };
+	int32_t offsetRA[8][2] = { { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 }	};
+	vec3_t mins = { -12, -12, -24 }; //for the volume trace -//12
+	vec3_t maxs = { 12, 12, 56 }; //44
+	vec3_t origin = { 0, 0, 0 };
+	vec3_t angles = { 0, 0, 0 };
+	vec3_t zOrigin = { 0, 0, 0 };
+	qboolean validTraceFound = qfalse;
+	qboolean everyone = qfalse;
+	gentity_t* target = NULL;
+	gentity_t* beamee = NULL;
+	trace_t	tr;
 
 
 	//Has to be an admin.. if anyone had it, the brig would become useless.
-
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
 
 	trap_Argv(1, argStr, sizeof(argStr));
-	if (!argStr[0]) {
-		trap_SendServerCommand(ent - g_entities, va("print \"Usage: Allows you to beam yourself or another player to the location of a separate player.\nCommand: (For yourself) - beamToPlayer <ID of player to beam to> \n(For other players) - beamToPlayer <ID of player to beam> <ID of location player>\n\" "));
+	if (argStr[0] == 0) {
+		G_PrintfClient(ent, "Usage: Allows you to beam yourself or another player to the location of a separate player.\nCommand: (For yourself) - beamToPlayer <ID of player to beam to> \n(For other players) - beamToPlayer <ID of player to beam> <ID of location player>\n");
 		return;
 	}
 
@@ -4081,7 +4095,7 @@ static void Cmd_BeamToPlayer_f(gentity_t	*ent) {
 		}
 		trap_Argv(2, argStr, sizeof(argStr));
 		if (Q_stricmp(argStr, "all") == 0) {
-			trap_SendServerCommand(ent - g_entities, "print \"ERROR. You can not beam a player to everyone.\nPerhaps you meant /beamToPlayer all <number>.\n\" ");
+			G_PrintfClient(ent, "ERROR. You can not beam a player to everyone.\nPerhaps you meant /beamToPlayer all <number>.\n");
 			return;
 		}
 
@@ -4089,12 +4103,12 @@ static void Cmd_BeamToPlayer_f(gentity_t	*ent) {
 	}
 
 	if (clientNum == bClientNum) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR. Target location player and target beaming player cannot be the same.\n\" "));
+		G_PrintfClient(ent, "ERROR. Target location player and target beaming player cannot be the same.\n");
 		return;
 	}
 
 	if ((clientNum < 0 || clientNum >= MAX_CLIENTS) || ((bClientNum < 0 || bClientNum >= MAX_CLIENTS) && !everyone)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"Invalid client specified.\n\" "));
+		G_PrintfClient(ent, "Invalid client specified.\n");
 		return;
 	}
 
@@ -4164,7 +4178,7 @@ static void Cmd_BeamToPlayer_f(gentity_t	*ent) {
 			}
 
 			if (!validTraceFound) {
-				trap_SendServerCommand(ent - g_entities, va("print \"No valid beam points next to player found.\n\" "));
+				G_PrintfClient(ent, "No valid beam points next to player found.\n");
 				continue;
 			}
 
@@ -4203,24 +4217,27 @@ time length has been received from
 client.  Any specific flags the
 emote may have will be checked here.
 */
-static void Cmd_DoEmote_f(gentity_t	*ent) {
-	char			argStr[MAX_QPATH];
-	emoteList_t		*emote;
-	int				animLength;
-	int				i;
-	int				emoteInt;
-	int				flagHolder = 0;
-	qboolean		doUpper = qfalse;
-	qboolean		doLower = qfalse;
-	qboolean		alreadyEmoting;
-	playerState_t	*ps;
+static void Cmd_DoEmote_f(gentity_t* ent) {
+	char argStr[MAX_QPATH];
+	int32_t animLength = 0;
+	int32_t	i = 0;
+	int32_t	emoteInt = 0;
+	int32_t	flagHolder = 0;
+	qboolean doUpper = qfalse;
+	qboolean doLower = qfalse;
+	qboolean alreadyEmoting = qfalse;
+	emoteList_t* emote = NULL;
+	playerState_t* ps = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	trap_Argv(1, argStr, sizeof(argStr));
 
 	//RPG-X | Marcin | 24/12/2008
 	//n00b check
 	if (g_classData[ent->client->sess.sessionClass].isn00b) {
-		trap_SendServerCommand(ent - g_entities, "print \"[You're too stupid to use this command]\n\"");
+		G_PrintfClient(ent, "[You're too stupid to use this command]\n");
 		return;
 	}
 
@@ -4228,17 +4245,17 @@ static void Cmd_DoEmote_f(gentity_t	*ent) {
 
 	//Small override for the specific eyes animation emotes.
 	//And also the alert mode now
-	if (!Q_stricmp(argStr, "eyes_shut") || !Q_stricmp(argStr, "eyes_frown") || !Q_stricmpn(argStr, "alert2", 6) || !Q_stricmpn(argStr, "alert", 5)) {
-		if (!Q_stricmp(argStr, "eyes_shut")) {
+	if (Q_stricmp(argStr, "eyes_shut") == 0 || Q_stricmp(argStr, "eyes_frown") == 0 || Q_stricmpn(argStr, "alert2", 6) == 0 || Q_stricmpn(argStr, "alert", 5) == 0) {
+		if (Q_stricmp(argStr, "eyes_shut") == 0) {
 			ps->stats[EMOTES] ^= EMOTE_EYES_SHUT;
 		}
 
-		else if (!Q_stricmp(argStr, "eyes_frown"))
+		else if (Q_stricmp(argStr, "eyes_frown") == 0)
 			ps->stats[EMOTES] ^= EMOTE_EYES_PISSED;
-		else if (!Q_stricmpn(argStr, "alert2", 6)) {
+		else if (Q_stricmpn(argStr, "alert2", 6) == 0) {
 			ps->pm_flags &= ~ANIM_ALERT;
 			ps->pm_flags ^= ANIM_ALERT2;
-		} else if (!Q_stricmpn(argStr, "alert", 5)) {
+		} else if (Q_stricmpn(argStr, "alert", 5) == 0) {
 			ps->pm_flags &= ~ANIM_ALERT2;
 			ps->pm_flags ^= ANIM_ALERT;
 		}
@@ -4247,15 +4264,15 @@ static void Cmd_DoEmote_f(gentity_t	*ent) {
 	}
 
 	if (trap_Argc() != 3) {
-		trap_SendServerCommand(ent - g_entities, va("print \"Invalid arguments listed.  Please use the '/emote' command to perform emotes.\n\" "));
+		G_PrintfClient(ent, "Invalid arguments listed.  Please use the '/emote' command to perform emotes.\n");
 		return;
 	}
 
 	emoteInt = atoi(argStr);
 	emote = &bg_emoteList[emoteInt];
 
-	if (!emote) {
-		trap_SendServerCommand(ent - g_entities, va("print \"Invalid emote specified.\n\" "));
+	if (emote == NULL) {
+		G_PrintfClient(ent, "Invalid emote specified.\n");
 		return;
 	}
 
@@ -4263,7 +4280,7 @@ static void Cmd_DoEmote_f(gentity_t	*ent) {
 	animLength = atoi(argStr);
 
 	if (animLength > 65000) {
-		trap_SendServerCommand(ent - g_entities, va("print \"Invalid emote time length specified.\n\" "));
+		G_PrintfClient(ent, "Invalid emote time length specified.\n");
 		return;
 	}
 
@@ -4272,18 +4289,18 @@ static void Cmd_DoEmote_f(gentity_t	*ent) {
 	ps->torsoAnim = 0;
 	ps->legsAnim = 0;
 
-	if (emote->bodyFlags & EMOTE_UPPER) {
+	if ((emote->bodyFlags & EMOTE_UPPER) != 0) {
 		doUpper = qtrue;
 	}
 
-	if (emote->bodyFlags & EMOTE_LOWER) {
+	if ((emote->bodyFlags & EMOTE_LOWER) != 0) {
 		doLower = qtrue;
 	}
 
-	if ((ps->stats[EMOTES] & EMOTE_UPPER) &&
-		(ps->stats[EMOTES] & EMOTE_LOOP_UPPER)) {
-		if (emote->animFlags & EMOTE_REVERTLOOP_UPPER) {
-			int anim = ps->stats[TORSOANIM];
+	if ((ps->stats[EMOTES] & EMOTE_UPPER) != 0 &&
+		(ps->stats[EMOTES] & EMOTE_LOOP_UPPER) != 0) {
+		if ((emote->animFlags & EMOTE_REVERTLOOP_UPPER) != 0) {
+			int32_t anim = ps->stats[TORSOANIM];
 			anim &= ~ANIM_TOGGLEBIT; //remove the toggle msk
 
 			for (i = 0; i < bg_numEmotes; i++) {
@@ -4295,10 +4312,10 @@ static void Cmd_DoEmote_f(gentity_t	*ent) {
 		}
 	}
 
-	if ((ps->stats[EMOTES] & EMOTE_LOWER) &&
-		(ps->stats[EMOTES] & EMOTE_LOOP_LOWER)) {
-		if (emote->animFlags & EMOTE_REVERTLOOP_LOWER) {
-			int anim = ps->stats[LEGSANIM];
+	if ((ps->stats[EMOTES] & EMOTE_LOWER) != 0 &&
+		(ps->stats[EMOTES] & EMOTE_LOOP_LOWER) != 0) {
+		if ((emote->animFlags & EMOTE_REVERTLOOP_LOWER) != 0) {
+			int32_t anim = ps->stats[LEGSANIM];
 			anim &= ~ANIM_TOGGLEBIT;
 
 			for (i = 0; i < bg_numEmotes; i++) {
@@ -4316,7 +4333,7 @@ static void Cmd_DoEmote_f(gentity_t	*ent) {
 		doUpper = (qboolean)((emote->animFlags & EMOTE_OVERRIDE_UPPER));
 		doLower = (qboolean)((emote->animFlags & EMOTE_OVERRIDE_LOWER));
 	} else {
-		if (doLower && !(emote->animFlags & EMOTE_OVERRIDE_LOWER) && ps->powerups[PW_FLIGHT]) {
+		if (doLower && (emote->animFlags & EMOTE_OVERRIDE_LOWER) == 0 && ps->powerups[PW_FLIGHT] != 0) {
 			doLower = qfalse;
 		}
 	}
@@ -4400,10 +4417,7 @@ static void Cmd_DoEmote_f(gentity_t	*ent) {
 		//set emote num into emote timer so we can use it in pmove
 		ps->legsTimer = emoteInt;
 
-		//ent->client->ps.legsAnim = 
-		//( ( ent->client->ps.legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
-		ps->stats[LEGSANIM] =
-			((ps->stats[LEGSANIM] & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | emote->enumName;
+		ps->stats[LEGSANIM] = ((ps->stats[LEGSANIM] & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | emote->enumName;
 	}
 }
 
@@ -4414,11 +4428,11 @@ I originally had it so holding the
 walk button did this, but then found out
 that it's permanently held down in other instances :S
 ================*/
-static void Cmd_EndEmote_f(gentity_t *ent) {
-	playerState_t *ps;
+static void Cmd_EndEmote_f(gentity_t* ent) {
+	playerState_t* ps = NULL;
 
-	if (!ent->client)
-		return;
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	ps = &ent->client->ps;
 
@@ -4446,12 +4460,17 @@ resulting in sluggish movement for high
 ping d00ds.
 ===============*/
 static void Cmd_Laser_f(gentity_t *ent) {
-	char* message;
-	playerState_t *ps = &ent->client->ps;
+	char* message = NULL;
+	playerState_t *ps = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	ps = &ent->client->ps;
 
 	//TiM - Say... what was the max length of time a Q3 server was capable of running
 	//nonstop again lol? :)
-	if (!ps->powerups[PW_LASER]) {
+	if (ps->powerups[PW_LASER] == 0) {
 		ps->powerups[PW_LASER] = level.time + 10000000;
 		message = "Activated Laser";
 	} else {
@@ -4459,15 +4478,20 @@ static void Cmd_Laser_f(gentity_t *ent) {
 		message = "Deactivated Laser";
 	}
 
-	trap_SendServerCommand(ent - g_entities, va(" print \"%s\n\" ", message));
+	G_PrintfClient(ent, "%s\n", message);
 }
 
 /*==============
 Cmd_FlashLight_f
 ==============*/
-static void Cmd_FlashLight_f(gentity_t *ent) {
-	char* message;
-	playerState_t *ps = &ent->client->ps;
+static void Cmd_FlashLight_f(gentity_t* ent) {
+	char* message = NULL;
+	playerState_t *ps = NULL;
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	ps = &ent->client->ps;
 
 	//TiM - Say... what was the max length of time a Q3 server was capable of running
 	//nonstop again lol? :)
@@ -4479,7 +4503,7 @@ static void Cmd_FlashLight_f(gentity_t *ent) {
 		message = "Deactivated Flashlight";
 	}
 
-	trap_SendServerCommand(ent - g_entities, va(" print \"%s\n\" ", message));
+	G_PrintfClient(ent, "%s\n", message);
 }
 
 /*==============
@@ -4488,23 +4512,30 @@ TiM: Allows admins
 to configure their
 FX guns to emit different FX
 ==============*/
-static void Cmd_fxGun_f(gentity_t *ent) {
-	char	arg[MAX_TOKEN_CHARS];
-	char	fxName[36];
-	const int FX_DEFAULT_TIME = 900000;
-	fxGunData_t *fxGunData;
+static void Cmd_fxGun_f(gentity_t* ent) {
+	char arg[MAX_TOKEN_CHARS];
+	char fxName[36];
+	const int32_t FX_DEFAULT_TIME = 900000;
+	int32_t argc = 0;
+	fxGunData_t* fxGunData = NULL;
 
-	if (!ent->client)
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	argc = trap_Argc();
+	if (argc < 2) {
+		G_PrintfClient(ent, "Usage: /fxGun <effect> [arguments]\n");
 		return;
+	}
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
 	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
-		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
+		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
 #endif
@@ -4516,17 +4547,23 @@ static void Cmd_fxGun_f(gentity_t *ent) {
 
 	fxGunData = &ent->client->fxGunData;
 
-	if (!Q_stricmp(arg, "default")) {
+	if (Q_stricmp(arg, "default") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
-	} else if (!Q_stricmp(arg, "detpack")) {
+	} else if (Q_stricmp(arg, "detpack") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 		fxGunData->eventNum = EV_DETPACK;
-	} else if (!Q_stricmp(arg, "chunks")) {
+	} else if (Q_stricmp(arg, "chunks") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
+
+		if (argc < 4) {
+			G_PrintfClient(ent, "Syntax: /fxGun chunks <radius> <chunk type: 1-5>\n");
+			return;
+		}
+
 		//radius
 		trap_Argv(2, arg, sizeof(arg));
-		if (!arg[0]) {
-			trap_SendServerCommand(ent - g_entities, "print \"Syntax: /fxGun chunks <radius> <chunk type: 1-5>\n\" ");
+		if (arg[0] == 0) {
+			G_PrintfClient(ent, "Syntax: /fxGun chunks <radius> <chunk type: 1-5>\n");
 			return;
 		}
 
@@ -4535,8 +4572,8 @@ static void Cmd_fxGun_f(gentity_t *ent) {
 
 		//radius
 		trap_Argv(3, arg, sizeof(arg));
-		if (!arg[0]) {
-			trap_SendServerCommand(ent - g_entities, "print \"Syntax: /fxGun chunks <radius> <chunk type: 1-5>\n\" ");
+		if (arg[0] == 0) {
+			G_PrintfClient(ent, "Syntax: /fxGun chunks <radius> <chunk type: 1-5>\n");
 			memset(fxGunData, 0, sizeof(fxGunData));
 			return;
 		}
