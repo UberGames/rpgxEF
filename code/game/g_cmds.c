@@ -7448,12 +7448,17 @@ static void Cmd_SqlLogin_f(gentity_t* ent) {
 Cmd_SqlUserAdd_f
 =================
 */
-static void Cmd_SqlUserAdd_f(gentity_t *ent) {
+static void Cmd_SqlUserAdd_f(gentity_t* ent) {
 	char uName[MAX_TOKEN_CHARS];
 	char password[MAX_TOKEN_CHARS];
-	qboolean res;
+	qboolean res = qfalse;
 
-	if(!sql_use.integer || !ent || !ent->client) return;
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	if(sql_use.integer == 0) {
+		return;
+	}
 
 	if(!IsAdmin(ent)) {
 		return;
@@ -7480,15 +7485,20 @@ static void Cmd_SqlUserAdd_f(gentity_t *ent) {
 Cmd_SqlUserMod_f
 =================
 */
-static void Cmd_SqlUserMod_f(gentity_t *ent) {
+static void Cmd_SqlUserMod_f(gentity_t* ent) {
 	char uName[MAX_TOKEN_CHARS];
 	char right[MAX_TOKEN_CHARS];
-	long lright;
-	int value;
-	qboolean res;
-	int clientNum;
+	qboolean res = qfalse;
+	int64_t lright = 0;
+	int32_t value = 0;
+	int32_t clientNum = 0;
 
-	if(!sql_use.integer || !ent || !ent->client) return;
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	if(sql_use.integer == 0) {
+		return;
+	}
 
 	if(!IsAdmin(ent)) {
 		return;
@@ -7507,7 +7517,6 @@ static void Cmd_SqlUserMod_f(gentity_t *ent) {
 
 	/* TODO finish me */
 	res = qfalse;
-
 	switch(res) {
 		case 1:
 			trap_SendServerCommand(clientNum, "print \"Seems to have worked.\n\"");
@@ -7530,17 +7539,19 @@ static void Cmd_SqlUserMod_f(gentity_t *ent) {
 Cmd_findEntitiesInRadius
 =================
 */
-static void Cmd_findEntitiesInRadius(gentity_t *ent) {
-	char		arg[MAX_QPATH];
-	int			radius;
-	char		*classname = NULL;
-	qboolean	all = qfalse;
-	qboolean	takeDamage = qfalse;
+static void Cmd_findEntitiesInRadius(gentity_t* ent) {
+	char arg[MAX_QPATH];
+	char* classname = NULL;
+	qboolean all = qfalse;
+	qboolean takeDamage = qfalse;
+	int32_t radius = 0;
 	struct list entities;
 	struct list ignore;
 	list_iter_p iter;
 	container_p c;
-	gentity_t*  t;
+	gentity_t* t = NULL;
+
+	G_Assert(ent, (void)0);
 
 #ifndef SQL
 	if (!IsAdmin(ent)) {
@@ -7554,18 +7565,22 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 	}
 #endif
 
-	if (trap_Argc() < 3) return;
+	if (trap_Argc() < 3) {
+		return;
+	}
 
 	trap_Argv(1, arg, sizeof(arg));
-
-	if (!Q_stricmp(Q_strlwr(arg), "all"))
+	if (Q_stricmp(Q_strlwr(arg), "all") == 0) {
 		all = qtrue;
-	else
+	} else {
 		classname = G_NewString(Q_strlwr(arg));
+	}
 
 	trap_Argv(2, arg, sizeof(arg));
 	radius = atoi(arg);
-	if (radius < 0) return;
+	if (radius < 0) {
+		return;
+	}
 
 	trap_Argv(3, arg, sizeof(arg));
 	takeDamage = (qboolean)atoi(arg);
@@ -7587,7 +7602,7 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 		if (all) {
 			G_PrintfClient(ent, "Entity: %i, Classname: %s", t - g_entities, t->classname);
 		} else {
-			if (!Q_stricmpn(t->classname, classname, strlen(classname))) {
+			if (Q_stricmpn(t->classname, classname, strlen(classname)) == 0) {
 				G_PrintfClient(ent, "Entity: %i Classname: %s", t - g_entities, classname);
 			}
 		}
@@ -7597,15 +7612,17 @@ static void Cmd_findEntitiesInRadius(gentity_t *ent) {
 }
 
 // CCAM
-static void Cmd_Camtest_f(gentity_t *ent) {
-	gentity_t *targ;
+static void Cmd_Camtest_f(gentity_t* ent) {
 	char tname[256];
+	gentity_t* targ = NULL;
+
+	G_Assert(ent, (void)0);
 
 	if (trap_Argc() < 1) {
 		return;
 	}
 
-	if (ent->flags & FL_CCAM) {
+	if ((ent->flags & FL_CCAM) != 0) {
 		return;
 	}
 
@@ -7624,11 +7641,15 @@ static void Cmd_Camtest_f(gentity_t *ent) {
 }
 
 void Cmd_CamtestEnd_f(gentity_t *ent) {
+	G_Assert(ent, (void)0);
+
 	Cinematic_DeactivateCameraMode(ent);
 }
 // END CCAM
 
 void Cmd_ScriptCall_f(gentity_t* ent) {
+	G_Assert(ent, (void)0);
+
 	if (g_developer.integer != 0) {
 		char function[MAX_STRING_CHARS];
 
@@ -7645,14 +7666,19 @@ void Cmd_ScriptCall_f(gentity_t* ent) {
 	}
 }
 
-void addShaderToList(list_p list, char *shader) {
-	char* s;
-	char* t;
+void addShaderToList(list_p list, char* shader) {
+	char* s = NULL;
+	char* t = NULL;
 	container_p c;
 	list_iter_p i;
 
-	if (shader[0] == 0) return;
-	if (list == NULL) return;
+	if (shader[0] == 0) {
+		return;
+	}
+
+	if (list == NULL) {
+		return;
+	}
 
 	s = strdup(shader);
 	if (s == NULL) {
@@ -7678,27 +7704,29 @@ void addShaderToList(list_p list, char *shader) {
 }
 
 extern target_alert_Shaders_s alertShaders;
-void Cmd_GeneratePrecacheFile(gentity_t *ent) {
-	int i;
+void Cmd_GeneratePrecacheFile(gentity_t* ent) {
 	char info[MAX_INFO_STRING];
 	char file[MAX_QPATH];
+	char* s = NULL;
+	int32_t i = 0;
 	list_p shaders;
 	list_iter_p iter;
 	qboolean first = qtrue;
 	fileHandle_t f;
-	char* s;
 	container_p c;
+
+	G_Assert(ent, (void)0);
 
 	trap_GetServerinfo(info, MAX_INFO_STRING);
 	Com_sprintf(file, MAX_QPATH, "maps/%s.precache", Info_ValueForKey(info, "mapname"));
 	trap_FS_FOpenFile(file, &f, FS_APPEND);
-	if (!f) {
+	if (f == 0) {
 		G_Printf(S_COLOR_RED "[Error] - Could not create/open 'maps/%s.precache'\n", file);
 		return;
 	}
 
 	shaders = create_list();
-	if (!shaders) {
+	if (shaders == NULL) {
 		G_Printf(S_COLOR_RED "[Error] - Could not create shader list.\n");
 		trap_FS_FCloseFile(f);
 		return;
@@ -7764,6 +7792,8 @@ void Cmd_GeneratePrecacheFile(gentity_t *ent) {
 }
 
 static void Cmd_TestLogger(gentity_t* ent) {
+	G_Assert(ent, (void)0);
+
 	G_Logger(LL_ALWAYS, "always print this %d %s\n", 42, "42");
 	G_Logger(LL_ERROR, "this is an error %d %s\n", 42, "42");
 	G_Logger(LL_WARN, "this is a warning %d %s\n", 42, "42");
@@ -7785,14 +7815,14 @@ G_Client_Command
 =================
 */
 void G_Client_Command(int clientNum) {
-	gentity_t *ent;
-	char	cmd[MAX_TOKEN_CHARS];
+	gentity_t* ent = NULL;
+	char cmd[MAX_TOKEN_CHARS];
 
 	//ent = g_entities + clientNum;
 	ent = &g_entities[clientNum];
-	if (!ent->client) {
-		return;		// not fully in game yet
-	}
+	
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
 
 	trap_Argv(0, cmd, sizeof(cmd));
 
