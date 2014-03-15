@@ -1916,7 +1916,7 @@ void G_Active_ShieldRemove(gentity_t* self);
 *	\param ent The client.
 *	\param txt Optional message for PADD dropping.
 */
-void ThrowWeapon( gentity_t* ent, char* txt );
+void G_ThrowWeapon(gentity_t* ent, char* txt);
 
 //
 // g_mem.c

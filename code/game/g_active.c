@@ -1815,7 +1815,7 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
 void BotTestSolid(vec3_t origin);
 
-void ThrowWeapon( gentity_t *ent, char *txt )
+void G_ThrowWeapon( gentity_t *ent, char *txt )
 {
 	gclient_t*	client = NULL;
 	usercmd_t*	ucmd = NULL;
