@@ -1243,61 +1243,6 @@ int G_GetEntityByBmodel(char* bmodel,list_p entities);
 void AddRemap(const char* oldShader, const char* newShader, float timeOffset);
 
 //
-// g_missile.c
-//
-/**
- * Run a missile.
- *
- * \param ent the missile
- */
-void G_Missile_Run( gentity_t* ent );
-
-/**
- * Fire alient plasma projectile.
- *
- * \param The shooter.
- * \param start Start point.
- * \param aimdir Direction.
- */
-/*@shared@*/ /*@null@*/  gentity_t* fire_plasma (gentity_t* self, vec3_t start, vec3_t aimdir);
-
-/**
- * Fire torpedo projectile.
- *
- * \param The shooter.
- * \param start Start point.
- * \param aimdir Direction.
- */
-/*@shared@*/ /*@null@*/  gentity_t* fire_quantum (gentity_t* self, vec3_t start, vec3_t aimdir);
-
-/**
- * Fire grenade.
- *
- * \param The shooter.
- * \param start Start point.
- * \param aimdir Direction.
- */
-/*@shared@*/ /*@null@*/  gentity_t* fire_grenade (gentity_t* self, vec3_t start, vec3_t aimdir);
-
-/**
- * Fire a rocket.
- *
- * \param The shooter.
- * \param start Start point.
- * \param dir Direction.
- */
-/*@shared@*/ /*@null@*/  gentity_t* fire_rocket (gentity_t* self, vec3_t start, vec3_t dir);
-
-/**
- * Fire a compression rifle projectile.
- *
- * \param The shooter.
- * \param start Start point.
- * \param dir Direction.
- */
-/*@shared@*/ /*@null@*/  gentity_t* fire_comprifle (gentity_t* self, vec3_t start, vec3_t dir);
-
-//
 // g_mover.c
 //
 /**

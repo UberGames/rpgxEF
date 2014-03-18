@@ -6,6 +6,7 @@
 #include "g_client.h"
 #include "g_spawn.h"
 #include "g_items.h"
+#include "g_missile.h"
 
 
 /*QUAKED func_group (0 0 0) ?
@@ -593,19 +594,19 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 
 	switch ( ent->s.weapon ) {
 	case WP_8:
-		fire_grenade( ent, ent->s.origin, dir );
+		G_Missile_FireGrenade( ent, ent->s.origin, dir );
 		break;
 	case WP_10:
-		fire_rocket( ent, ent->s.origin, dir );
+		G_Missile_FirerRocket( ent, ent->s.origin, dir );
 		break;
 	case WP_4:
-		fire_plasma( ent, ent->s.origin, dir );
+		G_Missile_FirePlasma( ent, ent->s.origin, dir );
 		break;
 	case WP_9:
-		fire_quantum( ent, ent->s.origin, dir );
+		G_Missile_FireQuantum( ent, ent->s.origin, dir );
 		break;
 	case WP_6:
-		fire_comprifle( ent, ent->s.origin, dir );
+		G_Missile_FireComprifle( ent, ent->s.origin, dir );
 		break;
 	}
 }

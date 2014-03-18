@@ -486,7 +486,7 @@ void G_Missile_Run( gentity_t* ent ) {
 
 //=============================================================================
 
-gentity_t* fire_plasma (gentity_t* self, vec3_t start, vec3_t dir) {
+gentity_t* G_Missile_FirePlasma (gentity_t* self, vec3_t start, vec3_t dir) {
 	gentity_t* bolt = NULL;
 
 	G_LogFuncBegin();
@@ -526,7 +526,7 @@ gentity_t* fire_plasma (gentity_t* self, vec3_t start, vec3_t dir) {
 	return bolt;
 }
 
-gentity_t* fire_comprifle(gentity_t* self, vec3_t start, vec3_t dir) {
+gentity_t* G_Missile_FireComprifle(gentity_t* self, vec3_t start, vec3_t dir) {
 	gentity_t* bolt = NULL;
 
 	G_LogFuncBegin();
@@ -570,7 +570,7 @@ gentity_t* fire_comprifle(gentity_t* self, vec3_t start, vec3_t dir) {
 
 //=============================================================================
 
-gentity_t* fire_quantum (gentity_t* self, vec3_t start, vec3_t dir) {
+gentity_t* G_Missile_FireQuantum (gentity_t* self, vec3_t start, vec3_t dir) {
 	gentity_t* bolt = NULL;
 
 	G_LogFuncBegin();
@@ -614,7 +614,7 @@ gentity_t* fire_quantum (gentity_t* self, vec3_t start, vec3_t dir) {
 
 //=============================================================================
 
-gentity_t* fire_grenade (gentity_t* self, vec3_t start, vec3_t dir) {
+gentity_t* G_Missile_FireGrenade (gentity_t* self, vec3_t start, vec3_t dir) {
 	gentity_t* bolt = NULL;
 
 	G_LogFuncBegin();
@@ -660,7 +660,7 @@ gentity_t* fire_grenade (gentity_t* self, vec3_t start, vec3_t dir) {
 
 //=============================================================================
 
-gentity_t* fire_rocket (gentity_t* self, vec3_t start, vec3_t dir) {
+gentity_t* G_Missile_FirerRocket (gentity_t* self, vec3_t start, vec3_t dir) {
 	gentity_t* bolt = NULL;
 
 	G_LogFuncBegin();
