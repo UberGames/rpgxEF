@@ -565,14 +565,6 @@ typedef struct {
 #define	MAX_VOTE_COUNT		3
 
 /**
- * Set the score for a client.
- *
- * \param ent The client.
- * \param score New score for the client.
- */
-void SetScore( gentity_t *ent, int score );
-
-/**
 *	\brief client data that stays across multiple respawns,
 *
 *	but is cleared on each level change or team change at G_Client_Begin()
@@ -1249,96 +1241,6 @@ int G_GetEntityByBmodel(char* bmodel,list_p entities);
  * \param timeOffset time offset
  */
 void AddRemap(const char* oldShader, const char* newShader, float timeOffset);
-
-//
-// g_combat.c
-//
-/**
- * Returns qtrue if the inflictor can directly damage the target.  Used for
- * explosions and melee attacks.
- *
- * \param targ the target
- * \param origin the origin
- * \return qtrue if the inflictor can directly damage the target.  Used for explosions and melee attacks.
- */
-qboolean CanDamage (gentity_t* targ, vec3_t origin);
-
-/**
- * Damage an entity.
- *
- * \param targ entity that is being damaged
- * \param inflictor entity that is causing the damage
- * \param attacker entity that caused the inflictor to damage targ
- * \param dir direction of the attack for knockback
- * \param point point at which the damage is being inflicted, used for headshots
- * \param damage amount of damage being inflicted
- * \param knockback force to be applied against targ as a result of the damage
- * \param dflags these flags are used to control how G_Damage works
- * \param mod means of death
- *
- * Damage flags:
- * DAMAGE_RADIUS			damage was indirect (from a nearby explosion)
- * DAMAGE_NO_ARMOR			armor does not protect from this damage
- * DAMAGE_NO_KNOCKBACK		do not affect velocity, just view angles
- * DAMAGE_NO_PROTECTION		kills godmode, armor, everything
- */
-void G_Damage (gentity_t* targ, /*@null@*/ gentity_t* inflictor, /*@null@*/ gentity_t* attacker, /*@null@*/ vec3_t dir, /*@null@*/ vec3_t point, int damage, int dflags, int mod);
-
-/**
- * Damage all entities around an origin in a specified radius.
- *
- * \return Hit a client?
- * \param origin Origin.
- * \param attacker Attacker.
- * \param damage Amount much damage.
- * \param radius Radius.
- * \param ignore Entity to ignore.
- * \param dflags Damage flags.
- * \param mod Means of death.
- * \todo Replace ignore entity by list of entites.
- */
-qboolean G_RadiusDamage (vec3_t origin, gentity_t* attacker, float damage, float radius, gentity_t* ignore, int dflags, int mod);
-
-/**
- * Let a body die.
- *
- * \param self Self.
- * \param inflictor entity that is causing the damage
- * \param attacker entity that caused the inflictor to damage targ
- * \param damage Amount of damage.
- * \param meansOfDeath Means of death.
- */
-void body_die( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int damage, int meansOfDeath );
-
-/**
- * Toss the weapon and powerups for the killed player.
- *
- * \param self the client.
- * \param Caused by disconnect?
- */
-void TossClientItems( gentity_t* self, qboolean dis_con );
-
-/**
- * Repairs repairable entities.
- *
- * \param ent The player.
- * \param tr_ent Entity to repair.
- * \param rate Rate to repair with.
- * \author Ubergames - GSIO01
- * \date 09/05/2009
- */
-void G_Repair(gentity_t* ent, gentity_t* tr_ent, float rate);
-
-// damage flags
-#define DAMAGE_RADIUS				0x00000001	// damage was indirect
-#define DAMAGE_NO_ARMOR				0x00000002	// armor (shields) do not protect from this damage
-#define DAMAGE_NO_KNOCKBACK			0x00000008	// do not affect velocity, just view angles
-#define DAMAGE_NO_PROTECTION		0x00000020  // armor, shields, invulnerability, and godmode have no effect
-#define DAMAGE_NOT_ARMOR_PIERCING	0x00000000	// trek: shields fully protect from this damage (for clarity)
-#define DAMAGE_ARMOR_PIERCING		0x00000040	// trek: shields don't fully protect from this damage
-#define DAMAGE_NO_INVULNERABILITY	0x00000080	// trek: invulnerability doesn't event protect from this damage
-#define DAMAGE_HALF_NOTLOS			0x00000100	// trek: radius damage still does 1/2 damage to ents that do not have LOS to explosion org but are in radius
-#define DAMAGE_ALL_TEAMS			0x00000200	// trek: damage ignores teamdamage settings
 
 //
 // g_missile.c

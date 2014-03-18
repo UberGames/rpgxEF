@@ -5,6 +5,7 @@
 #include "g_spawn.h"
 #include "g_missile.h"
 #include "g_logger.h"
+#include "g_combat.h"
 
 #define	MISSILE_PRESTEP_TIME	50
 
@@ -65,7 +66,7 @@ static void TouchStickyGrenade(gentity_t* ent, gentity_t* other, trace_t* trace)
 	G_Assert(ent, (void)0);
 	G_Assert(other, (void)0);
 
-	if (IsAdmin( other ) == qfalse) {
+	if (G_Client_IsAdmin( other ) == qfalse) {
 		if (other->takedamage) {
 			if (ent->parent != other) {
 				ent->touch = 0;
@@ -118,7 +119,7 @@ void tripwireThink ( gentity_t* ent ) {
 		//RPG-X: RedTechie - Admin Class go threw
 		//RPG-X: J2J - Mistake made here, was checking if the _owner_ was in admin at the time, not the player tripping the mine, FIXED.
 		
-		if (IsAdmin( traceEnt ) == qfalse) {
+		if (G_Client_IsAdmin( traceEnt ) == qfalse) {
 				grenadeSpewShrapnel( ent );
 		}	
 	}
@@ -271,7 +272,7 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 		{
 			//RPG-X: - Our forcefield killer :D
 			if(((other->classname != NULL && !Q_stricmp(other->classname, "holdable_shield")))){
-				if(IsAdmin(ent->parent)){
+				if(G_Client_IsAdmin(ent->parent)){
 					G_FreeEntity(ent);
 					G_Active_ShieldRemove(other);
 
@@ -321,7 +322,7 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 			{
 				flags |= DAMAGE_ARMOR_PIERCING;
 			}
-			G_Damage (other, ent, &g_entities[ent->r.ownerNum], velocity,
+			G_Combat_Damage (other, ent, &g_entities[ent->r.ownerNum], velocity,
 				ent->s.origin, ent->damage, 
 				flags, ent->methodOfDeath);
 		}
@@ -351,7 +352,7 @@ void G_Missile_Impact( gentity_t* ent, trace_t* trace ) {
 
 	// splash damage (doesn't apply to person directly hit)
 	if ( ent->splashDamage > 0 ) {
-		G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, other, 0, ent->splashMethodOfDeath );
+		G_Combat_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, other, 0, ent->splashMethodOfDeath );
 	}
 
 	trap_LinkEntity( ent );
@@ -389,7 +390,7 @@ void G_ExplodeMissile( gentity_t* ent ) {
 
 	// splash damage
 	if ( ent->splashDamage > 0 ) {
-		G_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage, ent->splashRadius, NULL, 0, ent->splashMethodOfDeath );
+		G_Combat_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage, ent->splashRadius, NULL, 0, ent->splashMethodOfDeath );
 	}
 
 	trap_LinkEntity( ent );
@@ -414,7 +415,7 @@ static void G_RunStuckMissile( gentity_t* ent )
 			if ( (VectorCompare( vec3_origin, other->s.pos.trDelta ) == 0 && other->s.pos.trType != TR_STATIONARY) || 
 				(VectorCompare( vec3_origin, other->s.apos.trDelta ) == 0 && other->s.apos.trType != TR_STATIONARY) )
 			{//thing I stuck to is moving or rotating now, kill me
-				G_Damage( ent, other, other, NULL, NULL, 99999, 0, MOD_CRUSH );
+				G_Combat_Damage( ent, other, other, NULL, NULL, 99999, 0, MOD_CRUSH );
 
 				G_LogFuncEnd();
 				return;

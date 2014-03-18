@@ -227,7 +227,7 @@ static qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, genti
 		if ( notMoving && check->s.eFlags&EF_MISSILE_STICK )
 		{//special case hack for sticky things
 			//destroy it
-			G_Damage( check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH );
+			G_Combat_Damage( check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH );
 			continue;
 		}
 
@@ -263,7 +263,7 @@ static qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, genti
 
 		// bobbing entities are instant-kill and never get blocked
 		if ( pusher->s.pos.trType == TR_SINE || pusher->s.apos.trType == TR_SINE ) {
-			G_Damage( check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH );
+			G_Combat_Damage( check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH );
 			continue;
 		}
 
@@ -812,7 +812,7 @@ void G_Mover_UseBinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activa
 	//GSIO01 | 09/05/2009: do engage if door is admin only and player isn admin
 	if(((ent->type == ENT_FUNC_DOOR) && ((ent->spawnflags & 128) != 0))
 		|| ((ent->type == ENT_FUNC_DOOR_ROTATING) && ((ent->spawnflags & 64) != 0))) {
-		if((activator != NULL) && !IsAdmin(activator)) {
+		if((activator != NULL) && !G_Client_IsAdmin(activator)) {
 			return;
 		}
 	}
@@ -1172,7 +1172,7 @@ void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 	}
 
 	if ( ent->damage ) {
-		G_Damage( other, ent, ent, NULL, NULL, ent->damage, 0, MOD_CRUSH );
+		G_Combat_Damage( other, ent, ent, NULL, NULL, ent->damage, 0, MOD_CRUSH );
 	}
 	if ( ((ent->spawnflags & 4) != 0) || ((ent->type == ENT_FUNC_DOOR_ROTATING) && ((ent->spawnflags & 2) != 0)) ) { // GSIO01: added support for fucn_door_roating
 		return;		// crushers don't reverse
@@ -2328,8 +2328,8 @@ static void forcefield_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 	ent->r.svFlags &= ~SVF_NOCLIENT;
 	ent->s.eFlags &= ~EF_NODRAW;
 
-	if ( ((ent->spawnflags & 4) && IsAdmin(other)) || 
-		((rpg_borgAdapt.integer && rpg_borgMoveThroughFields.integer && IsBorg(other) && !(ent->spawnflags & 256))) )
+	if ( ((ent->spawnflags & 4) && G_Client_IsAdmin(other)) || 
+		((rpg_borgAdapt.integer && rpg_borgMoveThroughFields.integer && G_Client_IsBorg(other) && !(ent->spawnflags & 256))) )
 	{
 		FieldGoNotSolid( ent );
 	}
@@ -2356,7 +2356,7 @@ static void forcefield_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 
 		if ( ent->damage )
 		{
-			G_Damage (other, ent, ent, NULL, NULL, ent->damage, 0, MOD_FORCEFIELD);
+			G_Combat_Damage (other, ent, ent, NULL, NULL, ent->damage, 0, MOD_FORCEFIELD);
 		}
 
 		ent->nextthink = level.time+ent->soundPos2;

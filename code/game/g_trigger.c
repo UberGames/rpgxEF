@@ -812,7 +812,7 @@ static void hurt_touch( gentity_t* self, gentity_t* other, trace_t* trace ) {
 	}
 
 	if((self->spawnflags & 64) != 0) {
-		if(IsAdmin(other)) {
+		if(G_Client_IsAdmin(other)) {
 			G_LocLogger(LL_DEBUG, "admins are protected\n");
 			G_LogFuncEnd();
 			return;
@@ -855,7 +855,7 @@ static void hurt_touch( gentity_t* self, gentity_t* other, trace_t* trace ) {
 		dflags = 0;
 	}
 
-	G_Damage (other, self, self, NULL, NULL, self->damage, dflags, MOD_TRIGGER_HURT);
+	G_Combat_Damage (other, self, self, NULL, NULL, self->damage, dflags, MOD_TRIGGER_HURT);
 
 	G_LogFuncEnd();
 }

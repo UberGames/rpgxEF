@@ -86,7 +86,7 @@ static qboolean	CheatsOk(gentity_t* ent) {
 
 	G_Assert(ent, qfalse);
 
-	if (g_cheats.integer == 0 || IsAdmin(ent) == qfalse) {
+	if (g_cheats.integer == 0 || G_Client_IsAdmin(ent) == qfalse) {
 		G_PrintfClient(ent, "You can't use cheats in a Roleplay Session!\n");
 		return qfalse;
 	}
@@ -241,12 +241,12 @@ static void Cmd_Give_f(gentity_t *ent) {
 	client = ent->client;
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_GIVE) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_GIVE) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -436,12 +436,12 @@ static void Cmd_God_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_GOD) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_GOD) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -465,7 +465,7 @@ static void Cmd_Notarget_f(gentity_t* ent) {
 
 	G_Assert(ent, (void)0);
 
-	if (IsAdmin(ent) == qfalse) {
+	if (G_Client_IsAdmin(ent) == qfalse) {
 		return;
 	}
 
@@ -489,12 +489,12 @@ static void Cmd_Noclip_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_NOCLIP) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_NOCLIP) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" ") );
 		return;
 	}
@@ -789,17 +789,6 @@ qboolean SetTeam(gentity_t* ent, char* s) {
 	G_Client_Begin(clientNum, qfalse, qfalse, qfalse);
 
 	return qtrue;
-}
-
-char* ClassNameForValue(pclass_t pClass) {
-	static char buffer[MAX_QPATH];
-	char *ptr = NULL;
-
-	trap_Cvar_VariableStringBuffer(va("rpg_%sPass", g_classData[pClass].consoleName), buffer, sizeof(buffer));
-
-	ptr = buffer;
-
-	return ptr;
 }
 
 /*
@@ -1172,12 +1161,12 @@ static void Cmd_Cloak_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CLOAK) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CLOAK) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n")
 			return;
 	}
@@ -1220,12 +1209,12 @@ static void Cmd_EvoSuit_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_EVOSUIT) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_EVOSUIT) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" ") );
 		return;
 	}
@@ -1259,12 +1248,12 @@ static void Cmd_Flight_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FLIGHT) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FLIGHT) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" ") );
 		return;
 	}
@@ -1416,10 +1405,10 @@ static void G_SayTo(gentity_t* ent, gentity_t* other, int32_t mode, int32_t colo
 
 	sess = &ent->client->sess;
 
-	if (mode == SAY_CLASS && !OnSameClass(ent, other) && (IsAdmin(other) == qfalse)) {
+	if (mode == SAY_CLASS && !OnSameClass(ent, other) && (G_Client_IsAdmin(other) == qfalse)) {
 		return;
 	}
-	if (mode == SAY_ADMIN && (IsAdmin(other) == qfalse)) {
+	if (mode == SAY_ADMIN && (G_Client_IsAdmin(other) == qfalse)) {
 		return;
 	}
 	// no chatting to players in tournements
@@ -1437,7 +1426,7 @@ static void G_SayTo(gentity_t* ent, gentity_t* other, int32_t mode, int32_t colo
 
 	//TiM : If admins want to not see broadcast messages, here's the check.
 	//trap_GetUserinfo( other->client->ps.clientNum, userInfo, sizeof( userInfo ) );
-	if ((mode == SAY_CLASS || mode == SAY_ADMIN) && (IsAdmin(other) && (other->client->noAdminChat == qtrue || rpg_respectPrivacy.integer > 0))) {
+	if ((mode == SAY_CLASS || mode == SAY_ADMIN) && (G_Client_IsAdmin(other) && (other->client->noAdminChat == qtrue || rpg_respectPrivacy.integer > 0))) {
 		return;
 	}
 
@@ -1914,12 +1903,12 @@ static void Cmd_ForceVote_f(gentity_t* ent) {
 	client = ent->client;
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEVOTE) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEVOTE) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -1975,7 +1964,7 @@ static void Cmd_SetViewpos_f(gentity_t* ent) {
 
 	G_Assert(ent, (void)0);
 
-	if (g_cheats.integer == 0 && !IsAdmin(ent)) {
+	if (g_cheats.integer == 0 && !G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "Cheats are not enabled on this server.\n");
 		return;
 	}
@@ -2014,12 +2003,12 @@ static void Cmd_ForceName_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		G_PrintfClient(ent,"ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -2093,12 +2082,12 @@ static void Cmd_ShakeCamera_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -2164,12 +2153,12 @@ static void Cmd_ForceClass_f(gentity_t* ent) {
 	}
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -2243,12 +2232,12 @@ static void Cmd_ForceKill_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEKILL) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEKILL) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -2387,12 +2376,12 @@ static void Cmd_ForceKillRadius_f(gentity_t* ent) {
 	//If client isn't in admin class, exit and disallow command.
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEKILL) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEKILL) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -2506,12 +2495,12 @@ static void Cmd_TargetKick_f(gentity_t* ent) {
 	//Disallow if not in admin class
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_KICK) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_KICK) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -2579,12 +2568,12 @@ static void Cmd_Drag_f(gentity_t* ent) {
 	//If client isn't in admin class, exit and disallow command.
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DRAG) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DRAG) ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" ") );
 		return;
 	}
@@ -2688,12 +2677,12 @@ static void Cmd_UnDrag_f(gentity_t* ent) {
 	//If client isn't in admin class, exit and disallow command.
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DRAG) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DRAG) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -2781,7 +2770,7 @@ void DragCheck(void) {
 		}
 
 		//If the starting admin is no longer in admin class:
-		if (IsAdmin(&g_entities[DragDat[i].AdminId]) == qfalse) {
+		if (G_Client_IsAdmin(&g_entities[DragDat[i].AdminId]) == qfalse) {
 			//Mark as non-dragging.
 			DragDat[i].AdminId = -1;
 			if (target && target->client)
@@ -2841,12 +2830,12 @@ static void Cmd_disarm_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DISARM) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DISARM) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -2945,7 +2934,7 @@ static void Cmd_Rank_f(gentity_t* ent) {
 			}
 
 			if (!MaxRankHit) {
-				SetScore(ent, newScore);
+				G_Client_SetScore(ent, newScore);
 				trap_SendServerCommand(ent - g_entities, va("prank %s", g_rankNames[i].consoleName));
 				break;
 			} else {
@@ -2959,7 +2948,7 @@ static void Cmd_Rank_f(gentity_t* ent) {
 		}
 
 		//Okay... we've hit the highest rank we're allowed to go.  If the player tries to change their rank to above this, they'll be pwned lol
-		if (rpg_maxRank.string[0] != 0 && Q_stricmp(g_rankNames[i].consoleName, rpg_maxRank.string) == 0 && IsAdmin(ent)) {
+		if (rpg_maxRank.string[0] != 0 && Q_stricmp(g_rankNames[i].consoleName, rpg_maxRank.string) == 0 && G_Client_IsAdmin(ent)) {
 			MaxRankHit = qtrue;
 		}
 	}
@@ -2967,7 +2956,7 @@ static void Cmd_Rank_f(gentity_t* ent) {
 	//if we didn't get find a matching name. >.<
 	if (newScore < 0) {
 		G_PrintfClient(ent, "This rank doesn't exist on this server!\n\n");
-		SetScore(ent, OldScore);
+		G_Client_SetScore(ent, OldScore);
 		return;
 	}
 
@@ -2999,12 +2988,12 @@ static void Cmd_ForceRank_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3043,7 +3032,7 @@ static void Cmd_ForceRank_f(gentity_t* ent) {
 		if (Q_stricmp(ArgStr, g_rankNames[i].consoleName) == 0) {
 			newScore = i;//1 << i;
 
-			SetScore(other, newScore);
+			G_Client_SetScore(other, newScore);
 			trap_SendServerCommand(other - g_entities, va("prank %s", g_rankNames[i].consoleName));
 			break;
 		}
@@ -3052,7 +3041,7 @@ static void Cmd_ForceRank_f(gentity_t* ent) {
 	//if we didn't get find a matching name. >.<
 	if (newScore < 0) {
 		G_PrintfClient(ent, "This rank doesn't exist on this server!\n\n");
-		SetScore(other, OldScore);
+		G_Client_SetScore(other, OldScore);
 		return;
 	}
 
@@ -3100,7 +3089,7 @@ static void Cmd_Admins_f(gentity_t* ent) {
 			Q_strncpyz(send, va("%s %s \n", send, target->client->pers.netname), sizeof(send));
 		}
 
-		if ((target->client->LoggedAsAdmin == qtrue) && (IsAdmin(ent) == qtrue)) {
+		if ((target->client->LoggedAsAdmin == qtrue) && (G_Client_IsAdmin(ent) == qtrue)) {
 			Q_strncpyz(send, va("%s %s (hidden) \n", send, target->client->pers.netname), sizeof(send));
 		}
 	}
@@ -3141,7 +3130,7 @@ static void Cmd_AdminLogin_f(gentity_t* ent) {
 		trap_Cvar_VariableStringBuffer(va("rpg_%sPass", g_classData[j].consoleName), classPass, sizeof(classPass));
 
 		if (g_classData[j].isAdmin && Q_stricmp(classPass, arg) == 0) {
-			if (IsAdmin(ent) == qfalse) {
+			if (G_Client_IsAdmin(ent) == qfalse) {
 				ent->client->LoggedAsAdmin = qtrue;
 				G_PrintfClient(ent, "You are logged in as an admin.\n");
 				G_Client_UserinfoChanged(ent - g_entities);
@@ -3193,12 +3182,12 @@ static void Cmd_Revive_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent) || rpg_medicsrevive.integer == 0) {
+	if (!G_Client_IsAdmin(ent) || rpg_medicsrevive.integer == 0) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_REVIVE) || rpg_medicsrevive.integer == 0 ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_REVIVE) || rpg_medicsrevive.integer == 0 ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3351,12 +3340,12 @@ static void Cmd_n00b_f(gentity_t* ent) {
 
 	//If client isn'tin admin class, exit and disallow command.
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_NOOB) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_NOOB) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3382,7 +3371,7 @@ static void Cmd_n00b_f(gentity_t* ent) {
 			char conName[15];
 			trap_Cvar_VariableStringBuffer(va("rpg_%sPass", g_classData[i].consoleName), conName, 15);
 
-			Q_strncpyz(target->client->origClass, ClassNameForValue(target->client->sess.sessionClass), sizeof(target->client->origClass));
+			Q_strncpyz(target->client->origClass, G_Client_ClassNameForValue(target->client->sess.sessionClass), sizeof(target->client->origClass));
 			target->client->n00bTime = level.time + (1000 * timeToBe);
 			SetClass(target, conName, NULL, qfalse);
 			break;
@@ -3409,12 +3398,12 @@ static void Cmd_admin_message(gentity_t* ent) {
 	//If client isn't in admin class, exit and disallow command.
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MESSAGE) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MESSAGE) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3457,12 +3446,12 @@ static void Cmd_ForceModel_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3520,12 +3509,12 @@ static void Cmd_PlayMusic_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3557,12 +3546,12 @@ static void Cmd_StopMusic_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3583,12 +3572,12 @@ static void Cmd_PlaySound_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MUSIC) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3653,12 +3642,12 @@ static void Cmd_UseEnt_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_USEENT) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_USEENT) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3735,12 +3724,12 @@ static void Cmd_EntList_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_USEENT) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_USEENT) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3806,12 +3795,12 @@ static void Cmd_BeamToLoc_f(gentity_t* ent) {
 
 	//Has to be an admin.. if anyone had it, the brig would become useless.
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -3968,12 +3957,12 @@ static void Cmd_ForcePlayer_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FORCEPARM) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -4064,12 +4053,12 @@ static void Cmd_BeamToPlayer_f(gentity_t* ent) {
 
 	//Has to be an admin.. if anyone had it, the brig would become useless.
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -4529,12 +4518,12 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 	}
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -4821,12 +4810,12 @@ static void Cmd_flushFX_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FX) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -4845,12 +4834,12 @@ static void Cmd_spawnChar_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CHARS) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CHARS) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -4882,12 +4871,12 @@ static void Cmd_fluchChars_f(gentity_t* ent) //GSIO01: fluch Chars ehhh? you kno
 	}
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CHARS) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CHARS) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -4941,7 +4930,7 @@ static void Cmd_flushDropped_f(gentity_t* ent) {
 		}
 
 		if (locEnt->classname != NULL && Q_strncmp(locEnt->classname, "weapon", 6) == 0) { // everything that begins with weapon_
-			if ((ans == qfalse || !IsAdmin(ent)) && locEnt->parent != ent) {
+			if ((ans == qfalse || !G_Client_IsAdmin(ent)) && locEnt->parent != ent) {
 				continue;
 			} else {
 				G_FreeEntity(locEnt);
@@ -4974,12 +4963,12 @@ static void Cmd_Kick2_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_KICK) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_KICK) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5053,12 +5042,12 @@ static void Cmd_ClampInfo_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CLAMP) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_CLAMP) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5157,7 +5146,7 @@ static void Cmd_Turbolift_f(gentity_t* ent) {
 		return;
 	}
 
-	if ((lift->flags & FL_LOCKED) != 0 && (!IsAdmin(ent))) {
+	if ((lift->flags & FL_LOCKED) != 0 && (!G_Client_IsAdmin(ent))) {
 		G_PrintfClient(ent, "Turbolift is offline.\n");
 		return;
 	}
@@ -5282,7 +5271,7 @@ static void Cmd_MeActionLocal_f(gentity_t* ent) {
 
 		//Send message to admins warning about command being used.
 		//TiM - since double spamming is annoying, ensure that the target admin wants this alert
-		if (!OtherPlayer->client->noAdminChat && IsAdmin(OtherPlayer)) {
+		if (!OtherPlayer->client->noAdminChat && G_Client_IsAdmin(OtherPlayer)) {
 			G_PrintfClientAll("%s" S_COLOR_CYAN" (locally) " S_COLOR_WHITE "%s\n", ent->client->pers.netname, message);
 		}
 
@@ -5372,12 +5361,12 @@ static void Cmd_lockDoor_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5453,12 +5442,12 @@ static void Cmd_ffColor_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FFSTUFF) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FFSTUFF) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5551,12 +5540,12 @@ static void Cmd_unlockAll_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5613,12 +5602,12 @@ static void Cmd_lockAll_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_LOCK) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5648,12 +5637,12 @@ static void Cmd_changeFreq(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FFSTUFF) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_FFSTUFF) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5700,12 +5689,12 @@ static void Cmd_alert_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_ALERT) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_ALERT) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5782,12 +5771,12 @@ static void Cmd_zonelist_f(gentity_t* ent) {
 	gentity_t* zone = NULL;
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5857,12 +5846,12 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 	trap_Argv(5, arg8, sizeof(arg8));
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -5965,12 +5954,12 @@ static void Cmd_shipdamage_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6119,12 +6108,12 @@ static void Cmd_reloadtorpedos_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6189,12 +6178,12 @@ static void Cmd_torpedolist_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_SMS ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6237,12 +6226,12 @@ static void Cmd_admin_centerprint_f(gentity_t* ent) {
 
 	//If client isn't in admin class, exit and disallow command.
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MESSAGE) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_MESSAGE) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6273,12 +6262,12 @@ static void Cmd_getBrushEntCount_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6300,12 +6289,12 @@ static void Cmd_listSPs(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6335,12 +6324,12 @@ static void Cmd_getEntInfo_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6385,12 +6374,12 @@ static void Cmd_getOrigin_f(gentity_t* ent) {
 	G_Assert(ent->client, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6437,12 +6426,12 @@ static void Cmd_getEntByTargetname_f(gentity_t *ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6482,12 +6471,12 @@ static void Cmd_getEntByTarget_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6528,12 +6517,12 @@ static void Cmd_getEntByBmodel_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6558,12 +6547,12 @@ static void Cmd_setOrigin(gentity_t *ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6606,12 +6595,12 @@ static void Cmd_flushTentities_f(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_TESS) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_TESS) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -6679,12 +6668,12 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 	clientNum = ent->client->ps.clientNum;
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as an admin.\n");
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_TESS) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_TESS) ) {
 		G_PrintfClient(ent, "ERROR: You are not logged in as a user with the appropriate rights.\n");
 		return;
 	}
@@ -7307,12 +7296,12 @@ static void Cmd_UiTransporterLoc_f(gentity_t* ent) {
 	if (locTarget != NULL) {
 		if (locTarget->sound1to2 == 0) {
 #ifndef SQL
-			if (!IsAdmin(ent)) {
+			if (!G_Client_IsAdmin(ent)) {
 				G_PrintfClient(ent, "Destination is a restricted location.\n");
 				return;
 			}
 #else
-			if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
+			if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_BEAM) ) {
 				G_PrintfClient(ent, "Destination is a restricted location.\n");
 				return;
 			}
@@ -7460,7 +7449,7 @@ static void Cmd_SqlUserAdd_f(gentity_t* ent) {
 		return;
 	}
 
-	if(!IsAdmin(ent)) {
+	if(!G_Client_IsAdmin(ent)) {
 		return;
 	}
 
@@ -7500,7 +7489,7 @@ static void Cmd_SqlUserMod_f(gentity_t* ent) {
 		return;
 	}
 
-	if(!IsAdmin(ent)) {
+	if(!G_Client_IsAdmin(ent)) {
 		return;
 	}	
 
@@ -7554,12 +7543,12 @@ static void Cmd_findEntitiesInRadius(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
-	if (!IsAdmin(ent)) {
+	if (!G_Client_IsAdmin(ent)) {
 		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as an admin.\n\" "));
 		return;
 	}
 #else
-	if ( !IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
+	if ( !G_Client_IsAdmin( ent ) || !G_Sql_UserDB_CheckRight(ent->client->uid, SQLF_DEBUG ) ) {
 		trap_SendServerCommand(ent - g_entities, va("print \"ERROR: You are not logged in as a user with the appropriate rights.\n\" "));
 		return;
 	}

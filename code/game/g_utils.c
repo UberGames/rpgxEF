@@ -9,6 +9,7 @@
 #include "g_local.h"
 #include "g_lua.h"
 #include "g_logger.h"
+#include "g_combat.h"
 
 /**
  * \brief Data structure for a singele shader remap.
@@ -827,7 +828,7 @@ void G_KillBox (gentity_t* ent) {
 		}
 	
 		/* nail it */
-		G_Damage ( hit, ent, ent, NULL, NULL,
+		G_Combat_Damage ( hit, ent, ent, NULL, NULL,
 			100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 	}
 

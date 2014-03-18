@@ -124,7 +124,7 @@ void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator)
 
 	/* RPG-X | GSIO01 | 09/05/2009: */
 	if ((self->spawnflags & USABLE_ADMIN_ONLY) != 0) { /* ADMINS_ONLY */
-		if (!IsAdmin(activator)) {
+		if (!G_Client_IsAdmin(activator)) {
 			G_Logger(LL_DEBUG, "activator not a player or not admin\n");
 			G_LogFuncEnd();
 			return;

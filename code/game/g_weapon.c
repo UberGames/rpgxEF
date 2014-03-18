@@ -10,6 +10,7 @@
 #include "g_missile.h"
 #include "g_logger.h"
 #include "g_lua.h"
+#include "g_combat.h"
 
 #define MAX_BEAM_HITS	4
 
@@ -176,9 +177,9 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 
 	/* call G_Repair */
 	if(alt_fire) {
-		G_Repair(ent, nearest, HYPERSPANNER_ALT_RATE * modifier);
+		G_Combat_Repair(ent, nearest, HYPERSPANNER_ALT_RATE * modifier);
 	} else {
-		G_Repair(ent, nearest, HYPERSPANNER_RATE * modifier);
+		G_Combat_Repair(ent, nearest, HYPERSPANNER_RATE * modifier);
 	}
 
 	validEnts.clear(&validEnts);
@@ -289,10 +290,10 @@ static void WP_FirePhaser( gentity_t* ent, qboolean alt_fire )
 			
 			if (damage > 0)	{
 				if ( alt_fire )	{
-					G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
+					G_Combat_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
 								DAMAGE_NO_KNOCKBACK | DAMAGE_NOT_ARMOR_PIERCING, MOD_PHASER_ALT );
 				} else {
-					G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
+					G_Combat_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
 								DAMAGE_NO_KNOCKBACK | DAMAGE_ARMOR_PIERCING, MOD_PHASER );
 				}
 			}
@@ -432,7 +433,7 @@ static void WP_FireCompressionRifle ( gentity_t* ent, qboolean alt_fire )
 			}
 			
 			if (damage > 0)	{
-				G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
+				G_Combat_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
 					DAMAGE_NO_KNOCKBACK | DAMAGE_ARMOR_PIERCING, MOD_CRIFLE_ALT ); /* GSIO01: was MOD_PHASER */
 			}
 		}
@@ -582,7 +583,7 @@ static void WP_FireDisruptor( gentity_t* ent, qboolean alt_fire )
 			}
 			
 			if (damage > 0) {
-				G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
+				G_Combat_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
 					DAMAGE_NO_KNOCKBACK | DAMAGE_ARMOR_PIERCING, MOD_STASIS ); /* GSIO01: was MOD_TETRION_ALT */
 			}
 		}
@@ -634,7 +635,7 @@ static void grenadeExplode( gentity_t* ent )
 
 	/* splash damage (doesn't apply to person directly hit) */
 	if ( ent->splashDamage > 0 ) {
-		G_RadiusDamage( pos, ent->parent, ent->splashDamage, ent->splashRadius, NULL, 0, ent->splashMethodOfDeath ); 
+		G_Combat_RadiusDamage( pos, ent->parent, ent->splashDamage, ent->splashRadius, NULL, 0, ent->splashMethodOfDeath ); 
 	}
 	G_FreeEntity( ent );
 
@@ -659,7 +660,7 @@ void grenadeSpewShrapnel( gentity_t* ent )
 	tent->s.eventParm = DirToByte(ent->pos1);
 
 	// just do radius dmg for altfire
-	G_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage, ent->splashRadius, 
+	G_Combat_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage, ent->splashRadius, 
 		ent, 0, ent->splashMethodOfDeath );
 
 	G_FreeEntity(ent);
@@ -819,7 +820,7 @@ static void WP_FireGrenade( gentity_t* ent, qboolean alt_fire )
 			VectorCopy( start, grenade->pos2 );
 		} else {
 			/* RPG-X: RedTechie - Check to see if there admin if so grant them effects gun */
-			if( IsAdmin(ent) && (rpg_effectsgun.integer == 1)) {
+			if( G_Client_IsAdmin(ent) && (rpg_effectsgun.integer == 1)) {
 				VectorMA (muzzle, MAXRANGE_CRIFLE, forward, end);
 				trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
 
@@ -1039,7 +1040,7 @@ static void WP_FireTR116Bullet( gentity_t* ent, vec3_t start, vec3_t dir ) {
 		G_Assert(traceEnt, (void)0);
 
 		if ( traceEnt->takedamage && (rpg_dmgFlags.integer & 4) != 0) {
-			G_Damage( traceEnt, ent, ent, dir, tr.endpos, TETRION_DAMAGE, 0, MOD_TETRION_ALT );
+			G_Combat_Damage( traceEnt, ent, ent, dir, tr.endpos, TETRION_DAMAGE, 0, MOD_TETRION_ALT );
 		}
 	}
 
@@ -1646,7 +1647,7 @@ static void WP_TricorderScan (gentity_t* ent, qboolean alt_fire)
 	}
 
 	/* Fix - Changed || to && in the below if statement! */
-	if ( IsAdmin( ent ) == qfalse ) {
+	if ( G_Client_IsAdmin( ent ) == qfalse ) {
 		G_Logger(LL_DEBUG, "player not an admin\n");
 		G_LogFuncEnd();
 		return;
@@ -1756,7 +1757,7 @@ static void WP_SprayVoyagerHypo( gentity_t* ent, qboolean alt_fire )
 	memset(&tr, 0, sizeof(trace_t));
 	trap_Trace ( &tr, muzzle, mins, maxs, end, ent->s.number, MASK_OPAQUE|CONTENTS_BODY|CONTENTS_ITEM|CONTENTS_CORPSE ); /*MASK_SHOT*/
 	
-	if(rpg_effectsgun.integer == 1 && IsAdmin(ent) && alt_fire == qtrue && ent->s.weapon == WP_12) {
+	if(rpg_effectsgun.integer == 1 && G_Client_IsAdmin(ent) && alt_fire == qtrue && ent->s.weapon == WP_12) {
 		if(RPGEntityCount != ENTITYNUM_MAX_NORMAL-20){
 			t_ent = G_TempEntity( muzzle, EV_HYPO_PUFF );
 			t_ent->s.eventParm = qfalse; /* TiM: Event parm is holding a qboolean value for color of spray */
@@ -1871,7 +1872,7 @@ void FireWeapon( gentity_t* ent, qboolean alt_fire )
 		WP_FireCompressionRifle( ent, alt_fire );
 		break;
 	case WP_1:
-		if ( IsAdmin( ent ) && alt_fire )
+		if ( G_Client_IsAdmin( ent ) && alt_fire )
 			WP_FireGrenade( ent, qfalse );
 		break;
 	case WP_4:

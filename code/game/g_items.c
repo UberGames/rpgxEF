@@ -185,7 +185,7 @@ static char* Padd_Get( gentity_t* key, gentity_t* who )
 				//Inform admins
 				for ( j = 0; j < level.maxclients; ++j ) {
 					gentity_t *player = &g_entities[j];
-					if ( (player != NULL) && (!player->client->noAdminChat) && IsAdmin( player ) && (rpg_respectPrivacy.integer == 0) && (player != who) && (paddData[i].value[0] != 0) ) {
+					if ( (player != NULL) && (!player->client->noAdminChat) && G_Client_IsAdmin( player ) && (rpg_respectPrivacy.integer == 0) && (player != who) && (paddData[i].value[0] != 0) ) {
 						trap_SendServerCommand( player-g_entities, va("print \"%s" S_COLOR_CYAN" (picked up by %s" S_COLOR_CYAN ") " S_COLOR_WHITE "%s\n\"", paddData[i].owner, who->client->pers.netname, paddData[i].value ) );
 					}
 				}
@@ -567,7 +567,7 @@ static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
 
 	// the same pickup rules are used for client side and server side
 	if ( !BG_CanItemBeGrabbed( &ent->s, &other->client->ps, Max_Weapon(other->client->ps.weapon) )
-		&& IsAdmin( other ) == qfalse )
+		&& G_Client_IsAdmin( other ) == qfalse )
 	{
 		return;
 	}
@@ -630,7 +630,7 @@ static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
 	// fire item targets
 	G_UseTargets (ent, other);
 
-    if ( rpg_weaponsStay.integer == 1 && IsAdmin( ent->parent ) == qtrue && IsAdmin( other ) == qfalse ) {
+    if ( rpg_weaponsStay.integer == 1 && G_Client_IsAdmin( ent->parent ) == qtrue && G_Client_IsAdmin( other ) == qfalse ) {
         return;
     }
 

@@ -227,7 +227,7 @@ static void P_WorldEffects( gentity_t *ent ) {
 				// don't play a normal pain sound
 				ent->pain_debounce_time = level.time + 200;
 
-				G_Damage (ent, NULL, NULL, NULL, NULL,
+				G_Combat_Damage (ent, NULL, NULL, NULL, NULL,
 					ent->damage, DAMAGE_NO_ARMOR, MOD_WATER);
 			}
 		}
@@ -245,12 +245,12 @@ static void P_WorldEffects( gentity_t *ent ) {
 				&& ent->pain_debounce_time < level.time	) {
 
 					if (ent->watertype & CONTENTS_LAVA) {
-						G_Damage (ent, NULL, NULL, NULL, NULL,
+						G_Combat_Damage (ent, NULL, NULL, NULL, NULL,
 							30*waterlevel, 0, MOD_LAVA);
 					}
 
 					if (ent->watertype & CONTENTS_SLIME) {
-						G_Damage (ent, NULL, NULL, NULL, NULL,
+						G_Combat_Damage (ent, NULL, NULL, NULL, NULL,
 							10*waterlevel, 0, MOD_SLIME);
 					}
 			}
@@ -634,14 +634,10 @@ static qboolean	bDetInit = qfalse;
 //-----------------------------------------------------------------------------DECOY TEMP
 extern qboolean FinishSpawningDecoy( gentity_t* ent, int32_t itemIndex );
 //-----------------------------------------------------------------------------DECOY TEMP
-void DetonateDetpack(gentity_t* ent);
 
 #define DETPACK_DAMAGE			750
 #define DETPACK_RADIUS			500
 
-/**
-*	The detpack has been shot
-*/
 void detpack_shot( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t meansOfDeath )
 {
 	int32_t i = 0;
@@ -651,7 +647,7 @@ void detpack_shot( gentity_t* self, gentity_t* inflictor, gentity_t* attacker, i
 	self->takedamage = qfalse;
 
 	G_TempEntity(self->s.origin, EV_GRENADE_EXPLODE);
-	G_RadiusDamage( self->s.origin, self->parent?self->parent:self, DETPACK_DAMAGE*0.125, DETPACK_RADIUS*0.25,
+	G_Combat_RadiusDamage( self->s.origin, self->parent?self->parent:self, DETPACK_DAMAGE*0.125, DETPACK_RADIUS*0.25,
 		self, DAMAGE_ALL_TEAMS, MOD_DETPACK );
 	// we're blowing up cuz we've been shot, so make sure we remove ourselves
 	//from our parent's inventory (so to speak)
@@ -871,8 +867,7 @@ static void DetpackBlammoThink(gentity_t* ent)
 /**
 *	Detonate a detpack
 */
-void DetonateDetpack(gentity_t *ent)
-{
+void DetonateDetpack(gentity_t *ent) {
 	// find all detpacks. the one whose parent is ent...blow up
 	gentity_t*	detpack = NULL;
 	char*		classname = BG_FindClassnameForHoldable(HI_DETPACK);
@@ -898,7 +893,7 @@ void DetonateDetpack(gentity_t *ent)
 			detpack->takedamage = qfalse;
 
 			G_AddEvent(detpack, EV_DETPACK, 0);
-			G_RadiusDamage( detpack->s.origin, detpack->parent, DETPACK_DAMAGE, DETPACK_RADIUS,
+			G_Combat_RadiusDamage( detpack->s.origin, detpack->parent, DETPACK_DAMAGE, DETPACK_RADIUS,
 				detpack, DAMAGE_HALF_NOTLOS|DAMAGE_ALL_TEAMS, MOD_DETPACK );
 			// just turn the model invisible and let the entity think for a bit to deliver a shockwave
 			//G_FreeEntity(detpack);
@@ -1061,7 +1056,7 @@ void ShieldTouch(gentity_t* self, gentity_t* other, trace_t* trace)
 	if ( other == NULL || other->client == NULL )
 		return;
 
-	if (IsAdmin(other) || (rpg_borgAdapt.integer && rpg_borgMoveThroughFields.integer != 0 && IsBorg(other))/*other->client->sess.sessionClass == PC_ADMIN*/ )
+	if (G_Client_IsAdmin(other) || (rpg_borgAdapt.integer && rpg_borgMoveThroughFields.integer != 0 && G_Client_IsBorg(other))/*other->client->sess.sessionClass == PC_ADMIN*/ )
 	{
 		ShieldGoNotSolid(self);
 	}
@@ -1488,7 +1483,7 @@ void Decoy_CheckForSolidity( gentity_t	*ent ) {
 *	Use function for decoy, removes it if activator is an player and admin
 */
 void DecoyUse ( gentity_t *self, gentity_t *other, gentity_t *activator ) {
-	if ( activator == NULL || !IsAdmin( activator ) || activator->client == NULL )
+	if ( activator == NULL || !G_Client_IsAdmin( activator ) || activator->client == NULL )
 		return;
 
 	G_FreeEntity( self );
@@ -1695,7 +1690,7 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 				damage = 0;
 			}
 			ent->pain_debounce_time = level.time + 200;	// no normal pain sound
-			G_Damage (ent, NULL, NULL, NULL, NULL, damage, DAMAGE_ARMOR_PIERCING, MOD_FALLING);
+			G_Combat_Damage (ent, NULL, NULL, NULL, NULL, damage, DAMAGE_ARMOR_PIERCING, MOD_FALLING);
 
 			break;
 
@@ -1846,7 +1841,7 @@ void G_ThrowWeapon( gentity_t *ent, char *txt )
 	item = BG_FindItemForWeapon( ps->weapon );
 
 	// admins don't lose weapon when thrown
-	if ( IsAdmin( ent ) == qfalse ) {
+	if ( G_Client_IsAdmin( ent ) == qfalse ) {
 		ps->ammo[ ps->weapon ] -= 1;
 		if (ps->ammo[ ps->weapon ] <= 0) {
 			ps->stats[STAT_WEAPONS] &= ~( 1 << ps->weapon );

@@ -9,6 +9,7 @@
 #include "g_spawn.h"
 #include "g_items.h"
 #include "g_lua.h"
+#include "g_logger.h"
 
 reconData_t	g_reconData[MAX_RECON_NAMES]; //!< recon data for a limited ammount of clients
 int32_t		g_reconNum;
@@ -472,7 +473,6 @@ void G_Client_SetViewAngle( gentity_t *ent, vec3_t angle ) {
 G_Client_Respawn
 ================
 */
-extern char *ClassNameForValue( pclass_t pClass );
 void G_Client_Respawn( gentity_t *ent ) {
 	qboolean		borg = qfalse;
 	gentity_t*		tent = NULL;
@@ -1168,7 +1168,7 @@ void G_Client_UserinfoChanged( int32_t clientNum ) {
 		s = va("n\\%s\\t\\%i\\p\\%i\\model\\%s\\hc\\%i\\w\\%i\\l\\%i\\age\\%s\\height\\%s\\weight\\%s\\race\\%s\\of\\%i\\admin\\%i",
 			pers->netname, sess->sessionTeam, sess->sessionClass, model,
 			pers->maxHealth, sess->wins, sess->losses, age,
-			sHeight, sWeight, race, modelOffset, ((int)IsAdmin(g_entities+clientNum)));
+			sHeight, sWeight, race, modelOffset, ((int)G_Client_IsAdmin(g_entities+clientNum)));
 	}
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
@@ -1344,7 +1344,7 @@ char* G_Client_Connect( int32_t clientNum, qboolean firstTime, qboolean isBot ) 
 					
 			if ( changeRank ) {
 				ent->client->UpdateScore = qtrue;
-				SetScore( ent, tmpScore );
+				G_Client_SetScore( ent, tmpScore );
 			}
 		}
 
@@ -1550,7 +1550,7 @@ void G_Client_Begin( int32_t clientNum, qboolean careAboutWarmup, qboolean isBot
 	client->ps.eFlags = flags;
 
 	client->UpdateScore = qtrue;
-	SetScore( ent, score );
+	G_Client_SetScore( ent, score );
 
 	// locate ent at a spawn point
 	G_Client_Spawn( ent, 0, qfalse );//RPG-X: RedTechie - Modifyed
@@ -2229,7 +2229,7 @@ void G_Client_Disconnect( int32_t clientNum ) {
 
 		// They don't get to take powerups with them!
 		// Especially important for stuff like CTF flags
-		TossClientItems ( ent, qtrue );
+		G_Client_TossClientItems ( ent, qtrue );
 	}
 	G_LogPrintf( "ClientDisconnect: %i (%s)\n", clientNum, g_entities[clientNum].client->pers.ip );
 
@@ -2285,7 +2285,7 @@ RPG-X | Phenix | 21/11/2004
 *	\author Ubergames - Phenix
 *	\date 21/11/2004
 */
-qboolean IsAdmin( gentity_t *ent)
+qboolean G_Client_IsAdmin( gentity_t *ent)
 {
 	if ( ent == NULL ) {
 		return qfalse;
@@ -2790,7 +2790,7 @@ void G_Client_UpdateSoundZones(void) {
 		if(strlen(supdate) != 0) {
 			Com_sprintf(supdate, sizeof(supdate), "%s\\c%d\\%d", supdate, i, zones[i]);
 		} else {
-			Com_sprintf(supdate, sizeof(supdate), "cd%\\%d", i, zones[i]);
+			Com_sprintf(supdate, sizeof(supdate), "c%d\\%d", i, zones[i]);
 		}
 	}
 
@@ -2800,3 +2800,709 @@ void G_Client_UpdateSoundZones(void) {
 		}
 	}
 }
+
+void G_Client_SetScore(gentity_t* ent, int32_t score) {
+
+	G_Assert(ent, (void)0);
+	G_Assert(ent->client, (void)0);
+
+	if (!ent->client->UpdateScore) {
+		return;
+	}
+
+	ent->client->ps.persistant[PERS_SCORE] = score;
+	G_Client_CalculateRanks(qfalse);
+
+	// TiM: send the current scoring to all clients
+	SendScoreboardMessageToAllClients();
+
+	//RPG-X: RedTechie - Lets enable score updating without this scores will not be updated
+	ent->client->UpdateScore = qfalse;
+}
+
+void G_Client_TossClientItems(gentity_t* self, qboolean dis_con) {
+	double angle = 0;
+	int32_t i = 0;
+	int32_t times = 0;
+	gentity_t* drop = NULL;
+	playerState_t *ps = NULL;
+	gitem_t* item = NULL;
+
+	G_Assert(self, (void)0);
+	G_Assert(self->client, (void)0);
+
+	ps = &self->client->ps;
+
+	if ((self->flags & FL_CLOAK) != 0) {
+		// remove the invisible powerup if the player is cloaked.
+		//RPG-X: RedTechie - Also remove ghost
+		ps->powerups[PW_GHOST] = level.time;
+		ps->powerups[PW_INVIS] = level.time;
+	}
+
+	if ((self->flags & FL_FLY) != 0) {
+		// remove the flying powerup if the player is flying.
+		ps->powerups[PW_FLIGHT] = level.time;
+	}
+
+	//RPG-X | Phenix | 8/8/2004
+	if ((self->flags & FL_EVOSUIT) != 0) {
+		// remove the evosuit powerup
+		ps->powerups[PW_EVOSUIT] = level.time;
+	}
+
+	// drop all the powerups if not in teamplay
+	if (g_gametype.integer != GT_TEAM) {
+		angle = 45;
+		for (i = 1; i < PW_NUM_POWERUPS; i++) {
+			if (ps->powerups[i] > level.time) {
+				item = BG_FindItemForPowerup(i);
+				if (item == NULL) {
+					continue;
+				}
+
+				drop = Drop_Item(self, item, angle);
+				// decide how many seconds it has left
+				drop->count = (ps->powerups[i] - level.time) / 1000;
+				if (drop->count < 1) {
+					drop->count = 1;
+				}
+				angle += 45;
+			}
+		}
+	}
+
+	// RPG-X | Marcin | 30/12/2008
+	// ...
+	if (rpg_allowWeaponDrop.integer == 0 || rpg_dropOnDeath.integer == 0 || dis_con) {
+		return;
+	}
+
+	// Drop ALL weapons in inventory
+	for (i = 0; i < WP_NUM_WEAPONS; ++i) {
+		// these weapons should not be tossed (hand and null)
+		if (Max_Weapons[i] == NULL) {
+			continue;
+		}
+
+		//RPG-X | GSIO01 | 08/05/2009: let's make sure we only drop weapons the player has
+		item = NULL;
+		if (ps->ammo[i]) {
+			times = ps->ammo[i];
+			item = BG_FindItemForWeapon((weapon_t)i);
+			while (times-- > 0) { // the 'goes towards' operator :p
+				Drop_Item(self, item, 0);
+			}
+		}
+	}
+
+	// then remove weapons
+
+	for (i = 0; i < WP_NUM_WEAPONS; ++i) {
+		ps->stats[STAT_WEAPONS] &= ~i;
+		ps->ammo[i] = 0;
+	}
+}
+
+void body_die(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t meansOfDeath) {
+	int32_t contents = 0;
+
+	G_Assert(self, (void)0);
+
+	contents = trap_PointContents(self->r.currentOrigin, -1);
+	if (rpg_medicsrevive.integer == 1 && !(contents & CONTENTS_NODROP) && (meansOfDeath != MOD_TRIGGER_HURT)) {
+		if (self->health > GIB_HEALTH_IMPOSSIBLE) {
+			return;
+		}
+
+	} else {
+		if (self->health > GIB_HEALTH) {
+			return;
+		}
+	}
+	G_Combat_GibEntity(self, 0);
+}
+
+char* G_Client_ClassNameForValue(pclass_t pClass) {
+	static char buffer[MAX_QPATH];
+	char *ptr = NULL;
+
+	trap_Cvar_VariableStringBuffer(va("rpg_%sPass", g_classData[pClass].consoleName), buffer, sizeof(buffer));
+
+	ptr = buffer;
+
+	return ptr;
+}
+
+// these are just for logging, the client prints its own messages
+char* modNames[MOD_MAX] = {
+	"MOD_UNKNOWN",
+
+	"MOD_WATER",
+	"MOD_SLIME",
+	"MOD_LAVA",
+	"MOD_CRUSH",
+	"MOD_TELEFRAG",
+	"MOD_FALLING",
+	"MOD_SUICIDE",
+	"MOD_TARGET_LASER",
+	"MOD_TRIGGER_HURT",
+
+	// Trek weapons
+	"MOD_PHASER",
+	"MOD_PHASER_ALT",
+	"MOD_CRIFLE",
+	"MOD_CRIFLE_SPLASH",
+	"MOD_CRIFLE_ALT",
+	"MOD_CRIFLE_ALT_SPLASH",
+	"MOD_IMOD",
+	"MOD_IMOD_ALT",
+	"MOD_SCAVENGER",
+	"MOD_SCAVENGER_ALT",
+	"MOD_SCAVENGER_ALT_SPLASH",
+	"MOD_STASIS",
+	"MOD_STASIS_ALT",
+	"MOD_GRENADE",
+	"MOD_GRENADE_ALT",
+	"MOD_GRENADE_SPLASH",
+	"MOD_GRENADE_ALT_SPLASH",
+	"MOD_TETRYON",
+	"MOD_TETRYON_ALT",
+	"MOD_DREADNOUGHT",
+	"MOD_DREADNOUGHT_ALT",
+	"MOD_QUANTUM",
+	"MOD_QUANTUM_SPLASH",
+	"MOD_QUANTUM_ALT",
+	"MOD_QUANTUM_ALT_SPLASH",
+
+	"MOD_DETPACK",
+	"MOD_SEEKER"
+
+	//expansion pack
+	"MOD_KNOCKOUT",
+	"MOD_ASSIMILATE",
+	"MOD_BORG",
+	"MOD_BORG_ALT",
+
+	"MOD_RESPAWN",
+	"MOD_EXPLOSION",
+}; //must be kept up to date with bg_public, meansOfDeath_t
+
+/*
+==================
+G_Client_Die
+Heavly Modifyed By: RedTechie
+RPG-X: Marcin: a little bit modified - 30/12/2008
+==================
+*/
+void G_Client_Die(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t meansOfDeath) {
+	//---------------------
+	//RPG-X: RedTechie - Check to see if medics revive people and not respawn if true use my fake death insead :)
+	//---------------------
+	int32_t contents = 0;
+
+	G_Assert(self, (void)0);
+	G_Assert(self->client, (void)0);
+
+	//RPG-X: RedTechie - Make sure there not getting killed by a trigger kill or the medics wont be able to heal them
+	contents = trap_PointContents(self->r.currentOrigin, -1);
+
+	if (rpg_medicsrevive.integer == 1 && !(contents & CONTENTS_NODROP) && (meansOfDeath != MOD_TRIGGER_HURT)) {
+		char* classname = NULL;
+		char* killerName = NULL;
+		char* obit = NULL;
+		int32_t anim = 0;
+		int32_t	killer = 0;
+		int32_t i = 0;
+		gentity_t* detpack = NULL;
+		gentity_t* ent = NULL;
+		playerState_t* ps = &self->client->ps;
+
+		//RPG-X: RedTechie - Blow up a detpack if some one placed it and died 
+		classname = BG_FindClassnameForHoldable(HI_DETPACK);
+		if (classname != NULL) {
+			while ((detpack = G_Find(detpack, FOFS(classname), classname)) != NULL) {
+				if (detpack->parent == self) {
+					detpack->think = DetonateDetpack;		// Detonate next think.
+					detpack->nextthink = level.time;
+				}
+			}
+		}
+
+
+		//RPG-X: Redtechie - Do some score keeping witch we commented out and log
+		if (attacker != NULL) {
+			killer = attacker->s.number;
+			if (attacker->client != NULL) {
+				killerName = attacker->client->pers.netname;
+			} else {
+				killerName = "<non-client>";
+			}
+		} else {
+			killer = ENTITYNUM_WORLD;
+			killerName = "<world>";
+		}
+
+		if (killer < 0 || killer >= MAX_CLIENTS) {
+			killer = ENTITYNUM_WORLD;
+			killerName = "<world>";
+		}
+
+		if (meansOfDeath < 0 || meansOfDeath >= sizeof(modNames) / sizeof(modNames[0])) {
+			obit = "<bad obituary>";
+		} else {
+			obit = modNames[meansOfDeath];
+		}
+
+		G_LogPrintf("Kill: %i %i %i: %s killed %s by %s\n", killer, self->s.number, meansOfDeath, killerName, self->client->pers.netname, obit);
+
+		G_LogWeaponKill(killer, meansOfDeath);
+		G_LogWeaponDeath(self->s.number, self->s.weapon);
+		if (attacker != NULL && attacker->client != NULL && attacker->inuse) {
+			G_LogWeaponFrag(killer, self->s.number);
+		}
+
+		if (meansOfDeath != MOD_RESPAWN && meansOfDeath != MOD_CUSTOM_DIE) {
+			// broadcast the death event to everyone
+			ent = G_TempEntity(self->r.currentOrigin, EV_OBITUARY);
+			ent->s.eventParm = meansOfDeath;
+			ent->s.otherEntityNum = self->s.number;
+			ent->s.otherEntityNum2 = killer;
+			ent->r.svFlags = SVF_BROADCAST;	// send to everyone
+		}
+
+		self->enemy = attacker;
+
+		ps->persistant[PERS_KILLED]++;
+		if (self == attacker) {
+			self->client->pers.teamState.suicides++;
+		} else {
+			//RPG-X | Phenix | 06/04/2005
+			// N00b Protection, you kill two people and puff your auto n00b!
+
+			if (attacker != NULL) {
+				if (attacker->client != NULL) {
+					if (G_Client_IsAdmin(attacker) == qfalse) {
+						attacker->n00bCount++;
+
+						attacker->client->fraggerTime = level.time + (rpg_fraggerSpawnDelay.integer * 1000);
+
+						if (rpg_kickAfterXkills.integer < 1) {
+							trap_SendServerCommand(attacker - g_entities, va("print \"^7Server: You have been caught n00bing, you have been temporary put in the n00b class.\n\""));
+						} else {
+							trap_SendServerCommand(attacker - g_entities, va("print \"^7Server: You have been caught n00bing, %i more times and you will be kicked.\n\"", (rpg_kickAfterXkills.integer - attacker->n00bCount)));
+						}
+
+						if ((attacker->n00bCount >= rpg_kickAfterXkills.integer) && (rpg_kickAfterXkills.integer != 0)) {
+							trap_DropClient(attacker->s.number, "Kicked: Do Not N00b!");
+						} else {
+							for (i = 0; g_classData[i].consoleName[0] && i < MAX_CLASSES; i++) {
+								if (g_classData[i].isn00b) {
+									char conName[64];
+									trap_Cvar_VariableStringBuffer(va("rpg_%sPass", conName), conName, sizeof(conName));
+
+									Q_strncpyz(attacker->client->origClass, G_Client_ClassNameForValue(attacker->client->sess.sessionClass), sizeof(attacker->client->origClass));
+									attacker->client->n00bTime = level.time + 10000;
+									SetClass(attacker, conName, NULL, qfalse);
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		//RPG-X: RedTechie no noclip
+		if (self->client->noclip) {
+			self->client->noclip = qfalse;
+		}
+
+		//RPG-X: RedTechie - Toss items
+		//RPG-X: Marcin - not when respawning - 30/12/2008
+		if (meansOfDeath != MOD_RESPAWN) {
+			G_Client_TossClientItems(self, qfalse);
+		}
+
+		ps->pm_type = PM_DEAD;
+
+		self->takedamage = qfalse;
+
+		ps->weapon = WP_0;
+		ps->weaponstate = WEAPON_READY;
+		self->r.contents = CONTENTS_CORPSE;
+
+		//-TiM
+
+		self->s.loopSound = 0;
+
+		self->r.maxs[2] = -8;
+
+		//RPG-X: RedTechie - Wait....forever
+		self->client->respawnTime = level.time + 1000000000;
+
+		//Play death sound
+		//RPG-X: RedTechie - No pain sound when they change class
+		if (meansOfDeath != MOD_RESPAWN) {
+			G_AddEvent(self, irandom(EV_DEATH1, EV_DEATH3), killer);
+			//if we died from falling, add a nice "splat' sound lol
+			if (meansOfDeath == MOD_FALLING) {
+				G_AddEvent(self, EV_SPLAT, killer);
+			}
+		}
+
+		//RPG-X : Model system - Death animations now based on vector hit
+		if (meansOfDeath == MOD_FALLING) {
+			anim = BOTH_FALLDEATH1LAND;
+		} else if (self->waterlevel == 3) {
+			anim = BOTH_FLOAT2;
+		} else {
+			if (meansOfDeath == MOD_PHASER || meansOfDeath == MOD_PHASER_ALT) {
+				if ((self->client->lasthurt_location & LOCATION_FRONT) != 0) {
+					anim = BOTH_DEATHBACKWARD1;
+				} else if ((self->client->lasthurt_location & LOCATION_BACK) != 0) {
+					anim = BOTH_DEATHFORWARD2;
+				} else if ((self->client->lasthurt_location & LOCATION_LEFT) != 0) {
+					anim = BOTH_DEATH2;
+				} else if ((self->client->lasthurt_location & LOCATION_RIGHT) != 0) {
+					anim = BOTH_DEATH2;
+				} else {
+					anim = BOTH_DEATH1;
+				}
+			} else {
+				if ((self->client->lasthurt_location & LOCATION_FRONT) != 0) {
+					anim = BOTH_DEATHBACKWARD2;
+				} else if ((self->client->lasthurt_location & LOCATION_BACK) != 0) {
+					anim = BOTH_DEATHFORWARD1;
+				} else if ((self->client->lasthurt_location & LOCATION_LEFT) != 0) {
+					anim = BOTH_DEATHFORWARD2;
+				} else if ((self->client->lasthurt_location & LOCATION_RIGHT) != 0) {
+					anim = BOTH_DEATHFORWARD2;
+				} else {
+					anim = BOTH_DEATH1;
+				}
+			}
+		}
+
+		//TiM
+		ps->stats[LEGSANIM] = ((ps->stats[LEGSANIM] & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
+		ps->stats[TORSOANIM] = ((ps->stats[TORSOANIM] & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
+
+		trap_LinkEntity(self);
+
+		BG_PlayerStateToEntityState(&self->client->ps, &self->s, qtrue);
+
+		G_Client_UserinfoChanged(self->s.clientNum);
+
+		ClientEndFrame(self);
+
+		G_Client_StoreClientInitialStatus(self);
+		//---------------------
+		//RPG-X: RedTechie - If it dose equal 0 use regular die
+		//---------------------
+	} else {
+		char* killerName = NULL;
+		char* obit = NULL;
+		char* classname = NULL;
+		int	anim = 0;
+		int	killer = 0;
+		int i = 0;
+		int	BottomlessPitDeath = 0;
+		static int deathNum;
+		gentity_t* ent = NULL;
+		gentity_t* detpack = NULL;
+		playerState_t* ps = &self->client->ps;
+
+		if (ps->pm_type == PM_DEAD) {
+			return;
+		}
+
+		if (level.intermissiontime != 0) {
+			return;
+		}
+
+		//RPG-X: RedTechie - Trying to make sure player dies when there health is 1 without medics revive turned on
+		//RPG-X | Phenix | 05/04/2005 - Read learn that "=" sets where "==" is an if statement!!!
+		if (self->health == 1) {
+			self->health = 0;
+		}
+
+		ps->pm_type = PM_DEAD;
+		//need to copy health here because pm_type was getting reset to PM_NORMAL if ClientThink_real was called before the STAT_HEALTH was updated
+		ps->stats[STAT_HEALTH] = self->health;
+
+		// check if we are in a NODROP Zone and died from a TRIGGER HURT
+		//  if so, we assume that this resulted from a fall to a "bottomless pit" and 
+		//  treat it differently...  
+		//
+		//  Any problems with other places in the code?
+		//
+		BottomlessPitDeath = 0;	// initialize
+
+		contents = trap_PointContents(self->r.currentOrigin, -1);
+		if ((contents & CONTENTS_NODROP) != 0 && (meansOfDeath == MOD_TRIGGER_HURT)) {
+			BottomlessPitDeath = 1;
+		}
+
+		// similarly, if El Corpso here has already dropped a detpack, blow it up
+		classname = BG_FindClassnameForHoldable(HI_DETPACK);
+		if (classname) {
+			while ((detpack = G_Find(detpack, FOFS(classname), classname)) != NULL) {
+				if (detpack->parent == self) {
+					detpack->think = DetonateDetpack;		// Detonate next think.
+					detpack->nextthink = level.time;
+				}
+			}
+		}
+
+		if (attacker != NULL) {
+			killer = attacker->s.number;
+			if (attacker->client != NULL) {
+				killerName = attacker->client->pers.netname;
+			} else {
+				killerName = "<non-client>";
+			}
+		} else {
+			killer = ENTITYNUM_WORLD;
+			killerName = "<world>";
+		}
+
+		if (killer < 0 || killer >= MAX_CLIENTS) {
+			killer = ENTITYNUM_WORLD;
+			killerName = "<world>";
+		}
+
+		if (meansOfDeath < 0 || meansOfDeath >= sizeof(modNames) / sizeof(modNames[0])) {
+			obit = "<bad obituary>";
+		} else {
+			obit = modNames[meansOfDeath];
+		}
+
+		G_LogPrintf("Kill: %i %i %i: %s killed %s by %s\n", killer, self->s.number, meansOfDeath, killerName, self->client->pers.netname, obit);
+
+		G_LogWeaponKill(killer, meansOfDeath);
+		G_LogWeaponDeath(self->s.number, self->s.weapon);
+		if (attacker != NULL && attacker->client != NULL && attacker->inuse) {
+			G_LogWeaponFrag(killer, self->s.number);
+		}
+
+		if (meansOfDeath != MOD_RESPAWN) {
+			// broadcast the death event to everyone
+			ent = G_TempEntity(self->r.currentOrigin, EV_OBITUARY);
+			ent->s.eventParm = meansOfDeath;
+			ent->s.otherEntityNum = self->s.number;
+			ent->s.otherEntityNum2 = killer;
+			ent->r.svFlags = SVF_BROADCAST;	// send to everyone
+		}
+
+		self->enemy = attacker;
+
+		ps->persistant[PERS_KILLED]++;
+		if (self == attacker) {
+			self->client->pers.teamState.suicides++;
+		}
+
+		//RPG-X: Redtechie - No awards or score calculations
+		////////////////////////////////////////////////////////////////////////
+		if (attacker != NULL && attacker->client != NULL) {
+			if (attacker == self) {
+				if (meansOfDeath != MOD_RESPAWN) {//just changing class
+					G_Client_AddScore(attacker, -1);
+				}
+			} else {
+				attacker->client->pers.teamState.frags++;
+				G_Client_AddScore(attacker, 1);
+
+				// Check to see if the player is on a streak.
+				attacker->client->streakCount++;
+
+				attacker->client->lastKillTime = level.time;
+			}
+		} else {
+			if (meansOfDeath != MOD_RESPAWN) {//not just changing class
+				G_Client_AddScore(self, -1);
+			}
+		}
+		////////////////////////////////////////////////////////////////////////
+
+		//RPG-X: Redtechie - agian no need
+		// Add team bonuses
+		//Team_FragBonuses(self, inflictor, attacker);
+
+		// if client is in a nodrop area, don't drop anything (but return CTF flags!)
+		if ((contents & CONTENTS_NODROP) == 0 && meansOfDeath != MOD_SUICIDE && meansOfDeath != MOD_RESPAWN) {//action hero doesn't drop stuff
+			//don't drop stuff in specialty mode
+			if (meansOfDeath != MOD_RESPAWN) {
+				G_Client_TossClientItems(self, qfalse);
+			}
+		}
+
+		DeathmatchScoreboardMessage(self);		// show scores
+		// send updated scores to any clients that are following this one,
+		// or they would get stale scoreboards
+		for (i = 0; i < level.maxclients; i++) {
+			gclient_t* client = NULL;
+
+			client = &level.clients[i];
+			if (client == NULL) {
+				continue;
+			}
+
+			if (client->pers.connected != CON_CONNECTED) {
+				continue;
+			}
+			if (client->sess.sessionTeam != TEAM_SPECTATOR) {
+				continue;
+			}
+			if (client->sess.spectatorClient == self->s.number) {
+				DeathmatchScoreboardMessage(g_entities + i);
+			}
+		}
+
+		self->takedamage = qtrue;	// can still be gibbed
+
+		self->s.weapon = WP_0;
+		self->s.powerups = 0;
+		self->r.contents = CONTENTS_CORPSE;
+
+		self->s.loopSound = 0;
+
+		self->r.maxs[2] = -8;
+
+		// don't allow respawn until the death anim is done
+		// g_forcerespawn may force spawning at some later time
+		self->client->respawnTime = level.time + 1700;
+
+		// We always want to see the body for special animations, so make sure not to gib right away:
+		if (meansOfDeath == MOD_CRIFLE_ALT ||
+			meansOfDeath == MOD_DETPACK ||
+			meansOfDeath == MOD_QUANTUM_ALT ||
+			meansOfDeath == MOD_DREADNOUGHT_ALT ||
+			meansOfDeath == MOD_PHASER_ALT)//RPG-X: RedTechie - Added phaser alt disnt
+		{
+			self->health = 0;
+		}
+
+		//RPG-X : Model system - Death animations now based on vector hit
+		if (meansOfDeath == MOD_FALLING) {
+			anim = BOTH_FALLDEATH1LAND;
+		} else if (self->waterlevel == 3) {
+			anim = BOTH_FLOAT2;
+		} else {
+			if (meansOfDeath == MOD_PHASER || meansOfDeath == MOD_PHASER_ALT) {
+				if ((self->client->lasthurt_location & LOCATION_FRONT) != 0) {
+					anim = BOTH_DEATHBACKWARD1;
+				} else if ((self->client->lasthurt_location & LOCATION_BACK) != 0) {
+					anim = BOTH_DEATHFORWARD2;
+				} else if ((self->client->lasthurt_location & LOCATION_LEFT) != 0) {
+					anim = BOTH_DEATH2;
+				} else if ((self->client->lasthurt_location & LOCATION_RIGHT) != 0) {
+					anim = BOTH_DEATH2;
+				} else {
+					anim = BOTH_DEATH1;
+				}
+			} else {
+				if ((self->client->lasthurt_location & LOCATION_FRONT) != 0) {
+					anim = BOTH_DEATHBACKWARD2;
+				} else if ((self->client->lasthurt_location & LOCATION_BACK) != 0) {
+					anim = BOTH_DEATHFORWARD1;
+				} else if ((self->client->lasthurt_location & LOCATION_LEFT) != 0) {
+					anim = BOTH_DEATHFORWARD2;
+				} else if ((self->client->lasthurt_location & LOCATION_RIGHT) != 0) {
+					anim = BOTH_DEATHFORWARD2;
+				} else {
+					anim = BOTH_DEATH1;
+				}
+			}
+		}
+
+		ps->stats[LEGSANIM] = ((ps->stats[LEGSANIM] & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
+		ps->stats[TORSOANIM] = ((ps->stats[TORSOANIM] & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim;
+
+		if ((BottomlessPitDeath == 1) && (killer == ENTITYNUM_WORLD)) {
+			//G_AddEvent( self, EV_FALL_FAR, killer ); ?? Need to play falling SF now, or 
+			// use designer trigger??
+			//FIXME: need *some* kind of death anim!
+		} else {
+			// normal death
+
+			switch (meansOfDeath) {
+				case MOD_PHASER_ALT: //RPG-X: RedTechie - Added better effect for alt phaser
+					if (rpg_phaserdisintegrates.integer == 1) {//RPG-X: RedTechie - Check to see if we want this
+						G_AddEvent(self, EV_DISINTEGRATION, killer);
+						ps->powerups[PW_DISINTEGRATE] = level.time + 100000;
+						VectorClear(ps->velocity);
+						self->takedamage = qfalse;
+						self->r.contents = 0;
+					}
+					break;
+				case MOD_CRIFLE_ALT:
+					break;
+				case MOD_QUANTUM_ALT:
+					G_AddEvent(self, EV_DISINTEGRATION2, killer);
+					ps->powerups[PW_EXPLODE] = level.time + 100000;
+					VectorClear(ps->velocity);
+					self->takedamage = qfalse;
+					self->r.contents = 0;
+					break;
+				case MOD_SCAVENGER_ALT:
+				case MOD_SCAVENGER_ALT_SPLASH:
+				case MOD_GRENADE:
+				case MOD_GRENADE_ALT:
+				case MOD_GRENADE_SPLASH:
+				case MOD_GRENADE_ALT_SPLASH:
+				case MOD_QUANTUM:
+				case MOD_QUANTUM_SPLASH:
+				case MOD_QUANTUM_ALT_SPLASH:
+				case MOD_DETPACK:
+					G_AddEvent(self, EV_EXPLODESHELL, killer);
+					ps->powerups[PW_EXPLODE] = level.time + 100000;
+					VectorClear(ps->velocity);
+					self->takedamage = qfalse;
+					self->r.contents = 0;
+					break;
+				case MOD_DREADNOUGHT:
+				case MOD_DREADNOUGHT_ALT:
+					G_AddEvent(self, EV_ARCWELD_DISINT, killer);
+					ps->powerups[PW_ARCWELD_DISINT] = level.time + 100000;
+					VectorClear(ps->velocity);
+					self->takedamage = qfalse;
+					self->r.contents = 0;
+					break;
+				case MOD_FALLING:
+					G_AddEvent(self, EV_SPLAT, killer);
+					break;
+				default:
+					G_AddEvent(self, irandom(EV_DEATH1, EV_DEATH3), killer);
+					break;
+			}
+
+			// the body can still be gibbed
+			self->die = body_die;
+
+		}
+		// globally cycle through the different death animations
+		deathNum = (deathNum + 1) % 3;
+
+		trap_LinkEntity(self);
+	}//RPG-X: RedTechie - End of my if statment for medics revive check
+}//RPG-X: RedTechie - End of void
+
+qboolean G_Client_IsBorg(gentity_t* ent) {
+	if (ent == NULL) {
+		return qfalse;
+	}
+
+	if (ent->client == NULL) {
+		return qfalse;
+	}
+
+	if (g_classData[ent->client->sess.sessionClass].isBorg) {
+		return qtrue;
+	} else {
+		return qfalse;
+	}
+}
+
+
+

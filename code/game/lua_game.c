@@ -1,6 +1,7 @@
 // game lib for lua
 
 #include "g_lua.h"
+#include "g_combat.h"
 
 #ifdef G_LUA
 
@@ -419,7 +420,7 @@ static int Game_Damage(lua_State *L) {
 	dflags = (int)luaL_checknumber(L, 7);
 	mod = (int)luaL_checknumber(L, 8);
 
-	G_Damage(targ, inflictor, attacker, dir, point, damage, dflags, mod);
+	G_Combat_Damage(targ, inflictor, attacker, dir, point, damage, dflags, mod);
 
 	lua_pushboolean(L, qtrue);
 	LUA_DEBUG("END - game.Damage");
@@ -448,7 +449,7 @@ static int Game_Repair(lua_State *L) {
 	
 	rate = (float)luaL_checknumber(L, 2);
 
-	G_Repair(lent->e, NULL, rate); // FIXME ... trance ent?
+	G_Combat_Repair(lent->e, NULL, rate); // FIXME ... trance ent?
 
 	LUA_DEBUG("END - game.Repair");
 	lua_pushboolean(L, qtrue);

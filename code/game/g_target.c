@@ -375,7 +375,7 @@ static void target_laser_think (/*@shared@*/ gentity_t *self) {
 
 	if ( tr.entityNum != 0 ) {
 		// hurt it if we can
-		G_Damage ( &g_entities[tr.entityNum], self, self->activator, self->movedir, 
+		G_Combat_Damage ( &g_entities[tr.entityNum], self, self->activator, self->movedir, 
 			tr.endpos, self->damage, DAMAGE_NO_KNOCKBACK, MOD_TARGET_LASER);
 	}
 
@@ -640,7 +640,7 @@ none
 */
 static void target_kill_use( /*@shared@*/ /*@unused@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ gentity_t *other, /*@shared@*/ gentity_t *activator ) {
 	if(activator != NULL) {
-		G_Damage ( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+		G_Combat_Damage ( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 	}
 }
 
@@ -3039,7 +3039,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 			//Loop trough all clients on the server.
 			while((client = G_Find( client, FOFS( classname ), "player" ))!= NULL){
 				if (client->client->nokilli != 1)
-					G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+					G_Combat_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
 			}
 			//we may go this way once more so clear clients back.
 			client = NULL;
@@ -3368,7 +3368,7 @@ void target_shiphealth_die(/*@shared@*/ gentity_t *ent){
 	//Loop trough all clients on the server.
 	while((client = G_Find( client, FOFS( classname ), "player" )) != NULL){
 		if (client->client && client->client->nokilli != 1) {
-			G_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
+			G_Combat_Damage (client, ent, ent, 0, 0, 999999, 0, MOD_TRIGGER_HURT); //maybe a new message ala "[Charname] did not abandon ship."
 		}
 	}
 	//we may go this way once more so clear clients back.

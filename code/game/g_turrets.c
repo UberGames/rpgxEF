@@ -2,6 +2,7 @@
 #include "g_spawn.h"
 #include "g_items.h"
 #include "g_logger.h"
+#include "g_combat.h"
 
 #define	ARM_ANGLE_RANGE		60
 #define	HEAD_ANGLE_RANGE	90
@@ -72,7 +73,7 @@ static void turret_die ( gentity_t* self, gentity_t* inflictor, gentity_t* attac
 	if ( (self->splashDamage > 0) && (self->splashRadius > 0) )
 	{
 		/* FIXME: specify type of explosion?  (barrel, electrical, etc.) */
-		G_RadiusDamage( self->r.currentOrigin, attacker, self->splashDamage, self->splashRadius, activator, DAMAGE_RADIUS, MOD_EXPLOSION );
+		G_Combat_RadiusDamage( self->r.currentOrigin, attacker, self->splashDamage, self->splashRadius, activator, DAMAGE_RADIUS, MOD_EXPLOSION );
 
 		te = G_TempEntity( self->r.currentOrigin, EV_MISSILE_MISS );
 		VectorSet( dir, 0, 0, 1 );
@@ -1062,7 +1063,7 @@ static void laser_arm_fire (gentity_t* ent)
 			gentity_t *hapless_victim = &g_entities[trace.entityNum];
 			if ( hapless_victim && hapless_victim->takedamage && ent->damage )
 			{
-				G_Damage( hapless_victim, ent, ent->nextTrain->activator, fwd, trace.endpos, ent->damage, DAMAGE_ALL_TEAMS, 1 );
+				G_Combat_Damage( hapless_victim, ent, ent->nextTrain->activator, fwd, trace.endpos, ent->damage, DAMAGE_ALL_TEAMS, 1 );
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 #include "g_breakable.h"
 #include "g_spawn.h"
 #include "g_items.h"
+#include "g_combat.h"
 
 /**
 *	\brief A func_breakables health has sunk to or under zero
@@ -64,7 +65,7 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 	// Ok, we are allowed to explode, so do it now!
 	if ( (self->splashDamage > 0) && (self->splashRadius > 0) )	{
 		//fixme: what about chain reactions?
-		G_RadiusDamage( org, attacker, self->splashDamage, self->splashRadius, self, DAMAGE_RADIUS|DAMAGE_ALL_TEAMS, MOD_EXPLOSION );
+		G_Combat_RadiusDamage( org, attacker, self->splashDamage, self->splashRadius, self, DAMAGE_RADIUS|DAMAGE_ALL_TEAMS, MOD_EXPLOSION );
 
 		//explosion effect
 		te = G_TempEntity( org, EV_MISSILE_MISS );

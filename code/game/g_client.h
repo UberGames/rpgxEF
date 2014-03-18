@@ -2,6 +2,7 @@
 #define _G_CLIENT_H
 
 #include "g_local.h"
+#include "g_combat.h"
 
 /**
  * Select a spawnpoint.
@@ -98,7 +99,7 @@ void G_Client_Disconnect( int32_t clientNum );
  * \param ent the player
  * \return Whether player is admin.
  */
-qboolean IsAdmin( gentity_t* ent );
+qboolean G_Client_IsAdmin( gentity_t* ent );
 
 /**
  *	Get location message for a client.
@@ -152,6 +153,48 @@ void G_Client_AddScore( gentity_t* ent, int score );
  * \param fromExit From exit?
  */
 void G_Client_CalculateRanks( qboolean fromExit );
+
+/**
+ * Set the score for a client.
+ *
+ * \param ent The client.
+ * \param score New score for the client.
+ */
+void G_Client_SetScore(gentity_t *ent, int32_t score);
+
+/**
+ * Toss the weapon and powerups for the killed player.
+ *
+ * \param self the client.
+ * \param Caused by disconnect?
+ */
+void G_Client_TossClientItems(gentity_t* self, qboolean dis_con);
+
+/**
+ * Let a body die.
+ *
+ * \param self Self.
+ * \param inflictor entity that is causing the damage
+ * \param attacker entity that caused the inflictor to damage targ
+ * \param damage Amount of damage.
+ * \param meansOfDeath Means of death.
+ */
+void body_die(gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int32_t damage, int32_t meansOfDeath);
+
+/**
+ * \brief Gets the classname for a given player class.
+ * \param pClass The class.
+ */
+char* G_Client_ClassNameForValue(pclass_t pClass);
+
+/**
+ *	Checks if a player is in a Class that is borg.
+ *	\param ent the player
+ *
+ *	\author Ubergames - GSIO01
+ *	\date 08/05/2009
+ */
+qboolean G_Client_IsBorg(gentity_t* ent);
 
 extern clInitStatus_t clientInitialStatus[MAX_CLIENTS];
 

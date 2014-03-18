@@ -10,6 +10,7 @@ A module for everything converning weapons.
 */
 
 #include "g_weapon.h"
+#include "g_combat.h"
 
 /***
 Get the forward vector.
@@ -99,7 +100,7 @@ static int weapon_Damage(lua_State *L) {
 	dflags = (int)luaL_checknumber(L, 7);
 	mod = (int)luaL_checknumber(L, 8);
 
-	G_Damage(target, inflictor, attacker, dir, point, damage, dflags, mod);
+	G_Combat_Damage(target, inflictor, attacker, dir, point, damage, dflags, mod);
 
 	lua_pushboolean(L, qtrue);
 	return 0;

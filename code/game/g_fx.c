@@ -3,6 +3,7 @@
 #include "g_local.h"
 #include "g_spawn.h"
 #include "g_logger.h"
+#include "g_combat.h"
 
 #define SPARK_STARTOFF		1
 /*QUAKED fx_spark (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF
@@ -165,7 +166,7 @@ static void steam_think( gentity_t *ent )
 				gentity_t *victim = &g_entities[trace.entityNum];
 				if ( (victim != NULL) && victim->takedamage )
 				{
-					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
+					G_Combat_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
 				}
 			}
 		}
@@ -334,7 +335,7 @@ static void bolt_think( gentity_t *ent )
 				gentity_t *victim = &g_entities[trace.entityNum];
 				if ( (victim != NULL) && (victim->takedamage == qtrue) )
 				{
-					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_PHASER_ALT );
+					G_Combat_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_PHASER_ALT );
 				}
 			}
 		}
@@ -620,7 +621,7 @@ static void surface_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *othe
 	G_AddEvent( self, EV_FX_SURFACE_EXPLOSION, 0 );
 
 	if ( self->splashDamage != 0 ) {
-		G_RadiusDamage( self->r.currentOrigin, self, (float)self->splashDamage, (float)self->splashRadius, self, DAMAGE_RADIUS|DAMAGE_ALL_TEAMS, MOD_EXPLOSION );
+		G_Combat_RadiusDamage( self->r.currentOrigin, self, (float)self->splashDamage, (float)self->splashRadius, self, DAMAGE_RADIUS|DAMAGE_ALL_TEAMS, MOD_EXPLOSION );
 	}
 }
 
@@ -894,7 +895,7 @@ static void electrical_explosion_use( gentity_t *self, /*@unused@*/ gentity_t *o
 
 	if ( self->splashDamage != 0 )
 	{
-		G_RadiusDamage( self->s.origin, self, (float)self->splashDamage, (float)self->splashRadius, self, 0, MOD_EXPLOSION );
+		G_Combat_RadiusDamage( self->s.origin, self, (float)self->splashDamage, (float)self->splashRadius, self, 0, MOD_EXPLOSION );
 	}
 }
 
@@ -1618,7 +1619,7 @@ static void forge_bolt_think( gentity_t *ent )
 				gentity_t *victim = &g_entities[trace.entityNum];
 				if ( victim != NULL && victim->takedamage == qtrue )
 				{
-					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
+					G_Combat_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
 				}
 			}
 		}
@@ -1763,7 +1764,7 @@ static void plasma_think( gentity_t *ent )
 				gentity_t *victim = &g_entities[trace.entityNum];
 				if ( victim != NULL && victim->takedamage == qtrue )
 				{
-					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
+					G_Combat_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
 				}
 			}
 		}
@@ -1896,7 +1897,7 @@ static void stream_think( gentity_t *ent )
 				gentity_t *victim = &g_entities[trace.entityNum];
 				if ( victim != NULL && victim->takedamage == qtrue )
 				{
-					G_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
+					G_Combat_Damage( victim, ent, ent->activator, temp, trace.endpos, ent->damage, 0, MOD_LAVA );
 				}
 			}
 		}
