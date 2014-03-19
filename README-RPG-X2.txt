@@ -21,26 +21,23 @@ parts of this mod (see Legal Notice).
 
 Compile Info:
 -------------
-Each part (game, cgame, ui) has it's own Makefile in it's 
-folder.
+The compile process of RPG-X2 is now integrated into the Makefile of rpgxEF.
+Compiling on linux/unix requires gcc, compiling on windows requires MinGw and 
+MSys (MSVC compiler is no longer supported).
 
 On Linux:
-- Make sure you have installed Mysql client
-- just run make in the game, cgame, and/or, ui folder to 
-  build the shared libraries
-- make clean removes all compiled files (including the 
-  shared libraries)
+- Go to the main folder of the rpgxEF git repository
+- Run make BUILD_SERVER=0 BUILD_CLIENT=0
 
 On Windows:
 - Install mingw and msys correctly
-- start the msys console
-- just run make in the game, cgame, and/or, ui folder to 
-  build the shared libraries
-- make clean removes all compiled files (including the 
-  shared libraries)
+- Go to the main folder of the rpgxEF git repository
+- Run make BUILD_SERVER=0 BUILD_CLIENT=0
 
 Cross Compiling for Windows:
-Not yet but hopefully soon.
+- Install the mingw cross compilers on your linux system
+- Go to the main folder of the rpgxEF git repository
+- Run cross-make-mingw.sh BUILD_SERVER=0 BUILD_CLIENT=0
 
 Mac OSX:
 Not yet but hopefully soon.
