@@ -3,6 +3,13 @@
 
 #include "g_local.h"
 
-qboolean G_Utils_LineOfSight( gentity_t* ent1, gentity_t* ent2 ); //Phenix
+/**
+ * \brief Get the model index for a model.
+ * Get the model index for a model.
+ *
+ * \param name the model name
+ * \return the models index
+ */
+int32_t G_ModelIndex(char* name);
 
 #endif /* G_UTILS_H_ */

@@ -3,6 +3,7 @@
 #include "g_spawn.h"
 #include "g_items.h"
 #include "g_combat.h"
+#include "g_utils.h"
 
 /**
 *	\brief A func_breakables health has sunk to or under zero

@@ -516,6 +516,7 @@
     <ClInclude Include="g_lua.h" />
     <ClInclude Include="g_main.h" />
     <ClInclude Include="g_missile.h" />
+    <ClInclude Include="g_mover.h" />
     <ClInclude Include="g_public.h" />
     <ClInclude Include="g_spawn.h" />
     <ClInclude Include="g_sql.h" />

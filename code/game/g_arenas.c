@@ -6,6 +6,7 @@
 
 #include "g_local.h"
 #include "g_client.h"
+#include "g_utils.h"
 
 #ifndef min
 #define min(a, b)	(a) < (b) ? a : b
@@ -17,17 +18,16 @@ gentity_t* podium2;
 gentity_t* podium3;
 
 void UpdateTournamentInfo(void) {
+	char		msg[AWARDS_MSG_LENGTH];
+	char		msg2[AWARDS_MSG_LENGTH];
+	char*		mvpName = "";
 	int32_t		i = 0;
 	int32_t		j = 0;
 	int32_t		k = 0;
-	gentity_t*	player = NULL;
-	int32_t		playerClientNum = 0;
 	int32_t		n = 0;
-	char		msg[AWARDS_MSG_LENGTH];
-	char		msg2[AWARDS_MSG_LENGTH];
+	int32_t		playerClientNum = 0;
 	int32_t		playerRank = level.numNonSpectatorClients - 1;
 	int32_t		highestTiedRank = 0;
-	gentity_t*	MVP = NULL;
 	int32_t		mvpNum = -1;
 	int32_t		mvpPoints = 0;
 	int32_t		winningCaptures = 0;
@@ -35,10 +35,11 @@ void UpdateTournamentInfo(void) {
 	int32_t		winningTeam=0;
 	int32_t		loseCaptures = 0;
 	int32_t		losePoints = 0;
-	char*		mvpName = "";
+	int32_t		secondPlaceTied=0;
+	gentity_t*	MVP = NULL;
+	gentity_t*	player = NULL;
 	gclient_t*	cl = NULL;
 	gclient_t*	cl2= NULL;
-	int32_t		secondPlaceTied=0;
 
 	memset(msg, 0, AWARDS_MSG_LENGTH);
 	memset(msg2, 0, AWARDS_MSG_LENGTH);

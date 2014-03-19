@@ -1,11 +1,12 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 
-#include "g_local.h"
+#include "g_mover.h"
 #include "g_client.h"
 #include "g_spawn.h"
 #include "g_combat.h"
 #include "g_lua.h"
+#include "g_utils.h"
 
 extern qboolean G_CallSpawn(gentity_t *ent);
 

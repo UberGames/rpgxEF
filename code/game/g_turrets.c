@@ -3,6 +3,7 @@
 #include "g_items.h"
 #include "g_logger.h"
 #include "g_combat.h"
+#include "g_utils.h"
 
 #define	ARM_ANGLE_RANGE		60
 #define	HEAD_ANGLE_RANGE	90

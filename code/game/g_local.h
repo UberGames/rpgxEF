@@ -866,17 +866,6 @@ typedef struct {
 // g_utils.c
 //
 /**
- * \brief Get the model index for a model.
- *
- * Get the model index for a model.
- *
- * \param name the model name
- *
- * \return the models index
- */
-int G_ModelIndex( char* name );
-
-/**
  * \brief Get the sound index for a sound.
  *
  * Get the sound index for a sound.
@@ -1241,34 +1230,6 @@ int G_GetEntityByBmodel(char* bmodel,list_p entities);
  * \param timeOffset time offset
  */
 void AddRemap(const char* oldShader, const char* newShader, float timeOffset);
-
-//
-// g_mover.c
-//
-/**
- * Run a mover.
- *
- * \param ent Mover to run.
- */
-void G_Mover_Run( gentity_t* ent );
-
-/**
- * Touch function for doors.
- *
- * \param ent The mover.
- * \param other The touching entity.
- * \param trace A trace.
- */
-void G_Mover_TouchDoorTrigger( gentity_t* ent, gentity_t* other, trace_t* trace );
-
-/**
- * Use function for binary movers.
- *
- * \param ent The mover.
- * \param other Other entity.
- * \param activator Activator.
- */
-void G_Mover_UseBinaryMover( gentity_t* ent, gentity_t* other, gentity_t* activator );
 
 //
 // g_misc.c
