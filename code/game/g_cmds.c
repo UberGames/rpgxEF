@@ -3540,8 +3540,9 @@ Cmd_StopMusic_f
 =================
 */
 static void Cmd_StopMusic_f(gentity_t* ent) {
-	//standard checks
+	int32_t i = 0;
 
+	//standard checks
 	G_Assert(ent, (void)0);
 	G_Assert(ent->client, (void)0);
 
@@ -3558,6 +3559,11 @@ static void Cmd_StopMusic_f(gentity_t* ent) {
 #endif
 
 	trap_SetConfigstring(CS_MUSIC, "");
+	for (; i < MAX_CLIENTS; i++) {
+		if (g_entities[i].client != NULL) {
+			G_AddEvent(&g_entities[i], EV_STOP_MUSIC, 0);
+		}
+	}
 }
 
 /*

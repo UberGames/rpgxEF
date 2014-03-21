@@ -1821,7 +1821,13 @@ case EV_SHAKE_SOUND:
 		break;
 
 	case EV_DEBUG_TRACE:
+		DEBUGNAME("EV_DEBUG_TRACE");
 		FX_AddLine(cent->currentState.origin, cent->currentState.origin2, 0.5, 0.5, 0.5, 1.0, 1.0, 1000, cgs.media.laserShader);
+		break;
+
+	case EV_STOP_MUSIC:
+		DEBUGNAME("EV_STOP_MUSIC");
+		trap_S_StartBackgroundTrack(NULL, NULL);
 		break;
 
 // Default

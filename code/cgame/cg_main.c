@@ -407,7 +407,7 @@ void CG_PrecacheRemapShaders(void) {
 		CG_Logger(LL_INFO, "\t%s ... ", token);
 
 		shader = trap_R_RegisterShader(token);
-		if(shader == NULL) {
+		if(shader == 0) {
 			CG_Logger(LL_WARN, "FAIL\n");
 		} else {
 			CG_Logger(LL_INFO, "OK\n");
@@ -1211,8 +1211,9 @@ CG_StartMusic
 ======================
 */
 void CG_StartMusic( void ) {
-	char	*s;
-	char	parm1[MAX_QPATH], parm2[MAX_QPATH];
+	char* s = NULL;
+	static char parm1[MAX_QPATH];
+	static char parm2[MAX_QPATH];
 
 	CG_LogFuncBegin();
 
@@ -1221,7 +1222,7 @@ void CG_StartMusic( void ) {
 	Q_strncpyz( parm1, COM_Parse( &s ), sizeof( parm1 ) );
 	Q_strncpyz( parm2, COM_Parse( &s ), sizeof( parm2 ) );
 
-	trap_S_StartBackgroundTrack( parm1, parm2 );
+	trap_S_StartBackgroundTrack(parm1, parm2);
 
 	CG_LogFuncEnd();
 }
