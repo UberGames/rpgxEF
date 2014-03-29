@@ -1428,8 +1428,8 @@ static void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chat
 	int			j;
 	gentity_t	*other;
 	int			color;
-	char		name[80];
-	char		text[150];
+	char		name[136];
+	char		text[878];
 	char		location[64];
 	char		*className;
 	gclient_t	*entClient = ent->client;
