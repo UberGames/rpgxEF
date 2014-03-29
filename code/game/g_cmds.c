@@ -1408,13 +1408,13 @@ static void G_SayTo(gentity_t* ent, gentity_t* other, int32_t mode, int32_t colo
 	if (mode == SAY_CLASS && !OnSameClass(ent, other) && (G_Client_IsAdmin(other) == qfalse)) {
 		return;
 	}
+
 	if (mode == SAY_ADMIN && (G_Client_IsAdmin(other) == qfalse)) {
 		return;
 	}
+
 	// no chatting to players in tournements
-	if (g_gametype.integer == GT_TOURNAMENT
-		&& other->client->sess.sessionTeam == TEAM_FREE
-		&& sess->sessionTeam != TEAM_FREE) {
+	if (g_gametype.integer == GT_TOURNAMENT && other->client->sess.sessionTeam == TEAM_FREE && sess->sessionTeam != TEAM_FREE) {
 		return;
 	}
 
@@ -1437,8 +1437,8 @@ static void G_Say(gentity_t* ent, gentity_t* target, int32_t mode, const char* c
 	int32_t j = 0;
 	gentity_t* other = NULL;
 	int32_t color = 0;
-	char name[80];
-	char text[150];
+	char name[136];
+	char text[878];
 	char location[64];
 	char* className = NULL;
 	gclient_t* entClient = NULL;
@@ -1526,7 +1526,7 @@ static void G_Say(gentity_t* ent, gentity_t* target, int32_t mode, const char* c
 			break;
 		case SAY_ADMIN:
 			if (G_Client_GetLocationMsg(ent, location, sizeof(location)) && tarPers)
-				Com_sprintf(name, sizeof(name), "[%s%c%c] [%s] (%s): ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, tarPers->netname, location);
+				Com_sprintf(name, sizeof(name), "[%s%c%c] [%s] (%s): ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, tarPers->netname, location); // todo: this is bad
 			else if (tarPers)
 				Com_sprintf(name, sizeof(name), "[%s%c%c ^7To %s^7]: ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, tarPers->netname);
 			else return;
