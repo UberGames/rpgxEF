@@ -47,15 +47,9 @@ Not yet but hopefully soon.
 
 Bug Reports and Patch/Feature Suggestions:
 --------------
-We have a bug report system set up at http://bugs.rpg-x.net
-If you see an error in the game, or if the game crashes,
-please let us know! Also if you fixed a bug in the code of 
-have coded a new feature feels free suggest us adding it
-there (please upload a *.diff file).
-
-Note: 
-As the UberGames bug tracker is down right now use
-http://bugs.hennecke-online.net instead.
+We are using GitHub for issues tracking (https://github.com/UberGames/rpgxEF/issues).
+You can also add Pull Requests on GitHub if you have solved an
+issues yourself.
 
 Contact:
 --------------
@@ -100,28 +94,6 @@ Lua License:
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************************/
 
-Original List Module License (list.h, list.c):
-----------------------------------------------
-/*
-Copyright (c) 2011 Zhehao Mao
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
 
 
 
