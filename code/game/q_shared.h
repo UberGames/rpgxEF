@@ -509,11 +509,6 @@ extern	vec3_t	axisDefault[3];
 
 #define	IS_NAN(x) (((*(int32_t *)&x)&nanmask)==nanmask)
 
-float Q_fabs( float f );
-float Q_rsqrt( float f );		// reciprocal square root
-
-#define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
-
 signed char ClampChar( int32_t i );
 int16_t ClampShort( int32_t i );
 
@@ -595,10 +590,6 @@ void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
 void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
 int32_t Q_log2(int32_t val);
 
-int32_t	Q_rand( int32_t *seed );
-double Q_random( int32_t *seed );
-double Q_crandom( int32_t *seed );
-
 #define random()	((rand () & 0x7fff) / ((float)0x7fff))
 #define crandom()	(2.0 * (random() - 0.5))
 
@@ -632,7 +623,7 @@ void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
 
 int32_t	PlaneTypeForNormal (vec3_t normal);
 
-void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
+void MatrixMultiply(double** in1, double** in2, double** out);
 void AngleVectors( const vec3_t angles, /*@null@*/ /*@out@*/ vec3_t forward, /*@null@*/ /*@out@*/ vec3_t right, /*@null@*/ /*@out@*/ vec3_t up);
 void PerpendicularVector( vec3_t dst, const vec3_t src );
 void VectorShort(vec3_t vect);

@@ -1,5 +1,6 @@
 #include "cg_local.h"
 #include "fx_local.h"
+#include "../game/q_math.h"
 
 
 /*

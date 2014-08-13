@@ -347,7 +347,7 @@ static void UI_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *pare
 	}
 
 	// cast away const because of compiler problems
-	MatrixMultiply( lerped.axis, ((refEntity_t*)parent)->axis, entity->axis );
+	MatrixMultiply((double**)lerped.axis, (double**)((refEntity_t*)parent)->axis, (double**)entity->axis);
 	entity->backlerp = parent->backlerp;
 	UI_LogFuncEnd();
 }
@@ -376,8 +376,8 @@ static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_
 	}
 
 	// cast away const because of compiler problems
-	MatrixMultiply( entity->axis, ((refEntity_t *)parent)->axis, tempAxis );
-	MatrixMultiply( lerped.axis, tempAxis, entity->axis );
+	MatrixMultiply((double**)entity->axis, (double**)((refEntity_t *)parent)->axis, (double**)tempAxis);
+	MatrixMultiply((double**)lerped.axis, (double**)tempAxis, (double**)entity->axis);
 	UI_LogFuncEnd();
 }
 

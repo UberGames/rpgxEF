@@ -7,6 +7,7 @@
 #include "g_combat.h"
 #include "g_lua.h"
 #include "g_utils.h"
+#include "q_math.h"
 
 extern qboolean G_CallSpawn(gentity_t *ent);
 

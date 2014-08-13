@@ -8,6 +8,7 @@
 #include "cg_local.h"
 #include "cg_text.h"
 #include "cg_screenfx.h"
+#include "../game/q_math.h"
 
 /* set in CG_ParseTeamInfo */
 int32_t sortedTeamPlayers[TEAM_MAXOVERLAY];

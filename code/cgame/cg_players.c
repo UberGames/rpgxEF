@@ -7,6 +7,7 @@
 #include "cg_screenfx.h"
 #include "fx_local.h"
 #include "../game/bg_misc.h"
+#include "../game/q_math.h"
 //#include "cg_anims.h"				//RPG-X: J2J - Added for animation string table.
 
 const char	*cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {

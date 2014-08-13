@@ -11,6 +11,7 @@
 #include "g_logger.h"
 #include "g_lua.h"
 #include "g_combat.h"
+#include "q_math.h"
 
 #define MAX_BEAM_HITS	4
 

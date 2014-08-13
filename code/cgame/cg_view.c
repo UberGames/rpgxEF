@@ -4,6 +4,7 @@
 // for a 3D rendering
 #include "cg_local.h"
 #include "cg_screenfx.h"
+#include "../game/q_math.h"
 
 #define MAX_SHAKE_INTENSITY			16.0f
 

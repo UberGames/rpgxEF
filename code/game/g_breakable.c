@@ -123,7 +123,7 @@ void breakable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 */
 void InitBBrush ( gentity_t *ent ) 
 {
-	double			light = 0.0f;
+	float			light = 0.0f;
 	vec3_t			color;
 	qboolean		lightSet;
 	qboolean		colorSet;

@@ -3,6 +3,7 @@
 // cg_weapons.c -- events and effects dealing with weapons
 #include "cg_local.h"
 #include "fx_local.h"
+#include "../game/q_math.h"
 
 //RPG-X : TiM - Weapons Arrays
 static int32_t RAweapons[8] = { WP_3, 

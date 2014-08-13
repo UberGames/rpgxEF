@@ -533,6 +533,9 @@
     <ClInclude Include="g_mover.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="q_math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">
