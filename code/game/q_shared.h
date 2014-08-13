@@ -573,10 +573,10 @@ void _VectorCopy( const vec3_t in, vec3_t out );
 void _VectorScale( const vec3_t in, float scale, vec3_t out );
 void _VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc );
 
-unsigned ColorBytes3 (float r, float g, float b);
-unsigned ColorBytes4 (float r, float g, float b, float a);
+uint32_t ColorBytes3(double r, double g, double b);
+uint32_t ColorBytes4(double r, double g, double b, double a);
 
-float NormalizeColor( const vec3_t in, vec3_t out );
+double NormalizeColor(const vec3_t in, vec3_t out);
 
 float RadiusFromBounds( const vec3_t mins, const vec3_t maxs );
 void ClearBounds( vec3_t mins, vec3_t maxs );
@@ -596,8 +596,8 @@ void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
 int32_t Q_log2(int32_t val);
 
 int32_t	Q_rand( int32_t *seed );
-float	Q_random( int32_t *seed );
-float	Q_crandom( int32_t *seed );
+double Q_random( int32_t *seed );
+double Q_crandom( int32_t *seed );
 
 #define random()	((rand () & 0x7fff) / ((float)0x7fff))
 #define crandom()	(2.0 * (random() - 0.5))
@@ -625,8 +625,8 @@ float AngleDelta ( float angle1, float angle2 );
 
 qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
 void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
-void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
-void RotateAroundDirection( vec3_t axis[3], float yaw );
+void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, double degrees);
+void RotateAroundDirection(vec3_t axis[3], double yaw);
 void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
 // perpendicular vector could be replaced by this
 
