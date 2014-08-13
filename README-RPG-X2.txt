@@ -21,38 +21,35 @@ parts of this mod (see Legal Notice).
 
 Compile Info:
 -------------
-The compile process of RPG-X2 is now integrated into the Makefile of rpgxEF.
-Compiling on linux/unix requires gcc, compiling on windows requires MinGw and 
-MSys (MSVC compiler is no longer supported).
+Each part (game, cgame, ui) has it's own Makefile in it's 
+folder.
 
 On Linux:
-- Go to the main folder of the rpgxEF git repository
-- Run make BUILD_SERVER=0 BUILD_CLIENT=0
+- Make sure you have installed Mysql client
+- just run make in the game, cgame, and/or, ui folder to 
+  build the shared libraries
+- make clean removes all compiled files (including the 
+  shared libraries)
 
 On Windows:
 - Install mingw and msys correctly
-- Go to the main folder of the rpgxEF git repository
-- Run make BUILD_SERVER=0 BUILD_CLIENT=0
+- start the msys console
+- just run make in the game, cgame, and/or, ui folder to 
+  build the shared libraries
+- make clean removes all compiled files (including the 
+  shared libraries)
 
 Cross Compiling for Windows:
-- Install the mingw cross compilers on your linux system
-- Go to the main folder of the rpgxEF git repository
-- Run cross-make-mingw.sh BUILD_SERVER=0 BUILD_CLIENT=0
+Not yet but hopefully soon.
 
 Mac OSX:
 Not yet but hopefully soon.
 
 Bug Reports and Patch/Feature Suggestions:
 --------------
-We have a bug report system set up at http://bugs.rpg-x.net
-If you see an error in the game, or if the game crashes,
-please let us know! Also if you fixed a bug in the code of 
-have coded a new feature feels free suggest us adding it
-there (please upload a *.diff file).
-
-Note: 
-As the UberGames bug tracker is down right now use
-http://bugs.hennecke-online.net instead.
+We are using GitHub for issues tracking (https://github.com/UberGames/rpgxEF/issues).
+You can also add Pull Requests on GitHub if you have solved an
+issues yourself.
 
 Contact:
 --------------
@@ -97,28 +94,6 @@ Lua License:
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************************/
 
-Original List Module License (list.h, list.c):
-----------------------------------------------
-/*
-Copyright (c) 2011 Zhehao Mao
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
 
 
 
