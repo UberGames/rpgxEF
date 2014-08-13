@@ -2776,7 +2776,7 @@ void G_Client_UpdateSoundZones(void) {
 	for( ; i < MAX_GENTITIES; i++) {
 		if((g_entities[i].type == ENT_TARGET_ZONE) && (g_entities[i].count == 3)) {
 			memset(&entlist, 0, sizeof(entlist));
-			count = trap_EntitiesInBox(g_entities[i].r.mins, g_entities[i].r.maxs, &entlist, MAX_GENTITIES);
+			count = trap_EntitiesInBox(g_entities[i].r.mins, g_entities[i].r.maxs, (int32_t*)&entlist, MAX_GENTITIES);
 
 			for(b = 0; b < count; b++) {
 				if(g_entities[entlist[b]].client != NULL) {
