@@ -694,6 +694,12 @@ KEYWORD [a-zA-Z]+[a-zA-Z0-9]*
 	yyextra->column++;
 	return LMT_SYMBOL;
 }
+"\." {
+	yyextra->type = LMT_SYMBOL;
+	yyextra->data.symbol = LSYM_POINT;
+	yyextra->column += 1;
+	return LMT_SYMBOL;
+}
 [ \t] {
 	yyextra->column++;
 	yyextra->type = LMT_IGNORE;
@@ -1068,6 +1074,50 @@ bgLexSymbol bgLex_textToSymbol(char* text) {
 
 	if(strcmp("false", text) == 0) {
 		return LSYM_FALSE;
+	}
+
+	if(strcmp("phaser", text) == 0) {
+		return LSYM_WCONF_PHASER;
+	}
+
+	if(strcmp("crifle", text) == 0) {
+		return LSYM_WCONF_CRIFLE;
+	}
+
+	if(strcmp("disruptor", text) == 0) {
+		return LSYM_WCONF_DISRUPTOR;
+	}
+
+	if(strcmp("grenade", text) == 0) {
+		return LSYM_WCONF_GRENADE;
+	}
+
+	if(strcmp("tr116", text) == 0) {
+		return LSYM_WCONF_TR116;
+	}
+
+	if(strcmp("quantum", text) == 0) {
+		return LSYM_WCONF_QUANTUM;
+	}
+
+	if(strcmp("hyperspanner", text) == 0) {
+		return LSYM_WCONF_HYPERSPANNER;
+	}
+
+	if(strcmp("damage", text) == 0) {
+		return LSYM_WCONF_DAMAGE;
+	}
+
+	if(strcmp("range", text) == 0) {
+		return LSYM_WCONF_RANGE;
+	}
+
+	if(strcmp("variation", text) == 0) {
+		return LSYM_WCONF_VARIATION;
+	}
+
+	if(strcmp("radius", text) == 0) {
+		return LSYM_WCONF_RADIUS;
 	}
 
 	return LSYM_UNKNOWN;
