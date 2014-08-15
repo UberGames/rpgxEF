@@ -3530,6 +3530,10 @@ bgLexSymbol bgLex_textToSymbol(char* text) {
 		return LSYM_WCONF_RADIUS;
 	}
 
+	if(strcmp("size", text) == 0) {
+		return LSYM_WCONF_SIZE;
+	}
+
 	return LSYM_UNKNOWN;
 }
 
