@@ -1124,6 +1124,18 @@ bgLexSymbol bgLex_textToSymbol(char* text) {
 		return LSYM_WCONF_SIZE;
 	}
 
+	if(strcmp("time", text) == 0) {
+		return LSYM_WCONF_TIME;
+	}
+
+	if(strcmp("velocity", text) == 0) {
+		return LSYM_WCONF_VELOCITY;
+	}
+
+	if(strcmp("splash", text) == 0) {
+		return LSYM_WCONF_SPLASH;
+	}
+
 	return LSYM_UNKNOWN;
 }
 

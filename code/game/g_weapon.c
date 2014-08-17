@@ -301,20 +301,344 @@ static qboolean G_Weapon_ParseWeaponConfig(bgLex* lexer) {
 			}
 			break;
 		case LSYM_WCONF_DISRUPTOR:
-
+			while (bgLex_lex(lexer) != 0) {
+				if (lexer->morphem.type != LMT_SYMBOL) {
+					G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+					G_LogFuncEnd();
+					return qfalse;
+				} else {
+					if (lexer->morphem.data.symbol == LSYM_WCONF_PRIMARY) {
+						bgLex_lex(lexer);
+						if (lexer->morphem.type != LMT_SYMBOL || lexer->morphem.data.symbol != LSYM_POINT) {
+							G_Logger(LL_ERROR, "Expected '.' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						bgLex_lex(lexer);
+						if (lexer->morphem.type != LMT_SYMBOL) {
+							G_Logger(LL_ERROR, "Unexpected token at weapons.cfg.%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						switch (lexer->morphem.data.symbol) {
+							case LSYM_WCONF_DAMAGE:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_INT) {
+									weaponConfig.disruptor.primary.damage = lexer->morphem.data.numInteger;
+								} else {
+									G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							case LSYM_WCONF_RANGE:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_DOUBLE) {
+									weaponConfig.disruptor.primary.range = lexer->morphem.data.numDouble;
+								} else {
+									G_Logger(LL_ERROR, "Expected double value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							default:
+								G_Logger(LL_ERROR, "Unexpected token at weapons.cfg.%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+								G_LogFuncEnd();
+								return qfalse;
+						}
+					} else if (lexer->morphem.data.symbol == LSYM_WCONF_SECONDARY) {
+						bgLex_lex(lexer);
+						if (lexer->morphem.type != LMT_SYMBOL || lexer->morphem.data.symbol != LSYM_POINT) {
+							G_Logger(LL_ERROR, "Expected '.' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						bgLex_lex(lexer);
+						if (lexer->morphem.type != LMT_SYMBOL) {
+							G_Logger(LL_ERROR, "Unexpected token at weapons.cfg.%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						switch (lexer->morphem.data.symbol) {
+							case LSYM_WCONF_DAMAGE:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_INT) {
+									weaponConfig.disruptor.secondary.damage = lexer->morphem.data.numInteger;
+								} else {
+									G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							case LSYM_WCONF_SIZE:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_INT) {
+									weaponConfig.disruptor.secondary.size = lexer->morphem.data.numInteger;
+								} else {
+									G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							default:
+								G_Logger(LL_ERROR, "Unexpected token at weapons.cfg.%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+								G_LogFuncEnd();
+								return qfalse;
+						}
+					} else {
+						G_Logger(LL_ERROR, "Expected 'primary' or 'secondary' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+						G_LogFuncEnd();
+						return qfalse;
+					}
+				}
+			}
 			break;
 		case LSYM_WCONF_GRENADE:
-
+			while (bgLex_lex(lexer) != 0) {
+				if (lexer->morphem.type != LMT_SYMBOL) {
+					G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+					G_LogFuncEnd();
+					return qfalse;
+				} else {
+					if (lexer->morphem.data.symbol == LSYM_WCONF_PRIMARY) {
+						bgLex_lex(lexer);
+						if (lexer->morphem.type != LMT_SYMBOL || lexer->morphem.data.symbol != LSYM_POINT) {
+							G_Logger(LL_ERROR, "Expected '.' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						bgLex_lex(lexer);
+						if (lexer->morphem.type != LMT_SYMBOL) {
+							G_Logger(LL_ERROR, "Unexpected token at weapons.cfg.%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						switch (lexer->morphem.data.symbol) {
+							case LSYM_WCONF_DAMAGE:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_INT) {
+									weaponConfig.grenade.primary.damage = lexer->morphem.data.numInteger;
+								} else {
+									G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							case LSYM_WCONF_SIZE:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_DOUBLE) {
+									weaponConfig.grenade.primary.size = lexer->morphem.data.numDouble;
+								} else {
+									G_Logger(LL_ERROR, "Expected double value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							case LSYM_WCONF_TIME:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_INT) {
+									weaponConfig.grenade.primary.time = lexer->morphem.data.numInteger;
+								} else {
+									G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							case LSYM_WCONF_VELOCITY:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_DOUBLE) {
+									weaponConfig.grenade.primary.velocity = lexer->morphem.data.numDouble;
+								} else {
+									G_Logger(LL_ERROR, "Expected double value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							case LSYM_WCONF_SPLASH:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_SYMBOL && lexer->morphem.data.symbol == LSYM_POINT) {
+									bgLex_lex(lexer);
+									if (lexer->morphem.type == LMT_SYMBOL) {
+										if (lexer->morphem.data.symbol == LSYM_WCONF_DAMAGE) {
+											bgLex_lex(lexer);
+											if (lexer->morphem.type == LMT_INT) {
+												weaponConfig.grenade.primary.splash.damage = lexer->morphem.data.numInteger;
+											} else {
+												G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+												G_LogFuncEnd();
+												return qfalse;
+											}
+										} else if(lexer->morphem.data.symbol == LSYM_WCONF_RADIUS) {
+											bgLex_lex(lexer);
+											if (lexer->morphem.type == LMT_INT) {
+												weaponConfig.grenade.primary.splash.radius = lexer->morphem.data.numInteger;
+											} else {
+												G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+												G_LogFuncEnd();
+												return qfalse;
+											}
+										} else {
+											G_Logger(LL_ERROR, "Expected 'damage' or 'radius' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+											G_LogFuncEnd();
+											return qfalse;
+										}
+									} else {
+										G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+										G_LogFuncEnd();
+										return qfalse;
+									}
+								} else {
+									G_Logger(LL_ERROR, "Expected '.' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							default:
+								G_Logger(LL_ERROR, "Unexpected token at weapons.cfg.%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+								G_LogFuncEnd();
+								return qfalse;
+						}
+					} else if (lexer->morphem.data.symbol == LSYM_WCONF_SECONDARY) {
+						bgLex_lex(lexer);
+						if (lexer->morphem.type != LMT_SYMBOL || lexer->morphem.data.symbol != LSYM_POINT) {
+							G_Logger(LL_ERROR, "Expected '.' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						bgLex_lex(lexer);
+						if (lexer->morphem.type != LMT_SYMBOL) {
+							G_Logger(LL_ERROR, "Unexpected token at weapons.cfg.%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						switch (lexer->morphem.data.symbol) {
+							case LSYM_WCONF_DAMAGE:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_INT) {
+									weaponConfig.grenade.secondary.damage = lexer->morphem.data.numInteger;
+								} else {
+									G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							case LSYM_WCONF_TIME:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_INT) {
+									weaponConfig.grenade.secondary.time = lexer->morphem.data.numInteger;
+								} else {
+									G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							case LSYM_WCONF_SPLASH:
+								bgLex_lex(lexer);
+								if (lexer->morphem.type == LMT_SYMBOL && lexer->morphem.data.symbol == LSYM_POINT) {
+									bgLex_lex(lexer);
+									if (lexer->morphem.type == LMT_SYMBOL) {
+										if (lexer->morphem.data.symbol == LSYM_WCONF_DAMAGE) {
+											bgLex_lex(lexer);
+											if (lexer->morphem.type == LMT_INT) {
+												weaponConfig.grenade.secondary.splash.damage = lexer->morphem.data.numInteger;
+											} else {
+												G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+												G_LogFuncEnd();
+												return qfalse;
+											}
+										} else if (lexer->morphem.data.symbol == LSYM_WCONF_RADIUS) {
+											bgLex_lex(lexer);
+											if (lexer->morphem.type == LMT_INT) {
+												weaponConfig.grenade.secondary.splash.radius = lexer->morphem.data.numInteger;
+											} else {
+												G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+												G_LogFuncEnd();
+												return qfalse;
+											}
+										} else {
+											G_Logger(LL_ERROR, "Expected 'damage' or 'radius' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+											G_LogFuncEnd();
+											return qfalse;
+										}
+									} else {
+										G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+										G_LogFuncEnd();
+										return qfalse;
+									}
+								} else {
+									G_Logger(LL_ERROR, "Expected '.' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+									G_LogFuncEnd();
+									return qfalse;
+								}
+								break;
+							default:
+								G_Logger(LL_ERROR, "Unexpected token at weapons.cfg.%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+								G_LogFuncEnd();
+								return qfalse;
+						}
+					} else {
+						G_Logger(LL_ERROR, "Expected 'primary' or 'secondary' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+						G_LogFuncEnd();
+						return qfalse;
+					}
+				}
+			}
 			break;
 
 		case LSYM_WCONF_HYPERSPANNER:
+			while (bgLex_lex(lexer) != 0) {
+				if (lexer->morphem.type != LMT_SYMBOL) {
+					G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+					G_LogFuncEnd();
+					return qfalse;
+				} else {
+					if (lexer->morphem.data.symbol == LSYM_WCONF_PRIMARY) {
 
+					} else if (lexer->morphem.data.symbol == LSYM_WCONF_SECONDARY) {
+
+					} else {
+						G_Logger(LL_ERROR, "Expected 'primary' or 'secondary' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+						G_LogFuncEnd();
+						return qfalse;
+					}
+				}
+			}
 			break;
 		case LSYM_WCONF_QUANTUM:
+			while (bgLex_lex(lexer) != 0) {
+				if (lexer->morphem.type != LMT_SYMBOL) {
+					G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+					G_LogFuncEnd();
+					return qfalse;
+				} else {
+					if (lexer->morphem.data.symbol == LSYM_WCONF_PRIMARY) {
 
+					} else if (lexer->morphem.data.symbol == LSYM_WCONF_SECONDARY) {
+
+					} else {
+						G_Logger(LL_ERROR, "Expected 'primary' or 'secondary' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+						G_LogFuncEnd();
+						return qfalse;
+					}
+				}
+			}
 			break;
 		case LSYM_WCONF_TR116:
+			while (bgLex_lex(lexer) != 0) {
+				if (lexer->morphem.type != LMT_SYMBOL) {
+					G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+					G_LogFuncEnd();
+					return qfalse;
+				} else {
+					if (lexer->morphem.data.symbol == LSYM_WCONF_PRIMARY) {
 
+					} else {
+						G_Logger(LL_ERROR, "Expected 'primary' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+						G_LogFuncEnd();
+						return qfalse;
+					}
+				}
+			}
 			break;
 		default:
 			G_LocLogger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
