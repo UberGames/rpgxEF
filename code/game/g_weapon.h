@@ -82,7 +82,7 @@ struct weaponConfigGrenade_s {
 
 struct weaponConfigTR116P_s {
 	int32_t damage;
-	int32_t range;
+	double range;
 };
 
 struct weaponConfigTR116_s {
