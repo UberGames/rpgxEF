@@ -3546,6 +3546,10 @@ bgLexSymbol bgLex_textToSymbol(char* text) {
 		return LSYM_WCONF_SPLASH;
 	}
 
+	if(strcmp("rate", text) == 0) {
+		return LSYM_WCONF_RATE;
+	}
+
 	return LSYM_UNKNOWN;
 }
 
