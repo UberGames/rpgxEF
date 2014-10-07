@@ -553,7 +553,113 @@ static qboolean G_Weapon_ParseConfigGrenade(bgLex* lexer) {
 }
 
 static qboolean G_Weapon_ParseConfigDisruptor(bgLex* lexer) {
-	return qfalse;
+	G_LogFuncBegin();
+
+	G_Assert(lexer, qfalse);
+
+	bgLex_lex(lexer);
+	if (lexer->morphem.type == LMT_SYMBOL && lexer->morphem.data.symbol == LSYM_POINT) {
+		bgLex_lex(lexer);
+		if (lexer->morphem.type == LMT_SYMBOL) {
+			if (lexer->morphem.data.symbol == LSYM_WCONF_PRIMARY) {
+				bgLex_lex(lexer);
+				if (lexer->morphem.type != LMT_SYMBOL || lexer->morphem.data.symbol != LSYM_POINT) {
+					G_Logger(LL_ERROR, "Expected '.' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+					G_LogFuncEnd();
+					return qfalse;
+				}
+				bgLex_lex(lexer);
+				if (lexer->morphem.type != LMT_SYMBOL) {
+					G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+					G_LogFuncEnd();
+					return qfalse;
+				}
+				switch (lexer->morphem.data.symbol) {
+					case LSYM_WCONF_DAMAGE:
+						bgLex_lex(lexer);
+						if (lexer->morphem.type == LMT_INT) {
+							weaponConfig.disruptor.primary.damage = lexer->morphem.data.numInteger;
+							G_LogFuncEnd();
+							return qtrue;
+						} else {
+							G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						break;
+					case LSYM_WCONF_RANGE:
+						if (lexer->morphem.type == LMT_INT) {
+							weaponConfig.disruptor.primary.range = lexer->morphem.data.numInteger;
+							G_LogFuncEnd();
+							return qtrue;
+						} else {
+							G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						break;
+					default:
+						G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+						G_LogFuncEnd();
+						return qfalse;
+				}
+			} else if (lexer->morphem.data.symbol == LSYM_WCONF_SECONDARY) {
+				bgLex_lex(lexer);
+				if (lexer->morphem.type != LMT_SYMBOL || lexer->morphem.data.symbol != LSYM_POINT) {
+					G_Logger(LL_ERROR, "Expected '.' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+					G_LogFuncEnd();
+					return qfalse;
+				}
+				bgLex_lex(lexer);
+				if (lexer->morphem.type != LMT_SYMBOL) {
+					G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+					G_LogFuncEnd();
+					return qfalse;
+				}
+				switch (lexer->morphem.data.symbol) {
+					case LSYM_WCONF_DAMAGE:
+						bgLex_lex(lexer);
+						if (lexer->morphem.type == LMT_INT) {
+							weaponConfig.disruptor.secondary.damage = lexer->morphem.data.numInteger;
+							G_LogFuncEnd();
+							return qtrue;
+						} else {
+							G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						break;
+					case LSYM_WCONF_SIZE:
+						if (lexer->morphem.type == LMT_INT) {
+							weaponConfig.disruptor.secondary.size = lexer->morphem.data.numInteger;
+							G_LogFuncEnd();
+							return qtrue;
+						} else {
+							G_Logger(LL_ERROR, "Expected integer value at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+							G_LogFuncEnd();
+							return qfalse;
+						}
+						break;
+					default:
+						G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+						G_LogFuncEnd();
+						return qfalse;
+				}
+			} else {
+				G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+				G_LogFuncEnd();
+				return qfalse;
+			}
+		} else {
+			G_Logger(LL_ERROR, "Unexpected token at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+			G_LogFuncEnd();
+			return qfalse;
+		}
+	} else {
+		G_Logger(LL_ERROR, "Expected '.' at weapons.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
+		G_LogFuncEnd();
+		return qfalse;
+	}
 }
 
 static qboolean G_Weapon_ParseConfigHyperspanner(bgLex* lexer) {
