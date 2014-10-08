@@ -1140,6 +1140,14 @@ bgLexSymbol bgLex_textToSymbol(char* text) {
 		return LSYM_WCONF_RATE;
 	}
 
+	if(strcmp("think", text) == 0) {
+		return LSYM_WCONF_THINK;
+	}
+
+	if(strcmp("distance", text) == 0) {
+		return LSYM_WCONF_DISTANCE;
+	}
+
 	return LSYM_UNKNOWN;
 }
 
