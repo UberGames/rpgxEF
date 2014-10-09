@@ -1210,38 +1210,6 @@ void G_Weapon_LoadConfig(void) {
 
 #define DMG_VAR	(flrandom(0.8,1.2))
 
-/* Phaser */
-/* I'll keep this comment just because it's funny lol :D */
-/* RPG-X: TiM - Increased to a standard 0.5 second
- * burst - Phenix GOING DOWN - TiM GOING UP we had
- * complaints when this was put down :P */
-#define	PHASER_DAMAGE				rpg_phaserDamage.integer
-#define PHASER_ALT_RADIUS			80 			 /* RPG-X: TiM - Increased to a near instant kill */
-
-/* Compression Rifle */
-#define	CRIFLE_DAMAGE				rpg_rifleDamage.integer
-#define CRIFLE_ALTDAMAGE			rpg_rifleAltDamage.integer
-
-/* Stasis Weapon */
-#define STASIS_DAMAGE				rpg_disruptorDamage.integer
-
-/* Grenade Launcher */
-#define GRENADE_DAMAGE				rpg_grenadeDamage.integer
-#define GRENADE_SPLASH_RAD			190
-#define GRENADE_SPLASH_DAM			100
-#define GRENADE_ALT_DAMAGE			rpg_grenadeAltDamage.integer
-
-/* Tetrion Disruptor */
-#define TETRION_DAMAGE				rpg_tr116Damage.integer
-
-/* Quantum Burst */
-#define QUANTUM_DAMAGE				rpg_photonDamage.integer	
-#define QUANTUM_SPLASH_DAM			rpg_photonDamage.integer
-#define QUANTUM_SPLASH_RAD			160
-#define QUANTUM_ALT_DAMAGE			rpg_photonAltDamage.integer	
-#define QUANTUM_ALT_SPLASH_DAM		rpg_photonAltDamage.integer
-#define QUANTUM_ALT_SPLASH_RAD		80
-
 void G_Weapon_SnapVectorTowards(vec3_t v, vec3_t to) {
 	int32_t i;
 
@@ -1272,10 +1240,6 @@ PLAYER WEAPONS
 HYPERSPANNER
 ----------------------------------------------
 */
-
-
-#define HYPERSPANNER_RATE			2
-#define HYPERSPANNER_ALT_RATE		4
 
 /**
  * @brief Handles weapon fire of the Hyperspanner.
@@ -1367,9 +1331,9 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 
 	/* call G_Repair */
 	if (alt_fire) {
-		G_Combat_Repair(ent, nearest, HYPERSPANNER_ALT_RATE * modifier);
+		G_Combat_Repair(ent, nearest, weaponConfig.hyperspanner.secondary.rate * modifier);
 	} else {
-		G_Combat_Repair(ent, nearest, HYPERSPANNER_RATE * modifier);
+		G_Combat_Repair(ent, nearest, weaponConfig.hyperspanner.primary.rate * modifier);
 	}
 
 	validEnts.clear(&validEnts);
@@ -1383,12 +1347,8 @@ PHASER
 ----------------------------------------------
 */
 
-#define MAXRANGE_PHASER				2048 /* This is the same as the range MAX_BEAM_RANGE	2048 */
 #define NUM_PHASER_TRACES 			3
-#define BEAM_VARIATION				6
 #define PHASER_POINT_BLANK			96
-#define PHASER_POINT_BLANK_FRAC		((float)PHASER_POINT_BLANK / (float)MAXRANGE_PHASER)
-
 /**
  * @brief Handles weapon fire of the phaser.
  * @param ent the player
@@ -1402,16 +1362,19 @@ static void WP_FirePhaser(gentity_t* ent, qboolean alt_fire) {
 	int32_t		trEnts[NUM_PHASER_TRACES];
 	int32_t		i = 0;
 	int32_t		damage = 0;
+	int32_t		variation = alt_fire ? weaponConfig.phaser.secondary.variation : weaponConfig.phaser.primary.variation;
 	double		trEntFraction[NUM_PHASER_TRACES];
+	double		maxRange = alt_fire ? weaponConfig.phaser.secondary.range : weaponConfig.phaser.primary.range;
+	double		pointBlangFrac = (double)PHASER_POINT_BLANK / maxRange;
 
 	G_LogFuncBegin();
 
 	G_Assert(ent, (void)0);
 
-	VectorMA(muzzle, MAXRANGE_PHASER, forward, end);
+	VectorMA(muzzle, maxRange, forward, end);
 	/* Add a subtle variation to the beam weapon's endpoint */
 	for (i = 0; i < 3; i++) {
-		end[i] += crandom() * BEAM_VARIATION;
+		end[i] += crandom() * variation;
 	}
 
 	for (i = 0; i < NUM_PHASER_TRACES; i++) {
@@ -1462,12 +1425,16 @@ static void WP_FirePhaser(gentity_t* ent, qboolean alt_fire) {
 		}
 
 		if (traceEnt->takedamage && ((rpg_dmgFlags.integer & 1) != 0)) {
-			/*damage = (float)PHASER_DAMAGE*DMG_VAR*s_quadFactor;*/ /* No variance on phaser */
-			damage = PHASER_DAMAGE;
+			/*damage = (float)weaponConfig.phaser.primary.damage*DMG_VAR*s_quadFactor;*/ /* No variance on phaser */
+			if (alt_fire) {
+				damage = weaponConfig.phaser.secondary.damage;
+			} else {
+				damage = weaponConfig.phaser.primary.damage;
+			}
 
-			if (trEntFraction[i] <= PHASER_POINT_BLANK_FRAC) {
+			if (trEntFraction[i] <= pointBlangFrac) {
 				/* Point blank!  Do up to double damage. */
-				damage += damage * (1.0 - (trEntFraction[i] / PHASER_POINT_BLANK_FRAC));
+				damage += damage * (1.0 - (trEntFraction[i] / pointBlangFrac));
 			} else {
 				/* Normal range */
 				damage -= (int32_t)(trEntFraction[i] * 5.0);
@@ -1500,7 +1467,6 @@ COMPRESSION RIFLE
 */
 
 #define MAXRANGE_CRIFLE		8192
-#define CRIFLE_SIZE			1  /* RPG-X | Marcin | 04/12/2008 */
 
 /**
  * @brief Fires a new compression rifle bullet.
@@ -1531,7 +1497,7 @@ static void FirePrifleBullet(gentity_t* ent, vec3_t start, vec3_t dir) {
 	bolt->count = 0;
 
 	if ((rpg_dmgFlags.integer & 2) != 0) {
-		bolt->damage = CRIFLE_DAMAGE * DMG_VAR;
+		bolt->damage = weaponConfig.crifle.primary.damage * DMG_VAR;
 	} else {
 		bolt->damage = 0;
 	}
@@ -1542,8 +1508,8 @@ static void FirePrifleBullet(gentity_t* ent, vec3_t start, vec3_t dir) {
 	bolt->clipmask = MASK_SHOT;
 
 	/* Set the size of the missile up */
-	VectorSet(bolt->r.maxs, CRIFLE_SIZE >> 1, CRIFLE_SIZE, CRIFLE_SIZE >> 1);
-	VectorSet(bolt->r.mins, -CRIFLE_SIZE >> 1, -CRIFLE_SIZE, -CRIFLE_SIZE >> 1);
+	VectorSet(bolt->r.maxs, weaponConfig.crifle.secondary.size >> 1, weaponConfig.crifle.secondary.size, weaponConfig.crifle.secondary.size >> 1);
+	VectorSet(bolt->r.mins, -weaponConfig.crifle.secondary.size >> 1, -weaponConfig.crifle.secondary.size, -weaponConfig.crifle.secondary.size >> 1);
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - 10; 			/* move a bit on the very first frame */
@@ -1592,8 +1558,9 @@ static void WP_FireCompressionRifle(gentity_t* ent, qboolean alt_fire) {
 		vec3_t		end = { 0, 0, 0 };
 		gentity_t*  traceEnt = NULL;
 		int32_t		damage = 0;
+		double		pointBlangFrac = (double)PHASER_POINT_BLANK / weaponConfig.crifle.primary.range;
 
-		VectorMA(muzzle, MAXRANGE_PHASER, forward, end);
+		VectorMA(muzzle, weaponConfig.crifle.primary.range, forward, end);
 
 		/* Find out who we've hit */
 		memset(&tr, 0, sizeof(trace_t));
@@ -1609,11 +1576,11 @@ static void WP_FireCompressionRifle(gentity_t* ent, qboolean alt_fire) {
 		G_Assert(traceEnt, (void)0);
 
 		if (traceEnt->takedamage && ((rpg_dmgFlags.integer & 2) != 0)) {
-			damage = (double)PHASER_DAMAGE;
+			damage = weaponConfig.crifle.secondary.damage;
 
-			if (tr.fraction <= PHASER_POINT_BLANK_FRAC) {
+			if (tr.fraction <= pointBlangFrac) {
 				/* Point blank!  Do up to double damage. */
-				damage += damage * (1.0 - (tr.fraction / PHASER_POINT_BLANK_FRAC));
+				damage += damage * (1.0 - (tr.fraction / pointBlangFrac));
 			} else {	/* Normal range */
 				damage -= (int32_t)(tr.fraction * 5.0);
 			}
@@ -1630,19 +1597,9 @@ static void WP_FireCompressionRifle(gentity_t* ent, qboolean alt_fire) {
 
 /*
 ----------------------------------------------
-SCAVENGER
-----------------------------------------------
-*/
-#define SCAV_SIZE		3
-#define SCAV_ALT_SIZE	6
-
-/*
-----------------------------------------------
 STASIS
 ----------------------------------------------
 */
-
-#define STASIS_MAIN_MISSILE_BIG		1
 
 /**
  * \brief Fires a disruptor missile.
@@ -1675,7 +1632,7 @@ static void FireDisruptorMissile(gentity_t* ent, vec3_t origin, vec3_t dir, int3
 	bolt->parent = ent;
 
 	if ((rpg_dmgFlags.integer & 32) != 0) {
-		bolt->damage = STASIS_DAMAGE*DMG_VAR;
+		bolt->damage = weaponConfig.disruptor.secondary.damage * DMG_VAR;
 	} else {
 		bolt->damage = 0;
 	}
@@ -1731,8 +1688,9 @@ static void WP_FireDisruptor(gentity_t* ent, qboolean alt_fire) {
 		vec3_t		end = { 0, 0, 0 };
 		gentity_t*	traceEnt = NULL;
 		int32_t		damage = 0;
+		double		pointBlangFrac = (double)PHASER_POINT_BLANK / weaponConfig.disruptor.primary.range;
 
-		VectorMA(muzzle, MAXRANGE_PHASER, forward, end);
+		VectorMA(muzzle, weaponConfig.disruptor.primary.range, forward, end);
 
 		/* Find out who we've hit */
 		memset(&tr, 0, sizeof(trace_t));
@@ -1749,11 +1707,11 @@ static void WP_FireDisruptor(gentity_t* ent, qboolean alt_fire) {
 		G_Assert(traceEnt, (void)0);
 
 		if (traceEnt->takedamage && ((rpg_dmgFlags.integer & 32) != 0)) {
-			damage = (double)PHASER_DAMAGE;
+			damage = weaponConfig.disruptor.primary.damage;
 
-			if (tr.fraction <= PHASER_POINT_BLANK_FRAC) {
+			if (tr.fraction <= pointBlangFrac) {
 				/* Point blank!  Do up to double damage. */
-				damage += damage * (1.0 - (tr.fraction / PHASER_POINT_BLANK_FRAC));
+				damage += damage * (1.0 - (tr.fraction / pointBlangFrac));
 			} else {	/* Normal range */
 				damage -= (int32_t)(tr.fraction*5.0);
 			}
@@ -1764,7 +1722,7 @@ static void WP_FireDisruptor(gentity_t* ent, qboolean alt_fire) {
 			}
 		}
 	} else {
-		FireDisruptorMissile(ent, muzzle, forward, STASIS_MAIN_MISSILE_BIG);
+		FireDisruptorMissile(ent, muzzle, forward, weaponConfig.disruptor.secondary.size);
 	}
 
 	G_LogWeaponFire(ent->s.number, WP_10);
@@ -1777,11 +1735,6 @@ static void WP_FireDisruptor(gentity_t* ent, qboolean alt_fire) {
 GRENADE LAUNCHER
 ----------------------------------------------
 */
-
-#define GRENADE_VELOCITY		1000
-#define GRENADE_TIME			2000
-#define GRENADE_SIZE			4
-#define GRENADE_ALT_TIME		2500
 
 /**
  * \brief Exploding a grenade.
@@ -1929,8 +1882,8 @@ static void WP_FireGrenade(gentity_t* ent, qboolean alt_fire) {
 				/* now make the new one */
 				grenade->classname = "tripwire";
 				if ((rpg_dmgFlags.integer & 8) != 0) {
-					grenade->splashDamage = GRENADE_SPLASH_DAM * 2;
-					grenade->splashRadius = GRENADE_SPLASH_RAD * 2;
+					grenade->splashDamage = weaponConfig.grenade.secondary.splash.damage * 2;
+					grenade->splashRadius = weaponConfig.grenade.secondary.splash.radius * 2;
 				} else {
 					grenade->splashDamage = 0;
 					grenade->splashRadius = 0;
@@ -1946,21 +1899,21 @@ static void WP_FireGrenade(gentity_t* ent, qboolean alt_fire) {
 				grenade->classname = "grenade_alt_projectile";
 
 				if ((rpg_dmgFlags.integer & 8) != 0) {
-					grenade->splashDamage = GRENADE_SPLASH_DAM;
-					grenade->splashRadius = GRENADE_SPLASH_RAD;
+					grenade->splashDamage = weaponConfig.grenade.secondary.splash.damage;
+					grenade->splashRadius = weaponConfig.grenade.secondary.splash.radius;
 				} else {
 					grenade->splashDamage = 0;
 					grenade->splashRadius = 0;
 				}
 
 				grenade->s.pos.trType = TR_GRAVITY;
-				grenade->nextthink = level.time + GRENADE_ALT_TIME; /* How long 'til she blows */
+				grenade->nextthink = level.time + weaponConfig.grenade.secondary.time; /* How long 'til she blows */
 			}
 			grenade->think = grenadeSpewShrapnel;
 			grenade->s.eFlags |= EF_MISSILE_STICK;
 			VectorScale(dir, 1000, grenade->s.pos.trDelta);
 
-			grenade->damage = (rpg_dmgFlags.integer & 8) ? (GRENADE_ALT_DAMAGE*DMG_VAR) : (grenade->damage = 0);
+			grenade->damage = (rpg_dmgFlags.integer & 8) ? (weaponConfig.grenade.secondary.damage * DMG_VAR) : (grenade->damage = 0);
 			grenade->methodOfDeath = MOD_GRENADE_ALT;
 			grenade->splashMethodOfDeath = MOD_GRENADE_ALT_SPLASH;
 			grenade->s.eType = ET_ALT_MISSILE;
@@ -1971,8 +1924,8 @@ static void WP_FireGrenade(gentity_t* ent, qboolean alt_fire) {
 			grenade->r.ownerNum = ent->s.number;
 			grenade->parent = ent;
 
-			VectorSet(grenade->r.mins, -GRENADE_SIZE, -GRENADE_SIZE, -GRENADE_SIZE);
-			VectorSet(grenade->r.maxs, GRENADE_SIZE, GRENADE_SIZE, GRENADE_SIZE);
+			VectorSet(grenade->r.mins, -weaponConfig.grenade.primary.size, -weaponConfig.grenade.primary.size, -weaponConfig.grenade.primary.size);
+			VectorSet(grenade->r.maxs, weaponConfig.grenade.primary.size, weaponConfig.grenade.primary.size, weaponConfig.grenade.primary.size);
 
 			grenade->clipmask = MASK_SHOT;
 
@@ -1987,7 +1940,7 @@ static void WP_FireGrenade(gentity_t* ent, qboolean alt_fire) {
 		} else {
 			/* RPG-X: RedTechie - Check to see if there admin if so grant them effects gun */
 			if (G_Client_IsAdmin(ent) && (rpg_effectsgun.integer == 1)) {
-				VectorMA(muzzle, MAXRANGE_CRIFLE, forward, end);
+				VectorMA(muzzle, MAXRANGE_CRIFLE, forward, end); // TODO: add range to waepons config
 				trap_Trace(&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
 
 				/*
@@ -2113,16 +2066,16 @@ static void WP_FireGrenade(gentity_t* ent, qboolean alt_fire) {
 				/* kef -- make sure count is 0 so it won't get its bounciness removed like the tetrion projectile */
 				grenade->count = 0;
 				grenade->classname = "grenade_projectile";
-				grenade->nextthink = level.time + GRENADE_TIME; /* How long 'til she blows */
+				grenade->nextthink = level.time + weaponConfig.grenade.primary.time; /* How long 'til she blows */
 				grenade->think = grenadeExplode;
 				grenade->s.eFlags |= EF_BOUNCE_HALF;
-				VectorScale(dir, GRENADE_VELOCITY, grenade->s.pos.trDelta);
+				VectorScale(dir, weaponConfig.grenade.primary.velocity, grenade->s.pos.trDelta);
 				grenade->s.pos.trType = TR_GRAVITY;
 
 				if ((rpg_dmgFlags.integer & 8) != 0) {
-					grenade->damage = GRENADE_DAMAGE*DMG_VAR;
-					grenade->splashDamage = GRENADE_SPLASH_DAM;
-					grenade->splashRadius = GRENADE_SPLASH_RAD;
+					grenade->damage = weaponConfig.grenade.primary.damage * DMG_VAR;
+					grenade->splashDamage = weaponConfig.grenade.primary.splash.damage;
+					grenade->splashRadius = weaponConfig.grenade.primary.splash.radius;
 				} else {
 					grenade->damage = 0;
 					grenade->splashDamage = 0;
@@ -2138,8 +2091,8 @@ static void WP_FireGrenade(gentity_t* ent, qboolean alt_fire) {
 				grenade->r.ownerNum = ent->s.number;
 				grenade->parent = ent;
 
-				VectorSet(grenade->r.mins, -GRENADE_SIZE, -GRENADE_SIZE, -GRENADE_SIZE);
-				VectorSet(grenade->r.maxs, GRENADE_SIZE, GRENADE_SIZE, GRENADE_SIZE);
+				VectorSet(grenade->r.mins, -weaponConfig.grenade.primary.size, -weaponConfig.grenade.primary.size, -weaponConfig.grenade.primary.size);
+				VectorSet(grenade->r.maxs, weaponConfig.grenade.primary.size, weaponConfig.grenade.primary.size, weaponConfig.grenade.primary.size);
 
 				grenade->clipmask = MASK_SHOT;
 
@@ -2169,9 +2122,6 @@ TETRION
 ----------------------------------------------
 */
 
-#define TETRION_ALT_SIZE	6
-
-#define MAX_TR_116_DIST		8192
 #define MAX_TRACES			24 /* Number of traces thru walls we'll do before we give up lol */
 
 /**
@@ -2194,7 +2144,7 @@ static void WP_FireTR116Bullet(gentity_t* ent, vec3_t start, vec3_t dir) {
 	G_Assert(ent, (void)0);
 
 	VectorCopy(start, traceFrom);
-	VectorMA(traceFrom, MAX_TR_116_DIST, dir, end); /* set trace end point */
+	VectorMA(traceFrom, weaponConfig.tr116.primary.range, dir, end); /* set trace end point */
 
 	memset(&tr, 0, sizeof(trace_t));
 	trap_Trace(&tr, traceFrom, NULL, NULL, end, ent->s.number, CONTENTS_BODY); /* MASK_SHOT - TiM - Goes thru everything but players */
@@ -2206,7 +2156,7 @@ static void WP_FireTR116Bullet(gentity_t* ent, vec3_t start, vec3_t dir) {
 		G_Assert(traceEnt, (void)0);
 
 		if (traceEnt->takedamage && (rpg_dmgFlags.integer & 4) != 0) {
-			G_Combat_Damage(traceEnt, ent, ent, dir, tr.endpos, TETRION_DAMAGE, 0, MOD_TETRION_ALT);
+			G_Combat_Damage(traceEnt, ent, ent, dir, tr.endpos, weaponConfig.tr116.primary.damage, 0, MOD_TETRION_ALT);
 		}
 	}
 
@@ -2246,11 +2196,6 @@ QUANTUM BURST
 ----------------------------------------------
 */
 
-#define QUANTUM_SIZE			1 
-#define QUANTUM_ALT_THINK_TIME	300
-#define QUANTUM_ALT_SEARCH_TIME	100
-#define QUANTUM_ALT_SEARCH_DIST	4096
-
 /**
  * \brief Fires a Quantum Burst.
  *
@@ -2282,9 +2227,9 @@ static void FireQuantumBurst(gentity_t* ent, vec3_t start, vec3_t dir) {
 	bolt->parent = ent;
 
 	if ((rpg_dmgFlags.integer & 16) != 0) {
-		bolt->damage = QUANTUM_DAMAGE*DMG_VAR;
-		bolt->splashDamage = QUANTUM_SPLASH_DAM;
-		bolt->splashRadius = QUANTUM_SPLASH_RAD;
+		bolt->damage = weaponConfig.quantum.primary.damage * DMG_VAR;
+		bolt->splashDamage = weaponConfig.quantum.primary.splash.damage;
+		bolt->splashRadius = weaponConfig.quantum.primary.splash.radius;
 	} else {
 		bolt->damage = 0;
 		bolt->splashDamage = 0;
@@ -2295,15 +2240,15 @@ static void FireQuantumBurst(gentity_t* ent, vec3_t start, vec3_t dir) {
 	bolt->splashMethodOfDeath = MOD_QUANTUM_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 
-	VectorSet(bolt->r.mins, -QUANTUM_SIZE, -QUANTUM_SIZE, -QUANTUM_SIZE);
-	VectorSet(bolt->r.maxs, QUANTUM_SIZE, QUANTUM_SIZE, QUANTUM_SIZE);
+	VectorSet(bolt->r.mins, -weaponConfig.quantum.primary.size, -weaponConfig.quantum.primary.size, -weaponConfig.quantum.primary.size);
+	VectorSet(bolt->r.maxs, weaponConfig.quantum.primary.size, weaponConfig.quantum.primary.size, weaponConfig.quantum.primary.size);
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time;		/* move a bit on the very first frame */
 	VectorCopy(start, bolt->s.pos.trBase);
 	SnapVector(bolt->s.pos.trBase);		/* save net bandwidth */
 
-	VectorScale(dir, rpg_photonSpeed.integer, bolt->s.pos.trDelta);
+	VectorScale(dir, rpg_photonSpeed.integer, bolt->s.pos.trDelta); // TODO: add speed to weapon config
 
 	SnapVector(bolt->s.pos.trDelta);		/* save net bandwidth */
 	VectorCopy(start, bolt->r.currentOrigin);
@@ -2342,7 +2287,7 @@ static qboolean SearchTarget(gentity_t* ent, vec3_t start, vec3_t end) {
 		SnapVector(ent->s.pos.trDelta);	/* save net bandwidth */
 		VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);
 		ent->s.pos.trTime = level.time;
-		ent->nextthink = level.time + QUANTUM_ALT_THINK_TIME;
+		ent->nextthink = level.time + weaponConfig.quantum.secondary.think.time;
 
 		G_LogFuncEnd();
 		return qtrue;
@@ -2353,7 +2298,7 @@ static qboolean SearchTarget(gentity_t* ent, vec3_t start, vec3_t end) {
 }
 
 /**
- * @brief Alt quantum burst projectile think functiom.
+ * @brief Alt quantum burst projectile think function.
  * @param ent the projectile
  */
 static void WP_QuantumAltThink(gentity_t* ent) {
@@ -2429,16 +2374,16 @@ static void WP_QuantumAltThink(gentity_t* ent) {
 		ent->s.pos.trTime = level.time;
 
 		/* Home at a reduced frequency. */
-		ent->nextthink = level.time + QUANTUM_ALT_THINK_TIME;	/* Nothing at all spectacular happened, continue. */
+		ent->nextthink = level.time + weaponConfig.quantum.secondary.think.time;	/* Nothing at all spectacular happened, continue. */
 	} else {	/* Search in front of the missile for targets. */
 		VectorCopy(ent->r.currentOrigin, start);
 		CrossProduct(ent->movedir, lup, lright);
 
 		/* Search straight ahead. */
-		VectorMA(start, QUANTUM_ALT_SEARCH_DIST, ent->movedir, search);
+		VectorMA(start, weaponConfig.quantum.secondary.think.search.distance, ent->movedir, search);
 
 		/* Add some small randomness to the search Z height, to give a bit of variation to where we are searching. */
-		search[2] += flrandom(-QUANTUM_ALT_SEARCH_DIST*0.075, QUANTUM_ALT_SEARCH_DIST*0.075);
+		search[2] += flrandom(-weaponConfig.quantum.secondary.think.search.distance * 0.075, weaponConfig.quantum.secondary.think.search.distance * 0.075);
 
 		if (SearchTarget(ent, start, search)) {
 			G_Logger(LL_DEBUG, "no valid entity found\n");
@@ -2447,7 +2392,7 @@ static void WP_QuantumAltThink(gentity_t* ent) {
 		}
 
 		/* Search to the right. */
-		VectorMA(search, QUANTUM_ALT_SEARCH_DIST*0.1, lright, search);
+		VectorMA(search, weaponConfig.quantum.secondary.think.search.distance * 0.1, lright, search);
 		if (SearchTarget(ent, start, search)) {
 			G_Logger(LL_DEBUG, "no valid entity found\n");
 			G_LogFuncEnd();
@@ -2455,7 +2400,7 @@ static void WP_QuantumAltThink(gentity_t* ent) {
 		}
 
 		/* Search to the left. */
-		VectorMA(search, -QUANTUM_ALT_SEARCH_DIST*0.2, lright, search);
+		VectorMA(search, -weaponConfig.quantum.secondary.think.search.distance * 0.2, lright, search);
 		if (SearchTarget(ent, start, search)) {
 			G_Logger(LL_DEBUG, "no valid entity found\n");
 			G_LogFuncEnd();
@@ -2463,7 +2408,7 @@ static void WP_QuantumAltThink(gentity_t* ent) {
 		}
 
 		/* Search at a higher rate than correction. */
-		ent->nextthink = level.time + QUANTUM_ALT_SEARCH_TIME;	/* Nothing at all spectacular happened, continue. */
+		ent->nextthink = level.time + weaponConfig.quantum.secondary.think.search.time;	/* Nothing at all spectacular happened, continue. */
 
 	}
 
@@ -2501,9 +2446,9 @@ static void FireQuantumBurstAlt(gentity_t* ent, vec3_t start, vec3_t dir) {
 	bolt->s.eFlags |= EF_ALT_FIRING;
 
 	if ((rpg_dmgFlags.integer & 16) != 0) {
-		bolt->damage = QUANTUM_ALT_DAMAGE*DMG_VAR;
-		bolt->splashDamage = QUANTUM_ALT_SPLASH_DAM;
-		bolt->splashRadius = QUANTUM_ALT_SPLASH_RAD;
+		bolt->damage = weaponConfig.quantum.secondary.damage * DMG_VAR;
+		bolt->splashDamage = weaponConfig.quantum.secondary.splash.damage;
+		bolt->splashRadius = weaponConfig.quantum.secondary.splash.radius;
 	} else {
 		bolt->damage = 0;
 		bolt->splashDamage = 0;
@@ -2514,8 +2459,8 @@ static void FireQuantumBurstAlt(gentity_t* ent, vec3_t start, vec3_t dir) {
 	bolt->splashMethodOfDeath = MOD_QUANTUM_ALT_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 
-	VectorSet(bolt->r.mins, -QUANTUM_SIZE, -QUANTUM_SIZE, -QUANTUM_SIZE);
-	VectorSet(bolt->r.maxs, QUANTUM_SIZE, QUANTUM_SIZE, QUANTUM_SIZE);
+	VectorSet(bolt->r.mins, -weaponConfig.quantum.secondary.size, -weaponConfig.quantum.secondary.size, -weaponConfig.quantum.secondary.size);
+	VectorSet(bolt->r.maxs, weaponConfig.quantum.secondary.size, weaponConfig.quantum.secondary.size, weaponConfig.quantum.secondary.size);
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time;		/* move a bit on the very first frame */
@@ -2681,54 +2626,60 @@ static vec3_t WP_MuzzlePoint[WP_NUM_WEAPONS] =
 	/*	{25,	7,			-10	},*/	/* WP_7 */
 };
 
+static double G_Weapon_ShotSize(int32_t wp_num) {
+	switch (wp_num) {
+		case WP_7:
+			return 6; // TODO: move to weapons config?
+		case WP_8:
+			return weaponConfig.grenade.primary.size;
+		case WP_9:
+			return weaponConfig.quantum.primary.size;
+		case WP_10:
+			return 3; // TODO: does this still make any sense?
+		case WP_11:
+		case WP_12:
+		case WP_13:
+		case WP_14:
+		case WP_15:
+		case WP_0:
+		case WP_1:
+		case WP_2:
+		case WP_3:
+		case WP_4:
+		case WP_5:
+		case WP_6:
+		default:
+			return 0;
+	}
+}
 
-/**
- * @brief Table containing the size of each weapons projectiles.
- */
-static double WP_ShotSize[WP_NUM_WEAPONS] =
-{
-	0,				/* WP_0, */
-	0,				/* WP_5, */
-	0,				/* WP_6, */
-	0,				/* WP_1, */
-	SCAV_SIZE,			/* WP_4, */
-	STASIS_MAIN_MISSILE_BIG * 3,	/* WP_10, */
-	GRENADE_SIZE,			/* WP_8, */
-	6,				/* WP_7, */
-	QUANTUM_SIZE,			/* WP_9, */
-	0,				/* WP_13, */
-	0,				/* WP_12, */
-	0,				/* WP_14 */
-	0,				/* WP_11 */
-	0,				/* WP_2, */
-	0,				/* WP_3, */
-	0,				/* WP_15, */
-	/*	0, */				/* WP_7 */
-};
-
-/**
- * @brief Table containing the size of each weapons alt projectiles.
- */
-static double WP_ShotAltSize[WP_NUM_WEAPONS] =
-{
-	0,				/* WP_0, */
-	PHASER_ALT_RADIUS,		/* WP_5, */
-	0,				/* WP_6, */
-	0,				/* WP_1, */
-	SCAV_ALT_SIZE,			/* WP_4, */
-	STASIS_MAIN_MISSILE_BIG * 3,	/* WP_10, */
-	GRENADE_SIZE,			/* WP_8, */
-	TETRION_ALT_SIZE,		/* WP_7, */
-	QUANTUM_SIZE,			/* WP_9, */
-	0,				/* WP_13, */
-	0,				/* WP_12, */
-	0,				/* WP_14 */
-	0,				/* WP_11 */
-	0,				/* WP_2 */
-	0,				/* WP_3, */
-	0,				/* WP_15, */
-	/*	0,*/				/* WP_7 */
-};
+static double G_Weapon_AltShotSize(int32_t wp_num) {
+	switch (wp_num) {
+		case WP_5:
+			return weaponConfig.phaser.secondary.radius;
+		case WP_6:
+			return weaponConfig.crifle.secondary.size;
+		case WP_8:
+			return weaponConfig.grenade.primary.size;
+		case WP_9:
+			return weaponConfig.quantum.secondary.size;
+		case WP_10:
+			return weaponConfig.disruptor.secondary.size;
+		case WP_11:
+		case WP_12:
+		case WP_13:
+		case WP_14:
+		case WP_15:
+		case WP_7:
+		case WP_0:
+		case WP_1:
+		case WP_2:
+		case WP_3:
+		case WP_4:
+		default:
+			return 0;
+	}
+}
 
 /**
  * @brief Calculate the muzzle point for weapons.
@@ -3000,9 +2951,9 @@ void FireWeapon(gentity_t* ent, qboolean alt_fire) {
 	AngleVectors(ent->client->ps.viewangles, forward, right, up);
 
 	if (alt_fire) {
-		projsize = WP_ShotAltSize[ent->s.weapon];
+		projsize = G_Weapon_AltShotSize(ent->s.weapon);
 	} else {
-		projsize = WP_ShotSize[ent->s.weapon];
+		projsize = G_Weapon_ShotSize(ent->s.weapon);
 	}
 	G_Weapon_CalcMuzzlePoint(ent, forward, right, up, muzzle, projsize);
 

@@ -16,6 +16,7 @@
 #include "g_missile.h"
 #include "g_utils.h"
 #include "g_mover.h"
+#include "g_weapon.h"
 
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames(char* fileName, rankNames_t rankNames[], size_t size);
@@ -180,17 +181,6 @@ vmCvar_t    rpg_photonDelay;     //RPG-X | Marcin | 06/12/2008
 vmCvar_t    rpg_altPhotonDelay;  //RPG-X | Marcin | 06/12/2008
 vmCvar_t	rpg_TR116Delay;		 //RPG-X | Marcin | 30/12/2008
 vmCvar_t	rpg_altTricorderDelay;	 //RPG-X | GSIO01 | 14/05/2009
-
-// Weapon Damage
-vmCvar_t	rpg_rifleDamage;
-vmCvar_t	rpg_rifleAltDamage;
-vmCvar_t	rpg_phaserDamage;
-vmCvar_t	rpg_disruptorDamage;
-vmCvar_t	rpg_grenadeDamage;
-vmCvar_t	rpg_grenadeAltDamage;
-vmCvar_t	rpg_tr116Damage;
-vmCvar_t	rpg_photonDamage;
-vmCvar_t	rpg_photonAltDamage;
 
 // Motd
 //! Specifies the message of the day file
@@ -470,15 +460,6 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &lua_allowedModules, "lua_allowedModules", "", 0, 0, qfalse },
 	{ &lua_modules, "lua_modules", "", 0, 0, qfalse },
 #endif
-	{ &rpg_rifleDamage, "rpg_rifleDamage", "75", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_rifleAltDamage, "rpg_rifleAltDamage", "16", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_phaserDamage, "rpg_phaserDamage", "55", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_disruptorDamage, "rpg_disruptorDamage", "80", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_grenadeDamage, "rpg_grenadeDamage", "75", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_grenadeAltDamage, "rpg_grenadeAltDamage", "80", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_tr116Damage, "rpg_tr116Damage", "150", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_photonDamage, "rpg_photonDamage", "140", CVAR_ARCHIVE, 0, qfalse },
-	{ &rpg_photonAltDamage, "rpg_photonAltDamage", "140", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_developer, "g_developer", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &g_logLevel, "g_loglevel", "2", CVAR_ARCHIVE, 0, qfalse }
 };
@@ -1817,6 +1798,8 @@ void G_InitGame(int levelTime, unsigned int randomSeed, int restart) {
 #ifdef G_LUA
 	G_Lua_Init();
 #endif
+
+	G_Weapon_LoadConfig();
 
 	G_LogWeaponInit();
 
