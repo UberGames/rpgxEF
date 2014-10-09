@@ -6,6 +6,7 @@
 #include "g_local.h"
 #include "g_cmds.h"
 #include "g_lua.h"
+#include "g_syscalls.h"
 
 /*
 ==============================================================================

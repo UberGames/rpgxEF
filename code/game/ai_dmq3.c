@@ -37,6 +37,8 @@
 #include "syn.h"				//synonyms
 #include "match.h"				//string matching types and vars
 
+#include "g_syscalls.h"
+
 #define IDEAL_ATTACKDIST			140
 #define WEAPONINDEX_PHASER			2
 

@@ -1,9 +1,11 @@
 // entity lib for lua
 
 #include "g_lua.h"
-#include "g_spawn.h"
 
 #ifdef G_LUA
+
+#include "g_spawn.h"
+#include "g_syscalls.h"
 
 /***
 Module to access entity functions and manage enities.

@@ -2,6 +2,7 @@
 #include "g_local.h"
 #include "g_client.h"
 #include "g_spawn.h"
+#include "g_syscalls.h"
 
 extern void InitMover( gentity_t *ent );
 

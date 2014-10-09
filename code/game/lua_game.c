@@ -1,9 +1,11 @@
 // game lib for lua
 
 #include "g_lua.h"
-#include "g_combat.h"
 
 #ifdef G_LUA
+
+#include "g_combat.h"
+#include "g_syscalls.h"
 
 /***
 This module provides access to some of the servers functionality.

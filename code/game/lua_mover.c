@@ -3,6 +3,9 @@
 #include "g_lua.h"
 
 #ifdef G_LUA
+
+#include "g_syscalls.h"
+
 /***
 A module for entity movement, especially for mover entities such as doors.
 @module mover

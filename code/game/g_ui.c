@@ -8,6 +8,7 @@
 #include "g_spawn.h"
 #include "g_trigger.h"
 #include "g_logger.h"
+#include "g_syscalls.h"
 
 #define UI_DIABLED 1
 /*QUAKED ui_transporter (1 0.5 0) (-8 -8 -8) (8 8 8) ? DISABLED

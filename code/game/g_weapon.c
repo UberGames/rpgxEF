@@ -13,6 +13,7 @@
 #include "g_combat.h"
 #include "q_math.h"
 #include "bg_lex.h"
+#include "g_syscalls.h"
 
 weaponConfig_t weaponConfig;
 

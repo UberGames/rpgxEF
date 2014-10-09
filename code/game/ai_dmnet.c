@@ -36,6 +36,8 @@
 #include "syn.h"			//synonyms
 #include "match.h"			//string matching types and vars
 
+#include "g_syscalls.h"
+
 //goal flag, see be_ai_goal.h for the other GFL_*
 #define GFL_AIR			128
 

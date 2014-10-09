@@ -11,6 +11,7 @@
 #include "g_cinematic.h"
 #include "g_active.h"
 #include "g_spawn.h"
+#include "g_syscalls.h"
 
 static void G_SayTo(gentity_t* ent, gentity_t* other, int32_t mode, int32_t color, const char* name, const char* message);
 

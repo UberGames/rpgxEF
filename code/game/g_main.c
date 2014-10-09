@@ -17,6 +17,7 @@
 #include "g_utils.h"
 #include "g_mover.h"
 #include "g_weapon.h"
+#include "g_syscalls.h"
 
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames(char* fileName, rankNames_t rankNames[], size_t size);

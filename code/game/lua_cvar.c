@@ -1,9 +1,11 @@
 // lua library for cvars
 
 #include "g_lua.h"
-#include <string.h>
 
 #ifdef G_LUA
+
+#include <string.h>
+#include "g_syscalls.h"
 
 /***
 This module allows getting and setting game cvars.

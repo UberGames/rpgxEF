@@ -1,6 +1,6 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
-#include "g_local.h"
+#include "g_syscalls.h"
 
 // this file is only included when building a dll
 // g_syscalls.asm is included instead when building a qvm

@@ -10,6 +10,7 @@
 #include "g_items.h"
 #include "g_lua.h"
 #include "g_logger.h"
+#include "g_syscalls.h"
 
 reconData_t	g_reconData[MAX_RECON_NAMES]; //!< recon data for a limited ammount of clients
 int32_t		g_reconNum;

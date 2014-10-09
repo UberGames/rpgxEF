@@ -13,6 +13,7 @@
 #include "g_logger.h"
 #include "g_missile.h"
 #include "g_spawn.h"
+#include "g_syscalls.h"
 
 void G_Combat_GibEntity(gentity_t* self, int32_t killer) {
 

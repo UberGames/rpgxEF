@@ -4,6 +4,7 @@
 #include "g_logger.h"
 #include "g_combat.h"
 #include "g_utils.h"
+#include "g_syscalls.h"
 
 #define	ARM_ANGLE_RANGE		60
 #define	HEAD_ANGLE_RANGE	90

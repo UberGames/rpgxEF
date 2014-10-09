@@ -8,6 +8,7 @@
 #include "g_client.h"
 #include "g_lua.h"
 #include "g_logger.h"
+#include "g_syscalls.h"
 
 void G_Trigger_Init( gentity_t* self ) {
 	G_LogFuncBegin();

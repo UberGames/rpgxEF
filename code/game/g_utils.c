@@ -10,6 +10,7 @@
 #include "g_lua.h"
 #include "g_logger.h"
 #include "g_combat.h"
+#include "g_syscalls.h"
 
 /**
  * \brief Data structure for a singele shader remap.

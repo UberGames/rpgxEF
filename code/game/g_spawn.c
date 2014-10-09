@@ -5,6 +5,7 @@
 #include "g_spawn.h"
 #include "g_items.h"
 #include "g_lua.h"
+#include "g_syscalls.h"
 
 field_t fields[] = {
 	{ "classname", FOFS(classname), F_LSTRING },

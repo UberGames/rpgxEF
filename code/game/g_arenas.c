@@ -7,6 +7,7 @@
 #include "g_local.h"
 #include "g_client.h"
 #include "g_utils.h"
+#include "g_syscalls.h"
 
 #ifndef min
 #define min(a, b)	(a) < (b) ? a : b

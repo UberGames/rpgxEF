@@ -37,6 +37,8 @@
 #include "inv.h"
 #include "syn.h"
 
+#include "g_syscalls.h"
+
 #define AI_MAX_PATH		144
 
 

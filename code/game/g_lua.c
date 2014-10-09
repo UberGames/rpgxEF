@@ -4,6 +4,8 @@
 
 #ifdef G_LUA
 
+#include "g_syscalls.h"
+
 lvm_t       *lVM[NUM_VMS];
 
 void QDECL LUA_DEBUG(const char *fmt, ...)

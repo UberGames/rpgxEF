@@ -9,6 +9,7 @@
 #include "g_combat.h"
 #include "g_lua.h"
 #include "g_mover.h"
+#include "g_syscalls.h"
 
 extern void ammo_station_finish_spawning ( gentity_t *self );
 

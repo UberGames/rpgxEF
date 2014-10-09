@@ -6,6 +6,7 @@
 #include "g_missile.h"
 #include "g_logger.h"
 #include "g_combat.h"
+#include "g_syscalls.h"
 
 #define	MISSILE_PRESTEP_TIME	50
 

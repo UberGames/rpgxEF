@@ -37,6 +37,8 @@
 #include "syn.h"				//synonyms
 #include "match.h"				//string matching types and vars
 
+#include "g_syscalls.h"
+
 
 #ifdef DEBUG
 /*

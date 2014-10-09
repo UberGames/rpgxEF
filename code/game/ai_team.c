@@ -31,6 +31,8 @@
 #include "ai_cmd.h"
 #include "ai_dmnet.h"
 
+#include "g_syscalls.h"
+
 //ctf task preferences for a client
 typedef struct bot_ctftaskpreference_s
 {

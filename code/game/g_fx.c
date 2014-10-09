@@ -4,6 +4,7 @@
 #include "g_spawn.h"
 #include "g_logger.h"
 #include "g_combat.h"
+#include "g_syscalls.h"
 
 #define SPARK_STARTOFF		1
 /*QUAKED fx_spark (0 0 1) (-8 -8 -8) (8 8 8) STARTOFF

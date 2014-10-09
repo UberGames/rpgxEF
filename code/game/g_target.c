@@ -6,6 +6,7 @@
 #include "g_spawn.h"
 #include "g_client.h"
 #include "g_lua.h"
+#include "g_syscalls.h"
 
 //#include <windows.h> //TiM : WTF?
 

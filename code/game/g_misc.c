@@ -7,6 +7,7 @@
 #include "g_spawn.h"
 #include "g_items.h"
 #include "g_missile.h"
+#include "g_syscalls.h"
 
 
 /*QUAKED func_group (0 0 0) ?

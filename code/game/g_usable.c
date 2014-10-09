@@ -3,6 +3,7 @@
 #include "g_spawn.h"
 #include "g_client.h"
 #include "g_logger.h"
+#include "g_syscalls.h"
 
 #define USABLE_START_OFF		1
 #define USABLE_AUTOANIM			2

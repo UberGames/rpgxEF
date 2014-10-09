@@ -4,6 +4,8 @@
 
 #ifdef G_LUA
 
+#include "g_syscalls.h"
+
 /***
 A module allowing to do traces. Documentation under work.
 @module trace

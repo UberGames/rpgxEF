@@ -1,4 +1,5 @@
 #include "g_local.h"
+#include "g_syscalls.h"
 
 #define LOGGING_WEAPONS	
 
