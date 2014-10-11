@@ -19,6 +19,12 @@
 #include "g_weapon.h"
 #include "g_syscalls.h"
 
+// pre declare ai functions
+extern int32_t AI_main_BotAIStartFrame(int32_t time);
+extern int32_t AI_main_BotAISetup(int32_t restart);
+extern int32_t AI_main_BotAIShutdown(int32_t restart);
+extern int32_t AI_main_BotAILoadMap(int32_t restart);
+
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames(char* fileName, rankNames_t rankNames[], size_t size);
 
@@ -514,7 +520,7 @@ Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, /*@unused@*/
 			//RPG-X : TiM - plagiarised Red's logic from SFEFMOD here lol
 			return (intptr_t)ConsoleCommand();
 		case BOTAI_START_FRAME:
-			return (intptr_t)BotAIStartFrame(arg0);
+			return (intptr_t)AI_main_BotAIStartFrame(arg0);
 	}
 
 	return -1;
@@ -1872,8 +1878,8 @@ void G_InitGame(int levelTime, unsigned int randomSeed, int restart) {
 	}
 
 	if (trap_Cvar_VariableIntegerValue("bot_enable") != 0) {
-		BotAISetup(restart);
-		BotAILoadMap(restart);
+		AI_main_BotAISetup(restart);
+		AI_main_BotAILoadMap(restart);
 		G_InitBots((qboolean)restart);
 	}
 
@@ -1980,7 +1986,7 @@ void G_ShutdownGame(int restart) {
 	G_WriteSessionData();
 
 	if (trap_Cvar_VariableIntegerValue("bot_enable") != 0) {
-		BotAIShutdown(restart);
+		AI_main_BotAIShutdown(restart);
 	}
 
 	if (level.timedMessages != NULL) {
@@ -2271,7 +2277,7 @@ void ExitLevel(void) {
 	levelExiting = qtrue;
 
 	//bot interbreeding
-	BotInterbreedEndMatch();
+	AI_main_BotInterbreedEndMatch();
 
 	G_ClearObjectives();
 	// if we are running a tournement map, kick the loser to spectator status,

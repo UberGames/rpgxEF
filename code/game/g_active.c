@@ -1810,7 +1810,7 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
 }
 
-void BotTestSolid(vec3_t origin);
+void AI_main_BotTestSolid(vec3_t origin);
 
 void G_ThrowWeapon( gentity_t *ent, char *txt )
 {
@@ -2172,7 +2172,7 @@ static void ClientThink_real( gentity_t *ent ) {
 	VectorCopy( ps->origin, ent->r.currentOrigin );
 
 	//test for solid areas in the AAS file
-	BotTestSolid(ent->r.currentOrigin);
+	AI_main_BotTestSolid(ent->r.currentOrigin);
 
 	// touch other objects
 	ClientImpacts( ent, &pm );

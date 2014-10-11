@@ -1880,69 +1880,7 @@ void Svcmd_BotList_f( void );
  *
  *	\todo Remove? We don't support bots.
  */
-void BotInterbreedEndMatch( void );
-
-// ai_main.c
-
-//some maxs
-#define MAX_NETNAME		36
-#define MAX_FILEPATH	144
-
-//bot settings
-/** \struct bot_settings_t
-*	Containing settings for bots.
-*/
-typedef struct bot_settings_s
-{
-	char	characterfile[MAX_FILEPATH];	/*!< filename of character file */
-	int		skill;							/*!< skill level */
-	char	team[MAX_FILEPATH];				/*!< team */
-	char	pclass[MAX_FILEPATH];			/*!< class */
-} bot_settings_t;
-
-/**
- * Setup bot AI.
- *
- * \param restart Determines if this is a map restart.
- */
-int BotAISetup( int restart );
-
-/**
- * Shutdown bot AI.
- *
- * \param restart Determines if this is a map restart.
- */
-int BotAIShutdown( int restart );
-
-/**
- * Load map in bot lib.
- *
- * \param restart Determines if this is a map restart.
- */
-int BotAILoadMap( int restart );
-
-/**
- * Setup bot AI for client.
- *
- * \param client client number
- * \param settings bot settings
- */
-int BotAISetupClient( int client, bot_settings_t* settings );
-
-/**
- * Shutdown bot client.
- *
- * \param client client number
- */
-int BotAIShutdownClient( int client );
-
-/**
- * Star frame.
- *
- * \param time current time
- */
-int BotAIStartFrame( int time );
-
+void AI_main_BotInterbreedEndMatch( void );
 
 //
 //	g_lua.c

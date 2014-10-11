@@ -127,7 +127,7 @@ qboolean EntityIsDead(aas_entityinfo_t *entinfo) {
 
 	if (entinfo->number >= 0 && entinfo->number < MAX_CLIENTS) {
 		//retrieve the current client state
-		BotAI_GetClientState( entinfo->number, &ps );
+		AI_main_BotAIGetClientState( entinfo->number, &ps );
 		if (ps.pm_type != PM_NORMAL) return qtrue;
 	}
 	return qfalse;
@@ -271,7 +271,7 @@ void BotCTFSeekGoals(bot_state_t *bs) {
 		//if not already going for the enemy flag
 		if (bs->ltgtype != LTG_GETFLAG) {
 			//if there's no bot team leader
-			if (!BotTeamLeader(bs)) {
+			if (!AI_main_BotTeamLeader(bs)) {
 				//go for the enemy flag
 				bs->ltgtype = LTG_GETFLAG;
 				//no team message
@@ -372,7 +372,7 @@ char *ClientName(int client, char *name, int size) {
 	char buf[MAX_INFO_STRING];
 
 	if (client < 0 || client >= MAX_CLIENTS) {
-		BotAI_Print(PRT_ERROR, "ClientName: client out of range\n");
+		AI_main_BotAIPrint(PRT_ERROR, "ClientName: client out of range\n");
 		return "[client out of range]";
 	}
 	trap_GetConfigstring(CS_PLAYERS+client, buf, sizeof(buf));
@@ -391,7 +391,7 @@ char *ClientSkin(int client, char *skin, int size) {
 	char buf[MAX_INFO_STRING];
 
 	if (client < 0 || client >= MAX_CLIENTS) {
-		BotAI_Print(PRT_ERROR, "ClientSkin: client out of range\n");
+		AI_main_BotAIPrint(PRT_ERROR, "ClientSkin: client out of range\n");
 		return "[client out of range]";
 	}
 	trap_GetConfigstring(CS_PLAYERS+client, buf, sizeof(buf));
@@ -623,7 +623,7 @@ void BotUpdateBattleInventory(bot_state_t *bs, int enemy) {
 	vec3_t dir;
 	aas_entityinfo_t entinfo;
 
-	BotEntityInfo(enemy, &entinfo);
+	AI_main_BotEntityInfo(enemy, &entinfo);
 	VectorSubtract(entinfo.origin, bs->origin, dir); 
 	bs->inventory[ENEMY_HEIGHT] = (int) dir[2];
 	dir[2] = 0;
@@ -663,7 +663,7 @@ qboolean BotShouldDetonateDetPack(bot_state_t *bs)
 	// determine who would be killed in the blast radius
 	for (botNum = 0; botNum < MAX_CLIENTS; botNum++)
 	{
-		BotEntityInfo(botNum, &botinfo);
+		AI_main_BotEntityInfo(botNum, &botinfo);
 		if (!botinfo.valid) continue;
 
 		//calculate the distance towards the enemy
@@ -838,7 +838,7 @@ bot_waypoint_t *BotCreateWayPoint(char *name, vec3_t origin, int areanum) {
 
 	wp = botai_freewaypoints;
 	if ( !wp ) {
-		BotAI_Print( PRT_WARNING, "BotCreateWayPoint: Out of waypoints\n" );
+		AI_main_BotAIPrint( PRT_WARNING, "BotCreateWayPoint: Out of waypoints\n" );
 		return NULL;
 	}
 	botai_freewaypoints = botai_freewaypoints->next;
@@ -970,7 +970,7 @@ int BotWantsToRetreat(bot_state_t *bs) {
 	//
 	if (bs->enemy >= 0) {
 		//if the enemy is carrying a flag
-		BotEntityInfo(bs->enemy, &entinfo);
+		AI_main_BotEntityInfo(bs->enemy, &entinfo);
 		if (EntityCarriesFlag(&entinfo)) return qfalse;
 	}
 	//if the bot is getting the flag
@@ -991,7 +991,7 @@ int BotWantsToChase(bot_state_t *bs) {
 	//always retreat when carrying a CTF flag
 	if (BotCTFCarryingFlag(bs)) return qfalse;
 	//if the enemy is carrying a flag
-	BotEntityInfo(bs->enemy, &entinfo);
+	AI_main_BotEntityInfo(bs->enemy, &entinfo);
 	if (EntityCarriesFlag(&entinfo)) return qtrue;
 	//if the bot is getting the flag
 	if (bs->ltgtype == LTG_GETFLAG) return qfalse;
@@ -1150,7 +1150,7 @@ void BotRoamGoal(bot_state_t *bs, vec3_t goal) {
 		//add a random value to the z-coordinate (NOTE: 48 = maxjump?)
 		bestorg[2] += 2 * 48 * crandom();
 		//trace a line from the origin to the roam target
-		BotAI_Trace(&trace, bs->origin, NULL, NULL, bestorg, bs->entitynum, MASK_SOLID);
+		AI_main_BotAITrace(&trace, bs->origin, NULL, NULL, bestorg, bs->entitynum, MASK_SOLID);
 		//direction and length towards the roam target
 		VectorSubtract(trace.endpos, bs->origin, dir);
 		len = VectorNormalize(dir);
@@ -1163,7 +1163,7 @@ void BotRoamGoal(bot_state_t *bs, vec3_t goal) {
 			belowbestorg[0] = bestorg[0];
 			belowbestorg[1] = bestorg[1];
 			belowbestorg[2] = bestorg[2] - 800;
-			BotAI_Trace(&trace, bestorg, NULL, NULL, belowbestorg, bs->entitynum, MASK_SOLID);
+			AI_main_BotAITrace(&trace, bestorg, NULL, NULL, belowbestorg, bs->entitynum, MASK_SOLID);
 			//
 			if (!trace.startsolid) {
 				trace.endpos[2]++;
@@ -1214,7 +1214,7 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 	//initialize the movement state
 	BotSetupForMovement(bs);
 	//get the enemy entity info
-	BotEntityInfo(bs->enemy, &entinfo);
+	AI_main_BotEntityInfo(bs->enemy, &entinfo);
 	//direction towards the enemy
 	VectorSubtract(entinfo.origin, bs->origin, forward);
 	//the distance towards the enemy
@@ -1370,7 +1370,7 @@ float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int
 	vec3_t dir, entangles, start, end, middle;
 
 	//calculate middle of bounding box
-	BotEntityInfo(ent, &entinfo);
+	AI_main_BotEntityInfo(ent, &entinfo);
 	VectorAdd(entinfo.mins, entinfo.maxs, middle);
 	VectorScale(middle, 0.5, middle);
 	VectorAdd(entinfo.origin, middle, middle);
@@ -1408,7 +1408,7 @@ float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int
 			contents_mask ^= (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER);
 		}
 		//trace from start to end
-		BotAI_Trace(&trace, start, NULL, NULL, end, passent, contents_mask);
+		AI_main_BotAITrace(&trace, start, NULL, NULL, end, passent, contents_mask);
 		//if water was hit
 		waterfactor = 1.0;
 		if (trace.contents & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER)) {
@@ -1416,7 +1416,7 @@ float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int
 			if (1) {
 				//trace through the water
 				contents_mask &= ~(CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER);
-				BotAI_Trace(&trace, trace.endpos, NULL, NULL, end, passent, contents_mask);
+				AI_main_BotAITrace(&trace, trace.endpos, NULL, NULL, end, passent, contents_mask);
 				waterfactor = 0.5;
 			}
 		}
@@ -1431,13 +1431,13 @@ float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int
 			}
 			else if (infog) {
 				VectorCopy(trace.endpos, start);
-				BotAI_Trace(&trace, start, NULL, NULL, eye, viewer, CONTENTS_FOG);
+				AI_main_BotAITrace(&trace, start, NULL, NULL, eye, viewer, CONTENTS_FOG);
 				VectorSubtract(eye, trace.endpos, dir);
 				fogdist = VectorLength(dir);
 			}
 			else if (otherinfog) {
 				VectorCopy(trace.endpos, end);
-				BotAI_Trace(&trace, eye, NULL, NULL, end, viewer, CONTENTS_FOG);
+				AI_main_BotAITrace(&trace, eye, NULL, NULL, end, viewer, CONTENTS_FOG);
 				VectorSubtract(end, trace.endpos, dir);
 				fogdist = VectorLength(dir);
 			}
@@ -1480,7 +1480,7 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 	bs->lasthealth = bs->inventory[INVENTORY_HEALTH];
 	//
 	if (curenemy >= 0) {
-		BotEntityInfo(curenemy, &curenemyinfo);
+		AI_main_BotEntityInfo(curenemy, &curenemyinfo);
 		if (EntityCarriesFlag(&curenemyinfo)) return qfalse;
 		VectorSubtract(curenemyinfo.origin, bs->origin, dir);
 		curdist = VectorLength(dir);
@@ -1498,7 +1498,7 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		//if it's the current enemy
 		if (i == curenemy) continue;
 		//
-		BotEntityInfo(i, &entinfo);
+		AI_main_BotEntityInfo(i, &entinfo);
 		//
 		if (!entinfo.valid) continue;
 		//if on the same team
@@ -1582,7 +1582,7 @@ int BotTeamFlagCarrierVisible(bot_state_t *bs) {
 	for (i = 0; i < maxclients && i < MAX_CLIENTS; i++) {
 		if (i == bs->client) continue;
 		//
-		BotEntityInfo(i, &entinfo);
+		AI_main_BotEntityInfo(i, &entinfo);
 		//if this player is active
 		if (!entinfo.valid) continue;
 		//if this player is carrying a flag
@@ -1678,7 +1678,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	//
 	if (aim_accuracy <= 0) aim_accuracy = 0.0001;
 	//get the enemy entity information
-	BotEntityInfo(bs->enemy, &entinfo);
+	AI_main_BotEntityInfo(bs->enemy, &entinfo);
 	//if the enemy is invisible then shoot crappy most of the time
 	if (EntityIsInvisible(&entinfo)) {
 		if (random() > 0.1) aim_accuracy *= 0.4;
@@ -1718,7 +1718,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 		start[2] += bs->cur_ps.viewheight;
 		start[2] += wi.offset[2];
 		//
-		BotAI_Trace(&trace, start, mins, maxs, bestorigin, bs->entitynum, MASK_SHOT);
+		AI_main_BotAITrace(&trace, start, mins, maxs, bestorigin, bs->entitynum, MASK_SHOT);
 		//if the enemy is NOT hit
 		if (trace.fraction <= 1 && trace.ent != entinfo.number) {
 			bestorigin[2] += 16;
@@ -1781,13 +1781,13 @@ void BotAimAtEnemy(bot_state_t *bs) {
 				//try to aim at the ground in front of the enemy
 				VectorCopy(entinfo.origin, end);
 				end[2] -= 64;
-				BotAI_Trace(&trace, entinfo.origin, NULL, NULL, end, entinfo.number, MASK_SHOT);
+				AI_main_BotAITrace(&trace, entinfo.origin, NULL, NULL, end, entinfo.number, MASK_SHOT);
 				//
 				VectorCopy(bestorigin, groundtarget);
 				if (trace.startsolid) groundtarget[2] = entinfo.origin[2] - 16;
 				else groundtarget[2] = trace.endpos[2] - 8;
 				//trace a line from projectile start to ground target
-				BotAI_Trace(&trace, start, NULL, NULL, groundtarget, bs->entitynum, MASK_SHOT);
+				AI_main_BotAITrace(&trace, start, NULL, NULL, groundtarget, bs->entitynum, MASK_SHOT);
 				//if hitpoint is not vertically too far from the ground target
 				if (fabs(trace.endpos[2] - groundtarget[2]) < 50) {
 					VectorSubtract(trace.endpos, groundtarget, dir);
@@ -1798,7 +1798,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 						if (VectorLength(dir) > 100) {
 							//check if the bot is visible from the ground target
 							trace.endpos[2] += 1;
-							BotAI_Trace(&trace, trace.endpos, NULL, NULL, entinfo.origin, entinfo.number, MASK_SHOT);
+							AI_main_BotAITrace(&trace, trace.endpos, NULL, NULL, entinfo.origin, entinfo.number, MASK_SHOT);
 							if (trace.fraction >= 1) {
 								//botimport.Print(PRT_MESSAGE, "%1.1f aiming at ground\n", AAS_Time());
 								VectorCopy(groundtarget, bestorigin);
@@ -1842,7 +1842,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	}
 	//
 	if (enemyvisible) {
-		BotAI_Trace(&trace, bs->eye, NULL, NULL, bestorigin, bs->entitynum, MASK_SHOT);
+		AI_main_BotAITrace(&trace, bs->eye, NULL, NULL, bestorigin, bs->entitynum, MASK_SHOT);
 		VectorCopy(trace.endpos, bs->aimtarget);
 	}
 	else {
@@ -1924,7 +1924,7 @@ void BotCheckAttack(bot_state_t *bs) {
 		}
 	}
 	//
-	BotEntityInfo(bs->enemy, &entinfo);
+	AI_main_BotEntityInfo(bs->enemy, &entinfo);
 	VectorSubtract(entinfo.origin, bs->eye, dir);
 	//
 	if (VectorLength(dir) < 100) fov = 120;
@@ -1937,7 +1937,7 @@ void BotCheckAttack(bot_state_t *bs) {
 	}*/
 	vectoangles(dir, angles);
 	if (!InFieldOfVision(bs->viewangles, fov, angles)) return;
-	BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, bs->aimtarget, bs->client, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
+	AI_main_BotAITrace(&bsptrace, bs->eye, NULL, NULL, bs->aimtarget, bs->client, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
 	if (bsptrace.fraction < 1 && bsptrace.ent != bs->enemy) return;
 
 	//get the weapon info
@@ -1953,7 +1953,7 @@ void BotCheckAttack(bot_state_t *bs) {
 	VectorMA(start, 1000, forward, end);
 	//a little back to make sure not inside a very close enemy
 	VectorMA(start, -12, forward, start);
-	BotAI_Trace(&trace, start, mins, maxs, end, bs->entitynum, MASK_SHOT);
+	AI_main_BotAITrace(&trace, start, mins, maxs, end, bs->entitynum, MASK_SHOT);
 	//if won't hit the enemy
 	if (trace.ent != bs->enemy) {
 		//if the entity is a client
@@ -2041,7 +2041,7 @@ void BotMapScripts(bot_state_t *bs) {
 
 			if (i == bs->client) continue;
 			//
-			BotEntityInfo(i, &entinfo);
+			AI_main_BotEntityInfo(i, &entinfo);
 			//
 			if (!entinfo.valid) continue;
 			//if the enemy isn't dead and the enemy isn't the bot self
@@ -2104,19 +2104,19 @@ int BotEntityToActivate(int entitynum) {
 	char targetname[10][128];
 	aas_entityinfo_t entinfo;
 
-	BotEntityInfo(entitynum, &entinfo);
+	AI_main_BotEntityInfo(entitynum, &entinfo);
 	Com_sprintf(model, sizeof( model ), "*%d", entinfo.modelindex);
 	for (ent = trap_AAS_NextBSPEntity(0); ent; ent = trap_AAS_NextBSPEntity(ent)) {
 		if (!trap_AAS_ValueForBSPEpairKey(ent, "model", tmpmodel, sizeof(tmpmodel))) continue;
 		if (!strcmp(model, tmpmodel)) break;
 	}
 	if (!ent) {
-		BotAI_Print(PRT_ERROR, "BotEntityToActivate: no entity found with model %s\n", model);
+		AI_main_BotAIPrint(PRT_ERROR, "BotEntityToActivate: no entity found with model %s\n", model);
 		return 0;
 	}
 	trap_AAS_ValueForBSPEpairKey(ent, "classname", classname, sizeof(classname));
 	if (!classname[0]) {
-		BotAI_Print(PRT_ERROR, "BotEntityToActivate: entity with model %s has no classname\n", model);
+		AI_main_BotAIPrint(PRT_ERROR, "BotEntityToActivate: entity with model %s has no classname\n", model);
 		return 0;
 	}
 	//if it is a door
@@ -2129,7 +2129,7 @@ int BotEntityToActivate(int entitynum) {
 	//get the targetname so we can find an entity with a matching target
 	if (!trap_AAS_ValueForBSPEpairKey(ent, "targetname", targetname[0], sizeof(targetname[0]))) {
 #ifdef OBSTACLEDEBUG
-		BotAI_Print(PRT_ERROR, "BotEntityToActivate: entity with model \"%s\" has no targetname\n", model);
+		AI_main_BotAIPrint(PRT_ERROR, "BotEntityToActivate: entity with model \"%s\" has no targetname\n", model);
 #endif //OBSTACLEDEBUG
 		return 0;
 	}
@@ -2144,12 +2144,12 @@ int BotEntityToActivate(int entitynum) {
 			}
 		}
 		if (!ent) {
-			BotAI_Print(PRT_ERROR, "BotEntityToActivate: no entity with target \"%s\"\n", targetname[i]);
+			AI_main_BotAIPrint(PRT_ERROR, "BotEntityToActivate: no entity with target \"%s\"\n", targetname[i]);
 			i--;
 			continue;
 		}
 		if (!trap_AAS_ValueForBSPEpairKey(ent, "classname", classname, sizeof(classname))) {
-			BotAI_Print(PRT_ERROR, "BotEntityToActivate: entity with target \"%s\" has no classname\n", targetname[i]);
+			AI_main_BotAIPrint(PRT_ERROR, "BotEntityToActivate: entity with target \"%s\" has no classname\n", targetname[i]);
 			continue;
 		}
 		if (!strcmp(classname, "func_button")) {
@@ -2164,7 +2164,7 @@ int BotEntityToActivate(int entitynum) {
 			i--;
 		}
 	}
-	BotAI_Print(PRT_ERROR, "BotEntityToActivate: unknown activator with classname \"%s\"\n", classname);
+	AI_main_BotAIPrint(PRT_ERROR, "BotEntityToActivate: unknown activator with classname \"%s\"\n", classname);
 	return 0;
 }
 
@@ -2249,10 +2249,10 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 		return;
 	}
 	//
-	BotEntityInfo(moveresult->blockentity, &entinfo);
+	AI_main_BotEntityInfo(moveresult->blockentity, &entinfo);
 #ifdef OBSTACLEDEBUG
 	ClientName(bs->client, netname, sizeof(netname));
-	BotAI_Print(PRT_MESSAGE, "%s: I'm blocked by model %d\n", netname, entinfo.modelindex);
+	AI_main_BotAIPrint(PRT_MESSAGE, "%s: I'm blocked by model %d\n", netname, entinfo.modelindex);
 #endif
 	//if blocked by a bsp model and the bot wants to activate it if possible
 	if (entinfo.modelindex > 0 && entinfo.modelindex <= max_bspmodelindex && activate) {
@@ -2262,14 +2262,14 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 		if (!ent) {
 			strcpy(classname, "");
 #ifdef OBSTACLEDEBUG
-			BotAI_Print(PRT_MESSAGE, "%s: can't find activator for blocking entity\n", ClientName(bs->client, netname, sizeof(netname)));
+			AI_main_BotAIPrint(PRT_MESSAGE, "%s: can't find activator for blocking entity\n", ClientName(bs->client, netname, sizeof(netname)));
 #endif
 		}
 		else {
 			trap_AAS_ValueForBSPEpairKey(ent, "classname", classname, sizeof(classname));
 #ifdef OBSTACLEDEBUG
 			ClientName(bs->client, netname, sizeof(netname));
-			BotAI_Print(PRT_MESSAGE, "%s: I should activate %s\n", netname, classname);
+			AI_main_BotAIPrint(PRT_MESSAGE, "%s: I should activate %s\n", netname, classname);
 #endif
 		}
 		if (!strcmp(classname, "func_button")) {
@@ -2370,8 +2370,8 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 				}
 				else {
 #ifdef OBSTACLEDEBUG
-					if (!numareas) BotAI_Print(PRT_MESSAGE, "button not in an area\n");
-					else BotAI_Print(PRT_MESSAGE, "button area has no reachabilities\n");
+					if (!numareas) AI_main_BotAIPrint(PRT_MESSAGE, "button not in an area\n");
+					else AI_main_BotAIPrint(PRT_MESSAGE, "button area has no reachabilities\n");
 #endif //OBSTACLEDEBUG
 					if (bs->ainode == AINode_Seek_NBG) bs->nbg_time = 0;
 					else if (bs->ainode == AINode_Seek_LTG) bs->ltg_time = 0;
@@ -2523,16 +2523,16 @@ void BotCheckConsoleMessages(bot_state_t *bs) {
 															NULL, NULL,
 															NULL, NULL,
 															botname, netname)) {
-						BotAI_Print(PRT_MESSAGE, "------------------------\n");
+						AI_main_BotAIPrint(PRT_MESSAGE, "------------------------\n");
 					}
 					else {
-						BotAI_Print(PRT_MESSAGE, "**** no valid reply ****\n");
+						AI_main_BotAIPrint(PRT_MESSAGE, "**** no valid reply ****\n");
 					}
 				}
 				//if at a valid chat position and not chatting already
 				else if (bs->ainode != AINode_Stand && BotValidChatPosition(bs)) {
 					chat_reply = 0;
-					if (random() < 1.5 / (NumBots()+1) && random() < chat_reply) {
+					if (random() < 1.5 / (AI_main_NumBots()+1) && random() < chat_reply) {
 						//if bot replies with a chat message
 						if (trap_BotReplyChat(bs->cs, message, context, CONTEXT_REPLY,
 																NULL, NULL,
@@ -2614,7 +2614,7 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		case EV_GLOBAL_SOUND:
 		{
 			if (state->eventParm < 0 || state->eventParm > MAX_SOUNDS) {
-				BotAI_Print(PRT_ERROR, "EV_GLOBAL_SOUND: eventParm (%d) out of range\n", state->eventParm);
+				AI_main_BotAIPrint(PRT_ERROR, "EV_GLOBAL_SOUND: eventParm (%d) out of range\n", state->eventParm);
 				break;
 			}
 			else {
@@ -2630,7 +2630,7 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		case EV_TEAM_SOUND:
 		{
 			if (state->eventParm < 0 || state->eventParm > MAX_TEAM_SOUNDS) {
-				BotAI_Print(PRT_ERROR, "EV_TEAM_SOUND: eventParm (%d) out of range\n", state->eventParm);
+				AI_main_BotAIPrint(PRT_ERROR, "EV_TEAM_SOUND: eventParm (%d) out of range\n", state->eventParm);
 				break;
 			}
 
@@ -2665,7 +2665,7 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 			//if this sound is played on the bot
 			if (state->number == bs->client) {
 				if (state->eventParm < 0 || state->eventParm > MAX_SOUNDS) {
-					BotAI_Print(PRT_ERROR, "EV_GENERAL_SOUND: eventParm (%d) out of range\n", state->eventParm);
+					AI_main_BotAIPrint(PRT_ERROR, "EV_GENERAL_SOUND: eventParm (%d) out of range\n", state->eventParm);
 					break;
 				}
 				//check out the sound
@@ -2695,12 +2695,12 @@ void BotCheckSnapshot(bot_state_t *bs) {
 
 	//
 	ent = 0;
-	while( ( ent = BotAI_GetSnapshotEntity( bs->client, ent, &state ) ) != -1 ) {
+	while( ( ent = AI_main_BotAIGetSnapshotEntity( bs->client, ent, &state ) ) != -1 ) {
 		//check the entity state for events
 		BotCheckEvents(bs, &state);
 	}
 	//check the player state for events
-	BotAI_GetEntityState(bs->client, &state);
+	AI_main_BotAIGetEntityState(bs->client, &state);
 	//copy the player state events to the entity state
 	state.event = bs->cur_ps.externalEvent;
 	state.eventParm = bs->cur_ps.externalEventParm;
@@ -2803,7 +2803,7 @@ void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
 		trap_BotDumpAvoidGoals(bs->gs);
 		BotDumpNodeSwitches(bs);
 		ClientName(bs->client, name, sizeof(name));
-		BotAI_Print(PRT_ERROR, "%s at %1.1f switched more than %d AI nodes\n", name, trap_AAS_Time(), MAX_NODESWITCHES);
+		AI_main_BotAIPrint(PRT_ERROR, "%s at %1.1f switched more than %d AI nodes\n", name, trap_AAS_Time(), MAX_NODESWITCHES);
 	}
 	//
 	bs->lastframe_health = bs->inventory[INVENTORY_HEALTH];
@@ -2831,9 +2831,9 @@ void BotSetupDeathmatchAI(void) {
 	//
 	if (gametype == GT_CTF) {
 		if (trap_BotGetLevelItemGoal(-1, "Red Flag", &ctf_redflag) < 0)
-			BotAI_Print(PRT_WARNING, "CTF without Red Flag\n");
+			AI_main_BotAIPrint(PRT_WARNING, "CTF without Red Flag\n");
 		if (trap_BotGetLevelItemGoal(-1, "Blue Flag", &ctf_blueflag) < 0)
-			BotAI_Print(PRT_WARNING, "CTF without Blue Flag\n");
+			AI_main_BotAIPrint(PRT_WARNING, "CTF without Blue Flag\n");
 	}
 
 	max_bspmodelindex = 0;

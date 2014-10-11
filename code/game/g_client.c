@@ -11,6 +11,11 @@
 #include "g_lua.h"
 #include "g_logger.h"
 #include "g_syscalls.h"
+#include "ai_common.h"
+
+// predeclare ai main functions
+extern int32_t AI_main_BotAISetupClient(int32_t client, bot_settings_t* settings);
+extern int32_t AI_main_BotAIShutdownClient(int32_t client);
 
 reconData_t	g_reconData[MAX_RECON_NAMES]; //!< recon data for a limited ammount of clients
 int32_t		g_reconNum;
@@ -2263,7 +2268,7 @@ void G_Client_Disconnect( int32_t clientNum ) {
 	G_Client_CalculateRanks( qfalse );
 
 	if ( (ent->r.svFlags & SVF_BOT) != 0 ) {
-		BotAIShutdownClient( clientNum );
+		AI_main_BotAIShutdownClient( clientNum );
 	}
 
 	// kef -- if this guy contributed to any of our kills/deaths/weapons logs, clean 'em out

@@ -484,6 +484,7 @@
     <ClInclude Include="..\qcommon\stv_version.h" />
     <ClInclude Include="ai_chat.h" />
     <ClInclude Include="ai_cmd.h" />
+    <ClInclude Include="ai_common.h" />
     <ClInclude Include="ai_dmnet.h" />
     <ClInclude Include="ai_dmq3.h" />
     <ClInclude Include="ai_main.h" />

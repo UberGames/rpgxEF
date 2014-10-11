@@ -6,6 +6,7 @@
 #include "g_main.h"
 #include "g_client.h"
 #include "g_syscalls.h"
+#include "ai_main.h"
 
 
 static int32_t	g_numBots;
@@ -564,7 +565,7 @@ qboolean G_BotConnect( int32_t clientNum, qboolean restart ) {
 	strncpy( settings.team, Info_ValueForKey( userinfo, "team" ), sizeof(settings.team) );
 	strncpy( settings.pclass, Info_ValueForKey( userinfo, "class" ), sizeof(settings.pclass) );
 
-	if (BotAISetupClient( clientNum, &settings ) == 0) {
+	if (AI_main_BotAISetupClient( clientNum, &settings ) == 0) {
 		trap_DropClient( clientNum, "BotAISetupClient failed" );
 		return qfalse;
 	}

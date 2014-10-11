@@ -91,7 +91,7 @@ int BotClientTravelTimeToGoal(int client, bot_goal_t *goal) {
 	playerState_t ps;
 	int areanum;
 
-	BotAI_GetClientState(client, &ps);
+	AI_main_BotAIGetClientState(client, &ps);
 	areanum = BotPointAreaNum(ps.origin);
 	if (!areanum) return 1;
 	return trap_AAS_AreaTravelTimeToGoalArea(areanum, ps.origin, goal->areanum, TFL_DEFAULT);
@@ -259,7 +259,7 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 			if (teammates[0] != bs->flagcarrier) other = teammates[0];
 			else other = teammates[1];
 			ClientName(other, name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, other);
 			break;
 		}
@@ -271,17 +271,17 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 			ClientName(other, name, sizeof(name));
 			ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 			if (bs->flagcarrier == bs->client) {
-				BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_accompanyme", name, NULL);
 			}
 			else {
-				BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_accompany", name, carriername, NULL);
 			}
 			BotSayTeamOrder(bs, other);
 			//tell the one furthest from the the base not carrying the flag to get the enemy flag
 			if (teammates[2] != bs->flagcarrier) other = teammates[2];
 			else other = teammates[1];
 			ClientName(other, name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, other);
 			break;
 		}
@@ -299,10 +299,10 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 				//
 				ClientName(teammates[i], name, sizeof(name));
 				if (bs->flagcarrier == bs->client) {
-					BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+					AI_main_BotAIInitialChat(bs, "cmd_accompanyme", name, NULL);
 				}
 				else {
-					BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+					AI_main_BotAIInitialChat(bs, "cmd_accompany", name, carriername, NULL);
 				}
 				BotSayTeamOrder(bs, teammates[i]);
 			}
@@ -313,7 +313,7 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 				}
 				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 			}
 			//
@@ -343,11 +343,11 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs) {
 		{
 			//both will go for the enemy flag
 			ClientName(teammates[0], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[0]);
 			//
 			ClientName(teammates[1], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			break;
 		}
@@ -355,15 +355,15 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs) {
 		{
 			//everyone go for the flag
 			ClientName(teammates[0], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[0]);
 			//
 			ClientName(teammates[1], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			//
 			ClientName(teammates[2], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
 			break;
 		}
@@ -376,13 +376,13 @@ void BotCTFOrders_FlagNotAtBase(bot_state_t *bs) {
 			for (i = 0; i < defenders; i++) {
 				//
 				ClientName(teammates[i], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 			}
 			for (i = 0; i < attackers; i++) {
 				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 			}
 			//
@@ -412,7 +412,7 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 			if (teammates[0] == bs->flagcarrier) other = teammates[1];
 			else other = teammates[0];
 			ClientName(other, name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, other);
 			break;
 		}
@@ -422,7 +422,7 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 			if (teammates[0] != bs->flagcarrier) other = teammates[0];
 			else other = teammates[1];
 			ClientName(other, name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, other);
 			//tell the one furthest from the base not carrying the flag to accompany the flag carrier
 			if (teammates[2] != bs->flagcarrier) other = teammates[2];
@@ -430,10 +430,10 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 			ClientName(other, name, sizeof(name));
 			ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 			if (bs->flagcarrier == bs->client) {
-				BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_accompanyme", name, NULL);
 			}
 			else {
-				BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_accompany", name, carriername, NULL);
 			}
 			BotSayTeamOrder(bs, other);
 			break;
@@ -451,7 +451,7 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 					continue;
 				}
 				ClientName(teammates[i], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 			}
 			ClientName(bs->flagcarrier, carriername, sizeof(carriername));
@@ -463,10 +463,10 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				if (bs->flagcarrier == bs->client) {
-					BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+					AI_main_BotAIInitialChat(bs, "cmd_accompanyme", name, NULL);
 				}
 				else {
-					BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+					AI_main_BotAIInitialChat(bs, "cmd_accompany", name, carriername, NULL);
 				}
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 			}
@@ -500,11 +500,11 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 		{
 			//the one closest to the base will defend the base
 			ClientName(teammates[0], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, teammates[0]);
 			//the other will get the flag
 			ClientName(teammates[1], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			break;
 		}
@@ -512,15 +512,15 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 		{
 			//the one closest to the base will defend the base
 			ClientName(teammates[0], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, teammates[0]);
 			//the others should go for the enemy flag
 			ClientName(teammates[1], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[1]);
 			//
 			ClientName(teammates[2], name, sizeof(name));
-			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+			AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, teammates[2]);
 			break;
 		}
@@ -532,13 +532,13 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 			for (i = 0; i < defenders; i++) {
 				//
 				ClientName(teammates[i], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 			}
 			for (i = 0; i < attackers; i++) {
 				//
 				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				AI_main_BotAIInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 			}
 			//
@@ -584,13 +584,13 @@ void BotTeamAI(bot_state_t *bs) {
 		}
 		if (bs->askteamleader_time && bs->askteamleader_time < trap_AAS_Time()) {
 			//if asked for a team leader and no repsonse
-			BotAI_BotInitialChat(bs, "whoisteamleader", NULL);
+			AI_main_BotAIInitialChat(bs, "whoisteamleader", NULL);
 			trap_BotEnterChat(bs->cs, bs->client, CHAT_TEAM);
 			bs->askteamleader_time = 0;
 			bs->becometeamleader_time = trap_AAS_Time() + 15 + random() * 10;
 		}
 		if (bs->becometeamleader_time && bs->becometeamleader_time < trap_AAS_Time()) {
-			BotAI_BotInitialChat(bs, "iamteamleader", NULL);
+			AI_main_BotAIInitialChat(bs, "iamteamleader", NULL);
 			trap_BotEnterChat(bs->cs, bs->client, CHAT_TEAM);
 			ClientName(bs->client, netname, sizeof(netname));
 			strncpy(bs->teamleader, netname, sizeof(bs->teamleader));

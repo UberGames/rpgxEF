@@ -539,6 +539,9 @@
     <ClInclude Include="g_syscalls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ai_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.def">
