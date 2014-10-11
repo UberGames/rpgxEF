@@ -40,7 +40,7 @@ typedef enum {
 	BFL_AVOIDRIGHT = 16,	//!<avoid obstacles by going to the right
 	BFL_IDEALVIEWSET = 32,	//!<bot has ideal view angles set
 	BFL_FIGHTSUICIDAL = 64	//!<bot is in a suicidal fight
-} BFL;
+} AI_main_BFL;
 
 //long term goal types
 typedef enum {
@@ -55,7 +55,7 @@ typedef enum {
 	LTG_PATROL,			//!<patrol
 	LTG_GETITEM,		//!<get an item
 	LTG_KILL			//!<kill someone
-} LTG;
+} AI_main_LTG;
 
 //some goal dedication times
 #define TEAM_HELP_TIME				10	//!<1 minute teamplay help time
