@@ -26,7 +26,7 @@ const float	pm_waterfriction = 1;
 const float	pm_flightfriction = 3;
 const float pm_evosuitfriction = 0.25; //RPG-X | Phenix | 8/8/2004
 
-int		c_pmove = 0;
+int32_t c_pmove = 0;
 
 #define	PHASER_RECHARGE_TIME	100
 
@@ -691,7 +691,7 @@ int PM_GetAnim ( int anim, int weapon, qboolean injured, qboolean upper )
 /**
 *	Adds a predictable event to playerstate
 */
-void PM_AddEvent( int newEvent ) {
+void PM_AddEvent( int32_t newEvent ) {
 	BG_AddPredictableEventToPlayerstate( newEvent, 0, pm->ps );
 }
 
@@ -738,7 +738,7 @@ PM_AddTouchEnt
 /**
 *	Adds a touchEnt event.
 */
-void PM_AddTouchEnt( int entityNum ) {
+void PM_AddTouchEnt( int32_t entityNum ) {
 	int		i;
 
 	if ( entityNum == ENTITYNUM_WORLD ) {
@@ -890,7 +890,7 @@ PM_ClipVelocity
 /**
 *	Slide off of the impacting surface
 */
-void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
+void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, double overbounce ) {
 	float	backoff;
 	float	change;
 	int		i;

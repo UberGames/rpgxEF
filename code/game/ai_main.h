@@ -58,31 +58,35 @@ typedef enum {
 } AI_main_LTG;
 
 //some goal dedication times
-#define TEAM_HELP_TIME				10	//!<1 minute teamplay help time
-#define TEAM_ACCOMPANY_TIME			10	//!<10 minutes teamplay accompany time
-#define TEAM_DEFENDKEYAREA_TIME		600	//!<5 minutes ctf defend base time
-#define TEAM_CAMP_TIME				10	//!<10 minutes camping time
-#define TEAM_PATROL_TIME			600	//!<10 minutes patrolling time
-#define TEAM_LEAD_TIME				600	//!<10 minutes taking the lead
-#define TEAM_GETITEM_TIME			10	//!<1 minute
-#define	TEAM_KILL_SOMEONE			10	//!<3 minute to kill someone
-#define CTF_GETFLAG_TIME			600	//!<5 minutes ctf get flag time
-#define CTF_RUSHBASE_TIME			600	//!<2 minutes ctf rush base time
-#define CTF_RETURNFLAG_TIME			600	//!<3 minutes to return the flag
-#define CTF_ROAM_TIME				600	//!<1 minute ctf roam time
+static const uint32_t TEAM_HELP_TIME = 10;				//!<1 minute teamplay help time
+static const uint32_t TEAM_ACCOMPANY_TIME = 10;			//!<10 minutes teamplay accompany time
+static const uint32_t TEAM_DEFENDKEYAREA_TIME = 600;	//!<5 minutes ctf defend base time
+static const uint32_t TEAM_CAMP_TIME = 10;				//!<10 minutes camping time
+static const uint32_t TEAM_PATROL_TIME = 600;			//!<10 minutes patrolling time
+static const uint32_t TEAM_LEAD_TIME = 600;				//!<10 minutes taking the lead
+static const uint32_t TEAM_GETITEM_TIME = 10;			//!<1 minute
+static const uint32_t TEAM_KILL_SOMEONE = 10;			//!<3 minute to kill someone
+static const uint32_t CTF_GETFLAG_TIME = 600;			//!<5 minutes ctf get flag time
+static const uint32_t CTF_RUSHBASE_TIME = 600;			//!<2 minutes ctf rush base time
+static const uint32_t CTF_RETURNFLAG_TIME = 600;		//!<3 minutes to return the flag
+static const uint32_t CTF_ROAM_TIME = 600;				//!<1 minute ctf roam time
+
 //patrol flags
-#define PATROL_LOOP					1
-#define PATROL_REVERSE				2
-#define PATROL_BACK					4
+static const uint32_t PATROL_LOOP = 1;
+static const uint32_t PATROL_REVERSE = 2;
+static const uint32_t PATROL_BACK = 4;
+
 //CTF task preference
-#define CTFTP_DEFENDER				1
-#define CTFTP_ATTACKER				2
+static const uint32_t CTFTP_DEFENDER = 1;
+static const uint32_t CTFTP_ATTACKER = 2;
+
 //CTF strategy
-#define CTFS_PASSIVE				1
+static const uint32_t CTFS_PASSIVE = 1;
+
 //copied from the aas file header
-#define PRESENCE_NONE				1
-#define PRESENCE_NORMAL				2
-#define PRESENCE_CROUCH				4
+static const uint32_t PRESENCE_NONE = 1;
+static const uint32_t PRESENCE_NORMAL = 2;
+static const uint32_t PRESENCE_CROUCH = 4;
 
 //!check points
 typedef struct bot_waypoint_s {

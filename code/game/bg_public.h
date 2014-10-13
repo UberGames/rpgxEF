@@ -5,50 +5,65 @@
 #ifndef BG_PUBLIC_H_
 #define BG_PUBLIC_H_
 
+#ifdef _MSC_VER
+#include <stddef.h>
+#include <stdint.h>
+#else
+#include <stdint.h>
+#endif
+
 // meh somehow preprocessor G_LUA won't work for me
 #define G_LUA 1
 #define CG_LUA 1
 
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
-#define RPGX_VERSION		"RPG-X V 2.4.1ua"
-#define RPGX_COMPILEDATE	__DATE__ " " __TIME__
-#define RPGX_COMPILEDBY		"Jenkins Buildserver"
-#define GAME_VERSION		"RPG-X v" RPGX_VERSION
+#define RPGX_VERSION "RPG-X V 2.4.1ua"
+static const char RPGX_COMPILEDATE[] = __DATE__ " " __TIME__;
+static const char RPGX_COMPILEDBY[] = "Jenkins Buildserver";
+#define GAME_VERSION "RPG-X v" RPGX_VERSION
 
-#define INJURED_MODE_HEALTH		20	//!<For the injured mode health system.
+static const uint32_t INJURED_MODE_HEALTH = 20;	//!<For the injured mode health system.
 
-#define	DEFAULT_GRAVITY		800
-#define	GIB_HEALTH			-40//RPG-X: RedTechie - If rpg_medicsrevive is off use this
-#define	GIB_HEALTH_IMPOSSIBLE			-100000//RPG-X: RedTechie - If rpg_medicsrevive is on use this
-#define	ARMOR_PROTECTION	1.0//0.66
-#define PIERCED_ARMOR_PROTECTION		0.50 //!< trek: shields only stop 50% of armor-piercing dmg
+static const uint32_t DEFAULT_GRAVITY = 800;
+static const int32_t GIB_HEALTH = -40; //RPG-X: RedTechie - If rpg_medicsrevive is off use this
+static const int32_t GIB_HEALTH_IMPOSSIBLE = -100000; //RPG-X: RedTechie - If rpg_medicsrevive is on use this
+static const double	ARMOR_PROTECTION = 1.0; //0.66
+static const double PIERCED_ARMOR_PROTECTION = 0.50; //!< trek: shields only stop 50% of armor-piercing dmg
 
-#define	MAX_ITEMS			256
+static const uint32_t RANK_TIED_FLAG = 0x4000;
 
-#define	RANK_TIED_FLAG		0x4000
+static const uint32_t ITEM_RADIUS = 15;	//!< item sizes are needed for client side pickup detection
 
-#define	ITEM_RADIUS			15		//!< item sizes are needed for client side pickup detection
+static const uint32_t LIGHTNING_RANGE = 768;
 
-#define	LIGHTNING_RANGE		768
+static const int32_t SCORE_NOT_PRESENT = -9999;	//!< for the CS_SCORES[12] when only one player is present
 
-#define	SCORE_NOT_PRESENT	-9999	//!< for the CS_SCORES[12] when only one player is present
+static const uint32_t VOTE_TIME = 30000;
 
-#define	VOTE_TIME			30000
+static const int32_t MINS_Z = -24;
 
-#define	MINS_Z				-24
-#define	DEFAULT_VIEWHEIGHT	34 // TIM - 26//32
-#define CROUCH_VIEWHEIGHT	12
-#define	DEAD_VIEWHEIGHT		-16
+typedef enum {
+	DEAD_VIEWHEIGHT = -16,
+	DEFAULT_VIEWHEIGHT = 34, // TIM - 26//32
+	CROUCH_VIEWHEIGHT = 12
+} bg_viewHeights;
 
-//TiM : New Rank Definitions
-#define	MAX_RANKS			128 //32 - see how this goes
+typedef enum {
+	MAX_DECKS = 16,			//TiM - Turbolift Decks
+	NUM_CVAR_STORES = 16,	//If we ever change the number of CVARS, we can change it here easily
+	MAX_CLASSES = 32,				//!< the maximum ammount of classes
+	MAXTOUCH = 32,
+	MAX_RANKS = 128,		//TiM : New Rank Definitions //32 - see how this goes
+	MAX_ITEMS = 256,
+	MAX_SCANNABLES = 256,	//scannable entities
+	MAX_ENTSCANNABLES = 256,//scannable entities
+	MAX_ARENAS = 1024,
+	MAX_BOTS = 1024,
+	MAX_ARENAS_TEXT = 8192,
+	MAX_BOTS_TEXT = 8192
+} bg_limits;;
 
-#define	NUM_CVAR_STORES		16	//If we ever change the number of CVARS, we can change it here easily
-
-//scannable entities
-#define MAX_SCANNABLES		256
-#define MAX_ENTSCANNABLES	256
 
 /** \struct rankNames_t
 *	Struct that hold rank names.
@@ -61,7 +76,6 @@ typedef struct {
 #define	RANKSET_DEFAULT	"rpgx_default"	//!< name of the default rankset
 
 //TiM : Class script info
-#define MAX_CLASSES		32				//!< the maximum ammount of classes
 #define	CLASS_DEFAULT	"rpgx_default"	//!< the default classset
 
 //RPG-X: Marcin: I'm lazy sorry
@@ -92,9 +106,6 @@ do { \
 #define DEFAULT_SKIN		"default"
 
 #define DEFAULT_PLAYER		"munro/main/default"
-
-//TiM - Turbolift Decks
-#define MAX_DECKS	16
 
 /**	\struct widescreen_t
 *	variables used for widescreen drawing, used in both UI and CG
@@ -256,8 +267,6 @@ typedef enum {
 #define ANIM_ALERT2			2048	//TiM: This makes it full I think
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
-
-#define	MAXTOUCH	32
 
 /**
 *	\struct pmove_t
@@ -1067,11 +1076,6 @@ char	*NextWordEndsHere(char *pos);
 char	*EndWord(char *pos);
 
 #define ARENAS_PER_TIER		4
-#define MAX_ARENAS			1024
-#define	MAX_ARENAS_TEXT		8192
-
-#define MAX_BOTS			1024
-#define MAX_BOTS_TEXT		8192
 
 //make this match Max_Ammo in g_items please;
 #define PHASER_AMMO_MAX		50

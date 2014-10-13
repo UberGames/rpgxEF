@@ -17,7 +17,7 @@
 #ifndef AI_DMNET_H_
 #define AI_DMNET_H_
 
-#define MAX_NODESWITCHES	50
+#define MAX_NODESWITCHES 50
 
 void AI_dmnet_AIEnter_Stand(bot_state_t* bs);
 void AI_dmnet_AIEnter_Seek_ActivateEntity(bot_state_t* bs);
