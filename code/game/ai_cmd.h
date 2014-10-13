@@ -19,8 +19,8 @@
 
 #include "g_local.h"
 
-int32_t BotMatchMessage(bot_state_t *bs, char *message);
-void BotPrintTeamGoal(bot_state_t *bs);
+int32_t BotMatchMessage(bot_state_t* bs, char* message);
+void BotPrintTeamGoal(bot_state_t* bs);
 
 #endif /* AI_CMD_H_ */
 

@@ -2365,7 +2365,7 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 					bs->activategoal.number = 0;
 					bs->activategoal.flags = 0;
 					bs->activate_time = trap_AAS_Time() + 10;
-					AIEnter_Seek_ActivateEntity(bs);
+					AI_dmnet_AIEnter_Seek_ActivateEntity(bs);
 					return;
 				}
 				else {
@@ -2373,8 +2373,8 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 					if (!numareas) AI_main_BotAIPrint(PRT_MESSAGE, "button not in an area\n");
 					else AI_main_BotAIPrint(PRT_MESSAGE, "button area has no reachabilities\n");
 #endif //OBSTACLEDEBUG
-					if (bs->ainode == AINode_Seek_NBG) bs->nbg_time = 0;
-					else if (bs->ainode == AINode_Seek_LTG) bs->ltg_time = 0;
+					if (bs->ainode == AI_dmnat_AINode_Seek_NBG) bs->nbg_time = 0;
+					else if (bs->ainode == AI_dmnet_AINode_Seek_LTG) bs->ltg_time = 0;
 				}
 			}
 		}
@@ -2445,8 +2445,8 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 	if (bs->notblocked_time < trap_AAS_Time() - 0.4) {
 		//just reset goals and hope the bot will go into another direction
 		//is this still needed??
-		if (bs->ainode == AINode_Seek_NBG) bs->nbg_time = 0;
-		else if (bs->ainode == AINode_Seek_LTG) bs->ltg_time = 0;
+		if (bs->ainode == AI_dmnat_AINode_Seek_NBG) bs->nbg_time = 0;
+		else if (bs->ainode == AI_dmnet_AINode_Seek_LTG) bs->ltg_time = 0;
 	}
 }
 
@@ -2530,7 +2530,7 @@ void BotCheckConsoleMessages(bot_state_t *bs) {
 					}
 				}
 				//if at a valid chat position and not chatting already
-				else if (bs->ainode != AINode_Stand && BotValidChatPosition(bs)) {
+				else if (bs->ainode != AI_dmnet_AINode_Stand && BotValidChatPosition(bs)) {
 					chat_reply = 0;
 					if (random() < 1.5 / (AI_main_NumBots()+1) && random() < chat_reply) {
 						//if bot replies with a chat message
@@ -2542,7 +2542,7 @@ void BotCheckConsoleMessages(bot_state_t *bs) {
 							//remove the console message
 							trap_BotRemoveConsoleMessage(bs->cs, handle);
 							bs->stand_time = trap_AAS_Time() + BotChatTime(bs);
-							AIEnter_Stand(bs);
+							AI_dmnet_AIEnter_Stand(bs);
 							//EA_Say(bs->client, bs->cs.chatmessage);
 							break;
 						}
@@ -2779,18 +2779,18 @@ void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
 	}
 	//if the bot has no ai node
 	if (!bs->ainode) {
-		AIEnter_Seek_LTG(bs);
+		AI_dmnet_AIEnter_Seek_LTG(bs);
 	}
 	//if the bot entered the game less than 8 seconds ago
 	if (!bs->entergamechat && bs->entergame_time > trap_AAS_Time() - 8) {
 		if (BotChat_EnterGame(bs)) {
 			bs->stand_time = trap_AAS_Time() + BotChatTime(bs);
-			AIEnter_Stand(bs);
+			AI_dmnet_AIEnter_Stand(bs);
 		}
 		bs->entergamechat = qtrue;
 	}
 	//reset the node switches from the previous frame
-	BotResetNodeSwitches();
+	AI_dmnet_BotResetNodeSwitches();
 	//execute AI nodes
 	for (i = 0; i < MAX_NODESWITCHES; i++) {
 		if (bs->ainode(bs)) break;
@@ -2801,7 +2801,7 @@ void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
 	if (i >= MAX_NODESWITCHES) {
 		trap_BotDumpGoalStack(bs->gs);
 		trap_BotDumpAvoidGoals(bs->gs);
-		BotDumpNodeSwitches(bs);
+		AI_dmnet_BotDumpNodeSwitches(bs);
 		ClientName(bs->client, name, sizeof(name));
 		AI_main_BotAIPrint(PRT_ERROR, "%s at %1.1f switched more than %d AI nodes\n", name, trap_AAS_Time(), MAX_NODESWITCHES);
 	}
