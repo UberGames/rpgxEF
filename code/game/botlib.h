@@ -16,7 +16,14 @@
 #ifndef BOTLIB_H_
 #define BOTLIB_H_
 
-#define	BOTLIB_API_VERSION		2
+#ifdef _MSC_VER
+#include <stddef.h>
+#include <stdint.h>
+#else
+#include <stdint.h>
+#endif
+
+static const uint32_t BOTLIB_API_VERSION = 2;
 
 struct aas_clientmove_s;
 struct aas_entityinfo_s;
@@ -28,12 +35,12 @@ struct bot_initmove_s;
 struct weaponinfo_s;
 
 //debug line colors
-#define LINECOLOR_NONE			-1
-#define LINECOLOR_RED			 1 //0xf2f2f0f0L
-#define LINECOLOR_GREEN			 2 //0xd0d1d2d3L
-#define LINECOLOR_BLUE			 3 //0xf3f3f1f1L
-#define LINECOLOR_YELLOW		 4 //0xdcdddedfL
-#define LINECOLOR_ORANGE		 5 //0xe0e1e2e3L
+static const int32_t  LINECOLOR_NONE	= -1;
+static const uint32_t LINECOLOR_RED		= 1; //0xf2f2f0f0L
+static const uint32_t LINECOLOR_GREEN	= 2; //0xd0d1d2d3L
+static const uint32_t LINECOLOR_BLUE	= 3; //0xf3f3f1f1L
+static const uint32_t LINECOLOR_YELLOW	= 4; //0xdcdddedfL
+static const uint32_t LINECOLOR_ORANGE	= 5; //0xe0e1e2e3L
 
 //Print types
 typedef enum {
