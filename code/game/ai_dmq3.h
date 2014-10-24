@@ -14,6 +14,8 @@
  *
  *****************************************************************************/
 
+// TODO ai_dmq3: 64bit awareness
+
 #ifndef AI_DMQ3_H_
 #define AI_DMQ3_H_
 
@@ -163,20 +165,22 @@ int BotPointAreaNum(vec3_t origin);
 void BotMapScripts(bot_state_t *bs);
 
 //ctf flags
-typedef enum {
+enum ai_ctfTeamFlagFlag_e {
 	CTF_FLAG_NONE,
 	CTF_FLAG_RED,
 	CTF_FLAG_BLUE
-} ai_ctfTeamFlagFlag;
+};
+
 //CTF skins
-static const char CTF_SKIN_REDTEAM[]	= "red";
-static const char CTF_SKIN_BLUETEAM[]	= "blue";
+static const char CTF_SKIN_REDTEAM[] = "red";
+static const char CTF_SKIN_BLUETEAM[] = "blue";
+
 //CTF teams
-typedef enum {
+enum ai_ctfTeamFlag_e {
 	CTF_TEAM_NONE,
 	CTF_TEAM_RED,
 	CTF_TEAM_BLUE
-} ai_ctfTeamFlag;
+};
 
 
 extern int32_t gametype;		//!<game type

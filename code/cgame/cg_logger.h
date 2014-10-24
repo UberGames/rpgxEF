@@ -12,8 +12,14 @@ enum {
 	LL_TRACE
 };
 
+#ifdef DEBUG
 #define CG_LogFuncBegin() CG_LocLogger(LL_TRACE, "%s - Begin\n", __FUNCTION__)
 #define CG_LogFuncEnd() CG_LocLogger(LL_TRACE, "%s - End\n", __FUNCTION__)
+#else
+#define CG_LogFuncBegin()
+#define CG_LogFuncEnd()
+#endif
+
 #define CG_LocLogger(X,...) _CG_LocLogger(__FILE__, __LINE__, X, __VA_ARGS__) 
 void QDECL CG_Logger(int level, char* fmt, ...) __attribute__ ((format (printf, 2, 3)));
 void QDECL _CG_LocLogger(const char* file, int line, int level, char* fmt, ...) __attribute__ ((format (printf, 4, 5)));

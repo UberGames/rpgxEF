@@ -2,8 +2,10 @@
 #define _AI_COMMON_H
 
 //some maxs
-#define MAX_NETNAME 36
-#define MAX_FILEPATH 144
+enum ai_commonLimits_e {
+	MAX_NETNAME = 36,
+	MAX_FILEPATH = 144
+};
 
 //bot settings
 /** \struct bot_settings_t

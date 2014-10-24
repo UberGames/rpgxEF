@@ -290,7 +290,7 @@ static cvarTable_t	cvarTable[] = {
 	{ &pms_race, "race", "Unknown", CVAR_ARCHIVE | CVAR_USERINFO },
 	{ &emote_Offset, "modelOffset", "0", CVAR_ARCHIVE | CVAR_USERINFO },
 
-	{ &cg_defaultChar, "cg_defaultChar", DEFAULT_CHAR, CVAR_ARCHIVE },
+	{ &cg_defaultChar, "cg_defaultChar", (char*)DEFAULT_CHAR, CVAR_ARCHIVE },
 
 	// the following variables are created in other parts of the system,
 	// but we also reference them here

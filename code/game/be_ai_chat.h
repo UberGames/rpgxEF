@@ -6,7 +6,7 @@
  * desc:		char AI
  *
  * $Archive: /StarTrek/Code-DM/game/be_ai_chat.h $
- * $Author: Jmonroe $ 
+ * $Author: Jmonroe $
  * $Revision: 1 $
  * $Modtime: 1/21/00 10:12p $
  * $Date: 1/25/00 6:26p $
@@ -16,40 +16,43 @@
 #ifndef BE_AI_CHAT_H_
 #define BE_AI_CHAT_H_
 
-#define MAX_MESSAGE_SIZE		256
-#define MAX_CHATTYPE_NAME		32
-#define MAX_MATCHVARIABLES		8
+enum be_ai_chatLimits_e {
+	MAX_MATCHVARIABLES = 8,
+	MAX_CHATTYPE_NAME = 32,
+	MAX_MESSAGE_SIZE = 256,
+};
 
-#define CHAT_GENDERLESS			0
-#define CHAT_GENDERFEMALE		1
-#define CHAT_GENDERMALE			2
+enum be_ai_chatGender_e {
+	CHAT_GENDERLESS,
+	CHAT_GENDERFEMALE,
+	CHAT_GENDERMALE
+};
 
-#define CHAT_ALL					0
-#define CHAT_TEAM					1
+enum be_ai_chatType_e {
+	CHAT_ALL,
+	CHAT_TEAM
+};
 
 //a console message
-typedef struct bot_consolemessage_s
-{
-	int handle;
-	float time;									//!<message time
-	int type;									//!<message type
+typedef struct bot_consolemessage_s {
+	int32_t handle;
+	double time;								//!<message time
+	int32_t type;								//!<message type
 	char message[MAX_MESSAGE_SIZE];				//!<message
 	struct bot_consolemessage_s *prev, *next;	//!<prev and next in list
 } bot_consolemessage_t;
 
 //!match variable
-typedef struct bot_matchvariable_s
-{
+typedef struct bot_matchvariable_s {
 	char offset;
-	int length;
+	int32_t length;
 } bot_matchvariable_t;
 
 //!returned to AI when a match is found
-typedef struct bot_match_s
-{
+typedef struct bot_match_s {
 	char string[MAX_MESSAGE_SIZE];
-	int type;
-	int subtype;
+	int32_t type;
+	int32_t subtype;
 	bot_matchvariable_t variables[MAX_MATCHVARIABLES];
 } bot_match_t;
 

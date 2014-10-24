@@ -10,6 +10,7 @@
 #include "g_lua.h"
 #include "g_mover.h"
 #include "g_syscalls.h"
+#include "g_logger.h"
 
 extern void ammo_station_finish_spawning ( gentity_t *self );
 
@@ -1830,7 +1831,7 @@ void G_ThrowWeapon( gentity_t *ent, char *txt )
 	}
 
 	if ( numTotalDropped >= MAX_DROPPED ) {
-		WARNING(("RPG-X Warning: maximum of dropped items of %i reached.\n", MAX_DROPPED));
+		G_LocLogger(LL_WARN, "RPG-X Warning: maximum of dropped items of %i reached.\n", MAX_DROPPED);
 		return;
 	}
 

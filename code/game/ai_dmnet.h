@@ -7,7 +7,7 @@
  * desc:		Quake3 bot AI
  *
  * $Archive: /StarTrek/Code-DM/game/ai_dmnet.h $
- * $Author: Jmonroe $ 
+ * $Author: Jmonroe $
  * $Revision: 1 $
  * $Modtime: 1/21/00 10:12p $
  * $Date: 1/25/00 6:26p $
@@ -17,7 +17,9 @@
 #ifndef AI_DMNET_H_
 #define AI_DMNET_H_
 
-#define MAX_NODESWITCHES 50
+enum ai_dmnetLimits_e {
+	MAX_NODESWITCHES = 50
+};
 
 void AI_dmnet_AIEnter_Stand(bot_state_t* bs);
 void AI_dmnet_AIEnter_Seek_ActivateEntity(bot_state_t* bs);

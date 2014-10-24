@@ -422,8 +422,8 @@ static cvarTable_t		cvarTable[] = {
 	//TiM : RPG-X variables 8-8-2005
 	{ &ui_dynamicLensFlares, "cg_dynamicLensFlares", "1", CVAR_ARCHIVE },
 	{ &ui_dynamicCrosshair, "cg_dynamicCrosshair", "1", CVAR_ARCHIVE },
-	{ &ui_currentRankSet, "ui_currentRankSet", RANKSET_DEFAULT, CVAR_ARCHIVE | CVAR_ROM },
-	{ &ui_currentClassSet, "ui_currentClassSet", CLASS_DEFAULT, CVAR_ARCHIVE | CVAR_ROM },
+	{ &ui_currentRankSet, "ui_currentRankSet", (char*)RANKSET_DEFAULT, CVAR_ARCHIVE | CVAR_ROM },
+	{ &ui_currentClassSet, "ui_currentClassSet", (char*)CLASS_DEFAULT, CVAR_ARCHIVE | CVAR_ROM },
 
 	//TiM: Local UI versions of the PMS parameters
 	{ &ui_age, "age", "Unknown", CVAR_ARCHIVE | CVAR_USERINFO },
@@ -431,7 +431,7 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_weight, "weight", "1.0", CVAR_ARCHIVE | CVAR_USERINFO },
 	{ &ui_race, "race", "Unknown", CVAR_ARCHIVE | CVAR_USERINFO },
 
-	{ &ui_defaultChar, "cg_defaultChar", DEFAULT_CHAR, CVAR_ARCHIVE },
+	{ &ui_defaultChar, "cg_defaultChar", (char*)DEFAULT_CHAR, CVAR_ARCHIVE },
 
 	//TiM: Emote CVARS - Recently played Emotes
 	{ &ui_recentEmote1, "ui_recentEmote1", "-1", CVAR_ARCHIVE },

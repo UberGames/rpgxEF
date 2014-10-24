@@ -22,17 +22,12 @@
 #include "be_aas.h"
 #include "botlib.h"
 
-//some maxs
-#define MAX_NETNAME 36
-#define MAX_FILEPATH 144
-
 //#define DEBUG
 #define CTF
 
-#define MAX_ITEMS 256
 //bot flags
 
-typedef enum {
+enum ai_mainBFL_e {
 	BFL_STRAFERIGHT = 1,	//!<strafe to the right
 	BFL_ATTACKED = 2,		//!<bot has attacked last ai frame
 	BFL_ATTACKJUMPED = 4,	//!<bot jumped during attack last frame
@@ -40,10 +35,10 @@ typedef enum {
 	BFL_AVOIDRIGHT = 16,	//!<avoid obstacles by going to the right
 	BFL_IDEALVIEWSET = 32,	//!<bot has ideal view angles set
 	BFL_FIGHTSUICIDAL = 64	//!<bot is in a suicidal fight
-} AI_main_BFL;
+};
 
 //long term goal types
-typedef enum {
+enum ai_mainLTG_e {
 	LTG_TEAMHELP = 1,	//!<help a team mate
 	LTG_TEAMACCOMPANY,	//!<accompany a team mate
 	LTG_DEFENDKEYAREA,	//!<defend a key area
@@ -55,7 +50,7 @@ typedef enum {
 	LTG_PATROL,			//!<patrol
 	LTG_GETITEM,		//!<get an item
 	LTG_KILL			//!<kill someone
-} AI_main_LTG;
+};
 
 //some goal dedication times
 static const uint32_t TEAM_HELP_TIME = 10;				//!<1 minute teamplay help time

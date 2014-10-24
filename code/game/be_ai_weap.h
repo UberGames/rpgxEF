@@ -7,7 +7,7 @@
  * desc:		weapon AI
  *
  * $Archive: /StarTrek/Code-DM/game/be_ai_weap.h $
- * $Author: Mgummelt $ 
+ * $Author: Mgummelt $
  * $Revision: 2 $
  * $Modtime: 3/12/01 3:08p $
  * $Date: 3/12/01 4:43p $
@@ -18,58 +18,64 @@
 #define BE_AI_WEAP_H_
 
 //projectile flags
-#define PFL_WINDOWDAMAGE			1		//!<projectile damages through window
-#define PFL_RETURN					2		//!<set when projectile returns to owner
-//weapon flags
-#define WFL_FIRERELEASED			1		//!<set when projectile is fired with key-up event
-//damage types
-#define DAMAGETYPE_IMPACT			1		//!<damage on impact
-#define DAMAGETYPE_RADIAL			2		//!<radial damage
-#define DAMAGETYPE_VISIBLE			4		//!<damage to all entities visible to the projectile
+enum be_ai_projectileFlag_e {
+	PFL_WINDOWDAMAGE = 1,	//!<projectile damages through window
+	PFL_RETURN = 2			//!<set when projectile returns to owner
+};
 
-typedef struct projectileinfo_s
-{
+//weapon flags
+enum be_ai_weaponFlag_e {
+	WFL_FIRERELEASED = 1		//!<set when projectile is fired with key-up event
+};
+
+//damage types
+enum be_ai_damageType_e {
+	DAMAGETYPE_IMPACT = 1,		//!<damage on impact
+	DAMAGETYPE_RADIAL = 2,		//!<radial damage
+	DAMAGETYPE_VISIBLE = 4		//!<damage to all entities visible to the projectile
+};
+
+typedef struct projectileinfo_s {
 	char name[MAX_STRINGFIELD];
 	char model[MAX_STRINGFIELD];
-	int flags;
-	float gravity;
-	int damage;
-	float radius;
-	int visdamage;
-	int damagetype;
-	int healthinc;
-	float push;
-	float detonation;
-	float bounce;
-	float bouncefric;
-	float bouncestop;
+	int32_t flags;
+	double gravity;
+	int32_t damage;
+	double radius;
+	int32_t visdamage;
+	int32_t damagetype;
+	int32_t healthinc;
+	double push;
+	double detonation;
+	double bounce;
+	double bouncefric;
+	double bouncestop;
 } projectileinfo_t;
 
-typedef struct weaponinfo_s
-{
-	int valid;					//!<true if the weapon info is valid
-	int number;									//!<number of the weapon
+typedef struct weaponinfo_s {
+	int32_t valid;					//!<true if the weapon info is valid
+	int32_t number;									//!<number of the weapon
 	char name[MAX_STRINGFIELD];
 	char model[MAX_STRINGFIELD];
-	int level;
-	int weaponindex;
-	int flags;
+	int32_t level;
+	int32_t weaponindex;
+	int32_t flags;
 	char projectile[MAX_STRINGFIELD];
-	int numprojectiles;
-	float hspread;
-	float vspread;
-	float speed;
-	float acceleration;
+	int32_t numprojectiles;
+	double hspread;
+	double vspread;
+	double speed;
+	double acceleration;
 	vec3_t recoil;
 	vec3_t offset;
 	vec3_t angleoffset;
-	float extrazvelocity;
-	int ammoamount;
-	int ammoindex;
-	float activate;
-	float reload;
-	float spinup;
-	float spindown;
+	double extrazvelocity;
+	int32_t ammoamount;
+	int32_t ammoindex;
+	double activate;
+	double reload;
+	double spinup;
+	double spindown;
 	projectileinfo_t proj;						//!<pointer to the used projectile
 } weaponinfo_t;
 

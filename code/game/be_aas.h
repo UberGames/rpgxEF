@@ -67,12 +67,12 @@ typedef enum {
 //!a trace is returned when a box is swept through the AAS world
 typedef struct aas_trace_s {
 	qboolean	startsolid;	//!< if true, the initial point was in a solid area
-	float		fraction;	//!< time completed, 1.0 = didn't hit anything
+	double		fraction;	//!< time completed, 1.0 = didn't hit anything
 	vec3_t		endpos;		//!< final position
-	int			ent;		//!< entity blocking the trace
-	int			lastarea;	//!< last area the trace was in (zero if none)
-	int			area;		//!< area blocking the trace (zero if none)
-	int			planenum;	//!< number of the plane that was hit
+	int32_t		ent;		//!< entity blocking the trace
+	int32_t		lastarea;	//!< last area the trace was in (zero if none)
+	int32_t		area;		//!< area blocking the trace (zero if none)
+	int32_t		planenum;	//!< number of the plane that was hit
 } aas_trace_t;
 
 /* Defined in botlib.h
@@ -103,29 +103,29 @@ int				ent;		// number of entity hit
 
 //!entity info
 typedef struct aas_entityinfo_s {
-	int		valid;			//!< true if updated this frame
-	int		type;			//!< entity type
-	int		flags;			//!< entity flags
-	float	ltime;			//!< local time
-	float	update_time;	//!< time between last and current update
-	int		number;			//!< number of the entity
+	int32_t	valid;			//!< true if updated this frame
+	int32_t	type;			//!< entity type
+	int32_t	flags;			//!< entity flags
+	double	ltime;			//!< local time
+	double	update_time;	//!< time between last and current update
+	int32_t	number;			//!< number of the entity
 	vec3_t	origin;			//!< origin of the entity
 	vec3_t	angles;			//!< angles of the model
 	vec3_t	old_origin;		//!< for lerping
 	vec3_t	lastvisorigin;	//!< last visible origin
 	vec3_t	mins;			//!< bounding box minimums
 	vec3_t	maxs;			//!< bounding box maximums
-	int		groundent;		//!< ground entity
-	int		solid;			//!< solid type
-	int		modelindex;		//!< model used
-	int		modelindex2;	//!< weapons, CTF flags, etc
-	int		frame;			//!< model frame number
-	int		event;			//!< impulse events -- muzzle flashes, footsteps, etc
-	int		eventParm;		//!< even parameter
-	int		powerups;		//!< bit flags
-	int		weapon;			//!< determines weapon and flash model, etc
-	int		legsAnim;		//!< mask off ANIM_TOGGLEBIT
-	int		torsoAnim;		//!< mask off ANIM_TOGGLEBIT
+	int32_t	groundent;		//!< ground entity
+	int32_t	solid;			//!< solid type
+	int32_t	modelindex;		//!< model used
+	int32_t	modelindex2;	//!< weapons, CTF flags, etc
+	int32_t	frame;			//!< model frame number
+	int32_t	event;			//!< impulse events -- muzzle flashes, footsteps, etc
+	int32_t	eventParm;		//!< even parameter
+	int32_t	powerups;		//!< bit flags
+	int32_t	weapon;			//!< determines weapon and flash model, etc
+	int32_t	legsAnim;		//!< mask off ANIM_TOGGLEBIT
+	int32_t	torsoAnim;		//!< mask off ANIM_TOGGLEBIT
 } aas_entityinfo_t;
 
 
@@ -147,23 +147,23 @@ typedef enum {
 } aas_stopEvents;
 
 typedef struct aas_clientmove_s {
-	vec3_t endpos;			//!<position at the end of movement prediction
-	int endarea;			//!<area at end of movement prediction
-	vec3_t velocity;		//!<velocity at the end of movement prediction
+	vec3_t	endpos;			//!<position at the end of movement prediction
+	int32_t endarea;		//!<area at end of movement prediction
+	vec3_t	velocity;		//!<velocity at the end of movement prediction
 	aas_trace_t trace;		//!<last trace
-	int presencetype;		//!<presence type at end of movement prediction
-	int stopevent;			//!<event that made the prediction stop
-	float endcontents;		//!<contents at the end of movement prediction
-	float time;				//!<time predicted ahead
-	int frames;				//!<number of frames predicted ahead
+	int32_t presencetype;	//!<presence type at end of movement prediction
+	int32_t stopevent;		//!<event that made the prediction stop
+	double endcontents;		//!<contents at the end of movement prediction
+	double time;			//!<time predicted ahead
+	int32_t frames;			//!<number of frames predicted ahead
 } aas_clientmove_t;
 
 typedef struct aas_altroutegoal_s {
 	vec3_t origin;
-	int areanum;
-	unsigned short starttraveltime;
-	unsigned short goaltraveltime;
-	unsigned short extratraveltime;
+	int32_t areanum;
+	uint16_t starttraveltime;
+	uint16_t goaltraveltime;
+	uint16_t extratraveltime;
 } aas_altroutegoal_t;
 
 #endif /* BE_AAS_H_ */

@@ -6,6 +6,7 @@
 #include "g_client.h"
 #include "g_spawn.h"
 #include "g_syscalls.h"
+#include "g_logger.h"
 
 /*
 
@@ -131,7 +132,7 @@ static void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
     char*		txtp = NULL;
     paddData_t*	empty = NULL;
 
-    DPRINTF(( S_COLOR_YELLOW "in Padd_Add: txt = %s and last = %s\n", txt, who->client->lastPaddMsg ));
+    G_LocLogger(LL_DEBUG, S_COLOR_YELLOW "in Padd_Add: txt = %s and last = %s\n", txt, who->client->lastPaddMsg );
 
     while ( empty == NULL ) {
         if ( i >= PADD_DATA_MAX ) {
@@ -144,7 +145,7 @@ static void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
         ++i;
     }
 
-    DPRINTF(( S_COLOR_YELLOW "added: %i with %s on nr %i\n" S_COLOR_WHITE, key, txt, i - 1));
+    G_LocLogger(LL_DEBUG, S_COLOR_YELLOW "added: %i with %s on nr %i\n" S_COLOR_WHITE, (int32_t)key, txt, i - 1);
 
     empty->key = key;
     if ( (txt != NULL) && (txt[0] != 0) ) {
@@ -182,7 +183,7 @@ static char* Padd_Get( gentity_t* key, gentity_t* who )
 	if((key != NULL) && (who != NULL)) {
 		for ( ; i < PADD_DATA_MAX; ++i ) {
 			if ( paddData[i].key == key ) {
-				DPRINTF(("^3got: %i with %s on nr %i\n", key, paddData[i].value, i));
+				G_LocLogger(LL_DEBUG, "^3got: %i with %s on nr %i\n", (int32_t)key, paddData[i].value, i);
 				//Inform admins
 				for ( j = 0; j < level.maxclients; ++j ) {
 					gentity_t *player = &g_entities[j];
@@ -218,7 +219,7 @@ static void Padd_Remove( gentity_t* key )
             paddData[i].key = 0;
             paddData[i].value[0] = '\0';
             paddData[i].owner[0] = '\0';
-            DPRINTF(( S_COLOR_YELLOW "deleting: %i on %i\n", key, i));
+            G_LocLogger(LL_DEBUG, S_COLOR_YELLOW "deleting: %i on %i\n", (int32_t)key, i);
             --paddDataNum;
             return;
         } else if ( i >= PADD_DATA_MAX ) {

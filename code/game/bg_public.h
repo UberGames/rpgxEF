@@ -62,7 +62,7 @@ typedef enum {
 	MAX_BOTS = 1024,
 	MAX_ARENAS_TEXT = 8192,
 	MAX_BOTS_TEXT = 8192
-} bg_limits;;
+} bg_limits;
 
 
 /** \struct rankNames_t
@@ -73,50 +73,37 @@ typedef struct {
 	char	formalName[MAX_QPATH];	//!< long name 
 } rankNames_t;
 
-#define	RANKSET_DEFAULT	"rpgx_default"	//!< name of the default rankset
+static const char RANKSET_DEFAULT[] = "rpgx_default";	//!< name of the default rankset
 
 //TiM : Class script info
-#define	CLASS_DEFAULT	"rpgx_default"	//!< the default classset
-
-//RPG-X: Marcin: I'm lazy sorry
-#define WARNING(x) \
-do { \
-	G_LogPrintf x; \
-	trap_SendServerCommand( -1, va("print \"%s\"", va x)); \
-} while ( 0 )
-
-//RPG-X: Marcin: DEBUG STUFF - 06/12/2008
-#ifdef  MY_DEBUG
-#define DPRINTF(x) WARNING x
-#else
-#define DPRINTF(x) // nothing
-#endif
+static const char CLASS_DEFAULT[] = "rpgx_default";	//!< the default classset
 
 //TiM - Used globally for hitbox definition
-#define		DEFAULT_MINS_0	-12
-#define		DEFAULT_MINS_1	-12
-#define		DEFAULT_MINS_2	-24
+enum be_hitboxDimensions_e {
+	DEFAULT_MINS_0 = -12,
+	DEFAULT_MINS_1 = -12,
+	DEFAULT_MINS_2 = -24,
 
-#define		DEFAULT_MAXS_0	12
-#define		DEFAULT_MAXS_1	12
-#define		DEFAULT_MAXS_2	32
+	DEFAULT_MAXS_0 = 12,
+	DEFAULT_MAXS_1 = 12,
+	DEFAULT_MAXS_2 = 32
+};
 
-#define	DEFAULT_CHAR		"munro"
-#define DEFAULT_MODEL		"main"
-#define DEFAULT_SKIN		"default"
+static const char DEFAULT_CHAR[] = "munro";
+static const char DEFAULT_MODEL[] = "main";
+static const char DEFAULT_SKIN[] = "default";
 
-#define DEFAULT_PLAYER		"munro/main/default"
+static const char DEFAULT_PLAYER[] = "munro/main/default";
 
 /**	\struct widescreen_t
 *	variables used for widescreen drawing, used in both UI and CG
 *
 *	\author Ubergames - TiM
 */
-typedef struct
-{
-	float				ratio;				//!<multiplied against x/w to decrease w/h ratio to 1:1
-	int					state;				//!<specific rendering state (so we can disable the effect for certain elements)
-	int					bias;				//!<shifts every element as if the entire screen was being shifted (for centering purposes)	
+typedef struct {
+	double				ratio;				//!<multiplied against x/w to decrease w/h ratio to 1:1
+	int32_t				state;				//!<specific rendering state (so we can disable the effect for certain elements)
+	int32_t				bias;				//!<shifts every element as if the entire screen was being shifted (for centering purposes)	
 } widescreen_t;
 
 /**	\enum widescreen_e
@@ -124,13 +111,12 @@ typedef struct
 *
 *	\author Ubergames - TiM
 */
-typedef enum
-{
+enum bg_widescreen_e {
 	WIDESCREEN_NONE = 0,			//!<draw as normal
 	WIDESCREEN_LEFT,				//!<Keeps it aligned to the left side of the screen
 	WIDESCREEN_RIGHT,				//!<offsets it so it fits a 4:3 perspective in the middle of the screen
 	WIDESCREEN_CENTER				//!<offsets it, so it's within a 4:3 perspective on the right side of the screen
-} widescreen_e;
+};
 
 //
 // config strings are a general means of communicating variable length strings
@@ -138,43 +124,44 @@ typedef enum
 //
 
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
-#define	CS_MUSIC			2
-#define	CS_MESSAGE			3		//!< from the map worldspawn's message field
-#define	CS_MOTD				4		//!< g_motd string for server message of the day
-#define	CS_WARMUP			5		//!< server time when the match will be restarted
-#define	CS_SCORES1			6
-#define	CS_SCORES2			7
-#define CS_VOTE_TIME		8
-#define CS_VOTE_STRING		9
-#define	CS_VOTE_YES			10
-#define	CS_VOTE_NO			11
-#define	CS_GAME_VERSION		12
-#define	CS_LEVEL_START_TIME	13		//!< so the timer only shows the current level
-#define	CS_INTERMISSION		14		//!< when 1, fraglimit/timelimit has been hit and intermission will start in a second or two
-#define CS_FLAGSTATUS		15		//!< string indicating flag status in CTF
-#define CS_RED_GROUP		16		//!< used to send down what the group the red team is
-#define CS_BLUE_GROUP		17		//!< used to send down what the group the blue team is
+enum bg_configStrings_e {
+	CS_MUSIC = 2,
+	CS_MESSAGE = 3,				//!< from the map worldspawn's message field
+	CS_MOTD = 4,				//!< g_motd string for server message of the day
+	CS_WARMUP = 5,				//!< server time when the match will be restarted
+	CS_SCORES1 = 6,
+	CS_SCORES2 = 7,
+	CS_VOTE_TIME = 8,
+	CS_VOTE_STRING = 9,
+	CS_VOTE_YES = 10,
+	CS_VOTE_NO = 11,
+	CS_GAME_VERSION = 12,
+	CS_LEVEL_START_TIME = 13,	//!< so the timer only shows the current level
+	CS_INTERMISSION = 14,		//!< when 1, fraglimit/timelimit has been hit and intermission will start in a second or two
+	CS_FLAGSTATUS = 15,			//!< string indicating flag status in CTF
+	CS_RED_GROUP = 16,			//!< used to send down what the group the red team is
+	CS_BLUE_GROUP = 17,			//!< used to send down what the group the blue team is
 
-#define	CS_ITEMS			27		//!< string of 0's and 1's that tell which items are present
-//TiM: Ooooh! a gap between 27 + 32! Exploitationism!
-#define CS_CAMERA_SHAKE		28		//!<holds the intensity + duration for camera shakes.
-									//I'm using a CS string, so if a client joins mid-shake, they'll start shaking too
-#define CS_CON_FAIL			29		//!<If a connection fails - Display this message
-#define CS_CLASS_DATA		30		//!<Class data passed to the client from the server (to allow players not requiring class data locally)
-#define CS_TURBOLIFT_DATA	31
-#define CS_SHADERSTATE		32 		//!< used for shader remapping
-#define	CS_MODELS			33
-#define	CS_SOUNDS			(CS_MODELS+MAX_MODELS)
-#define	CS_PLAYERS			(CS_SOUNDS+MAX_SOUNDS)
-#define CS_LOCATIONS		(CS_PLAYERS+MAX_CLIENTS)
+	CS_ITEMS = 27,				//!< string of 0's and 1's that tell which items are present
+	//TiM: Ooooh! a gap between 27 + 32! Exploitationism!
+	CS_CAMERA_SHAKE = 28,		//!<holds the intensity + duration for camera shakes.
+	//I'm using a CS string, so if a client joins mid-shake, they'll start shaking too
+	CS_CON_FAIL = 29,			//!<If a connection fails - Display this message
+	CS_CLASS_DATA = 30,			//!<Class data passed to the client from the server (to allow players not requiring class data locally)
+	CS_TURBOLIFT_DATA = 31,
+	CS_SHADERSTATE = 32, 		//!< used for shader remapping
+	CS_MODELS = 33,
+	CS_SOUNDS = (CS_MODELS + MAX_MODELS),
+	CS_PLAYERS = (CS_SOUNDS + MAX_SOUNDS),
+	CS_LOCATIONS = (CS_PLAYERS + MAX_CLIENTS),
 
-//TiM: RPG-X Tricorder scan-able func_usables
-#define CS_TRIC_STRINGS		(CS_LOCATIONS+MAX_LOCATIONS)
-//TiM: RPG-X Data for decoy spawnage
-#define CS_DECOYS			(CS_TRIC_STRINGS+MAX_TRIC_STRINGS)
+	//TiM: RPG-X Tricorder scan-able func_usables
+	CS_TRIC_STRINGS = (CS_LOCATIONS + MAX_LOCATIONS),
+	//TiM: RPG-X Data for decoy spawnage
+	CS_DECOYS = (CS_TRIC_STRINGS + MAX_TRIC_STRINGS),
 
-#define CS_MAX				(CS_DECOYS+MAX_DECOYS)
-//#define CS_MAX				(CS_LOCATIONS+MAX_LOCATIONS) //TiM : Old
+	CS_MAX = (CS_DECOYS + MAX_DECOYS)
+};
 
 //TiM: Current String count is 896. 128 left O_o
 //GSIO: Current String count is 897 for rpgxEF. 3199 left for rpgxEF O_o :D
@@ -199,19 +186,19 @@ typedef enum {
 typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
 
 //TiM - Global variables for the player weight/height system
-#define BASE_HEIGHT		185.0
-#define BASE_WEIGHT		90.0
+static const double BASE_HEIGHT = 185.0;
+static const double BASE_WEIGHT = 90.0;
 
-#define FEMALE_OFFSET	0.73
+static const double FEMALE_OFFSET = 0.73;
 
-#define MAX_HEIGHT		1.15
-#define MIN_HEIGHT		0.9
+static const double MAX_HEIGHT = 1.15;
+static const double MIN_HEIGHT = 0.9;
 
-#define MAX_WEIGHT		1.1
-#define MIN_WEIGHT		0.9
+static const double MAX_WEIGHT = 1.1;
+static const double MIN_WEIGHT = 0.9;
 
-#define HEIGHT_UNIT		"cm"
-#define WEIGHT_UNIT		"kg"
+static const char HEIGHT_UNIT[] = "cm";
+static const char WEIGHT_UNIT[] = "kg";
 
 /*
 ===================================================================================
@@ -249,24 +236,24 @@ typedef enum {
 
 // pmove->pm_flags
 
-#define	PMF_DUCKED			1 //1 //2
-#define	PMF_JUMP_HELD		2 //2 //4
-#define	PMF_BACKWARDS_JUMP	8		//!< go into backwards land
-#define	PMF_BACKWARDS_RUN	16		//!< coast down to backwards run
-#define	PMF_TIME_LAND		32		//!< pm_time is time before rejump
-#define	PMF_TIME_KNOCKBACK	64		//!< pm_time is an air-accelerate only time
-#define	PMF_TIME_WATERJUMP	256		//!< pm_time is waterjump
-#define	PMF_RESPAWNED		512		//!< clear after attack and jump buttons come up
-#define	PMF_USE_ITEM_HELD	1024
-#define PMF_FOLLOW			4096	//!< spectate following another player
-#define PMF_SCOREBOARD		8192	//!< spectate as a scoreboard
-
-#define ANIM_ONLADDER		16384
-#define ANIM_DIDFLY			32768
-#define	ANIM_ALERT			128		//TiM: How was this missed!?
-#define ANIM_ALERT2			2048	//TiM: This makes it full I think
-
-#define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
+enum bg_pmFlag_e {
+	PMF_DUCKED = 1,				//1 //2
+	PMF_JUMP_HELD = 2,			//2 //4
+	PMF_BACKWARDS_JUMP = 8,		//!< go into backwards land
+	PMF_BACKWARDS_RUN = 16,		//!< coast down to backwards run
+	PMF_TIME_LAND = 32,			//!< pm_time is time before rejump
+	PMF_TIME_KNOCKBACK = 64,	//!< pm_time is an air-accelerate only time
+	ANIM_ALERT = 128,			//TiM: How was this missed!?
+	PMF_TIME_WATERJUMP = 256,	//!< pm_time is waterjump
+	PMF_RESPAWNED = 512,		//!< clear after attack and jump buttons come up
+	PMF_USE_ITEM_HELD = 1024,
+	ANIM_ALERT2 = 2048,			//TiM: This makes it full I think
+	PMF_FOLLOW = 4096,			//!< spectate following another player
+	PMF_SCOREBOARD = 8192,		//!< spectate as a scoreboard
+	ANIM_ONLADDER = 16384,
+	ANIM_DIDFLY = 32768,
+	PMF_ALL_TIMES = (PMF_TIME_WATERJUMP | PMF_TIME_LAND | PMF_TIME_KNOCKBACK)
+};
 
 /**
 *	\struct pmove_t
@@ -277,24 +264,24 @@ typedef struct {
 
 	// command (in)
 	usercmd_t	cmd;
-	int			tracemask;			//!< collide against these types of surfaces
-	int			debugLevel;			//!< if set, diagnostic output will be printed
+	int32_t		tracemask;			//!< collide against these types of surfaces
+	int32_t		debugLevel;			//!< if set, diagnostic output will be printed
 	qboolean	noFootsteps;		//!< if the game is setup for no footsteps by the server
 	qboolean	pModDisintegration;		//!< true if the Disintegration playerMod is on
 
 	// results (out)
-	int			numtouch;
-	int			touchents[MAXTOUCH];
+	int32_t		numtouch;
+	int32_t		touchents[MAXTOUCH];
 
-	int			useEvent;
+	int32_t		useEvent;
 
 	vec3_t		mins, maxs;			//!< bounding box size
 
-	int			watertype;
-	int			waterlevel;
+	int32_t		watertype;
+	int32_t		waterlevel;
 
-	float		xyspeed;
-	float		xyzspeed; //TiM : in case body is falling as well
+	double		xyspeed;
+	double		xyzspeed; //TiM : in case body is falling as well
 
 	qboolean	admin;
 	qboolean	medic;
@@ -302,14 +289,14 @@ typedef struct {
 
 	// callbacks to test the world
 	// these will be different functions during game and cgame
-	void		(*trace)( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );
-	int			(*pointcontents)( const vec3_t point, int passEntityNum );
+	void(*trace)(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int32_t passEntityNum, int32_t contentMask);
+	int32_t(*pointcontents)(const vec3_t point, int32_t passEntityNum);
 
 } pmove_t;
 
 // if a full pmove isn't done on the client, you can just update the angles
-void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
-void Pmove (pmove_t *pmove);
+void PM_UpdateViewAngles(playerState_t *ps, const usercmd_t *cmd);
+void Pmove(pmove_t *pmove);
 
 //===================================================================================
 
@@ -369,31 +356,33 @@ typedef enum {
 //TiM : ioEF has defined it so 24 bits is the norm... but in reg EF, it's 27
 //either way, confirm there's absolutely no more than 27 (24 if we can)
 
-#define	EF_DEAD				0x00000001		//!< don't draw a foe marker over players with EF_DEAD
-#define EF_ITEMPLACEHOLDER	0x00000002		//!< faded items
-#define	EF_TELEPORT_BIT		0x00000004		//!< toggled every time the origin abruptly changes
-#define	EF_BOUNCE			0x00000008		//!< for missiles
-#define	EF_BOUNCE_HALF		0x00000010		//!< for missiles
-#define EF_MISSILE_STICK	0x00000020		//!< missiles that stick to the wall.
-#define	EF_NODRAW			0x00000040		//!< may have an event, but no model (unspawned items)
-#define	EF_FIRING			0x00000080		//!< for lightning gun
-#define EF_ALT_FIRING		0x00000100		//!< for alt-fires, mostly for lightning guns though
-#define	EF_CONNECTION		0x00000200		//!< draw a connection trouble sprite
-#define	EF_TALK				0x00000400		//!< draw a talk balloon
-#define	EF_SHIELD_BOX_X		0x00000800		//!< tells the client to use special client-collision info, x-axis aligned
-#define EF_VOTED			0x00001000		//!< already cast a vote
-#define EF_ANIM_ALLFAST		0x00002000		//!< automatically cycle through all frames at 10hz
-//RPG-X Flags
-#define EF_TALKING			0x00004000		//!< Player is talking
-#define	EF_CLAMP_BODY		0x00008000		//!< clamps player in place. moving cancels the emote, looking around rotates head (applies to legs only)
-#define	EF_CLAMP_ALL		0x00010000		//!< clamp whole body
-#define EF_EYES_SHUT		0x00020000		//!< player toggled their char's eye's shut.
-#define EF_EYES_ANGRY		0x00040000		//!< player toggled pissed off char face.
-#define EF_FULL_ROTATE		0x00080000		
-#define EF_ANIM_ONCE		0x00100000		//!< cycle through all frames just once then stop
-#define	EF_TURBOLIFT		0x00200000		//!< ent is in a turbolift now, so gets special rotation
-#define EF_SHIELD_BOX_Y		0x00400000		//!< tells the client to use special client-collision info, y-axis aligned
-#define	EF_MOVER_STOP		0x00800000		//!< will push otherwise - 67108864
+enum be_entityFlag_e {
+	EF_DEAD = 0x00000001,				//!< don't draw a foe marker over players with EF_DEAD
+	EF_ITEMPLACEHOLDER = 0x00000002,	//!< faded items
+	EF_TELEPORT_BIT = 0x00000004,		//!< toggled every time the origin abruptly changes
+	EF_BOUNCE = 0x00000008,				//!< for missiles
+	EF_BOUNCE_HALF = 0x00000010,		//!< for missiles
+	EF_MISSILE_STICK = 0x00000020,		//!< missiles that stick to the wall.
+	EF_NODRAW = 0x00000040,				//!< may have an event, but no model (unspawned items)
+	EF_FIRING = 0x00000080,				//!< for lightning gun
+	EF_ALT_FIRING = 0x00000100,			//!< for alt-fires, mostly for lightning guns though
+	EF_CONNECTION = 0x00000200,			//!< draw a connection trouble sprite
+	EF_TALK = 0x00000400,				//!< draw a talk balloon
+	EF_SHIELD_BOX_X = 0x00000800,		//!< tells the client to use special client-collision info, x-axis aligned
+	EF_VOTED = 0x00001000,				//!< already cast a vote
+	EF_ANIM_ALLFAST = 0x00002000,		//!< automatically cycle through all frames at 10hz
+	//RPG-X Flags
+	EF_TALKING = 0x00004000,			//!< Player is talking
+	EF_CLAMP_BODY = 0x00008000,			//!< clamps player in place. moving cancels the emote, looking around rotates head (applies to legs only)
+	EF_CLAMP_ALL = 0x00010000,			//!< clamp whole body
+	EF_EYES_SHUT = 0x00020000,			//!< player toggled their char's eye's shut.
+	EF_EYES_ANGRY = 0x00040000,			//!< player toggled pissed off char face.
+	EF_FULL_ROTATE = 0x00080000,
+	EF_ANIM_ONCE = 0x00100000,			//!< cycle through all frames just once then stop
+	EF_TURBOLIFT = 0x00200000,			//!< ent is in a turbolift now, so gets special rotation
+	EF_SHIELD_BOX_Y = 0x00400000,		//!< tells the client to use special client-collision info, y-axis aligned
+	EF_MOVER_STOP = 0x00800000			//!< will push otherwise - 67108864
+};
 
 //===================================================================================
 //TiM : Emote system definitions
@@ -403,39 +392,42 @@ typedef enum {
 #include "../cgame/cg_anims.h"
 
 //body flags
-#define	EMOTE_UPPER				1								//!<Emote affects torso model only
-#define EMOTE_LOWER				2								//!<Emote affects	legs model only
-#define	EMOTE_BOTH				( EMOTE_UPPER | EMOTE_LOWER )	//!<Emote affects both parts
+enum bg_emoteFlag_e {
+	EMOTE_UPPER = 1,							//!<Emote affects torso model only
+	EMOTE_LOWER = 2,							//!<Emote affects	legs model only
+	EMOTE_BOTH = (EMOTE_UPPER | EMOTE_LOWER),	//!<Emote affects both parts
 
-//Emote specific flags
-#define	EMOTE_CLAMP_BODY		4								//!<Emote clamps player angles, but leaves head free swinging
-#define	EMOTE_CLAMP_ALL			8								//!<Emote clamps the whole player. period.
 
-//Infinite loop this anim
-#define	EMOTE_LOOP_LOWER		16								//!<Lower emote will loop continuously until manually stopped
-#define EMOTE_LOOP_UPPER		32								//!<Upper emote will loop continuosly until stopped.
-#define EMOTE_LOOP_BOTH			( EMOTE_LOOP_LOWER | EMOTE_LOOP_UPPER )
+	//Emote specific flags
+	EMOTE_CLAMP_BODY = 4,								//!<Emote clamps player angles, but leaves head free swinging
+	EMOTE_CLAMP_ALL = 8,								//!<Emote clamps the whole player. period.
 
-//Eye emotes
-#define EMOTE_EYES_SHUT			64								//!<Emote plays with player's eyes shut
-#define EMOTE_EYES_PISSED		128								//!<Emote plays with player looking not happy.
+	//Infinite loop this anim
+	EMOTE_LOOP_LOWER = 16,								//!<Lower emote will loop continuously until manually stopped
+	EMOTE_LOOP_UPPER = 32,								//!<Upper emote will loop continuosly until stopped.
+	EMOTE_LOOP_BOTH = (EMOTE_LOOP_LOWER | EMOTE_LOOP_UPPER),
 
-//Override previous emotes flags
-#define EMOTE_OVERRIDE_UPPER	256								//!<If another emote is already playing, this one WILL override the upper section
-#define EMOTE_OVERRIDE_LOWER	512								//!<If another emote is already playing, this one WILL override the lower section
-#define EMOTE_OVERRIDE_BOTH		( EMOTE_OVERRIDE_UPPER | EMOTE_OVERRIDE_LOWER ) //!<Overrides both parts for the new emote
+	//Eye emotes
+	EMOTE_EYES_SHUT = 64,									//!<Emote plays with player's eyes shut
+	EMOTE_EYES_PISSED = 128,								//!<Emote plays with player looking not happy.
 
-//Revert to a loop anim when this is finished playing
-#define EMOTE_REVERTLOOP_UPPER	1024							//!<If already in a looping anim, when this new one finishes playing, the player will revert back to that anim (ie if u gestured whilst sitting down etc)
-#define EMOTE_REVERTLOOP_LOWER	2048
-#define EMOTE_REVERTLOOP_BOTH	( EMOTE_REVERTLOOP_UPPER | EMOTE_REVERTLOOP_LOWER )
+	//Override previous emotes flags
+	EMOTE_OVERRIDE_UPPER = 256,											//!<If another emote is already playing, this one WILL override the upper section
+	EMOTE_OVERRIDE_LOWER = 512,											//!<If another emote is already playing, this one WILL override the lower section
+	EMOTE_OVERRIDE_BOTH = (EMOTE_OVERRIDE_UPPER | EMOTE_OVERRIDE_LOWER),//!<Overrides both parts for the new emote
 
-//Used to clear all emote params except for blinking.
-//Kind of hacky, but better than diverting the blinking flag resources elsewhere.  
-//We only have so many array cells available
-#define EMOTE_MASK_LOWER		( EMOTE_LOWER | EMOTE_CLAMP_BODY | EMOTE_CLAMP_ALL | EMOTE_LOOP_LOWER | EMOTE_OVERRIDE_LOWER | EMOTE_REVERTLOOP_LOWER )
-#define EMOTE_MASK_UPPER		( EMOTE_UPPER | EMOTE_LOOP_UPPER | EMOTE_OVERRIDE_UPPER | EMOTE_REVERTLOOP_UPPER )
-#define EMOTE_MASK_BOTH			( EMOTE_MASK_LOWER | EMOTE_MASK_UPPER )
+	//Revert to a loop anim when this is finished playing
+	EMOTE_REVERTLOOP_UPPER = 1024,							//!<If already in a looping anim, when this new one finishes playing, the player will revert back to that anim (ie if u gestured whilst sitting down etc)
+	EMOTE_REVERTLOOP_LOWER = 2048,
+	EMOTE_REVERTLOOP_BOTH = (EMOTE_REVERTLOOP_UPPER | EMOTE_REVERTLOOP_LOWER),
+
+	//Used to clear all emote params except for blinking.
+	//Kind of hacky, but better than diverting the blinking flag resources elsewhere.  
+	//We only have so many array cells available
+	EMOTE_MASK_LOWER = (EMOTE_LOWER | EMOTE_CLAMP_BODY | EMOTE_CLAMP_ALL | EMOTE_LOOP_LOWER | EMOTE_OVERRIDE_LOWER | EMOTE_REVERTLOOP_LOWER),
+	EMOTE_MASK_UPPER = (EMOTE_UPPER | EMOTE_LOOP_UPPER | EMOTE_OVERRIDE_UPPER | EMOTE_REVERTLOOP_UPPER),
+	EMOTE_MASK_BOTH = (EMOTE_MASK_LOWER | EMOTE_MASK_UPPER)
+};
 
 /** \struct emoteList_t
 *	Emote data structure
@@ -443,16 +435,16 @@ typedef enum {
 *	\author Ubergames
 */
 typedef struct {
-	char		*name;							//!<name of emote player enters into console
-	int			emoteType;						//!<Type of emote (for menu display)
-	int			enumName;						//!<eNum value of the emote
-	int			enumLoop;						//!<eNum value for loop anim
+	char*		name;							//!<name of emote player enters into console
+	int32_t		emoteType;						//!<Type of emote (for menu display)
+	int32_t		enumName;						//!<eNum value of the emote
+	int32_t		enumLoop;						//!<eNum value for loop anim
 
-	int			viewHeight;						//!<Specific viewheight the player will be looking at when this emote is active. (ie, sitting down, you'd be lower than standing up)
-	int			hitBoxHeight;
+	int32_t		viewHeight;						//!<Specific viewheight the player will be looking at when this emote is active. (ie, sitting down, you'd be lower than standing up)
+	int32_t		hitBoxHeight;
 
-	int			bodyFlags;						//!<flags relating to whether this emote is upper or lower or both
-	int			animFlags;						//!<Specific flags related to emote handling
+	int32_t		bodyFlags;						//!<flags relating to whether this emote is upper or lower or both
+	int32_t		animFlags;						//!<Specific flags related to emote handling
 } emoteList_t;
 
 /**	\enum emoteTypes_t
@@ -476,7 +468,7 @@ extern emoteList_t	bg_emoteList[];
 //=====================================================================================
 
 /**
-* The different powerups	
+* The different powerups
 */
 typedef enum {
 	PW_NONE,
@@ -489,7 +481,7 @@ typedef enum {
 	PW_FLIGHT,
 	PW_FLASHLIGHT,
 
- 	PW_BORG_ADAPT,
+	PW_BORG_ADAPT,
 	PW_OUCH,
 
 	PW_DISINTEGRATE,
@@ -500,7 +492,7 @@ typedef enum {
 	PW_BEAM_OUT, //TiM - Beam in used to be PW_BEAMING
 
 	PW_EVOSUIT, //RPG-X | Phenix | 8/8/2004
-	
+
 	PW_NUM_POWERUPS
 } powerup_t;
 
@@ -527,7 +519,7 @@ typedef enum {
 } giveType_t;
 
 /** \struct giveItem_t
-*	Struct to hold data about all the items 
+*	Struct to hold data about all the items
 *	admins can give.  Point being so the data can be shared
 *	in the UI and actual command
 */
@@ -542,9 +534,9 @@ extern giveItem_t	bg_giveItem[];
 //=============================
 
 typedef enum {
-	HI_NONE=0,		 //!< keep this first enum entry equal to 0 so cgs.useableModels will work properly
+	HI_NONE = 0,		 //!< keep this first enum entry equal to 0 so cgs.useableModels will work properly
 
-	HI_TRANSPORTER=1,
+	HI_TRANSPORTER = 1,
 	HI_MEDKIT,
 	HI_DETPACK,
 	HI_SHIELD,
@@ -575,7 +567,7 @@ typedef enum {
 	WP_11, // WP_MEDKIT				//	2048	// 10/12/00 jtd -- added for MP patch/gold - merges single player projectile and taser		// 1/1/06 TiM: used to be WP_11
 	WP_12, // WP_VOYAGER_HYPO		//	4096	// 10/6/00 mcg -- added for MP patch/gold
 	WP_13, // WP_DERMAL_REGEN		//	8192	// 3/13/00 kef -- added									// 1/1/06 TiM: used to be WP_13
-	
+
 	WP_14, // WP_TOOLKIT				//	16384	// 10/12/00 jtd -- added for MP patch/gold					// 1/1/06 TiM: used to be WP_14
 	WP_15, // WP_HYPERSPANNER				//	32768														// 1/1/06 TiM: used to be WP_NEUTRINO_PROBE
 
@@ -593,10 +585,10 @@ typedef enum {
 	REWARD_STREAK			//!< Ace/Expert/Master/Champion
 } reward_t;
 
-#define STREAK_ACE			5
-#define STREAK_EXPERT		10
-#define STREAK_MASTER		15
-#define STREAK_CHAMPION		20
+static const int32_t STREAK_ACE = 5;
+static const int32_t STREAK_EXPERT = 10;
+static const int32_t STREAK_MASTER = 15;
+static const int32_t STREAK_CHAMPION = 20;
 
 
 // entityState_t->event values
@@ -608,9 +600,11 @@ typedef enum {
 // that an identical event started twice in a row can
 // be distinguished.  And off the value with ~EV_EVENT_BITS
 // to retrieve the actual event number
-#define	EV_EVENT_BIT1		0x00000100
-#define	EV_EVENT_BIT2		0x00000200
-#define	EV_EVENT_BITS		(EV_EVENT_BIT1|EV_EVENT_BIT2)
+enum bg_eventBit_e {
+	EV_EVENT_BIT1 = 0x00000100,
+	EV_EVENT_BIT2 = 0x00000200,
+	EV_EVENT_BITS = (EV_EVENT_BIT1 | EV_EVENT_BIT2)
+};
 
 typedef enum {
 	EV_NONE,
@@ -648,7 +642,7 @@ typedef enum {
 	EV_ALT_FIRE,
 	EV_FIRE_EMPTY_PHASER,
 
-//BOOKMARK (J2J)
+	//BOOKMARK (J2J)
 	EV_USE_ITEM0,
 	EV_USE_ITEM1,
 	EV_USE_ITEM2,
@@ -735,7 +729,7 @@ typedef enum {
 	EV_FX_ELECTRICAL_EXPLOSION,	 //RPG-X - TiM
 	EV_FX_FIRE,					 //RPG-X - Marcin			
 	EV_FX_SHAKE,				 //RPG-X - Marcin
-	
+
 	// Additional ports from SP by Harry Young
 	// You forgot the , ... I added them for you - GSIO
 
@@ -824,18 +818,18 @@ typedef enum {
 //#include "../cgame/cg_anims.h"
 
 typedef struct animation_s {
-	int		firstFrame;
-	int		numFrames;
-	int		loopFrames;			//!< 0 to numFrames
-	int		frameLerp;			//!< msec between frames
-	int		initialLerp;		//!< msec to get to first frame
+	int32_t		firstFrame;
+	int32_t		numFrames;
+	int32_t		loopFrames;			//!< 0 to numFrames
+	int32_t		frameLerp;			//!< msec between frames
+	int32_t		initialLerp;		//!< msec to get to first frame
 } animation_t;
 
 // flip the togglebit every time an animation
 // changes so a restart of the same anim can be detected
 
 //RPG-X: Jason - Last bit in a 2 byte integer is now the flag. (essentailly all we need as 2 byes allows values up to 65536)
-#define		ANIM_TOGGLEBIT		1024
+static const int32_t ANIM_TOGGLEBIT = 1024;
 
 typedef enum {
 	TEAM_FREE,
@@ -855,29 +849,31 @@ enum {
 };
 
 // Time between location updates
-#define TEAM_LOCATION_UPDATE_TIME		1000
+static const int32_t TEAM_LOCATION_UPDATE_TIME = 1000;
 
 // How many players on the overlay
 // TiM - Increasing this greatly may not be good...
 #define TEAM_MAXOVERLAY		MAX_CLIENTS//8
 
-#define LOCATION_NONE		0x00000000
+enum bg_hitLocation_e {
+	LOCATION_NONE = 0x00000000,
 
-// Height layers
-#define LOCATION_HEAD		0x00000001 // [F,B,L,R] Top of head
-#define LOCATION_FACE		0x00000002 // [F] Face [B,L,R] Head
-#define LOCATION_SHOULDER	0x00000004 // [L,R] Shoulder [F] Throat, [B] Neck
-#define LOCATION_CHEST		0x00000008 // [F] Chest [B] Back [L,R] Arm
-#define LOCATION_STOMACH	0x00000010 // [L,R] Sides [F] Stomach [B] Lower Back
-#define LOCATION_GROIN		0x00000020 // [F] Groin [B] Butt [L,R] Hip
-#define LOCATION_LEG		0x00000040 // [F,B,L,R] Legs
-#define LOCATION_FOOT		0x00000080 // [F,B,L,R] Bottom of Feet
+	// Height layers
+	LOCATION_HEAD = 0x00000001,		// [F,B,L,R] Top of head
+	LOCATION_FACE = 0x00000002,		// [F] Face [B,L,R] Head
+	LOCATION_SHOULDER = 0x00000004, // [L,R] Shoulder [F] Throat, [B] Neck
+	LOCATION_CHEST = 0x00000008,	// [F] Chest [B] Back [L,R] Arm
+	LOCATION_STOMACH = 0x00000010,	// [L,R] Sides [F] Stomach [B] Lower Back
+	LOCATION_GROIN = 0x00000020,	// [F] Groin [B] Butt [L,R] Hip
+	LOCATION_LEG = 0x00000040,		// [F,B,L,R] Legs
+	LOCATION_FOOT = 0x00000080,		// [F,B,L,R] Bottom of Feet
 
-// Relative direction strike came from
-#define LOCATION_LEFT		0x00000100
-#define LOCATION_RIGHT		0x00000200
-#define LOCATION_FRONT		0x00000400
-#define LOCATION_BACK		0x00000800
+	// Relative direction strike came from
+	LOCATION_LEFT = 0x00000100,
+	LOCATION_RIGHT = 0x00000200,
+	LOCATION_FRONT = 0x00000400,
+	LOCATION_BACK = 0x00000800
+};
 
 // means of death
 typedef enum {
@@ -893,7 +889,7 @@ typedef enum {
 	MOD_TARGET_LASER,
 	MOD_TRIGGER_HURT,
 
-// Trek weapons
+	// Trek weapons
 	MOD_PHASER,
 	MOD_PHASER_ALT,
 	MOD_CRIFLE,
@@ -923,7 +919,7 @@ typedef enum {
 	MOD_DETPACK,
 	MOD_SEEKER,
 
-//expansion pack
+	//expansion pack
 	MOD_KNOCKOUT,
 	MOD_ASSIMILATE,
 	MOD_BORG,
@@ -948,65 +944,67 @@ typedef enum {
 	IT_ARMOR,				// EFX: rotate + minlight
 	IT_HEALTH,				// EFX: static external sphere + rotating internal
 	IT_POWERUP,				// instant on, timer based
-							// EFX: rotate + external ring that rotates
+	// EFX: rotate + external ring that rotates
 	IT_HOLDABLE,			// single use, holdable item
-							// EFX: rotate + bob
+	// EFX: rotate + bob
 	IT_TEAM
 } itemType_t;
 
 typedef struct gitem_s {
-	char		*classname;	//!< spawning name
-	char		*pickup_sound;
-	char		*world_model;
-	char		*view_model;
+	char*		classname;	//!< spawning name
+	char*		pickup_sound;
+	char*		world_model;
+	char*		view_model;
 
-	char		*icon;
-	char		*pickup_name;	//!< for printing on pickup
+	char*		icon;
+	char*		pickup_name;	//!< for printing on pickup
 
-	int			quantity;		//!< for ammo how much, or duration of powerup
+	int32_t		quantity;		//!< for ammo how much, or duration of powerup
 	itemType_t  giType;			//!< IT_* flags
 
-	int			giTag;
+	int32_t		giTag;
 
-	char		*precaches;		//!< string of all models and images this item will use
-	char		*sounds;		//!< string of all sounds this item will use
-    //char        paddMsg[512];   // RPG-X: Marcin: I hope this works. - 06/12/2008 - no it does not i'm an idiot
+	char*		precaches;		//!< string of all models and images this item will use
+	char*		sounds;		//!< string of all sounds this item will use
+	//char        paddMsg[512];   // RPG-X: Marcin: I hope this works. - 06/12/2008 - no it does not i'm an idiot
 } gitem_t;
 
 // included in both the game dll and the client
 extern	gitem_t	bg_itemlist[];
-extern	int		bg_numItems;
+extern	int32_t	bg_numItems;
 
-extern	int		bg_numEmotes; //TiM - added a counter variable since it'd be easier to store then :P
-extern	int		bg_numGiveItems;
+extern	int32_t	bg_numEmotes; //TiM - added a counter variable since it'd be easier to store then :P
+extern	int32_t	bg_numGiveItems;
 
 gitem_t *BG_FindItemWithClassname(const char *name);
 char *BG_FindClassnameForHoldable(holdable_t pw);
-gitem_t	*BG_FindItem( const char *pickupName/*const char *classname*/ );//RPG-X: RedTechie - Attempting to fix give cmd
-gitem_t	*BG_FindItemForWeapon( weapon_t weapon );
-gitem_t	*BG_FindItemForAmmo( weapon_t weapon );
-gitem_t	*BG_FindItemForPowerup( powerup_t pw );
-gitem_t	*BG_FindItemForHoldable( holdable_t pw );
+gitem_t	*BG_FindItem(const char *pickupName/*const char *classname*/);//RPG-X: RedTechie - Attempting to fix give cmd
+gitem_t	*BG_FindItemForWeapon(weapon_t weapon);
+gitem_t	*BG_FindItemForAmmo(weapon_t weapon);
+gitem_t	*BG_FindItemForPowerup(powerup_t pw);
+gitem_t	*BG_FindItemForHoldable(holdable_t pw);
 #define	ITEM_INDEX(x) ((x)-bg_itemlist)
 
-qboolean	BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps, int maxWeap );
+qboolean	BG_CanItemBeGrabbed(const entityState_t *ent, const playerState_t *ps, int maxWeap);
 
 
 // g_dmflags->integer flags
-#define	DF_NO_FALLING			8
-#define DF_FIXED_FOV			16
-#define	DF_NO_FOOTSTEPS			32
+enum bg_dmFlag_e {
+	DF_NO_FALLING = 8,
+	DF_FIXED_FOV = 16,
+	DF_NO_FOOTSTEPS = 32
+};
 
 // content masks
-#define	MASK_ALL				(-1)
-#define	MASK_SOLID				(CONTENTS_SOLID)
-#define	MASK_PLAYERSOLID		(CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_BODY)
-#define	MASK_DEADSOLID			(CONTENTS_SOLID|CONTENTS_PLAYERCLIP)
-#define	MASK_WATER				(CONTENTS_WATER|CONTENTS_LAVA|CONTENTS_SLIME)
-#define	MASK_OPAQUE				(CONTENTS_SOLID|CONTENTS_SLIME|CONTENTS_LAVA)
-#define	MASK_SHOT				(CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE|CONTENTS_SHOTCLIP)
-#define MASK_ONLYPLAYER			(CONTENTS_PLAYERCLIP | CONTENTS_BODY)					//RPG-X: - J2J Added for that transporter effect thingy where it appears next to the target (well not really, but dont tell)
-#define MASK_BRUSHES			(CONTENTS_STRUCTURAL|CONTENTS_DETAIL|CONTENTS_TRANSLUCENT) //RPG-X: RedTechie - Added for FX gun for "anal probe" -jason
+static const int32_t MASK_ALL = (-1);
+static const int32_t MASK_SOLID = (CONTENTS_SOLID);
+static const int32_t MASK_PLAYERSOLID = (CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_BODY);
+static const int32_t MASK_DEADSOLID = (CONTENTS_SOLID | CONTENTS_PLAYERCLIP);
+static const int32_t MASK_WATER = (CONTENTS_WATER | CONTENTS_LAVA | CONTENTS_SLIME);
+static const int32_t MASK_OPAQUE = (CONTENTS_SOLID | CONTENTS_SLIME | CONTENTS_LAVA);
+static const int32_t MASK_SHOT = (CONTENTS_SOLID | CONTENTS_BODY | CONTENTS_CORPSE | CONTENTS_SHOTCLIP);
+static const int32_t MASK_ONLYPLAYER = (CONTENTS_PLAYERCLIP | CONTENTS_BODY);						//RPG-X: - J2J Added for that transporter effect thingy where it appears next to the target (well not really, but dont tell)
+static const int32_t MASK_BRUSHES = (CONTENTS_STRUCTURAL | CONTENTS_DETAIL | CONTENTS_TRANSLUCENT); //RPG-X: RedTechie - Added for FX gun for "anal probe" -jason
 
 //
 // entityState_t->eType
@@ -1035,8 +1033,8 @@ typedef enum {
 	ET_MOVER_STR,			//RPG-X: GSIO01 - Mover entity that has Tricorder string var
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding
-							// by setting eType to ET_EVENTS + eventNum
-							// this avoids having to set eFlags and eventNum
+	// by setting eType to ET_EVENTS + eventNum
+	// this avoids having to set eFlags and eventNum
 } entityType_t;
 
 /*====================
@@ -1053,8 +1051,7 @@ ID system.
 #define SECURITY_SIZE	4+4+4
 #define SECURITY_FILE	"rpgxid.dat"
 
-typedef struct
-{
+typedef struct {
 	unsigned long		ID;
 	//short				padding;
 	unsigned long		hash;
@@ -1063,14 +1060,14 @@ typedef struct
 	//short				padding3;
 } rpgxSecurityFile_t;
 
-void	BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
-void	BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
+void	BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result);
+void	BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t result);
 
 void	BG_AddPredictableEventToPlayerstate(int32_t newEvent, int32_t eventParm, playerState_t* ps);
 
-void	BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
+void	BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap);
 
-qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
+qboolean	BG_PlayerTouchesItem(playerState_t *ps, entityState_t *item, int atTime);
 
 char	*NextWordEndsHere(char *pos);
 char	*EndWord(char *pos);

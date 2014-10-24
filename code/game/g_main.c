@@ -380,7 +380,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &rpg_effectsgun, "rpg_effectsGun", "1", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qfalse },
 	{ &rpg_phaserdisintegrates, "rpg_phaserDisintegrates", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_kickAfterXkills, "rpg_kickAfterNumkills", "2", CVAR_ARCHIVE, 0, qfalse }, //RPG-X | Phenix | 06/04/2005
-	{ &rpg_rankSet, "rpg_rankSet", RANKSET_DEFAULT, CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_LATCH, 0, qfalse },
+	{ &rpg_rankSet, "rpg_rankSet", (char*)RANKSET_DEFAULT, CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_LATCH, 0, qfalse },
 	{ &rpg_passMessage, "rpg_passMessage", "", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_renamedPlayers, "rpg_renamedPlayers", "1", CVAR_ARCHIVE, 0, qfalse },
 	{ &rpg_uniqueNames, "rpg_uniqueNames", "1", CVAR_ARCHIVE, 0, qfalse },
