@@ -21,7 +21,7 @@ static int Sound_PlaySound(lua_State *L) {
 	char	*sound;
 	int		snd;
 	int		chan;
-	lent_t	*l;
+	luaGentity_t	*l;
 
 	l = Lua_GetEntity(L,1);
 	if(!l || !l->e) return 1;

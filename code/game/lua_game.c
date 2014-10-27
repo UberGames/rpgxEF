@@ -386,7 +386,7 @@ Damage and player or entity.
 @return Success or fail.
 */
 static int Game_Damage(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	gentity_t *targ = NULL, *inflictor = NULL, *attacker = NULL;
 	vec_t *dir = NULL, *point = NULL;
 	int damage = 0, dflags = 0, mod = 0;
@@ -437,7 +437,7 @@ Repair an entity.
 @return Success or fail.
 */
 static int Game_Repair(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	float rate;
 
 	LUA_DEBUG("BEGIN - game.Repair");

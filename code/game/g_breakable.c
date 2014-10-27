@@ -93,7 +93,7 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 /**
 *	Called when a breakable takes damage
 */
-void breakable_pain ( gentity_t *self, gentity_t *attacker, int32_t damage )
+void G_Breakable_Pain ( gentity_t *self, gentity_t *attacker, int32_t damage )
 {
 	if ( self->pain_debounce_time > level.time ) {
 		return;
@@ -114,7 +114,7 @@ void breakable_pain ( gentity_t *self, gentity_t *attacker, int32_t damage )
 /**
 *	Called if a brealable has been used
 */
-void breakable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
+void G_Breakable_Use (gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	breakable_die( self, other, activator, self->health, MOD_UNKNOWN );
 }
@@ -122,7 +122,7 @@ void breakable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
 /**
 *	Inits a breakable brush entity
 */
-void InitBBrush ( gentity_t *ent ) 
+void G_Breakable_InitBrush ( gentity_t *ent ) 
 {
 	float			light = 0.0f;
 	vec3_t			color;
@@ -336,11 +336,11 @@ void SP_func_breakable( gentity_t *self )
 	self->damage = self->health;
 
 	G_SoundIndex("sound/weapons/explosions/cargoexplode.wav");//precaching
-	self->use = breakable_use;
+	self->use = G_Breakable_Use;
 	self->count = 1; // GSIO01
 
 	if ( self->paintarget != NULL ) {
-		self->pain = breakable_pain;
+		self->pain = G_Breakable_Pain;
 	}
 
 	if (self->model == NULL) {
@@ -348,7 +348,7 @@ void SP_func_breakable( gentity_t *self )
 	}
 	VectorCopy(self->s.origin, self->pos1);
 	trap_LinkEntity(self);
-	InitBBrush( self );
+	G_Breakable_InitBrush( self );
 
 	level.numBrushEnts++;
 }
@@ -447,12 +447,12 @@ void SP_misc_model_breakable( gentity_t *ent )
 
 	ent->damage = ent->health;
 
-	ent->use = breakable_use;	
+	ent->use = G_Breakable_Use;	
 
 	if ( ent->health != 0 ) {
 		G_SoundIndex("sound/weapons/explosions/cargoexplode.wav");
 		ent->takedamage = qtrue;
-		ent->pain = breakable_pain;
+		ent->pain = G_Breakable_Pain;
 		ent->die = breakable_die;
 	}
 
@@ -706,7 +706,7 @@ void SP_misc_ammo_station( gentity_t *ent )
 
 	if ( ent->health != 0 )	{
 		ent->takedamage = qtrue;
-		ent->pain = breakable_pain;
+		ent->pain = G_Breakable_Pain;
 		ent->die  = breakable_die;
 	}
 
@@ -755,14 +755,14 @@ void target_repair_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 
 	target->r.svFlags &= ~SVF_NOCLIENT;
 	target->s.eFlags &= ~EF_NODRAW;
-	InitBBrush(target);
+	G_Breakable_InitBrush(target);
 
 	target->health = target->damage;
 	target->takedamage = qtrue;
-	target->use = breakable_use;
+	target->use = G_Breakable_Use;
 
 	if(target->paintarget != NULL) {
-		target->pain = breakable_pain;
+		target->pain = G_Breakable_Pain;
 	}
 
 	target->clipmask = 0;

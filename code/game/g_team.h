@@ -5,9 +5,9 @@
 #define G_TEAM_H_
 
 // Prototypes
-const char *TeamName(int team);
-const char *OtherTeamName(int team);
-const char *TeamColorString(int team);
+const char* TeamName(int32_t team);
+const char* OtherTeamName(int32_t team);
+const char* TeamColorString(int32_t team);
 
 #endif /* G_TEAM_H_ */
 

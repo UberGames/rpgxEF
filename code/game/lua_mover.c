@@ -18,7 +18,7 @@ Stops translational movement on ent immediately.
 @return Success or failure.
 */
 static int Mover_Halt(lua_State *L) {
-	lent_t		*lent;
+	luaGentity_t		*lent;
 	gentity_t	*ent = NULL;
 	int			id = 0;
 	
@@ -64,7 +64,7 @@ Stops rotational movement on ent immediately.
 */
 static int Mover_HaltAngles(lua_State * L)
 {
-	lent_t			*lent;
+	luaGentity_t			*lent;
 	gentity_t       *ent = NULL;
 	int				id = 0;
 
@@ -116,7 +116,7 @@ Moves an entity like a func_train entity. Targets have to be path_corner entitie
  */
 static int Mover_AsTrain(lua_State * L)
 {
-	lent_t			*lent, *tlent;
+	luaGentity_t			*lent, *tlent;
 	gentity_t      *ent = NULL;
 	gentity_t      *targ = NULL;
 	vec3_t          move;
@@ -237,7 +237,7 @@ Sets the angles of ent to the specified value.
 static int Mover_SetAngles(lua_State * L)
 {
 	vec3_t          newAngles;
-	lent_t			*lent;
+	luaGentity_t			*lent;
 	gentity_t      *ent = NULL;
 	vec_t          *target;
 	int				id = 0;
@@ -304,7 +304,7 @@ Sets the angles of ent to the specified value.
 static int Mover_SetAngles2(lua_State * L)
 {
 	vec3_t          newAngles;
-	lent_t			*lent;
+	luaGentity_t			*lent;
 	gentity_t      *ent = NULL;
 	vec_t          *target;
 	int				id = 0;
@@ -371,7 +371,7 @@ Set the position of ent to the specified value.
 static int Mover_SetPosition(lua_State * L)
 {
 	vec3_t          newOrigin;
-	lent_t			*lent;
+	luaGentity_t			*lent;
 	gentity_t      *ent = NULL;
 	vec_t          *target;
 	int				id = 0;
@@ -455,7 +455,7 @@ Rotates ent with a given speed (in degrees per second) to the specified values.
 static int Mover_ToAngles(lua_State * L)
 {
 	vec3_t          newAngles;
-	lent_t			*lent;
+	luaGentity_t			*lent;
 	gentity_t      *ent = NULL;
 	float           speed;
 	vec_t          *target;
@@ -521,7 +521,7 @@ Moves ent with a given speed to the specified values. Can also be stowed in a ve
 static int Mover_ToPosition(lua_State * L)
 {
 	vec3_t          newOrigin;
-	lent_t			*lent;
+	luaGentity_t			*lent;
 	gentity_t      *ent = NULL;
 	float           speed;
 	vec_t          *target;

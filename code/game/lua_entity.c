@@ -89,7 +89,7 @@ Returns a target entity of ent.
 */
 static int Entity_GetTarget(lua_State * L)
 {
-	lent_t*		lent = NULL;
+	luaGentity_t*		lent = NULL;
 	gentity_t*	t = NULL;
 
 	LUA_DEBUG("BEGIN - entity.GetTarget");
@@ -243,7 +243,7 @@ Uses the given entity.
 */
 static int Entity_Use(lua_State * L)
 {
-	lent_t* lent = NULL;
+	luaGentity_t* lent = NULL;
 
 	LUA_DEBUG("BEGIN - entity.Use");
 
@@ -274,8 +274,8 @@ Teleports client to target's position
 */
 static int Entity_Teleport(lua_State * L)
 {
-	lent_t* lent = NULL;
-	lent_t* target = NULL;
+	luaGentity_t* lent = NULL;
+	luaGentity_t* target = NULL;
 
 	LUA_DEBUG("BEGIN - entity.Teleport");
 
@@ -314,7 +314,7 @@ Checks if an entity is a rocket.
 */
 static int Entity_IsRocket(lua_State * L)
 {
-	lent_t*		lent = NULL;
+	luaGentity_t*		lent = NULL;
 	qboolean	rocket = qfalse;
 
 	lent = Lua_GetEntity(L, 1);
@@ -339,7 +339,7 @@ Checks if an entity is a grenade.
 */
 static int Entity_IsGrenade(lua_State * L)
 {
-	lent_t*		lent = NULL;
+	luaGentity_t*		lent = NULL;
 	qboolean	grenade = qfalse;
 
 	lent = Lua_GetEntity(L, 1);
@@ -384,7 +384,7 @@ Returns the entities index number.
 */
 static int Entity_GetNumber(lua_State * L)
 {
-	lent_t* lent = NULL;
+	luaGentity_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
 	if(lent == NULL || lent->e == NULL) {
@@ -403,7 +403,7 @@ Checks if an entity is a client
 */
 static int Entity_IsClient(lua_State * L)
 {
-	lent_t* lent = NULL;
+	luaGentity_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
 	
@@ -423,7 +423,7 @@ Returns the display name of a client.
 */
 static int Entity_GetClientName(lua_State * L)
 {
-	lent_t* lent = NULL;
+	luaGentity_t* lent = NULL;
 
 	lent = Lua_GetEntity(L, 1);
 
@@ -438,7 +438,7 @@ static int Entity_GetClientName(lua_State * L)
 
 static int Entity_Print(lua_State * L)
 {
-	lent_t*	lent = NULL;
+	luaGentity_t*	lent = NULL;
 	int		i;
 	char	buf[MAX_STRING_CHARS];
 	int		n = lua_gettop(L);
@@ -490,7 +490,7 @@ static int Entity_Print(lua_State * L)
 
 static int Entity_CenterPrint(lua_State * L)
 {
-	lent_t	*lent = NULL;
+	luaGentity_t	*lent = NULL;
 	int		i;
 	char	buf[MAX_STRING_CHARS];
 	int		n = lua_gettop(L);
@@ -549,7 +549,7 @@ Sets a key of an entity to a value.
 @return Success or failure.
 */
 static int Entity_SetKeyValue(lua_State * L) {
-	lent_t* lent = NULL;
+	luaGentity_t* lent = NULL;
 	char*	key = NULL;
 	char*	value = NULL;
 	
@@ -590,7 +590,7 @@ Returns the classname of an entity.
 */
 static int Entity_GetClassName(lua_State * L)
 {
-	lent_t* lent = NULL;
+	luaGentity_t* lent = NULL;
 
 	LUA_DEBUG("BEGIN - entity.GetClassname");
 
@@ -614,7 +614,7 @@ Sets the Classname of an entity to name
 */
 static int Entity_SetClassName(lua_State * L)
 {
-	lent_t* lent = NULL;
+	luaGentity_t* lent = NULL;
 
 	LUA_DEBUG("BEGIN - entity.SetClassname");
 
@@ -638,7 +638,7 @@ Returns the targetname of an entity.
 */
 static int Entity_GetTargetName(lua_State * L)
 {
-	lent_t* lent = NULL;
+	luaGentity_t* lent = NULL;
 
 	LUA_DEBUG("BEGIN - entity.GetTargetname");
 
@@ -662,7 +662,7 @@ Rotates an entity in the specified directions.
 */
 static int Entity_Rotate(lua_State * L)
 {
-	lent_t*	lent = NULL;
+	luaGentity_t*	lent = NULL;
 	vec_t*	vec = NULL;
 
 	LUA_DEBUG("BEGIN - entity.Rotate");
@@ -705,7 +705,7 @@ Prints an entity as string also return said string.
 */
 static int Entity_ToString(lua_State * L)
 {
-	lent_t*		lent = NULL;
+	luaGentity_t*		lent = NULL;
 	gentity_t*	gent = NULL;
 	char		buf[MAX_STRING_CHARS];
 
@@ -741,7 +741,7 @@ Calls the game logic spawn function for the class of ent after a given delay in 
 @return Success or failure.
 */
 static int Entity_DelayedCallSpawn(lua_State *L) {
-	lent_t*	lent = NULL;
+	luaGentity_t*	lent = NULL;
 	int		delay;
 
 	LUA_DEBUG("BEGIN - entity.DelayedCallSpawn");
@@ -780,7 +780,7 @@ Calls the game logic spawn function for the class of ent.
 @return Success or failure.
 */
 static int Entity_CallSpawn(lua_State *L) {
-	lent_t* lent = NULL;
+	luaGentity_t* lent = NULL;
 	qboolean r = qfalse;
 	gentity_t* e = NULL;
 
@@ -910,7 +910,7 @@ Removes an entity if it is not protected.
 @return Success or failure.
 */
 static int Entity_Remove(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.Remove");
 
@@ -959,7 +959,7 @@ Does some setup for entities spawned by script that are to be used as trigger.
 @return Succcess or failure.
 */
 static int Entity_SetupTrigger(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	gentity_t *e;
 	vec_t  *vptr;
 	vec3_t size;
@@ -1004,7 +1004,7 @@ Returns the origin of an entity as vector.
 @return Origin (or nil on failure).
 */
 static int Entity_GetOrigin(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	vec3_t	origin;
 
 	LUA_DEBUG("BEGIN - entity.GetOrigin");
@@ -1033,7 +1033,7 @@ Looks the entity ent. Works with anything that can be locked (doors, turbolifts,
 @return Success or failure.
 */
 static int Entity_Lock(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	gentity_t *ent;
 
 	LUA_DEBUG("BEGIN - entity.Lock");
@@ -1083,7 +1083,7 @@ Unlooks the entity ent. Works with anything that can be locked (doors, turbolift
 @return Success or failure.
 */
 static int Entity_Unlock(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	gentity_t *ent;
 
 	LUA_DEBUG("BEGIN - entity.Unlock");
@@ -1127,7 +1127,7 @@ Check if the entity is locked.
 @return Whether the entity is locked or not.
 */
 static int Entity_IsLocked(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	gentity_t *ent;
 
 	LUA_DEBUG("BEGIN - entity.IsLocked");
@@ -1152,7 +1152,7 @@ Get a luaParm from the entity.
 @return Value of luaParm or nil.
 */
 static int Entity_GetParm(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	gentity_t *ent;
 	int parm;
 	char *res = NULL;
@@ -1204,7 +1204,7 @@ static int Entity_GetParm(lua_State *L) {
 }
 
 static int Entity_SetParm(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	gentity_t *ent;
 	int parm;
 	char *parms;
@@ -1268,7 +1268,7 @@ static int Entity_SetParm(lua_State *L) {
 }
 
 static int Entity_GetActivator(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetActivator");
 
@@ -1285,8 +1285,8 @@ static int Entity_GetActivator(lua_State *L) {
 }
 
 static int Entity_SetActivator(lua_State *L) {
-	lent_t *lent;
-	lent_t *activator;
+	luaGentity_t *lent;
+	luaGentity_t *activator;
 
 	LUA_DEBUG("BEGIN - entity.SetActivator");
 
@@ -1310,7 +1310,7 @@ static int Entity_SetActivator(lua_State *L) {
 }
 
 static int Entity_GetAngle(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetAngle");
 
@@ -1327,7 +1327,7 @@ static int Entity_GetAngle(lua_State *L) {
 }
 
 static int Entity_GetAngles(lua_State* L) {
-	lent_t* lent;
+	luaGentity_t* lent;
 
 	LUA_DEBUG("BEGIN - entity.GetAngles");
 
@@ -1344,7 +1344,7 @@ static int Entity_GetAngles(lua_State* L) {
 }
 
 static int Entity_SetAngle(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	float angle;
 
 	LUA_DEBUG("BEGIN - entity.SetAngle");
@@ -1364,7 +1364,7 @@ static int Entity_SetAngle(lua_State *L) {
 }
 
 static int Entity_SetAngles(lua_State* L) {
-	lent_t* lent;
+	luaGentity_t* lent;
 	vec_t* vec;
 
 	LUA_DEBUG("BEGIN - entity.SetAngles");
@@ -1387,7 +1387,7 @@ static int Entity_SetAngles(lua_State* L) {
 }
 
 static int Entity_GetApos1(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	vec3_t null = { 0, 0, 0 };
 
 	LUA_DEBUG("BEGIN - entity.GetApos1");
@@ -1405,7 +1405,7 @@ static int Entity_GetApos1(lua_State *L) {
 }
 
 static int Entity_GetApos2(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	vec3_t null = { 0, 0, 0 };
 
 	LUA_DEBUG("BEGIN - entity.GetApos2");
@@ -1423,7 +1423,7 @@ static int Entity_GetApos2(lua_State *L) {
 }
 
 static int Entity_SetApos1(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	vec_t *vec;
 
 	LUA_DEBUG("BEGIN - entity.SetApos1");
@@ -1443,7 +1443,7 @@ static int Entity_SetApos1(lua_State *L) {
 }
 
 static int Entity_SetApos2(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	vec_t *vec;
 	
 	LUA_DEBUG("BEGIN - entity.SetApos2");
@@ -1463,7 +1463,7 @@ static int Entity_SetApos2(lua_State *L) {
 }
 
 static int Entity_GetBluename(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetBluename");
 
@@ -1481,7 +1481,7 @@ static int Entity_GetBluename(lua_State *L) {
 }
 
 static int Entity_SetBluename(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetBluename");
 
@@ -1499,7 +1499,7 @@ static int Entity_SetBluename(lua_State *L) {
 }
 
 static int Entity_GetBluesound(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetBluesound");
 
@@ -1517,7 +1517,7 @@ static int Entity_GetBluesound(lua_State *L) {
 }
 
 static int Entity_SetBluesound(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetBluesound");
 
@@ -1535,7 +1535,7 @@ static int Entity_SetBluesound(lua_State *L) {
 }
 
 static int Entity_GetBooleanstate(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetBooleanstate");
 
@@ -1552,7 +1552,7 @@ static int Entity_GetBooleanstate(lua_State *L) {
 }
 
 static int Entity_SetBooleanstate(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.SetBooleanstate");
 
@@ -1570,7 +1570,7 @@ static int Entity_SetBooleanstate(lua_State *L) {
 }
 
 static int Entity_GetClipmask(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetClipmask");
 
@@ -1587,7 +1587,7 @@ static int Entity_GetClipmask(lua_State *L) {
 }
 
 static int Entity_SetClipmask(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int mask;
 
 	LUA_DEBUG("BEGIN - entity.SetClipmask");
@@ -1607,7 +1607,7 @@ static int Entity_SetClipmask(lua_State *L) {
 }
 
 static int Entity_GetCount(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.SetClipmask");
 
@@ -1624,7 +1624,7 @@ static int Entity_GetCount(lua_State *L) {
 }
 
 static int Entity_SetCount(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		count;
 
 	LUA_DEBUG("BEGIN - entity.SetCount");
@@ -1644,7 +1644,7 @@ static int Entity_SetCount(lua_State *L) {
 }
 
 static int Entity_GetDamage(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetDamage");
 
@@ -1661,7 +1661,7 @@ static int Entity_GetDamage(lua_State *L) {
 }
 
 static int Entity_SetDamage(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		damage;
 
 	LUA_DEBUG("BEGIN - entity.SetDamage");
@@ -1682,7 +1682,7 @@ static int Entity_SetDamage(lua_State *L) {
 }
 
 static int Entity_GetDistance(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetDistance");
 
@@ -1699,7 +1699,7 @@ static int Entity_GetDistance(lua_State *L) {
 }
 
 static int Entity_SetDistance(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	float	distance;
 
 	LUA_DEBUG("BEGIN - entity.SetDistance");
@@ -1719,7 +1719,7 @@ static int Entity_SetDistance(lua_State *L) {
 }
 
 static int Entity_GetEnemy(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetEnemy");
 
@@ -1736,8 +1736,8 @@ static int Entity_GetEnemy(lua_State *L) {
 }
 
 static int Entity_SetEnemy(lua_State *L) {
-	lent_t *lent;
-	lent_t *enemy;
+	luaGentity_t *lent;
+	luaGentity_t *enemy;
 
 	LUA_DEBUG("BEGIN - entity.SetEnemy");
 
@@ -1765,7 +1765,7 @@ static int Entity_SetEnemy(lua_State *L) {
 }
 
 static int Entity_GetEventTime(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetEventTime");
 
@@ -1782,7 +1782,7 @@ static int Entity_GetEventTime(lua_State *L) {
 }
 
 static int Entity_SetEventTime(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		eTime;
 
 	LUA_DEBUG("BEGIN - entity.SetEventTime");
@@ -1802,7 +1802,7 @@ static int Entity_SetEventTime(lua_State *L) {
 }
 
 static int Entity_GetFalsename(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetFalsename");
 
@@ -1820,7 +1820,7 @@ static int Entity_GetFalsename(lua_State *L) {
 }
 
 static int Entity_SetFalsename(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetFalsename");
 
@@ -1838,7 +1838,7 @@ static int Entity_SetFalsename(lua_State *L) {
 }
 
 static int Entity_GetTruename(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetTruename");
 
@@ -1856,7 +1856,7 @@ static int Entity_GetTruename(lua_State *L) {
 }
 
 static int Entity_SetTruename(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTruename");
 
@@ -1874,7 +1874,7 @@ static int Entity_SetTruename(lua_State *L) {
 }
 
 static int Entity_SetTargetName(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTargetName");
 
@@ -1892,7 +1892,7 @@ static int Entity_SetTargetName(lua_State *L) {
 }
 
 static int Entity_GetFalsetarget(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetFalsetarget");
 
@@ -1910,7 +1910,7 @@ static int Entity_GetFalsetarget(lua_State *L) {
 }
 
 static int Entity_SetFalsetarget(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetFalsetarget");
 
@@ -1928,7 +1928,7 @@ static int Entity_SetFalsetarget(lua_State *L) {
 }
 
 static int Entity_GetTruetarget(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetTruetarget");
 
@@ -1946,7 +1946,7 @@ static int Entity_GetTruetarget(lua_State *L) {
 }
 
 static int Entity_SetTruetarget(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTruetarget");
 
@@ -1964,7 +1964,7 @@ static int Entity_SetTruetarget(lua_State *L) {
 }
 
 static int Entity_GetFlags(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	
 	LUA_DEBUG("BEGIN - entity.GetFlags");
 
@@ -1981,7 +1981,7 @@ static int Entity_GetFlags(lua_State *L) {
 }
 
 static int Entity_SetFlags(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		flags;
 
 	LUA_DEBUG("BEGIN - entity.SetFlags");
@@ -2001,7 +2001,7 @@ static int Entity_SetFlags(lua_State *L) {
 }
 
 static int Entity_GetFreeAfterEvent(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetFreeAfterEvent");
 
@@ -2018,7 +2018,7 @@ static int Entity_GetFreeAfterEvent(lua_State *L) {
 }
 
 static int Entity_SetFreeAfterEvent(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	qboolean b;
 
 	LUA_DEBUG("BEGIN - entity.SetFreeAfterEvent");
@@ -2038,7 +2038,7 @@ static int Entity_SetFreeAfterEvent(lua_State *L) {
 }
 
 static int Entity_GetFreetime(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetFreetime");
 
@@ -2055,7 +2055,7 @@ static int Entity_GetFreetime(lua_State *L) {
 }
 
 static int Entity_GetGreensound(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetGreensound");
 
@@ -2073,7 +2073,7 @@ static int Entity_GetGreensound(lua_State *L) {
 }
 
 static int Entity_SetGreensound(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetGreensound");
 
@@ -2091,7 +2091,7 @@ static int Entity_SetGreensound(lua_State *L) {
 }
 
 static int Entity_GetHealth(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetHealth");
 
@@ -2108,7 +2108,7 @@ static int Entity_GetHealth(lua_State *L) {
 }
 
 static int Entity_SetHealth(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		health;
 
 	LUA_DEBUG("BEGIN - entity.SetHealth");
@@ -2128,7 +2128,7 @@ static int Entity_SetHealth(lua_State *L) {
 }
 
 static int Entity_GetInUse(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetInUse");
 
@@ -2145,7 +2145,7 @@ static int Entity_GetInUse(lua_State *L) {
 }
 
 static int Entity_GetLastEnemy(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLastEnemy");
 
@@ -2166,8 +2166,8 @@ static int Entity_GetLastEnemy(lua_State *L) {
 }
 
 static int Entity_SetLastEnemy(lua_State *L) {
-	lent_t *lent;
-	lent_t *lastEnemy;
+	luaGentity_t *lent;
+	luaGentity_t *lastEnemy;
 
 	LUA_DEBUG("BEGIN - entity.SetLastEnemy");
 
@@ -2190,7 +2190,7 @@ static int Entity_SetLastEnemy(lua_State *L) {
 }
 
 static int Entity_GetLuaDie(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaDie");
 
@@ -2208,7 +2208,7 @@ static int Entity_GetLuaDie(lua_State *L) {
 }
 
 static int Entity_SetLuaDie(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaDie");
 
@@ -2226,7 +2226,7 @@ static int Entity_SetLuaDie(lua_State *L) {
 }
 
 static int Entity_GetLuaEntity(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaEntity");
 
@@ -2243,7 +2243,7 @@ static int Entity_GetLuaEntity(lua_State *L) {
 }
 
 static int Entity_GetLuaFree(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaFree");
 
@@ -2261,7 +2261,7 @@ static int Entity_GetLuaFree(lua_State *L) {
 }
 
 static int Entity_SetLuaFree(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaFree");
 
@@ -2279,7 +2279,7 @@ static int Entity_SetLuaFree(lua_State *L) {
 }
 
 static int Entity_GetLuaHurt(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaHurt");
 
@@ -2297,7 +2297,7 @@ static int Entity_GetLuaHurt(lua_State *L) {
 }
 
 static int Entity_SetLuaHurt(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaHurt");
 
@@ -2315,7 +2315,7 @@ static int Entity_SetLuaHurt(lua_State *L) {
 }
 
 static int Entity_GetLuaReached(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaReached");
 
@@ -2333,7 +2333,7 @@ static int Entity_GetLuaReached(lua_State *L) {
 }
 
 static int Entity_SetLuaReached(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaReached");
 
@@ -2351,7 +2351,7 @@ static int Entity_SetLuaReached(lua_State *L) {
 }
 
 static int Entity_GetLuaReachedAngular(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaReachedAngular");
 
@@ -2369,7 +2369,7 @@ static int Entity_GetLuaReachedAngular(lua_State *L) {
 }
 
 static int Entity_SetLuaReachedAngular(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaReachedAngular");
 
@@ -2387,7 +2387,7 @@ static int Entity_SetLuaReachedAngular(lua_State *L) {
 }
 
 static int Entity_GetLuaSpawn(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaSpawn");
 
@@ -2405,7 +2405,7 @@ static int Entity_GetLuaSpawn(lua_State *L) {
 }
 
 static int Entity_SetLuaSpawn(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaSpawn");
 
@@ -2423,7 +2423,7 @@ static int Entity_SetLuaSpawn(lua_State *L) {
 }
 
 static int Entity_GetLuaThink(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaThink");
 
@@ -2441,7 +2441,7 @@ static int Entity_GetLuaThink(lua_State *L) {
 }
 
 static int Entity_SetLuaThink(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaThink");
 
@@ -2459,7 +2459,7 @@ static int Entity_SetLuaThink(lua_State *L) {
 }
 
 static int Entity_GetLuaTouch(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaTouch");
 
@@ -2477,7 +2477,7 @@ static int Entity_GetLuaTouch(lua_State *L) {
 }
 
 static int Entity_SetLuaTouch(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaTouch");
 
@@ -2495,7 +2495,7 @@ static int Entity_SetLuaTouch(lua_State *L) {
 }
 
 static int Entity_GetLuaTrigger(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaTrigger");
 
@@ -2513,7 +2513,7 @@ static int Entity_GetLuaTrigger(lua_State *L) {
 }
 
 static int Entity_SetLuaTrigger(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaTrigger");
 
@@ -2531,7 +2531,7 @@ static int Entity_SetLuaTrigger(lua_State *L) {
 }
 
 static int Entity_GetLuaUse(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetLuaUse");
 
@@ -2549,7 +2549,7 @@ static int Entity_GetLuaUse(lua_State *L) {
 }
 
 static int Entity_SetLuaUse(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetLuaUse");
 
@@ -2568,7 +2568,7 @@ static int Entity_SetLuaUse(lua_State *L) {
 
 
 static int Entity_GetMessage(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetMessage");
 
@@ -2586,7 +2586,7 @@ static int Entity_GetMessage(lua_State *L) {
 }
 
 static int Entity_SetMessage(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetMessage");
 
@@ -2604,7 +2604,7 @@ static int Entity_SetMessage(lua_State *L) {
 }
 
 static int Entity_GetMethodOfDeath(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetMethodOfDeath");
 
@@ -2621,7 +2621,7 @@ static int Entity_GetMethodOfDeath(lua_State *L) {
 }
 
 static int Entity_SetMethodOfDeath(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		mod;
 
 	LUA_DEBUG("BEGIN - entity.SetMethodOfDeath");
@@ -2641,7 +2641,7 @@ static int Entity_SetMethodOfDeath(lua_State *L) {
 }
 
 static int Entity_GetModel(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.GetModel");
 
@@ -2659,7 +2659,7 @@ static int Entity_GetModel(lua_State *L) {
 }
 
 static int Entity_SetModel(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetMode");
 
@@ -2677,7 +2677,7 @@ static int Entity_SetModel(lua_State *L) {
 }
 
 static int Entity_GetModel2(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.GetModel2");
 
@@ -2695,7 +2695,7 @@ static int Entity_GetModel2(lua_State *L) {
 }
 
 static int Entity_SetModel2(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetModel2");
 
@@ -2713,7 +2713,7 @@ static int Entity_SetModel2(lua_State *L) {
 }
 
 static int Entity_GetMovedir(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	vec3_t null = { 0, 0, 0 };
 
 	LUA_DEBUG("BEGIN - entity.GetMovedir");
@@ -2731,7 +2731,7 @@ static int Entity_GetMovedir(lua_State *L) {
 }
 
 static int Entity_SetMovedir(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 	vec_t	*dir;
 
 	LUA_DEBUG("BEGIN - entity.SetMovedir");
@@ -2751,7 +2751,7 @@ static int Entity_SetMovedir(lua_State *L) {
 }
 
 static int Entity_GetMoverstate(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetMoverstate");
 
@@ -2768,7 +2768,7 @@ static int Entity_GetMoverstate(lua_State *L) {
 }
 
 static int Entity_SetMoverstate(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 	moverState_t m;
 
 	LUA_DEBUG("BEGIN - entity.SetMoverstate");
@@ -2789,7 +2789,7 @@ static int Entity_SetMoverstate(lua_State *L) {
 }
 
 static int Entity_GetN00bCount(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	
 	LUA_DEBUG("BEGIN - entity.GetN00bCount");
 
@@ -2806,7 +2806,7 @@ static int Entity_GetN00bCount(lua_State *L) {
 }
 
 static int Entity_SetN00bCount(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		cnt;
 
 	LUA_DEBUG("BEGIN - entity.SetN00bCount");
@@ -2826,7 +2826,7 @@ static int Entity_SetN00bCount(lua_State *L) {
 }
 
 static int Entity_GetWait(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	
 	LUA_DEBUG("BEGIN - entity.GetWait");
 
@@ -2843,7 +2843,7 @@ static int Entity_GetWait(lua_State *L) {
 }
 
 static int Entity_SetWait(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		wait;
 
 	LUA_DEBUG("BEGIN - entity.SetWait");
@@ -2864,7 +2864,7 @@ static int Entity_SetWait(lua_State *L) {
 }
 
 static int Entity_GetNeverFree(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetNeverFree");
 
@@ -2881,7 +2881,7 @@ static int Entity_GetNeverFree(lua_State *L) {
 }
 
 static int Entity_SetNeverFree(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	qboolean b;
 
 	LUA_DEBUG("BEGIN - entity.SetNeverFree");
@@ -2901,7 +2901,7 @@ static int Entity_SetNeverFree(lua_State *L) {
 }
 
 static int Entity_GetNexthink(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetNexthink");
 
@@ -2918,7 +2918,7 @@ static int Entity_GetNexthink(lua_State *L) {
 }
 
 static int Entity_SetNexthink(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		next;
 
 	LUA_DEBUG("BEGIN - entity.SetNexthink");
@@ -2938,7 +2938,7 @@ static int Entity_SetNexthink(lua_State *L) {
 }
 
 static int  Entity_GetNextTrain(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetNextTrain");
 	
@@ -2959,8 +2959,8 @@ static int  Entity_GetNextTrain(lua_State *L) {
 }
 
 static int Entity_SetNextTrain(lua_State *L) {
-	lent_t *lent;
-	lent_t *next;
+	luaGentity_t *lent;
+	luaGentity_t *next;
 
 	LUA_DEBUG("BEGIN - entity.SetNextTrain");
 
@@ -2983,7 +2983,7 @@ static int Entity_SetNextTrain(lua_State *L) {
 }
 
 static int Entity_GetNoiseIndex(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	
 	LUA_DEBUG("BEGIN - entity.GetNoiseIndex");
 
@@ -3000,7 +3000,7 @@ static int Entity_GetNoiseIndex(lua_State *L) {
 }
 
 static int Entity_SetNoiseIndex(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		idx;
 
 	LUA_DEBUG("BEGIN - entity.SetNoiseIndex");
@@ -3020,7 +3020,7 @@ static int Entity_SetNoiseIndex(lua_State *L) {
 }
 
 static int Entity_GetOldHealth(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetOldHealth");
 
@@ -3037,7 +3037,7 @@ static int Entity_GetOldHealth(lua_State *L) {
 }
 
 static int Entity_SetOldHealth(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		old_health;
 
 	LUA_DEBUG("BEGIN - entity.SetOldHealth");
@@ -3057,7 +3057,7 @@ static int Entity_SetOldHealth(lua_State *L) {
 }
 
 static int Entity_GetPaintarget(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetPaintarget");
 
@@ -3075,7 +3075,7 @@ static int Entity_GetPaintarget(lua_State *L) {
 }
 
 static int Entity_SetPaintarget(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetPaintarget");
 
@@ -3093,7 +3093,7 @@ static int Entity_SetPaintarget(lua_State *L) {
 }
 
 static int Entity_GetPainDebounceTime(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetPainDebounceTime");
 
@@ -3110,7 +3110,7 @@ static int Entity_GetPainDebounceTime(lua_State *L) {
 }
 
 static int Entity_SetPainDebounceTime(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		pdb;
 
 	LUA_DEBUG("BEGIN - entity.SetPainDebounceTime");
@@ -3131,7 +3131,7 @@ static int Entity_SetPainDebounceTime(lua_State *L) {
 }
 
 static int Entity_GetParent(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetParent");
 
@@ -3152,8 +3152,8 @@ static int Entity_GetParent(lua_State *L) {
 }
 
 static int Entity_SetParent(lua_State *L) {
-	lent_t *lent;
-	lent_t *parent;
+	luaGentity_t *lent;
+	luaGentity_t *parent;
 
 	LUA_DEBUG("BEGIN - entity.SetParent");
 
@@ -3176,7 +3176,7 @@ static int Entity_SetParent(lua_State *L) {
 }
 
 static int Entity_GetPhysicsBounce(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetPhysicsBounce");
 
@@ -3193,7 +3193,7 @@ static int Entity_GetPhysicsBounce(lua_State *L) {
 }
 
 static int Entity_SetPhysicsBounce(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	float	pb;
 
 	LUA_DEBUG("BEGIN - entity.SetPhysicsBounce");
@@ -3213,7 +3213,7 @@ static int Entity_SetPhysicsBounce(lua_State *L) {
 }
 
 static int Entity_GetPhysicsObject(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetPhysicsObject");
 
@@ -3230,7 +3230,7 @@ static int Entity_GetPhysicsObject(lua_State *L) {
 }
 
 static int Entity_SetPhysicsObject(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	qboolean b;
 
 	LUA_DEBUG("BEGIN - entity.SetPhysicsObject");
@@ -3250,7 +3250,7 @@ static int Entity_SetPhysicsObject(lua_State *L) {
 }
 
 static int Entity_GetPos1(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	vec3_t	null = { 0, 0, 0 };
 
 	LUA_DEBUG("BEGIN - entity.GetPos1");
@@ -3268,7 +3268,7 @@ static int Entity_GetPos1(lua_State *L) {
 }
 
 static int Entity_SetPos1(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 	vec_t	*vec;
 
 	LUA_DEBUG("BEGIN - entity.SetPos1");
@@ -3289,7 +3289,7 @@ static int Entity_SetPos1(lua_State *L) {
 }
 
 static int Entity_GetPos2(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	vec3_t	null = { 0, 0, 0 };
 
 	LUA_DEBUG("BEGIN - entity.GetPos2");
@@ -3307,7 +3307,7 @@ static int Entity_GetPos2(lua_State *L) {
 }
 
 static int Entity_SetPos2(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 	vec_t	*vec;
 
 	LUA_DEBUG("BEGIN - entity.SetPos2");
@@ -3327,7 +3327,7 @@ static int Entity_SetPos2(lua_State *L) {
 }
 
 static int Entity_GetPrevTrain(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetPrevTrain");
 
@@ -3348,8 +3348,8 @@ static int Entity_GetPrevTrain(lua_State *L) {
 }
 
 static int Entity_SetPrevTrain(lua_State *L) {
-	lent_t *lent;
-	lent_t *prev;
+	luaGentity_t *lent;
+	luaGentity_t *prev;
 
 	LUA_DEBUG("BEGIN - entity.SetPrevTrain");
 
@@ -3372,7 +3372,7 @@ static int Entity_SetPrevTrain(lua_State *L) {
 }
 
 static int Entity_GetRandom(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetRandom");
 
@@ -3389,7 +3389,7 @@ static int Entity_GetRandom(lua_State *L) {
 }
 
 static int Entity_SetRandom(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	float	rand;
 
 	LUA_DEBUG("BEGIN - entity.SetRandom");
@@ -3409,7 +3409,7 @@ static int Entity_SetRandom(lua_State *L) {
 }
 
 static int Entity_GetRedsound(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetRedsound");
 
@@ -3427,7 +3427,7 @@ static int Entity_GetRedsound(lua_State *L) {
 }
 
 static int Entity_SetRedsound(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetRedsound");
 
@@ -3445,7 +3445,7 @@ static int Entity_SetRedsound(lua_State *L) {
 }
 
 static int Entity_GetSound1To2(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSound1To2");
 
@@ -3462,7 +3462,7 @@ static int Entity_GetSound1To2(lua_State *L) {
 }
 
 static int Entity_SetSound1To2(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		s1to2;
 
 	LUA_DEBUG("BEGIN - entity.SetSound1To2");
@@ -3482,7 +3482,7 @@ static int Entity_SetSound1To2(lua_State *L) {
 }
 
 static int Entity_GetSound2To1(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSound2To1");
 
@@ -3499,7 +3499,7 @@ static int Entity_GetSound2To1(lua_State *L) {
 }
 
 static int Entity_SetSound2To1(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		s2to1;
 
 	LUA_DEBUG("BEGIN - entity.SetSound2To1");
@@ -3519,7 +3519,7 @@ static int Entity_SetSound2To1(lua_State *L) {
 }
 
 static int Entity_GetSoundLoop(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSoundLoop");
 
@@ -3536,7 +3536,7 @@ static int Entity_GetSoundLoop(lua_State *L) {
 }
 
 static int Entity_SetSoundLoop(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		sl;
 
 	LUA_DEBUG("BEGIN - entity.SetSoundLoop");
@@ -3556,7 +3556,7 @@ static int Entity_SetSoundLoop(lua_State *L) {
 }
 
 static int Entity_GetSoundPos1(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSoundPos1");
 
@@ -3573,7 +3573,7 @@ static int Entity_GetSoundPos1(lua_State *L) {
 }
 
 static int Entity_SetSoundPos1(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		sp1;
 
 	LUA_DEBUG("BEGIN - entity.SetSoundPos1");
@@ -3593,7 +3593,7 @@ static int Entity_SetSoundPos1(lua_State *L) {
 }
 
 static int Entity_GetSoundPos2(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSoundPos2");
 
@@ -3610,7 +3610,7 @@ static int Entity_GetSoundPos2(lua_State *L) {
 }
 
 static int Entity_SetSoundPos2(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		sp2;
 
 	LUA_DEBUG("BEGIN - entity.SetSoundPos2");
@@ -3631,7 +3631,7 @@ static int Entity_SetSoundPos2(lua_State *L) {
 }
 
 static int Entity_GetSpawnflags(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSpawnflags");
 
@@ -3648,7 +3648,7 @@ static int Entity_GetSpawnflags(lua_State *L) {
 }
 
 static int Entity_SetSpawnflags(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		sp;
 
 	LUA_DEBUG("BEGIN - entity.SetSpawnflags");
@@ -3668,7 +3668,7 @@ static int Entity_SetSpawnflags(lua_State *L) {
 }
 
 static int Entity_GetSpeed(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSpeed");
 
@@ -3685,7 +3685,7 @@ static int Entity_GetSpeed(lua_State *L) {
 }
 
 static int Entity_SetSpeed(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	float	speed;
 
 	LUA_DEBUG("BEGIN - entity.SetSpeed");
@@ -3705,7 +3705,7 @@ static int Entity_SetSpeed(lua_State *L) {
 }
 
 static int Entity_GetSplashDamage(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSplashDamage");
 
@@ -3722,7 +3722,7 @@ static int Entity_GetSplashDamage(lua_State *L) {
 }
 
 static int Entity_SetSplashDamage(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		dmg;
 
 	LUA_DEBUG("BEGIN - entity.SetSplashDamage");
@@ -3742,7 +3742,7 @@ static int Entity_SetSplashDamage(lua_State *L) {
 }
 
 static int Entity_GetSplashMethodOfDeath(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSplashMethodOfDeath");
 
@@ -3759,7 +3759,7 @@ static int Entity_GetSplashMethodOfDeath(lua_State *L) {
 }
 
 static int Entity_SetSplashMethodOfDeath(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		mod;
 
 	LUA_DEBUG("BEGIN - entity.SetSplashMethodOfDeath");
@@ -3779,7 +3779,7 @@ static int Entity_SetSplashMethodOfDeath(lua_State *L) {
 }
 
 static int Entity_GetSplashRadius(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSplashRadius");
 
@@ -3796,7 +3796,7 @@ static int Entity_GetSplashRadius(lua_State *L) {
 }
 
 static int Entity_SetSplashRadius(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 	int		radius;
 
 	LUA_DEBUG("BEGIN - entity.SetSplashRadius");
@@ -3816,7 +3816,7 @@ static int Entity_SetSplashRadius(lua_State *L) {
 }
 
 static int Entity_GetSwapname(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetSwapname");
 
@@ -3834,7 +3834,7 @@ static int Entity_GetSwapname(lua_State *L) {
 }
 
 static int Entity_SetSwapname(lua_State *L) {
-	lent_t	*lent;
+	luaGentity_t	*lent;
 
 	LUA_DEBUG("BEGIN - entity.SetSwapname");
 
@@ -3852,7 +3852,7 @@ static int Entity_SetSwapname(lua_State *L) {
 }
 
 static int Entity_GetTakedamage(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetTakedamage");
 
@@ -3869,7 +3869,7 @@ static int Entity_GetTakedamage(lua_State *L) {
 }
 
 static int Entity_SetTakedamage(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTakedamage");
 
@@ -3887,7 +3887,7 @@ static int Entity_SetTakedamage(lua_State *L) {
 }
 
 static int Entity_SetTarget(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTarget");
 
@@ -3905,7 +3905,7 @@ static int Entity_SetTarget(lua_State *L) {
 }
 
 static int Entity_GetTargetname2(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTarget");
 
@@ -3923,7 +3923,7 @@ static int Entity_GetTargetname2(lua_State *L) {
 }
 
 static int Entity_SetTargetname2(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTargetname2");
 
@@ -3941,7 +3941,7 @@ static int Entity_SetTargetname2(lua_State *L) {
 }
 
 static int Entity_GetTargetShaderName(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetTargetShaderName");
 
@@ -3959,7 +3959,7 @@ static int Entity_GetTargetShaderName(lua_State *L) {
 }
 
 static int Entity_SetTargetShaderName(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTargetShaderName");
 
@@ -3977,7 +3977,7 @@ static int Entity_SetTargetShaderName(lua_State *L) {
 }
 
 static int Entity_GetTargetShaderNewName(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetTargetShaderNewName");
 
@@ -3995,7 +3995,7 @@ static int Entity_GetTargetShaderNewName(lua_State *L) {
 }
 
 static int Entity_SetTargetShaderNewName(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTargetShaderNewName");
 
@@ -4013,7 +4013,7 @@ static int Entity_SetTargetShaderNewName(lua_State *L) {
 }
 
 static int Entity_GetTargetEnt(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetTargetEnt");
 
@@ -4031,8 +4031,8 @@ static int Entity_GetTargetEnt(lua_State *L) {
 }
 
 static int Entity_SetTargetEnt(lua_State *L) {
-	lent_t *lent;
-	lent_t *targ;
+	luaGentity_t *lent;
+	luaGentity_t *targ;
 
 	LUA_DEBUG("BEGIN - entity.SetTargetEnt");
 
@@ -4055,7 +4055,7 @@ static int Entity_SetTargetEnt(lua_State *L) {
 }
 
 static int Entity_GetTeam(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetTeam");
 
@@ -4073,7 +4073,7 @@ static int Entity_GetTeam(lua_State *L) {
 }
 
 static int Entity_SetTeam(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.SetTeam");
 
@@ -4091,7 +4091,7 @@ static int Entity_SetTeam(lua_State *L) {
 }
 
 static int Entity_GetTeamchain(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetTeamchain");
 
@@ -4109,8 +4109,8 @@ static int Entity_GetTeamchain(lua_State *L) {
 }
 
 static int Entity_SetTeamchain(lua_State *L) {
-	lent_t *lent;
-	lent_t *team;
+	luaGentity_t *lent;
+	luaGentity_t *team;
 
 	LUA_DEBUG("BEGIN - entity.SetTeamchain");
 
@@ -4133,7 +4133,7 @@ static int Entity_SetTeamchain(lua_State *L) {
 }
 
 static int Entity_GetTeammaster(lua_State *L) {
-	lent_t *lent;
+	luaGentity_t *lent;
 
 	LUA_DEBUG("BEGIN - entity.GetTeammaster");
 
@@ -4151,8 +4151,8 @@ static int Entity_GetTeammaster(lua_State *L) {
 }
 
 static int Entity_SetTeammaster(lua_State *L) {
-	lent_t *lent;
-	lent_t *team;
+	luaGentity_t *lent;
+	luaGentity_t *team;
 
 	LUA_DEBUG("BEGIN - entity.SetTeammaster");
 
@@ -4475,24 +4475,24 @@ int Luaopen_Entity(lua_State * L)
 
 void Lua_PushEntity(lua_State * L, gentity_t * ent)
 {
-	lent_t     *lent;
+	luaGentity_t     *lent;
 
 	if(!ent || !ent->inuse)
 		lua_pushnil(L);
 	else {
-		lent = (lent_t *)lua_newuserdata(L, sizeof(lent_t));
+		lent = (luaGentity_t *)lua_newuserdata(L, sizeof(luaGentity_t));
 		luaL_getmetatable(L, "game.entity");
 		lua_setmetatable(L, -2);
 		lent->e = ent;
 	}
 }
 
-lent_t *Lua_GetEntity(lua_State * L, int argNum)
+luaGentity_t *Lua_GetEntity(lua_State * L, int argNum)
 {
 	void           *ud;
 
 	ud = luaL_checkudata(L, argNum, "game.entity");
 	luaL_argcheck(L, ud != NULL, argNum, "\'entity\' expected");
-	return (lent_t *) ud;
+	return (luaGentity_t *) ud;
 }
 #endif

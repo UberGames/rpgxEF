@@ -727,16 +727,16 @@ void G_Combat_Repair(gentity_t* ent, gentity_t* tr_ent, double rate) {
 				trap_SetBrushModel(tr_ent, tr_ent->model);
 				tr_ent->r.svFlags &= ~SVF_NOCLIENT;
 				tr_ent->s.eFlags &= ~EF_NODRAW;
-				InitBBrush(tr_ent);
+				G_Breakable_InitBrush(tr_ent);
 
 				if (tr_ent->health) {
 					tr_ent->takedamage = qtrue;
 				}
 
-				tr_ent->use = breakable_use;
+				tr_ent->use = G_Breakable_Use;
 
 				if (tr_ent->paintarget) {
-					tr_ent->pain = breakable_pain;
+					tr_ent->pain = G_Breakable_Pain;
 				}
 
 				tr_ent->clipmask = 0;

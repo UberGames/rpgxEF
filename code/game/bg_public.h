@@ -1052,32 +1052,29 @@ ID system.
 #define SECURITY_FILE	"rpgxid.dat"
 
 typedef struct {
-	unsigned long		ID;
+	uint64_t			ID;
 	//short				padding;
-	unsigned long		hash;
+	uint64_t			hash;
 	//short				padding2;
-	unsigned long		playerID;
+	uint64_t			playerID;
 	//short				padding3;
 } rpgxSecurityFile_t;
 
-void	BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result);
-void	BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t result);
+void	BG_EvaluateTrajectory(const trajectory_t* tr, int32_t atTime, vec3_t result);
+void	BG_EvaluateTrajectoryDelta(const trajectory_t* tr, int32_t atTime, vec3_t result);
 
 void	BG_AddPredictableEventToPlayerstate(int32_t newEvent, int32_t eventParm, playerState_t* ps);
 
-void	BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap);
+void	BG_PlayerStateToEntityState(playerState_t* ps, entityState_t* s, qboolean snap);
 
-qboolean	BG_PlayerTouchesItem(playerState_t *ps, entityState_t *item, int atTime);
+qboolean	BG_PlayerTouchesItem(playerState_t* ps, entityState_t* item, int32_t atTime);
 
-char	*NextWordEndsHere(char *pos);
-char	*EndWord(char *pos);
+char* NextWordEndsHere(char* pos);
+char* EndWord(char* pos);
 
 #define ARENAS_PER_TIER		4
 
-//make this match Max_Ammo in g_items please;
-#define PHASER_AMMO_MAX		50
-
-extern int Max_Ammo[];
+extern int32_t Max_Ammo[];
 
 #endif /* BG_PUBLIC_H_ */
 

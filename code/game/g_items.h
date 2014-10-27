@@ -17,12 +17,14 @@ typedef struct
 	char		value[256];
 } paddData_t;
 
-#define PADD_DATA_MAX	256 //!< max number of padds
-#define MAX_DROPPED		255 //!< should be reasonable
+enum g_itemsLimits_e {
+	MAX_DROPPED = 255, //!< should be reasonable
+	PADD_DATA_MAX = 256 //!< max number of padds
+};
 
 extern paddData_t	paddData[PADD_DATA_MAX];
-extern int			paddDataNum;
-extern int			numTotalDropped;
+extern int32_t		paddDataNum;
+extern int32_t		numTotalDropped;
 
 /**
  * Run an item.

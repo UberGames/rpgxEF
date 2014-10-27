@@ -70,7 +70,7 @@ Do damage to an entity.
 @return Success or failure.
 */
 static int weapon_Damage(lua_State *L) {
-	lent_t* lent;
+	luaGentity_t* lent;
 	gentity_t* target = NULL;
 	gentity_t* inflictor = NULL;
 	gentity_t* attacker = NULL;

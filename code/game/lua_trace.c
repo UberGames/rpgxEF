@@ -19,7 +19,7 @@ static int Trace_GC(lua_State * L)
 
 static int Trace_ToString(lua_State * L)
 {
-	ltrace_t     *ltrace;
+	luaTrace_t     *ltrace;
 	trace_t      *trace;
 	char         buf[MAX_STRING_CHARS];
 
@@ -83,7 +83,7 @@ Frees all memory that was allocated for this trace.
 @param trace The trace.
 */
 static int Trace_FreeTrace(lua_State *L) {
-	ltrace_t *tr;
+	luaTrace_t *tr;
 
 	tr = Lua_GetTrace(L, 1);
 	if(tr && tr->tr)
@@ -98,7 +98,7 @@ Check whether the trace has gone only trough solid content (e.g. only inside a w
 @return Whether trace was all solid.
 */
 static int Trace_GetAllsolid(lua_State *L) {
-	ltrace_t *tr;
+	luaTrace_t *tr;
 
 	tr = Lua_GetTrace(L, 1);
 	lua_pushboolean(L, (int)tr->tr->allsolid);
@@ -112,7 +112,7 @@ Check whether the trace has started in solid contents.
 @return Whether trace started solid.
 */
 static int Trace_GetStartsolid(lua_State *L) {
-	ltrace_t *tr;
+	luaTrace_t *tr;
 
 	tr = Lua_GetTrace(L, 1);
 	lua_pushboolean(L, (int)tr->tr->startsolid);
@@ -126,7 +126,7 @@ Get fraction of trace.
 @return Fraction.
 */
 static int Trace_GetFraction(lua_State *L) {
-	ltrace_t *tr;
+	luaTrace_t *tr;
 
 	tr = Lua_GetTrace(L, 1);
 	lua_pushnumber(L, tr->tr->fraction);
@@ -140,7 +140,7 @@ Get end position of the trace.
 @return End position of the trace.
 */
 static int Trace_GetEndpos(lua_State *L) {
-	ltrace_t *tr;
+	luaTrace_t *tr;
 
 	tr = Lua_GetTrace(L, 1);
 	Lua_PushVector(L, tr->tr->endpos);
@@ -154,7 +154,7 @@ Get the surface flags for the face the trace hit.
 @return Surface flags.
 */
 static int Trace_GetSurfaceFlags(lua_State *L) {
-	ltrace_t *tr;
+	luaTrace_t *tr;
 
 	tr = Lua_GetTrace(L, 1);
 	lua_pushnumber(L, tr->tr->surfaceFlags);
@@ -168,7 +168,7 @@ Get content flags for the trace.
 @return Content flags.
 */
 static int Trace_GetContents(lua_State *L) {
-	ltrace_t *tr;
+	luaTrace_t *tr;
 
 	tr = Lua_GetTrace(L, 1);
 	lua_pushnumber(L, tr->tr->contents);
@@ -182,7 +182,7 @@ Get entity number for entity the trace hit.
 @return Entity number.
 */
 static int Trace_GetEntityNum(lua_State *L) {
-	ltrace_t *tr;
+	luaTrace_t *tr;
 
 	tr = Lua_GetTrace(L, 1);
 	lua_pushnumber(L, tr->tr->entityNum);
@@ -196,7 +196,7 @@ Get entity the trace hit.
 @return entity the trace hit.
 */
 static int Trace_GetEntity(lua_State *L) {
-	ltrace_t *tr;
+	luaTrace_t *tr;
 	gentity_t *ent;
 
 	tr = Lua_GetTrace(L, 1);
@@ -280,9 +280,9 @@ int Luaopen_Trace(lua_State *L) {
 
 void Lua_PushTrace(lua_State * L, trace_t * tr)
 {
-	ltrace_t     *trace;
+	luaTrace_t     *trace;
 
-	trace = (ltrace_t *)lua_newuserdata(L, sizeof(ltrace_t));
+	trace = (luaTrace_t *)lua_newuserdata(L, sizeof(luaTrace_t));
 
 	luaL_getmetatable(L, "game.trace");
 	lua_setmetatable(L, -2);
@@ -290,12 +290,12 @@ void Lua_PushTrace(lua_State * L, trace_t * tr)
 	trace->tr = tr;
 }
 
-ltrace_t *Lua_GetTrace(lua_State * L, int argNum)
+luaTrace_t *Lua_GetTrace(lua_State * L, int argNum)
 {
 	void           *ud;
 
 	ud = luaL_checkudata(L, argNum, "game.trace");
 	luaL_argcheck(L, ud != NULL, argNum, "\'trace\' expected");
-	return (ltrace_t *) ud;
+	return (luaTrace_t *) ud;
 }
 #endif

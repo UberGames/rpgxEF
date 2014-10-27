@@ -11,13 +11,16 @@ typedef struct
 	char	text[128];
 } group_list_t;
 
-#define MAX_GROUP_MEMBERS	1024
+enum g_groupsLimits_e {
+	MAX_SKINS_FOR_RACE = 128,
+	MAX_GROUP_MEMBERS = 1024
+};
 
 extern group_list_t	group_list[MAX_GROUP_MEMBERS];
-extern int 	group_count;
-/*@shared@*/ /*@null@*/ extern char *G_searchGroupList(const char *name);
+extern int32_t group_count;
+/*@shared@*/ /*@null@*/ extern char* G_searchGroupList(const char* name);
+ 
 
-#define MAX_SKINS_FOR_RACE 128
 
 #endif /* G_GROUPS_H_ */
 

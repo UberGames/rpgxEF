@@ -22,9 +22,9 @@ typedef enum {
 typedef struct
 {
 	char*		name;
-	int			ofs;
+	int32_t		ofs;
 	fieldtype_t	type;
-	int			flags;
+	int32_t		flags;
 } field_t;
 
 /**
@@ -455,7 +455,7 @@ qboolean G_SpawnFloat( const char* key, const char* defaultString, /*@out@*/ flo
  * \param[out] out The result.
  * \return Success or fail.
  */
-qboolean G_SpawnInt( const char* key, const char* defaultString, /*@out@*/ int* out );
+qboolean G_SpawnInt( const char* key, const char* defaultString, /*@out@*/ int32_t* out );
 
 /**
  * \brief Get a vector for a custom entity key.

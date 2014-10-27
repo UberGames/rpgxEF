@@ -13,8 +13,8 @@ A library for cinematics. Not finished and therfore not further documented.
 // cinematic.Activate(entity ent, entity target)
 // Activates Camera on ent and points it at target.
 static int Cinematic_Activate(lua_State *L) {
-	lent_t *ent;
-	lent_t *target;
+	luaGentity_t *ent;
+	luaGentity_t *target;
 
 	ent = Lua_GetEntity(L, 1);
 	if(!ent) return 0;
@@ -30,7 +30,7 @@ static int Cinematic_Activate(lua_State *L) {
 // cinematic.Deactivate(entity ent)
 // Deactivates camera on ent.
 static int Cinematic_Deactivate(lua_State *L) {
-	lent_t *ent;
+	luaGentity_t *ent;
 
 	ent = Lua_GetEntity(L, 1);
 	if(!ent) return 0;
@@ -43,7 +43,7 @@ static int Cinematic_Deactivate(lua_State *L) {
 // cinematic.ActivateGlobal(entity target)
 // Activates broadcasting of target.
 static int Cinematic_ActivateGlobal(lua_State *L) {
-	lent_t *target;
+	luaGentity_t *target;
 
 	target = Lua_GetEntity(L, 2);
 	if(!target) return 0;
