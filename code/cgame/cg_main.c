@@ -703,7 +703,7 @@ static void CG_RegisterSounds( void )
 	cgs.media.ShakeSound = trap_S_RegisterSound("sound/shake.wav");
 	cgs.media.tedTextSound = trap_S_RegisterSound( "sound/interface/tedtext.wav" );
 
-	for (i=0 ; i<N00bSoundCount ; i++) {
+	for (i=0 ; i<MAX_N00BSOUND_COUNT ; i++) {
 		Com_sprintf (name, sizeof(name), "sound/n00bs/insult%i.wav", i+1);
 		cgs.media.N00bSound[i] = trap_S_RegisterSound (name);
 	}

@@ -679,7 +679,7 @@ static void CG_ServerCommand( void ) {
 	//RPG-X | Phenix | 13/02/2005
 	// Play a insult to the n00b when moved into n00b class
 	if ( !strcmp( cmd, "playN00bInsult") ) {
-		trap_S_StartLocalSound( cgs.media.N00bSound[(rand()%N00bSoundCount)], CHAN_LOCAL_SOUND );
+		trap_S_StartLocalSound( cgs.media.N00bSound[(rand()%MAX_N00BSOUND_COUNT)], CHAN_LOCAL_SOUND );
 		CG_CenterPrint( "Welcome to the n00b Class", SCREEN_HEIGHT * 0.25, BIGCHAR_WIDTH );
 		return;
 	}
