@@ -9,14 +9,18 @@
 #ifndef CG_PUBLIC_H_
 #define CG_PUBLIC_H_
 
-#define	CMD_BACKUP			64	
-#define	CMD_MASK			(CMD_BACKUP - 1)
+enum cgPublicCmd_e {
+	CMD_BACKUP = 64,
+	CMD_MASK = (CMD_BACKUP - 1)
+};
+
 // allow a lot of command backups for very fast systems
 // multiple commands may be combined into a single packet, so this
 // needs to be larger than PACKET_BACKUP
 
-
-#define	MAX_ENTITIES_IN_SNAPSHOT	256
+enum cgPublicLimits_e {
+	MAX_ENTITIES_IN_SNAPSHOT = 256
+};
 
 // snapshots are a view of the server at a given time
 
@@ -49,7 +53,7 @@ functions imported from the main executable
 ==================================================================
 */
 
-#define	CGAME_IMPORT_API_VERSION	3
+static const uint32_t CGAME_IMPORT_API_VERSION = 3;
 
 //these must match up with cg_syscalls.asm
 typedef enum {
@@ -112,8 +116,8 @@ typedef enum {
 	CG_SETUSERCMDVALUE,
 	CG_R_REGISTERSHADERNOMIP,
 	CG_MEMORY_REMAINING,
-    CG_R_REGISTERSHADER3D,  //59
-    CG_CVAR_SET_NO_MODIFY,  // 60
+	CG_R_REGISTERSHADER3D,  //59
+	CG_CVAR_SET_NO_MODIFY,  // 60
 	CG_R_REMAP_SHADER,
 
 	CG_MEMSET = 100,
@@ -142,7 +146,7 @@ functions exported to the main executable
 
 typedef enum {
 	CG_INIT,
-//	void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence )
+	//	void CG_Init( int32_t serverMessageNum, int32_t serverCommandSequence )
 	// called when the level loads or when the renderer is restarted
 	// all media should be registered at this time
 	// cgame will display loading status by calling SCR_Update, which
@@ -151,26 +155,26 @@ typedef enum {
 	// demos, tourney restarts, or vid_restarts
 
 	CG_SHUTDOWN,
-//	void (*CG_Shutdown)( void );
+	//	void (*CG_Shutdown)( void );
 	// oportunity to flush and close any open files
 
 	CG_CONSOLE_COMMAND,
-//	qboolean (*CG_ConsoleCommand)( void );
+	//	qboolean (*CG_ConsoleCommand)( void );
 	// a console command has been issued locally that is not recognized by the
 	// main game system.
 	// use Cmd_Argc() / Cmd_Argv() to read the command, return qfalse if the
 	// command is not known to the game
 
 	CG_DRAW_ACTIVE_FRAME,
-//	void (*CG_DrawActiveFrame)( int32_t serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+	//	void (*CG_DrawActiveFrame)( int32_t serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
 	// Generates and draws a game scene and status information at the given time.
 	// If demoPlayback is set, local movement prediction will not be enabled
 
 	CG_CROSSHAIR_PLAYER,
-//	int32_t (*CG_CrosshairPlayer)( void );
+	//	int32_t (*CG_CrosshairPlayer)( void );
 
 	CG_LAST_ATTACKER
-//	int32_t (*CG_LastAttacker)( void );
+	//	int32_t (*CG_LastAttacker)( void );
 } cgameExport_t;
 
 //----------------------------------------------
