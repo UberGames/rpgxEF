@@ -34,8 +34,8 @@ Can be used as a LIFO stack of FIFO queue. */
 	#include <stdint.h>
 #endif
 
-#define LIST_FRONT 0
-#define LIST_BACK 1
+static const char LIST_FRONT = 0;
+static const char LIST_BACK = 1;
 
 /**
  * Possible type the data in a container may have.
