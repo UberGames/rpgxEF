@@ -15,7 +15,7 @@ qboolean	passwordNeeded = qtrue;
 menufield_s passwordField;
 
 static connstate_t	lastConnState;
-static char			lastLoadingText[MAX_INFO_VALUE];
+static char	lastLoadingText[MAX_INFO_VALUE];
 
 static void UI_ReadableSize ( char *buf, int32_t bufsize, int32_t value )
 {

@@ -23,9 +23,6 @@
     <ClCompile Include="..\game\q_shared.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_addbots.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ui_admin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
