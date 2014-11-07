@@ -887,7 +887,7 @@ static void PlayerSettings_MenuInit(int32_t menuFrom)
 	s_playersettings.height.height						= 32;
 	s_playersettings.height.focusWidth					= 145; //145
 	s_playersettings.height.focusHeight					= 18;
-	s_playersettings.height.picName						= GRAPHIC_SQUARE;
+	s_playersettings.height.picName						= (char*)GRAPHIC_SQUARE;
 	s_playersettings.height.picX						= 115;
 	s_playersettings.height.picY						= y;
 	s_playersettings.height.picWidth					= 85; //MENU_BUTTON_MED_WIDTH + 21;
@@ -921,7 +921,7 @@ static void PlayerSettings_MenuInit(int32_t menuFrom)
 	s_playersettings.weight.height						= 32;
 	s_playersettings.weight.focusWidth					= 145;
 	s_playersettings.weight.focusHeight					= 18;
-	s_playersettings.weight.picName						= GRAPHIC_SQUARE;
+	s_playersettings.weight.picName						= (char*)GRAPHIC_SQUARE;
 	s_playersettings.weight.picX						= 115;
 	s_playersettings.weight.picY						= y;
 	s_playersettings.weight.picWidth					= 85; //MENU_BUTTON_MED_WIDTH + 21;

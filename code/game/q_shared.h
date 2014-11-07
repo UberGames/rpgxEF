@@ -106,9 +106,11 @@
 #else
 	#ifdef _MSC_VER
 		#include <stddef.h>
-		#include <stdint.h>
+		#define __STDC_FORMAT_MACROS
+		#include <inttypes.h>
 	#else
-		#include <stdint.h>
+		#define __STDC_FORMAT_MACROS
+		#include <inttypes.h>
 	#endif
 #endif
 

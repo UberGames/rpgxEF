@@ -2305,7 +2305,7 @@ static void VideoData2_MenuInit( void )
 	s_videodata2.gamma_slider.height			= 32;
 	s_videodata2.gamma_slider.focusWidth		= 145;
 	s_videodata2.gamma_slider.focusHeight		= 18;
-	s_videodata2.gamma_slider.picName			= GRAPHIC_SQUARE;
+	s_videodata2.gamma_slider.picName			= (char*)GRAPHIC_SQUARE;
 	s_videodata2.gamma_slider.picX				= x;
 	s_videodata2.gamma_slider.picY				= y;
 	s_videodata2.gamma_slider.picWidth			= MENU_BUTTON_MED_WIDTH + 21;
@@ -2354,7 +2354,7 @@ static void VideoData2_MenuInit( void )
 	s_videodata2.screensize_slider.height			= 32;
 	s_videodata2.screensize_slider.focusWidth		= 145;
 	s_videodata2.screensize_slider.focusHeight		= 18;
-	s_videodata2.screensize_slider.picName			= GRAPHIC_SQUARE;
+	s_videodata2.screensize_slider.picName			= (char*)GRAPHIC_SQUARE;
 	s_videodata2.screensize_slider.picX				= x;
 	s_videodata2.screensize_slider.picY				= y;
 	s_videodata2.screensize_slider.picWidth			= MENU_BUTTON_MED_WIDTH + 21;

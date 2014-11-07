@@ -241,6 +241,6 @@ typedef enum
 } ingameTextType_t;
 
 
-extern char *ingame_text[IGT_MAX];
+extern char* ingame_text[IGT_MAX];
 
 #endif	//__CG_TEXT_H__

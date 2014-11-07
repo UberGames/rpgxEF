@@ -3039,7 +3039,7 @@ static void ControlsMouseJoyStick_MenuInit( void )
 	s_controls.sensitivity.height				= 32;
 	s_controls.sensitivity.focusWidth			= 145;
 	s_controls.sensitivity.focusHeight			= 18;
-	s_controls.sensitivity.picName				= GRAPHIC_SQUARE;
+	s_controls.sensitivity.picName				= (char*)GRAPHIC_SQUARE;
 	s_controls.sensitivity.picX					= x;
 	s_controls.sensitivity.picY					= y;
 	s_controls.sensitivity.picWidth				= MENU_BUTTON_MED_WIDTH + 21;
@@ -3122,7 +3122,7 @@ static void ControlsMouseJoyStick_MenuInit( void )
 	s_controls.joythreshold.height			= 32;
 	s_controls.joythreshold.focusWidth		= 145;
 	s_controls.joythreshold.focusHeight		= 18;
-	s_controls.joythreshold.picName			= GRAPHIC_SQUARE;
+	s_controls.joythreshold.picName			= (char*)GRAPHIC_SQUARE;
 	s_controls.joythreshold.picX				= x;
 	s_controls.joythreshold.picY				= y;
 	s_controls.joythreshold.picWidth			= MENU_BUTTON_MED_WIDTH + 21;
@@ -3519,7 +3519,7 @@ static void ControlsOther_MenuInit( void )
 	s_keyturnspeed_slider.height			= 32;
 	s_keyturnspeed_slider.focusWidth		= 145;
 	s_keyturnspeed_slider.focusHeight		= 18;
-	s_keyturnspeed_slider.picName			= GRAPHIC_SQUARE;
+	s_keyturnspeed_slider.picName			= (char*)GRAPHIC_SQUARE;
 	s_keyturnspeed_slider.picX				= x;
 	s_keyturnspeed_slider.picY				= y;
 	s_keyturnspeed_slider.picWidth			= MENU_BUTTON_MED_WIDTH + 21;

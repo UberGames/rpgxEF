@@ -812,7 +812,7 @@ static void InitialSetupMenu_Init( void )
 	s_initialsetup.gamma.textEnum				= MBT_BRIGHTNESS;
 	s_initialsetup.gamma.textcolor				= CT_BLACK;
 	s_initialsetup.gamma.textcolor2		= CT_BLACK; //CT_WHITE;
-	s_initialsetup.gamma.thumbName				= GRAPHIC_BUTTONSLIDER;
+	s_initialsetup.gamma.thumbName				= (char*)GRAPHIC_BUTTONSLIDER;
 	s_initialsetup.gamma.thumbHeight			= 32;
 	s_initialsetup.gamma.thumbWidth				= 16;
 	s_initialsetup.gamma.thumbGraphicWidth		= 9;

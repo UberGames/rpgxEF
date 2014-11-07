@@ -2988,7 +2988,7 @@ void UI_SecurityCodeSetup ( void )
 		if ( !code )
 			UI_Logger( LL_ERROR, "No data was able to be loaded\n" );
 		else
-			UI_Logger( LL_ERROR, "ID was %lu, should be %u\n", code->ID, SECURITY_ID );
+			UI_Logger( LL_ERROR, "ID was %"PRIu64", should be %u\n", code->ID, SECURITY_ID );
 
 		UI_ConfirmMenu( menu_normal_text[MNT_ID_INVALID], 0, SecurityFeedback );
 		UI_LogFuncEnd();
@@ -3055,14 +3055,14 @@ void UI_SecurityCodeSetup ( void )
 		trap_FS_Write( code, SECURITY_SIZE, wf );
 		trap_FS_FCloseFile( wf );
 
-		trap_Cvar_Set( "sv_securityHash", va( "%lu", code->hash ) );
+		trap_Cvar_Set( "sv_securityHash", va( "%"PRIu64, code->hash ) );
 	}
 
 	/*
  	 * update the security code value and lock it each time
 	 * from here, it is subsequently sent to the server on player connect
 	 */
-	trap_Cvar_Set( "sv_securityCode", va( "%lu", code->playerID ) );
+	trap_Cvar_Set( "sv_securityCode", va( "%"PRIu64, code->playerID ) );
 	UI_LogFuncEnd();
 
 }
