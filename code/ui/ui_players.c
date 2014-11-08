@@ -5,25 +5,26 @@
 #include "ui_local.h"
 #include "ui_logger.h"
 
+enum ui_playersTimer_e {
+	UI_TIMER_WEAPON_DELAY = 250,
+	UI_TIMER_WEAPON_SWITCH = 300,
+	UI_TIMER_ATTACK = 500,
+	UI_TIMER_MUZZLE_FLASH = 20,
+	UI_TIMER_LAND = 130,
+	UI_TIMER_JUMP = 1000,
+	UI_TIMER_GESTURE = 2300
+};
 
-#define UI_TIMER_GESTURE		2300
-#define UI_TIMER_JUMP			1000
-#define UI_TIMER_LAND			130
-#define UI_TIMER_WEAPON_SWITCH	300
-#define UI_TIMER_ATTACK			500
-#define	UI_TIMER_MUZZLE_FLASH	20
-#define	UI_TIMER_WEAPON_DELAY	250
+static const int32_t JUMP_HEIGHT = 56;
 
-#define JUMP_HEIGHT				56
+static const double SWINGSPEED = 0.2;  //TiM - 0.3
 
-#define SWINGSPEED				0.2  //TiM - 0.3
-
-#define SPIN_SPEED				0.9
-#define COAST_TIME				1000
+static const double SPIN_SPEED = 0.9;
+static const int32_t COAST_TIME = 1000;
 
 
-static int32_t			dp_realtime;
-static float		jumpHeight;
+static int32_t dp_realtime;
+static float jumpHeight;
 
 //TiM : Bolton Table
 stringID_table_t BoltonTable[BOLTON_MAX + 1] =
