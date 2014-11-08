@@ -10,118 +10,121 @@
 #include "ui_local.h"
 #include "ui_logger.h"
 
-#define MAX_DEVS			15	//Max number of developers per menu
-#define MAX_MENUS			9	//Max number of menus
+enum ui_creditsLimits_e {
+	MAX_MENUS = 9,	//Max number of menus
+	MAX_DEVS = 15	//Max number of developers per menu
+};
 
 //Just to be on the safe side, I made these increment from 1 rather than 0
 //and then compensated in the code. :)
-#define ID_LEADS			1
-#define ID_CODERS			2
-#define ID_2D				3
-#define ID_3D				4
-#define ID_MAPPING			5
-#define ID_SOUNDS			6
-#define ID_EXTRAS			7
-#define	ID_BETAS			8
-#define ID_THANKS			9
-#define ID_MAINMENU			100
+enum ui_creditsIDs_e {
+	ID_LEADS = 1,
+	ID_CODERS,
+	ID_2D,
+	ID_3D,
+	ID_MAPPING,
+	ID_SOUNDS,
+	ID_EXTRAS,
+	ID_BETAS,
+	ID_THANKS,
+	ID_MAINMENU = 100
+};
 
-#define MAIN_LOGO_MODEL		"models/mapobjects/rpg-x/logo.md3"
-#define LCARS_CORNER_U		"menu/common/corner_lr_7_12.tga"
-#define LCARS_LOGO_BACKDROP	"menu/rpgx_credits/logo_backdrop"
-#define LCARS_BLIP			"sound/interface/button7.wav"
+static const char MAIN_LOGO_MODEL[] = "models/mapobjects/rpg-x/logo.md3";
+static const char LCARS_CORNER_U[] = "menu/common/corner_lr_7_12.tga";
+static const char LCARS_LOGO_BACKDROP[] = "menu/rpgx_credits/logo_backdrop";
+static const char LCARS_BLIP[] = "sound/interface/button7.wav";
 
 //----------------------------------------------------------------
 //TiM : In order to lower memory by recycling any repeated names
 
 //Developer Names
-#define	NAME_PHENIX			"Dominic 'Phenix' Black"
-#define	NAME_JAY			"Jason 'J2J' Griffith"
-#define	NAME_SHARKY			"Nazar 'Sharky' Surmai"
-#define NAME_RED			"Stephen 'RedTechie' Shamakian"
-#define NAME_TIM			"Timothy 'TiM' Oliver"
-#define NAME_SCOOTER		"Scooter"
-#define NAME_MARCIN			"Marcin 'turbomarcin' Koziuk"
-#define	NAME_WILL			"William Riker"
-#define	NAME_ANT			"Anthony"
-#define NAME_TDP			"The Dark Project"
+static const char NAME_PHENIX[] = "Dominic 'Phenix' Black";
+static const char NAME_JAY[] = "Jason 'J2J' Griffith";
+static const char NAME_SHARKY[] = "Nazar 'Sharky' Surmai";
+static const char NAME_RED[] = "Stephen 'RedTechie' Shamakian";
+static const char NAME_TIM[] = "Timothy 'TiM' Oliver";
+static const char NAME_SCOOTER[] = "Scooter";
+static const char NAME_MARCIN[] = "Marcin 'turbomarcin' Koziuk";
+static const char NAME_GSIO01[] = "Walter 'GSIO01' Hennecke";
+static const char NAME_YOUNG[] = "Hendrik 'Harry Young' Gerritzen";
+static const char NAME_WILL[] = "William Riker";
+static const char NAME_ANT[] = "Anthony";
+static const char NAME_TDP[] = "The Dark Project";
 
 //#define	NAME_DI				"Digital Intervention" //TiM: DI is the brand I put all of my high-end 3D artwork under now as standardiazation for client work. :)
 
-#define NAME_SIMMO			"Tom 'Simmo666' Simpson"
-#define NAME_KURO			"Kuro-chan"				//Kare to kare no nihongo no na dazo lol. :P
+static const char NAME_SIMMO[] = "Tom 'Simmo666' Simpson";
+static const char NAME_KURO[] = "Kuro-chan"; //Kare to kare no nihongo no na dazo lol. :P
 
-#define NAME_JAREN			"Jaren"
+static const char NAME_JAREN[] = "Jaren";
 
-#define	NAME_MONROE			"James 'Emorog' Monroe"
-#define NAME_GENE			"Gene Roddenberry"
-#define	NAME_RAVEN			"Raven Software"
-#define	NAME_EFPEEPS		"The EF RPG Community"
-#define NAME_STEVE			"Steve"					//Never even met this d00d lol
-#define NAME_GSIO01			"Walter 'GSIO01' Hennecke"
+static const char NAME_MONROE[] = "James 'Emorog' Monroe";
+static const char NAME_GENE[] = "Gene Roddenberry";
+static const char NAME_RAVEN[] = "Raven Software";
+static const char NAME_EFPEEPS[] = "The EF RPG Community";
+static const char NAME_STEVE[] = "Steve"; //Never even met this d00d lol
 
-#define NAME_JEROEN			"Jeroen"
 
-#define NAME_LAZ			"Laz Rojas"
+static const char NAME_JEROEN[] = "Jeroen";
 
-#define NAME_PARKER			"Chris 'Parker' Vad"
-#define NAME_HOCKING		"AdmiralHocking"
+static const char NAME_LAZ[] = "Laz Rojas";
 
-#define NAME_YOUNG			"Hendrik 'Harry Young' Gerritzen"
+static const char NAME_PARKER[] = "Chris 'Parker' Vad";
+static const char NAME_HOCKING[] = "AdmiralHocking";
 
 //Developer Uber professional sounding titles
-#define	TITLE_LEADER		"Project Lead"
-#define	TITLE_LPROG			"Lead Coding"
-#define TITLE_L2DAS			"Lead 2-D & Audio Art"
-#define	TITLE_L3D			"Lead 3-D Art"
-#define	TITLE_LMAPPER		"Lead Level Design"
-#define	TITLE_LLUA			"Lead Lua Coding"
+static const char TITLE_LEADER[] = "Project Lead";
+static const char TITLE_LPROG[] = "Lead Coding";
+static const char TITLE_L2DAS[] = "Lead 2-D & Audio Art";
+static const char TITLE_L3D[] = "Lead 3-D Art";
+static const char TITLE_LMAPPER[] = "Lead Level Design";
+static const char TITLE_LLUA[] = "Lead Lua Coding";
 
 //Programming titles
-#define TITLE_PROG			"Primary Coding"
-#define TITLE_GPROG			"Graphics Coding"
-#define	TITLE_ADPROG		"Additional Coding"
-//#define TITLE_SCRIPTING		"Player Scripting"
+static const char TITLE_PROG[] = "Primary Coding";
+static const char TITLE_GPROG[] = "Graphics Coding";
+static const char TITLE_ADPROG[] = "Additional Coding";
 
 //2-D Titles
-#define	TITLE_L2D			"Lead 2-D Art"
-#define	TITLE_LCARS			"Secondary 2-D Art / LCARS Design" //Simmo special lol
-#define	TITLE_AD2D			"Additional 2-D Art"
-#define	TITLE_RANKS			"Menu Rank Icons Creation" // Kuro special
-#define TITLE_ACAI			"Additional Coding / Many ideas"
+static const char TITLE_L2D[] = "Lead 2-D Art";
+static const char TITLE_LCARS[] = "Secondary 2-D Art / LCARS Design"; //Simmo special lol
+static const char TITLE_AD2D[] = "Additional 2-D Art";
+static const char TITLE_RANKS[] = "Menu Rank Icons Creation"; // Kuro special
+static const char TITLE_ACAI[] = "Additional Coding / Many ideas";
 
 //3-D Titles... none O_O
 
 //Mapping titles
-#define	TITLE_LEVELART		"Level Design"
-#define	TITLE_LUAENH		"Lua Level Enhancement"
+static const char TITLE_LEVELART[] = "Level Design";
+static const char TITLE_LUAENH[] = "Lua Level Enhancement";
 
 //Audio Titles
-#define	TITLE_LAUDIO		"Audio Lead"
-#define	TITLE_ADAUDIO		"Additional Audio"
+static const char TITLE_LAUDIO[] = "Audio Lead";
+static const char TITLE_ADAUDIO[] = "Additional Audio";
 
 //Additional Titles
-#define	TITLE_CANON			"Canon Inspector" //Scooter... and only Scooter hehe
-#define TITLE_DOCU			"Documentation"
-#define TITLE_DEUTSCH		"German Translation"
-#define TITLE_NEDERLANDS	"Dutch Translation"
+static const char TITLE_CANON[] = "Canon Inspector";//Scooter... and only Scooter hehe
+static const char TITLE_DOCU[] = "Documentation";
+static const char TITLE_DEUTSCH[] = "German Translation";
+static const char TITLE_NEDERLANDS[] = "Dutch Translation";
 
 //#define	TITLE_CIN			"Opening Cinematic"
-#define TITLE_SKINSMODELS	"Providing Additional Skins and Models"
+static const char TITLE_SKINSMODELS[] = "Providing Additional Skins and Models";
 
 //Thank you Titles
-#define	TITLE_TREK			"Creator of Star Trek"
-#define	TITLE_EF			"Creators of Elite Force"
-#define	TITLE_TEST			"For Suggestions and Additional Testing"
-#define	TITLE_PLAGIA		"Creator of the original EF RPG Mod"
-#define	TITLE_RAVENCODER	"EF Engine Consulting and Assistance"
+static const char TITLE_TREK[] = "Creator of Star Trek";
+static const char TITLE_EF[] = "Creators of Elite Force";
+static const char TITLE_TEST[] = "For Suggestions and Additional Testing";
+static const char TITLE_PLAGIA[] = "Creator of the original EF RPG Mod";
+static const char TITLE_RAVENCODER[] = "EF Engine Consulting and Assistance";
 
 //----------------------------------------------------------------
 
 static qhandle_t			cornerUpper;
 static qhandle_t			spaceBackdrop;
 
-int32_t i;
+static int32_t i;
 
 static float cm_buttons[9][2] = 
 {
@@ -166,8 +169,8 @@ static credits_t	s_credits;
 
 typedef	struct
 {
-	char	name[MAX_QPATH];
-	char	position[MAX_QPATH];
+	const char*	name;
+	const char*	position;
 } devInfo_t;
 
 typedef struct
@@ -185,6 +188,7 @@ static creditsInfo_t	creditsInfo[MAX_MENUS] =
 		"PROJECT LEADS", 
 		{
 			{ NAME_PHENIX,			TITLE_LEADER },
+			{ NAME_GSIO01,			TITLE_LEADER },			
 			{ NAME_JAY,				TITLE_LPROG },
 			{ NAME_SHARKY,			TITLE_L2DAS },
 			{ NAME_TIM,				TITLE_L3D },
@@ -197,12 +201,12 @@ static creditsInfo_t	creditsInfo[MAX_MENUS] =
 		"PROGRAMMING",
 		{
 			{ NAME_JAY,				TITLE_LPROG },
+			{ NAME_GSIO01,			TITLE_LPROG },
 			{ NAME_TIM,				TITLE_PROG },
 			{ NAME_PHENIX,			TITLE_PROG },
-			{ NAME_RED,				TITLE_ADPROG },
 			{ NAME_MARCIN,			TITLE_PROG }, // Scooter was originally here...sorry... not enough space!
+			{ NAME_RED,				TITLE_ADPROG },
 			//{ NAME_SCOOTER,			TITLE_ADPROG }, //one had to go.
-			{ NAME_GSIO01,			TITLE_PROG },
 			{ NAME_YOUNG,			TITLE_LLUA }  
 		}
 	},
@@ -317,10 +321,10 @@ static creditsInfo_t	creditsInfo[MAX_MENUS] =
 	{ 
 		"SPECIAL THANKS",	
 		{
-			{ NAME_GENE,				TITLE_TREK },
-			{ NAME_RAVEN,				TITLE_EF },
+			{ NAME_GENE,			TITLE_TREK },
+			{ NAME_RAVEN,			TITLE_EF },
 			{ NAME_EFPEEPS,			TITLE_TEST },
-			{ NAME_STEVE,				TITLE_PLAGIA },
+			{ NAME_STEVE,			TITLE_PLAGIA },
 			{ NAME_MONROE,			TITLE_RAVENCODER }
 		}
 	}
