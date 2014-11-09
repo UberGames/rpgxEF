@@ -95,9 +95,6 @@
     <ClCompile Include="ui_qmenu.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_removebots.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ui_serverinfo.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -107,19 +104,7 @@
     <ClCompile Include="ui_sound.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_sparena.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ui_specifyserver.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_splevel.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_sppostgame.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_spskill.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ui_startserver.c">
