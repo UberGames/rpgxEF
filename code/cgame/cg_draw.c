@@ -1342,7 +1342,8 @@ static float CG_DrawTimer( float y ) {
 
 	return y + BIGCHAR_HEIGHT + 10;
 }
-#define TINYPAD 1.25
+
+static const double TINYPAD = 1.25;
 
 /*
 =====================

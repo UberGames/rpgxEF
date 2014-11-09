@@ -16,7 +16,9 @@
 #include "../game/lualib.h"
 #endif
 
-#define NUM_VMS 1
+enum cg_luaLimits_e {
+	NUM_VMS = 1
+};
 
 #if defined __linux__
 #define HOSTARCH	"UNIX"

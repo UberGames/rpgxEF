@@ -2,7 +2,7 @@
 #ifndef FX_LOCAL_H_
 #define FX_LOCAL_H_
 
-#define DEFAULT_DEVIATION	0.5
+static const double DEFAULT_DEVIATION = 0.5;
 
 /*
  * fx_*.c

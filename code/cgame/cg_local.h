@@ -20,13 +20,18 @@ enum cg_localLimits_e {
 	NUM_FONT_BIG = 1,
 	NUM_FONT_SMALL = 2,
 	MAX_TALK_SKINS = 4,
+	NUM_CHUNKS = 6,
 	TEAMCHAT_HEIGHT = 8,
+	MAX_RANDOM_ANIMSOUNDS = 8,
 	MAX_VERTS_ON_POLY = 10,
 	MAX_BOLTONS = 10,
 	NUM_CROSSHAIRS = 12,
 	MAX_N00BSOUND_COUNT = 12,
+	MAX_CROSSHAIRS = 15,
 	MAX_OBJECTIVES = 16,
 	MAX_CUSTOM_SOUNDS = 32,
+	MAX_ANIM_SOUNDS = 64,
+	MAX_LENS_FLARES = 64,
 	TEAMCHAT_WIDTH = 80,
 	MAX_MARK_POLYS = 256,
 	MAX_OBJ_LENGTH = 1024,
@@ -141,8 +146,6 @@ typedef struct animsList_s {
 //TiM: Borrowed from EF SP
 //Data struct for necessary dynamic animation sound effects.
 //Useful for proper footstep sync and emote-based sound FX.
-#define MAX_ANIM_SOUNDS			64
-#define	MAX_RANDOM_ANIMSOUNDS	8
 
 typedef struct animsounds_s {
 	int32_t		keyFrame;							//Frame to play sound on
@@ -247,8 +250,6 @@ typedef struct {
 
 	rankModelData_t	rankModelData;
 } defaultRankData_t;
-
-#define MAX_CROSSHAIRS 15
 
 //=================================================
 //TiM: Importable - Custom Crosshair Data
@@ -1031,8 +1032,6 @@ typedef enum {
 
 } material_type_t;
 
-#define NUM_CHUNKS		6
-
 // all of the model, shader, and sound references that are
 // loaded at gamestate time are stored in cgMedia_t
 // Other media that can be tied to clients, weapons, or items are
@@ -1675,15 +1674,15 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h);
 void CG_FillRect(float x, float y, float width, float height, const float *color);
 void CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader);
 void CG_DrawStretchPic(float x, float y, float width, float height, float s1,
-					   float t1, float s2, float t2, qhandle_t hShader);
+	float t1, float s2, float t2, qhandle_t hShader);
 void CG_DrawString(float x, float y, const char *string,
-				   float charWidth, float charHeight, const float *modulate);
+	float charWidth, float charHeight, const float *modulate);
 void UI_DrawProportionalString(int32_t x, int32_t y, const char* str, int32_t style, vec4_t color);
 void CG_LoadFonts(void);
 
 
 void CG_DrawStringExt(int32_t x, int32_t y, const char *string, const float *setColor,
-					  qboolean forceColor, qboolean shadow, int32_t charWidth, int32_t charHeight, int32_t maxChars);
+	qboolean forceColor, qboolean shadow, int32_t charWidth, int32_t charHeight, int32_t maxChars);
 void CG_DrawBigString(int32_t x, int32_t y, const char *s, float alpha);
 void CG_DrawBigStringColor(int32_t x, int32_t y, const char *s, vec4_t color);
 void CG_DrawSmallString(int32_t x, int32_t y, const char *s, float alpha);
@@ -1757,11 +1756,13 @@ typedef enum {
 
 extern interfacegraphics_s interface_graphics[IG_MAX];
 
-#define SG_OFF		0
-#define SG_STRING	1
-#define SG_GRAPHIC	2
-#define SG_NUMBER	3
-#define SG_VAR		4
+enum cg_localSG_e {
+	SG_OFF,
+	SG_STRING,
+	SG_GRAPHIC,
+	SG_NUMBER,
+	SG_VAR
+};
 
 
 extern	int32_t sortedTeamPlayers[TEAM_MAXOVERLAY];
@@ -1796,7 +1797,7 @@ void CG_NewDecoyInfo(int32_t decoyNum);
 void CG_BuildSolidList(void);
 int32_t	CG_PointContents(const vec3_t point, int32_t passEntityNum);
 void CG_Trace(trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-			  int32_t skipNumber, int32_t mask);
+	int32_t skipNumber, int32_t mask);
 void CG_PredictPlayerState(void);
 void CG_LoadDeferredPlayers(void);
 
@@ -1819,9 +1820,9 @@ void CG_Beam(centity_t *cent);
 void CG_AdjustPositionForMover(const vec3_t in, int32_t moverNum, int32_t fromTime, int32_t toTime, vec3_t out);
 
 void CG_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *parent,
-							qhandle_t parentModel, char *tagName);
+	qhandle_t parentModel, char *tagName);
 void CG_PositionRotatedEntityOnTag(refEntity_t *entity, const refEntity_t *parent,
-								   qhandle_t parentModel, char *tagName);
+	qhandle_t parentModel, char *tagName);
 
 
 //
@@ -1897,11 +1898,11 @@ extern int32_t tris_state;
 void	CG_InitMarkPolys(void);
 void	CG_AddMarks(void);
 void	CG_ImpactMark(qhandle_t markShader,
-					  const vec3_t origin, const vec3_t dir,
-					  float orientation,
-					  float r, float g, float b, float a,
-					  qboolean alphaFade,
-					  float radius, qboolean temporary);
+	const vec3_t origin, const vec3_t dir,
+	float orientation,
+	float r, float g, float b, float a,
+	qboolean alphaFade,
+	float radius, qboolean temporary);
 
 //
 // cg_localents.c
@@ -1915,13 +1916,13 @@ void	CG_AddLocalEntities(void);
 // cg_effects.c
 //
 localEntity_t *CG_SmokePuff(const vec3_t p,
-							const vec3_t vel,
-							float radius,
-							float r, float g, float b, float a,
-							float duration,
-							int32_t startTime,
-							int32_t leFlags,
-							qhandle_t hShader);
+	const vec3_t vel,
+	float radius,
+	float r, float g, float b, float a,
+	float duration,
+	int32_t startTime,
+	int32_t leFlags,
+	qhandle_t hShader);
 void CG_BubbleTrail(vec3_t start, vec3_t end, float spacing);
 void CG_SpawnEffect(vec3_t org, refEntity_t *ent_legs, refEntity_t *ent_torso, refEntity_t *ent_head);
 void CG_QFlashEvent(vec3_t org);
@@ -1936,11 +1937,11 @@ void CG_Smoke(vec3_t position, vec3_t dir, int32_t killTime, int32_t radius);
 void CG_Fire(vec3_t position, vec3_t dir, int32_t killTime, int32_t radius, int32_t fxEnt);
 
 localEntity_t *CG_MakeExplosion(vec3_t origin, vec3_t dir,
-								qhandle_t hModel, qhandle_t shader, int32_t msec, float scale,
-								qboolean isSprite);
+	qhandle_t hModel, qhandle_t shader, int32_t msec, float scale,
+	qboolean isSprite);
 localEntity_t *CG_MakeExplosion2(vec3_t origin, vec3_t dir,
-								 qhandle_t hModel, int32_t numFrames, qhandle_t shader,
-								 int32_t msec, qboolean isSprite, float scale, int32_t flags);
+	qhandle_t hModel, int32_t numFrames, qhandle_t shader,
+	int32_t msec, qboolean isSprite, float scale, int32_t flags);
 
 void CG_SurfaceExplosion(vec3_t origin, vec3_t normal, float radius, float shake_speed, qboolean smoke);
 void CG_ExplosionEffects(vec3_t origin, int32_t intensity, int32_t radius);
@@ -2105,18 +2106,18 @@ clipHandle_t trap_CM_TempBoxModel(const vec3_t mins, const vec3_t maxs);
 int32_t			trap_CM_PointContents(const vec3_t p, clipHandle_t model);
 int32_t			trap_CM_TransformedPointContents(const vec3_t p, clipHandle_t model, const vec3_t origin, const vec3_t angles);
 void		trap_CM_BoxTrace(trace_t *results, const vec3_t start, const vec3_t end,
-							 const vec3_t mins, const vec3_t maxs,
-							 clipHandle_t model, int32_t brushmask);
+	const vec3_t mins, const vec3_t maxs,
+	clipHandle_t model, int32_t brushmask);
 void		trap_CM_TransformedBoxTrace(trace_t *results, const vec3_t start, const vec3_t end,
-										const vec3_t mins, const vec3_t maxs,
-										clipHandle_t model, int32_t brushmask,
-										const vec3_t origin, const vec3_t angles);
+	const vec3_t mins, const vec3_t maxs,
+	clipHandle_t model, int32_t brushmask,
+	const vec3_t origin, const vec3_t angles);
 
 // Returns the projection of a polygon onto the solid brushes in the world
 int32_t			trap_CM_MarkFragments(int32_t numPoints, const vec3_t *points,
-									  const vec3_t projection,
-									  int32_t maxPoints, vec3_t pointBuffer,
-									  int32_t maxFragments, markFragment_t *fragmentBuffer);
+	const vec3_t projection,
+	int32_t maxPoints, vec3_t pointBuffer,
+	int32_t maxFragments, markFragment_t *fragmentBuffer);
 
 // normal sounds will have their volume dynamically changed as their entity
 // moves and the listener moves
@@ -2157,10 +2158,10 @@ void		trap_R_AddLightToScene(const vec3_t org, float intensity, float r, float g
 void		trap_R_RenderScene(const refdef_t *fd);
 void		trap_R_SetColor(const float *rgba);	// NULL = 1,1,1,1
 void		trap_R_DrawStretchPic(float x, float y, float w, float h,
-								  float s1, float t1, float s2, float t2, qhandle_t hShader);
+	float s1, float t1, float s2, float t2, qhandle_t hShader);
 void		trap_R_ModelBounds(clipHandle_t model, vec3_t mins, vec3_t maxs);
 void		trap_R_LerpTag(orientation_t *tag, clipHandle_t mod, int32_t startFrame, int32_t endFrame,
-						   float frac, const char *tagName);
+	float frac, const char *tagName);
 
 // The glconfig_t will not change during the life of a cgame.
 // If it needs to change, the entire cgame will be restarted, because
@@ -2202,8 +2203,6 @@ void		testPrintInt(char *string, int32_t i);
 void		testPrintFloat(char *string, float f);
 
 int32_t			trap_MemoryRemaining(void);
-
-#define MAX_LENS_FLARES 64
 
 //RPG-X | TiM | 28/06/2005
 typedef struct {
@@ -2249,11 +2248,11 @@ extern lensReflec_s lensReflec[10];
 
 void CG_DrawLensFlare(lensFlare_t *flare);
 void CG_InitLensFlare(vec3_t worldCoord,
-					  int32_t w1, int32_t h1,
-					  vec3_t glowColor, float glowOffset, float hazeOffset, int32_t minDist, int32_t maxDist,
-					  vec3_t streakColor, int32_t streakDistMin, int32_t streakDistMax, int32_t streakW, int32_t streakH, qboolean whiteStreaks,
-					  int32_t reflecDistMin, int32_t reflecDistMax, qboolean reflecAnamorphic, qboolean defReflecs,
-					  qboolean clamp, float maxAlpha, int32_t startTime, int32_t upTime, int32_t holdTime, int32_t downTime);
+	int32_t w1, int32_t h1,
+	vec3_t glowColor, float glowOffset, float hazeOffset, int32_t minDist, int32_t maxDist,
+	vec3_t streakColor, int32_t streakDistMin, int32_t streakDistMax, int32_t streakW, int32_t streakH, qboolean whiteStreaks,
+	int32_t reflecDistMin, int32_t reflecDistMax, qboolean reflecAnamorphic, qboolean defReflecs,
+	qboolean clamp, float maxAlpha, int32_t startTime, int32_t upTime, int32_t holdTime, int32_t downTime);
 
 //void CG_ParseClassData( void );
 
