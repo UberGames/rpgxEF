@@ -113,12 +113,6 @@
     <ClCompile Include="ui_syscalls.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_team.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_teamorders.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ui_transporter.c">
       <Filter>Source Files</Filter>
     </ClCompile>
