@@ -8,7 +8,7 @@
 #include "g_combat.h"
 #include "g_syscalls.h"
 
-#define	MISSILE_PRESTEP_TIME	50
+static const uint8_t MISSILE_PRESTEP_TIME = 50;
 
 // ick
 // TODO: create g_weapon.h
@@ -148,7 +148,7 @@ G_MissileStick
 
 ================
 */
-#define GRENADE_ALT_STICK_TIME		2500
+static const uint16_t GRENADE_ALT_STICK_TIME = 2500;
 static void G_MissileStick( gentity_t* ent, trace_t* trace )
 {
 	vec3_t		org = { 0, 0, 0 };
