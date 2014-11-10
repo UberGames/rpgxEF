@@ -51,20 +51,21 @@ void DeathmatchScoreboardMessage(gentity_t* ent) {
 
 		if (cl->pers.connected == CON_CONNECTING) {
 			ping = -1;
-		} else {
+		}
+		else {
 			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 		}
 
 		// TODO adjust me some things here might not be needed anymore
 		Com_sprintf(entry, sizeof(entry),
-					" %i %i %i %i %i %i %i %i %i %i %i", level.sortedClients[i],
-					cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime) / 60000,
-					scoreFlags, g_entities[level.sortedClients[i]].s.powerups,
-					0,
-					0,
-					0,
-					cl->ps.persistant[PERS_KILLED],
-					((g_entities[cl->ps.clientNum].r.svFlags&SVF_ELIMINATED) != 0));
+			" %i %i %i %i %i %i %i %i %i %i %i", level.sortedClients[i],
+			cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime) / 60000,
+			scoreFlags, g_entities[level.sortedClients[i]].s.powerups,
+			0,
+			0,
+			0,
+			cl->ps.persistant[PERS_KILLED],
+			((g_entities[cl->ps.clientNum].r.svFlags&SVF_ELIMINATED) != 0));
 
 		j = strlen(entry);
 		if (stringlength + j > 1024) {
@@ -290,7 +291,8 @@ static void Cmd_Give_f(gentity_t *ent) {
 		ps = &client->ps;
 
 		self = qfalse;
-	} else {
+	}
+	else {
 		targEnt = &g_entities[clientNum];
 
 		if (targEnt == NULL || targEnt->client == NULL) {
@@ -311,7 +313,8 @@ static void Cmd_Give_f(gentity_t *ent) {
 	if (ps->pm_type == PM_DEAD) {
 		if (!self) {
 			G_PrintfClient(ent, "ERROR: You cannot give items to a dead player.\n");
-		} else {
+		}
+		else {
 			G_PrintfClient(ent, "ERROR: You cannot receive items when you're dead.\n");
 		}
 
@@ -348,78 +351,82 @@ static void Cmd_Give_f(gentity_t *ent) {
 	}
 
 	switch (item->giveType) {
-		case TYPE_ALL:
-			targEnt->health = ps->stats[STAT_MAX_HEALTH];
+	case TYPE_ALL:
+		targEnt->health = ps->stats[STAT_MAX_HEALTH];
 
-			ps->stats[STAT_WEAPONS] = (1 << WP_NUM_WEAPONS) - 1 - (1 << WP_0);
+		ps->stats[STAT_WEAPONS] = (1 << WP_NUM_WEAPONS) - 1 - (1 << WP_0);
 
-			//RPG-X: J2J - Added so you dont just get empty weapons
-			for (i = MAX_WEAPONS - 1; i > -1; i--) { /* RPG-X | Marcin | 30/12/2008 */ // GSIO: Changed from i++ to i--
-				targEnt->client->ps.ammo[i] += 1;
-			}
-
-			ps->stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable(HI_SHIELD) - bg_itemlist;
-
-			break;
-		case TYPE_HEALTH:
-			targEnt->health = ps->stats[STAT_MAX_HEALTH];
-			break;
-		case TYPE_WEAPONS:
-			ps->stats[STAT_WEAPONS] = (1 << WP_NUM_WEAPONS) - 1 - (1 << WP_0);
-
-			//RPG-X: J2J - Added so you dont just get empty weapons
-			for (i = MAX_WEAPONS - 1; i > -1; i--) { // GSIO: changed from i++ to i--
-				targEnt->client->ps.ammo[i] += 1;
-			}
-
-			break;
-		case TYPE_AMMO:
-			for (i = MAX_WEAPONS - 1; i > -1; i--) { // GSIO: changed from i++ to i--
-				targEnt->client->ps.ammo[i] += 1;
-			}
-			break;
-		case TYPE_HOLDABLE:
-			ps->stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable((holdable_t)item->giveValue) - bg_itemlist;
-			break;
-		case TYPE_WEAPON:
-			ps->stats[STAT_WEAPONS] ^= (1 << item->giveValue);
-
-			if (ps->stats[STAT_WEAPONS] & (1 << item->giveValue))
-				ps->ammo[item->giveValue] += 1;
-			else
-				ps->ammo[item->giveValue] = 0;
-			break;
-
-		case TYPE_POWERUP:
-		{
-							 int32_t flag = 0;
-							 int32_t arrayNum = 0;
-
-							 if (!Q_stricmp(item->consoleName, "god")) {
-								 flag = FL_GODMODE;
-								 arrayNum = -1;
-							 } else if (!Q_stricmp(item->consoleName, "cloak")) {
-								 flag = FL_CLOAK;
-								 arrayNum = PW_INVIS;
-							 } else if (!Q_stricmp(item->consoleName, "flight")) {
-								 flag = FL_FLY;
-								 arrayNum = PW_FLIGHT;
-							 } else if (!Q_stricmp(item->consoleName, "evasuit")) {
-								 flag = FL_FLY;
-								 arrayNum = PW_FLIGHT;
-							 }
-
-							 targEnt->flags ^= flag;
-
-							 if (arrayNum >= 0) {
-								 if (targEnt->flags & flag) {
-									 ps->powerups[arrayNum] = level.time + 10000000;
-								 } else {
-									 ps->powerups[arrayNum] = level.time;
-								 }
-							 }
+		//RPG-X: J2J - Added so you dont just get empty weapons
+		for (i = MAX_WEAPONS - 1; i > -1; i--) { /* RPG-X | Marcin | 30/12/2008 */ // GSIO: Changed from i++ to i--
+			targEnt->client->ps.ammo[i] += 1;
 		}
-			break;
+
+		ps->stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable(HI_SHIELD) - bg_itemlist;
+
+		break;
+	case TYPE_HEALTH:
+		targEnt->health = ps->stats[STAT_MAX_HEALTH];
+		break;
+	case TYPE_WEAPONS:
+		ps->stats[STAT_WEAPONS] = (1 << WP_NUM_WEAPONS) - 1 - (1 << WP_0);
+
+		//RPG-X: J2J - Added so you dont just get empty weapons
+		for (i = MAX_WEAPONS - 1; i > -1; i--) { // GSIO: changed from i++ to i--
+			targEnt->client->ps.ammo[i] += 1;
+		}
+
+		break;
+	case TYPE_AMMO:
+		for (i = MAX_WEAPONS - 1; i > -1; i--) { // GSIO: changed from i++ to i--
+			targEnt->client->ps.ammo[i] += 1;
+		}
+		break;
+	case TYPE_HOLDABLE:
+		ps->stats[STAT_HOLDABLE_ITEM] = BG_FindItemForHoldable((holdable_t)item->giveValue) - bg_itemlist;
+		break;
+	case TYPE_WEAPON:
+		ps->stats[STAT_WEAPONS] ^= (1 << item->giveValue);
+
+		if (ps->stats[STAT_WEAPONS] & (1 << item->giveValue))
+			ps->ammo[item->giveValue] += 1;
+		else
+			ps->ammo[item->giveValue] = 0;
+		break;
+
+	case TYPE_POWERUP:
+	{
+						 int32_t flag = 0;
+						 int32_t arrayNum = 0;
+
+						 if (!Q_stricmp(item->consoleName, "god")) {
+							 flag = FL_GODMODE;
+							 arrayNum = -1;
+						 }
+						 else if (!Q_stricmp(item->consoleName, "cloak")) {
+							 flag = FL_CLOAK;
+							 arrayNum = PW_INVIS;
+						 }
+						 else if (!Q_stricmp(item->consoleName, "flight")) {
+							 flag = FL_FLY;
+							 arrayNum = PW_FLIGHT;
+						 }
+						 else if (!Q_stricmp(item->consoleName, "evasuit")) {
+							 flag = FL_FLY;
+							 arrayNum = PW_FLIGHT;
+						 }
+
+						 targEnt->flags ^= flag;
+
+						 if (arrayNum >= 0) {
+							 if (targEnt->flags & flag) {
+								 ps->powerups[arrayNum] = level.time + 10000000;
+							 }
+							 else {
+								 ps->powerups[arrayNum] = level.time;
+							 }
+						 }
+	}
+		break;
 	}
 
 	//What the absolute fudge?! What the hell is causing the EVA Suit to activate!?
@@ -451,7 +458,8 @@ static void Cmd_God_f(gentity_t* ent) {
 	ent->flags ^= FL_GODMODE;
 	if ((ent->flags & FL_GODMODE) == 0) {
 		G_PrintfClient(ent, "%s", "godmode OFF\n");
-	} else {
+	}
+	else {
 		G_PrintfClient(ent, "%s", "godmode ON\n");
 	}
 }
@@ -473,7 +481,8 @@ static void Cmd_Notarget_f(gentity_t* ent) {
 	ent->flags ^= FL_NOTARGET;
 	if ((ent->flags & FL_NOTARGET) == 0) {
 		G_PrintfClient(ent, "%s", "notarget OFF\n");
-	} else {
+	}
+	else {
 		G_PrintfClient(ent, "%s", "notarget ON\n");
 	}
 }
@@ -508,7 +517,8 @@ static void Cmd_Noclip_f(gentity_t* ent) {
 
 	if (client->noclip) {
 		G_PrintfClient(ent, "%s", "noclip OFF\n");
-	} else {
+	}
+	else {
 		G_PrintfClient(ent, "%s", "noclip ON\n");
 	}
 	client->noclip = (qboolean)!client->noclip;
@@ -619,7 +629,8 @@ static void Cmd_Kill_f(gentity_t* ent) {
 		ps->stats[STAT_HOLDABLE_ITEM] = HI_NONE;
 		ps->stats[STAT_HEALTH] = ent->health = 1;
 		G_Client_Die(ent, ent, ent, 1, meansOfDeath); //MOD_SUICIDE
-	} else {
+	}
+	else {
 		ps->stats[STAT_HEALTH] = ent->health = 0;
 		G_Client_Die(ent, ent, ent, 100000, meansOfDeath); //MOD_SUICIDE
 	}
@@ -652,17 +663,20 @@ void BroadcastTeamChange(gclient_t* client, int32_t oldTeam) {
 			Q_strncpyz(red_team, "red team", sizeof(red_team));
 		}
 		trap_SendServerCommand(-1, va("cp \"%.15s" S_COLOR_WHITE " joined the %s.\n\"", pers->netname, red_team));
-	} else if (sess->sessionTeam == TEAM_BLUE) {
+	}
+	else if (sess->sessionTeam == TEAM_BLUE) {
 		char	blue_team[MAX_QPATH];
 		trap_GetConfigstring(CS_BLUE_GROUP, blue_team, sizeof(blue_team));
 		if (!blue_team[0]) {
 			Q_strncpyz(blue_team, "blue team", sizeof(blue_team));
 		}
 		trap_SendServerCommand(-1, va("cp \"%.15s" S_COLOR_WHITE " joined the %s.\n\"", pers->netname, blue_team));
-	} else if (sess->sessionTeam == TEAM_SPECTATOR && oldTeam != TEAM_SPECTATOR) {
+	}
+	else if (sess->sessionTeam == TEAM_SPECTATOR && oldTeam != TEAM_SPECTATOR) {
 		trap_SendServerCommand(-1, va("cp \"%.15s" S_COLOR_WHITE " is now spectating.\n\"",
 			pers->netname));
-	} else if (sess->sessionTeam == TEAM_FREE) {
+	}
+	else if (sess->sessionTeam == TEAM_FREE) {
 		trap_SendServerCommand(-1, va("cp \"%.15s" S_COLOR_WHITE " joined the Roleplay Session.\n\"",
 			pers->netname));
 	}
@@ -723,30 +737,36 @@ qboolean SetTeam(gentity_t* ent, char* s) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE;
 		client->noclip = (qboolean)1;
-	} else if (g_gametype.integer >= GT_TEAM) {
+	}
+	else if (g_gametype.integer >= GT_TEAM) {
 		// if running a team game, assign player to one of the teams
 		specState = SPECTATOR_NOT;
 		if (Q_stricmp(s, "red") == 0 || Q_stricmp(s, "r") == 0) {
 			team = TEAM_RED;
-		} else if (Q_stricmp(s, "blue") == 0 || Q_stricmp(s, "b") == 0) {
+		}
+		else if (Q_stricmp(s, "blue") == 0 || Q_stricmp(s, "b") == 0) {
 			team = TEAM_BLUE;
-		} else {
+		}
+		else {
 			// pick the team with the least number of players
 			if (isBot) {
 				team = G_Client_PickTeam(clientNum);
-			} else {
+			}
+			else {
 				team = TEAM_SPECTATOR;
 				specState = SPECTATOR_FREE;
 			}
 		}
-	} else {
+	}
+	else {
 		team = TEAM_FREE;
 	}
 
 	// override decision if limiting the players
 	if (g_gametype.integer == GT_TOURNAMENT && level.numNonSpectatorClients >= 2) {
 		team = TEAM_SPECTATOR;
-	} else if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer) {
+	}
+	else if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer) {
 		team = TEAM_SPECTATOR;
 	}
 
@@ -909,14 +929,16 @@ qboolean SetClass(gentity_t* ent, char* s, /*@null@*/ char* teamName, qboolean S
 
 	if (teamName != NULL && SetTeam(ent, teamName)) {
 		return qtrue;
-	} else {//not changing teams or couldn't change teams
+	}
+	else {//not changing teams or couldn't change teams
 		// get and distribute relevent paramters
 		G_Client_UserinfoChanged(clientNum);
 
 		//if in the game already, kill and respawn him, else just wait to join
 		if (sess->sessionTeam == TEAM_SPECTATOR) {// they go to the end of the line for tournaments
 			sess->spectatorTime = level.time;
-		} else {
+		}
+		else {
 			//RPG-X: RedTechie - No respawn for n00bs set all info and frap that a n00b needs HERE this eliminates respawns for n00bs
 			if (g_classData[pclass].isn00b/*pclass == PC_N00B*/) {
 
@@ -937,7 +959,8 @@ qboolean SetClass(gentity_t* ent, char* s, /*@null@*/ char* teamName, qboolean S
 
 
 				trap_SendServerCommand(ps->clientNum, "playN00bInsult");
-			} else {
+			}
+			else {
 				// he starts at 'base' - Removed phenix
 				client->pers.teamState.state = TEAM_BEGIN;
 
@@ -1016,18 +1039,18 @@ static void Cmd_Team_f(gentity_t* ent) {
 
 	if (trap_Argc() != 2) {
 		switch (oldTeam) {
-			case TEAM_BLUE:
-				trap_SendServerCommand(ent - g_entities, "print \"Blue team\n\"");
-				break;
-			case TEAM_RED:
-				trap_SendServerCommand(ent - g_entities, "print \"Red team\n\"");
-				break;
-			case TEAM_FREE:
-				trap_SendServerCommand(ent - g_entities, "print \"Free team\n\"");
-				break;
-			case TEAM_SPECTATOR:
-				trap_SendServerCommand(ent - g_entities, "print \"Spectator team\n\"");
-				break;
+		case TEAM_BLUE:
+			trap_SendServerCommand(ent - g_entities, "print \"Blue team\n\"");
+			break;
+		case TEAM_RED:
+			trap_SendServerCommand(ent - g_entities, "print \"Red team\n\"");
+			break;
+		case TEAM_FREE:
+			trap_SendServerCommand(ent - g_entities, "print \"Free team\n\"");
+			break;
+		case TEAM_SPECTATOR:
+			trap_SendServerCommand(ent - g_entities, "print \"Spectator team\n\"");
+			break;
 		}
 		return;
 	}
@@ -1187,7 +1210,8 @@ static void Cmd_Cloak_f(gentity_t* ent) {
 	if ((ent->flags & FL_CLOAK) == 0) {
 		msg = "Cloak Is Off\n";
 		ps->powerups[PW_INVIS] = level.time;
-	} else {
+	}
+	else {
 		msg = "Cloak Is On\n";
 		ps->powerups[PW_INVIS] = INT_MAX;
 	}
@@ -1227,7 +1251,8 @@ static void Cmd_EvoSuit_f(gentity_t* ent) {
 	if ((ent->flags & FL_EVOSUIT) == 0) {
 		msg = "You have taken an EVA Suit off\n";
 		ps->powerups[PW_EVOSUIT] = 0; //level.time;   //eh? who put this here? -J2J
-	} else {
+	}
+	else {
 		msg = "You have put an EVA Suit on\n";
 		ps->powerups[PW_EVOSUIT] = INT_MAX;
 	}
@@ -1266,7 +1291,8 @@ static void Cmd_Flight_f(gentity_t* ent) {
 	if ((ent->flags & FL_FLY) == 0) {
 		msg = "Flight Is Off\n";
 		ps->powerups[PW_FLIGHT] = level.time;
-	} else {
+	}
+	else {
 		msg = "Flight Is On\n";
 		ps->powerups[PW_FLIGHT] = INT_MAX;
 	}
@@ -1356,11 +1382,13 @@ static qboolean OnSameClass(gentity_t* ent1, gentity_t* ent2) {
 			if (ent1->classname != NULL && ent2->classname != NULL && atoi(ent1->classname) == atoi(ent2->classname)) {
 				return qtrue;
 			}
-		} else if (client1 == NULL) {
+		}
+		else if (client1 == NULL) {
 			if (ent1->classname != NULL && atoi(ent1->classname) == sess2->sessionClass) {
 				return qtrue;
 			}
-		} else {
+		}
+		else {
 			if (ent2->classname && sess1->sessionClass == atoi(ent2->classname)) {
 				return qtrue;
 			}
@@ -1382,14 +1410,16 @@ G_Say
 ==================
 */
 
-#define SAY_ALL		0
-#define SAY_TEAM	1
-#define SAY_TELL	2
-#define SAY_INVAL	3
-#define SAY_CLASS	4
-#define SAY_ADMIN	5
-#define SAY_TELL2	6
-#define SAY_AREA	7
+enum g_sayTypes_e {
+	SAY_ALL,
+	SAY_TEAM,
+	SAY_TELL,
+	SAY_INVAL,
+	SAY_CLASS,
+	SAY_ADMIN,
+	SAY_TELL2,
+	SAY_AREA
+};
 
 static void G_SayTo(gentity_t* ent, gentity_t* other, int32_t mode, int32_t color, const char* name, const char* message) {
 	clientSession_t*sess = NULL;
@@ -1485,61 +1515,62 @@ static void G_Say(gentity_t* ent, gentity_t* target, int32_t mode, const char* c
 
 	if (rpg_chatsallowed.integer > 0) {
 		ent->voiceChatSquelch += (34000 / rpg_chatsallowed.integer);
-	} else {
+	}
+	else {
 		return;
 	}
 	// dhm
 
 	switch (mode) {
-		default:
-		case SAY_ALL:
-			G_LogPrintf("say: %s: %s (%s)\n", entPers->netname, chatText, entPers->ip);
-			Com_sprintf(name, sizeof(name), "^7 %s%c%c ^7: ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
-			color = COLOR_WHITE;
-			break;
-		case SAY_TEAM:
-			// Team Say has become say to all for RPG-X
-			G_LogPrintf("say: %s: %s (%s)\n", entPers->netname, chatText, entPers->ip);
-			Com_sprintf(name, sizeof(name), "^7 %s%c%c^7: ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
-			color = COLOR_WHITE;
-			break;
-		case SAY_TELL:
-			if (tarPers)
-				Com_sprintf(name, sizeof(name), "^7%s ^7from %s%c%c: ", tarPers->netname, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
-			else return;
-			color = COLOR_MAGENTA;
-			break;
-		case SAY_TELL2:
-			if (tarPers)
-				Com_sprintf(name, sizeof(name), "^7%s ^7from %s%c%c: ", tarPers->netname, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
-			else return;
-			color = COLOR_MAGENTA;
-			target = ent;
-			break;
-			// CLASS SAY
-		case SAY_CLASS:
+	default:
+	case SAY_ALL:
+		G_LogPrintf("say: %s: %s (%s)\n", entPers->netname, chatText, entPers->ip);
+		Com_sprintf(name, sizeof(name), "^7 %s%c%c ^7: ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+		color = COLOR_WHITE;
+		break;
+	case SAY_TEAM:
+		// Team Say has become say to all for RPG-X
+		G_LogPrintf("say: %s: %s (%s)\n", entPers->netname, chatText, entPers->ip);
+		Com_sprintf(name, sizeof(name), "^7 %s%c%c^7: ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+		color = COLOR_WHITE;
+		break;
+	case SAY_TELL:
+		if (tarPers)
+			Com_sprintf(name, sizeof(name), "^7%s ^7from %s%c%c: ", tarPers->netname, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+		else return;
+		color = COLOR_MAGENTA;
+		break;
+	case SAY_TELL2:
+		if (tarPers)
+			Com_sprintf(name, sizeof(name), "^7%s ^7from %s%c%c: ", tarPers->netname, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+		else return;
+		color = COLOR_MAGENTA;
+		target = ent;
+		break;
+		// CLASS SAY
+	case SAY_CLASS:
 
-			className = g_classData[entSess->sessionClass].formalName;
+		className = g_classData[entSess->sessionClass].formalName;
 
-			G_LogPrintf("sayclass: %s: %s (%s)\n", entPers->netname, chatText, entPers->ip);
-			Com_sprintf(name, sizeof(name), "^7To all %s^7's from %s%c%c: ", className, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
-			color = COLOR_YELLOW;
-			break;
-		case SAY_ADMIN:
-			if (G_Client_GetLocationMsg(ent, location, sizeof(location)) && tarPers)
-				Com_sprintf(name, sizeof(name), "[%s%c%c] [%s] (%s): ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, tarPers->netname, location); // todo: this is bad
-			else if (tarPers)
-				Com_sprintf(name, sizeof(name), "[%s%c%c ^7To %s^7]: ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, tarPers->netname);
-			else return;
-			color = COLOR_CYAN;
-			target = NULL;
-			break;
-		case SAY_INVAL:
-			G_LogPrintf("Invalid During Intermission: %s: %s (%s)\n", entPers->netname, chatText, entPers->ip);
-			Com_sprintf(name, sizeof(name), "[Invalid During Intermission%c%c]: ", Q_COLOR_ESCAPE, COLOR_WHITE);
-			color = COLOR_GREEN;
-			target = ent;
-			break;
+		G_LogPrintf("sayclass: %s: %s (%s)\n", entPers->netname, chatText, entPers->ip);
+		Com_sprintf(name, sizeof(name), "^7To all %s^7's from %s%c%c: ", className, entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+		color = COLOR_YELLOW;
+		break;
+	case SAY_ADMIN:
+		if (G_Client_GetLocationMsg(ent, location, sizeof(location)) && tarPers)
+			Com_sprintf(name, sizeof(name), "[%s%c%c] [%s] (%s): ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, tarPers->netname, location); // todo: this is bad
+		else if (tarPers)
+			Com_sprintf(name, sizeof(name), "[%s%c%c ^7To %s^7]: ", entPers->netname, Q_COLOR_ESCAPE, COLOR_WHITE, tarPers->netname);
+		else return;
+		color = COLOR_CYAN;
+		target = NULL;
+		break;
+	case SAY_INVAL:
+		G_LogPrintf("Invalid During Intermission: %s: %s (%s)\n", entPers->netname, chatText, entPers->ip);
+		Com_sprintf(name, sizeof(name), "[Invalid During Intermission%c%c]: ", Q_COLOR_ESCAPE, COLOR_WHITE);
+		color = COLOR_GREEN;
+		target = ent;
+		break;
 	}
 
 	Q_strncpyz(text, chatText, sizeof(text));
@@ -1641,7 +1672,8 @@ static void Cmd_Say_f(gentity_t* ent, int32_t mode, qboolean arg0) {
 
 	if (arg0) {
 		p = ConcatArgs(0);
-	} else {
+	}
+	else {
 		p = ConcatArgs(1);
 	}
 
@@ -1768,9 +1800,12 @@ static void Cmd_CallVote_f(gentity_t* ent) {
 	}
 
 	if (Q_stricmp(arg1, "map_restart") == 0) {
-	} else if (Q_stricmp(arg1, "map") == 0) {
-	} else if (Q_stricmp(arg1, "kick") == 0 && rpg_allowvote.integer > 0) {
-	} else {
+	}
+	else if (Q_stricmp(arg1, "map") == 0) {
+	}
+	else if (Q_stricmp(arg1, "kick") == 0 && rpg_allowvote.integer > 0) {
+	}
+	else {
 		G_PrintfClient(ent, "Invalid Vote Command.\n");
 		return;
 	}
@@ -1819,14 +1854,17 @@ static void Cmd_CallVote_f(gentity_t* ent) {
 		trap_Cvar_VariableStringBuffer("nextmap", s, sizeof(s));
 		if (*s) {
 			Com_sprintf(level.voteString, sizeof(level.voteString), "%s %s; set nextmap \"%s\n\"", arg1, arg2, s);
-		} else {
+		}
+		else {
 			Com_sprintf(level.voteString, sizeof(level.voteString), "%s %s", arg1, arg2);
 		}
-	} else if (Q_stricmp(arg1, "map_restart") == 0) {
+	}
+	else if (Q_stricmp(arg1, "map_restart") == 0) {
 		char	serverInfo[MAX_TOKEN_CHARS];
 		trap_GetServerinfo(serverInfo, sizeof(serverInfo));
 		Com_sprintf(level.voteString, sizeof(level.voteString), "%s %s", "map", Info_ValueForKey(serverInfo, "mapname"));
-	} else {
+	}
+	else {
 		Com_sprintf(level.voteString, sizeof(level.voteString), "%s %s", arg1, arg2);
 	}
 
@@ -1881,7 +1919,8 @@ static void Cmd_Vote_f(gentity_t* ent) {
 	if (msg[0] == 'y' || msg[1] == 'Y' || msg[1] == '1') {
 		level.voteYes++;
 		trap_SetConfigstring(CS_VOTE_YES, va("%i", level.voteYes));
-	} else {
+	}
+	else {
 		level.voteNo++;
 		trap_SetConfigstring(CS_VOTE_NO, va("%i", level.voteNo));
 	}
@@ -1943,7 +1982,8 @@ static void Cmd_ForceVote_f(gentity_t* ent) {
 		level.voteYes += 999;
 		trap_SetConfigstring(CS_VOTE_YES, va("%i", level.voteYes));
 		G_PrintfClient(ent, "You have overridden the vote with yes.\n");
-	} else {
+	}
+	else {
 		level.voteNo += 999;
 		trap_SetConfigstring(CS_VOTE_NO, va("%i", level.voteNo));
 		G_PrintfClient(ent, "You have overridden the vote with no.\n");
@@ -2277,7 +2317,8 @@ static void Cmd_ForceKill_f(gentity_t* ent) {
 				ps->stats[STAT_HOLDABLE_ITEM] = HI_NONE;
 				ps->stats[STAT_HEALTH] = target->health = 1;
 				G_Client_Die(target, target, target, 100000, MOD_FORCEDSUICIDE);
-			} else {
+			}
+			else {
 				ps->stats[STAT_HEALTH] = target->health = 0;
 				G_Client_Die(target, target, target, 100000, MOD_FORCEDSUICIDE);
 			}
@@ -2318,7 +2359,8 @@ static void Cmd_ForceKill_f(gentity_t* ent) {
 			ps->stats[STAT_HOLDABLE_ITEM] = HI_NONE;
 			ps->stats[STAT_HEALTH] = target->health = 1;
 			G_Client_Die(target, target, target, 100000, MOD_FORCEDSUICIDE);
-		} else {
+		}
+		else {
 			ps->stats[STAT_HEALTH] = target->health = 0;
 			G_Client_Die(target, target, target, 100000, MOD_FORCEDSUICIDE);
 		}
@@ -2449,7 +2491,8 @@ static void Cmd_ForceKillRadius_f(gentity_t* ent) {
 				oPs->stats[STAT_HOLDABLE_ITEM] = HI_NONE;
 				oPs->stats[STAT_HEALTH] = OtherPlayer->health = 1;
 				G_Client_Die(OtherPlayer, OtherPlayer, OtherPlayer, 100000, MOD_FORCEDSUICIDE);
-			} else {
+			}
+			else {
 				oPs->stats[STAT_HEALTH] = OtherPlayer->health = 0;
 				G_Client_Die(OtherPlayer, OtherPlayer, OtherPlayer, 100000, MOD_FORCEDSUICIDE);
 			}
@@ -2468,7 +2511,8 @@ static void Cmd_ForceKillRadius_f(gentity_t* ent) {
 			ePs->stats[STAT_HOLDABLE_ITEM] = HI_NONE;
 			ePs->stats[STAT_HEALTH] = ent->health = 1;
 			G_Client_Die(ent, ent, ent, 100000, MOD_FORCEDSUICIDE);
-		} else {
+		}
+		else {
 			ePs->stats[STAT_HEALTH] = ent->health = 0;
 			G_Client_Die(ent, ent, ent, 100000, MOD_FORCEDSUICIDE);
 		}
@@ -2627,7 +2671,8 @@ static void Cmd_Drag_f(gentity_t* ent) {
 				DragDat[ID].distance = 0;
 				g_entities[ID].client->noclip = qfalse;
 			}
-		} else {
+		}
+		else {
 			trap_SendServerCommand(clientNum, "print \"Cannot Drag, Someone else is already dragging that player!\n\"");
 		}
 		return;
@@ -2728,7 +2773,8 @@ static void Cmd_UnDrag_f(gentity_t* ent) {
 		}
 		trap_SendServerCommand(clientNum, va("print \"Stopped Dragging your Clients\n\""));
 		return;
-	} else {
+	}
+	else {
 		ID = atoi(arg);
 
 		if (ID < 0 || ID >= level.maxclients) {
@@ -2852,12 +2898,14 @@ static void Cmd_disarm_f(gentity_t* ent) {
 			}
 			foundTripWires[tripcount++] = tripwire->s.number;
 		}
-	} else if (Q_strncmp(arg, "all", 3)) { //J2J
+	}
+	else if (Q_strncmp(arg, "all", 3)) { //J2J
 		//All Mines
 		while ((tripwire = G_Find(tripwire, FOFS(classname), "tripwire")) != NULL) {
 			foundTripWires[tripcount++] = tripwire->s.number;
 		}
-	} else //J2J
+	}
+	else //J2J
 	{
 		return;
 	}
@@ -2869,13 +2917,15 @@ static void Cmd_disarm_f(gentity_t* ent) {
 			//remove it... or blow it?
 			if (&g_entities[foundTripWires[i]] == NULL) {
 				return;
-			} else {
+			}
+			else {
 				G_FreeEntity(&g_entities[foundTripWires[i]]);
 				foundTripWires[i] = ENTITYNUM_NONE;
 			}
 		}
 		G_PrintfClient(ent, "Disarmed %i tripmines\n", tripcount);
-	} else {
+	}
+	else {
 		G_PrintfClient(ent, "No tripmines to disarm\n");
 	}
 }
@@ -2938,7 +2988,8 @@ static void Cmd_Rank_f(gentity_t* ent) {
 				G_Client_SetScore(ent, newScore);
 				trap_SendServerCommand(ent - g_entities, va("prank %s", g_rankNames[i].consoleName));
 				break;
-			} else {
+			}
+			else {
 				if (!MaxRankHit)
 					G_PrintfClient(ent, "This rank is disabled\n");
 				else
@@ -2963,7 +3014,8 @@ static void Cmd_Rank_f(gentity_t* ent) {
 
 	if (OldScore > ent->client->ps.persistant[PERS_SCORE]) {
 		G_PrintfClientAll("%s" S_COLOR_WHITE " was demoted to %s\n", ent->client->pers.netname, g_rankNames[i].formalName);
-	} else {
+	}
+	else {
 		G_PrintfClientAll("%s" S_COLOR_WHITE " was promoted to %s\n", ent->client->pers.netname, g_rankNames[i].formalName);
 	}
 }
@@ -3048,7 +3100,8 @@ static void Cmd_ForceRank_f(gentity_t* ent) {
 
 	if (OldScore > ent->client->ps.persistant[PERS_SCORE]) {
 		G_PrintfClientAll("%s" S_COLOR_WHITE " was demoted to %s\n", other->client->pers.netname, g_rankNames[i].formalName);
-	} else {
+	}
+	else {
 		G_PrintfClientAll("%s" S_COLOR_WHITE " was promoted to %s\n", other->client->pers.netname, g_rankNames[i].formalName);
 	}
 
@@ -3121,7 +3174,8 @@ static void Cmd_AdminLogin_f(gentity_t* ent) {
 		G_PrintfClient(ent, "You are now logged out.\n");
 		G_Client_UserinfoChanged(ent - g_entities);
 		return;
-	} else if (arg[0] == 0) { //if user added no args (ie wanted the parameters)
+	}
+	else if (arg[0] == 0) { //if user added no args (ie wanted the parameters)
 		G_PrintfClient(ent, "\nUsage: Allows a player to login as an admin\nCommand: AdminLogin <Admin Password>\nWARNING: Entering an incorrect password 3 times will automatically kick you from the server!\nEntering AdminLogin without password will log you out if you are locked in\n");
 		return;
 	}
@@ -3136,7 +3190,8 @@ static void Cmd_AdminLogin_f(gentity_t* ent) {
 				G_PrintfClient(ent, "You are logged in as an admin.\n");
 				G_Client_UserinfoChanged(ent - g_entities);
 				return;
-			} else {
+			}
+			else {
 				G_PrintfClient(ent, "You are already logged in as an admin or in the admin class.\n");
 				return;
 			}
@@ -3155,7 +3210,8 @@ static void Cmd_AdminLogin_f(gentity_t* ent) {
 
 		//Kick Client because client has entered the wrong password 3 times
 		trap_DropClient(ent->s.number, "Kicked: Too many bad passwords!");
-	} else {
+	}
+	else {
 		//Give the client another warning
 		G_PrintfClient(ent, "You have entered an incorrect password, if you enter a wrong password %i more times you will be kicked.\n", (3 - ent->client->AdminFailed));
 
@@ -3252,7 +3308,8 @@ static void Cmd_Revive_f(gentity_t* ent) {
 				G_SayTo(ent, e, SAY_ADMIN, COLOR_CYAN, "^7Server: ", send);
 			}
 		}
-	} else {
+	}
+	else {
 		if (pla_str[0] == 0) {
 			//Just me
 			if ((ent->health <= 1) && (ent->client->ps.pm_type == PM_DEAD)) {
@@ -3271,7 +3328,8 @@ static void Cmd_Revive_f(gentity_t* ent) {
 				ps->legsTimer = 0;
 				ps->torsoTimer = 0;
 			}
-		} else {
+		}
+		else {
 			//Specific user
 			char send[100];
 			int32_t targetNum = 0;
@@ -3622,7 +3680,8 @@ static void Cmd_Bolton_f(gentity_t* ent) {
 	if ((ent->flags & FL_HOLSTER) == 0) {
 		msg = "You took your equipment off.\n";
 		client->ps.powerups[PW_BOLTON] = level.time;
-	} else {
+	}
+	else {
 		msg = "You put your equipment on.\n";
 		client->ps.powerups[PW_BOLTON] = INT_MAX;
 	}
@@ -3685,7 +3744,8 @@ static void Cmd_UseEnt_f(gentity_t* ent) {
 		trap_Trace(&tr, start, NULL, NULL, end, ps->clientNum, MASK_SHOT);
 
 		index = tr.entityNum;
-	} else { //We gotz an arg, so put it in
+	}
+	else { //We gotz an arg, so put it in
 		index = atoi(entArg);
 	}
 
@@ -3697,7 +3757,8 @@ static void Cmd_UseEnt_f(gentity_t* ent) {
 		if (targetEnt == NULL) {
 			return;
 		}
-	} else {
+	}
+	else {
 		targetEnt = &g_entities[index]; //get the ent
 	}
 
@@ -3711,7 +3772,8 @@ static void Cmd_UseEnt_f(gentity_t* ent) {
 		}
 
 		targetEnt->use(targetEnt, ent, ent); //Activate the Ent
-	} else { //otherwise berrate the user for being n00bish
+	}
+	else { //otherwise berrate the user for being n00bish
 		G_PrintfClient(ent, "Entity %i cannot be activated in that way.\n", index);
 	}
 }
@@ -3747,8 +3809,8 @@ static void Cmd_EntList_f(gentity_t* ent) {
 	memset(&mainBuffer, 0, sizeof(mainBuffer));
 
 	for (i = 0, mapEnt = g_entities;
-		 i < level.num_entities;
-		 i++, mapEnt++) {
+		i < level.num_entities;
+		i++, mapEnt++) {
 
 		if ((Q_stricmpn(mapEnt->classname, "fx_", 3) == 0) || ((mapEnt->type == ENT_FUNC_USABLE) && (ent->targetname != NULL))) {
 			if (mapEnt->use) {
@@ -3756,13 +3818,15 @@ static void Cmd_EntList_f(gentity_t* ent) {
 
 				if (mapEnt->targetname != NULL) {
 					Com_sprintf(entBuffer, sizeof(entBuffer), "ClassName: '%s', TargetName: '%s', ID: %i\n", mapEnt->classname, mapEnt->targetname, i);
-				} else {
+				}
+				else {
 					Com_sprintf(entBuffer, sizeof(entBuffer), "ClassName: '%s', ID: %i\n", mapEnt->classname, i);
 				}
 
 				if (strlen(mainBuffer) + strlen(entBuffer) >= sizeof(mainBuffer)) {
 					break;
-				} else {
+				}
+				else {
 					Q_strcat(mainBuffer, sizeof(mainBuffer), entBuffer);
 				}
 			}
@@ -3771,7 +3835,8 @@ static void Cmd_EntList_f(gentity_t* ent) {
 
 	if (strlen(mainBuffer) > 0) {
 		G_PrintfClient(ent, "%s", mainBuffer);
-	} else {
+	}
+	else {
 		G_PrintfClient(ent, "No activate able entities detected.\n");
 	}
 }
@@ -3826,7 +3891,8 @@ static void Cmd_BeamToLoc_f(gentity_t* ent) {
 		//beam all?
 		if (Q_stricmp(argStr, "all") == 0) {
 			all = qtrue;
-		} else {
+		}
+		else {
 			//Get Client ID
 			clientNum = atoi(argStr);
 		}
@@ -3848,14 +3914,17 @@ static void Cmd_BeamToLoc_f(gentity_t* ent) {
 		//If arg is a string of chars or an integer
 		if ((unsigned char)argStr[0] < '0' || (unsigned char)argStr[0] > '9') {
 			strLoc = ConcatArgs(2);
-		} else {
+		}
+		else {
 			locIndex = atoi(argStr);
 		}
-	} else { //else 1 arg was specified - the index to beam ourselves.
+	}
+	else { //else 1 arg was specified - the index to beam ourselves.
 		//If arg is a string of chars or an integer
 		if ((unsigned char)argStr[0] < '0' || (unsigned char)argStr[0] > '9') {
 			strLoc = ConcatArgs(1);
-		} else {
+		}
+		else {
 			locIndex = atoi(argStr);
 		}
 
@@ -3897,7 +3966,8 @@ static void Cmd_BeamToLoc_f(gentity_t* ent) {
 	//locEnt
 	if (locEnt->target != NULL) {
 		targEnt = G_PickTarget(locEnt->target);
-	} else {
+	}
+	else {
 		targEnt = locEnt;
 	}
 
@@ -3914,7 +3984,8 @@ static void Cmd_BeamToLoc_f(gentity_t* ent) {
 			trap_SendServerCommand(ent - g_entities, va("chat \"Initiating transport to location: %s\n\" ", locEnt->message));
 			if (!all) {
 				G_InitTransport(beamTarget->client->ps.clientNum, destPoint, targEnt->s.angles);
-			} else {
+			}
+			else {
 				gentity_t* e = NULL;
 				for (i = 0; i < MAX_CLIENTS && i < g_maxclients.integer; i++) {
 					e = &g_entities[i];
@@ -3927,14 +3998,17 @@ static void Cmd_BeamToLoc_f(gentity_t* ent) {
 					targEnt = G_PickTarget(locEnt->target);
 				}
 			}
-		} else {
+		}
+		else {
 			if (beamTarget->client->ps.clientNum == ent->client->ps.clientNum) {
 				trap_SendServerCommand(ent - g_entities, va("chat \"Unable to comply. You are already within a transport cycle.\n\" "));
-			} else {
+			}
+			else {
 				trap_SendServerCommand(ent - g_entities, va("chat \"Unable to comply. Subject is already within a transport cycle.\n\" "));
 			}
 		}
-	} else {
+	}
+	else {
 		trap_SendServerCommand(ent - g_entities, va("chat \"Location entity does not have a valid beam location.\n\" "));
 	}
 }
@@ -4034,7 +4108,7 @@ other player locations.
 
 Marcin : Implemented an 'all' option. (11/12/2008)
 */
-#define PLAYER_BEAM_DIST	50
+static const uint8_t PLAYER_BEAM_DIST = 50;
 
 static void Cmd_BeamToPlayer_f(gentity_t* ent) {
 	char argStr[MAX_TOKEN_CHARS];
@@ -4081,11 +4155,13 @@ static void Cmd_BeamToPlayer_f(gentity_t* ent) {
 		clientNum = atoi(argStr);
 		bClientNum = ent->client->ps.clientNum;
 		everyone = qfalse;
-	} else if (trap_Argc() >= 3) {
+	}
+	else if (trap_Argc() >= 3) {
 		if (Q_stricmp(argStr, "all") == 0) {
 			bClientNum = -1;
 			everyone = qtrue;
-		} else {
+		}
+		else {
 			bClientNum = atoi(argStr);
 			everyone = qfalse;
 		}
@@ -4114,10 +4190,12 @@ static void Cmd_BeamToPlayer_f(gentity_t* ent) {
 			if (!everyone) {
 				beamee = &g_entities[bClientNum];
 				j = bClientNum;
-			} else {
+			}
+			else {
 				if (g_entities[j].client) {
 					beamee = &g_entities[j];
-				} else {
+				}
+				else {
 					continue;
 				}
 			}
@@ -4166,7 +4244,8 @@ static void Cmd_BeamToPlayer_f(gentity_t* ent) {
 					//ew... seems to be a chasm or something below us... don't wanna beam there
 					if (tr.fraction == 1.0) {
 						continue;
-					} else {
+					}
+					else {
 						validTraceFound = qtrue;
 						break;
 					}
@@ -4186,16 +4265,19 @@ static void Cmd_BeamToPlayer_f(gentity_t* ent) {
 			if (TransDat[beamee->client->ps.clientNum].beamTime == 0) {
 				if (j == ent->client->ps.clientNum) {
 					trap_SendServerCommand(ent - g_entities, va("chat \"Initiating transport to player %s^7's co-ordinates.\n\" ", target->client->pers.netname));
-				} else {
+				}
+				else {
 					trap_SendServerCommand(ent - g_entities, va("chat \"Transporting %s^7 to player %s^7's co-ordinates.\n\" ", beamee->client->pers.netname, target->client->pers.netname));
 				}
 				//commence beaming
 				G_InitTransport(beamee->client->ps.clientNum, origin, angles);
-			} else if (!everyone) {
+			}
+			else if (!everyone) {
 				if (j == ent->client->ps.clientNum) {
 					trap_SendServerCommand(ent - g_entities, va("chat \"Unable to comply.  You are already within a transport cycle.\n\" "));
 
-				} else {
+				}
+				else {
 					trap_SendServerCommand(ent - g_entities, va("chat \"Unable to comply.  Subject is already within a transport cycle.\n\" "));
 				}
 			}
@@ -4251,7 +4333,8 @@ static void Cmd_DoEmote_f(gentity_t* ent) {
 		else if (Q_stricmpn(argStr, "alert2", 6) == 0) {
 			ps->pm_flags &= ~ANIM_ALERT;
 			ps->pm_flags ^= ANIM_ALERT2;
-		} else if (Q_stricmpn(argStr, "alert", 5) == 0) {
+		}
+		else if (Q_stricmpn(argStr, "alert", 5) == 0) {
 			ps->pm_flags &= ~ANIM_ALERT2;
 			ps->pm_flags ^= ANIM_ALERT;
 		}
@@ -4328,7 +4411,8 @@ static void Cmd_DoEmote_f(gentity_t* ent) {
 	if (alreadyEmoting) {
 		doUpper = (qboolean)((emote->animFlags & EMOTE_OVERRIDE_UPPER));
 		doLower = (qboolean)((emote->animFlags & EMOTE_OVERRIDE_LOWER));
-	} else {
+	}
+	else {
 		if (doLower && (emote->animFlags & EMOTE_OVERRIDE_LOWER) == 0 && ps->powerups[PW_FLIGHT] != 0) {
 			doLower = qfalse;
 		}
@@ -4379,7 +4463,8 @@ static void Cmd_DoEmote_f(gentity_t* ent) {
 			}
 
 			ps->stats[TORSOTIMER] = animLength;
-		} else {
+		}
+		else {
 			ps->stats[TORSOTIMER] = 0;						//Infinite animations (ie sitting/typing )
 		}
 
@@ -4406,7 +4491,8 @@ static void Cmd_DoEmote_f(gentity_t* ent) {
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			ps->stats[LEGSTIMER] = 0;
 		}
 
@@ -4469,7 +4555,8 @@ static void Cmd_Laser_f(gentity_t *ent) {
 	if (ps->powerups[PW_LASER] == 0) {
 		ps->powerups[PW_LASER] = level.time + 10000000;
 		message = "Activated Laser";
-	} else {
+	}
+	else {
 		ps->powerups[PW_LASER] = level.time;
 		message = "Deactivated Laser";
 	}
@@ -4494,7 +4581,8 @@ static void Cmd_FlashLight_f(gentity_t* ent) {
 	if (!ps->powerups[PW_FLASHLIGHT]) {
 		ps->powerups[PW_FLASHLIGHT] = level.time + 10000000;
 		message = "Activated Flashlight";
-	} else {
+	}
+	else {
 		ps->powerups[PW_FLASHLIGHT] = level.time;
 		message = "Deactivated Flashlight";
 	}
@@ -4545,10 +4633,12 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 
 	if (Q_stricmp(arg, "default") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
-	} else if (Q_stricmp(arg, "detpack") == 0) {
+	}
+	else if (Q_stricmp(arg, "detpack") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 		fxGunData->eventNum = EV_DETPACK;
-	} else if (Q_stricmp(arg, "chunks") == 0) {
+	}
+	else if (Q_stricmp(arg, "chunks") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 
 		if (argc < 4) {
@@ -4575,7 +4665,8 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 		}
 
 		fxGunData->arg_int2 = atoi(arg);
-	} else if (Q_stricmp(arg, "sparks") == 0) {
+	}
+	else if (Q_stricmp(arg, "sparks") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 
 		if (argc < 3) {
@@ -4597,13 +4688,16 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 			trap_Argv(3, arg, sizeof(arg));
 			if (arg[0] && atoi(arg)) {
 				fxGunData->arg_int2 = atoi(arg);
-			} else {
+			}
+			else {
 				fxGunData->arg_int2 = FX_DEFAULT_TIME;
 			}
-		} else {
+		}
+		else {
 			fxGunData->arg_int2 = FX_DEFAULT_TIME;
 		}
-	} else if (!Q_stricmp(arg, "steam") == 0) {
+	}
+	else if (!Q_stricmp(arg, "steam") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 		fxGunData->eventNum = EV_FX_STEAM;
 
@@ -4612,13 +4706,16 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 			trap_Argv(2, arg, sizeof(arg));
 			if (arg[0] && atoi(arg)) {
 				fxGunData->arg_int2 = atoi(arg);
-			} else {
+			}
+			else {
 				fxGunData->arg_int2 = FX_DEFAULT_TIME;
 			}
-		} else {
+		}
+		else {
 			fxGunData->arg_int2 = FX_DEFAULT_TIME;
 		}
-	} else if (Q_stricmp(arg, "drips") == 0) {
+	}
+	else if (Q_stricmp(arg, "drips") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 
 		if (argc < 3) {
@@ -4652,13 +4749,16 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 			trap_Argv(4, arg, sizeof(arg));
 			if (arg[0] && atoi(arg)) {
 				fxGunData->arg_int2 = atoi(arg);
-			} else {
+			}
+			else {
 				fxGunData->arg_int2 = FX_DEFAULT_TIME;
 			}
-		} else {
+		}
+		else {
 			fxGunData->arg_int2 = FX_DEFAULT_TIME;
 		}
-	} else if (Q_stricmp(arg, "smoke") == 0) {
+	}
+	else if (Q_stricmp(arg, "smoke") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 
 		if (argc < 3) {
@@ -4681,13 +4781,16 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 			trap_Argv(3, arg, sizeof(arg));
 			if (arg[0] != 0 && atoi(arg)) {
 				fxGunData->arg_int2 = atoi(arg);
-			} else {
+			}
+			else {
 				fxGunData->arg_int2 = FX_DEFAULT_TIME;
 			}
-		} else {
+		}
+		else {
 			fxGunData->arg_int2 = FX_DEFAULT_TIME;
 		}
-	} else if (Q_stricmp(arg, "surf_explosion") == 0) {
+	}
+	else if (Q_stricmp(arg, "surf_explosion") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 
 		if (argc < 4) {
@@ -4716,7 +4819,8 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 		}
 
 		fxGunData->arg_float2 = atof(arg);
-	} else if (Q_stricmp(arg, "elec_explosion") == 0) {
+	}
+	else if (Q_stricmp(arg, "elec_explosion") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 
 		if (argc < 3) {
@@ -4734,7 +4838,8 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 		fxGunData->eventNum = EV_FX_ELECTRICAL_EXPLOSION;
 		fxGunData->arg_float1 = atof(arg);
 
-	} else if (Q_stricmp(arg, "fire") == 0) {
+	}
+	else if (Q_stricmp(arg, "fire") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 
 		if (argc < 3) {
@@ -4757,14 +4862,17 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 			trap_Argv(3, arg, sizeof(arg));
 			if (arg[0] != 0 && atoi(arg)) {
 				fxGunData->arg_int2 = atoi(arg);
-			} else {
+			}
+			else {
 				fxGunData->arg_int2 = FX_DEFAULT_TIME;
 			}
-		} else {
+		}
+		else {
 			fxGunData->arg_int2 = FX_DEFAULT_TIME;
 		}
 
-	} else if (Q_stricmp(arg, "shake") == 0) {
+	}
+	else if (Q_stricmp(arg, "shake") == 0) {
 		memset(fxGunData, 0, sizeof(fxGunData));
 
 		if (argc < 3) {
@@ -4793,7 +4901,8 @@ static void Cmd_fxGun_f(gentity_t* ent) {
 			fxGunData->arg_int2 = atoi(arg);
 		}
 
-	} else {
+	}
+	else {
 		G_PrintfClient(ent, "Syntax: /fxGun <FX_Name>\nValid Effects:\n  default\n  chunks\n  detpack\n  sparks\n  steam\n  drips\n  smoke\n  surf_explosion\n  elec_explosion \n");
 		memset(fxGunData, 0, sizeof(fxGunData));
 		return;
@@ -4812,7 +4921,7 @@ if an admin was a little too
 happy with the FX gun
 ==============*/
 static void Cmd_flushFX_f(gentity_t* ent) {
-	
+
 	G_Assert(ent, (void)0);
 	G_Assert(ent->client, (void)0);
 
@@ -4837,7 +4946,7 @@ TiM: Takes ur current data, and
 spawns a player model that looks like you with it.
 ==================*/
 static void Cmd_spawnChar_f(gentity_t* ent) {
-	
+
 	G_Assert(ent, (void)0);
 
 #ifndef SQL
@@ -4854,7 +4963,8 @@ static void Cmd_spawnChar_f(gentity_t* ent) {
 
 	if (!PlaceDecoy(ent)) {
 		trap_SendServerCommand(ent - g_entities, "cp \"NO ROOM TO PLACE CHARACTER\"");
-	} else {
+	}
+	else {
 		trap_SendServerCommand(ent - g_entities, "cp \"CHARACTER PLACED\"");
 	}
 }
@@ -4903,7 +5013,8 @@ static void Cmd_fluchChars_f(gentity_t* ent) //GSIO01: fluch Chars ehhh? you kno
 		if (locEnt->classname != NULL && Q_stricmp(locEnt->classname, "decoy") == 0) {
 			if (atoi(arg) == 0 && locEnt->parent != ent) {
 				continue;
-			} else {
+			}
+			else {
 				G_FreeEntity(locEnt);
 			}
 		}
@@ -4927,7 +5038,8 @@ static void Cmd_flushDropped_f(gentity_t* ent) {
 	trap_Argv(1, arg, sizeof(arg));
 	if (arg[0] == 0) {
 		ans = (qboolean)0;
-	} else {
+	}
+	else {
 		ans = (qboolean)atoi(arg);
 	}
 
@@ -4939,7 +5051,8 @@ static void Cmd_flushDropped_f(gentity_t* ent) {
 		if (locEnt->classname != NULL && Q_strncmp(locEnt->classname, "weapon", 6) == 0) { // everything that begins with weapon_
 			if ((ans == qfalse || !G_Client_IsAdmin(ent)) && locEnt->parent != ent) {
 				continue;
-			} else {
+			}
+			else {
 				G_FreeEntity(locEnt);
 			}
 		}
@@ -4998,7 +5111,8 @@ static void Cmd_Kick2_f(gentity_t* ent) {
 				//if there was only one arg, just kick em
 				if (trap_Argc() <= 2) {
 					trap_SendConsoleCommand(EXEC_APPEND, va("kick \"%i\"\n", g_entities[i].client->ps.clientNum));
-				} else { //else give em a reason I guess
+				}
+				else { //else give em a reason I guess
 					str2 = ConcatArgs(2);
 					Com_sprintf(reason, MAX_TOKEN_CHARS, "Kicked: %s", str2);
 
@@ -5015,14 +5129,16 @@ static void Cmd_Kick2_f(gentity_t* ent) {
 				trap_SendConsoleCommand(EXEC_APPEND, va("kick \"%i\"\n", g_entities[i].client->ps.clientNum));
 			}
 		}
-	} else { //The original kick2 code - crafted by Scooter
+	}
+	else { //The original kick2 code - crafted by Scooter
 		cl = ClientForString(str);
 		G_Assert(cl, (void)0);
 
 		//TiM: trap_Argc works along the principle that the command name itself (ie in this case, "kick2") is an argument too
 		if (trap_Argc() <= 2) {
 			trap_SendConsoleCommand(EXEC_APPEND, va("kick \"%i\"\n", cl->ps.clientNum));
-		} else {
+		}
+		else {
 			// show him the exit
 			str2 = ConcatArgs(2);
 			Com_sprintf(reason, MAX_TOKEN_CHARS, "Kicked: %s", str2);
@@ -5076,7 +5192,8 @@ static void Cmd_ClampInfo_f(gentity_t* ent) {
 	targ->flags ^= FL_CLAMPED;
 	if ((targ->flags & FL_CLAMPED) != 0) {
 		G_PrintfClient(ent, "%s ^7 has now had their info clamped.\n", targ->client->pers.netname);
-	} else {
+	}
+	else {
 		G_PrintfClient(ent, "%s ^7 has now had their info un-clamped.\n", targ->client->pers.netname);
 	}
 }
@@ -5186,7 +5303,8 @@ static void Cmd_Turbolift_f(gentity_t* ent) {
 
 		if (numLifts == 0) {
 			otherLift = NULL;
-		} else {
+		}
+		else {
 			otherLift = lifts[rand() % numLifts];
 		}
 	}
@@ -5403,7 +5521,8 @@ static void Cmd_lockDoor_f(gentity_t* ent) {
 		trap_Trace(&tr, start, NULL, NULL, end, ps->clientNum, MASK_SHOT);
 
 		index = tr.entityNum;
-	} else { //We gotz an arg, so put it in
+	}
+	else { //We gotz an arg, so put it in
 		index = atoi(entArg);
 	}
 
@@ -5415,7 +5534,8 @@ static void Cmd_lockDoor_f(gentity_t* ent) {
 		if (targetEnt == NULL) {
 			return;
 		}
-	} else {
+	}
+	else {
 		targetEnt = &g_entities[index]; //get the ent
 	}
 
@@ -5464,7 +5584,8 @@ static void Cmd_ffColor_f(gentity_t* ent) {
 	i = atoi(arg);
 	if (i < 0 || i > 3) {
 		trap_Cvar_Set("rpg_forceFieldColor", "0");
-	} else {
+	}
+	else {
 		trap_Cvar_Set("rpg_forceFieldColor", va("%i", i));
 	}
 }
@@ -5497,11 +5618,14 @@ static void Cmd_remodulate_f(gentity_t *ent) {
 	trap_Argv(1, arg, sizeof(arg));
 	if (Q_strncmp(arg, "phaser", 6) == 0) {
 		i = 1;
-	} else if (Q_strncmp(arg, "prifle", 6) == 0) {
+	}
+	else if (Q_strncmp(arg, "prifle", 6) == 0) {
 		i = 2;
-	} else if (Q_strncmp(arg, "disruptor", 9) == 0) {
+	}
+	else if (Q_strncmp(arg, "disruptor", 9) == 0) {
 		i = 3;
-	} else {
+	}
+	else {
 		i = atoi(arg);
 	}
 
@@ -5516,21 +5640,21 @@ static void Cmd_remodulate_f(gentity_t *ent) {
 	}
 
 	switch (i) {
-		case 1:
-			level.borgAdaptHits[WP_5] = 0;
-			G_PrintfClientAll("Phasers have been remodulated.\n");
-			break;
-		case 2:
-			level.borgAdaptHits[WP_6] = 0;
-			G_PrintfClientAll("Compression Rifles have been remodulated.\n");
-			break;
-		case 3:
-			level.borgAdaptHits[WP_10] = 0;
-			G_PrintfClientAll("Disruptors have been remodulated.\n");
-			break;
-		default:
-			G_PrintfClient(ent, "Usage: remodulate i, where i: 1 = phaser, 2 = phaser rifle and 3 = disruptor\n");
-			break;
+	case 1:
+		level.borgAdaptHits[WP_5] = 0;
+		G_PrintfClientAll("Phasers have been remodulated.\n");
+		break;
+	case 2:
+		level.borgAdaptHits[WP_6] = 0;
+		G_PrintfClientAll("Compression Rifles have been remodulated.\n");
+		break;
+	case 3:
+		level.borgAdaptHits[WP_10] = 0;
+		G_PrintfClientAll("Disruptors have been remodulated.\n");
+		break;
+	default:
+		G_PrintfClient(ent, "Usage: remodulate i, where i: 1 = phaser, 2 = phaser rifle and 3 = disruptor\n");
+		break;
 	}
 }
 
@@ -5561,7 +5685,8 @@ static void Cmd_unlockAll_f(gentity_t* ent) {
 	for (i = g_maxclients.integer; i < MAX_GENTITIES; i++) {
 		if ((g_entities[i].type == ENT_FUNC_DOOR) && ((g_entities[i].flags & FL_LOCKED) != 0)) {
 			g_entities[i].flags ^= FL_LOCKED;
-		} else if ((g_entities[i].type == ENT_FUNC_DOOR_ROTATING) && ((g_entities[i].flags & FL_LOCKED) != 0)) {
+		}
+		else if ((g_entities[i].type == ENT_FUNC_DOOR_ROTATING) && ((g_entities[i].flags & FL_LOCKED) != 0)) {
 			g_entities[i].flags ^= FL_LOCKED;
 		}
 	}
@@ -5586,7 +5711,8 @@ static void Cmd_Respawn_f(gentity_t* ent) {
 
 		if (secondsToWait) {
 			G_PrintfClient(ent, "You just have respawned. Please wait %d seconds to respawn again.\n", secondsToWait);
-		} else {
+		}
+		else {
 			G_PrintfClient(ent, "You just have respawned. Please wait. You will be able to respawn very soon.\n");
 		}
 		return;
@@ -5604,7 +5730,7 @@ GSIO01 | 12/05/2009
 */
 static void Cmd_lockAll_f(gentity_t* ent) {
 	int32_t i = 0;
-	
+
 	G_Assert(ent, (void)0);
 	G_Assert(ent->client, (void)0);
 
@@ -5623,7 +5749,8 @@ static void Cmd_lockAll_f(gentity_t* ent) {
 	for (i = g_maxclients.integer; i < MAX_GENTITIES; i++) {
 		if ((g_entities[i].type == ENT_FUNC_DOOR) && ((g_entities[i].flags & FL_LOCKED) == 0)) {
 			g_entities[i].flags ^= FL_LOCKED;
-		} else if ((g_entities[i].type == ENT_FUNC_DOOR_ROTATING) && !(g_entities[i].flags & FL_LOCKED)) {
+		}
+		else if ((g_entities[i].type == ENT_FUNC_DOOR_ROTATING) && !(g_entities[i].flags & FL_LOCKED)) {
 			g_entities[i].flags ^= FL_LOCKED;
 		}
 	}
@@ -5663,17 +5790,17 @@ static void Cmd_changeFreq(gentity_t* ent) {
 	trap_Argv(1, arg, sizeof(arg));
 	i = atof(arg);
 	switch (atoi(arg)) {
-		case -1:
-			i = -1;
-			break;
-		case 0:
+	case -1:
+		i = -1;
+		break;
+	case 0:
+		i = flrandom(0.1, 20);
+		break;
+	default:
+		if (i < 0 || i > 20) {
 			i = flrandom(0.1, 20);
-			break;
-		default:
-			if (i < 0 || i > 20) {
-				i = flrandom(0.1, 20);
-			}
-			break;
+		}
+		break;
 	}
 	trap_Cvar_Set("rpg_forceFieldFreq", va("%f", i));
 	G_Printf("%f\n", rpg_forceFieldFreq.value);
@@ -5728,31 +5855,36 @@ static void Cmd_alert_f(gentity_t* ent) {
 	}
 	if (Q_stricmp(arg, "red") == 0) {
 		te->target = alertEnt->falsename;
-	} else if (Q_stricmp(arg, "yellow") == 0) {
+	}
+	else if (Q_stricmp(arg, "yellow") == 0) {
 		te->target = alertEnt->truename;
-	} else if (Q_stricmp(arg, "blue") == 0) {
+	}
+	else if (Q_stricmp(arg, "blue") == 0) {
 		te->target = alertEnt->bluename;
-	} else if (Q_stricmp(arg, "green") == 0) {
+	}
+	else if (Q_stricmp(arg, "green") == 0) {
 		te->target = alertEnt->swapname;
-	} else if (Q_stricmp(arg, "toggle") == 0) {
+	}
+	else if (Q_stricmp(arg, "toggle") == 0) {
 		switch (alertEnt->damage) {
-			case 0: // green
-				te->target = alertEnt->swapname;
-				break;
-			case 1: // yellow
-				te->target = alertEnt->truename;
-				break;
-			case 2: // red
-				te->target = alertEnt->falsename;
-				break;
-			case 3: // blue
-				te->target = alertEnt->bluename;
-				break;
+		case 0: // green
+			te->target = alertEnt->swapname;
+			break;
+		case 1: // yellow
+			te->target = alertEnt->truename;
+			break;
+		case 2: // red
+			te->target = alertEnt->falsename;
+			break;
+		case 3: // blue
+			te->target = alertEnt->bluename;
+			break;
 		}
 		if (i == 1) {
 			i = 0;
 		}
-	} else {
+	}
+	else {
 		G_PrintfClient(ent, "Invalid alert condition \'%s\'. Valid conditions: red, blue, yellow, green.\n", arg);
 		return;
 	}
@@ -5811,13 +5943,15 @@ static void Cmd_zonelist_f(gentity_t* ent) {
 
 			if (zone->n00bCount == 1) {
 				G_PrintfClient(ent, "Status of safezone: ^2safe \n");
-			} else {
+			}
+			else {
 				G_PrintfClient(ent, "Status of safezone: ^1unsafe \n");
 			}
 
 			if ((zone->spawnflags & 2) != 0) {
 				G_PrintfClient(ent, "Flagges as ship: yes \n\n");
-			} else {
+			}
+			else {
 				G_PrintfClient(ent, "Flagged as ship: no \n\n");
 			}
 		}
@@ -5835,7 +5969,7 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 	char arg[16];
 	char arg2[16];
 	char arg6[16];
-	char arg7[16]; 
+	char arg7[16];
 	char arg8[16];
 	double ETAmin = 0;
 	double ETAsec = 0;
@@ -5899,11 +6033,13 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		}
 		if (destructEnt->wait <= 0) {
 			G_FreeEntity(destructEnt);
-		} else {
+		}
+		else {
 			G_CallSpawn(destructEnt);
 		}
 		return;
-	} else if (Q_stricmp(arg, "remaining") == 0) {
+	}
+	else if (Q_stricmp(arg, "remaining") == 0) {
 		//Is there sth running alrerady?
 		destructEnt = G_Find(NULL, FOFS(classname), "target_selfdestruct");
 		if (destructEnt == NULL) {
@@ -5919,10 +6055,12 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 		ETAsec = floor(modf(((floor(destructEnt->damage / 1000) - floor(level.time / 1000)) / 60), &ETAmin) * 60); //break it apart, put off the minutes and return the floored secs
 		if (ETAsec / 10 < 1) { //get leading 0 for secs
 			trap_SendServerCommand(-1, va("servermsg \"^1Self Destruct in %.0f:0%.0f\"", ETAmin, ETAsec));
-		} else {
+		}
+		else {
 			trap_SendServerCommand(-1, va("servermsg \"^1Self Destruct in %.0f:%.0f\"", ETAmin, ETAsec));
 		}
-	} else if (Q_stricmp(arg, "abort") == 0) {
+	}
+	else if (Q_stricmp(arg, "abort") == 0) {
 		//Is there sth running alrerady?
 		destructEnt = G_Find(NULL, FOFS(classname), "target_selfdestruct");
 		if (destructEnt == NULL) {
@@ -5930,7 +6068,8 @@ static void Cmd_selfdestruct_f(gentity_t *ent) {
 			return;
 		}
 		destructEnt->use(destructEnt, NULL, NULL); // Use-Function will simply manage the abort
-	} else {
+	}
+	else {
 		//maybe hook up a setup UI here later.
 		G_PrintfClient(ent, "^1ERROR: Invalid or no command-Argument. Arguments are start, remaining and abort");
 		G_PrintfClient(ent, "^3Usage: selfdestruct start duration audio [safezone] [target]");
@@ -6006,11 +6145,13 @@ static void Cmd_shipdamage_f(gentity_t* ent) {
 	if (atoi(arg) > 0) {
 		if (healthEnt->count > 0) {
 			healthEnt->damage = atoi(arg);
-		} else {
+		}
+		else {
 			G_PrintfClient(ent, "^1ERROR: The ship is destroyed.");
 			return;
 		}
-	} else {
+	}
+	else {
 		G_PrintfClient(ent, "^1ERROR: Damage must be a positive value. You can not heal with this command.");
 		return;
 	}
@@ -6054,42 +6195,49 @@ static void Cmd_shiphealth_f(gentity_t* ent) {
 		RHS = ((CHS * pow(THS, -1)) * 100);
 		if (RHS <= 25) { //Hull Color Indicators
 			HCI = 1;
-		} else if (RHS <= 50) {
+		}
+		else if (RHS <= 50) {
 			HCI = 3;
-		} else if (RHS <= 100) {
+		}
+		else if (RHS <= 100) {
 			HCI = 2;
-		} else {
+		}
+		else {
 			HCI = 7;
 		}
 
 		RSS = ((CSS * pow(TSS, -1)) * 100);
 		if (RSS <= 25) { //Shield Color Indicators
 			SCI = 1;
-		} else if (RSS <= 50) {
+		}
+		else if (RSS <= 50) {
 			SCI = 3;
-		} else if (RSS <= 100) {
+		}
+		else if (RSS <= 100) {
 			SCI = 2;
-		} else {
+		}
+		else {
 			SCI = 7;
 		}
 
 		if (CHS == 0) {
 			G_PrintfClient(ent, "\n^1 %s is destroyed.\n\n", healthEnt->targetname);
-		} else {
+		}
+		else {
 			G_PrintfClient(ent, "\n^3 %s : Tactical Master Systems Display\n", healthEnt->targetname);
 			switch (SI) {
-				case -2:
-					G_PrintfClient(ent, "^1 Shields are offline\n");
-					break;
-				case -1:
-					G_PrintfClient(ent, "^1 Shields are inoperable\n");
-					break;
-				case 0:
-					G_PrintfClient(ent, "^3 Shields are standing by\n");
-					break;
-				case 1:
-					G_PrintfClient(ent, "^2 Shields are online\n");
-					break;
+			case -2:
+				G_PrintfClient(ent, "^1 Shields are offline\n");
+				break;
+			case -1:
+				G_PrintfClient(ent, "^1 Shields are inoperable\n");
+				break;
+			case 0:
+				G_PrintfClient(ent, "^3 Shields are standing by\n");
+				break;
+			case 1:
+				G_PrintfClient(ent, "^2 Shields are online\n");
+				break;
 			}
 			if (CSS > 0) {
 				G_PrintfClient(ent, "^%i Shield Capactiy at %.0f Percent (%i of %i Points)\n", SCI, RSS, CSS, TSS);
@@ -6163,9 +6311,11 @@ static void Cmd_reloadtorpedos_f(gentity_t* ent) {
 			if (torpedo->methodOfDeath > 0) { //we only need to consider this for restock if it is restockable
 				if (atoi(arg) == -1 || atoi(arg) > torpedo->methodOfDeath) {
 					torpedo->count = torpedo->methodOfDeath;
-				} else if (atoi(arg) == -2) {
+				}
+				else if (atoi(arg) == -2) {
 					torpedo->count = 0;
-				} else {
+				}
+				else {
 					torpedo->count = atoi(arg);
 				}
 			}
@@ -6202,13 +6352,15 @@ static void Cmd_torpedolist_f(gentity_t* ent) {
 
 		if ((torpedo->spawnflags & 1) != 0) {
 			G_PrintfClient(ent, "Type: Quantum \n");
-		} else {
+		}
+		else {
 			G_PrintfClient(ent, "Type: Photon \n");
 		}
 
 		if (torpedo->count == -1) {
 			G_PrintfClient(ent, "Amount: Unlimited\n\n");
-		} else {
+		}
+		else {
 			G_PrintfClient(ent, "Current Amount: %i \n", torpedo->count);
 			G_PrintfClient(ent, "Maximum Amount: %i \n\n", torpedo->damage);
 		}
@@ -6311,7 +6463,8 @@ static void Cmd_listSPs(gentity_t* ent) {
 	for (i = 0; i < MAX_GENTITIES; i++) {
 		if (g_entities[i].type == ENT_INFO_PLAYER_START) {
 			G_Printf("Spawnpoint type: info_player_start Origin: %s\n", vtos(ent->s.origin));
-		} else if (Q_stricmp(g_entities[i].classname, "info_player_deathmatch") == 0) {
+		}
+		else if (Q_stricmp(g_entities[i].classname, "info_player_deathmatch") == 0) {
 			G_Printf("Spawnpoint type: info_player_deathmatch Origin: %s\n", vtos(ent->s.origin));
 		}
 	}
@@ -6356,7 +6509,8 @@ static void Cmd_getEntInfo_f(gentity_t* ent) {
 		VectorMA(start, 8192, forward, end);
 		trap_Trace(&tr, start, NULL, NULL, end, ps->clientNum, MASK_SHOT);
 		i = tr.entityNum;
-	} else {
+	}
+	else {
 		i = atoi(arg);
 	}
 
@@ -6406,7 +6560,8 @@ static void Cmd_getOrigin_f(gentity_t* ent) {
 		VectorMA(start, 8192, forward, end);
 		trap_Trace(&tr, start, NULL, NULL, end, ps->clientNum, MASK_SHOT);
 		i = tr.entityNum;
-	} else {
+	}
+	else {
 		i = atoi(arg);
 	}
 
@@ -6615,7 +6770,8 @@ static void Cmd_flushTentities_f(gentity_t* ent) {
 
 	if (trap_Argc() < 2) {
 		return;
-	} else {
+	}
+	else {
 		trap_Argv(1, arg, sizeof(arg));
 		if (Q_stricmpn(arg, "all", 3) == 0) {
 			for (i = 0; i < MAX_GENTITIES; i++) {
@@ -6626,7 +6782,8 @@ static void Cmd_flushTentities_f(gentity_t* ent) {
 			}
 
 			G_PrintfClient(ent, "Freed %i temporal entities.\n", cnt);
-		} else {
+		}
+		else {
 			i = atoi(arg);
 			if (i < 0 || i > MAX_GENTITIES - 1) {
 				G_PrintfClient(ent, "Invalid entity num %i.\n\"", i);
@@ -6634,7 +6791,8 @@ static void Cmd_flushTentities_f(gentity_t* ent) {
 			}
 			if (Q_stricmpn(g_entities[i].classname, "tmp_", 4) == 0) {
 				G_FreeEntity(&g_entities[i]);
-			} else {
+			}
+			else {
 				G_PrintfClient(ent, "Entity %i is not a temporal entity or does not exist!\n\"", i);
 			}
 		}
@@ -6762,7 +6920,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->health = atof(arg);
 			}
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "trigger_once")) { //actually trigger_multiple with wait of -1
+		}
+		else if (!Q_stricmp(arg, "trigger_once")) { //actually trigger_multiple with wait of -1
 			newEnt->classname = "trigger_multiple";
 			if (numArgs < 5) {
 				G_FreeEntity(newEnt);
@@ -6790,7 +6949,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			newEnt->target = G_NewString(arg);
 			G_CallSpawn(newEnt);
 			newEnt->wait = -1;
-		} else if (!Q_stricmp(arg, "trigger_multiple")) {
+		}
+		else if (!Q_stricmp(arg, "trigger_multiple")) {
 			newEnt->classname = "trigger_multiple";
 			if (numArgs < 6) {
 				G_FreeEntity(newEnt);
@@ -6819,7 +6979,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			G_CallSpawn(newEnt);
 			trap_Argv(6, arg, sizeof(arg));
 			newEnt->wait = atof(arg);
-		} else if (!Q_stricmp(arg, "trigger_hurt")) {
+		}
+		else if (!Q_stricmp(arg, "trigger_hurt")) {
 			//newEnt = G_Spawn();
 			newEnt->classname = "trigger_hurt";
 			if (numArgs < 4) {
@@ -6852,7 +7013,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->targetname = G_NewString(arg);
 			}
 		}
-	} else if (!Q_stricmpn(arg, "fx_", 3)) {
+	}
+	else if (!Q_stricmpn(arg, "fx_", 3)) {
 		if (!Q_stricmp(arg, "fx_spark")) {
 			//newEnt = G_Spawn();
 			newEnt->classname = "fx_spark";
@@ -6875,7 +7037,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			G_CallSpawn(newEnt);
 			trap_Argv(2, arg, sizeof(arg));
 			newEnt->wait = atof(arg);
-		} else if (!Q_stricmp(arg, "fx_surface_explosion")) {
+		}
+		else if (!Q_stricmp(arg, "fx_surface_explosion")) {
 			newEnt->classname = "fx_surface_explosion";
 			if (numArgs < 2) {
 				G_FreeEntity(newEnt);
@@ -6906,7 +7069,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->speed = atof(arg);
 			}
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "fx_blow_chunks")) {
+		}
+		else if (!Q_stricmp(arg, "fx_blow_chunks")) {
 			newEnt->classname = "fx_blow_chunks";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -6927,7 +7091,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->s.powerups = atoi(arg);
 			}
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "fx_electrical_explosion")) {
+		}
+		else if (!Q_stricmp(arg, "fx_electrical_explosion")) {
 			newEnt->classname = "fx_electrical_explosion";
 			if (numArgs < 2) {
 				G_FreeEntity(newEnt);
@@ -6951,7 +7116,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			}
 			G_CallSpawn(newEnt);
 		}
-	} else if (!Q_stricmpn(arg, "info_", 5)) {
+	}
+	else if (!Q_stricmpn(arg, "info_", 5)) {
 		if (!Q_stricmp(arg, "info_notnull")) {
 			newEnt->classname = "info_notnull";
 			if (numArgs < 2) {
@@ -6963,11 +7129,13 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			trap_Argv(2, arg, sizeof(arg));
 			newEnt->targetname = arg;
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "info_player_deathmatch") || !Q_stricmp(arg, "info_player_start")) {
+		}
+		else if (!Q_stricmp(arg, "info_player_deathmatch") || !Q_stricmp(arg, "info_player_start")) {
 			newEnt->classname = "info_player_deathmatch";
 			G_CallSpawn(newEnt);
 		}
-	} else if (!Q_stricmpn(arg, "target_", 7)) {
+	}
+	else if (!Q_stricmpn(arg, "target_", 7)) {
 		if (!Q_stricmp(arg, "target_boolean")) {
 			newEnt->classname = "target_boolean";
 			if (numArgs < 5) {
@@ -6998,7 +7166,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->falsename = G_NewString(arg);
 			}
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_counter")) {
+		}
+		else if (!Q_stricmp(arg, "target_counter")) {
 			newEnt->classname = "target_counter";
 			if (numArgs < 4) {
 				G_FreeEntity(newEnt);
@@ -7013,7 +7182,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			trap_Argv(4, arg, sizeof(arg));
 			newEnt->count = atoi(arg);
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_deactivate")) {
+		}
+		else if (!Q_stricmp(arg, "target_deactivate")) {
 			newEnt->classname = "target_deactivate";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7026,7 +7196,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			trap_Argv(3, arg, sizeof(arg));
 			newEnt->target = G_NewString(arg);
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_doorlock")) {
+		}
+		else if (!Q_stricmp(arg, "target_doorlock")) {
 			newEnt->classname = "target_doorlock";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7051,7 +7222,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->truename = G_NewString(arg);
 			}
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_relay")) {
+		}
+		else if (!Q_stricmp(arg, "target_relay")) {
 			newEnt->classname = "target_relay";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7068,7 +7240,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->spawnflags = atoi(arg);
 			}
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_delay")) {
+		}
+		else if (!Q_stricmp(arg, "target_delay")) {
 			newEnt->classname = "target_delay";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7091,7 +7264,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			G_CallSpawn(newEnt);
 			trap_Argv(4, arg, sizeof(arg));
 			newEnt->wait = atoi(arg);
-		} else if (!Q_stricmp(arg, "target_evosuit")) {
+		}
+		else if (!Q_stricmp(arg, "target_evosuit")) {
 			newEnt->classname = "target_evosuit";
 			if (numArgs < 2) {
 				G_FreeEntity(newEnt);
@@ -7102,7 +7276,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			trap_Argv(2, arg, sizeof(arg));
 			newEnt->targetname = G_NewString(arg);
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_give")) {
+		}
+		else if (!Q_stricmp(arg, "target_give")) {
 			newEnt->classname = "target_give";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7115,7 +7290,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			trap_Argv(3, arg, sizeof(arg));
 			newEnt->target = G_NewString(arg);
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_gravity")) {
+		}
+		else if (!Q_stricmp(arg, "target_gravity")) {
 			newEnt->classname = "target_gravity";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7132,7 +7308,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->spawnflags = atoi(arg);
 			}
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_kill")) {
+		}
+		else if (!Q_stricmp(arg, "target_kill")) {
 			newEnt->classname = "target_kill";
 			if (numArgs < 2) {
 				G_FreeEntity(newEnt);
@@ -7143,7 +7320,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			trap_Argv(2, arg, sizeof(arg));
 			newEnt->targetname = G_NewString(arg);
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_print")) {
+		}
+		else if (!Q_stricmp(arg, "target_print")) {
 			newEnt->classname = "target_print";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7160,7 +7338,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->spawnflags = atoi(arg);
 			}
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_repair")) {
+		}
+		else if (!Q_stricmp(arg, "target_repair")) {
 			newEnt->classname = "target_repair";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7173,7 +7352,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			trap_Argv(3, arg, sizeof(arg));
 			newEnt->target = G_NewString(arg);
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_shake")) {
+		}
+		else if (!Q_stricmp(arg, "target_shake")) {
 			newEnt->classname = "target_shake";
 			if (numArgs < 4) {
 				G_FreeEntity(newEnt);
@@ -7188,7 +7368,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 			G_CallSpawn(newEnt);
 			trap_Argv(4, arg, sizeof(arg));
 			newEnt->wait = atof(arg);
-		} else if (!Q_stricmp(arg, "target_teleporter")) {
+		}
+		else if (!Q_stricmp(arg, "target_teleporter")) {
 			newEnt->classname = "target_teleporter";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7209,7 +7390,8 @@ static void Cmd_spawnTentity_f(gentity_t* ent) {
 				newEnt->swapname = G_NewString(arg);
 			}
 			G_CallSpawn(newEnt);
-		} else if (!Q_stricmp(arg, "target_speaker")) {
+		}
+		else if (!Q_stricmp(arg, "target_speaker")) {
 			newEnt->classname = "target_speaker";
 			if (numArgs < 3) {
 				G_FreeEntity(newEnt);
@@ -7320,12 +7502,14 @@ static void Cmd_UiTransporterLoc_f(gentity_t* ent) {
 			if (delay) {
 				trTrigger->think = trigger_transporter_delay;
 				trTrigger->nextthink = level.time + delay;
-			} else {
+			}
+			else {
 				trTrigger->flags ^= FL_LOCKED;
 				trTrigger->think = trigger_transporter_think;
 				trTrigger->nextthink = level.time + trTrigger->wait;
 			}
-		} else {
+		}
+		else {
 			G_PrintfClient(trTrigger->target_ent, "Transporter is already in a Transport Cycle.\n");
 			return;
 		}
@@ -7373,12 +7557,14 @@ static void Cmd_UiTransporterExt_f(gentity_t* ent) {
 		if (delay) {
 			trTrigger->think = trigger_transporter_delay;
 			trTrigger->nextthink = level.time + delay;
-		} else {
+		}
+		else {
 			trTrigger->flags ^= FL_LOCKED;
 			trTrigger->think = trigger_transporter_think;
 			trTrigger->nextthink = level.time + trTrigger->wait;
 		}
-	} else {
+	}
+	else {
 		G_PrintfClient(trTrigger->target_ent, "Transporter is already in a Transport Cycle.\n");
 		return;
 	}
@@ -7412,7 +7598,7 @@ static void Cmd_SqlLogin_f(gentity_t* ent) {
 	if(sql_use.integer == 0) {
 		return;
 	}
-	
+
 	//logout if no argument and player is loged in
 	if(uName[0] == 0 && pwd[0] == 0 && ent->client->uid != 0) {
 		ent->client->uid = 0;
@@ -7514,18 +7700,18 @@ static void Cmd_SqlUserMod_f(gentity_t* ent) {
 	/* TODO finish me */
 	res = qfalse;
 	switch(res) {
-		case 1:
-			trap_SendServerCommand(clientNum, "print \"Seems to have worked.\n\"");
-			break;
-		case 2:
-			trap_SendServerCommand(clientNum, "print \"User does not exist.\n\"");
-			break;
-		case 3:
-			trap_SendServerCommand(clientNum, "print \"No entry for user found. Created one.\n\"");
-			break;
-		case 0:
-			trap_SendServerCommand(clientNum, "print \"An SQL Error occured, check server log for more information.\n\"");
-			break;
+	case 1:
+		trap_SendServerCommand(clientNum, "print \"Seems to have worked.\n\"");
+		break;
+	case 2:
+		trap_SendServerCommand(clientNum, "print \"User does not exist.\n\"");
+		break;
+	case 3:
+		trap_SendServerCommand(clientNum, "print \"No entry for user found. Created one.\n\"");
+		break;
+	case 0:
+		trap_SendServerCommand(clientNum, "print \"An SQL Error occured, check server log for more information.\n\"");
+		break;
 	}
 }
 #endif
@@ -7568,7 +7754,8 @@ static void Cmd_findEntitiesInRadius(gentity_t* ent) {
 	trap_Argv(1, arg, sizeof(arg));
 	if (Q_stricmp(Q_strlwr(arg), "all") == 0) {
 		all = qtrue;
-	} else {
+	}
+	else {
 		classname = G_NewString(Q_strlwr(arg));
 	}
 
@@ -7597,7 +7784,8 @@ static void Cmd_findEntitiesInRadius(gentity_t* ent) {
 
 		if (all) {
 			G_PrintfClient(ent, "Entity: %i, Classname: %s", t - g_entities, t->classname);
-		} else {
+		}
+		else {
 			if (Q_stricmpn(t->classname, classname, strlen(classname)) == 0) {
 				G_PrintfClient(ent, "Entity: %i Classname: %s", t - g_entities, classname);
 			}
@@ -7657,7 +7845,8 @@ void Cmd_ScriptCall_f(gentity_t* ent) {
 		trap_Argv(1, function, MAX_STRING_CHARS);
 
 		LuaHook_G_CmdScriptCall(function);
-	} else {
+	}
+	else {
 		G_Logger(LL_ALWAYS, "Calling of lua functions is only allowed in development mode!\n");
 	}
 }
@@ -7770,7 +7959,8 @@ void Cmd_GeneratePrecacheFile(gentity_t* ent) {
 			trap_FS_Write(s, strlen(s), f);
 			trap_FS_Write("\"", 1, f);
 			first = qfalse;
-		} else {
+		}
+		else {
 			trap_FS_Write("\n\"", 2, f);
 			trap_FS_Write(s, strlen(s), f);
 			trap_FS_Write("\"", 1, f);
@@ -7816,7 +8006,7 @@ void G_Client_Command(int clientNum) {
 
 	//ent = g_entities + clientNum;
 	ent = &g_entities[clientNum];
-	
+
 	G_Assert(ent, (void)0);
 	G_Assert(ent->client, (void)0);
 
@@ -8067,14 +8257,18 @@ void G_Client_Command(int clientNum) {
 	// END CCAM
 	else if (Q_stricmp(cmd, "generatePrecacheFile") == 0) {
 		Cmd_GeneratePrecacheFile(ent);
-	} else if (Q_stricmp(cmd, "testlogger") == 0) {
+	}
+	else if (Q_stricmp(cmd, "testlogger") == 0) {
 		Cmd_TestLogger(ent);
-	} else if (Q_stricmp(cmd, "script_call") == 0) {
+	}
+	else if (Q_stricmp(cmd, "script_call") == 0) {
 		Cmd_ScriptCall_f(ent);
-	} else if (Q_strncmp(cmd, "\n", 1) == 0 || Q_strncmp(cmd, " ", 1) == 0 || Q_strncmp(cmd, "\0", 1) == 0) {
+	}
+	else if (Q_strncmp(cmd, "\n", 1) == 0 || Q_strncmp(cmd, " ", 1) == 0 || Q_strncmp(cmd, "\0", 1) == 0) {
 		// sorry
 		(void)(0);
-	} else {
+	}
+	else {
 		trap_SendServerCommand(clientNum, va("print \"unknown cmd %s\n\"", cmd));
 	}
 }
