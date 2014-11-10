@@ -249,8 +249,10 @@ static void CelebrateStop(gentity_t* player) {
 }
 
 
-#define	TIMER_GESTURE	(34*66+50)
+static const uint16_t TIMER_GESTURE = 2294;
+
 extern void	BG_AddPredictableEventToPlayerstate(int32_t newEvent, int32_t eventParm, playerState_t* ps);
+
 static void CelebrateStart(gentity_t* player) 
 {
 	/*player->s.torsoAnim = ( ( player->s.torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | TORSO_GESTURE;
