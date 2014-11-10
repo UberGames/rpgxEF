@@ -1909,7 +1909,7 @@ extern  gentity_t		g_entities[MAX_GENTITIES];
 
 //RPG-X: RedTechie
 //extern int shaketimer; //Global shake timer varible //TiM: NOT NECESSARY!
-extern int RPGEntityCount; //Global entity count varible
+extern uint32_t RPGEntityCount; //Global entity count varible
 
 extern	vmCvar_t	g_logLevel;
 extern	vmCvar_t	g_gametype;
