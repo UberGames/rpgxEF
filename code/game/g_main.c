@@ -28,15 +28,19 @@ extern int32_t AI_main_BotAILoadMap(int32_t restart);
 extern void BG_LoadItemNames(void);
 extern qboolean BG_ParseRankNames(char* fileName, rankNames_t rankNames[], size_t size);
 
-//RPG-X: RedTechie
-int RPGEntityCount; //Global entity count varible
+enum g_mainLimits_e {
+	MAX_GROUP_FILE_SIZE = 5000
+};
 
-level_locals_t	level;
+//RPG-X: RedTechie
+uint32_t RPGEntityCount; //Global entity count varible
+
+level_locals_t level;
 extern char	races[256];	//this is evil!
 
-group_list_t	group_list[MAX_GROUP_MEMBERS];
-int 			group_count;
-int				numKilled;
+group_list_t group_list[MAX_GROUP_MEMBERS];
+int32_t group_count;
+int32_t numKilled;
 
 typedef struct {
 	/*@shared@*/ /*@null@*/ vmCvar_t	*vmCvar;
@@ -490,37 +494,37 @@ This MUST be the very first function compiled into the .q3vm file
 */
 Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, /*@unused@*/ int arg3, /*@unused@*/ int arg4, /*@unused@*/ int arg5, /*@unused@*/ int arg6) {
 	switch (command) {
-		case GAME_INIT:
-			G_InitGame(arg0, (unsigned)arg1, arg2);
-			return 0;
-		case GAME_SHUTDOWN:
-			G_ShutdownGame(arg0);
-			return 0;
-		case GAME_CLIENT_CONNECT:
-			return (intptr_t)G_Client_Connect(arg0, (qboolean)arg1, (qboolean)arg2);
-		case GAME_CLIENT_THINK:
-			ClientThink(arg0);
-			return 0;
-		case GAME_CLIENT_USERINFO_CHANGED:
-			G_Client_UserinfoChanged(arg0); //TiM - this means a user just tried to change it
-			return 0;
-		case GAME_CLIENT_DISCONNECT:
-			G_Client_Disconnect(arg0);
-			return 0;
-		case GAME_CLIENT_BEGIN:
-			G_Client_Begin(arg0, qtrue, qfalse, qtrue);
-			return 0;
-		case GAME_CLIENT_COMMAND:
-			G_Client_Command(arg0);
-			return 0;
-		case GAME_RUN_FRAME:
-			G_RunFrame(arg0);
-			return 0;
-		case GAME_CONSOLE_COMMAND:
-			//RPG-X : TiM - plagiarised Red's logic from SFEFMOD here lol
-			return (intptr_t)ConsoleCommand();
-		case BOTAI_START_FRAME:
-			return (intptr_t)AI_main_BotAIStartFrame(arg0);
+	case GAME_INIT:
+		G_InitGame(arg0, (unsigned)arg1, arg2);
+		return 0;
+	case GAME_SHUTDOWN:
+		G_ShutdownGame(arg0);
+		return 0;
+	case GAME_CLIENT_CONNECT:
+		return (intptr_t)G_Client_Connect(arg0, (qboolean)arg1, (qboolean)arg2);
+	case GAME_CLIENT_THINK:
+		ClientThink(arg0);
+		return 0;
+	case GAME_CLIENT_USERINFO_CHANGED:
+		G_Client_UserinfoChanged(arg0); //TiM - this means a user just tried to change it
+		return 0;
+	case GAME_CLIENT_DISCONNECT:
+		G_Client_Disconnect(arg0);
+		return 0;
+	case GAME_CLIENT_BEGIN:
+		G_Client_Begin(arg0, qtrue, qfalse, qtrue);
+		return 0;
+	case GAME_CLIENT_COMMAND:
+		G_Client_Command(arg0);
+		return 0;
+	case GAME_RUN_FRAME:
+		G_RunFrame(arg0);
+		return 0;
+	case GAME_CONSOLE_COMMAND:
+		//RPG-X : TiM - plagiarised Red's logic from SFEFMOD here lol
+		return (intptr_t)ConsoleCommand();
+	case BOTAI_START_FRAME:
+		return (intptr_t)AI_main_BotAIStartFrame(arg0);
 	}
 
 	return -1;
@@ -862,7 +866,8 @@ static qboolean G_LoadClassData(char* fileName) {
 
 	if (classIndex > 0) {
 		return qtrue;
-	} else {
+	}
+	else {
 		G_Printf(S_COLOR_RED "ERROR: No valid classes were found.\n");
 		return qfalse;
 	}
@@ -917,7 +922,8 @@ static void G_LoadTimedMessages(void) {
 	while (bgLex_lex(lexer) != 0) {
 		if (lexer->morphem.type == LMT_STRING) {
 			level.timedMessages->append(level.timedMessages, lexer->morphem.data.str, LT_STRING, strlen(lexer->morphem.data.str));
-		} else {
+		}
+		else {
 			G_Logger(LL_WARN, "Unexpected token in timedmessages.cfg:%d:%d!\n", lexer->morphem.line, lexer->morphem.column);
 		}
 	}
@@ -1152,7 +1158,8 @@ static void G_LoadServerChangeFile(void) {
 
 			if (bgLex_lex(lex) == LMT_STRING) {
 				strncpy(level.srvChangeData.ip[level.srvChangeData.count], lex->morphem.data.str, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
-			} else {
+			}
+			else {
 				G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
@@ -1162,7 +1169,8 @@ static void G_LoadServerChangeFile(void) {
 
 			if (bgLex_lex(lex) == LMT_STRING) {
 				strncpy(level.srvChangeData.name[level.srvChangeData.count], lex->morphem.data.str, sizeof(level.srvChangeData.name[level.srvChangeData.count]));
-			} else {
+			}
+			else {
 				G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
@@ -1180,7 +1188,8 @@ static void G_LoadServerChangeFile(void) {
 				G_LogFuncEnd();
 				return;
 			}
-		} else {
+		}
+		else {
 			G_LocLogger(LL_ERROR, "Unexpected token at %d:%d. Expected '}' or 'Server'\n", lex->morphem.line, lex->morphem.column);
 			free(buffer);
 			bgLex_destroy(lex);
@@ -1381,7 +1390,8 @@ static void G_LoadLocationsFile(void) {
 				G_LogFuncEnd();
 				return;
 			}
-		} else {
+		}
+		else {
 			G_Logger(LL_WARN, "LocationsList2 had no opening brace '{'!\n");
 		}
 
@@ -1392,7 +1402,8 @@ static void G_LoadLocationsFile(void) {
 
 			if (lex->morphem.type == LMT_VECTOR3) {
 				VectorCopy(lex->morphem.data.vector3, origin);
-			} else {
+			}
+			else {
 				G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
@@ -1402,7 +1413,8 @@ static void G_LoadLocationsFile(void) {
 
 			if (bgLex_lex(lex) == LMT_VECTOR3) {
 				VectorCopy(lex->morphem.data.vector3, angles);
-			} else {
+			}
+			else {
 				G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
@@ -1432,7 +1444,8 @@ static void G_LoadLocationsFile(void) {
 						G_LogFuncEnd();
 						return;
 					}
-				} else {
+				}
+				else {
 					if (result == 0) {
 						G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
 						free(buffer);
@@ -1441,7 +1454,8 @@ static void G_LoadLocationsFile(void) {
 						return;
 					}
 				}
-			} else {
+			}
+			else {
 				G_LocLogger(LL_ERROR, "ERROR: Expected string at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 				free(buffer);
 				bgLex_destroy(lex);
@@ -1489,11 +1503,13 @@ static void G_LoadLocationsFile(void) {
 					G_LogFuncEnd();
 					return;
 				}
-			} else {
+			}
+			else {
 				G_Logger(LL_WARN, "Missing ';' at %d:%d.\n", lex->morphem.line, lex->morphem.column);
 			}
 		}
-	} else {
+	}
+	else {
 		G_LocLogger(LL_ERROR, "Unexpected token at %s:%d:%d.\n", fileRoute, lex->morphem.line, lex->morphem.column);
 		G_LocLogger(LL_ERROR, "Expected 'LocationsList' or 'LocationsList2'.\n");
 		free(buffer);
@@ -1512,7 +1528,7 @@ static void G_LoadLocationsFile(void) {
 	G_LogFuncEnd();
 }
 
-#define MAX_GROUP_FILE_SIZE	5000
+
 char *G_searchGroupList(const char *name) {
 	char	*text_p = NULL, *slash = NULL;
 	char	text[MAX_GROUP_FILE_SIZE];
@@ -1541,7 +1557,8 @@ char *G_searchGroupList(const char *name) {
 	// did we find this group in the list?
 	if (i == group_count || text_p == NULL) {
 		Com_sprintf(races, sizeof(races), "unknown");
-	} else {
+	}
+	else {
 		Com_sprintf(races, sizeof(races), "%s", text_p);
 	}
 	return races;
@@ -1693,7 +1710,8 @@ static void Dev_ShowTriggers(gentity_t *ent) {
 			trap_LinkEntity(ent);
 			if (tar->type == ENT_TRIGGER_PUSH) {
 				G_AddEvent(tar, EV_TRIGGER_SHOW, 1);
-			} else {
+			}
+			else {
 				G_AddEvent(tar, EV_TRIGGER_SHOW, 0);
 			}
 		}
@@ -1773,7 +1791,8 @@ void G_InitGame(int levelTime, unsigned int randomSeed, int restart) {
 	//level.message = levelTime - (int)(rpg_timedmessagetime.value * 60000) + 30000;
 	if (rpg_timedmessagetime.value < 0.2) {
 		messageTime = 0.2;
-	} else {
+	}
+	else {
 		messageTime = rpg_timedmessagetime.value;
 	}
 
@@ -1784,12 +1803,14 @@ void G_InitGame(int levelTime, unsigned int randomSeed, int restart) {
 	if (g_gametype.integer != GT_SINGLE_PLAYER && g_log.string[0] != 0) {
 		if (g_logSync.integer != 0) {
 			trap_FS_FOpenFile(g_log.string, &level.logFile, FS_APPEND_SYNC);
-		} else {
+		}
+		else {
 			trap_FS_FOpenFile(g_log.string, &level.logFile, FS_APPEND);
 		}
 		if (level.logFile == 0) {
 			G_Printf("WARNING: Couldn't open logfile: %s\n", g_log.string);
-		} else {
+		}
+		else {
 			char	serverinfo[MAX_INFO_STRING];
 
 			memset(serverinfo, 0, sizeof(serverinfo));
@@ -1798,7 +1819,8 @@ void G_InitGame(int levelTime, unsigned int randomSeed, int restart) {
 			G_LogPrintf("------------------------------------------------------------\n");
 			G_LogPrintf("InitGame: %s\n", serverinfo);
 		}
-	} else {
+	}
+	else {
 		G_Printf("Not logging to disk.\n");
 	}
 
@@ -1833,7 +1855,7 @@ void G_InitGame(int levelTime, unsigned int randomSeed, int restart) {
 
 	// let the server system know where the entites are
 	trap_LocateGameData(level.gentities, level.num_entities, (int)sizeof(gentity_t),
-						&level.clients[0].ps, (int)sizeof(level.clients[0]));
+		&level.clients[0].ps, (int)sizeof(level.clients[0]));
 
 	// reserve some spots for dead player bodies
 	G_Client_InitBodyQue();
@@ -2158,7 +2180,8 @@ void FindIntermissionPoint(void) {
 	ent = G_Find(NULL, FOFS(classname), "info_player_intermission");
 	if (ent == NULL) {	// the map creator forgot to put in an intermission point...
 		G_Client_SelectSpawnPoint(vec3_origin, level.intermission_origin, level.intermission_angle);
-	} else {
+	}
+	else {
 		VectorCopy(ent->s.origin, level.intermission_origin);
 		VectorCopy(ent->s.angles, level.intermission_angle);
 		// if it has a target, look towards it
@@ -2333,7 +2356,8 @@ static void CheckTournement(void) {
 		if (level.warmupTime == 0 || level.warmupTime != 0) {//RPG-X: RedTechie - No warmup Fail safe
 			return;
 		}
-	} else if (g_gametype.integer != GT_SINGLE_PLAYER) {
+	}
+	else if (g_gametype.integer != GT_SINGLE_PLAYER) {
 		if (level.warmupTime == 0) {
 			return;
 		}
@@ -2352,17 +2376,20 @@ static void CheckVote(void) {
 	}
 	if (level.time - level.voteTime >= VOTE_TIME) {
 		trap_SendServerCommand(-1, "print \"Vote failed.\n\"");
-	} else {
+	}
+	else {
 		if (level.voteYes > level.numVotingClients / 2) {
 			// execute the command, then remove the vote
 			char message[1024] = "";
 			trap_SendServerCommand(-1, "print \"Vote passed.\n\"");
 			Com_sprintf(message, 1024, "%s\n", level.voteString);
 			trap_SendConsoleCommand(EXEC_APPEND, message);
-		} else if (level.voteNo >= level.numVotingClients / 2) {
+		}
+		else if (level.voteNo >= level.numVotingClients / 2) {
 			// same behavior as a timeout
 			trap_SendServerCommand(-1, "print \"Vote failed.\n\"");
-		} else {
+		}
+		else {
 			// still waiting for a majority
 			return;
 		}
@@ -2385,7 +2412,8 @@ static void CheckCvars(void) {
 		lastMod = g_password.modificationCount;
 		if (g_password.string[0] != 0 && Q_stricmp(g_password.string, "none") != 0) {
 			trap_Cvar_Set("g_needpass", "1");
-		} else {
+		}
+		else {
 			trap_Cvar_Set("g_needpass", "0");
 		}
 	}
@@ -2484,7 +2512,8 @@ void G_RunFrame(int32_t levelTime) {
 				// tempEntities or dropped items completely go away after their event
 				G_FreeEntity(ent);
 				continue;
-			} else if (ent->unlinkAfterEvent) {
+			}
+			else if (ent->unlinkAfterEvent) {
 				// items that will respawn will hide themselves after their pickup event
 				ent->unlinkAfterEvent = qfalse;
 				trap_UnlinkEntity(ent);
