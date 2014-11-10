@@ -17,9 +17,9 @@ int32_t			g_numArenas;
 static char*	g_arenaInfos[MAX_ARENAS];
 
 
-#define BOT_BEGIN_DELAY_BASE		2000
-#define BOT_BEGIN_DELAY_INCREMENT	2000
-#define BOT_SPAWN_QUEUE_DEPTH		16
+static const uint16_t BOT_BEGIN_DELAY_BASE = 2000;
+static const uint16_t BOT_BEGIN_DELAY_INCREMENT = 2000;
+static const uint8_t BOT_SPAWN_QUEUE_DEPTH = 16;
 
 typedef struct {
 	int32_t	clientNum;
