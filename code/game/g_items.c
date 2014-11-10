@@ -19,16 +19,18 @@
   Respawnable items don't actually go away when picked up, they are
   just made invisible and untouchable.  This allows them to ride
   movers and respawn apropriately.
-*/
+  */
 
 
-#define	RESPAWN_ARMOR		20
-#define	RESPAWN_TEAM_WEAPON	30
-#define	RESPAWN_HEALTH		30
-#define	RESPAWN_AMMO		40
-#define	RESPAWN_HOLDABLE	60
-#define	RESPAWN_MEGAHEALTH	120
-#define	RESPAWN_POWERUP		120
+enum g_itemsRespawn_e {
+	RESPAWN_ARMOR = 20,
+	RESPAWN_TEAM_WEAPON = 30,
+	RESPAWN_HEALTH = 30,
+	RESPAWN_AMMO = 40,
+	RESPAWN_HOLDABLE = 60,
+	RESPAWN_MEGAHEALTH = 120,
+	RESPAWN_POWERUP = 120
+};
 
 //Replacement for Max_Ammo table
 vmCvar_t *Max_Weapons[WP_NUM_WEAPONS] = {
@@ -89,9 +91,10 @@ RPG-X | Marcin | 06/12/2008
 */
 int32_t Max_Weapon(int32_t num)
 {
-	if ( Max_Weapons[num] == NULL ) {
+	if (Max_Weapons[num] == NULL) {
 		return 1;
-	} else {
+	}
+	else {
 		return Max_Weapons[num]->integer;
 	}
 }
@@ -110,9 +113,10 @@ RPG-X | Marcin | 06/12/2008
 */
 int32_t Min_Weapon(int32_t num)
 {
-	if ( Min_Weapons[num] == NULL ) {
+	if (Min_Weapons[num] == NULL) {
 		return 1;
-	} else {
+	}
+	else {
 		return Min_Weapons[num]->integer;
 	}
 }
@@ -126,44 +130,47 @@ int32_t Min_Weapon(int32_t num)
  * \author Ubergames - Marcin
  * \date 06/12/2008
  */
-static void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
+static void Padd_Add(gentity_t *key, gentity_t *who, char *txt)
 {
-    int32_t		i = 0;
-    char*		txtp = NULL;
-    paddData_t*	empty = NULL;
+	int32_t		i = 0;
+	char*		txtp = NULL;
+	paddData_t*	empty = NULL;
 
-    G_LocLogger(LL_DEBUG, S_COLOR_YELLOW "in Padd_Add: txt = %s and last = %s\n", txt, who->client->lastPaddMsg );
+	G_LocLogger(LL_DEBUG, S_COLOR_YELLOW "in Padd_Add: txt = %s and last = %s\n", txt, who->client->lastPaddMsg);
 
-    while ( empty == NULL ) {
-        if ( i >= PADD_DATA_MAX ) {
-            G_Printf( S_COLOR_RED "Padd_Add: Too much PADDs!\n" S_COLOR_WHITE );
-            return;
-        } else if ( paddData[i].key == 0 ) {
-            empty = &paddData[i];
-        }
+	while (empty == NULL) {
+		if (i >= PADD_DATA_MAX) {
+			G_Printf(S_COLOR_RED "Padd_Add: Too much PADDs!\n" S_COLOR_WHITE);
+			return;
+		}
+		else if (paddData[i].key == 0) {
+			empty = &paddData[i];
+		}
 
-        ++i;
-    }
+		++i;
+	}
 
-    G_LocLogger(LL_DEBUG, S_COLOR_YELLOW "added: %i with %s on nr %i\n" S_COLOR_WHITE, (int32_t)key, txt, i - 1);
+	G_LocLogger(LL_DEBUG, S_COLOR_YELLOW "added: %i with %s on nr %i\n" S_COLOR_WHITE, (int32_t)key, txt, i - 1);
 
-    empty->key = key;
-    if ( (txt != NULL) && (txt[0] != 0) ) {
-        txtp = txt;
-        Q_strncpyz( who->client->lastPaddMsg, txt, sizeof( who->client->lastPaddMsg ) );
-    } else if ( who->client->lastPaddMsg[0] != 0 ) {
-        txtp = who->client->lastPaddMsg;
-    } else {
-        txtp = 0;
-    }
+	empty->key = key;
+	if ((txt != NULL) && (txt[0] != 0)) {
+		txtp = txt;
+		Q_strncpyz(who->client->lastPaddMsg, txt, sizeof(who->client->lastPaddMsg));
+	}
+	else if (who->client->lastPaddMsg[0] != 0) {
+		txtp = who->client->lastPaddMsg;
+	}
+	else {
+		txtp = 0;
+	}
 
-    if (txtp != NULL) {
-        Q_strncpyz( empty->value, txtp, sizeof( empty->value ) );
-    }
+	if (txtp != NULL) {
+		Q_strncpyz(empty->value, txtp, sizeof(empty->value));
+	}
 
-    Q_strncpyz( empty->owner, who->client->pers.netname, sizeof( empty->owner ) );
+	Q_strncpyz(empty->owner, who->client->pers.netname, sizeof(empty->owner));
 
-    ++paddDataNum;
+	++paddDataNum;
 }
 
 /**
@@ -175,32 +182,32 @@ static void Padd_Add( gentity_t *key, gentity_t *who, char *txt )
  * \author Ubergames - Marcin
  * \date 06/12/2008
  */
-static char* Padd_Get( gentity_t* key, gentity_t* who )
+static char* Padd_Get(gentity_t* key, gentity_t* who)
 {
-    int32_t i = 0;
+	int32_t i = 0;
 	int32_t j = 0;
 
-	if((key != NULL) && (who != NULL)) {
-		for ( ; i < PADD_DATA_MAX; ++i ) {
-			if ( paddData[i].key == key ) {
+	if ((key != NULL) && (who != NULL)) {
+		for (; i < PADD_DATA_MAX; ++i) {
+			if (paddData[i].key == key) {
 				G_LocLogger(LL_DEBUG, "^3got: %i with %s on nr %i\n", (int32_t)key, paddData[i].value, i);
 				//Inform admins
-				for ( j = 0; j < level.maxclients; ++j ) {
+				for (j = 0; j < level.maxclients; ++j) {
 					gentity_t *player = &g_entities[j];
-					if ( (player != NULL) && (!player->client->noAdminChat) && G_Client_IsAdmin( player ) && (rpg_respectPrivacy.integer == 0) && (player != who) && (paddData[i].value[0] != 0) ) {
-						trap_SendServerCommand( player-g_entities, va("print \"%s" S_COLOR_CYAN" (picked up by %s" S_COLOR_CYAN ") " S_COLOR_WHITE "%s\n\"", paddData[i].owner, who->client->pers.netname, paddData[i].value ) );
+					if ((player != NULL) && (!player->client->noAdminChat) && G_Client_IsAdmin(player) && (rpg_respectPrivacy.integer == 0) && (player != who) && (paddData[i].value[0] != 0)) {
+						trap_SendServerCommand(player - g_entities, va("print \"%s" S_COLOR_CYAN" (picked up by %s" S_COLOR_CYAN ") " S_COLOR_WHITE "%s\n\"", paddData[i].owner, who->client->pers.netname, paddData[i].value));
 					}
 				}
 
 				//Store string
-				Q_strncpyz( who->client->lastPaddMsg, paddData[i].value, sizeof( who->client->lastPaddMsg ) );
+				Q_strncpyz(who->client->lastPaddMsg, paddData[i].value, sizeof(who->client->lastPaddMsg));
 				return paddData[i].value;
 			}
 		}
 	}
 
-    G_Printf( S_COLOR_RED "Padd_Get: Unable to find the text for this PADD!\n" S_COLOR_WHITE );
-    return NULL;
+	G_Printf(S_COLOR_RED "Padd_Get: Unable to find the text for this PADD!\n" S_COLOR_WHITE);
+	return NULL;
 }
 
 /**
@@ -210,25 +217,26 @@ static char* Padd_Get( gentity_t* key, gentity_t* who )
  * \author Ubergames - Marcin
  * \date 06/12/2008
  */
-static void Padd_Remove( gentity_t* key )
+static void Padd_Remove(gentity_t* key)
 {
-    int32_t i = 0;
+	int32_t i = 0;
 
-    while ( qtrue ) {
-        if ( paddData[i].key == key ) {
-            paddData[i].key = 0;
-            paddData[i].value[0] = '\0';
-            paddData[i].owner[0] = '\0';
-            G_LocLogger(LL_DEBUG, S_COLOR_YELLOW "deleting: %i on %i\n", (int32_t)key, i);
-            --paddDataNum;
-            return;
-        } else if ( i >= PADD_DATA_MAX ) {
-            G_Printf( S_COLOR_RED "Padd_Remove: Can not delete PADD!\n" S_COLOR_WHITE);
-            return;
-        }
+	while (qtrue) {
+		if (paddData[i].key == key) {
+			paddData[i].key = 0;
+			paddData[i].value[0] = '\0';
+			paddData[i].owner[0] = '\0';
+			G_LocLogger(LL_DEBUG, S_COLOR_YELLOW "deleting: %i on %i\n", (int32_t)key, i);
+			--paddDataNum;
+			return;
+		}
+		else if (i >= PADD_DATA_MAX) {
+			G_Printf(S_COLOR_RED "Padd_Remove: Can not delete PADD!\n" S_COLOR_WHITE);
+			return;
+		}
 
-        ++i;
-    }
+		++i;
+	}
 }
 
 // For more than four players, adjust the respawn times, up to 1/4.
@@ -239,14 +247,16 @@ static int32_t adjustRespawnTime(double respawnTime) {
 
 	if (level.numPlayingClients > 4) {
 		// Start scaling the respawn times.
-		
+
 		if (level.numPlayingClients > 32) {
 			// 1/4 time minimum.
 			respawnTime *= 0.25;
-		} else if (level.numPlayingClients > 12) {	
+		}
+		else if (level.numPlayingClients > 12) {
 			// From 12-32, scale from 0.5 to 0.25;
 			respawnTime *= 20.0 / (double)(level.numPlayingClients + 8);
-		} else {
+		}
+		else {
 			// From 4-12, scale from 1.0 to 0.5;
 			respawnTime *= 8.0 / (double)(level.numPlayingClients + 4);
 		}
@@ -263,73 +273,74 @@ static int32_t adjustRespawnTime(double respawnTime) {
 
 //======================================================================
 
-static int32_t Pickup_Powerup( gentity_t* ent, gentity_t* other ) {
+static int32_t Pickup_Powerup(gentity_t* ent, gentity_t* other) {
 	int32_t			quantity = 0;
 	int32_t			i = 0;
 	gclient_t*		client = NULL;
 	playerState_t*	ps = &other->client->ps;
 
-	if(other != NULL && other->client != NULL && ent != NULL) {
-		if ( ps->powerups[ent->item->giTag] == 0 ) {
+	if (other != NULL && other->client != NULL && ent != NULL) {
+		if (ps->powerups[ent->item->giTag] == 0) {
 			// round timing to seconds to make multiple powerup timers
 			// count in sync
-			ps->powerups[ent->item->giTag] = level.time - ( level.time % 1000 );
+			ps->powerups[ent->item->giTag] = level.time - (level.time % 1000);
 
 			// kef -- log the fact that we picked up this powerup
 			G_LogWeaponPowerup(other->s.number, ent->item->giTag);
 		}
 
-		if ( ent->count != 0 ) {
+		if (ent->count != 0) {
 			quantity = ent->count;
-		} else {
+		}
+		else {
 			quantity = ent->item->quantity;
 		}
 
 		ps->powerups[ent->item->giTag] += quantity * 1000;
 
 		// give any nearby players a "denied" anti-reward
-		for ( i = 0 ; i < level.maxclients ; i++ ) {
+		for (i = 0; i < level.maxclients; i++) {
 			vec3_t		delta;
 			double		len = 0.0;
 			vec3_t		forward;
 			trace_t		tr;
 
 			client = &level.clients[i];
-			if ( client == other->client ) {
+			if (client == other->client) {
 				continue;
 			}
 
-			if ( client->pers.connected == CON_DISCONNECTED ) {
+			if (client->pers.connected == CON_DISCONNECTED) {
 				continue;
 			}
 
-			if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
+			if (client->ps.stats[STAT_HEALTH] <= 0) {
 				continue;
 			}
 
 			// if same team in team game, no sound
 			// cannot use OnSameTeam as it expects to g_entities, not clients
-  			if ( g_gametype.integer >= GT_TEAM && other->client->sess.sessionTeam == client->sess.sessionTeam  ) {
-			  continue;
+			if (g_gametype.integer >= GT_TEAM && other->client->sess.sessionTeam == client->sess.sessionTeam) {
+				continue;
 			}
 
 			// if too far away, no sound
-			VectorSubtract( ent->s.pos.trBase, client->ps.origin, delta );
-			len = VectorNormalize( delta );
-			if ( len > 192 ) {
+			VectorSubtract(ent->s.pos.trBase, client->ps.origin, delta);
+			len = VectorNormalize(delta);
+			if (len > 192) {
 				continue;
 			}
 
 			// if not facing, no sound
-			AngleVectors( client->ps.viewangles, forward, NULL, NULL );
-			if ( DotProduct( delta, forward ) < 0.4 ) {
+			AngleVectors(client->ps.viewangles, forward, NULL, NULL);
+			if (DotProduct(delta, forward) < 0.4) {
 				continue;
 			}
 
 			// if not line of sight, no sound
 			memset(&tr, 0, sizeof(trace_t));
-			trap_Trace( &tr, client->ps.origin, NULL, NULL, ent->s.pos.trBase, ENTITYNUM_NONE, CONTENTS_SOLID );
-			if ( tr.fraction != 1.0 ) {
+			trap_Trace(&tr, client->ps.origin, NULL, NULL, ent->s.pos.trBase, ENTITYNUM_NONE, CONTENTS_SOLID);
+			if (tr.fraction != 1.0) {
 				continue;
 			}
 
@@ -344,11 +355,11 @@ static int32_t Pickup_Powerup( gentity_t* ent, gentity_t* other ) {
 
 //======================================================================
 
-static int32_t Pickup_Holdable( gentity_t* ent, gentity_t* other )
+static int32_t Pickup_Holdable(gentity_t* ent, gentity_t* other)
 {
 	int32_t nItem;
-	
-	if((ent != NULL) && (other != NULL) && (other->client != NULL)) { 	
+
+	if ((ent != NULL) && (other != NULL) && (other->client != NULL)) {
 		nItem = ent->item - bg_itemlist;
 
 		other->client->ps.stats[STAT_HOLDABLE_ITEM] = nItem;
@@ -374,29 +385,30 @@ static int32_t Pickup_Holdable( gentity_t* ent, gentity_t* other )
  * \param weapon For which weapon.
  * \param count Ammount of ammo.
  */
-static void Add_Ammo (gentity_t* ent, int32_t weapon, int32_t count) {
+static void Add_Ammo(gentity_t* ent, int32_t weapon, int32_t count) {
 	playerState_t* ps = &ent->client->ps;
 
-	if(ent != NULL) {
+	if (ent != NULL) {
 		ps->ammo[weapon] += count;
-		if ( ps->ammo[weapon] > Max_Weapon(weapon) ) {
+		if (ps->ammo[weapon] > Max_Weapon(weapon)) {
 			ps->ammo[weapon] = Max_Weapon(weapon);
 		}
 	}
 }
 
-static int32_t Pickup_Ammo (gentity_t* ent, gentity_t* other)
+static int32_t Pickup_Ammo(gentity_t* ent, gentity_t* other)
 {
 	int32_t quantity = 0;
 
-	if(ent != NULL && other != NULL) {
-		if ( ent->count != 0 ) {
+	if (ent != NULL && other != NULL) {
+		if (ent->count != 0) {
 			quantity = ent->count;
-		} else {
+		}
+		else {
 			quantity = ent->item->quantity;
 		}
 
-		Add_Ammo (other, ent->item->giTag, quantity);
+		Add_Ammo(other, ent->item->giTag, quantity);
 	}
 
 	return adjustRespawnTime(RESPAWN_AMMO);
@@ -405,27 +417,27 @@ static int32_t Pickup_Ammo (gentity_t* ent, gentity_t* other)
 //======================================================================
 
 
-static int32_t Pickup_Weapon (gentity_t* ent, gentity_t* other) {
-    char *msg = NULL;
+static int32_t Pickup_Weapon(gentity_t* ent, gentity_t* other) {
+	char *msg = NULL;
 
-	if(ent != NULL && other != NULL) {
+	if (ent != NULL && other != NULL) {
 		// add the weapon
-		other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
-		Add_Ammo( other, ent->item->giTag, 1 );
+		other->client->ps.stats[STAT_WEAPONS] |= (1 << ent->item->giTag);
+		Add_Ammo(other, ent->item->giTag, 1);
 
 		// RPG-X: Marcin: print PADD message - 06/12/2008
 
-		if ( ent->item->giTag == WP_3 ) {
-			msg = Padd_Get( ent, other );
+		if (ent->item->giTag == WP_3) {
+			msg = Padd_Get(ent, other);
 			if (msg != NULL) {
-				trap_SendServerCommand( other-g_entities, va("print \"" S_COLOR_CYAN "(padd)" S_COLOR_WHITE " %s\n\"", msg) );
+				trap_SendServerCommand(other - g_entities, va("print \"" S_COLOR_CYAN "(padd)" S_COLOR_WHITE " %s\n\"", msg));
 			}
 		}
 
 		G_LogWeaponPickup(other->s.number, ent->item->giTag);
-	
+
 		// team deathmatch has slow weapon respawns
-		if ( g_gametype.integer == GT_TEAM ) {
+		if (g_gametype.integer == GT_TEAM) {
 			return adjustRespawnTime(RESPAWN_TEAM_WEAPON);
 		}
 	}
@@ -436,35 +448,37 @@ static int32_t Pickup_Weapon (gentity_t* ent, gentity_t* other) {
 
 //======================================================================
 
-static int32_t Pickup_Health (gentity_t* ent, gentity_t* other) {
+static int32_t Pickup_Health(gentity_t* ent, gentity_t* other) {
 	int32_t			max = 0;
 	int32_t			quantity = 0;
 	playerState_t* ps = NULL;
-	
-	if(ent != NULL && other != NULL && other->client != NULL) {
+
+	if (ent != NULL && other != NULL && other->client != NULL) {
 		ps = &other->client->ps;
 
 		// small and mega healths will go over the max
-		if ( ent->item->quantity != 5 && ent->item->quantity != 100  ) {
+		if (ent->item->quantity != 5 && ent->item->quantity != 100) {
 			max = ps->stats[STAT_MAX_HEALTH];
-		} else {
+		}
+		else {
 			max = ps->stats[STAT_MAX_HEALTH] * 2;
 		}
 
-		if ( ent->count != 0 ) {
+		if (ent->count != 0) {
 			quantity = ent->count;
-		} else {
+		}
+		else {
 			quantity = ent->item->quantity;
 		}
 
 		other->health += quantity;
 
-		if (other->health > max ) {
+		if (other->health > max) {
 			other->health = max;
 		}
 		ps->stats[STAT_HEALTH] = other->health;
 
-		if ( ent->item->giTag == 100 ) {		// mega health respawns slow
+		if (ent->item->giTag == 100) {		// mega health respawns slow
 			return RESPAWN_MEGAHEALTH;			// It also does not adapt like other health pickups.
 		}
 	}
@@ -474,11 +488,11 @@ static int32_t Pickup_Health (gentity_t* ent, gentity_t* other) {
 
 //======================================================================
 
-static int32_t Pickup_Armor( gentity_t* ent, gentity_t* other ) {
-	if(ent != NULL && other != NULL && other->client != NULL) {
+static int32_t Pickup_Armor(gentity_t* ent, gentity_t* other) {
+	if (ent != NULL && other != NULL && other->client != NULL) {
 		playerState_t *ps = &other->client->ps;
 		ps->stats[STAT_ARMOR] += ent->item->quantity;
-		if ( ps->stats[STAT_ARMOR] > ps->stats[STAT_MAX_HEALTH] * 2 ) {
+		if (ps->stats[STAT_ARMOR] > ps->stats[STAT_MAX_HEALTH] * 2) {
 			ps->stats[STAT_ARMOR] = ps->stats[STAT_MAX_HEALTH] * 2;
 		}
 	}
@@ -493,8 +507,8 @@ static int32_t Pickup_Armor( gentity_t* ent, gentity_t* other ) {
  *
  * \param ent The item.
  */
-static void RespawnItem( gentity_t* ent ) {
-	if(ent != NULL) {
+static void RespawnItem(gentity_t* ent) {
+	if (ent != NULL) {
 
 		// randomly select from teamed entities
 		if (ent->team != NULL) {
@@ -502,8 +516,8 @@ static void RespawnItem( gentity_t* ent ) {
 			int32_t		count = 0;
 			int32_t		choice = 0;
 
-			if ( ent->teammaster == NULL ) {
-				G_Error( "RespawnItem: bad teammaster");
+			if (ent->teammaster == NULL) {
+				G_Error("RespawnItem: bad teammaster");
 			}
 			master = ent->teammaster;
 
@@ -516,26 +530,26 @@ static void RespawnItem( gentity_t* ent ) {
 				;
 		}
 
-		if(ent == NULL) {
+		if (ent == NULL) {
 			return;
 		}
 
 		ent->r.contents = CONTENTS_TRIGGER;
 		ent->s.eFlags &= ~(EF_NODRAW | EF_ITEMPLACEHOLDER);
 		ent->r.svFlags &= ~SVF_NOCLIENT;
-		trap_LinkEntity (ent);
+		trap_LinkEntity(ent);
 
-		if ( ent->item->giType == IT_POWERUP ) {
+		if (ent->item->giType == IT_POWERUP) {
 			// play powerup spawn sound to all clients
 			gentity_t	*te;
 
-			te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
-			te->s.eventParm = G_SoundIndex( "sound/items/poweruprespawn.wav" );//cgs.media.poweruprespawn
+			te = G_TempEntity(ent->s.pos.trBase, EV_GLOBAL_SOUND);
+			te->s.eventParm = G_SoundIndex("sound/items/poweruprespawn.wav");//cgs.media.poweruprespawn
 			te->r.svFlags |= SVF_BROADCAST;
 		}
 
 		// play the normal respawn sound only to nearby clients
-		G_AddEvent( ent, EV_ITEM_RESPAWN, 0 );
+		G_AddEvent(ent, EV_ITEM_RESPAWN, 0);
 
 		ent->nextthink = 0;
 	}
@@ -549,7 +563,7 @@ static void RespawnItem( gentity_t* ent ) {
  * \param other The touching entity.
  * \param trace A trace.
  */
-static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
+static void Touch_Item(gentity_t* ent, gentity_t* other, trace_t* trace) {
 	int32_t respawn = 0;
 
 	if ((other == NULL) || (other->client == NULL) || (ent == NULL)) {
@@ -560,27 +574,28 @@ static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
 		return;		// dead people can't pickup
 	}
 
-    // RPG-X: Marcin: Press USE to pick up items. - 03/12/2008
-    if ( ((other->client->pers.cmd.buttons & BUTTON_USE) == 0) || (other->client->pressedUse == qtrue)) {
-        return;
-	} else {
+	// RPG-X: Marcin: Press USE to pick up items. - 03/12/2008
+	if (((other->client->pers.cmd.buttons & BUTTON_USE) == 0) || (other->client->pressedUse == qtrue)) {
+		return;
+	}
+	else {
 		other->client->pressedUse = qtrue;
 	}
 
 	// the same pickup rules are used for client side and server side
-	if ( !BG_CanItemBeGrabbed( &ent->s, &other->client->ps, Max_Weapon(other->client->ps.weapon) )
-		&& G_Client_IsAdmin( other ) == qfalse )
+	if (!BG_CanItemBeGrabbed(&ent->s, &other->client->ps, Max_Weapon(other->client->ps.weapon))
+		&& G_Client_IsAdmin(other) == qfalse)
 	{
 		return;
 	}
 
 	numTotalDropped--;
 
-	G_LogPrintf( "Item: %i %s\n", other->s.number, ent->item->classname );
+	G_LogPrintf("Item: %i %s\n", other->s.number, ent->item->classname);
 
 	// call the item-specific pickup function
 
-	switch( ent->item->giType )
+	switch (ent->item->giType)
 	{
 	case IT_WEAPON:
 		respawn = Pickup_Weapon(ent, other);
@@ -612,17 +627,18 @@ static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
 	}
 
 	// play the normal pickup sound
-	if ( other->client->pers.predictItemPickup ) {
-		G_AddPredictableEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
-	} else {
-		G_AddEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
+	if (other->client->pers.predictItemPickup) {
+		G_AddPredictableEvent(other, EV_ITEM_PICKUP, ent->s.modelindex);
+	}
+	else {
+		G_AddEvent(other, EV_ITEM_PICKUP, ent->s.modelindex);
 	}
 
 	// powerup pickups are global broadcasts
-	if ( ent->item->giType == IT_POWERUP || ent->item->giType == IT_TEAM) {
+	if (ent->item->giType == IT_POWERUP || ent->item->giType == IT_TEAM) {
 		gentity_t* te = NULL;
 
-		te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP );
+		te = G_TempEntity(ent->s.pos.trBase, EV_GLOBAL_ITEM_PICKUP);
 		te->s.eventParm = ent->s.modelindex;
 		// tell us which client fired off this global sound
 		te->s.otherEntityNum = other->s.number;
@@ -630,18 +646,18 @@ static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
 	}
 
 	// fire item targets
-	G_UseTargets (ent, other);
+	G_UseTargets(ent, other);
 
-    if ( rpg_weaponsStay.integer == 1 && G_Client_IsAdmin( ent->parent ) == qtrue && G_Client_IsAdmin( other ) == qfalse ) {
-        return;
-    }
+	if (rpg_weaponsStay.integer == 1 && G_Client_IsAdmin(ent->parent) == qtrue && G_Client_IsAdmin(other) == qfalse) {
+		return;
+	}
 
-    if ( ent->item->giTag == WP_3 ) {
-        Padd_Remove( ent );
-    }
-    
-    // wait of -1 will not respawn
-	if ( ent->wait == -1 ) {
+	if (ent->item->giTag == WP_3) {
+		Padd_Remove(ent);
+	}
+
+	// wait of -1 will not respawn
+	if (ent->wait == -1) {
 		ent->r.svFlags |= SVF_NOCLIENT;
 		ent->s.eFlags |= EF_NODRAW;
 		ent->r.contents = 0;
@@ -650,20 +666,20 @@ static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
 	}
 
 	// non zero wait overrides respawn time
-	if ( ent->wait > 0.0f) {
+	if (ent->wait > 0.0f) {
 		respawn = ent->wait;
 	}
 
 	// random can be used to vary the respawn time
-	if ( ent->random > 0.0f ) {
+	if (ent->random > 0.0f) {
 		respawn += crandom() * ent->random;
-		if ( respawn < 1.0f ) {
+		if (respawn < 1.0f) {
 			respawn = 1;
 		}
 	}
 
 	// dropped items will not respawn
-	if ( (ent->flags & FL_DROPPED_ITEM) != 0 ) {
+	if ((ent->flags & FL_DROPPED_ITEM) != 0) {
 		ent->freeAfterEvent = qtrue;
 	}
 
@@ -671,33 +687,34 @@ static void Touch_Item (gentity_t* ent, gentity_t* other, trace_t* trace) {
 	// draw anything.  This allows respawnable items
 	// to be placed on movers.
 
-	if (ent->item->giType==IT_WEAPON || ent->item->giType==IT_POWERUP)
+	if (ent->item->giType == IT_WEAPON || ent->item->giType == IT_POWERUP)
 	{
 		ent->s.eFlags |= EF_ITEMPLACEHOLDER;
 	}
 	else
 	{
-//	this line used to prevent items that were picked up from being drawn, but we now want to draw the techy grid thing instead
+		//	this line used to prevent items that were picked up from being drawn, but we now want to draw the techy grid thing instead
 		ent->s.eFlags |= EF_NODRAW;
 		ent->r.svFlags |= SVF_NOCLIENT;
 	}
 
 	ent->r.contents = 0;
 
-// ***************
+	// ***************
 	// ZOID
 	// A negative respawn times means to never respawn this item (but don't 
 	// delete it).  This is used by items that are respawned by third party 
 	// events such as ctf flags
-	if ( respawn <= 0 ) {
+	if (respawn <= 0) {
 		ent->nextthink = 0;
 		ent->think = 0;
-	} else {
-        ent->nextthink = level.time + respawn * 1000;
+	}
+	else {
+		ent->nextthink = level.time + respawn * 1000;
 		ent->think = RespawnItem;
 	}
 
-	trap_LinkEntity( ent );
+	trap_LinkEntity(ent);
 }
 
 
@@ -710,7 +727,7 @@ LaunchItem
 Spawns an item and tosses it forward
 ================
 */
-static gentity_t* LaunchItem( gitem_t* item, gentity_t* who, vec3_t origin, vec3_t velocity, int32_t flags, char* txt) // RPG-X: Marcin: for ThrowWeapon 03/12/2008
+static gentity_t* LaunchItem(gitem_t* item, gentity_t* who, vec3_t origin, vec3_t velocity, int32_t flags, char* txt) // RPG-X: Marcin: for ThrowWeapon 03/12/2008
 {                                                                                                           // and for PADD stuff too         06/12/2008, 08/12/2008
 	gentity_t* dropped = NULL;
 
@@ -722,87 +739,87 @@ static gentity_t* LaunchItem( gitem_t* item, gentity_t* who, vec3_t origin, vec3
 
 	dropped->classname = item->classname;
 	dropped->item = item;
-	VectorSet (dropped->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS);
-	VectorSet (dropped->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS);
+	VectorSet(dropped->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS);
+	VectorSet(dropped->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS);
 	dropped->r.contents = CONTENTS_TRIGGER;
 
 	dropped->touch = Touch_Item;
 
-	G_SetOrigin( dropped, origin );
+	G_SetOrigin(dropped, origin);
 	dropped->s.pos.trType = TR_GRAVITY;
 	dropped->s.pos.trTime = level.time;
-	VectorCopy( velocity, dropped->s.pos.trDelta );
+	VectorCopy(velocity, dropped->s.pos.trDelta);
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
 	dropped->s.eFlags |= EF_DEAD;	// Yes, this is totally lame, but we use it bg_misc to check
-									// if the item has been droped, and if so, make it pick-up-able
-									// cdr
+	// if the item has been droped, and if so, make it pick-up-able
+	// cdr
 
-    if ( item->giTag == WP_3 ) {
-        Padd_Add(dropped, who, txt);
-    }
+	if (item->giTag == WP_3) {
+		Padd_Add(dropped, who, txt);
+	}
 
 	dropped->think = G_FreeEntity;
 	dropped->nextthink = level.time + 6000000; //30000; // RPG-X: Marcin: increased - 03/12/2008
 
 	dropped->flags = flags; // FL_DROPPED_ITEM; // RPG-X: Marcin: for ThrowWeapon - 03/12/2008
 
-    if( (flags & FL_THROWN_ITEM) != 0 ) {
-        dropped->clipmask = MASK_SHOT;
-        dropped->s.pos.trTime = level.time - 50;
-        VectorScale( velocity, 300, dropped->s.pos.trDelta );
-        SnapVector( dropped->s.pos.trDelta );
-        dropped->physicsBounce = 0.2;
-    }
+	if ((flags & FL_THROWN_ITEM) != 0) {
+		dropped->clipmask = MASK_SHOT;
+		dropped->s.pos.trTime = level.time - 50;
+		VectorScale(velocity, 300, dropped->s.pos.trDelta);
+		SnapVector(dropped->s.pos.trDelta);
+		dropped->physicsBounce = 0.2;
+	}
 
 
-	trap_LinkEntity (dropped);
+	trap_LinkEntity(dropped);
 
 	return dropped;
 }
 
-gentity_t *DropWeapon( gentity_t *ent, gitem_t *item, double angle, int32_t flags, char *txt ) {
+gentity_t *DropWeapon(gentity_t *ent, gitem_t *item, double angle, int32_t flags, char *txt) {
 	vec3_t	velocity;
 	vec3_t	origin;
 
-	if(ent == NULL) {
+	if (ent == NULL) {
 		return NULL;
 	}
 
-	VectorCopy( ent->s.pos.trBase, origin );
+	VectorCopy(ent->s.pos.trBase, origin);
 
 	// set aiming directions
-	AngleVectors (ent->client->ps.viewangles, velocity, NULL, NULL);
+	AngleVectors(ent->client->ps.viewangles, velocity, NULL, NULL);
 
 	origin[2] += ent->client->ps.viewheight + 10;
-	VectorMA( origin, 14, velocity, origin );
+	VectorMA(origin, 14, velocity, origin);
 	// snap to integer coordinates for more efficient network bandwidth usage
-	SnapVector( origin );
+	SnapVector(origin);
 
 	// extra vertical velocity
 	velocity[2] += 0.2;
-	VectorNormalize( velocity );
+	VectorNormalize(velocity);
 
-	return LaunchItem( item, ent, origin, velocity, flags, txt );
+	return LaunchItem(item, ent, origin, velocity, flags, txt);
 }
 
-gentity_t* Drop_Item( gentity_t* ent, gitem_t* item, double angle ) {
+gentity_t* Drop_Item(gentity_t* ent, gitem_t* item, double angle) {
 	vec3_t	velocity;
 	vec3_t	angles;
 
-	if(ent == NULL) { 
+	if (ent == NULL) {
 		return NULL;
 	}
 
-	VectorCopy( ent->s.apos.trBase, angles );
+	VectorCopy(ent->s.apos.trBase, angles);
 	angles[YAW] += angle;
 	angles[PITCH] = 0;	// always forward
 
-	AngleVectors( angles, velocity, NULL, NULL );
-	VectorScale( velocity, 300, velocity );
+	AngleVectors(angles, velocity, NULL, NULL);
+	VectorScale(velocity, 300, velocity);
 	velocity[2] += 75 + crandom() * 50;
 
-	return LaunchItem( item, ent, ent->s.pos.trBase, velocity, FL_DROPPED_ITEM, 0 ); // RPG-X: Marcin: for ThrowWeapon - 03/12/2008
+	return LaunchItem(item, ent, ent->s.pos.trBase, velocity, FL_DROPPED_ITEM, 0); // RPG-X: Marcin: for ThrowWeapon - 03/12/2008
 }
 
 
@@ -813,9 +830,9 @@ Use_Item
 Respawn the item
 ================
 */
-static void Use_Item( gentity_t* ent, gentity_t* other, gentity_t* activator ) {
-	if(ent != NULL) {
-		RespawnItem( ent );
+static void Use_Item(gentity_t* ent, gentity_t* other, gentity_t* activator) {
+	if (ent != NULL) {
+		RespawnItem(ent);
 	}
 }
 
@@ -827,24 +844,24 @@ static void Use_Item( gentity_t* ent, gentity_t* other, gentity_t* activator ) {
  *
  * \param ent Entity for the item.
  */
-static void FinishSpawningItem( gentity_t* ent ) {
+static void FinishSpawningItem(gentity_t* ent) {
 	trace_t		tr;
 	vec3_t		dest;
 
-	if ( ent == NULL )
+	if (ent == NULL)
 	{
 		DEVELOPER(G_Printf("print \"Ent Missing\"");)
-		return;
+			return;
 	}
 
-	if ( ent->item == NULL )
+	if (ent->item == NULL)
 	{
 		DEVELOPER(G_Printf("print \"Ent->item Missing\"");)
-		return;
+			return;
 	}
 
-	VectorSet( ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS );
-	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
+	VectorSet(ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS);
+	VectorSet(ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS);
 
 	ent->s.eType = ET_ITEM;
 	ent->s.modelindex = ent->item - bg_itemlist;		// store item number in modelindex
@@ -855,43 +872,44 @@ static void FinishSpawningItem( gentity_t* ent ) {
 	// useing an item causes it to respawn
 	ent->use = Use_Item;
 
-	
+
 	Com_Printf("print \"giType %i!\n\"", ent->item->giType);
 
-	if ( (ent->spawnflags & 1) != 0 ) {
+	if ((ent->spawnflags & 1) != 0) {
 		// suspended
-		G_SetOrigin( ent, ent->s.origin );
-	} else {
+		G_SetOrigin(ent, ent->s.origin);
+	}
+	else {
 		// drop to floor
-		VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096 );
+		VectorSet(dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096);
 		memset(&tr, 0, sizeof(trace_t));
-		trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
+		trap_Trace(&tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID);
 
-		if ( tr.startsolid ) {
-			DEVELOPER(G_Printf ("FinishSpawningItem: removing %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));)
+		if (tr.startsolid) {
+			DEVELOPER(G_Printf("FinishSpawningItem: removing %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));)
 #ifndef FINAL_BUILD
-			G_Error("FinishSpawningItem: removing %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
+				G_Error("FinishSpawningItem: removing %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
 #endif
-			DEVELOPER(G_Printf ("FinishSpawningItem: %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));)
+			DEVELOPER(G_Printf("FinishSpawningItem: %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));)
 
-			G_FreeEntity( ent );
+				G_FreeEntity(ent);
 			return;
 		}
 
 		// allow to ride movers
 		ent->s.groundEntityNum = tr.entityNum;
 
-		G_SetOrigin( ent, tr.endpos );
+		G_SetOrigin(ent, tr.endpos);
 	}
 
 	// team slaves and targeted items aren't present at start
-	if ( (( ent->flags & FL_TEAMSLAVE ) != 0) || (ent->targetname != NULL) ) {
+	if (((ent->flags & FL_TEAMSLAVE) != 0) || (ent->targetname != NULL)) {
 		ent->s.eFlags |= EF_NODRAW;
 		ent->r.contents = 0;
 		return;
 	}
 
-	trap_LinkEntity (ent);
+	trap_LinkEntity(ent);
 }
 
 
@@ -903,17 +921,17 @@ Traces down to find where an item should rest, instead of letting them
 free fall from their spawn points
 ================
 */
-qboolean FinishSpawningDetpack( gentity_t *ent, int itemIndex )
+qboolean FinishSpawningDetpack(gentity_t *ent, int itemIndex)
 {
 	trace_t		tr;
 	vec3_t		dest;
-	
-	if(ent == NULL) {
+
+	if (ent == NULL) {
 		return qfalse;
 	}
 
-	VectorSet( ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, 0 );
-	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
+	VectorSet(ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, 0);
+	VectorSet(ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS);
 
 	ent->s.eType = ET_USEABLE;
 	ent->s.modelindex = bg_itemlist[itemIndex].giTag;	// this'll be used in CG_Useable()
@@ -930,12 +948,12 @@ qboolean FinishSpawningDetpack( gentity_t *ent, int itemIndex )
 	ent->use = Use_Item;
 
 	// drop to floor
-	VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096 );
-	memset(&tr,0, sizeof(trace_t));
-	trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
-	if ( tr.startsolid )
+	VectorSet(dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 4096);
+	memset(&tr, 0, sizeof(trace_t));
+	trap_Trace(&tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID);
+	if (tr.startsolid)
 	{
-		G_FreeEntity( ent );
+		G_FreeEntity(ent);
 		return qfalse;
 	}
 
@@ -943,15 +961,15 @@ qboolean FinishSpawningDetpack( gentity_t *ent, int itemIndex )
 	ent->physicsObject = qtrue;
 	ent->s.groundEntityNum = tr.entityNum;
 
-	G_SetOrigin( ent, tr.endpos );
+	G_SetOrigin(ent, tr.endpos);
 
 	ent->s.eFlags &= ~EF_NODRAW;
 	ent->r.svFlags &= ~SVF_NOCLIENT;
 
-	trap_LinkEntity (ent);
-	
+	trap_LinkEntity(ent);
+
 	ent->noise_index = G_SoundIndex("sound/weapons/detpacklatch.wav");
-	G_AddEvent( ent, EV_GENERAL_SOUND, ent->noise_index );
+	G_AddEvent(ent, EV_GENERAL_SOUND, ent->noise_index);
 	return qtrue;
 }
 
@@ -964,7 +982,7 @@ Traces down to find where an item should rest, instead of letting them
 free fall from their spawn points
 ================
 */
-qboolean FinishSpawningDecoy( gentity_t *ent, int itemIndex )
+qboolean FinishSpawningDecoy(gentity_t *ent, int itemIndex)
 {
 	trace_t		tr;
 	vec3_t		dest;
@@ -975,19 +993,19 @@ qboolean FinishSpawningDecoy( gentity_t *ent, int itemIndex )
 	ent->use = Use_Item;
 
 	// drop to floor
-	VectorSet( dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 1 ); //4096
-	trap_Trace( &tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
+	VectorSet(dest, ent->s.origin[0], ent->s.origin[1], ent->s.origin[2] - 1); //4096
+	trap_Trace(&tr, ent->s.origin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID);
 
-	if ( tr.startsolid )
+	if (tr.startsolid)
 	{	// If stuck in a solid, give up and go home
-		G_FreeEntity( ent );
+		G_FreeEntity(ent);
 		return qfalse;
 	}
 
-	G_SetOrigin( ent, tr.endpos );
+	G_SetOrigin(ent, tr.endpos);
 
 	// allow to ride movers
-	if ( tr.contents & CONTENTS_SOLID ) { //TiM - only if u spawn them ON the elevator.  Otherwise, leave them in the air
+	if (tr.contents & CONTENTS_SOLID) { //TiM - only if u spawn them ON the elevator.  Otherwise, leave them in the air
 		ent->physicsObject = qtrue;
 		ent->s.pos.trType = TR_GRAVITY;//have to do this because it thinks it's an ET_PLAYER
 		ent->s.groundEntityNum = tr.entityNum;
@@ -997,7 +1015,7 @@ qboolean FinishSpawningDecoy( gentity_t *ent, int itemIndex )
 	ent->s.eFlags &= ~EF_NODRAW;
 	ent->r.svFlags &= ~SVF_NOCLIENT;
 
-	trap_LinkEntity (ent);
+	trap_LinkEntity(ent);
 	return qtrue;
 }
 
@@ -1006,60 +1024,61 @@ qboolean FinishSpawningDecoy( gentity_t *ent, int itemIndex )
 
 qboolean	itemRegistered[MAX_ITEMS];
 
-void ClearRegisteredItems( void ) {
-	memset( itemRegistered, 0, sizeof( itemRegistered ) );
+void ClearRegisteredItems(void) {
+	memset(itemRegistered, 0, sizeof(itemRegistered));
 	// players always start with the base weapon
-	RegisterItem( BG_FindItemForWeapon( WP_5 ) );
-	RegisterItem( BG_FindItemForWeapon( WP_6 ) );	//this is for the podium at the end, make sure we have the model
+	RegisterItem(BG_FindItemForWeapon(WP_5));
+	RegisterItem(BG_FindItemForWeapon(WP_6));	//this is for the podium at the end, make sure we have the model
 
-	RegisterItem( BG_FindItemForWeapon( WP_1 ) );
-	RegisterItem( BG_FindItemForWeapon( WP_10 ) );
-	RegisterItem( BG_FindItemForWeapon( WP_13 ) );
-	RegisterItem( BG_FindItemForWeapon( WP_12 ) );
-	RegisterItem( BG_FindItemForWeapon( WP_14 ) );
-	RegisterItem( BG_FindItemForWeapon( WP_11 ) );
-	RegisterItem( BG_FindItemForWeapon( WP_2 ) );
+	RegisterItem(BG_FindItemForWeapon(WP_1));
+	RegisterItem(BG_FindItemForWeapon(WP_10));
+	RegisterItem(BG_FindItemForWeapon(WP_13));
+	RegisterItem(BG_FindItemForWeapon(WP_12));
+	RegisterItem(BG_FindItemForWeapon(WP_14));
+	RegisterItem(BG_FindItemForWeapon(WP_11));
+	RegisterItem(BG_FindItemForWeapon(WP_2));
 
-	RegisterItem( BG_FindItemForWeapon( WP_3 ) );
-	RegisterItem( BG_FindItemForWeapon( WP_15 ) );
-	RegisterItem( BG_FindItemForWeapon( WP_7 ) );
+	RegisterItem(BG_FindItemForWeapon(WP_3));
+	RegisterItem(BG_FindItemForWeapon(WP_15));
+	RegisterItem(BG_FindItemForWeapon(WP_7));
 }
 
-void RegisterItem( gitem_t *item  ) {
-	if ( !item ) {
-		G_Error( "RegisterItem: NULL" );
+void RegisterItem(gitem_t *item) {
+	if (!item) {
+		G_Error("RegisterItem: NULL");
 		//RPG-X
-		Com_Printf( "Missing Item In RegisterItem\n" );
+		Com_Printf("Missing Item In RegisterItem\n");
 	}
-	itemRegistered[ item - bg_itemlist ] = qtrue;
+	itemRegistered[item - bg_itemlist] = qtrue;
 }
 
-void SaveRegisteredItems( void ) {
-	char	string[MAX_ITEMS+1];
+void SaveRegisteredItems(void) {
+	char	string[MAX_ITEMS + 1];
 	int		i;
 	int		count;
 
 	count = 0;
-	for ( i = 0 ; i < bg_numItems ; i++ ) {
-		if ( itemRegistered[i] ) {
+	for (i = 0; i < bg_numItems; i++) {
+		if (itemRegistered[i]) {
 			count++;
 			string[i] = '1';
-		} else {
+		}
+		else {
 			string[i] = '0';
 		}
 	}
-	string[ bg_numItems ] = 0;
+	string[bg_numItems] = 0;
 
-	G_Printf( "%i items registered\n", count );
+	G_Printf("%i items registered\n", count);
 	trap_SetConfigstring(CS_ITEMS, string);
 }
 
 
-qboolean G_ItemSuppressed( int itemType, int itemTag )
+qboolean G_ItemSuppressed(int itemType, int itemTag)
 {
-	if ( rpg_rpg.integer != 0 )
+	if (rpg_rpg.integer != 0)
 	{
-		switch( itemType )
+		switch (itemType)
 		{
 		case IT_HEALTH:
 		case IT_ARMOR:
@@ -1074,34 +1093,34 @@ qboolean G_ItemSuppressed( int itemType, int itemTag )
 	return qfalse;
 }
 
-qboolean G_ItemClassnameSuppressed( char *itemname )
+qboolean G_ItemClassnameSuppressed(char *itemname)
 {
 	gitem_t *item = NULL;
 	int		itemType = 0;
 	int		itemTag = 0;
 
-	item = BG_FindItemWithClassname( itemname );
+	item = BG_FindItemWithClassname(itemname);
 
-	if ( !item )
+	if (!item)
 	{
 		return qfalse;
 	}
 	itemType = item->giType;
 	itemTag = item->giTag;
 
-	return G_ItemSuppressed( itemType, itemTag );
+	return G_ItemSuppressed(itemType, itemTag);
 }
 
-void G_SpawnItem (gentity_t *ent, gitem_t *item) {
-	if ( G_ItemSuppressed( item->giType, item->giTag ) )
+void G_SpawnItem(gentity_t *ent, gitem_t *item) {
+	if (G_ItemSuppressed(item->giType, item->giTag))
 	{
 		return;
 	}
 
-	G_SpawnFloat( "random", "0", &ent->random );
-	G_SpawnFloat( "wait", "0", &ent->wait );
+	G_SpawnFloat("random", "0", &ent->random);
+	G_SpawnFloat("wait", "0", &ent->wait);
 
-	RegisterItem( item );
+	RegisterItem(item);
 	ent->item = item;
 	// some movers spawn on the second frame, so delay item
 	// spawns until the third frame so they can ride trains
@@ -1110,8 +1129,8 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 
 	ent->physicsBounce = 0.50;		// items are bouncy
 
-	if ( item->giType == IT_POWERUP ) {
-		G_SoundIndex( "sound/items/poweruprespawn.wav" );//cgs.media.poweruprespawn
+	if (item->giType == IT_POWERUP) {
+		G_SoundIndex("sound/items/poweruprespawn.wav");//cgs.media.poweruprespawn
 	}
 }
 
@@ -1122,88 +1141,89 @@ G_BounceItem
 
 ================
 */
-void G_BounceItem( gentity_t *ent, trace_t *trace ) {
+void G_BounceItem(gentity_t *ent, trace_t *trace) {
 	vec3_t	velocity;
 	float	dot;
 	int		hitTime;
 
 	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
-	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
-	dot = DotProduct( velocity, trace->plane.normal );
-	VectorMA( velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta );
+	hitTime = level.previousTime + (level.time - level.previousTime) * trace->fraction;
+	BG_EvaluateTrajectoryDelta(&ent->s.pos, hitTime, velocity);
+	dot = DotProduct(velocity, trace->plane.normal);
+	VectorMA(velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta);
 
 	// cut the velocity to keep from bouncing forever
-	VectorScale( ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta );
+	VectorScale(ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta);
 
 	// check for stop
-	if ( trace->plane.normal[2] > 0 && ent->s.pos.trDelta[2] < 40 ) {
+	if (trace->plane.normal[2] > 0 && ent->s.pos.trDelta[2] < 40) {
 		trace->endpos[2] += 1.0;	// make sure it is off ground
-		SnapVector( trace->endpos );
-		G_SetOrigin( ent, trace->endpos );
+		SnapVector(trace->endpos);
+		G_SetOrigin(ent, trace->endpos);
 		ent->s.groundEntityNum = trace->entityNum;
 		return;
 	}
 
-	VectorAdd( ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
-	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
+	VectorAdd(ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
+	VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);
 	ent->s.pos.trTime = level.time;
 }
 
-void G_RunItem( gentity_t *ent ) {
+void G_RunItem(gentity_t *ent) {
 	vec3_t		origin;
 	trace_t		tr;
 	int			contents;
 	int			mask;
 
 	// if groundentity has been set to -1, it may have been pushed off an edge
-	if ( ent->s.groundEntityNum == -1 ) {
-		if ( ent->s.pos.trType != TR_GRAVITY ) {
+	if (ent->s.groundEntityNum == -1) {
+		if (ent->s.pos.trType != TR_GRAVITY) {
 			ent->s.pos.trType = TR_GRAVITY;
 			ent->s.pos.trTime = level.time;
 		}
 	}
 
-	if ( ent->s.pos.trType == TR_STATIONARY ) {
+	if (ent->s.pos.trType == TR_STATIONARY) {
 		// check think function
-		G_RunThink( ent );
+		G_RunThink(ent);
 		return;
 	}
 
 	// get current position
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
+	BG_EvaluateTrajectory(&ent->s.pos, level.time, origin);
 
 	// trace a line from the previous position to the current position
-	if ( ent->clipmask ) {
+	if (ent->clipmask) {
 		mask = ent->clipmask;
-	} else {
+	}
+	else {
 		mask = MASK_PLAYERSOLID & ~CONTENTS_BODY;//MASK_SOLID;
 	}
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, 
-		ent->r.ownerNum, mask );
+	trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
+		ent->r.ownerNum, mask);
 
-	VectorCopy( tr.endpos, ent->r.currentOrigin );
+	VectorCopy(tr.endpos, ent->r.currentOrigin);
 
-	if ( tr.startsolid ) {
+	if (tr.startsolid) {
 		tr.fraction = 0;
 	}
 
-	trap_LinkEntity( ent );	// FIXME: avoid this for stationary?
+	trap_LinkEntity(ent);	// FIXME: avoid this for stationary?
 
 	// check think function
-	G_RunThink( ent );
+	G_RunThink(ent);
 
-	if ( tr.fraction == 1 ) {
+	if (tr.fraction == 1) {
 		return;
 	}
 
 	// if it is in a nodrop volume, remove it
-	contents = trap_PointContents( ent->r.currentOrigin, -1 );
-	if ( contents & CONTENTS_NODROP ) {
-		G_FreeEntity( ent );
+	contents = trap_PointContents(ent->r.currentOrigin, -1);
+	if (contents & CONTENTS_NODROP) {
+		G_FreeEntity(ent);
 		return;
 	}
 
-	G_BounceItem( ent, &tr );
+	G_BounceItem(ent, &tr);
 }
 
