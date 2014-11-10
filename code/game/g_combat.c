@@ -26,8 +26,6 @@ void G_Combat_GibEntity(gentity_t* self, int32_t killer) {
 	self->r.contents = 0;
 }
 
-#define	BORG_ADAPT_NUM_HITS 10
-
 /**
  * \brief Checks if borg have adapted to a specified damage type.
  * \param targ The target.
