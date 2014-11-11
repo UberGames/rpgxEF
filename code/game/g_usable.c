@@ -5,19 +5,21 @@
 #include "g_logger.h"
 #include "g_syscalls.h"
 
-#define USABLE_START_OFF		1
-#define USABLE_AUTOANIM			2
-#define USABLE_ALWAYS_ON		8
-#define USABLE_NOBLOCKCHECK		16
-#define USABLE_ADMIN_ONLY		256
-#define USABLE_NO_ACTIVATOR		512
-#define USABLE_NO_AREAPORTAL	1024
-#define USABLE_DEACTIVATED		2048
+enum g_usableSpawnflags_e {
+	USABLE_START_OFF = 1,
+	USABLE_AUTOANIM = 2,
+	USABLE_ALWAYS_ON = 8,
+	USABLE_NOBLOCKCHECK = 16,
+	USABLE_ADMIN_ONLY = 256,
+	USABLE_NO_ACTIVATOR = 512,
+	USABLE_NO_AREAPORTAL = 1024,
+	USABLE_DEACTIVATED = 2048
+};
 
-extern void InitMover( gentity_t *ent ); // TODO: add g_mover.h once it is ready
-extern gentity_t *G_TestEntityPosition( gentity_t *ent ); // TODO: add g_mover.h once it is ready
+extern void InitMover(gentity_t *ent); // TODO: add g_mover.h once it is ready
+extern gentity_t *G_TestEntityPosition(gentity_t *ent); // TODO: add g_mover.h once it is ready
 
-void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator);
+void func_usable_use(gentity_t* self, gentity_t* other, gentity_t* activator);
 
 /**
  * \brief Try to get solid again.
@@ -27,7 +29,7 @@ void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator);
  *
  * @param self the entity itself
  */
-void func_wait_return_solid( gentity_t* self )
+void func_wait_return_solid(gentity_t* self)
 {
 	G_LogFuncBegin();
 
@@ -42,10 +44,10 @@ void func_wait_return_solid( gentity_t* self )
 	self->clipmask = CONTENTS_BODY;
 	if ((self->spawnflags & USABLE_NOBLOCKCHECK) == 0 || G_TestEntityPosition(self) == NULL)
 	{
-		trap_SetBrushModel( self, self->model );
-		InitMover( self );
-		VectorCopy( self->s.origin, self->s.pos.trBase );
-		VectorCopy( self->s.origin, self->r.currentOrigin );
+		trap_SetBrushModel(self, self->model);
+		InitMover(self);
+		VectorCopy(self->s.origin, self->s.pos.trBase);
+		VectorCopy(self->s.origin, self->r.currentOrigin);
 		self->r.svFlags &= ~SVF_NOCLIENT;
 		self->s.eFlags &= ~EF_NODRAW;
 		self->use = func_usable_use;
@@ -53,7 +55,7 @@ void func_wait_return_solid( gentity_t* self )
 
 		if ((self->spawnflags & USABLE_START_OFF) == 0 && (self->spawnflags & USABLE_NO_AREAPORTAL) == 0)
 		{/* START_OFF doesn't effect area portals */
-			trap_AdjustAreaPortalState( self, qfalse );
+			trap_AdjustAreaPortalState(self, qfalse);
 		}
 	}
 	else
@@ -73,7 +75,7 @@ void func_wait_return_solid( gentity_t* self )
  *
  * @param self the entity itself
  */
-void func_usable_think( gentity_t* self )
+void func_usable_think(gentity_t* self)
 {
 	G_LogFuncBegin();
 
@@ -103,7 +105,7 @@ void func_usable_think( gentity_t* self )
  * @param another entity
  * @param activator the activating entity
  */
-void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator)
+void func_usable_use(gentity_t* self, gentity_t* other, gentity_t* activator)
 {
 	G_LogFuncBegin();
 
@@ -116,7 +118,7 @@ void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator)
 
 	/* Toggle on and off */
 	/* Remap shader */
-	if(self->targetShaderName != NULL && self->targetShaderNewName != NULL) {
+	if (self->targetShaderName != NULL && self->targetShaderNewName != NULL) {
 		double f = level.time * 0.001;
 		AddRemap(self->targetShaderName, self->targetShaderNewName, f);
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
@@ -147,28 +149,31 @@ void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator)
 		/*also remove ability to call any use func at all!*/
 		self->use = NULL; /*NULL*/
 
-		if(self->target != NULL && self->target[0] != 0)
+		if (self->target != NULL && self->target[0] != 0)
 		{
 			if ((self->spawnflags & USABLE_NO_ACTIVATOR) != 0) {
 				G_UseTargets(self, self);
-			} else {
+			}
+			else {
 				G_UseTargets(self, activator);
 			}
-		} 
-		
-		if ( self->wait > 0.0 )
+		}
+
+		if (self->wait > 0.0)
 		{
 			self->think = func_usable_think;
-			self->nextthink = level.time + ( self->wait * 1000 );
+			self->nextthink = level.time + (self->wait * 1000);
 		}
 
 		G_LogFuncEnd();
 		return;
-	} else if ( self->count == 0 ) {
+	}
+	else if (self->count == 0) {
 		/*become solid again*/
 		self->count = 1;
-		func_wait_return_solid( self );
-	} else {
+		func_wait_return_solid(self);
+	}
+	else {
 		self->s.solid = 0;
 		self->r.contents = 0;
 		self->clipmask = 0;
@@ -176,10 +181,11 @@ void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator)
 		self->s.eFlags |= EF_NODRAW;
 		self->count = 0;
 
-		if(self->target != NULL && self->target[0] != 0) {
+		if (self->target != NULL && self->target[0] != 0) {
 			if ((self->spawnflags & 512) != 0) {
 				G_UseTargets(self, self);
-			} else {
+			}
+			else {
 				G_UseTargets(self, activator);
 			}
 		}
@@ -189,7 +195,7 @@ void func_usable_use (gentity_t* self, gentity_t* other, gentity_t* activator)
 
 		if ((self->spawnflags & USABLE_START_OFF) == 0 && (self->spawnflags & USABLE_NO_AREAPORTAL) == 0) {
 			/* START_OFF doesn't effect area portals */
-			trap_AdjustAreaPortalState( self, qtrue );
+			trap_AdjustAreaPortalState(self, qtrue);
 		}
 	}
 
@@ -216,7 +222,7 @@ void func_usable_pain(gentity_t* self, gentity_t* attacker, int damage)
 		return;
 	}
 
-	self->use( self, attacker, attacker );
+	self->use(self, attacker, attacker);
 
 	G_LogFuncEnd();
 }
@@ -244,7 +250,7 @@ void func_usable_die(gentity_t* self, gentity_t* inflictor, gentity_t* attacker,
 	}
 
 	self->takedamage = qfalse;
-	self->use( self, inflictor, attacker );
+	self->use(self, inflictor, attacker);
 
 	G_LogFuncEnd();
 }
@@ -311,26 +317,26 @@ For VFX-usables these keys might be interesting:
 Sounds for consoles:
 One of the advantages with luaUse-functions is that you can play sounds on the usable you're using this comes in very handy if you'd like to for example play a sound on the turbolift-usable:
 
-	function turbocontrol(ent, other, activator) --set luaUse to turbocontrol for this to trigger
-		if ent.GetCount(entity.Find("info_turbolift")) == 1 then --for a trubolift in particular you need an external information provider as lua can't deal with bit-flags. In this case turbolift would be offline.
-		    sound.PlaySound(ent, "sound/movers/switches/voyneg.mp3", 0);
-		    game.MessagePrint(ent.GetNumber(activator), "=C= Unable to comply: The Turbolift is offline.");
-		else
-			sound.PlaySound(ent, "sound/voice/computer/tour/trblftmenu.mp3", 0);
-		end
-	end
+function turbocontrol(ent, other, activator) --set luaUse to turbocontrol for this to trigger
+if ent.GetCount(entity.Find("info_turbolift")) == 1 then --for a trubolift in particular you need an external information provider as lua can't deal with bit-flags. In this case turbolift would be offline.
+sound.PlaySound(ent, "sound/movers/switches/voyneg.mp3", 0);
+game.MessagePrint(ent.GetNumber(activator), "=C= Unable to comply: The Turbolift is offline.");
+else
+sound.PlaySound(ent, "sound/voice/computer/tour/trblftmenu.mp3", 0);
+end
+end
 
 Also if you have a (morer or less) generic console that you want to fire generic console sounds off of you can extend this script for any number of sounds of which one will be picked randomly:
 
-	function consolesounds(ent, other, activator)
-		i = qmath.irandom(1, <insert number of sounds here>);
-		if i == 1 then
-			sound.PlaySound(ent, <insert soundpath here>, 0);
-		end
-		if i == n then
-			sound.PlaySound(ent, <insert soundpath here>, 0);
-		end
-	end
+function consolesounds(ent, other, activator)
+i = qmath.irandom(1, <insert number of sounds here>);
+if i == 1 then
+sound.PlaySound(ent, <insert soundpath here>, 0);
+end
+if i == n then
+sound.PlaySound(ent, <insert soundpath here>, 0);
+end
+end
 */
 
 /**
@@ -374,8 +380,8 @@ void SP_func_usable(gentity_t* self)
 
 	/*
 	if ((self->spawnflags & 4) != 0) {
-		//FIXME: need to be able to do change to something when it's done?  Or not be usable until it's done?
-		self->s.eFlags |= EF_ANIM_ONCE;
+	//FIXME: need to be able to do change to something when it's done?  Or not be usable until it's done?
+	self->s.eFlags |= EF_ANIM_ONCE;
 	}
 	*/
 
@@ -460,7 +466,8 @@ void SP_func_usable(gentity_t* self)
 				VectorCopy(self->r.mins, self->s.origin2); /*mins dimension*/
 				VectorCopy(self->r.maxs, self->s.angles2); /*maxs*/
 			}
-		} else {
+		}
+		else {
 			/*
 			 * TiM: Humm... hopefully in my infinite hackiness, this won't screw anything up lol.
 			 * Apparently this is the cause of Atlantis dying. The amount of scannable ents is making too
@@ -483,7 +490,7 @@ void SP_func_usable(gentity_t* self)
 		self->flags ^= FL_LOCKED;
 	}
 
-	trap_LinkEntity (self);
+	trap_LinkEntity(self);
 
 	level.numBrushEnts++;
 
@@ -497,7 +504,7 @@ void SP_func_usable(gentity_t* self)
 *	\return sucessfully loaded?
 *	\author Ubergames - TiM
 */
-qboolean G_Usable_SetupUsablesStrings( void )
+qboolean G_Usable_SetupUsablesStrings(void)
 {
 	char*			serverInfo = NULL;
 	char			fileRoute[MAX_QPATH];
@@ -515,35 +522,35 @@ qboolean G_Usable_SetupUsablesStrings( void )
 	level.hasEntScannableFile = qfalse;
 
 	serverInfo = (char *)malloc(MAX_TOKEN_CHARS * sizeof(char));
-	if(serverInfo == NULL) {
+	if (serverInfo == NULL) {
 		G_LocLogger(LL_ERROR, "could not allocate %d byte\n", MAX_TOKEN_CHARS);
 		G_LogFuncEnd();
 		return qfalse;
-	}	
+	}
 
 	/* get the map name out of the server data */
-	trap_GetServerinfo( serverInfo, MAX_TOKEN_CHARS * sizeof(char) );
+	trap_GetServerinfo(serverInfo, MAX_TOKEN_CHARS * sizeof(char));
 
 	/* setup the file route */
-	Com_sprintf( fileRoute, sizeof( fileRoute ), "maps/%s.usables", Info_ValueForKey( serverInfo, "mapname" ) );
+	Com_sprintf(fileRoute, sizeof(fileRoute), "maps/%s.usables", Info_ValueForKey(serverInfo, "mapname"));
 
-	file_len = trap_FS_FOpenFile( fileRoute, &f, FS_READ );
+	file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
 	if (serverInfo != NULL) {
 		free(serverInfo);
 	}
 
 	/* It's assumed most maps won't have this feature, so just exit 'gracefully' */
-	if ( file_len<=1 )
+	if (file_len <= 1)
 	{
-		trap_FS_FCloseFile( f );
+		trap_FS_FCloseFile(f);
 		/* G_Printf( S_COLOR_YELLOW "WARNING: No file named %s was found.\n", fileRoute ); */
 		G_LogFuncEnd();
 		return qfalse;
 	}
 
 	buffer = (char *)malloc(32000 * sizeof(char));
-	if(buffer == NULL) {
+	if (buffer == NULL) {
 		trap_FS_FCloseFile(f);
 		G_LocLogger(LL_ERROR, "Was not able to allocate 32000 byte\n");
 		G_LogFuncEnd();
@@ -551,85 +558,86 @@ qboolean G_Usable_SetupUsablesStrings( void )
 	}
 
 	/* fill the buffer with the file data */
-	trap_FS_Read( buffer, file_len, f );
+	trap_FS_Read(buffer, file_len, f);
 	buffer[file_len] = '0';
 
-	trap_FS_FCloseFile( f );
-	
-	if ( buffer == NULL || buffer[0] == 0 )	{
-		G_LocLogger(LL_ERROR, "ERROR: Attempted to load %s, but no data was inside!\n", fileRoute );
+	trap_FS_FCloseFile(f);
+
+	if (buffer == NULL || buffer[0] == 0)	{
+		G_LocLogger(LL_ERROR, "ERROR: Attempted to load %s, but no data was inside!\n", fileRoute);
 		free(buffer);
 		G_LogFuncEnd();
 		return qfalse;
 	}
 
-	G_Logger(LL_INFO, "Usables file %s located. Proceeding to load scan data.\n", fileRoute );
+	G_Logger(LL_INFO, "Usables file %s located. Proceeding to load scan data.\n", fileRoute);
 
 	COM_BeginParseSession();
 	textPtr = buffer;
 
 	i = 0;	/* used for the main arrays indices */
 
-	while( 1 ) {
-		token = COM_Parse( &textPtr );
+	while (1) {
+		token = COM_Parse(&textPtr);
 		if (token == NULL || token[0] == 0) {
 			break;
 		}
 
-		if ( Q_strncmp( token, "UsableDescriptions", 18 ) == 0 ) {
-			token = COM_Parse( &textPtr );
-			if ( Q_strncmp( token, "{", 1 ) != 0 ) {
-				G_LocLogger(LL_WARN, "UsableDescriptions had no opening brace ( { )!\n" );
+		if (Q_strncmp(token, "UsableDescriptions", 18) == 0) {
+			token = COM_Parse(&textPtr);
+			if (Q_strncmp(token, "{", 1) != 0) {
+				G_LocLogger(LL_WARN, "UsableDescriptions had no opening brace ( { )!\n");
 				continue;
 			}
 
 			level.hasScannableFile = qtrue;
 
-			token = COM_Parse( &textPtr );
+			token = COM_Parse(&textPtr);
 
 			/* expected format is 'id' <space> 'string' */
-			while ( Q_strncmp( token, "}", 1 ) != 0 ) {
+			while (Q_strncmp(token, "}", 1) != 0) {
 				if (token == NULL || token[0] == 0) {
 					break;
 				}
 
-				if ( Q_strncmp( token, "UsableEntities", 14 ) == 0 ) {
-					token = COM_Parse( &textPtr );
-					if ( Q_strncmp( token, "{", 1 ) ) {
-						G_LocLogger(LL_WARN, "UsableEntities had no opening brace ( { )!\n" );
+				if (Q_strncmp(token, "UsableEntities", 14) == 0) {
+					token = COM_Parse(&textPtr);
+					if (Q_strncmp(token, "{", 1)) {
+						G_LocLogger(LL_WARN, "UsableEntities had no opening brace ( { )!\n");
 						continue;
 					}
 
 					level.hasEntScannableFile = qtrue;
 
-					token = COM_Parse( &textPtr );
+					token = COM_Parse(&textPtr);
 
 					j = 0;
-					while( Q_strncmp( token, "}", 1 ) != 0 ) {
+					while (Q_strncmp(token, "}", 1) != 0) {
 						if (token == NULL || token[0] == 0) {
 							break;
 						}
 
-						if ( token[0] != 'e' ) {
-							SkipRestOfLine( &textPtr );
+						if (token[0] != 'e') {
+							SkipRestOfLine(&textPtr);
 							continue;
 						}
 
 						token++; /* skip the 'e' */
 
-						level.g_entScannables[j][0] = atoi( token );
-						token = COM_ParseExt( &textPtr, qfalse );
-						level.g_entScannables[j][1] = atoi( token );
+						level.g_entScannables[j][0] = atoi(token);
+						token = COM_ParseExt(&textPtr, qfalse);
+						level.g_entScannables[j][1] = atoi(token);
 
 						/* there's no way clients are scannable in here, so just validate the entry b4 proceeding */
 						if (level.g_entScannables[j][0] > MAX_CLIENTS - 1 && level.g_entScannables[j][1] > 0) {
 							j++;
 						}
 
-						token = COM_Parse( &textPtr );
+						token = COM_Parse(&textPtr);
 					}
-				} else {
-					level.g_scannables[i] = atoi( token );
+				}
+				else {
+					level.g_scannables[i] = atoi(token);
 
 					/* ensure a valid number was passed, else ignore it */
 					if (level.g_scannables[i] > 0) {
@@ -637,9 +645,9 @@ qboolean G_Usable_SetupUsablesStrings( void )
 					}
 
 					/* we don't need the text on the server side */
-					SkipRestOfLine( &textPtr );
+					SkipRestOfLine(&textPtr);
 
-					token = COM_Parse( &textPtr );
+					token = COM_Parse(&textPtr);
 				}
 			}
 		}

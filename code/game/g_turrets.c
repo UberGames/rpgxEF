@@ -6,23 +6,23 @@
 #include "g_utils.h"
 #include "g_syscalls.h"
 
-#define	ARM_ANGLE_RANGE		60
-#define	HEAD_ANGLE_RANGE	90
-#define	TURR_FOFS		18.0f
-#define	TURR_ROFS		0.0f
-#define	TURR_UOFS		12.0f
-#define	ARM_FOFS		0.0f
-#define	ARM_ROFS		0.0f
-#define	ARM_UOFS		0.0f
-#define	FARM_FOFS		14.0f
-#define	FARM_ROFS		0.0f
-#define	FARM_UOFS		4.0f
-#define	FTURR_FOFS		0.0f
-#define	FTURR_ROFS		0.0f
-#define	FTURR_UOFS		6.0f
-#define	LARM_FOFS		2.0f
-#define	LARM_ROFS		0.0f
-#define	LARM_UOFS		-26.0f
+static const uint8_t ARM_ANGLE_RANGE = 60;
+static const uint8_t HEAD_ANGLE_RANGE = 90;
+static const double	TURR_FOFS = 18.0;
+static const double	TURR_ROFS = 0.0;
+static const double	TURR_UOFS = 12.0;
+static const double	ARM_FOFS = 0.0;
+static const double	ARM_ROFS = 0.0;
+static const double	ARM_UOFS = 0.0;
+static const double	FARM_FOFS = 14.0;
+static const double	FARM_ROFS = 0.0;
+static const double	FARM_UOFS = 4.0;
+static const double	FTURR_FOFS = 0.0;
+static const double	FTURR_ROFS = 0.0;
+static const double	FTURR_UOFS = 6.0;
+static const double	LARM_FOFS = 2.0;
+static const double	LARM_ROFS = 0.0;
+static const double	LARM_UOFS = -26.0;
 
 /**
  * @brief Turret's die function.
@@ -92,10 +92,11 @@ static void turret_die ( gentity_t* self, gentity_t* inflictor, gentity_t* attac
 	G_LogFuncEnd();
 }
 
-#define FORGE_TURRET_DAMAGE		2
-#define FORGE_TURRET_SPLASH_RAD		64
-#define FORGE_TURRET_SPLASH_DAM		4
-#define FORGE_TURRET_VELOCITY		500
+
+static const uint8_t FORGE_TURRET_DAMAGE = 2;
+static const uint8_t FORGE_TURRET_SPLASH_RAD = 64;
+static const uint8_t FORGE_TURRET_SPLASH_DAM = 4;
+static const uint16_t FORGE_TURRET_VELOCITY = 500;
 
 /**
  * @brief Fire the turret.
