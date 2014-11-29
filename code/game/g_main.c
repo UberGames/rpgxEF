@@ -1074,6 +1074,20 @@ static void G_LoadHolodeckFile(void) {
 	free(buffer);
 }
 
+/*
+File Format:
+
+ServerChangeConfig {
+	Server [
+		"1.1.1.1"
+		"Server name"
+	]
+	Server [
+		"1.1.1.2"
+		"Server name 2"
+	]
+}
+*/
 static void G_LoadServerChangeFile(void) {
 	char			fileRoute[MAX_QPATH];
 	fileHandle_t	f = 0;
