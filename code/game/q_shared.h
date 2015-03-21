@@ -570,10 +570,10 @@ void _VectorCopy( const vec3_t in, vec3_t out );
 void _VectorScale( const vec3_t in, float scale, vec3_t out );
 void _VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc );
 
-uint32_t ColorBytes3(double r, double g, double b);
-uint32_t ColorBytes4(double r, double g, double b, double a);
+uint32_t ColorBytes3(float r, float g, float b);
+uint32_t ColorBytes4(float r, float g, float b, float a);
 
-double NormalizeColor(const vec3_t in, vec3_t out);
+float NormalizeColor(const vec3_t in, vec3_t out);
 
 float RadiusFromBounds( const vec3_t mins, const vec3_t maxs );
 void ClearBounds( vec3_t mins, vec3_t maxs );
@@ -618,8 +618,8 @@ float AngleDelta ( float angle1, float angle2 );
 
 qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
 void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
-void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, double degrees);
-void RotateAroundDirection(vec3_t axis[3], double yaw);
+void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
+void RotateAroundDirection(vec3_t axis[3], float yaw);
 void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
 // perpendicular vector could be replaced by this
 

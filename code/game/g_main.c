@@ -1352,7 +1352,7 @@ static void G_LoadLocationsFile(void) {
 
 	free(serverInfo);
 
-	if (file_len == 0) {
+	if (file_len <= 0) {
 		G_LogFuncEnd();
 		return;
 	}
