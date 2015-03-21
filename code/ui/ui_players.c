@@ -377,8 +377,8 @@ static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_
 	}
 
 	// cast away const because of compiler problems
-	MatrixMultiply((double**)entity->axis, (double**)((refEntity_t *)parent)->axis, (double**)tempAxis);
-	MatrixMultiply((double**)lerped.axis, (double**)tempAxis, (double**)entity->axis);
+  MatrixMultiply((float**)entity->axis, (float**)((refEntity_t *)parent)->axis, (float**)tempAxis);
+  MatrixMultiply((float**)lerped.axis, (float**)tempAxis, (float**)entity->axis);
 	UI_LogFuncEnd();
 }
 

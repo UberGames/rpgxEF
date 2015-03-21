@@ -23,6 +23,10 @@ static const char RPGX_COMPILEDATE[] = __DATE__ " " __TIME__;
 static const char RPGX_COMPILEDBY[] = "Jenkins Buildserver";
 #define GAME_VERSION "RPG-X v" RPGX_VERSION
 
+//RPG-X: TiM - Tricorder InfoStrings
+#define MAX_TRIC_STRINGS	64
+#define	MAX_DECOYS			64 //128
+
 static const uint32_t INJURED_MODE_HEALTH = 20;	//!<For the injured mode health system.
 
 static const uint32_t DEFAULT_GRAVITY = 800;
@@ -1052,11 +1056,11 @@ ID system.
 #define SECURITY_FILE	"rpgxid.dat"
 
 typedef struct {
-	uint64_t			ID;
+	unsigned long			ID;
 	//short				padding;
-	uint64_t			hash;
+  unsigned long			hash;
 	//short				padding2;
-	uint64_t			playerID;
+  unsigned long			playerID;
 	//short				padding3;
 } rpgxSecurityFile_t;
 
