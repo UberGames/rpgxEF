@@ -1093,7 +1093,7 @@ void G_Weapon_LoadConfig(void) {
 	G_LogFuncBegin();
 
 	len = trap_FS_FOpenFile("weapon.cfg", &f, FS_READ);
-	if (len == 0) {
+	if (f == 0) {
 		G_LocLogger(LL_ERROR, "weapon.cfg not found or empty! Using defaults.\n");
 		G_Weapon_DefaultConfig();
 		G_LogFuncEnd();

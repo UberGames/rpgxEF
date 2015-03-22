@@ -52,7 +52,7 @@ qboolean LoadLuaFile(char *path, int32_t num_vm)
 	lvm_t	       *vm;
 
 	flen = trap_FS_FOpenFile(path, &f, FS_READ);
-	if(flen < 0)
+	if(f  == 0 || flen <= 0)
 	{
 		LUA_LOG("Lua: can not open file %s\n", path);
 		CG_Printf(S_COLOR_YELLOW "Lua: can not open file %s\n", path);

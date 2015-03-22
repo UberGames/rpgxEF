@@ -1486,7 +1486,7 @@ qboolean CG_LoadRanks(void) {
 
 	file_len = trap_FS_FOpenFile(fileName, &file, FS_READ);
 
-	if (file_len <= 0) {
+	if (file == 0 || file_len <= 0) {
 		return qfalse;
 	}
 
@@ -1737,7 +1737,7 @@ qboolean CG_LoadCrosshairs(void) {
 	memset(&cgs.crosshairsData, 0, sizeof(&cgs.crosshairsData));
 
 	//check to see if we got anything
-	if (file_len <= 0) {
+	if (f == 0 || file_len <= 0) {
 		Com_Printf(S_COLOR_RED "Could not find file: %s\n", fileName);
 		return qfalse;
 	}

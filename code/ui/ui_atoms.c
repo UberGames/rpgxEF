@@ -2910,7 +2910,7 @@ void UI_LanguageFilename(char *baseName, char *baseExtension, char *finalName)
 		/* Attempt to load the file */
 		trap_FS_FOpenFile(finalName, &file, FS_READ);
 
-		if (file == 0) /* This extension doesn't exist, go English. */
+		if (file <= 0) /* This extension doesn't exist, go English. */
 		{
 			Com_sprintf(finalName, MAX_QPATH, "%s.%s", baseName, baseExtension); /* the caller will give the error if this isn't there */
 		}

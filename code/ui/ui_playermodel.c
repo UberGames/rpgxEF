@@ -1231,7 +1231,7 @@ static void PlayerModel_BuildList(void)
 
 				//UI_Logger( LL_DEBUG, "File %s loaded.\n", dirptr );
 
-				if (!fileLength) {
+				if (fileLength <= 0) {
 					continue;
 				}
 				//UI_Logger( LL_DEBUG, "We have length.\n" );

@@ -884,7 +884,7 @@ static void G_LoadTimedMessages(void) {
 	G_LogFuncBegin();
 
 	len = trap_FS_FOpenFile("timedmessages.cfg", &f, FS_READ);
-	if (len == 0) {
+	if (f == 0) {
 		G_LogFuncEnd();
 		return;
 	}
@@ -969,7 +969,7 @@ static void G_LoadHolodeckFile(void) {
 
 	free(info);
 
-	if (file_len == 0) {
+	if (f == 0) {
 		return;
 	}
 
@@ -1102,7 +1102,7 @@ static void G_LoadServerChangeFile(void) {
 
 	file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
-	if (file_len == 0) {
+	if (f == 0) {
 		G_LogFuncEnd();
 		return;
 	}
@@ -1233,7 +1233,7 @@ static void G_LoadMapChangeFile(void) {
 
 	file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
-	if (file_len == 0) {
+	if (f == 0) {
 		return;
 	}
 
@@ -1352,7 +1352,7 @@ static void G_LoadLocationsFile(void) {
 
 	free(serverInfo);
 
-	if (file_len <= 0) {
+	if (f <= 0) {
 		G_LogFuncEnd();
 		return;
 	}

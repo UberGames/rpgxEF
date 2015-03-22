@@ -2135,7 +2135,7 @@ static void AdminAudio_InitFilesList(void)
 	/* First step: Parse in the config where we store all our file dirs */
 	strLen = trap_FS_FOpenFile("ext_data/audioFileRoutes.dat", &f, FS_READ);
 
-	if (!strLen) {
+	if (strLen <= 0) {
 		UI_Logger(LL_ERROR, "ext_data/audioFileRoutes.dat could not be found.\n");
 		return;
 	}

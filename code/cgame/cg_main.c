@@ -1596,7 +1596,7 @@ void CG_LoadObjectivesForMap(void)
 
 	len = trap_FS_FOpenFile( fullFileName, &f, FS_READ );
 
-	if ( len > MAX_OBJ_TEXT_LENGTH )
+	if (f == 0 || len > MAX_OBJ_TEXT_LENGTH ) // TODO split these checks
 	{
 		CG_LocLogger(LL_ERROR, "CG_LoadObjectivesForMap : %s file bigger than %d!\n", fileName, MAX_OBJ_TEXT_LENGTH );
 		CG_LogFuncEnd();
@@ -1668,6 +1668,10 @@ qboolean CG_LoadClasses( void )
 	memset( &cgs.classData, 0, sizeof( cg_classData_t ) );
 
 	file_len = trap_FS_FOpenFile( filePath, &f, FS_READ );
+
+  if (f == 0) {
+    return qfalse; // TODO logging
+  }
 
 	if ( !file_len )
 	{
@@ -1893,6 +1897,11 @@ qboolean CG_LoadUsablesStrings( void )
 	CG_LanguageFilename( mapRoute, "usables", fileRoute );
 
 	file_len = trap_FS_FOpenFile( fileRoute, &f, FS_READ );
+
+  if (f == 0) {
+    // TODO logging
+    return qfalse;
+  }
 
 	//It's assumed most maps won't have this feature, so just exit 'gracefully'
 	if ( file_len<=1 )
