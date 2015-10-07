@@ -3,7 +3,7 @@ Project page: http://rpgxEF.hennecke-online.net
    - last updated 21.01.2012
 
 This project is a modification to the icculus.org maintained quake3 engine
-and hte Star Trek - Voyager: Elite Force compability patch for it. It was
+and hte Star Trek - Voyager: Elite Force compatibility patch for it. It was
 meant as modification of the engine for RPG-X2 that increases some of the
 limits the original engine has and which caused many problems with RPG-X2.
 
