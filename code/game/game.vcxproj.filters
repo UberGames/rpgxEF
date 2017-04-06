@@ -276,9 +276,6 @@
     <ClCompile Include="sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bg_lex.yy.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="memorypool.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -292,6 +289,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="g_local.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bg_lex.flex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -547,13 +547,15 @@
     <None Include="game.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="bg_lex.lex">
-      <Filter>Source Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="g_syscalls.asm" />
     <CustomBuildStep Include="game.bat" />
     <CustomBuildStep Include="game.q3asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Flex Include="bg_lex.l">
+      <Filter>Source Files</Filter>
+    </Flex>
   </ItemGroup>
 </Project>

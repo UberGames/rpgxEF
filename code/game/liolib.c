@@ -4,6 +4,10 @@
 ** See Copyright Notice in lua.h
 */
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
 
 /*
 ** POSIX idiosyncrasy!
@@ -662,4 +666,9 @@ LUAMOD_API int luaopen_io (lua_State *L) {
   createstdfile(L, stderr, NULL, "stderr");
   return 1;
 }
+
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 

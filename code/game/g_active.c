@@ -531,7 +531,7 @@ static char *TimedMessage(void){
 	}
 
 	c = level.timedMessages->cycl_next(level.iterTimedMessages);
-	message = c->data;
+	message = static_cast<char*>(c->data);
 
 	return message;
 }
@@ -1850,7 +1850,7 @@ void G_ThrowWeapon(gentity_t *ent, char *txt)
 
 	numTotalDropped++;
 
-	item = BG_FindItemForWeapon(ps->weapon);
+	item = BG_FindItemForWeapon(weapon_t(ps->weapon));
 
 	// admins don't lose weapon when thrown
 	if (G_Client_IsAdmin(ent) == qfalse) {

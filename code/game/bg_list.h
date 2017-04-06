@@ -67,7 +67,7 @@ struct container {
 	size_t		size;		/*!< size of the data    */
 	dataType_t	type;		/*!< type of the data    */
 	char		pointer;	/*!< determin if the data is a pointer */
-} container;
+};
 
 /**
  * Type for a pointer to a container.

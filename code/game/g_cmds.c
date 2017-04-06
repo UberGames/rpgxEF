@@ -1064,7 +1064,7 @@ static void Cmd_Team_f(gentity_t* ent) {
 
 
 	// check and save if this player has already voted
-	voted = ent->client->ps.eFlags & EF_VOTED;
+	voted = qboolean(ent->client->ps.eFlags & EF_VOTED);
 
 	//if this is a manual change, not an assimilation, uninitialize the clInitStatus data
 	SetTeam(ent, s);
@@ -6651,7 +6651,7 @@ static void Cmd_getEntByTarget_f(gentity_t* ent) {
 
 	iter = entities.iterator(&entities, LIST_FRONT);
 	for (c = entities.next(iter); c != NULL; c = entities.next(iter)) {
-		t = c->data;
+		t = (gentity_t*)c->data;
 
 		if (t == NULL) {
 			continue;
@@ -7776,7 +7776,7 @@ static void Cmd_findEntitiesInRadius(gentity_t* ent) {
 
 	iter = entities.iterator(&entities, LIST_FRONT);
 	for (c = entities.next(iter); c != NULL; c = entities.next(iter)) {
-		t = c->data;
+		t = (gentity_t*)c->data;
 
 		if (t == NULL) {
 			continue;
@@ -7877,7 +7877,7 @@ void addShaderToList(list_p list, char* shader) {
 	}
 
 	for (c = list->next(i); c != NULL; c = list->next(i)) {
-		t = c->data;
+		t = (char*)c->data;
 		if (!strcmp(shader, t)) {
 			free(s);
 			return;
@@ -7952,7 +7952,7 @@ void Cmd_GeneratePrecacheFile(gentity_t* ent) {
 	}
 
 	for (c = shaders->next(iter); c != NULL; c = shaders->next(iter)) {
-		s = c->data;
+		s = (char*)c->data;
 		G_Printf("\t%s\n", s);
 		if (first) {
 			trap_FS_Write("\"", 1, f);

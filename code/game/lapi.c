@@ -4,6 +4,10 @@
 ** See Copyright Notice in lua.h
 */
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4702)
+#endif
 
 #include <stdarg.h>
 #include <string.h>
@@ -1282,3 +1286,6 @@ LUA_API void lua_upvaluejoin (lua_State *L, int fidx1, int n1,
   luaC_objbarrier(L, f1, *up2);
 }
 
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

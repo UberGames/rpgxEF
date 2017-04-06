@@ -4,6 +4,10 @@
 ** See Copyright Notice in lua.h
 */
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4244)
+#endif
 
 #include <setjmp.h>
 #include <stdlib.h>
@@ -670,4 +674,6 @@ int luaD_protectedparser (lua_State *L, ZIO *z, const char *name,
   return status;
 }
 
-
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

@@ -3044,7 +3044,7 @@ void target_selfdestruct_think(gentity_t *ent) {
 			}
 			//we may go this way once more so clear clients back.
 			client = NULL;
-			while((client = G_Find( client, FOFS( classname ), "player" ))){
+			while((client = G_Find( client, FOFS( classname ), "player" )) != nullptr){
 				client->client->nokilli = 0;
 			}
 			//let's hear it

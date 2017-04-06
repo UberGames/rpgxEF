@@ -29,6 +29,11 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
+
 
 /*
 ** LUA_PATH and LUA_CPATH are the names of the environment
@@ -722,4 +727,8 @@ LUAMOD_API int luaopen_package (lua_State *L) {
   lua_pop(L, 1);  /* pop global table */
   return 1;  /* return 'package' table */
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 

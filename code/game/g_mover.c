@@ -3541,16 +3541,15 @@ will be called when the entity is used
 
 void use_stasis_door(gentity_t *ent, gentity_t *other, gentity_t *activator)
 {
-	return;
-	if (!Q_stricmp(activator->target, ent->targetname))
-	{
-		ent->think = toggle_stasis_door;
-		ent->nextthink = level.time + 50;
-	}
-	else if (!Q_stricmp(activator->target, ent->swapname))
-	{
-		ent->nextthink = level.time + 100;
-	}
+	//if (!Q_stricmp(activator->target, ent->targetname))
+	//{
+	//	ent->think = toggle_stasis_door;
+	//	ent->nextthink = level.time + 50;
+	//}
+	//else if (!Q_stricmp(activator->target, ent->swapname))
+	//{
+	//	ent->nextthink = level.time + 100;
+	//}
 }
 /*
 -------------------------------------------

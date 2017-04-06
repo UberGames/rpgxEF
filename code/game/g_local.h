@@ -2174,7 +2174,7 @@ struct luaAlertState_s {
 	char* targets[4];
 };
 
-luaAlertState_t* luaAlertState;
+extern luaAlertState_t* luaAlertState;
 
 /* alert shaders */
 typedef struct {

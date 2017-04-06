@@ -167,3 +167,4 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+/misc/msvc10/.vs/ioq3/v15

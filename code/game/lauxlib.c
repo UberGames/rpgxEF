@@ -5,6 +5,11 @@
 */
 
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
+
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -600,7 +605,7 @@ static int skipBOM (LoadF *lf) {
   do {
     c = getc(lf->f);
     if (c == EOF || c != *(const unsigned char *)p++) return c;
-    lf->buff[lf->n++] = c;  /* to be read by the parser */
+    lf->buff[lf->n++] = (char)c;  /* to be read by the parser */
   } while (*p != '\0');
   lf->n = 0;  /* prefix matched; discard it */
   return getc(lf->f);  /* return next character */
@@ -650,7 +655,7 @@ LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
     skipcomment(&lf, &c);  /* re-read initial portion */
   }
   if (c != EOF)
-    lf.buff[lf.n++] = c;  /* 'c' is the first character of the stream */
+    lf.buff[lf.n++] = (char)c;  /* 'c' is the first character of the stream */
   status = lua_load(L, getF, &lf, lua_tostring(L, -1), mode);
   readstatus = ferror(lf.f);
   if (filename) fclose(lf.f);  /* close file (even in case of errors) */
@@ -957,3 +962,7 @@ LUALIB_API void luaL_checkversion_ (lua_State *L, lua_Number ver) {
   lua_pop(L, 1);
 }
 
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

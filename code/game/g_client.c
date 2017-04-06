@@ -757,12 +757,12 @@ static void randomSkin(const char* race, char* model, int32_t current_team, int3
 
 	memset(temp_model, 0, sizeof(temp_model));
 
-	skinsForRace = malloc(MAX_SKINS_FOR_RACE * 128 * sizeof(char));
+	skinsForRace = (char**)malloc(MAX_SKINS_FOR_RACE * 128 * sizeof(char));
 	if (skinsForRace == NULL) {
 		G_Error("Was unable to allocate %i bytes.\n", MAX_SKINS_FOR_RACE * 128 * sizeof(char));
 		return;
 	}
-	skinNamesAlreadyUsed = malloc(16 * 128 * sizeof(char));
+	skinNamesAlreadyUsed = (char**)malloc(16 * 128 * sizeof(char));
 	if (skinNamesAlreadyUsed == NULL) {
 		G_Error("Was unable to allocate %i bytes.\n", 16 * 128 * sizeof(char));
 		return;
@@ -795,7 +795,7 @@ static void randomSkin(const char* race, char* model, int32_t current_team, int3
 			// no, so look at the next one, and see if it's in the list we are constructing
 			// same team?
 			if (ent->client != NULL && ent->client->sess.sessionTeam == current_team) {
-				userinfo = malloc(MAX_INFO_STRING * sizeof(char));
+				userinfo = (char*)malloc(MAX_INFO_STRING * sizeof(char));
 				if (userinfo == NULL) {
 					G_Error("Was unable to allocate %i bytes.\n", MAX_INFO_STRING * sizeof(char));
 					return;
@@ -1314,7 +1314,7 @@ char* G_Client_Connect(int32_t clientNum, qboolean firstTime, qboolean isBot) {
 	if (isBot) {
 		ent->r.svFlags |= SVF_BOT;
 		ent->inuse = qtrue;
-		if (!G_BotConnect(clientNum, !firstTime)) {
+		if (!G_BotConnect(clientNum, qboolean(!firstTime))) {
 			return "BotConnectfailed";
 		}
 	}
@@ -2910,7 +2910,7 @@ void G_Client_TossClientItems(gentity_t* self, qboolean dis_con) {
 		angle = 45;
 		for (i = 1; i < PW_NUM_POWERUPS; i++) {
 			if (ps->powerups[i] > level.time) {
-				item = BG_FindItemForPowerup(i);
+				item = BG_FindItemForPowerup(powerup_t(i));
 				if (item == NULL) {
 					continue;
 				}

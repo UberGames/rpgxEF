@@ -35,6 +35,8 @@
 #pragma warning(disable : 4711)		// selected for automatic inline expansion
 #pragma warning(disable : 4220)		// varargs matches remaining parameters
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #endif
 
 //Ignore __attribute__ on non-gcc platforms

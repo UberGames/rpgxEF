@@ -36,6 +36,7 @@
 #include "chars.h"
 #include "inv.h"
 #include "syn.h"
+#include "q_math.h"
 
 #include "g_syscalls.h"
 
@@ -676,7 +677,7 @@ static void AI_main_BotChangeViewAngles(bot_state_t* bs, double thinktime) {
 	maxchange *= thinktime;
 	for (; i < 2; i++) {
 		//smooth slowdown view model
-		diff = abs(AngleDifference(bs->viewangles[i], bs->ideal_viewangles[i]));
+		diff = Q_fabs(AngleDifference(bs->viewangles[i], bs->ideal_viewangles[i]));
 		anglespeed = diff * factor;
 		if (anglespeed > maxchange) {
 			anglespeed = maxchange;
@@ -786,7 +787,7 @@ static void AI_main_BotInputToUserCommand(bot_input_t* bi, usercmd_t* ucmd, int3
 	//set the view independent movement
 	ucmd->forwardmove = DotProduct(forward, bi->dir) * bi->speed;
 	ucmd->rightmove = DotProduct(right, bi->dir) * bi->speed;
-	ucmd->upmove = abs(forward[2]) * bi->dir[2] * bi->speed;
+	ucmd->upmove = Q_fabs(forward[2]) * bi->dir[2] * bi->speed;
 
 	//normal keyboard movement
 	if ((bi->actionflags & ACTION_MOVEFORWARD) != 0) {
@@ -995,7 +996,7 @@ int32_t AI_main_BotAISetupClient(int32_t client, struct bot_settings_s* settings
 	int32_t errnum = 0;
 
 	if (botstates[client] == NULL) {
-		botstates[client] = G_Alloc(sizeof(bot_state_t));
+		botstates[client] = static_cast<bot_state_t*>(G_Alloc(sizeof(bot_state_t)));
 	}
 	bs = botstates[client];
 

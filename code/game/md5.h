@@ -41,10 +41,10 @@ struct MD5Context {
         unsigned char in[64];
 };
 
-extern void MD5Init(struct MD5Context *ctx);
-extern void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len);
-extern void MD5Final(struct MD5Context *Ctx, unsigned char *digest);
-extern void MD5Transform(uint32 buf[4], uint32 in[16]);
+void MD5Init(struct MD5Context *ctx);
+void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len);
+void MD5Final(struct MD5Context *Ctx, unsigned char *digest);
+void MD5Transform(uint32 buf[4], uint32 in[16]);
 
 /*
  * This is needed to make RSAREF happy on some MS-DOS compilers.

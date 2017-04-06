@@ -816,7 +816,7 @@ static void PM_ContinueLegsAnim(int anim, qboolean overrideEmote) {
 	//override to return to idle after moving in an emote
 	if ((ps->stats[EMOTES] & EMOTE_LOWER) && (!(ps->stats[EMOTES] & EMOTE_CLAMP_BODY) && !(ps->stats[EMOTES] & EMOTE_CLAMP_ALL)) && !overrideEmote) {
 		if (ps->legsTimer > 0 && (ps->stats[LEGSANIM] & ~ANIM_TOGGLEBIT) != bg_emoteList[ps->legsTimer].enumName && (ps->stats[LEGSANIM] & ~ANIM_TOGGLEBIT) != BOTH_GET_UP1) {
-			int anim2 = PM_GetAnim(ANIM_IDLE, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse);
+			int anim2 = PM_GetAnim(ANIM_IDLE, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse);
 
 			ps->stats[LEGSANIM] = ((ps->stats[LEGSANIM] & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT) | anim2;
 		}
@@ -1163,15 +1163,15 @@ static qboolean PM_CheckJump(void) {
 	PM_AddEvent(EV_JUMP);
 
 	if (pm->cmd.forwardmove >= 0) {
-		PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse)); //BOTH_JUMP
+		PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse)); //BOTH_JUMP
 		if (ps->weaponstate == WEAPON_READY)
-			PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
+			PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
 		ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 	}
 	else {
 		if (ps->weaponstate == WEAPON_READY)
-			PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue);
-		PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue)); //LEGS_JUMPB
+			PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue);
+		PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue)); //LEGS_JUMPB
 		ps->pm_flags |= PMF_BACKWARDS_JUMP;
 	}
 
@@ -1412,8 +1412,8 @@ static void PM_FlyMove(void) {
 	PM_Accelerate(wishdir, wishspeed, pm_flyaccelerate);
 
 	if (ps->weaponstate == WEAPON_READY)
-		PM_ContinueTorsoAnim(PM_GetAnim(ANIM_FLY, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
-	PM_ContinueLegsAnim(PM_GetAnim(ANIM_FLY, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue);
+		PM_ContinueTorsoAnim(PM_GetAnim(ANIM_FLY, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
+	PM_ContinueLegsAnim(PM_GetAnim(ANIM_FLY, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue);
 
 	PM_StepSlideMove(qfalse);
 }
@@ -1987,15 +1987,15 @@ static void PM_GroundTraceMissed(void) {
 		pm->trace(&trace, ps->origin, pm->mins, pm->maxs, point, ps->clientNum, pm->tracemask);
 		if (trace.fraction == 1.0 && (ps->stats[LEGSANIM] & ~ANIM_TOGGLEBIT) != BOTH_GET_UP1) {
 			if (pm->cmd.forwardmove >= 0) {
-				PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse));
+				PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse));
 				if (ps->weaponstate == WEAPON_READY)
-					PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
+					PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
 				ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 			}
 			else {
-				PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse));
+				PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse));
 				if (ps->weaponstate == WEAPON_READY)
-					PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
+					PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
 				ps->pm_flags |= PMF_BACKWARDS_JUMP;
 			}
 
@@ -2049,15 +2049,15 @@ static void PM_GroundTrace(void) {
 		}
 		// go into jump animation
 		if (pm->cmd.forwardmove >= 0) {
-			PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse));
+			PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse));
 			if (ps->weaponstate == WEAPON_READY)
-				PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
+				PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMP, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
 			ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 		}
 		else {
-			PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse));
+			PM_ForceLegsAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse));
 			if (ps->weaponstate == WEAPON_READY)
-				PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
+				PM_ForceTorsoAnim(PM_GetAnim(ANIM_JUMPB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
 			ps->pm_flags |= PMF_BACKWARDS_JUMP;
 		}
 
@@ -2386,8 +2386,8 @@ static void PM_Footsteps(void) {
 			// airborne leaves position in cycle intact, but doesn't advance
 			if (pm->waterlevel > 2) { //TiM: swimming is more hardcore now //1
 				if (ps->weaponstate == WEAPON_READY)
-					PM_ContinueTorsoAnim(PM_GetAnim(ANIM_SWIM, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
-				PM_ContinueLegsAnim(PM_GetAnim(ANIM_SWIM, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue);
+					PM_ContinueTorsoAnim(PM_GetAnim(ANIM_SWIM, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qtrue);
+				PM_ContinueLegsAnim(PM_GetAnim(ANIM_SWIM, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue);
 			}
 
 			return;
@@ -2447,10 +2447,10 @@ static void PM_Footsteps(void) {
 		bobmove = 0.5;	// ducked characters bob much faster
 		//HACK coz this damn thing screws up crouch firing anims otherwise T_T
 		if (ps->weaponstate == WEAPON_READY) {
-			PM_ContinueTorsoAnim(PM_GetAnim(ANIM_CROUCHWALK, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
+			PM_ContinueTorsoAnim(PM_GetAnim(ANIM_CROUCHWALK, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
 		}
 
-		PM_ContinueLegsAnim(PM_GetAnim(ANIM_CROUCHWALK, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue);
+		PM_ContinueLegsAnim(PM_GetAnim(ANIM_CROUCHWALK, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue);
 		// ducked characters never play footsteps
 	}
 	else if (ps->pm_flags & PMF_BACKWARDS_RUN)
@@ -2460,15 +2460,15 @@ static void PM_Footsteps(void) {
 			footstep = qtrue;
 
 			if (ps->weaponstate == WEAPON_READY)
-				PM_ContinueTorsoAnim(PM_GetAnim(ANIM_RUNB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
-			PM_ContinueLegsAnim(PM_GetAnim(ANIM_RUNB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue); //LEGS_BACK
+				PM_ContinueTorsoAnim(PM_GetAnim(ANIM_RUNB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
+			PM_ContinueLegsAnim(PM_GetAnim(ANIM_RUNB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue); //LEGS_BACK
 		}
 		else {
 			bobmove = 0.3;
 
 			if (ps->weaponstate == WEAPON_READY)
-				PM_ContinueTorsoAnim(PM_GetAnim(ANIM_WALKB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
-			PM_ContinueLegsAnim(PM_GetAnim(ANIM_WALKB, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue); //LEGS_BACK
+				PM_ContinueTorsoAnim(PM_GetAnim(ANIM_WALKB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
+			PM_ContinueLegsAnim(PM_GetAnim(ANIM_WALKB, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue); //LEGS_BACK
 		}
 
 	}
@@ -2479,16 +2479,16 @@ static void PM_Footsteps(void) {
 			footstep = qtrue;
 
 			if (ps->weaponstate == WEAPON_READY)
-				PM_ContinueTorsoAnim(PM_GetAnim(ANIM_RUN, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
-			PM_ContinueLegsAnim(PM_GetAnim(ANIM_RUN, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue); //LEGS_RUN
+				PM_ContinueTorsoAnim(PM_GetAnim(ANIM_RUN, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
+			PM_ContinueLegsAnim(PM_GetAnim(ANIM_RUN, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue); //LEGS_RUN
 
 		}
 		else {
 			bobmove = 0.3;	// walking bobs slow //0.3
 			if (ps->weaponstate == WEAPON_READY)
-				PM_ContinueTorsoAnim(PM_GetAnim(ANIM_WALK, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
+				PM_ContinueTorsoAnim(PM_GetAnim(ANIM_WALK, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
 
-			PM_ContinueLegsAnim(PM_GetAnim(ANIM_WALK, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue); //LEGS_WALK	
+			PM_ContinueLegsAnim(PM_GetAnim(ANIM_WALK, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qfalse), qtrue); //LEGS_WALK	
 		}
 	}
 
@@ -2746,7 +2746,7 @@ static void PM_Weapon(void) {
 	{
 		ps->weaponstate = WEAPON_READY;
 
-		PM_StartTorsoAnim(PM_GetAnim(ANIM_IDLE, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
+		PM_StartTorsoAnim(PM_GetAnim(ANIM_IDLE, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
 
 		return;
 	}
@@ -2789,11 +2789,11 @@ static void PM_Weapon(void) {
 			|| (ps->weapon == WP_7))
 			&& (ps->pm_flags & PMF_DUCKED))
 		{
-			PM_ForceTorsoAnim(PM_GetAnim(ANIM_CROUCH, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
+			PM_ForceTorsoAnim(PM_GetAnim(ANIM_CROUCH, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
 		}
 		else
 		{
-			PM_ContinueTorsoAnim(PM_GetAnim(ANIM_ATTACK, ps->weapon, (ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
+			PM_ContinueTorsoAnim(PM_GetAnim(ANIM_ATTACK, ps->weapon, qboolean(ps->stats[STAT_HEALTH] <= INJURED_MODE_HEALTH), qtrue), qfalse);
 		}
 
 		//Put in this scope, so holding down the trigger on these 'no-anim' weapons won't lock

@@ -652,7 +652,7 @@ static void turret_base_think (gentity_t* self)
 
 		iter = entity_list.iterator(&entity_list, LIST_FRONT);
 		for(c = entity_list.next(iter); c != NULL; c = entity_list.next(iter)) {
-			target = c->data;
+			target = (gentity_t*)c->data;
 
 			if(target == NULL) {
 				continue;

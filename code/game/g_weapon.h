@@ -3,10 +3,10 @@
 
 #include "g_local.h"
 
-vec3_t	forward;
-vec3_t	right;
-vec3_t	up;
-vec3_t	muzzle;
+extern vec3_t	forward;
+extern vec3_t	right;
+extern vec3_t	up;
+extern vec3_t	muzzle;
 
 struct weaponConfigPhaserP_s {
 	int32_t damage;

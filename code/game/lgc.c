@@ -4,6 +4,12 @@
 ** See Copyright Notice in lua.h
 */
 
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4244)
+#endif
+
 #include <string.h>
 
 #define lgc_c
@@ -1210,4 +1216,7 @@ void luaC_fullgc (lua_State *L, int isemergency) {
 
 /* }====================================================== */
 
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 

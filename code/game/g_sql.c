@@ -503,9 +503,6 @@ qboolean G_Sql_UserDB_CheckRight(int uid, int right) {
 		sqlite3_finalize(stmt);
 		return qfalse;
 	}
-
-	sqlite3_finalize(stmt);
-	return qfalse;
 }
 
 qboolean G_Sql_UserDB_AddRight(int uid, int right) {

@@ -2779,7 +2779,7 @@ static int Entity_SetMoverstate(lua_State *L) {
 		lua_pushboolean(L, qfalse);
 		return 1;
 	}
-	m = (moverState_t)luaL_checknumber(L, 2);
+	m = static_cast<moverState_t>(int32_t(luaL_checknumber(L, 2)));
 
 	lent->e->moverState = m;
 

@@ -1098,7 +1098,7 @@ int32_t G_RadiusList(vec3_t origin, double radius, list_p ignore, qboolean takeD
 		if (ignore != NULL) {
 			iter = ignore->iterator(ignore, LIST_FRONT);
 			for (c = ignore->next(iter); c != NULL; c = ignore->next(iter)) {
-				t = c->data;
+				t = (gentity_t*)c->data;
 
 				if (t == NULL) {
 					continue;
@@ -1211,7 +1211,7 @@ int32_t G_RadiusListOfTypes(list_p classnames, vec3_t origin, double radius, lis
 		if (ignore != NULL) {
 			iter = ignore->iterator(ignore, LIST_FRONT);
 			for (c = ignore->next(iter); c != NULL; c = ignore->next(iter)) {
-				t = c->data;
+				t = (gentity_t*)c->data;
 
 				if (t == NULL) {
 					continue;
@@ -1311,7 +1311,7 @@ gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, double radius, list_p
 
 	iter = entList.iterator(&entList, LIST_FRONT);
 	for (c = entList.next(iter); c != NULL; c = entList.next(iter)) {
-		t = c->data;
+		t = (gentity_t*)c->data;
 
 		if (t == NULL) {
 			continue;
@@ -1384,7 +1384,7 @@ gentity_t* G_GetNearestPlayer(vec3_t origin, double radius, list_p ignore) {
 
 	iter = entList.iterator(&entList, LIST_FRONT);
 	for (c = entList.next(iter); c != NULL; c = entList.next(iter)) {
-		t = c->data;
+		t = (gentity_t*)c->data;
 
 		if (t == NULL) {
 			continue;

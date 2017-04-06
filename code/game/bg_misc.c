@@ -92,7 +92,7 @@ gitem_t	bg_itemlist[] =
 		NULL,							/* char			*icon;*/
 		NULL,							/* char			*pickup_name; */	/* for printing on pickup */
 		0,								/* int			quantity; */		/* for ammo how much, or duration of powerup */
-		0,							/* itemType_t  	giType; */			/* IT_* flags */
+		itemType_t(0),							/* itemType_t  	giType; */			/* IT_* flags */
 		0,								/* int			giTag; */
 		"",								/* char			*precaches;	*/		/* string of all models and images this item will use */
 		""								/* char			*sounds; */			/* string of all sounds this item will use */

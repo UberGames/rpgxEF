@@ -19,6 +19,12 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4244)
+#pragma warning(disable:4996)
+#endif
+
 
 /*
 ** maximum number of captures that a pattern can do during
@@ -1016,4 +1022,8 @@ LUAMOD_API int luaopen_string (lua_State *L) {
   createmetatable(L);
   return 1;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 

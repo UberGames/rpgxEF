@@ -19,6 +19,10 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
 
 /*
 ** list of valid conversion specifiers for the 'strftime' function
@@ -321,3 +325,7 @@ LUAMOD_API int luaopen_os (lua_State *L) {
   return 1;
 }
 
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

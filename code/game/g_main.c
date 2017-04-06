@@ -20,6 +20,7 @@
 #include "g_syscalls.h"
 
 // pre declare ai functions
+luaAlertState_t* luaAlertState;
 extern int32_t AI_main_BotAIStartFrame(int32_t time);
 extern int32_t AI_main_BotAISetup(int32_t restart);
 extern int32_t AI_main_BotAIShutdown(int32_t restart);
@@ -1108,7 +1109,7 @@ static void G_LoadServerChangeFile(void) {
 	}
 
 	// TODO dynamic buffer size
-	buffer = malloc((file_len + 1) * sizeof(char));
+	buffer = (char*)malloc((file_len + 1) * sizeof(char));
 	if (buffer == NULL) {
 		G_LocLogger(LL_ERROR, "Was unable to allocate %i bytes.\n", (file_len + 1) * sizeof(char));
 		trap_FS_FCloseFile(f);
@@ -1332,7 +1333,7 @@ static void G_LoadLocationsFile(void) {
 	memset(fileRoute, 0, sizeof(fileRoute));
 	memset(mapRoute, 0, sizeof(mapRoute));
 
-	serverInfo = malloc(MAX_INFO_STRING * sizeof(char));
+	serverInfo = (char*)malloc(MAX_INFO_STRING * sizeof(char));
 	if (serverInfo == NULL) {
 		G_LocLogger(LL_ERROR, "Was unable to allocate %i bytes.\n", MAX_INFO_STRING * sizeof(char));
 		G_LogFuncEnd();

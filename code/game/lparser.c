@@ -25,6 +25,10 @@
 #include "lstring.h"
 #include "ltable.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4244)
+#endif
 
 
 /* maximum number of local variables per function (must be smaller
@@ -1635,4 +1639,8 @@ Closure *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff,
   lua_assert(dyd->actvar.n == 0 && dyd->gt.n == 0 && dyd->label.n == 0);
   return cl;  /* it's on the stack too */
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 

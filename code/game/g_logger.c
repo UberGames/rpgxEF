@@ -1,10 +1,10 @@
 #include "g_logger.h"
 
-void QDECL G_Logger (int level, char* fmt, ...) {
+void QDECL G_Logger (int log_level, char* fmt, ...) {
 	va_list argptr;
 	char	text[1024];
 
-	if(level > g_logLevel.integer) {
+	if(log_level > g_logLevel.integer) {
 		return;
 	}
 
@@ -12,7 +12,7 @@ void QDECL G_Logger (int level, char* fmt, ...) {
 	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-	switch (level)
+	switch (log_level)
 	{
 	case LL_ERROR:
 		G_Printf(S_COLOR_RED "[game][error] - %s", text);
@@ -40,11 +40,11 @@ void QDECL G_Logger (int level, char* fmt, ...) {
 	}
 }
 
-void QDECL _G_LocLogger (const char* file, int line, int level, char* fmt, ...) {
+void QDECL _G_LocLogger (const char* file, int line, int log_level, char* fmt, ...) {
 	va_list argptr;
 	char	text[1024];
 
-	if(level > g_logLevel.integer) {
+	if(log_level > g_logLevel.integer) {
 		return;
 	}
 
@@ -52,7 +52,7 @@ void QDECL _G_LocLogger (const char* file, int line, int level, char* fmt, ...) 
 	vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-	switch (level)
+	switch (log_level)
 	{
 	case LL_ERROR:
 		G_Printf(S_COLOR_RED "[game][error][%s:%d] - ", file, line);

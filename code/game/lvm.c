@@ -27,6 +27,11 @@
 #include "lvm.h"
 
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
+
 
 /* limit for table tag-method chains (to avoid loops) */
 #define MAXTAGLOOP	100
@@ -865,3 +870,7 @@ void luaV_execute (lua_State *L) {
   }
 }
 
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

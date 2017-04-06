@@ -5,7 +5,7 @@
 #define QUADRANT_RIGHT 1
 #define QUADRANT_MIDDLE 2
 qboolean BG_LineBoxIntersection(vec3_t mins, vec3_t maxs, vec3_t origin, vec3_t dir, vec_t* hit) {
-	qboolean inside;
+	qboolean inside = qfalse;
 	char quadrant[3];
 	int i;
 	int plane;

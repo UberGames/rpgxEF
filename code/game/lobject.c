@@ -23,7 +23,10 @@
 #include "lstring.h"
 #include "lvm.h"
 
-
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
 
 LUAI_DDEF const TValue luaO_nilobject_ = {NILCONSTANT};
 
@@ -285,3 +288,7 @@ void luaO_chunkid (char *out, const char *source, size_t bufflen) {
   }
 }
 
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

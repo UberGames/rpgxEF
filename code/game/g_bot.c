@@ -88,7 +88,7 @@ int32_t G_ParseInfos(char* buf, int32_t max, char* infos[]) {
 			Info_SetValueForKey(info, key, token);
 		}
 		//NOTE: extra space for arena number
-		infos[count] = G_Alloc(strlen(info) + strlen("\\num\\") + strlen(va("%d", MAX_ARENAS)) + 1);
+		infos[count] = (char*)G_Alloc(strlen(info) + strlen("\\num\\") + strlen(va("%d", MAX_ARENAS)) + 1);
 		if (infos[count] != NULL) {
 			strcpy(infos[count], info);
 			count++;
@@ -722,7 +722,7 @@ static void G_AddBot(const char* name, double skill, const char* team, const cha
 
 		if (bot->client->sess.sessionTeam == TEAM_SPECTATOR)
 		{
-			bot->client->sess.sessionTeam = preTeam;
+			bot->client->sess.sessionTeam = team_t(preTeam);
 		}
 
 		if (bot->client->sess.sessionTeam == TEAM_RED)

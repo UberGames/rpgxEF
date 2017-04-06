@@ -220,7 +220,7 @@ static int32_t G_Combat_LocationDamage(vec3_t point, gentity_t* targ, gentity_t*
 	}
 
 	// Check the location ignoring the rotation info
-	switch ((targ->client->lasthurt_location & ~(LOCATION_BACK | LOCATION_LEFT | LOCATION_RIGHT | LOCATION_FRONT)) != 0) {
+	switch (targ->client->lasthurt_location & ~(LOCATION_BACK | LOCATION_LEFT | LOCATION_RIGHT | LOCATION_FRONT)) {
 		case LOCATION_HEAD:
 			take *= 1.8;
 			break;

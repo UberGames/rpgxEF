@@ -37,7 +37,7 @@ static const double PIERCED_ARMOR_PROTECTION = 0.50; //!< trek: shields only sto
 
 static const uint32_t RANK_TIED_FLAG = 0x4000;
 
-static const uint32_t ITEM_RADIUS = 15;	//!< item sizes are needed for client side pickup detection
+static const int32_t ITEM_RADIUS = 15;	//!< item sizes are needed for client side pickup detection
 
 static const uint32_t LIGHTNING_RANGE = 768;
 

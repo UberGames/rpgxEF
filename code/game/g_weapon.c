@@ -15,6 +15,11 @@
 #include "bg_lex.h"
 #include "g_syscalls.h"
 
+vec3_t	forward;
+vec3_t	right;
+vec3_t	up;
+vec3_t	muzzle;
+
 weaponConfig_t weaponConfig;
 
 static void G_Weapon_DefaultConfig(void) {
@@ -1284,7 +1289,7 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 		iter = validEnts.iterator(&validEnts, LIST_FRONT);
 
 		for (cont = validEnts.next(iter); cont != NULL; cont = validEnts.next(iter)) {
-			e = cont->data;
+			e = (gentity_t*)cont->data;
 
 			// TODO: fix problems with small distance
 			if ((e->spawnflags & 512) != 0) {
