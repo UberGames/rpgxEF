@@ -84,6 +84,7 @@
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <CompileAs>CompileAsCpp</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -128,6 +129,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>CompileAsCpp</CompileAs>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
