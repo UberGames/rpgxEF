@@ -18,7 +18,7 @@
     insures we work on new platforms regardless of their byte
     order.  */
 
-#include "q_shared.h"
+#include "../base_game/q_shared.h"
 
 #define HIGHFIRST
 

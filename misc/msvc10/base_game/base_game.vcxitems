@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{ddf6f925-edc6-46a8-85b4-b612bbd39d4b}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_collision.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_list.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_misc.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_oums.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_pmove.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_slidemove.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\q_math.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\q_shared.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_collision.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_list.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_local.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_misc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_oums.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\bg_public.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\q_math.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\q_shared.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\base_game\surfaceflags.h" />
+  </ItemGroup>
+</Project>

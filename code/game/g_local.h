@@ -4,10 +4,10 @@
 #ifndef _G_LOCAL_H_
 #define _G_LOCAL_H_
 
-#include "q_shared.h"
-#include "bg_public.h"
+#include "../base_game/q_shared.h"
+#include "../base_game/bg_public.h"
 #include "g_public.h"
-#include "bg_list.h"
+#include "../base_game/bg_list.h"
 
 //==================================================================
 

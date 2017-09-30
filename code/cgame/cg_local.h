@@ -1,11 +1,11 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 
-#include "../game/q_shared.h"
+#include "../base_game/q_shared.h"
 #include "tr_types.h"
-#include "../game/bg_public.h"
+#include "../base_game/bg_public.h"
 #include "cg_public.h"
-#include "../game/bg_list.h"
+#include "../base_game/bg_list.h"
 
 #ifndef CG_LOCAL_H_
 #define CG_LOCAL_H_

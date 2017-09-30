@@ -3,15 +3,7 @@
 
 #include "g_local.h"
 
-#if (defined __linux__ || defined __WIN32__) // linux or mingw
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-#else
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-#endif
+#include "lua.hpp"
 
 enum g_luaLimits_e {
 	NUM_VMS = 3

@@ -5,7 +5,7 @@
 #pragma warning(disable:4005)
 #endif
 
-#include "q_shared.h"
+#include "../base_game/q_shared.h"
 #include "bg_lex.h"
 
 #define YY_FATAL_ERROR(msg) bgLexFatalError(msg, yyscanner)

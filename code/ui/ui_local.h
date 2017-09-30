@@ -3,11 +3,11 @@
 #ifndef __UI_LOCAL_H__
 #define __UI_LOCAL_H__
 
-#include "../game/q_shared.h"
+#include "../base_game//q_shared.h"
 #include "../cgame/tr_types.h"
 #include "ui_public.h"
 #include "keycodes.h"
-#include "../game/bg_public.h"
+#include "../base_game/bg_public.h"
 
 //RPG-X : TiM
 //Defines for animation code in UI module

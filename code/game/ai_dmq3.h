@@ -20,11 +20,10 @@
 #define AI_DMQ3_H_
 
 #ifdef _MSC_VER
-#include <stddef.h>
-#include <stdint.h>
-#else
-#include <stdint.h>
+#include <cstddef>
 #endif
+
+#include <cstdint>
 
 //!setup the deathmatch AI
 void BotSetupDeathmatchAI(void);

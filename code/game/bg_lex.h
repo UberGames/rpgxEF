@@ -1,7 +1,7 @@
 #ifndef BG_LEX_H
 #define BG_LEX_H
 
-#include "q_shared.h"
+#include "../base_game/q_shared.h"
 
 #define LEX_DEBUG
 #ifdef LEX_DEBUG

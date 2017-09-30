@@ -1,5 +1,7 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quake3", "quake3.vcxproj", "{81CB51C4-B434-4E12-B69B-BAEE102F2852}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cgame", "..\..\code\cgame\cgame.vcxproj", "{EBB0D9E9-00FC-4DBA-AF4A-4052FE9B17B1}"
@@ -8,7 +10,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "..\..\code\game\gam
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui", "..\..\code\ui\ui.vcxproj", "{A4AF2332-2A45-4CE7-953D-FFB0FC490AA9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base_game", "base_game\base_game.vcxitems", "{DDF6F925-EDC6-46A8-85B4-B612BBD39D4B}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		base_game\base_game.vcxitems*{a4af2332-2a45-4ce7-953d-ffb0fc490aa9}*SharedItemsImports = 4
+		base_game\base_game.vcxitems*{ddf6f925-edc6-46a8-85b4-b612bbd39d4b}*SharedItemsImports = 9
+		base_game\base_game.vcxitems*{ebb0d9e9-00fc-4dba-af4a-4052fe9b17b1}*SharedItemsImports = 4
+		base_game\base_game.vcxitems*{f4a59392-23bd-4787-a7d5-aac517803246}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug TA|Win32 = Debug TA|Win32
 		Debug TA|x64 = Debug TA|x64
@@ -75,5 +85,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1264AC22-0783-4CAA-943E-792384A75D52}
 	EndGlobalSection
 EndGlobal

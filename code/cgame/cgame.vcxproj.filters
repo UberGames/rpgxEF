@@ -9,157 +9,112 @@
       <UniqueIdentifier>{76164a83-7a3a-4473-b6db-f151d30a82d7}</UniqueIdentifier>
       <Extensions>h</Extensions>
     </Filter>
-    <Filter Include="Source Files\lua">
-      <UniqueIdentifier>{cc31ca7a-00a9-49ce-9830-b91beeffb091}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\game\bg_lib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\game\bg_misc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\game\bg_oums.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\game\bg_pmove.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\game\bg_slidemove.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_consolecmds.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_draw.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_drawtools.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_effects.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_ents.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_env.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_event.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_info.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_localents.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_logger.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_marks.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_players.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_playerstate.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_predict.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_scoreboard.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_screenfx.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_servercmds.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_snapshot.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_syscalls.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_view.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_weapons.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_compression.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_grenade.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_item.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_lib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_misc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_phaser.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_quantum.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_tetrion.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_transporter.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\game\q_math.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\game\q_shared.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_hypospray.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fx_disruptor.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cg_lua.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lua_cfx.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lua_cent.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lua_refent.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
     <ClCompile Include="cg_logger.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\game\bg_list.c">
+    <ClCompile Include="cg_drawtools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_consolecmds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_effects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_ents.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_env.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_event.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_info.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_localents.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_marks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_players.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_playerstate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_predict.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_scoreboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_screenfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_servercmds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_snapshot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_syscalls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_view.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cg_weapons.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_compression.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_disruptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_grenade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_hypospray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_lib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_phaser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_quantum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_tetrion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fx_transporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\game\bg_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\bg_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="cg_anims.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -178,19 +133,7 @@
     <ClInclude Include="fx_local.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\q_shared.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\surfaceflags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tr_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cg_lua.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\bg_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -18,129 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ai_chat.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ai_cmd.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ai_dmnet.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ai_dmq3.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ai_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ai_team.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bg_lib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bg_misc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bg_pmove.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bg_slidemove.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_active.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_arenas.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_bot.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_breakable.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_client.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_cmds.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_combat.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_fx.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_items.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_log.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_lua.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_mem.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_misc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_missile.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_mover.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_session.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_spawn.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_sql.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_svcmds.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_syscalls.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_target.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_team.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_trigger.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_turrets.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_ui.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_usable.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_utils.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_weapon.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="q_math.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="q_shared.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="lua_entity.c">
       <Filter>Source Files\lua</Filter>
     </ClCompile>
@@ -155,105 +32,6 @@
     </ClCompile>
     <ClCompile Include="lua_qmath.c">
       <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lapi.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lauxlib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lbaselib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lbitlib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lcode.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lcorolib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lctype.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="ldblib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="ldebug.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="ldo.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="ldump.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lfunc.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lgc.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="linit.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="liolib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="llex.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lmathlib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lmem.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="loadlib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lobject.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lopcodes.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="loslib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lparser.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lstate.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lstring.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lstrlib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="ltable.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="ltablib.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="ltm.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lundump.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lvm.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="lzio.c">
-      <Filter>Source Files\lua</Filter>
-    </ClCompile>
-    <ClCompile Include="g_cinematic.c">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="lua_cinematic.c">
       <Filter>Source Files\lua</Filter>
@@ -270,28 +48,127 @@
     <ClCompile Include="lua_cvar.c">
       <Filter>Source Files\lua</Filter>
     </ClCompile>
-    <ClCompile Include="md5.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="memorypool.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_logger.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bg_list.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bg_collision.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="g_local.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="bg_lex.flex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ai_chat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ai_cmd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ai_dmnet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ai_dmq3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ai_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ai_team.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_active.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_arenas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_bot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_breakable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_cinematic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_cmds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_combat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_fx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_items.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_local.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_lua.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_mem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_missile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_mover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_session.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_spawn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_sql.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_svcmds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_syscalls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_target.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_team.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_trigger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_turrets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_ui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_usable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_weapon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -338,15 +215,6 @@
     <ClInclude Include="be_ea.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bg_lib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bg_local.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bg_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="botlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -383,89 +251,11 @@
     <ClInclude Include="match.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="q_shared.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="surfaceflags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="syn.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lapi.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lauxlib.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lcode.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lctype.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="ldebug.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="ldo.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lfunc.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lgc.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="llex.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="llimits.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lmem.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lobject.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lopcodes.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lparser.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lstate.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lstring.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="ltable.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="ltm.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lua.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lua.hpp">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="luaconf.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lualib.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lundump.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lvm.h">
-      <Filter>Source Files\lua</Filter>
-    </ClInclude>
-    <ClInclude Include="lzio.h">
-      <Filter>Source Files\lua</Filter>
     </ClInclude>
     <ClInclude Include="g_weapon.h">
       <Filter>Header Files</Filter>
@@ -488,9 +278,6 @@
     <ClInclude Include="g_cmds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bg_misc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="g_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -500,13 +287,7 @@
     <ClInclude Include="g_active.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="memorypool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="g_logger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bg_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="g_missile.h">
@@ -524,16 +305,10 @@
     <ClInclude Include="g_trigger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bg_collision.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\stv_version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="g_mover.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="q_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="g_syscalls.h">

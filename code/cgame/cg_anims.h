@@ -6,7 +6,7 @@
 
 //cg_players_c
 
-#include "../game/q_shared.h"
+#include "../base_game/q_shared.h"
 
 typedef enum {
 	BOTH_ASSIMILATED1=0,

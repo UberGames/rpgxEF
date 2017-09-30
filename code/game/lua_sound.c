@@ -1,7 +1,7 @@
 // sound lib for lua
 
 #include "g_lua.h"
-#include "q_shared.h"
+#include "../base_game/q_shared.h"
 
 #ifdef G_LUA
 

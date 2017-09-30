@@ -11,144 +11,120 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\game\bg_lib.c">
+    <ClCompile Include="ui_admin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\game\bg_misc.c">
+    <ClCompile Include="ui_atoms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\game\q_math.c">
+    <ClCompile Include="ui_cdkey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\game\q_shared.c">
+    <ClCompile Include="ui_confirm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_admin.c">
+    <ClCompile Include="ui_connect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_atoms.c">
+    <ClCompile Include="ui_controls2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_cdkey.c">
+    <ClCompile Include="ui_credits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_confirm.c">
+    <ClCompile Include="ui_cvars.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_connect.c">
+    <ClCompile Include="ui_demo2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_controls2.c">
+    <ClCompile Include="ui_emotes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_credits.c">
+    <ClCompile Include="ui_fonts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_cvars.c">
+    <ClCompile Include="ui_gameinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_demo2.c">
+    <ClCompile Include="ui_ingame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_emotes.c">
+    <ClCompile Include="ui_logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_fonts.c">
+    <ClCompile Include="ui_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_gameinfo.c">
+    <ClCompile Include="ui_menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_ingame.c">
+    <ClCompile Include="ui_mfield.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_main.c">
+    <ClCompile Include="ui_mods.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_menu.c">
+    <ClCompile Include="ui_motd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_mfield.c">
+    <ClCompile Include="ui_msd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_mods.c">
+    <ClCompile Include="ui_network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_motd.c">
+    <ClCompile Include="ui_playermodel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_network.c">
+    <ClCompile Include="ui_players.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_playermodel.c">
+    <ClCompile Include="ui_playersettings.cp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_players.c">
+    <ClCompile Include="ui_preferences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_playersettings.c">
+    <ClCompile Include="ui_qmenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_preferences.c">
+    <ClCompile Include="ui_serverinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_qmenu.c">
+    <ClCompile Include="ui_servers2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_serverinfo.c">
+    <ClCompile Include="ui_sound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_servers2.c">
+    <ClCompile Include="ui_specifyserver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_sound.c">
+    <ClCompile Include="ui_sql.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_specifyserver.c">
+    <ClCompile Include="ui_startserver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_startserver.c">
+    <ClCompile Include="ui_syscalls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_syscalls.c">
+    <ClCompile Include="ui_transporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_transporter.c">
+    <ClCompile Include="ui_turbolift.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_turbolift.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_video.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_msd.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_sql.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_logger.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\game\bg_list.c">
+    <ClCompile Include="ui_video.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\game\bg_public.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="keycodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\game\q_shared.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\qcommon\stv_version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\surfaceflags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\cgame\tr_types.h">
@@ -161,9 +137,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ui_logger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\game\bg_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
