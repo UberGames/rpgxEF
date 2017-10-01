@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{2c33fecb-cbc5-4ff8-abde-0b61e70e751e}</ItemsProjectGuid>
+    <ItemsProjectGuid>{6d53174b-907f-41e8-88b9-b1bec8dc0be0}</ItemsProjectGuid>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -12,5 +12,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\code\doctest\doctest.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\code\doctest\parts\doctest_fwd.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\code\doctest\parts\doctest_impl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\code\doctest\runner.h" />
   </ItemGroup>
 </Project>

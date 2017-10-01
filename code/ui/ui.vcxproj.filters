@@ -80,9 +80,6 @@
     <ClCompile Include="ui_players.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui_playersettings.cp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ui_preferences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -119,15 +116,21 @@
     <ClCompile Include="ui_video.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui_playersettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_holodeck.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unittest_runner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="keycodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\qcommon\stv_version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\cgame\tr_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ui_local.h">

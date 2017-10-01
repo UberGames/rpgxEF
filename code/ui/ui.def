@@ -1,3 +1,4 @@
 EXPORTS
 	vmMain
 	dllEntry
+	RunUnutTests

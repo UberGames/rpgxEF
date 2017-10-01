@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="parts">
+      <UniqueIdentifier>{31695460-c20b-42b4-8b5c-98254770f436}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Walter\Source\Repos\rpgxEF\misc\doctest\..\..\code\doctest\parts\doctest_impl.h">
+      <Filter>parts</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Walter\Source\Repos\rpgxEF\misc\doctest\..\..\code\doctest\parts\doctest_fwd.h">
+      <Filter>parts</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\code\doctest\runner.h" />
+  </ItemGroup>
+</Project>
