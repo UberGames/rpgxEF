@@ -6,12 +6,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\Walter\Source\Repos\rpgxEF\misc\doctest\..\..\code\doctest\parts\doctest_impl.h">
-      <Filter>parts</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Users\Walter\Source\Repos\rpgxEF\misc\doctest\..\..\code\doctest\parts\doctest_fwd.h">
-      <Filter>parts</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\code\doctest\runner.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\code\doctest\doctest.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\code\doctest\parts\doctest_fwd.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\code\doctest\parts\doctest_impl.h" />
   </ItemGroup>
 </Project>

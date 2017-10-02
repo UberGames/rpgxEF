@@ -16,8 +16,11 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\common_game\Position2D.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\common_game\String.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\code\common_game\Warnings.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\common_game\String.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\code\common_game\String.cpp">
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+    </ClCompile>
   </ItemGroup>
 </Project>

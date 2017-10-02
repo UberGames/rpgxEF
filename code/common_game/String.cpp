@@ -1,5 +1,6 @@
 #include "String.h"
 #include "../doctest/parts/doctest_fwd.h"
+#include "Warnings.h"
 
 namespace Common
 {
@@ -363,6 +364,88 @@ namespace Common
     REQUIRE(CompareNoCase(Str2, Str5) == 1);
     REQUIRE(CompareNoCase(Str3, Str5) == 1);
     REQUIRE(CompareNoCase(Str4, Str5) == 1);
+  }
+
+
+  TEST_CASE("String ToString Ptr")
+  {
+    int32_t* Test = nullptr;
+
+    WARNINGS_OFF(4127);
+
+    if(sizeof(void*) == 4)
+      REQUIRE(ToString(Test) == _T("00000000"));
+    else
+      // ReSharper disable once CppUnreachableCode
+      REQUIRE(ToString(Test) == _T("0000000000000000"));
+
+    WARNINGS_ON;
+  }
+
+  TEST_CASE("String ToString String")
+  {
+    const String Test = _T("Test");
+
+    REQUIRE(ToString(Test) == Test);
+  }
+
+  TEST_CASE("String ToString Bool")
+  {
+    REQUIRE(ToString(true) == _T("1"));
+    REQUIRE(ToString(false) == _T("0"));
+    REQUIRE(ToString(true, true) == _T("true"));
+    REQUIRE(ToString(false, true) == _T("false"));
+    REQUIRE(ToString(1 == 1) == _T("1"));
+    REQUIRE(ToString(1 == 42) == _T("0"));
+    REQUIRE(ToString(1 == 1, true) == _T("true"));
+    REQUIRE(ToString(1 == 42, true) == _T("false"));
+  }
+
+  TEST_CASE("String ToString Floating Point")
+  {
+    float f = 42.0f;
+
+    ToString(4.02, 5);
+
+    REQUIRE(ToString(f, 5, true) == _T("42.00000"));
+    REQUIRE(ToString(2.04, 5) == _T("2.04"));
+    REQUIRE(ToString(2.04, 1) == _T("2"));
+
+    auto Temp = ToString(f, 10, true, true, 20);
+    REQUIRE(Temp.length() == 20);
+  }
+
+  TEST_CASE("String ToString Integral")
+  {
+    int32_t I1 = 42;
+    uint32_t I2 = 42;
+    int16_t I3 = -42;
+
+    REQUIRE(ToString(I1) == _T("42"));
+    REQUIRE(ToString(I2) == _T("42"));
+    REQUIRE(ToString(I3) == _T("-42"));
+
+    REQUIRE(ToString(I1, EIntegralFormat::Hexadecimal) == _T("2a"));
+    REQUIRE(ToString(I2, EIntegralFormat::Hexadecimal) == _T("2a"));
+    REQUIRE(ToString(I3, EIntegralFormat::Hexadecimal) == _T("ffd6"));
+
+    REQUIRE(ToString(I1, EIntegralFormat::Octal) == _T("52"));
+    REQUIRE(ToString(I2, EIntegralFormat::Octal) == _T("52"));
+    REQUIRE(ToString(I3, EIntegralFormat::Octal) == _T("177726"));
+
+    REQUIRE(ToString(I1, EIntegralFormat::Decimal, 5).length() == 5);
+    REQUIRE(ToString(I2, EIntegralFormat::Decimal, 5).length() == 5);
+    REQUIRE(ToString(I3, EIntegralFormat::Decimal, 5).length() == 5);
+
+    REQUIRE(ToString(I1, EIntegralFormat::Decimal, 5, _T('.')) == _T("...42"));
+    REQUIRE(ToString(I2, EIntegralFormat::Decimal, 5, _T('.')) == _T("...42"));
+    REQUIRE(ToString(I3, EIntegralFormat::Decimal, 5, _T('.')) == _T("..-42"));
+  }
+
+  TEST_CASE("String Format")
+  {
+    REQUIRE(Format(_T("%0 %1 %2"), 42, _T("test"), true) == _T("42 test 1"));
+    REQUIRE(Format(_T("%1%0%1"), 1, 0) == _T("010"));
   }
 }
 
