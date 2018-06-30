@@ -4,6 +4,9 @@
 #ifndef _G_LOCAL_H_
 #define _G_LOCAL_H_
 
+#include <string>
+#include <vector>
+
 #include "../base_game/q_shared.h"
 #include "../base_game/bg_public.h"
 #include "g_public.h"
@@ -837,8 +840,9 @@ typedef struct {
 
 	/*@shared@*/ /*@null@*/ list_p	safezones;								/*!< self destruct safezones list */
 	/*@shared@*/ /*@null@*/ list_p	locations;								/*!< level locations list */
-	/*@shared@*/ /*@null@*/ list_p	timedMessages;				/*!< timed messages list */
-	/*@shared@*/ /*@null@*/ list_iter_p iterTimedMessages;
+
+  size_t timedMessageIndex = 0;
+  std::vector<std::string> timedMessages;
 
 	// other stuff
 	srvChangeData_t		srvChangeData;							/*!< Server change data */
