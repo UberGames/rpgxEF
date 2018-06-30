@@ -743,15 +743,10 @@ struct levelLocation_s {
 */
 typedef struct srvChangeData_s srvChangeData_t;
 
-/** \struct srvChangeData_s
-*	Contains data needed by traporter UI and transportet entities for serverchage transports.
-*
-*	\author Ubergames - GSIO01
-*/
-struct srvChangeData_s {
-	char	name[6][MAX_QPATH];	//!< name of the locations
-	char	ip[6][MAX_QPATH];	//!< IPs of the servers to connect to
-	int		count;				//!< Count of servers
+struct ServerChangeData
+{
+  std::string m_name;
+  std::string m_ip;
 };
 
 /**
@@ -845,7 +840,7 @@ typedef struct {
   std::vector<std::string> timedMessages;
 
 	// other stuff
-	srvChangeData_t		srvChangeData;							/*!< Server change data */
+	std::vector<ServerChangeData> srvChangeData;
 
 	// override rpg_calcLiftTravelDuration
 	int					overrideCalcLiftTravelDuration;			/*!< Indicated whether the level author wants to override rpg_calcLiftTravelDuration */

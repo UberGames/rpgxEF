@@ -3,6 +3,15 @@
 
 #include <sstream>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4127)
+#endif
+#include <nlohmann/json.hpp>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
 #include "g_main.h"
 #include "g_local.h"
 #include "g_groups.h"
@@ -10,7 +19,6 @@
 #include "g_spawn.h"
 #include "g_cmds.h"
 #include "g_items.h"
-#include "bg_lex.h"
 #include "../base_game/bg_misc.h"
 #include "g_logger.h"
 #include "g_usable.h"
@@ -930,6 +938,10 @@ static qboolean G_LoadClassData(char* fileName)
 
 void SP_target_location(gentity_t *ent);
 
+/**
+ * @brief Load timed messages.
+ * Each line in the cfg file is a single message.
+ */
 static void G_LoadTimedMessages(void)
 {
   fileHandle_t	f = 0;
@@ -1109,163 +1121,85 @@ static void G_LoadHolodeckFile(void)
 }
 
 /*
-File Format:
+File Format is json. Example:
 
-ServerChangeConfig {
-  Server [
-    "1.1.1.1"
-    "Server name"
-  ]
-  Server [
-    "1.1.1.2"
-    "Server name 2"
+{
+  "ServerChangeConfig" :
+  [
+    { "Server" : { "ip" : "1.1.1.1", "name" : "Server Name" } },
+    { "Server" : { "ip" : "1.1.1.2", "name" : "Server Name 2" } }
   ]
 }
+
 */
 static void G_LoadServerChangeFile(void)
 {
-  char			fileRoute[MAX_QPATH];
+  char fileRoute[MAX_QPATH];
   fileHandle_t	f = 0;
-  bgLex*			lex;
-  char*			buffer;
-  int				file_len;
-
-  G_LogFuncBegin();
 
   memset(fileRoute, 0, sizeof(fileRoute));
   BG_LanguageFilename("serverchange", "cfg", fileRoute);
 
-  file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
+  auto file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
   if(f == 0)
   {
-    G_LogFuncEnd();
     return;
   }
 
-  // TODO dynamic buffer size
-  buffer = (char*)malloc((file_len + 1) * sizeof(char));
-  if(buffer == NULL)
-  {
-    G_LocLogger(LL_ERROR, "Was unable to allocate %i bytes.\n", (file_len + 1) * sizeof(char));
-    trap_FS_FCloseFile(f);
-    G_LogFuncEnd();
-    return;
-  }
-  memset(buffer, 0, sizeof(buffer));
-
-  trap_FS_Read(buffer, file_len, f);
-  if(buffer[0] == 0)
+  std::string buffer(file_len, '\0');
+  trap_FS_Read(buffer.data(), buffer.size(), f);
+  if(buffer.empty())
   {
     G_LocLogger(LL_ERROR, "Couldn't read in file: %s!\n", fileRoute);
     trap_FS_FCloseFile(f);
-    free(buffer);
-    G_LogFuncEnd();
     return;
   }
 
-  buffer[file_len] = '\0';
   trap_FS_FCloseFile(f);
-
-  memset(&level.srvChangeData, 0, sizeof(&level.srvChangeData));
 
   G_Logger(LL_INFO, "Loading ServerChangeConfig '%s'.\n", fileRoute);
 
-  lex = bgLex_create(buffer);
-  if(lex == NULL)
-  {
-    G_LocLogger(LL_ERROR, "Could not create bgLex to lex ServerChangeConfig.\n");
-    free(buffer);
-    G_LogFuncEnd();
-    return;
-  }
+  std::stringstream stream{ buffer };
 
-  if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_SERVER_CHANGE_CONFIG)
+  try
   {
-    G_LocLogger(LL_ERROR, "Expected 'ServerChangeConfig' at beginning of %s.\n", fileRoute);
-    free(buffer);
-    bgLex_destroy(lex);
-    G_LogFuncEnd();
-    return;
-  }
-  if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_OBRACEC)
-  {
-    G_LocLogger(LL_ERROR, "Missing '{' at %d:%d.\n", lex->morphem.line, lex->morphem.column);
-    free(buffer);
-    bgLex_destroy(lex);
-    G_LogFuncEnd();
-    return;
-  }
+    nlohmann::json j;
+    stream >> j;
 
-  while(bgLex_lex(lex) != 0)
-  {
-    if(lex->morphem.type == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_CBRACEC)
+    auto scc = j.find("ServerChangeConfig");
+    if(scc == j.end())
     {
-      break;
+      throw std::invalid_argument("Could not find element: ServerChangeConfig");
     }
 
-    if(lex->morphem.type == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_SERVER)
+    for(const auto& server : scc.value())
     {
-      if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_OBRACESQ)
+      auto srv = server.find("Server");
+      if(srv == server.end())
       {
-        G_LocLogger(LL_ERROR, "Missing '[' at %d:%d.\n", lex->morphem.line, lex->morphem.column);
-        free(buffer);
-        bgLex_destroy(lex);
-        G_LogFuncEnd();
-        return;
+        throw std::invalid_argument("Could not find element: Server");
       }
 
-      if(bgLex_lex(lex) == LMT_STRING)
+      auto ip = srv.value().find("ip");
+      if(ip == srv.value().end())
       {
-        strncpy(level.srvChangeData.ip[level.srvChangeData.count], lex->morphem.data.str, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
-      }
-      else
-      {
-        G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem.line, lex->morphem.column);
-        free(buffer);
-        bgLex_destroy(lex);
-        G_LogFuncEnd();
-        return;
+        throw std::invalid_argument("Could not find element: ip");
       }
 
-      if(bgLex_lex(lex) == LMT_STRING)
+      auto name = srv.value().find("name");
+      if(name == srv.value().end())
       {
-        strncpy(level.srvChangeData.name[level.srvChangeData.count], lex->morphem.data.str, sizeof(level.srvChangeData.name[level.srvChangeData.count]));
-      }
-      else
-      {
-        G_LocLogger(LL_ERROR, "Unexpected token at %d:%d.\n", lex->morphem.line, lex->morphem.column);
-        free(buffer);
-        bgLex_destroy(lex);
-        memset(level.srvChangeData.ip[level.srvChangeData.count], 0, sizeof(level.srvChangeData.ip[level.srvChangeData.count]));
-        G_LogFuncEnd();
-        return;
+        throw std::invalid_argument("Could not find element: name");
       }
 
-      level.srvChangeData.count++;
-
-      if(bgLex_lex(lex) != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_CBRACESQ)
-      {
-        G_LocLogger(LL_ERROR, "Missing ']' at %d:%d.\n", lex->morphem.line, lex->morphem.column);
-        free(buffer);
-        bgLex_destroy(lex);
-        G_LogFuncEnd();
-        return;
-      }
-    }
-    else
-    {
-      G_LocLogger(LL_ERROR, "Unexpected token at %d:%d. Expected '}' or 'Server'\n", lex->morphem.line, lex->morphem.column);
-      free(buffer);
-      bgLex_destroy(lex);
-      G_LogFuncEnd();
-      return;
+      level.srvChangeData.push_back({ ip.value().get<std::string>(), name.value().get<std::string>() });
     }
   }
-
-  bgLex_destroy(lex);
-  free(buffer);
-  G_LogFuncEnd();
+  catch(std::exception& ex)
+  {
+    G_Logger(LL_ERROR, "An error occured while loading the ServerChangeConfig '%s': %s\n", fileRoute, ex.what());
+  }
 }
 
 
@@ -1379,262 +1313,131 @@ static void G_LoadMapChangeFile(void)
   free(buffer);
 }
 
+/*
+File format is json. Example:
+{
+  "LocationsList" :
+  [
+    { "position" : [ 100.0, 200.0, 300.0 ], "angles" : [ 0.0, 42.0, -24 ], "name" : "A Name" },
+    { "position" : [ 100.0, 500.0, 300.0 ], "angles" : [ 0.0, 42.0, 0 ], "name" : "Another Name" }
+  ]
+}
+*/
 static void G_LoadLocationsFile(void)
 {
   char			fileRoute[MAX_QPATH];
   char			mapRoute[MAX_QPATH];
-  char			*serverInfo;
   fileHandle_t	f = 0;
-  bgLex*			lex;
-  char			*buffer;
   int				file_len;
-  vec3_t			origin, angles;
-  gentity_t		*ent;
-  char			*desc;
-  int				rest = 0;
-
-  G_LogFuncBegin();
 
   memset(fileRoute, 0, sizeof(fileRoute));
   memset(mapRoute, 0, sizeof(mapRoute));
 
-  serverInfo = (char*)malloc(MAX_INFO_STRING * sizeof(char));
-  if(serverInfo == NULL)
-  {
-    G_LocLogger(LL_ERROR, "Was unable to allocate %i bytes.\n", MAX_INFO_STRING * sizeof(char));
-    G_LogFuncEnd();
-    return;
-  }
-  memset(serverInfo, 0, sizeof(serverInfo));
+  std::string serverInfo(MAX_INFO_STRING, '\0');
 
   //get the map name out of the server data
-  trap_GetServerinfo(serverInfo, (size_t)(MAX_INFO_STRING * sizeof(char)));
+  trap_GetServerinfo(serverInfo.data(), serverInfo.size());
 
   //setup the file route
-  Com_sprintf(mapRoute, sizeof(mapRoute), "maps/%s", Info_ValueForKey(serverInfo, "mapname"));
+  Com_sprintf(mapRoute, sizeof(mapRoute), "maps/%s", Info_ValueForKey(serverInfo.data(), "mapname"));
 
   BG_LanguageFilename(mapRoute, "locations", fileRoute);
 
   file_len = trap_FS_FOpenFile(fileRoute, &f, FS_READ);
 
-  free(serverInfo);
-
   if(f <= 0)
   {
-    G_LogFuncEnd();
     return;
   }
 
-  buffer = (char *)malloc((file_len + 1) * sizeof(char));
-  if(buffer == NULL)
-  {
-    G_Printf(S_COLOR_RED "ERROR: Was unable to allocate %i bytes.\n", (file_len + 1) * sizeof(char));
-    trap_FS_FCloseFile(f);
-    return;
-  }
-  memset(buffer, 0, sizeof(buffer));
-
-  trap_FS_Read(buffer, file_len, f);
-  if(buffer[0] == 0)
+  std::string buffer(file_len, '\0');
+  trap_FS_Read(buffer.data(), buffer.size(), f);
+  if(buffer.empty())
   {
     G_LocLogger(LL_ERROR, "Couldn't read in file: %s!\n", fileRoute);
     trap_FS_FCloseFile(f);
-    free(buffer);
-    G_LogFuncEnd();
     return;
   }
 
-  buffer[file_len] = '\0';
   trap_FS_FCloseFile(f);
 
   G_Logger(LL_INFO, "Locations file %s located. Proceeding to load scan data.\n", fileRoute); //GSIO01: why did this say "Usables file ..."? lol ;)
 
-  lex = bgLex_create(buffer);
-  if(lex == NULL)
+  try
   {
-    G_LocLogger(LL_ERROR, "Could not create bgLex to lex locations file.\n");
-    free(buffer);
-    G_LogFuncEnd();
-    return;
-  }
+    std::stringstream stream{ buffer };
+    nlohmann::json j;
+    stream >> j;
 
-  if(bgLex_lex(lex) != LMT_SYMBOL)
-  {
-    G_LocLogger(LL_ERROR, "Expected locations file to begin with 'LocationsList' or 'LocationsList2'.\n");
-    free(buffer);
-    bgLex_destroy(lex);
-    G_LogFuncEnd();
-    return;
-  }
-
-  if(lex->morphem.data.symbol == LSYM_LOCATIONS_LIST || lex->morphem.data.symbol == LSYM_LOCATIONS_LIST_2)
-  {
-    if(bgLex_lex(lex) == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_OBRACEC)
+    auto locList = j.find("LocationsList");
+    if(locList == j.end())
     {
-      if(bgLex_lex(lex) == 0)
-      {
-        G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
-        free(buffer);
-        bgLex_destroy(lex);
-        G_LogFuncEnd();
-        return;
-      }
-    }
-    else
-    {
-      G_Logger(LL_WARN, "LocationsList2 had no opening brace '{'!\n");
+      throw std::invalid_argument("Could not find LocationsList element");
     }
 
-    while(qtrue)
+    for(const auto& loc : locList.value())
     {
-      if(lex->morphem.type == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_CBRACEC)
+      auto pos = loc.find("position");
+      if(pos == loc.end())
       {
-        break;
+        throw std::invalid_argument("Could not find position element");
       }
 
-      if(lex->morphem.type == LMT_VECTOR3)
+      auto angles = loc.find("angles");
+      if(angles == loc.end())
       {
-        VectorCopy(lex->morphem.data.vector3, origin);
-      }
-      else
-      {
-        G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem.line, lex->morphem.column);
-        free(buffer);
-        bgLex_destroy(lex);
-        G_LogFuncEnd();
-        return;
+        throw std::invalid_argument("Could not find angles element");
       }
 
-      if(bgLex_lex(lex) == LMT_VECTOR3)
+      auto name = loc.find("name");
+      if(name == loc.end())
       {
-        VectorCopy(lex->morphem.data.vector3, angles);
-      }
-      else
-      {
-        G_LocLogger(LL_ERROR, "Expected vector at %d:%d.\n", lex->morphem.line, lex->morphem.column);
-        free(buffer);
-        bgLex_destroy(lex);
-        G_LogFuncEnd();
-        return;
+        throw std::invalid_argument("Could not find name element");
       }
 
-      if(bgLex_lex(lex) == LMT_STRING)
+      auto restricted = 0;
+      auto rest = loc.find("restricted");
+      if(rest != loc.end())
       {
-        int result;
-
-        desc = G_NewString(lex->morphem.data.str);
-
-        if(desc == NULL)
-        {
-          free(buffer);
-          bgLex_destroy(lex);
-          return;
-        }
-
-        if((result = bgLex_lex(lex)) == LMT_STRING)
-        {
-          rest = atoi(desc);
-          desc = G_NewString(lex->morphem.data.str);
-
-          if(bgLex_lex(lex) == 0)
-          {
-            G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
-            free(buffer);
-            bgLex_destroy(lex);
-            G_LogFuncEnd();
-            return;
-          }
-        }
-        else
-        {
-          if(result == 0)
-          {
-            G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
-            free(buffer);
-            bgLex_destroy(lex);
-            G_LogFuncEnd();
-            return;
-          }
-        }
-      }
-      else
-      {
-        G_LocLogger(LL_ERROR, "ERROR: Expected string at %d:%d.\n", lex->morphem.line, lex->morphem.column);
-        free(buffer);
-        bgLex_destroy(lex);
-        G_LogFuncEnd();
-        return;
+        restricted = rest.value().get<bool>() ? 1 : 0;
       }
 
-      //create a new entity
-      ent = G_Spawn();
-      if(ent == NULL)
+      auto ent = G_Spawn();
+      if(ent == nullptr)
       {
-        G_LocLogger(LL_ERROR, "Couldn't create entity in %s!\n", fileRoute);
-        free(buffer);
-        bgLex_destroy(lex);
-        G_LogFuncEnd();
-        return;
+        throw std::runtime_error("failed to spawn new entity");
       }
 
       ent->classname = "target_location";
 
       //copy position data
-      VectorCopy(origin, ent->s.origin);
-      VectorCopy(angles, ent->s.angles);
+      ent->s.origin[0] = pos.value().at(0).get<float>();
+      ent->s.origin[1] = pos.value().at(1).get<float>();
+      ent->s.origin[2] = pos.value().at(2).get<float>();
+      ent->s.angles[0] = angles.value().at(0).get<float>();
+      ent->s.angles[1] = angles.value().at(1).get<float>();
+      ent->s.angles[2] = angles.value().at(2).get<float>();
 
       //copy string
-      ent->message = G_NewString(desc);
+      ent->message = G_NewString(name.value().get<std::string>().data());
 
       //copy desc into target as well
-      ent->target = ent->targetname = G_NewString(desc);
+      ent->target = ent->targetname = G_NewString(name.value().get<std::string>().data());
 
       // copy restriction value
-      ent->sound1to2 = rest;
+      ent->sound1to2 = restricted;
 
       //initiate it as a location ent
       SP_target_location(ent);
 
       //reset the ent
-      ent = NULL;
-      rest = 0;
-
-      if(lex->morphem.type == LMT_SYMBOL && lex->morphem.data.symbol == LSYM_SEMICOLON)
-      {
-        if(bgLex_lex(lex) == 0)
-        {
-          G_LocLogger(LL_ERROR, "Unexpected end of file.\n");
-          free(buffer);
-          bgLex_destroy(lex);
-          G_LogFuncEnd();
-          return;
-        }
-      }
-      else
-      {
-        G_Logger(LL_WARN, "Missing ';' at %d:%d.\n", lex->morphem.line, lex->morphem.column);
-      }
+      ent = nullptr;
     }
   }
-  else
+  catch(std::exception& ex)
   {
-    G_LocLogger(LL_ERROR, "Unexpected token at %s:%d:%d.\n", fileRoute, lex->morphem.line, lex->morphem.column);
-    G_LocLogger(LL_ERROR, "Expected 'LocationsList' or 'LocationsList2'.\n");
-    free(buffer);
-    bgLex_destroy(lex);
-    G_LogFuncEnd();
-    return;
+    G_Logger(LL_ERROR, "Error loading locations file '%s': %s\n", fileRoute, ex.what());
   }
-
-  if(lex->morphem.type != LMT_SYMBOL || lex->morphem.data.symbol != LSYM_CBRACEC)
-  {
-    G_Logger(LL_WARN, "Missing closing brace '}'!\n");
-  }
-
-  free(buffer);
-  bgLex_destroy(lex);
-
-  G_LogFuncEnd();
 }
 
 
@@ -2152,7 +1955,7 @@ void G_InitGame(int levelTime, unsigned int randomSeed, int restart)
   G_Printf("          .:;;:+tIIVIi:.;iYYIii+=:,;;:.        \n");    G_Printf("            .  ,:=itIXi.tXYit=;::,  .          \n");
   G_Printf("                 .+tti=,,iIt+;.                \n");    G_Printf("                  .:;;:. ,;;;:.                \n");
 
-}
+    }
 
 void G_ShutdownGame(int restart)
 {

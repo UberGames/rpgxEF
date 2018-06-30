@@ -1487,21 +1487,14 @@ static void G_SendHoloData(int32_t clientNum) {
 
 //! Think function for temporal entity that transmits the server change data and map change data for transporter UI
 static void transTent_think(gentity_t* ent) {
-	char	temp[MAX_STRING_CHARS];
-	int32_t i;
+  std::string message = "ui_trdata ";
 
-	memset(temp, 0, sizeof(temp));
+  for(auto i = 0U; i < 6 && i < level.srvChangeData.size(); i++)
+  {
+    message += std::to_string(i) + R"(\)" + level.srvChangeData[i].m_name + R"(\)";
+  }
 
-	for (i = 0; i < level.srvChangeData.count; i++) {
-		if (temp[0] == 0) {
-			Com_sprintf(temp, sizeof(temp), "ui_trdata d%i\\%s\\", i, level.srvChangeData.name[i]);
-		}
-		else {
-			Com_sprintf(temp, sizeof(temp), "%sd%i\\%s\\", temp, i, level.srvChangeData.name[i]);
-		}
-	}
-
-	trap_SendServerCommand(ent->target_ent - g_entities, temp);
+	trap_SendServerCommand(ent->target_ent - g_entities, message.data());
 	G_FreeEntity(ent);
 }
 
@@ -1691,7 +1684,7 @@ void G_Client_Begin(int32_t clientNum, qboolean careAboutWarmup, qboolean isBot,
 
 	// send srv change data to ui
 	if (!isBot && first) {
-		if (level.srvChangeData.count > 0) {
+		if (!level.srvChangeData.empty()) {
 			G_SendTransData(clientNum);
 		}
 	}

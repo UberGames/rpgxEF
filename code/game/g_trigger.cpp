@@ -1101,7 +1101,7 @@ static void trigger_transporter_touch(gentity_t* ent, gentity_t* other, trace_t*
 		G_InitTransport(clientNum, ent->target_ent->s.origin, ent->target_ent->s.angles);
 	}
 	else {
-		srv = level.srvChangeData.ip[ent->health];
+		srv = level.srvChangeData[ent->health].m_ip.data();
 
 		tent = G_Spawn();
 

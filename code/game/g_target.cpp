@@ -2793,7 +2793,7 @@ void target_serverchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused
 		TransDat[activator->client->ps.clientNum].beamTime = level.time + 8000;
 		activator->client->ps.powerups[PW_BEAM_OUT] = level.time + 8000;
 		ent->touched = activator;
-		ent->targetname2 = level.srvChangeData.ip[ent->count];
+		ent->targetname2 = level.srvChangeData[ent->count].m_ip.data();
 	}
 }
 
