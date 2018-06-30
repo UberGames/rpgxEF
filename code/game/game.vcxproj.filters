@@ -324,11 +324,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="g_syscalls.asm" />
-    <CustomBuildStep Include="game.bat" />
-    <CustomBuildStep Include="game.q3asm" />
-  </ItemGroup>
-  <ItemGroup>
     <Flex Include="bg_lex.l">
       <Filter>Source Files</Filter>
     </Flex>
