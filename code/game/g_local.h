@@ -10,7 +10,6 @@
 #include "../base_game/q_shared.h"
 #include "../base_game/bg_public.h"
 #include "g_public.h"
-#include "../base_game/bg_list.h"
 
 //==================================================================
 
@@ -703,39 +702,6 @@ struct gclient_s {
 #define	MAX_SPAWN_VARS			64
 #define	MAX_SPAWN_VARS_CHARS	2048
 
-/** \typedef levelLocation
-*	Type for level location.
-*	@see levelLocation_s
-*
-*	\author Ubergames - GSIO01
-*/
-typedef struct levelLocation_s levelLocation;
-
-/** \typedef levelLocation´_p
-*	Pointer to a level location.
-*	@see levelLocation
-*	@see levelLocation_s
-*
-*	\author Ubergames - GSIO01
-*/
-typedef levelLocation levelLocation_p;
-
-/** \struct levelLocation_s
-*	Describes a level location.
-*
-*	Contains a list of origin and angles where the first is the primary location origin and angles.
-*	A name which identifies the location like the targetname for entities.
-*	The actual description displayed.
-*
-*	\author Ubergames - GSIO01
-*/
-struct levelLocation_s {
-	list_p	origins;
-	list_p	angles;
-	char*	name;
-	char*	description;
-};
-
 /** \typedef srvChangeData_t
 *	Type for \link srvChangeData_s \endlink
 *
@@ -832,9 +798,6 @@ typedef struct {
 	qboolean			hasEntScannableFile;					/*!< Only older maps would probably have this */
 
 	int					numBrushEnts;							/*!< number of entities in the level that use brushmodels */
-
-	/*@shared@*/ /*@null@*/ list_p	safezones;								/*!< self destruct safezones list */
-	/*@shared@*/ /*@null@*/ list_p	locations;								/*!< level locations list */
 
   size_t timedMessageIndex = 0;
   std::vector<std::string> timedMessages;
@@ -1137,10 +1100,9 @@ void G_SetAngles( gentity_t* ent, vec3_t anlges ); //RPG-X | GSIO01 | 24.08.2009
  * \param radius Radius to serach in.
  * \param ignore List of entities to ignore.
  * \param takeDamage Only return entities matching this value for takeDamage.
- * \param ent_list List to store found entities in.
- * \return Count of entities found.
+ * \return List of entities.
  */
-int32_t G_RadiusList ( vec3_t origin, double radius, list_p ignore, qboolean takeDamage, list_p ent_list);
+std::vector<gentity_t*> G_RadiusList(vec3_t origin, double radius, const std::vector<gentity_t*>& ignore, qboolean takeDamage);
 
 /**
  *	Get a list of specified entity classes in a specified radius.
@@ -1155,7 +1117,7 @@ int32_t G_RadiusList ( vec3_t origin, double radius, list_p ignore, qboolean tak
  *	\param ent_list list to store the results
  *	\return count of found entities
  */
-int32_t G_RadiusListOfTypes(list_p classnames, vec3_t origin, double radius, list_p ignore, list_p ent_list);
+std::vector<gentity_t*> G_RadiusListOfTypes(const std::vector<std::string>& classnames, vec3_t origin, double radius, const std::vector<gentity_t*>& ignore);
 
 /**
  * Get the neares entity to an origin.
@@ -1167,7 +1129,7 @@ int32_t G_RadiusListOfTypes(list_p classnames, vec3_t origin, double radius, lis
  * \param takeDamage Only return entities that match this value for takeDamage.
  * \return Nearest entity found.
  */
-/*@shared@*/ /*@null@*/  gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, double radius, list_p ignore, qboolean takeDamage);
+/*@shared@*/ /*@null@*/  gentity_t* G_GetNearestEnt(char* classname, vec3_t origin, double radius, std::vector<gentity_t*>& ignore, qboolean takeDamage);
 
 /**
  * Get the nearest player orund an origin.
@@ -1177,7 +1139,7 @@ int32_t G_RadiusListOfTypes(list_p classnames, vec3_t origin, double radius, lis
  * \param ignore List of entities to ignore.
  * \return Nearest player.
  */
-/*@shared@*/ /*@null@*/  gentity_t* G_GetNearestPlayer(vec3_t origin, double radius, list_p ignore );
+/*@shared@*/ /*@null@*/  gentity_t* G_GetNearestPlayer(vec3_t origin, double radius, const std::vector<gentity_t*>& ignore);
 
 /**
  * \author Ubergames - GSIO01
@@ -1190,7 +1152,7 @@ int32_t G_RadiusListOfTypes(list_p classnames, vec3_t origin, double radius, lis
  *
  * \return number of entities found
  */
-int G_GetEntityByTargetname(const char* targetname, list_p entities);
+int G_GetEntityByTargetname(const char* targetname, std::vector<gentity_t*>& entities);
 
 /**
  * \author Ubergames - GSIO01
@@ -1203,7 +1165,7 @@ int G_GetEntityByTargetname(const char* targetname, list_p entities);
  *
  *  \return number of matches found
  */
-int G_GetEntityByTarget(const char* target, list_p entities);
+std::vector<gentity_t*> G_GetEntityByTarget(const char* target);
 
 /**
  * \author Ubergames - GSIO01
@@ -1217,7 +1179,7 @@ int G_GetEntityByTarget(const char* target, list_p entities);
  *
  * \return number of matches found
  */
-int G_GetEntityByBmodel(char* bmodel,list_p entities);
+int G_GetEntityByBmodel(char* bmodel, std::vector<gentity_t*>& entities);
 
 /**
  * \brief Add a new shader remap.

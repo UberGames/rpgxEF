@@ -1,7 +1,6 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
-#include "../base_game/bg_list.h"
 #include "../base_game/bg_misc.h"
 #include "g_spawn.h"
 #include "g_client.h"

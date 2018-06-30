@@ -1255,13 +1255,7 @@ HYPERSPANNER
  */
 static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 	double		modifier = 0.0;
-	struct list validEnts;
-	struct list	classnames;
-	list_iter_p iter = NULL;
-	container_p cont = NULL;
-	gentity_t*	e = NULL;
 	gentity_t*	nearest = NULL;
-	int32_t		count = 0;
 	double		nearestd = 65000.0;
 	vec3_t		dVec = { 0, 0, 0 };
 	vec3_t		end = { 0, 0, 0 };
@@ -1273,24 +1267,18 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 	G_Assert(ent, (void)0);
 
 	/* prepare lists */
-	list_init(&classnames, free);
-	list_init(&validEnts, free);
-	classnames.append(&classnames, "func_breakable", LT_STRING, strlen("func_breakable") + 1);
-	classnames.append(&classnames, "misc_model_breakable", LT_STRING, strlen("misc_model_breakable") + 1);
+  std::vector<std::string> classnames = {"func_breakable", "misc_model_breakable"};
 
 	/* find all vlaid entities in range */
-	count = G_RadiusListOfTypes(&classnames, ent->r.currentOrigin, 512, NULL, &validEnts);
-	classnames.clear(&classnames);
+	auto validEnts = G_RadiusListOfTypes(classnames, ent->r.currentOrigin, 512, {});
 
-	if (count > 0) {
+	if (!validEnts.empty()) {
 		trace_t tr;
 
 		memset(&tr, 0, sizeof(trace_t));
-		iter = validEnts.iterator(&validEnts, LIST_FRONT);
 
-		for (cont = validEnts.next(iter); cont != NULL; cont = validEnts.next(iter)) {
-			e = (gentity_t*)cont->data;
-
+    for(auto e : validEnts)
+    {
 			// TODO: fix problems with small distance
 			if ((e->spawnflags & 512) != 0) {
 				VectorSubtract(ent->r.currentOrigin, e->s.angles2, dVec);
@@ -1323,7 +1311,6 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 	}
 
 	if (nearest == NULL || nearest->inuse == qfalse) {
-		validEnts.clear(&validEnts);
 		G_LogFuncEnd();
 		return;
 	}
@@ -1341,8 +1328,6 @@ static void WP_FireHyperspanner(gentity_t* ent, qboolean alt_fire) {
 	} else {
 		G_Combat_Repair(ent, nearest, weaponConfig.hyperspanner.primary.rate * modifier);
 	}
-
-	validEnts.clear(&validEnts);
 
 	G_LogFuncEnd();
 }
