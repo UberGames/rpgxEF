@@ -357,7 +357,7 @@ void SP_func_usable(gentity_t* self)
 		return;
 	}
 
-	self->type = ENT_FUNC_USABLE;
+	self->type = EntityType::ENT_FUNC_USABLE;
 
 	trap_SetBrushModel(self, self->model);
 	InitMover(self);

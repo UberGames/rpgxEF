@@ -298,14 +298,14 @@ void G_Combat_Damage(gentity_t* targ, gentity_t* inflictor, gentity_t* attacker,
 	}
 
 	// shootable doors / buttons don't actually have any health
-	if (((targ->s.eType == ET_MOVER) && (targ->type != ENT_FUNC_BREAKABLE) && (targ->type != ENT_MISC_MODEL_BREAKABLE)) ||
-		((targ->s.eType == ET_MOVER_STR) && (targ->type != ENT_FUNC_BREAKABLE) && (targ->type != ENT_MISC_MODEL_BREAKABLE))) //RPG-X | GSIO01 | 13/05/2009 
+	if (((targ->s.eType == ET_MOVER) && (targ->type != EntityType::ENT_FUNC_BREAKABLE) && (targ->type != EntityType::ENT_MISC_MODEL_BREAKABLE)) ||
+		((targ->s.eType == ET_MOVER_STR) && (targ->type != EntityType::ENT_FUNC_BREAKABLE) && (targ->type != EntityType::ENT_MISC_MODEL_BREAKABLE))) //RPG-X | GSIO01 | 13/05/2009 
 	{
-		if (targ->type == ENT_FUNC_FORCEFIELD) {
+		if (targ->type == EntityType::ENT_FUNC_FORCEFIELD) {
 			if (targ->pain != NULL) {
 				targ->pain(targ, inflictor, take);
 			}
-		} else if ((targ->use != NULL) && ((targ->moverState == MOVER_POS1) || (targ->moverState == ROTATOR_POS1)) && (targ->type != ENT_FUNC_DOOR) && (targ->type != ENT_FUNC_DOOR_ROTATING)) {
+		} else if ((targ->use != NULL) && ((targ->moverState == MOVER_POS1) || (targ->moverState == ROTATOR_POS1)) && (targ->type != EntityType::ENT_FUNC_DOOR) && (targ->type != EntityType::ENT_FUNC_DOOR_ROTATING)) {
 			targ->use(targ, inflictor, attacker);
 		}
 		return;
@@ -472,7 +472,7 @@ void G_Combat_Damage(gentity_t* targ, gentity_t* inflictor, gentity_t* attacker,
 		targ->health = targ->health - take;
 
 		//RPG-X: RedTechie - If medicrevive is on then health only goes down to 1 so we can simulate fake death
-		if ((rpg_medicsrevive.integer == 1) && (targ->type != ENT_FUNC_BREAKABLE) && (targ->type != ENT_MISC_MODEL_BREAKABLE)) {
+		if ((rpg_medicsrevive.integer == 1) && (targ->type != EntityType::ENT_FUNC_BREAKABLE) && (targ->type != EntityType::ENT_MISC_MODEL_BREAKABLE)) {
 			if (targ->health <= 0) {
 				targ->health = 1;
 			}
@@ -720,7 +720,7 @@ void G_Combat_Repair(gentity_t* ent, gentity_t* tr_ent, double rate) {
 			if (tr_ent->target) {
 				G_UseTargets2(tr_ent, tr_ent, tr_ent->target);
 			}
-			if (tr_ent->type == ENT_FUNC_BREAKABLE) {
+			if (tr_ent->type == EntityType::ENT_FUNC_BREAKABLE) {
 				tr_ent->s.solid = CONTENTS_BODY;
 				trap_SetBrushModel(tr_ent, tr_ent->model);
 				tr_ent->r.svFlags &= ~SVF_NOCLIENT;
@@ -739,7 +739,7 @@ void G_Combat_Repair(gentity_t* ent, gentity_t* tr_ent, double rate) {
 
 				tr_ent->clipmask = 0;
 				tr_ent->count = 1;
-			} else if (tr_ent->type == ENT_MISC_MODEL_BREAKABLE) {
+			} else if (tr_ent->type == EntityType::ENT_MISC_MODEL_BREAKABLE) {
 				SP_misc_model_breakable(tr_ent);
 			}
 		}

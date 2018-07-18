@@ -112,7 +112,7 @@ static void ui_transporter_setup(gentity_t* ent) {
 }
 
 void SP_ui_transporter(gentity_t* ent) {
-	ent->type = ENT_UI_TRANSPORTER;
+	ent->type = EntityType::ENT_UI_TRANSPORTER;
 	
 	G_LogFuncBegin();
 
@@ -197,7 +197,7 @@ static void ui_msd_use(gentity_t* ent, gentity_t* other, gentity_t* activator) {
 
 		if(target->falsetarget != NULL){
 			while((temp = G_Find(temp, FOFS(truename), target->falsetarget)) != NULL){
-				if(temp->type == ENT_TARGET_WARP) {
+				if(temp->type == EntityType::ENT_TARGET_WARP) {
 					G_LogFuncEnd();
 					break;
 				}
@@ -223,7 +223,7 @@ static void ui_msd_use(gentity_t* ent, gentity_t* other, gentity_t* activator) {
 
 		if(target->bluename != NULL){
 			while((temp = G_Find(temp, FOFS(swapname), target->bluename)) != NULL){
-				if(temp->type == ENT_TARGET_TURBOLIFT) { 
+				if(temp->type == EntityType::ENT_TARGET_TURBOLIFT) { 
 					break;
 				}
 			}
@@ -239,7 +239,7 @@ static void ui_msd_use(gentity_t* ent, gentity_t* other, gentity_t* activator) {
 
 		if(target->bluesound != NULL){
 			while((temp = G_Find(temp, FOFS(swapname), target->bluesound)) != NULL){
-				if(temp->type == ENT_UI_TRANSPORTER) {
+				if(temp->type == EntityType::ENT_UI_TRANSPORTER) {
 					break;
 				}
 			}
@@ -255,7 +255,7 @@ static void ui_msd_use(gentity_t* ent, gentity_t* other, gentity_t* activator) {
 
 		if(target->falsename != NULL){
 			while((temp = G_Find(temp, FOFS(falsename), target->falsename)) != NULL){
-				if(temp->type == ENT_TARGET_ALERT) break;
+				if(temp->type == EntityType::ENT_TARGET_ALERT) break;
 			}
 			if(temp != NULL) {
 				alertstate = temp->damage;
@@ -283,7 +283,7 @@ static void ui_msd_setup(gentity_t* ent) {
 	G_Assert(ent, (void)0);
 
 	while((target = G_Find(target, FOFS(targetname), ent->target)) != NULL){
-		if(target->type == ENT_TARGET_SHIPHEALTH) {
+		if(target->type == EntityType::ENT_TARGET_SHIPHEALTH) {
 			break;
 		}
 	}
@@ -309,7 +309,7 @@ void SP_ui_msd(gentity_t* ent) {
 
 	G_Assert(ent, (void)0);
 
-	ent->type = ENT_UI_MSD;
+	ent->type = EntityType::ENT_UI_MSD;
 	
 	if(ent->target == NULL) {
 		G_LocLogger(LL_ERROR, "ui_msd without target at %s! Removing Entity.\n", vtos(ent->s.origin));
@@ -416,7 +416,7 @@ void SP_ui_holodeck(gentity_t* ent) {
 
 	G_Assert(ent, (void)0);
 
-	ent->type = ENT_UI_HOLODECK;
+	ent->type = EntityType::ENT_UI_HOLODECK;
 
 	if(ent->target == NULL) {
 		G_LocLogger(LL_ERROR, "ui_holodeck without target at %s!\n", vtos(ent->s.origin));

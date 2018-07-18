@@ -206,6 +206,12 @@
     <ClCompile Include="bg_lex.flex.cpp">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
     </ClCompile>
+    <ClCompile Include="entities\InfoCamp.cpp" />
+    <ClCompile Include="entities\InfoNotNull.cpp" />
+    <ClCompile Include="entities\InfoNull.cpp" />
+    <ClCompile Include="entities\Light.cpp" />
+    <ClCompile Include="entities\Model.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="g_cinematic.cpp">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
     </ClCompile>
@@ -500,6 +506,13 @@
     <ClInclude Include="bg_lex.h" />
     <ClInclude Include="botlib.h" />
     <ClInclude Include="chars.h" />
+    <ClInclude Include="entities\InfoCamp.h" />
+    <ClInclude Include="entities\InfoNotNull.h" />
+    <ClInclude Include="entities\InfoNull.h" />
+    <ClInclude Include="entities\Light.h" />
+    <ClInclude Include="entities\Model.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="g_active.h" />
     <ClInclude Include="g_breakable.h" />
     <ClInclude Include="g_cinematic.h" />

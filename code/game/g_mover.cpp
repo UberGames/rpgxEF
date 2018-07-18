@@ -518,7 +518,7 @@ ReturnToPos1
 void ReturnToPos1(gentity_t *ent)
 {
 	//if it's a crushing door, make sure there are no ents in the way
-	if ((ent->type == ENT_FUNC_DOOR) && (ent->targetname != NULL) && ((ent->spawnflags & 32) == 0) && (ent->wait > 0)) //OVERRIDE
+	if ((ent->type == EntityType::ENT_FUNC_DOOR) && (ent->targetname != NULL) && ((ent->spawnflags & 32) == 0) && (ent->wait > 0)) //OVERRIDE
 	{
 		gentity_t *t;
 		trace_t tr;
@@ -527,7 +527,7 @@ void ReturnToPos1(gentity_t *ent)
 		//FIX: make sure it isn't a turbolift door either
 		//A turbolift door should only be targetted by its turbolift parent
 		t = G_Find(NULL, FOFS(target), ent->targetname);
-		if ((t != NULL) && (t->type != ENT_TARGET_TURBOLIFT))
+		if ((t != NULL) && (t->type != EntityType::ENT_TARGET_TURBOLIFT))
 		{
 			VectorCopy(ent->r.mins, mins);
 			VectorCopy(ent->r.maxs, maxs);
@@ -569,7 +569,7 @@ TiM: To make toggle doors
 void ReturnToPos1_Use(gentity_t* ent, gentity_t* other, gentity_t* activator)
 {
 	//if it's a crushing door, make sure there are no ents in the way
-	if ((ent->type == ENT_FUNC_DOOR) && (ent->targetname != NULL) && ((ent->spawnflags & 32) == 0) && (ent->wait > 0)) //OVERRIDE
+	if ((ent->type == EntityType::ENT_FUNC_DOOR) && (ent->targetname != NULL) && ((ent->spawnflags & 32) == 0) && (ent->wait > 0)) //OVERRIDE
 	{
 		gentity_t *t;
 		trace_t tr;
@@ -578,7 +578,7 @@ void ReturnToPos1_Use(gentity_t* ent, gentity_t* other, gentity_t* activator)
 		//FIX: make sure it isn't a turbolift door either
 		//A turbolift door should only be targetted by its turbolift parent
 		t = G_Find(NULL, FOFS(target), ent->targetname);
-		if ((t != NULL) && (t->type != ENT_TARGET_TURBOLIFT))
+		if ((t != NULL) && (t->type != EntityType::ENT_TARGET_TURBOLIFT))
 		{
 			VectorCopy(ent->r.mins, mins);
 			VectorCopy(ent->r.maxs, maxs);
@@ -792,7 +792,7 @@ void G_Mover_UseBinaryMover(gentity_t *ent, gentity_t *other, gentity_t *activat
 
 	//GSIO01 -> is this a train and is called by the swapname
 	if (activator && activator->target && ent->swapname) {
-		if ((ent->type == ENT_FUNC_TRAIN) && !Q_stricmp(activator->target, ent->swapname)) {
+		if ((ent->type == EntityType::ENT_FUNC_TRAIN) && !Q_stricmp(activator->target, ent->swapname)) {
 			if (ent->count == 1) {
 				ent->s.solid = 0;
 				ent->r.contents = 0;
@@ -824,8 +824,8 @@ void G_Mover_UseBinaryMover(gentity_t *ent, gentity_t *other, gentity_t *activat
 	}
 
 	//GSIO01 | 09/05/2009: do engage if door is admin only and player isn admin
-	if (((ent->type == ENT_FUNC_DOOR) && ((ent->spawnflags & 128) != 0))
-		|| ((ent->type == ENT_FUNC_DOOR_ROTATING) && ((ent->spawnflags & 64) != 0))) {
+	if (((ent->type == EntityType::ENT_FUNC_DOOR) && ((ent->spawnflags & 128) != 0))
+		|| ((ent->type == EntityType::ENT_FUNC_DOOR_ROTATING) && ((ent->spawnflags & 64) != 0))) {
 		if ((activator != NULL) && !G_Client_IsAdmin(activator)) {
 			return;
 		}
@@ -1026,7 +1026,7 @@ void InitMover(gentity_t *ent) {
 
 
 	ent->use = G_Mover_UseBinaryMover;
-	if (ent->type != ENT_FUNC_MOVER) {
+	if (ent->type != EntityType::ENT_FUNC_MOVER) {
 		ent->reached = Reached_BinaryMover;
 	}
 	else {
@@ -1034,7 +1034,7 @@ void InitMover(gentity_t *ent) {
 	}
 
 	// if this is a func_mover we have to make sure it is a bit away from it's first target
-	if (ent->type == ENT_FUNC_MOVER) {
+	if (ent->type == EntityType::ENT_FUNC_MOVER) {
 		VectorSubtract(ent->pos1, ent->pos2, move);
 		distance = VectorLength(move);
 		if (distance < 32) {
@@ -1078,7 +1078,7 @@ void InitMover(gentity_t *ent) {
 		ent->s.apos.trDuration = 1;
 	}
 
-	if (ent->type == ENT_FUNC_ROTATING) {
+	if (ent->type == EntityType::ENT_FUNC_ROTATING) {
 		ent->reached = 0;
 	}
 }
@@ -1189,7 +1189,7 @@ void Blocked_Door(gentity_t *ent, gentity_t *other) {
 	if (ent->damage) {
 		G_Combat_Damage(other, ent, ent, NULL, NULL, ent->damage, 0, MOD_CRUSH);
 	}
-	if (((ent->spawnflags & 4) != 0) || ((ent->type == ENT_FUNC_DOOR_ROTATING) && ((ent->spawnflags & 2) != 0))) { // GSIO01: added support for fucn_door_roating
+	if (((ent->spawnflags & 4) != 0) || ((ent->type == EntityType::ENT_FUNC_DOOR_ROTATING) && ((ent->spawnflags & 2) != 0))) { // GSIO01: added support for fucn_door_roating
 		return;		// crushers don't reverse
 	}
 
@@ -1331,12 +1331,12 @@ void Think_SpawnNewDoorTrigger(gentity_t *ent) {
 	}
 
 	// should we have a big old trigger volume, or a small one?
-	if ((((ent->spawnflags & 256) != 0) && (ent->type == ENT_FUNC_DOOR)) ||
-		(((ent->spawnflags & 128) != 0) && (ent->type == ENT_FUNC_DOOR_ROTATING))) {
+	if ((((ent->spawnflags & 256) != 0) && (ent->type == EntityType::ENT_FUNC_DOOR)) ||
+		(((ent->spawnflags & 128) != 0) && (ent->type == EntityType::ENT_FUNC_DOOR_ROTATING))) {
 		maxs[best] += 12;
 		mins[best] -= 12;
 	}
-	else if (((ent->spawnflags & 8) != 0) && (ent->type == ENT_FUNC_DOOR))
+	else if (((ent->spawnflags & 8) != 0) && (ent->type == EntityType::ENT_FUNC_DOOR))
 	{
 		maxs[best] += 48;
 		mins[best] -= 48;
@@ -1510,7 +1510,7 @@ void SP_func_door(gentity_t *ent) {
 	float	lip;
 	char	*sound;
 
-	ent->type = ENT_FUNC_DOOR;
+	ent->type = EntityType::ENT_FUNC_DOOR;
 
 	if (!ent->tmpEntity) { // not modified by spawnfile
 		G_SpawnString("soundstart", "sound/movers/doors/largedoorstart.wav", &sound);
@@ -1727,7 +1727,7 @@ void SP_func_plat(gentity_t *ent) {
 	float		lip, height;
 	char		*sound;
 
-	ent->type = ENT_FUNC_PLAT;
+	ent->type = EntityType::ENT_FUNC_PLAT;
 
 	G_SpawnString("soundstart", "sound/movers/plats/largeplatstart.wav", &sound);
 	ent->sound1to2 = ent->sound2to1 = G_SoundIndex(sound);
@@ -1842,7 +1842,7 @@ void SP_func_button(gentity_t *ent) {
 	float		lip;
 	char		*sound;
 
-	ent->type = ENT_FUNC_BUTTON;
+	ent->type = EntityType::ENT_FUNC_BUTTON;
 
 	if (!ent->tmpEntity) { // not modified by spawn file
 		G_SpawnString("sounduse", "sound/movers/switches/forgepos.wav", &sound);
@@ -2030,7 +2030,7 @@ void Think_SetupTrainTargets(gentity_t *ent) {
 					vtos(path->s.origin)););
 				return;
 			}
-		} while (next->type != ENT_PATH_CORNER);
+		} while (next->type != EntityType::ENT_PATH_CORNER);
 
 		path->nextTrain = next;
 	}
@@ -2054,7 +2054,7 @@ none
 "wait" - seconds to wait before beginning move to next corner
 */
 void SP_path_corner(gentity_t *self) {
-	self->type = ENT_PATH_CORNER;
+	self->type = EntityType::ENT_PATH_CORNER;
 
 	if (!self->targetname) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] path_corner with no targetname at %s\n", vtos(self->s.origin)););
@@ -2096,7 +2096,7 @@ q3map2:
 "_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_train(gentity_t *self) {
-	self->type = ENT_FUNC_TRAIN;
+	self->type = EntityType::ENT_FUNC_TRAIN;
 
 	VectorClear(self->s.angles);
 
@@ -2173,7 +2173,7 @@ q3map2:
 "_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_static(gentity_t *ent) {
-	ent->type = ENT_FUNC_STATIC;
+	ent->type = EntityType::ENT_FUNC_STATIC;
 
 	trap_SetBrushModel(ent, ent->model);
 	G_SetOrigin(ent, ent->s.origin);
@@ -2430,7 +2430,7 @@ void SP_func_forcefield(gentity_t *ent)
 {
 	char *activate, *damage, *touch, *deactivate, *temp;
 
-	ent->type = ENT_FUNC_FORCEFIELD;
+	ent->type = EntityType::ENT_FUNC_FORCEFIELD;
 
 	// timestamp keeps track of whether the field is on or off
 	ent->timestamp = 1;
@@ -2570,7 +2570,7 @@ void func_rotating_use(gentity_t *ent, gentity_t *other, gentity_t *activator)
 void SP_func_rotating(gentity_t *ent) {
 	float	speed;
 
-	ent->type = ENT_FUNC_ROTATING;
+	ent->type = EntityType::ENT_FUNC_ROTATING;
 
 	if (!ent->speed) {
 		ent->speed = 100;
@@ -2726,7 +2726,7 @@ q3map2:
 void SP_func_door_rotating(gentity_t *ent) {
 	char *sound;
 
-	ent->type = ENT_FUNC_DOOR_ROTATING;
+	ent->type = EntityType::ENT_FUNC_DOOR_ROTATING;
 
 	G_SpawnString("soundstart", "sound/movers/doors/largedoorstart.wav", &sound);
 	ent->sound1to2 = ent->sound2to1 = G_SoundIndex(sound);
@@ -2863,7 +2863,7 @@ void SP_func_bobbing(gentity_t *ent) {
 	float		height;
 	float		phase;
 
-	ent->type = ENT_FUNC_BOBBING;
+	ent->type = EntityType::ENT_FUNC_BOBBING;
 
 	if (!ent->tmpEntity) { // only do this if this is not done by spawn file
 		G_SpawnFloat("height", "32", &height);
@@ -2938,7 +2938,7 @@ void SP_func_pendulum(gentity_t *ent) {
 	float		phase;
 	float		speed;
 
-	ent->type = ENT_FUNC_PENDULUM;
+	ent->type = EntityType::ENT_FUNC_PENDULUM;
 
 	G_SpawnFloat("speed", "30", &speed);
 	G_SpawnInt("dmg", "2", &ent->damage);
@@ -2998,7 +2998,7 @@ q3map2:
 "_receiveShadows" OR "_rs" - sets whether the entity receives shadows
 */
 void SP_func_brushmodel(gentity_t *ent) {
-	ent->type = ENT_FUNC_BRUSHMODEL;
+	ent->type = EntityType::ENT_FUNC_BRUSHMODEL;
 
 	trap_SetBrushModel(ent, ent->model);
 	ent->s.eType = ET_MOVER;
@@ -3044,7 +3044,7 @@ void func_lightchange_setup(gentity_t *ent) {
 		G_FreeEntity(ent);
 		return;
 	}
-	if (ent->type != ENT_FUNC_BRUSHMODEL) {
+	if (ent->type != EntityType::ENT_FUNC_BRUSHMODEL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] func_lightchange with invalid target entity of class %s at %s!\n", bmodel->classname, vtos(ent->s.origin)););
 		G_FreeEntity(ent);
 		return;
@@ -3062,7 +3062,7 @@ void func_lightchange_setup(gentity_t *ent) {
 }
 
 void SP_func_lightchange(gentity_t *ent) {
-	ent->type = ENT_FUNC_LIGHTCHANGE;
+	ent->type = EntityType::ENT_FUNC_LIGHTCHANGE;
 
 	if (!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] func_lightchange without target at %s!\n", vtos(ent->s.origin)););
@@ -3156,7 +3156,7 @@ void func_targetmover_link(gentity_t *ent) {
 void SP_func_targetmover(gentity_t *ent) {
 	char	*sound;
 
-	ent->type = ENT_FUNC_TARGETMOVER;
+	ent->type = EntityType::ENT_FUNC_TARGETMOVER;
 
 	if (!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] func_targetmover without target at %s!\n", vtos(ent->s.origin)););
@@ -3372,7 +3372,7 @@ Target position for the discontinued func_mover
 "angles" - to rotate to
 */
 void SP_path_point(gentity_t *ent) {
-	ent->type = ENT_PATH_POINT;
+	ent->type = EntityType::ENT_PATH_POINT;
 
 	// check if angles are set
 	if (ent->angle) {
@@ -3408,7 +3408,7 @@ void SP_func_mover(gentity_t *ent) {
 	gentity_t  *target;
 	float aspeed;
 
-	ent->type = ENT_FUNC_MOVER;
+	ent->type = EntityType::ENT_FUNC_MOVER;
 
 	if (!ent->target) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] func_mover without target at %s!\n", vtos(ent->s.origin)););
@@ -3641,7 +3641,7 @@ A bmodel that just sits there and opens when a player gets close to it.
 */
 void SP_func_stasis_door(gentity_t *ent)
 {
-	ent->type = ENT_FUNC_STASIS_DOOR;
+	ent->type = EntityType::ENT_FUNC_STASIS_DOOR;
 
 	/* set the brush model */
 	trap_SetBrushModel(ent, ent->model);

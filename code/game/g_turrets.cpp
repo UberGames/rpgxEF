@@ -822,7 +822,7 @@ void SP_misc_turret(gentity_t* base)
 
   G_LogFuncBegin();
 
-  base->type = ENT_MISC_TURRET;
+  base->type = EntityType::ENT_MISC_TURRET;
 
   if(arm == NULL)
   {
@@ -1378,7 +1378,7 @@ void SP_laser_arm(gentity_t *base)
 {
   G_LogFuncBegin();
 
-  base->type = ENT_LASER_ARM;
+  base->type = EntityType::ENT_LASER_ARM;
   base->think = laser_arm_start;
   base->nextthink = level.time + FRAMETIME;
 

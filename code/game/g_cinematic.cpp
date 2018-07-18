@@ -20,7 +20,7 @@ none
 To be written later.
 */
 void SP_cinematic_camera(gentity_t *ent) {
-	ent->type = ENT_CINEMATIC_CAMMERA;
+	ent->type = EntityType::ENT_CINEMATIC_CAMMERA;
 	trap_LinkEntity(ent);
 	InitMover(ent);
 }

@@ -164,6 +164,11 @@ void trap_UnlinkEntity( gentity_t *ent ) {
 	syscall( G_UNLINKENTITY, ent );
 }
 
+void trap_UnlinkEntity(sharedEntity_t* ent)
+{
+  syscall(G_UNLINKENTITY, ent);
+}
+
 
 int trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int32_t* list, int maxcount ) {
 	return syscall( G_ENTITIES_IN_BOX, mins, maxs, list, maxcount );

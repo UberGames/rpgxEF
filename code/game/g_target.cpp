@@ -54,7 +54,7 @@ void SP_target_give( gentity_t *ent )
 	char*		token;
 	unsigned	weapon;
 
-	ent->type = ENT_TARGET_GIVE;
+	ent->type = EntityType::ENT_TARGET_GIVE;
 
 	G_SpawnString( "items", "", &items );
 
@@ -130,7 +130,7 @@ static void Use_target_remove_powerups( /*@shared@*/ /*@unused@*/ gentity_t *ent
 }
 
 void SP_target_remove_powerups( gentity_t *ent ) {
-	ent->type = ENT_TARGET_REMOVE_POWERUPS;
+	ent->type = EntityType::ENT_TARGET_REMOVE_POWERUPS;
 	ent->use = Use_target_remove_powerups;
 }
 
@@ -175,7 +175,7 @@ static void Use_Target_Delay( /*@shared@*/  gentity_t *ent, /*@shared@*/ /*@unus
 }
 
 void SP_target_delay( gentity_t *ent ) {
-	ent->type = ENT_TARGET_DELAY;
+	ent->type = EntityType::ENT_TARGET_DELAY;
 
 	if ( ent->wait <= 0.0f ) {
 		G_SpawnFloat("delay", "0", &ent->wait);
@@ -230,7 +230,7 @@ static void Use_Target_Print (/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unuse
 }
 
 void SP_target_print( gentity_t *ent ) {
-	ent->type = ENT_TARGET_PRINT;
+	ent->type = EntityType::ENT_TARGET_PRINT;
 	ent->use = Use_Target_Print;
 }
 
@@ -283,7 +283,7 @@ void SP_target_speaker( gentity_t *ent ) {
 	char	buffer[MAX_QPATH];
 	char	*s;
 
-	ent->type = ENT_TARGET_SPEAKER;
+	ent->type = EntityType::ENT_TARGET_SPEAKER;
 
 	G_SpawnFloat( "wait", "0", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
@@ -451,7 +451,7 @@ static void target_laser_start (/*@shared@*/ gentity_t *self)
 
 void SP_target_laser (gentity_t *self)
 {
-	self->type = ENT_TARGET_LASER;
+	self->type = EntityType::ENT_TARGET_LASER;
 
 	// let everything else get spawned before we start firing
 	self->think = target_laser_start;
@@ -538,7 +538,7 @@ The activator will be instantly teleported away.
 "swapname" - Activate/Deactivate (Using entity needs SELF/NOACTIVATOR)
 */
 void SP_target_teleporter( gentity_t *self ) {
-	self->type = ENT_TARGET_TELEPORTER;
+	self->type = EntityType::ENT_TARGET_TELEPORTER;
 
 	if (self->targetname == NULL) {
 		if(self->classname != NULL) {
@@ -621,7 +621,7 @@ static void target_relay_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unus
 }
 
 void SP_target_relay (gentity_t *self) {
-	self->type = ENT_TARGET_RELAY;
+	self->type = EntityType::ENT_TARGET_RELAY;
 	self->use = target_relay_use;
 }
 
@@ -645,7 +645,7 @@ static void target_kill_use( /*@shared@*/ /*@unused@*/ gentity_t *self, /*@share
 }
 
 void SP_target_kill( gentity_t *self ) {
-	self->type = ENT_TARGET_KILL;
+	self->type = EntityType::ENT_TARGET_KILL;
 
 	self->use = target_kill_use;
 
@@ -673,7 +673,7 @@ static void target_location_linkup(/*@shared@*/ gentity_t *ent)
 	for (i = 0, ent = g_entities, n = 1;
 		i < level.num_entities;
 		i++, ent++) {
-			if ((ent->classname != NULL) && (ent->type == ENT_TARGET_LOCATION)) {
+			if ((ent->classname != NULL) && (ent->type == EntityType::ENT_TARGET_LOCATION)) {
 				// lets overload some variables!
 				ent->health = n; // use for location marking
 				trap_SetConfigstring( CS_LOCATIONS + n, ent->message );
@@ -721,7 +721,7 @@ For Type = 1: /locedit add <protected> "<location-name>"
 	this will close the file.
 */
 void SP_target_location( gentity_t *self ){
-	self->type = ENT_TARGET_LOCATION;
+	self->type = EntityType::ENT_TARGET_LOCATION;
 
 	self->think = target_location_linkup;
 	self->nextthink = level.time + 200;  // Let them all spawn first
@@ -766,7 +766,7 @@ static void target_counter_use( /*@shared@*/ gentity_t *self, /*@shared@*/ /*@un
 
 void SP_target_counter (gentity_t *self)
 {
-	self->type = ENT_TARGET_COUNTER;
+	self->type = EntityType::ENT_TARGET_COUNTER;
 
 	self->wait = -1.0f;
 	if (self->count == 0) {
@@ -812,7 +812,7 @@ static void target_objective_use( /*@shared@*/ gentity_t *self, /*@shared@*/ /*@
 
 void SP_target_objective (gentity_t *self)
 {
-	self->type = ENT_TARGET_OBJECTIVE;
+	self->type = EntityType::ENT_TARGET_OBJECTIVE;
 
 	if ( self->count <= 0 ) {
 		//FIXME: error msg
@@ -915,7 +915,7 @@ static void target_boolean_use (/*@shared@*/ gentity_t *self, /*@shared@*/ genti
 }
 
 void SP_target_boolean (gentity_t *self) {
-	self->type = ENT_TARGET_BOOLEAN;
+	self->type = EntityType::ENT_TARGET_BOOLEAN;
 
 	if (!self->booleanstate && (self->spawnflags & 1) != 0) {
 		self->booleanstate = qtrue;
@@ -974,7 +974,7 @@ void target_gravity_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/
 void SP_target_gravity (gentity_t *self) {
 	char *temp;
 
-	self->type = ENT_TARGET_GRAVITY;
+	self->type = EntityType::ENT_TARGET_GRAVITY;
 
 	if(!self->tmpEntity) { // check for spawnTEnt
 		G_SpawnString("gravity", "800", &temp);
@@ -1012,7 +1012,7 @@ void target_shake_use (/*@shared@*/ gentity_t *self, /*@shared@*/ /*@unused@*/ g
 }
 
 void SP_target_shake (gentity_t *self) {
-	self->type = ENT_TARGET_SHAKE;
+	self->type = EntityType::ENT_TARGET_SHAKE;
 
 	//TiM: Phenix, you're a n00b. You should always put default values in. ;P
 	G_SpawnFloat( "intensity", "5", &self->distance /*was &self->intensity*/ );
@@ -1053,7 +1053,7 @@ void target_evosuit_use (/*@shared@*/ /*@unused@*/ gentity_t *self, /*@shared@*/
 }
 
 void SP_target_evosuit (gentity_t *self) {
-	self->type = ENT_TARGET_EVOSUIT;
+	self->type = EntityType::ENT_TARGET_EVOSUIT;
 
 	self->use = target_evosuit_use;
 
@@ -1083,7 +1083,7 @@ static void target_turbolift_unlock ( /*@shared@*/ gentity_t *ent )
 		if(ent->target != NULL) {
 			while ( ( door = G_Find( door, FOFS( targetname ), ent->target )) != NULL  )
 			{
-				if ( door->type == ENT_FUNC_DOOR )
+				if ( door->type == EntityType::ENT_FUNC_DOOR )
 				{
 					door->flags &= ~FL_CLAMPED;
 				}
@@ -1095,7 +1095,7 @@ static void target_turbolift_unlock ( /*@shared@*/ gentity_t *ent )
 		{
 			while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
 			{
-				if ( door->type == ENT_FUNC_DOOR )
+				if ( door->type == EntityType::ENT_FUNC_DOOR )
 				{
 					door->flags &= ~FL_CLAMPED;
 				}
@@ -1146,7 +1146,7 @@ static void target_turbolift_endMove ( /*@shared@*/ gentity_t *ent )
 		if(ent->target != NULL) {
 			while ( ( lights = G_Find( lights, FOFS( targetname ), ent->target ) ) != NULL )
 			{
-				if ( lights->type == ENT_FUNC_USABLE )
+				if ( lights->type == EntityType::ENT_FUNC_USABLE )
 				{	
 					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
@@ -1192,7 +1192,7 @@ static void target_turbolift_endMove ( /*@shared@*/ gentity_t *ent )
 		if(otherLift != NULL && otherLift->target != NULL) {
 			while ( ( lights = G_Find( lights, FOFS( targetname ), otherLift->target ) ) != NULL )
 			{
-				if ( lights->type == ENT_FUNC_USABLE )
+				if ( lights->type == EntityType::ENT_FUNC_USABLE )
 				{
 					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
@@ -1440,7 +1440,7 @@ static void target_turbolift_startMove (/*@shared@*/ gentity_t *ent )
 		if(ent->target != NULL) {
 			while ( ( lights = G_Find( lights, FOFS( targetname ), ent->target ) ) != NULL )
 			{
-				if ( lights->type == ENT_FUNC_USABLE )
+				if ( lights->type == EntityType::ENT_FUNC_USABLE )
 				{
 					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
@@ -1486,7 +1486,7 @@ static void target_turbolift_startMove (/*@shared@*/ gentity_t *ent )
 		if(otherLift->target != NULL) {
 			while ( ( lights = G_Find( lights, FOFS( targetname ), otherLift->target ) ) != NULL )
 			{
-				if ( lights->type == ENT_FUNC_USABLE )
+				if ( lights->type == EntityType::ENT_FUNC_USABLE )
 				{
 					if(rpg_calcLiftTravelDuration.integer == 0) {
 						lights->use( lights, lights, ent );
@@ -1577,7 +1577,7 @@ static void target_turbolift_shutDoors (/*@shared@*/  gentity_t *ent )
 	if(ent->target != NULL) {
 		while ( ( door = G_Find( door, FOFS( targetname ), ent->target )) != NULL  )
 		{
-			if ( door->type == ENT_FUNC_DOOR )
+			if ( door->type == EntityType::ENT_FUNC_DOOR )
 			{
 				if ( door->moverState != MOVER_POS1 ) {
 					ent->nextthink = level.time + 500;
@@ -1591,7 +1591,7 @@ static void target_turbolift_shutDoors (/*@shared@*/  gentity_t *ent )
 	if(otherLift->target != NULL) {
 		while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
 		{
-			if ( door->type == ENT_FUNC_DOOR )
+			if ( door->type == EntityType::ENT_FUNC_DOOR )
 			{
 				if ( door->moverState != MOVER_POS1 ) {
 					ent->nextthink = level.time + 500;
@@ -1627,7 +1627,7 @@ void target_turbolift_start ( gentity_t *self )
 		if(self->target != NULL) {
 			while ( ( door = G_Find( door, FOFS( targetname ), self->target )) != NULL  )
 			{
-				if ( door->type == ENT_FUNC_DOOR )
+				if ( door->type == EntityType::ENT_FUNC_DOOR )
 				{
 					door->flags |= FL_CLAMPED;
 					if ( door->moverState != MOVER_POS1 )
@@ -1642,7 +1642,7 @@ void target_turbolift_start ( gentity_t *self )
 		if(otherLift->target != NULL) {
 			while ( ( door = G_Find( door, FOFS( targetname ), otherLift->target )) != NULL  )
 			{
-				if ( door->type == ENT_FUNC_DOOR )
+				if ( door->type == EntityType::ENT_FUNC_DOOR )
 				{
 					door->flags |= FL_CLAMPED;
 					if ( door->moverState != MOVER_POS1 )
@@ -1783,7 +1783,7 @@ void SP_target_turbolift ( gentity_t *self )
 		return;
 	}
 
-	self->type = ENT_TARGET_TURBOLIFT;
+	self->type = EntityType::ENT_TARGET_TURBOLIFT;
 
 	//cache the moving sounds
 	G_SpawnString( "soundLoop", "sound/movers/plats/turbomove.wav", &loopSound );
@@ -1956,7 +1956,7 @@ void target_doorLock_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ 
 		}
 	}
 
-	if((target->type == ENT_FUNC_DOOR) || (target->type == ENT_FUNC_DOOR_ROTATING)) {
+	if((target->type == EntityType::ENT_FUNC_DOOR) || (target->type == EntityType::ENT_FUNC_DOOR_ROTATING)) {
 		target->flags ^= FL_LOCKED;
 	} else {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] Target %s of target_doorlock at %s is not a door!\n", ent->target, vtos(ent->s.origin)););
@@ -1967,7 +1967,7 @@ void target_doorLock_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ 
 void SP_target_doorLock(gentity_t *ent) {
 	char *temp;
 
-	ent->type = ENT_TARGET_DOORLOCK;
+	ent->type = EntityType::ENT_TARGET_DOORLOCK;
 
 	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_doorlock at %s without target!\n", vtos(ent->s.origin)););
@@ -2448,7 +2448,7 @@ void target_alert_parseShaders(/*@shared@*/ gentity_t *ent) {
 void SP_target_alert(gentity_t *ent) {
 	char		*temp;
 
-	ent->type = ENT_TARGET_ALERT;
+	ent->type = EntityType::ENT_TARGET_ALERT;
 
 	G_SpawnString("greenname", "", &temp);
 	ent->swapname = G_NewString(temp);
@@ -2561,7 +2561,7 @@ void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gent
 				continue;
 			}
 
-			if((g_entities[i].type != ENT_FUNC_TRAIN) && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
+			if((g_entities[i].type != EntityType::ENT_FUNC_TRAIN) && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
 				target = &g_entities[i];
 				if(target == NULL) {
 					continue;
@@ -2582,7 +2582,7 @@ void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gent
 					}
 #endif
 				}
-			} else if((g_entities[i].type == ENT_FUNC_TRAIN) && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
+			} else if((g_entities[i].type == EntityType::ENT_FUNC_TRAIN) && Q_stricmp(g_entities[i].swapname, ent->bluename) == 0) {
 				target = &g_entities[i];
 				if(target == NULL) {
 					continue;
@@ -2676,7 +2676,7 @@ void target_warp_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ gent
 void SP_target_warp(gentity_t *ent) {
 	char *temp;
 
-	ent->type = ENT_TARGET_WARP;
+	ent->type = EntityType::ENT_TARGET_WARP;
 
 	G_SpawnString("swapWarp", "", &temp);
 	ent->swapname = G_NewString(temp);
@@ -2728,14 +2728,14 @@ void target_deactivate_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*
 	}
 
 	while((target = G_Find(target, FOFS(targetname2), ent->target)) != NULL) {
-		if(target->type == ENT_FUNC_USABLE) {
+		if(target->type == EntityType::ENT_FUNC_USABLE) {
 			target->flags ^= FL_LOCKED;
 		}
 	}
 }
 
 void SP_target_deactivate(/*@shared@*/ gentity_t *ent) {
-	ent->type = ENT_TARGET_DEACTIVATE;
+	ent->type = EntityType::ENT_TARGET_DEACTIVATE;
 
 	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_deactivate at %s without target!\n", vtos(ent->r.currentOrigin)););
@@ -2799,7 +2799,7 @@ void target_serverchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused
 void SP_target_serverchange(/*@shared@*/ gentity_t *ent) {
 	int serverNum = 0;
 
-	ent->type = ENT_TARGET_SERVERCHANGE;
+	ent->type = EntityType::ENT_TARGET_SERVERCHANGE;
 
 	G_SpawnInt("serverNum", "1", &serverNum);
 	ent->count = serverNum;
@@ -2855,7 +2855,7 @@ void target_levelchange_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@
 }
 
 void SP_target_levelchange(gentity_t *ent) {
-	ent->type = ENT_TARGET_LEVELCHANGE;
+	ent->type = EntityType::ENT_TARGET_LEVELCHANGE;
 
 	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_levelchange without target at %s!\n", vtos(ent->s.origin)););
@@ -2944,7 +2944,7 @@ void target_shaderremap_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@
 
 void SP_target_shaderremap(gentity_t *ent) {
 
-	ent->type = ENT_TARGET_SHADERREMAP;
+	ent->type = EntityType::ENT_TARGET_SHADERREMAP;
 
 	if(ent->falsename == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shaderremap without falsename-shader at %s!\n", vtos(ent->s.origin)););
@@ -3064,7 +3064,7 @@ void SP_target_selfdestruct(gentity_t *ent) {
 	double		ETAmin, ETAsec;
 	float		temp;
 
-	ent->type = ENT_TARGET_SELFDESTRUCT;
+	ent->type = EntityType::ENT_TARGET_SELFDESTRUCT;
 
 	if(level.time < 1000.0f){ //failsafe in case someone spawned this in the radiant
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_selfdestruct spawned by level. Removing entity."););
@@ -3193,7 +3193,7 @@ void target_safezone_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ 
 
 void SP_target_zone(gentity_t *ent) {
 
-	ent->type = ENT_TARGET_ZONE;
+	ent->type = EntityType::ENT_TARGET_ZONE;
 
 	if(ent->targetname == NULL || ent->targetname[0] == 0) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_zone without targetname at %s, removing entity.\n", vtos(ent->s.origin)););
@@ -3571,14 +3571,14 @@ void target_shiphealth_think(/*@shared@*/ gentity_t *ent) {
 	//shield reenstatement
 	if(ent->splashDamage == -1) { //else we don't need to run this
 		if((ent->count * pow(ent->health, -1)) > 0.5) {
-			if(alertEnt != NULL && alertEnt->damage == 0 && (alertEnt->type == ENT_TARGET_ALERT)) {
+			if(alertEnt != NULL && alertEnt->damage == 0 && (alertEnt->type == EntityType::ENT_TARGET_ALERT)) {
 				ent->splashDamage = 0;
 			} else {
 				ent->splashDamage = 1;
 			}
 		} else {
 			if((ent->count * pow(ent->health, -1) * flrandom(0, 1)) > 0.75){
-				if(alertEnt != NULL && alertEnt->damage == 0 && (alertEnt->type == ENT_TARGET_ALERT)) {
+				if(alertEnt != NULL && alertEnt->damage == 0 && (alertEnt->type == EntityType::ENT_TARGET_ALERT)) {
 					ent->splashDamage = 0;
 				} else {
 					ent->splashDamage = 1;
@@ -3620,7 +3620,7 @@ void target_shiphealth_think(/*@shared@*/ gentity_t *ent) {
 
 
 void SP_target_shiphealth(gentity_t *ent) {
-	ent->type = ENT_TARGET_SHIPHEALTH;
+	ent->type = EntityType::ENT_TARGET_SHIPHEALTH;
 
 	if(ent->targetname == NULL || ent->health == 0 || ent->splashRadius == 0 || !ent->angle || !ent->speed){
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_shiphealth at %s is missing one or more parameters, removing entity.\n", vtos(ent->s.origin)););
@@ -3941,7 +3941,7 @@ void target_sequence_use(/*@shared@*/ gentity_t *ent, /*@shared@*/ /*@unused@*/ 
 }
 
 void SP_target_sequence(gentity_t *ent) {
-	ent->type = ENT_TARGET_SEQUENCE;
+	ent->type = EntityType::ENT_TARGET_SEQUENCE;
 
 	if(ent->targetname == NULL){
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_sequence at %s without targetname, removing entity.\n", vtos(ent->s.origin)););

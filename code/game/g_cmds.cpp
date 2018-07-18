@@ -3767,7 +3767,7 @@ static void Cmd_UseEnt_f(gentity_t* ent) {
 	//Doing it this way can screw up maps bigtime. >.<
 	//RPG_Chambers may never be the same again.... :S
 	if (((targetEnt != NULL) && (targetEnt->use != NULL))) {
-		if (targetEnt->type == ENT_FUNC_USABLE) {
+		if (targetEnt->type == EntityType::ENT_FUNC_USABLE) {
 			return;
 		}
 
@@ -3812,7 +3812,7 @@ static void Cmd_EntList_f(gentity_t* ent) {
 		i < level.num_entities;
 		i++, mapEnt++) {
 
-		if ((Q_stricmpn(mapEnt->classname, "fx_", 3) == 0) || ((mapEnt->type == ENT_FUNC_USABLE) && (ent->targetname != NULL))) {
+		if ((Q_stricmpn(mapEnt->classname, "fx_", 3) == 0) || ((mapEnt->type == EntityType::ENT_FUNC_USABLE) && (ent->targetname != NULL))) {
 			if (mapEnt->use) {
 				memset(&entBuffer, 0, sizeof(entBuffer));
 
@@ -3944,7 +3944,7 @@ static void Cmd_BeamToLoc_f(gentity_t* ent) {
 	//Scan for the right entity
 	for (i = 0, locEnt = g_entities; i < level.num_entities; locEnt++, i++) {
 
-		if (locEnt->type == ENT_TARGET_LOCATION) {
+		if (locEnt->type == EntityType::ENT_TARGET_LOCATION) {
 			//if we have a health index (which will always be above 0 coz 0 is a default 'unknown' value)
 			if (locEnt->health == locIndex && locEnt->health >= 1 && locIndex >= 1) {
 				break;
@@ -3958,7 +3958,7 @@ static void Cmd_BeamToLoc_f(gentity_t* ent) {
 		}
 	}
 
-	if ((locEnt == NULL) || (locEnt->type != ENT_TARGET_LOCATION)) {
+	if ((locEnt == NULL) || (locEnt->type != EntityType::ENT_TARGET_LOCATION)) {
 		G_PrintfClient(ent, "Invalid Beam Entity.\n");
 		return;
 	}
@@ -5258,7 +5258,7 @@ static void Cmd_Turbolift_f(gentity_t* ent) {
 		}
 
 		//found our ent!
-		if (lift->type == ENT_TARGET_TURBOLIFT) {
+		if (lift->type == EntityType::ENT_TARGET_TURBOLIFT) {
 			break;
 		}
 		//reset it
@@ -5544,9 +5544,9 @@ static void Cmd_lockDoor_f(gentity_t* ent) {
 	//Doing it this way can screw up maps bigtime. >.<
 	//RPG_Chambers may never be the same again.... :S
 	if (targetEnt != NULL) {
-		if (targetEnt->type != ENT_FUNC_DOOR) {
+		if (targetEnt->type != EntityType::ENT_FUNC_DOOR) {
 			//GSIO01 not a func_door?? well then check wheter its a rotating door
-			if (targetEnt->type != ENT_FUNC_DOOR_ROTATING) {
+			if (targetEnt->type != EntityType::ENT_FUNC_DOOR_ROTATING) {
 				trap_SendServerCommand(ent - g_entities, va(" print \"Entity %i isn't a door.\n\" ", index));
 				return;
 			}
@@ -5683,10 +5683,10 @@ static void Cmd_unlockAll_f(gentity_t* ent) {
 #endif
 
 	for (i = g_maxclients.integer; i < MAX_GENTITIES; i++) {
-		if ((g_entities[i].type == ENT_FUNC_DOOR) && ((g_entities[i].flags & FL_LOCKED) != 0)) {
+		if ((g_entities[i].type == EntityType::ENT_FUNC_DOOR) && ((g_entities[i].flags & FL_LOCKED) != 0)) {
 			g_entities[i].flags ^= FL_LOCKED;
 		}
-		else if ((g_entities[i].type == ENT_FUNC_DOOR_ROTATING) && ((g_entities[i].flags & FL_LOCKED) != 0)) {
+		else if ((g_entities[i].type == EntityType::ENT_FUNC_DOOR_ROTATING) && ((g_entities[i].flags & FL_LOCKED) != 0)) {
 			g_entities[i].flags ^= FL_LOCKED;
 		}
 	}
@@ -5747,10 +5747,10 @@ static void Cmd_lockAll_f(gentity_t* ent) {
 #endif
 
 	for (i = g_maxclients.integer; i < MAX_GENTITIES; i++) {
-		if ((g_entities[i].type == ENT_FUNC_DOOR) && ((g_entities[i].flags & FL_LOCKED) == 0)) {
+		if ((g_entities[i].type == EntityType::ENT_FUNC_DOOR) && ((g_entities[i].flags & FL_LOCKED) == 0)) {
 			g_entities[i].flags ^= FL_LOCKED;
 		}
-		else if ((g_entities[i].type == ENT_FUNC_DOOR_ROTATING) && !(g_entities[i].flags & FL_LOCKED)) {
+		else if ((g_entities[i].type == EntityType::ENT_FUNC_DOOR_ROTATING) && !(g_entities[i].flags & FL_LOCKED)) {
 			g_entities[i].flags ^= FL_LOCKED;
 		}
 	}
@@ -6303,7 +6303,7 @@ static void Cmd_reloadtorpedos_f(gentity_t* ent) {
 			continue;
 		}
 
-		if (torpedo->type != ENT_FX_TORPEDO) {
+		if (torpedo->type != EntityType::ENT_FX_TORPEDO) {
 			continue;
 		}
 
@@ -6461,7 +6461,7 @@ static void Cmd_listSPs(gentity_t* ent) {
 
 	G_Printf("Spawnpoint list: \n");
 	for (i = 0; i < MAX_GENTITIES; i++) {
-		if (g_entities[i].type == ENT_INFO_PLAYER_START) {
+		if (g_entities[i].type == EntityType::ENT_INFO_PLAYER_START) {
 			G_Printf("Spawnpoint type: info_player_start Origin: %s\n", vtos(ent->s.origin));
 		}
 		else if (Q_stricmp(g_entities[i].classname, "info_player_deathmatch") == 0) {
@@ -7465,7 +7465,7 @@ static void Cmd_UiTransporterLoc_f(gentity_t* ent) {
 	delay *= 1000;
 
 	for (i = 0; i < MAX_GENTITIES; i++) {
-		if (g_entities[i].type == ENT_TARGET_LOCATION) {
+		if (g_entities[i].type == EntityType::ENT_TARGET_LOCATION) {
 			if (g_entities[i].health == targetLoc && g_entities[i].health >= 1 && targetLoc >= 1) {
 				locTarget = &g_entities[i];
 				break;
@@ -7880,7 +7880,7 @@ void Cmd_GeneratePrecacheFile(gentity_t* ent) {
 	for (i = 0; i < MAX_GENTITIES; i++) {
 		if (!g_entities[i].inuse) continue;
 
-		if (g_entities[i].type == ENT_TARGET_TURBOLIFT) {
+		if (g_entities[i].type == EntityType::ENT_TARGET_TURBOLIFT) {
 			if (g_entities[i].falsename != NULL && g_entities[i].falsename[0] != 0) {
 				addShaderToList(shaders, g_entities[i].falsename);
 			}

@@ -1512,7 +1512,7 @@ static void G_FindTeams(void)
       continue;
     if((e->flags & FL_TEAMSLAVE) != 0)
       continue;
-    if((e->classname != NULL) && (e->type != ENT_FUNC_DOOR))
+    if((e->classname != NULL) && (e->type != EntityType::ENT_FUNC_DOOR))
     {//not a door
       if(Q_stricmp("1", e->team) == 0 || Q_stricmp("2", e->team) == 0)
       {//is trying to tell us it belongs to the TEAM_RED or TEAM_BLUE
@@ -1638,9 +1638,9 @@ static void Dev_ShowTriggers(gentity_t *ent)
   for(i = 0; i < MAX_GENTITIES; i++)
   {
     if((tar = &g_entities[i]) == NULL) continue;
-    if(tar->type >= ENT_TRIGGER_ALWAYS && tar->type < ENT_TARGET_REMOVE_POWERUPS)
+    if(tar->type >= EntityType::ENT_TRIGGER_ALWAYS && tar->type < EntityType::ENT_TARGET_REMOVE_POWERUPS)
     {
-      if(tar->type == ENT_TRIGGER_ALWAYS)
+      if(tar->type == EntityType::ENT_TRIGGER_ALWAYS)
       {
         continue;
       }
@@ -1651,7 +1651,7 @@ static void Dev_ShowTriggers(gentity_t *ent)
       }
 
       trap_LinkEntity(ent);
-      if(tar->type == ENT_TRIGGER_PUSH)
+      if(tar->type == EntityType::ENT_TRIGGER_PUSH)
       {
         G_AddEvent(tar, EV_TRIGGER_SHOW, 1);
       }

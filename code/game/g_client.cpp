@@ -72,7 +72,7 @@ potential spawning position for deathmatch games.
 void SP_info_player_deathmatch(gentity_t *ent) {
 	int32_t i = 0;
 
-	ent->type = ENT_INFO_PLAYER_START;
+	ent->type = EntityType::ENT_INFO_PLAYER_START;
 
 	if (strcmp(ent->classname, "info_player_deathmatch") != 0) {
 		ent->classname = "info_player_deathmatch";
@@ -106,7 +106,7 @@ none
 *	Spawn function for intermission entity.
 */
 void SP_info_player_intermission(gentity_t *ent) {
-	ent->type = ENT_INFO_PLAYER_INTERMISSION;
+	ent->type = EntityType::ENT_INFO_PLAYER_INTERMISSION;
 }
 
 /**
@@ -2820,7 +2820,7 @@ void G_Client_UpdateSoundZones(void) {
 	memset(&supdate, 0, sizeof(supdate));
 
 	for (; i < MAX_GENTITIES; i++) {
-		if ((g_entities[i].type == ENT_TARGET_ZONE) && (g_entities[i].count == 3)) {
+		if ((g_entities[i].type == EntityType::ENT_TARGET_ZONE) && (g_entities[i].count == 3)) {
 			memset(&entlist, 0, sizeof(entlist));
 			count = trap_EntitiesInBox(g_entities[i].r.mins, g_entities[i].r.maxs, (int32_t*)&entlist, MAX_GENTITIES);
 

@@ -878,7 +878,7 @@ void G_FreeEntity(gentity_t* ed)
   ed->classname = "freed";
   ed->freetime = level.time;
   ed->inuse = qfalse;
-  ed->type = ENT_FREE;
+  ed->type = EntityType::ENT_FREE;
 
   G_LogFuncEnd();
 }

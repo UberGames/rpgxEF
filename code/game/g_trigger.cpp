@@ -176,7 +176,7 @@ so, the basic time between firing is a random time between
 void SP_trigger_multiple(gentity_t *ent) {
 	G_LogFuncBegin();
 
-	ent->type = ENT_TRIGGER_MULTIPLE;
+	ent->type = EntityType::ENT_TRIGGER_MULTIPLE;
 
 	G_SpawnFloat("wait", "0.5", &ent->wait);
 	G_SpawnFloat("random", "0", &ent->random);
@@ -251,7 +251,7 @@ none
 void SP_trigger_always(gentity_t* ent) {
 	G_LogFuncBegin();
 
-	ent->type = ENT_TRIGGER_ALWAYS;
+	ent->type = EntityType::ENT_TRIGGER_ALWAYS;
 
 	/* we must have some delay to make sure our use targets are present */
 	ent->nextthink = level.time + 300;
@@ -363,7 +363,7 @@ None
 void SP_trigger_push(gentity_t* self) {
 	G_LogFuncBegin();
 
-	self->type = ENT_TRIGGER_PUSH;
+	self->type = EntityType::ENT_TRIGGER_PUSH;
 
 	G_Trigger_Init(self);
 
@@ -439,7 +439,7 @@ This is predicted on the serverside and is triggered by use-function.
 void SP_target_push(gentity_t* self) {
 	G_LogFuncBegin();
 
-	self->type = ENT_TARGET_PUSH;
+	self->type = EntityType::ENT_TARGET_PUSH;
 
 	if (self->speed <= 0) {
 		self->speed = 1000;
@@ -700,7 +700,7 @@ void SP_trigger_teleport(gentity_t* self)
 
 	G_LogFuncBegin();
 
-	self->type = ENT_TRIGGER_TELEPORT;
+	self->type = EntityType::ENT_TRIGGER_TELEPORT;
 
 	G_Trigger_Init(self);
 
@@ -871,7 +871,7 @@ static void hurt_touch(gentity_t* self, gentity_t* other, trace_t* trace) {
 void SP_trigger_hurt(gentity_t* self) {
 	G_LogFuncBegin();
 
-	self->type = ENT_TRIGGER_HURT;
+	self->type = EntityType::ENT_TRIGGER_HURT;
 
 	G_Trigger_Init(self);
 
@@ -972,7 +972,7 @@ static void func_timer_use(gentity_t* self, gentity_t* other, gentity_t* activat
 void SP_func_timer(gentity_t* self) {
 	G_LogFuncBegin();
 
-	self->type = ENT_FUNC_TIMER;
+	self->type = EntityType::ENT_FUNC_TIMER;
 
 	G_SpawnFloat("random", "1", &self->random);
 	G_SpawnFloat("wait", "1", &self->wait);
@@ -1155,7 +1155,7 @@ void SP_trigger_transporter(gentity_t* ent) {
 
 	G_LogFuncBegin();
 
-	ent->type = ENT_TRIGGER_TRANSPORTER;
+	ent->type = EntityType::ENT_TRIGGER_TRANSPORTER;
 
 	G_Trigger_Init(ent);
 
@@ -1278,7 +1278,7 @@ static void trigger_radiation_use(gentity_t* ent, gentity_t* other, gentity_t* a
 void SP_trigger_radiation(gentity_t* ent) {
 	G_LogFuncBegin();
 
-	ent->type = ENT_TRIGGGER_RADIATION;
+	ent->type = EntityType::ENT_TRIGGGER_RADIATION;
 
 	if (ent->damage == 0) {
 		ent->damage = 1;

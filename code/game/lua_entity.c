@@ -754,7 +754,7 @@ static int Entity_DelayedCallSpawn(lua_State *L) {
 		return 1;
 	}
 
-	if(lent->e->type == ENT_TARGET_SELFDESTRUCT) {
+	if(lent->e->type == EntityType::ENT_TARGET_SELFDESTRUCT) {
 		LUA_DEBUG("ERROR - entity.DelayedCallSpawn - entity is target_selfdestruct");
 		lua_pushboolean(L, qfalse);
 		return 1; //we will not selfdestruct this way
@@ -795,7 +795,7 @@ static int Entity_CallSpawn(lua_State *L) {
 	}
 	e = lent->e;
 
-	if(lent->e->type == ENT_TARGET_SELFDESTRUCT) {
+	if(lent->e->type == EntityType::ENT_TARGET_SELFDESTRUCT) {
 		LUA_DEBUG("ERROR - entity.CallSpawn - entity is target_selfdestruct");
 		lua_pushboolean(L, qfalse);
 		return 1; //we will not selfdestruct this way
@@ -1048,15 +1048,15 @@ static int Entity_Lock(lua_State *L) {
 
 	ent = lent->e;
 
-	if((ent->type == ENT_FUNC_DOOR) ||
-		(ent->type == ENT_FUNC_DOOR_ROTATING) ||
-		(ent->type == ENT_TARGET_TELEPORTER) ||
-		(ent->type == ENT_TARGET_TURBOLIFT) ||
-		(ent->type == ENT_FUNC_USABLE) ||
-		(ent->type == ENT_TARGET_SERVERCHANGE) ||
-		(ent->type == ENT_TRIGGER_TELEPORT) ||
-		(ent->type == ENT_UI_TRANSPORTER) ||
-		(ent->type == ENT_UI_HOLODECK)
+	if((ent->type == EntityType::ENT_FUNC_DOOR) ||
+		(ent->type == EntityType::ENT_FUNC_DOOR_ROTATING) ||
+		(ent->type == EntityType::ENT_TARGET_TELEPORTER) ||
+		(ent->type == EntityType::ENT_TARGET_TURBOLIFT) ||
+		(ent->type == EntityType::ENT_FUNC_USABLE) ||
+		(ent->type == EntityType::ENT_TARGET_SERVERCHANGE) ||
+		(ent->type == EntityType::ENT_TRIGGER_TELEPORT) ||
+		(ent->type == EntityType::ENT_UI_TRANSPORTER) ||
+		(ent->type == EntityType::ENT_UI_HOLODECK)
 		) {
 		if(ent->flags & FL_LOCKED) {
 			LUA_DEBUG("INFO - entity.Lock - already locked");
@@ -1096,15 +1096,15 @@ static int Entity_Unlock(lua_State *L) {
 	}
 
 	ent = lent->e;
-	if((ent->type == ENT_FUNC_DOOR) ||
-		(ent->type == ENT_FUNC_DOOR_ROTATING) ||
-		(ent->type == ENT_TARGET_TELEPORTER) ||
-		(ent->type == ENT_TARGET_TURBOLIFT) ||
-		(ent->type == ENT_FUNC_USABLE) ||
-		(ent->type == ENT_TARGET_SERVERCHANGE) ||
-		(ent->type == ENT_TRIGGER_TELEPORT) ||
-		(ent->type == ENT_UI_TRANSPORTER) ||
-		(ent->type == ENT_UI_HOLODECK)
+	if((ent->type == EntityType::ENT_FUNC_DOOR) ||
+		(ent->type == EntityType::ENT_FUNC_DOOR_ROTATING) ||
+		(ent->type == EntityType::ENT_TARGET_TELEPORTER) ||
+		(ent->type == EntityType::ENT_TARGET_TURBOLIFT) ||
+		(ent->type == EntityType::ENT_FUNC_USABLE) ||
+		(ent->type == EntityType::ENT_TARGET_SERVERCHANGE) ||
+		(ent->type == EntityType::ENT_TRIGGER_TELEPORT) ||
+		(ent->type == EntityType::ENT_UI_TRANSPORTER) ||
+		(ent->type == EntityType::ENT_UI_HOLODECK)
 		) {
 		if(ent->flags & FL_LOCKED)  {
 			ent->flags ^= FL_LOCKED;

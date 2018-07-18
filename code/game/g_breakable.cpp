@@ -43,7 +43,7 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 		eState->solid = 0;
 		eShared->contents = 0;
 		self->clipmask = 0;
-		if(((self->spawnflags & 256) != 0) && (self->type == ENT_FUNC_BREAKABLE)) {
+		if(((self->spawnflags & 256) != 0) && (self->type == EntityType::ENT_FUNC_BREAKABLE)) {
 			eShared->svFlags |= SVF_NOCLIENT;
 			eState->eFlags |= EF_NODRAW;
 		}
@@ -320,7 +320,7 @@ In the unlikely event that we do have an origin brush this is the code:
 */
 void SP_func_breakable( gentity_t *self ) 
 {
-	self->type = ENT_FUNC_BREAKABLE;
+	self->type = EntityType::ENT_FUNC_BREAKABLE;
 
 	if((self->spawnflags & 1) == 0) {
 		if(self->health == 0) {
@@ -432,7 +432,7 @@ void SP_misc_model_breakable( gentity_t *ent )
 	entityShared_t*	eShared = &ent->r;
 	entityState_t*	eState = &ent->s;
 	
-	ent->type = ENT_MISC_MODEL_BREAKABLE;
+	ent->type = EntityType::ENT_MISC_MODEL_BREAKABLE;
 
 	//Main model
 	eState->modelindex = ent->sound2to1 = G_ModelIndex( ent->model );
@@ -681,7 +681,7 @@ none
 */
 void SP_misc_ammo_station( gentity_t *ent )
 {
-	ent->type = ENT_MISC_AMMOSTATION;
+	ent->type = EntityType::ENT_MISC_AMMOSTATION;
 
 	if (ent->health == 0) {
 		ent->health = 60;
@@ -788,7 +788,7 @@ void target_repair_link(gentity_t *ent) {
 
 	ent->lastEnemy = target;
 
-	if(target->type != ENT_FUNC_BREAKABLE) {
+	if(target->type != EntityType::ENT_FUNC_BREAKABLE) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_repair at %s with an invalid target entity %s\n", vtos(ent->s.origin), target->classname););
 		return;
 	}
@@ -800,7 +800,7 @@ void target_repair_link(gentity_t *ent) {
 *	Spawn function of target_repair entity
 */
 void SP_target_repair(gentity_t *ent) {
-	ent->type = ENT_TARGET_REPAIR;
+	ent->type = EntityType::ENT_TARGET_REPAIR;
 
 	if(ent->target == NULL) {
 		DEVELOPER(G_Printf(S_COLOR_YELLOW "[Entity-Error] target_repair without target at %s\n", vtos(ent->s.origin)););

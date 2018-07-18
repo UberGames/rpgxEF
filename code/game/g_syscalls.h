@@ -254,6 +254,7 @@ void trap_LinkEntity(gentity_t* ent);
 *	Unlinks an entity.
 */
 void trap_UnlinkEntity(gentity_t* ent);
+void trap_UnlinkEntity(sharedEntity_t* ent);
 
 /**
 *	\brief Get a list of all entities in a box.

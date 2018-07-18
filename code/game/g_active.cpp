@@ -60,7 +60,7 @@ static void TryUse(gentity_t* ent)
   target = &g_entities[trace.entityNum];
 
   //Check for a use command
-  if((target != NULL) && (target->use != NULL) && (target->type == ENT_FUNC_USABLE))
+  if((target != NULL) && (target->use != NULL) && (target->type == EntityType::ENT_FUNC_USABLE))
   {//usable brush
     if(target->team && atoi(target->team) != 0)
     {//usable has a team
@@ -78,7 +78,7 @@ static void TryUse(gentity_t* ent)
 #endif
     return;
   }
-  else if((target != NULL) && (target->use != NULL) && (ent->type == ENT_MISC_AMMOSTATION))
+  else if((target != NULL) && (target->use != NULL) && (ent->type == EntityType::ENT_MISC_AMMOSTATION))
   {//ammo station
     if(sess->sessionTeam)
     {

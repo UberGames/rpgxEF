@@ -35,7 +35,7 @@ none
 */
 // Lol, this is contradictory, should free but instead sets origin... Description sais removed so maybe merge with info_null.
 void SP_info_camp( gentity_t *self ) {
-	self->type = ENT_INFO_CAMP;
+	self->type = EntityType::ENT_INFO_CAMP;
 	G_SetOrigin( self, self->s.origin );
 }
 
@@ -96,7 +96,7 @@ void SP_info_notnull( gentity_t *self ){
 		G_FreeEntity(self);
 	}
 
-	self->type = ENT_INFO_NOTNULL;
+	self->type = EntityType::ENT_INFO_NOTNULL;
 
 	if(strcmp(self->classname, "info_notnull")) {
 		self->classname = "info_notnull";
@@ -503,7 +503,7 @@ Autocycle or manual Cycle usually only makes sence for a survaliance-station or 
 For a viewscreen or a communications channel make the brush having the portal-texture a func_usable and treat is as described on that entity for VFX-Entities.
 */
 void SP_misc_portal_surface(gentity_t *ent) {
-	ent->type = ENT_MISC_PORTAL_SURFACE;
+	ent->type = EntityType::ENT_MISC_PORTAL_SURFACE;
 
 	VectorClear( ent->r.mins );
 	VectorClear( ent->r.maxs );
@@ -545,7 +545,7 @@ You can set either angles or target another entity (NOT an info_null or similar)
 void SP_misc_portal_camera(gentity_t *ent) {
 	float	roll;
 
-	ent->type = ENT_MISC_PORTAL_CAMERA;
+	ent->type = EntityType::ENT_MISC_PORTAL_CAMERA;
 
 	VectorClear( ent->r.mins );
 	VectorClear( ent->r.maxs );
@@ -651,7 +651,7 @@ none
 "random" - the number of degrees of deviance from the taget. (1.0 default)
 */
 void SP_shooter_rocket( gentity_t *ent ) {
-	ent->type = ENT_SHOOTER_ROCKET;
+	ent->type = EntityType::ENT_SHOOTER_ROCKET;
 	InitShooter( ent, WP_10 );
 }
 
@@ -667,7 +667,7 @@ none
 "random" - the number of degrees of deviance from the taget. (1.0 default)
 */
 void SP_shooter_plasma( gentity_t *ent ) {
-	ent->type = ENT_SHOOTER_PLASMA;
+	ent->type = EntityType::ENT_SHOOTER_PLASMA;
 	InitShooter( ent, WP_6 ); //TiM : WP_4
 }
 
@@ -683,7 +683,7 @@ none
 "random" - the number of degrees of deviance from the taget. (1.0 default)
 */
 void SP_shooter_grenade( gentity_t *ent ) {
-	ent->type = ENT_SHOOTER_GRENADE;
+	ent->type = EntityType::ENT_SHOOTER_GRENADE;
 	InitShooter( ent, WP_8);
 }
 
@@ -699,6 +699,6 @@ none
 "random" - the number of degrees of deviance from the taget. (1.0 default)
 */
 void SP_shooter_torpedo( gentity_t *ent ) {
-	ent->type = ENT_SHOOTER_TORPEDO;
+	ent->type = EntityType::ENT_SHOOTER_TORPEDO;
 	InitShooter( ent, WP_9 );
 }

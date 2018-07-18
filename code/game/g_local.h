@@ -184,7 +184,7 @@ typedef enum {
 
 //============================================================================
 
-typedef enum {
+enum class EntityType {
 	ENT_FREE = 0,
 	ENT_UNKNOWN,
 	ENT_TEMPORAL,
@@ -297,7 +297,7 @@ typedef enum {
 	ENT_UI_HOLODECK,
 	ENT_UI_MSD,
 	ENT_CINEMATIC_CAMMERA = 900
-} entityTypeNumber_t;
+};
 
 /**	\typedef gentity_t
 *
@@ -313,6 +313,12 @@ typedef struct gentity_s gentity_t;
 *
 */
 typedef struct gclient_s gclient_t;
+
+struct GameSharedEntity : sharedEntity_t
+{
+  bool m_inUse;
+  int32_t m_freeTime;
+};
 
 /** \struct gentity_s
 *
@@ -331,7 +337,7 @@ struct gentity_s {
 
 	qboolean	inuse;
 
-	entityTypeNumber_t					type;				//!< Entity type
+	EntityType					type;				//!< Entity type
 	/*@shared@*/ /*@null@*/ char*		classname;			//!< set in QuakeEd
 	int			spawnflags;			//!< set in QuakeEd
 
@@ -350,7 +356,7 @@ struct gentity_s {
 	qboolean	physicsObject;		//!< if true, it can be pushed by movers and fall off edges
 									//!< all game items are physicsObjects,
 	float		physicsBounce;		//!< 1.0 = continuous bounce, 0.0 = no bounce
-	int			clipmask;			//!< brushes with this content value will be collided again when moving. items and corpses do not collide against players, for instance
+	int			clipmask;			//!< brushes with this content value will be collided with when moving. items and corpses do not collide against players, for instance
 
 	// movers
 	moverState_t moverState;		//!< current state of the mover
