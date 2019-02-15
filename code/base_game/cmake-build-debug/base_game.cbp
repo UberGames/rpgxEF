@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="base_game"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="base_game">
+				<Option output="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/CMakeFiles/base_game.dir/base_game.objlib" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../include/c++/8.2.0"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../include/c++/8.2.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../include/c++/8.2.0/backward"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/include-fixed"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 base_game"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="base_game/fast">
+				<Option output="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/CMakeFiles/base_game.dir/base_game.objlib" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../include/c++/8.2.0"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../include/c++/8.2.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../include/c++/8.2.0/backward"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../include"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/include-fixed"/>
+					<Add directory="C:/msys64/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.2.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 base_game/fast"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/msys64/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_collision.cpp">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_collision.h">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_list.cpp">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_list.h">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_local.h">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_misc.cpp">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_misc.h">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_oums.cpp">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_oums.h">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_panimate.c">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_pmove.cpp">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_public.h">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/bg_slidemove.cpp">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/q_math.cpp">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/q_math.h">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/q_shared.cpp">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/q_shared.h">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/surfaceflags.h">
+			<Option target="base_game"/>
+		</Unit>
+		<Unit filename="C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

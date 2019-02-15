@@ -319,7 +319,7 @@ BotWeaponNameForMeansOfDeath
 ==================
 */
 
-static char* BotWeaponNameForMeansOfDeath(int32_t mod) {
+static const char* BotWeaponNameForMeansOfDeath(int32_t mod) {
 	switch (mod) {
 		case MOD_PHASER:
 		case MOD_PHASER_ALT:			return "Phaser";
@@ -356,7 +356,7 @@ static char* BotWeaponNameForMeansOfDeath(int32_t mod) {
 BotRandomWeaponName
 ==================
 */
-static char* BotRandomWeaponName(void) {
+static const char* BotRandomWeaponName(void) {
 	int32_t rnd = random() * 8.9;
 
 	switch (rnd) {

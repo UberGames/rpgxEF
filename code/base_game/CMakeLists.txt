@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.12)
+
+set(CMAKE_CXX_STANDARD 17)
+
+file(GLOB BASE_GAME_SRC "*.h" "*.c" "*.cpp")
+
+add_library(base_game OBJECT ${BASE_GAME_SRC})
+target_compile_options(base_game PUBLIC -Wno-write-strings)

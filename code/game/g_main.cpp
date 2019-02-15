@@ -67,7 +67,7 @@ typedef struct
 gentity_t g_entities[MAX_GENTITIES];
 static gclient_t	g_clients[MAX_CLIENTS];
 
-rankNames_t g_rankNames[MAX_RANKS];
+std::vector<RankName> g_rankNames;
 
 g_classData_t	g_classData[MAX_CLASSES];
 

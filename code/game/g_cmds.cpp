@@ -2977,7 +2977,7 @@ static void Cmd_Rank_f(gentity_t* ent) {
 	ent->client->UpdateScore = qtrue;
 
 	for (i = 0; (g_rankNames[i].consoleName[0] && i < MAX_RANKS); i++) {
-		if (Q_stricmp(ArgStr, g_rankNames[i].consoleName) == 0) {
+		if (Q_stricmp(ArgStr, g_rankNames[i].consoleName.data()) == 0) {
 			newScore = i;
 
 			if (newScore == OldScore) {
@@ -2986,7 +2986,7 @@ static void Cmd_Rank_f(gentity_t* ent) {
 
 			if (!MaxRankHit) {
 				G_Client_SetScore(ent, newScore);
-				trap_SendServerCommand(ent - g_entities, va("prank %s", g_rankNames[i].consoleName));
+				trap_SendServerCommand(ent - g_entities, va("prank %s", g_rankNames[i].consoleName.data()));
 				break;
 			}
 			else {
@@ -3000,7 +3000,7 @@ static void Cmd_Rank_f(gentity_t* ent) {
 		}
 
 		//Okay... we've hit the highest rank we're allowed to go.  If the player tries to change their rank to above this, they'll be pwned lol
-		if (rpg_maxRank.string[0] != 0 && Q_stricmp(g_rankNames[i].consoleName, rpg_maxRank.string) == 0 && G_Client_IsAdmin(ent)) {
+		if (rpg_maxRank.string[0] != 0 && Q_stricmp(g_rankNames[i].consoleName.data(), rpg_maxRank.string) == 0 && G_Client_IsAdmin(ent)) {
 			MaxRankHit = qtrue;
 		}
 	}
@@ -3013,10 +3013,10 @@ static void Cmd_Rank_f(gentity_t* ent) {
 	}
 
 	if (OldScore > ent->client->ps.persistant[PERS_SCORE]) {
-		G_PrintfClientAll("%s" S_COLOR_WHITE " was demoted to %s\n", ent->client->pers.netname, g_rankNames[i].formalName);
+		G_PrintfClientAll("%s" S_COLOR_WHITE " was demoted to %s\n", ent->client->pers.netname, g_rankNames[i].formalName.data());
 	}
 	else {
-		G_PrintfClientAll("%s" S_COLOR_WHITE " was promoted to %s\n", ent->client->pers.netname, g_rankNames[i].formalName);
+		G_PrintfClientAll("%s" S_COLOR_WHITE " was promoted to %s\n", ent->client->pers.netname, g_rankNames[i].formalName.data());
 	}
 }
 
@@ -3081,12 +3081,13 @@ static void Cmd_ForceRank_f(gentity_t* ent) {
 
 	other->client->UpdateScore = qtrue;
 
-	for (i = 0; (g_rankNames[i].consoleName && i < MAX_RANKS); i++) {
-		if (Q_stricmp(ArgStr, g_rankNames[i].consoleName) == 0) {
+	for(const auto& rankName : g_rankNames)
+	{
+		if (Q_stricmp(ArgStr, rankName.consoleName.data()) == 0) {
 			newScore = i;//1 << i;
 
 			G_Client_SetScore(other, newScore);
-			trap_SendServerCommand(other - g_entities, va("prank %s", g_rankNames[i].consoleName));
+			trap_SendServerCommand(other - g_entities, ("prank " + rankName.consoleName).data());
 			break;
 		}
 	}
@@ -3099,10 +3100,10 @@ static void Cmd_ForceRank_f(gentity_t* ent) {
 	}
 
 	if (OldScore > ent->client->ps.persistant[PERS_SCORE]) {
-		G_PrintfClientAll("%s" S_COLOR_WHITE " was demoted to %s\n", other->client->pers.netname, g_rankNames[i].formalName);
+		G_PrintfClientAll("%s" S_COLOR_WHITE " was demoted to %s\n", other->client->pers.netname, g_rankNames[i].formalName.data());
 	}
 	else {
-		G_PrintfClientAll("%s" S_COLOR_WHITE " was promoted to %s\n", other->client->pers.netname, g_rankNames[i].formalName);
+		G_PrintfClientAll("%s" S_COLOR_WHITE " was promoted to %s\n", other->client->pers.netname, g_rankNames[i].formalName.data());
 	}
 
 	G_LogPrintf("%s changed %s's rank to %s (%s)\n", ent->client->pers.netname, other->client->pers.netname, ArgStr, ent->client->pers.ip);

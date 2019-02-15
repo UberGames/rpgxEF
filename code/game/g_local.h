@@ -57,7 +57,7 @@
 //RPG-X Defines ==============================
 
 //TiM : Rank Variables
-extern rankNames_t g_rankNames[MAX_RANKS];
+extern std::vector<RankName> g_rankNames;
 
 //TiM : Weapons table
 extern stringID_table_t WeaponTable[];

@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 3.12)
+
+set(CMAKE_CXX_STANDARD 17)
+
+if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+    set(ARCH "x86_64")
+elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "amd64")
+    set(ARCH "x86_64")
+elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "AMD64")
+    if (CMAKE_CL_64)
+        set(ARCH "x86_64")
+    else ()
+        set(ARCH "x86")
+    endif ()
+elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86")
+    set(ARCH "x86")
+elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i386")
+    set(ARCH "x86")
+elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+    set(ARCH "x86")
+else ()
+    message(FATAL_ERROR "Unknown processor:" ${CMAKE_SYSTEM_PROCESSOR})
+endif ()
+
+set(UI_LIB_NAME "ui${ARCH}")
+
+file(GLOB_RECURSE UI_SRC "*.h" "*.c" "*.cpp")
+
+add_library(${UI_LIB_NAME} SHARED ${UI_SRC})
+target_include_directories(${UI_LIB_NAME} PUBLIC ../json/include ..)
+target_link_libraries(${UI_LIB_NAME} common base_game -static -lstdc++fs)
+target_compile_options(${UI_LIB_NAME} PUBLIC -Wno-narrowing -Wno-write-strings)
+target_compile_definitions(${UI_LIB_NAME} PUBLIC -DUI_DLL)
+set_target_properties(${UI_LIB_NAME} PROPERTIES PREFIX "")
+
+target_compile_definitions(base_game PUBLIC -DUI_DLL)

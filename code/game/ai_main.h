@@ -237,7 +237,7 @@ void AI_main_BotEntityInfo(int32_t entnum, aas_entityinfo_t *info);
 // from the game source
 void QDECL AI_main_BotAIPrint(int32_t type, char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
-void QDECL QDECL AI_main_BotAIInitialChat(bot_state_t *bs, char *type, ...);
+void QDECL QDECL AI_main_BotAIInitialChat(bot_state_t *bs, const char *type, ...);
 
 void AI_main_BotAITrace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int32_t passent, int32_t contentmask);
 

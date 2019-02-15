@@ -365,7 +365,7 @@ int	trap_AAS_PredictClientMovement(void* move, int entnum, vec3_t origin, int pr
 
 void trap_EA_Say(int client, char* str);
 
-void trap_EA_SayTeam(int client, char* str);
+void trap_EA_SayTeam(int client, const char* str);
 
 void trap_EA_SayClass(int client, char* str);
 
@@ -447,7 +447,7 @@ int	trap_BotNextConsoleMessage(int chatstate, void* cm);
 
 int	trap_BotNumConsoleMessages(int chatstate);
 
-void trap_BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7);
+void trap_BotInitialChat(int chatstate, const char* type, int mcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7);
 
 int	trap_BotNumInitialChats(int chatstate, char* type);
 

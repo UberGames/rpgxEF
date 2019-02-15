@@ -225,7 +225,7 @@ int32_t AI_main_BotAIGetSnapshotEntity(int32_t clientNum, int32_t sequence, enti
 BotAI_BotInitialChat
 ==================
 */
-void QDECL AI_main_BotAIInitialChat(bot_state_t* bs, char* type, ...) {
+void QDECL AI_main_BotAIInitialChat(bot_state_t* bs, const char* type, ...) {
 	int32_t	i = 0;
 	int32_t mcontext = 0;
 	va_list	ap;

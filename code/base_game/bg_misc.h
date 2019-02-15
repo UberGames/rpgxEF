@@ -2,6 +2,7 @@
 #define _BG_MISC_H
 
 #include "q_shared.h"
+#include "bg_public.h"
 
 void BG_LanguageFilename(char *baseName,char *baseExtension,char *finalName);
 char* BG_RegisterRace( const char *name );
@@ -15,5 +16,9 @@ char* BG_RegisterRace( const char *name );
  * @param origin [out] Three dimensional vector the origin should be stored into.
  */
 void BG_OriginFromBoundingBox(vec3_t mins, vec3_t maxs, vec_t* origin);
+
+qboolean BG_ParseRankNames(char* fileName, rankNames_t rankNames[], size_t size);
+
+void BG_LoadItemNames();
 
 #endif /* _BG_MISC_H */

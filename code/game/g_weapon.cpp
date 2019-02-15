@@ -12,7 +12,6 @@
 #include "g_lua.h"
 #include "g_combat.h"
 #include "../base_game/q_math.h"
-#include "bg_lex.h"
 #include "g_syscalls.h"
 
 vec3_t	forward;

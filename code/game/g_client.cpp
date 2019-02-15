@@ -1352,7 +1352,7 @@ char* G_Client_Connect(int32_t clientNum, qboolean firstTime, qboolean isBot) {
 
 			for (i = 0; i < MAX_RANKS; i++) {
 				if (rpg_startingRank.string[0] == 0 && newRank[0] != 0) {
-					if (Q_stricmp(newRank, g_rankNames[i].consoleName) == 0) {
+					if (Q_stricmp(newRank, g_rankNames[i].consoleName.data()) == 0) {
 						tmpScore = i;//1 << i;
 
 						if (rpg_changeRanks.integer != 0) {
@@ -1362,7 +1362,7 @@ char* G_Client_Connect(int32_t clientNum, qboolean firstTime, qboolean isBot) {
 					}
 				}
 				else {
-					if ((rpg_startingRank.string[0] != 0) && (Q_stricmp(g_rankNames[i].consoleName, rpg_startingRank.string) == 0)) {
+					if ((rpg_startingRank.string[0] != 0) && (Q_stricmp(g_rankNames[i].consoleName.data(), rpg_startingRank.string) == 0)) {
 						tmpScore = i;// 1 << i;
 						changeRank = qtrue;
 						break;

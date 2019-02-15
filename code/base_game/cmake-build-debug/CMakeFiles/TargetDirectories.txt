@@ -1,0 +1,3 @@
+C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/CMakeFiles/base_game.dir
+C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Walter/Source/Repos/rpgxEF/code/base_game/cmake-build-debug/CMakeFiles/rebuild_cache.dir
