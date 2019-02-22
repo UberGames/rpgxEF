@@ -26,9 +26,9 @@ set(UI_LIB_NAME "ui${ARCH}")
 
 file(GLOB_RECURSE UI_SRC "*.h" "*.c" "*.cpp")
 
-add_library(${UI_LIB_NAME} SHARED ${UI_SRC})
+add_library(${UI_LIB_NAME} SHARED ${UI_SRC} $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:base_game>)
 target_include_directories(${UI_LIB_NAME} PUBLIC ../json/include ..)
-target_link_libraries(${UI_LIB_NAME} common base_game -static -lstdc++fs)
+target_link_libraries(${UI_LIB_NAME} -static -lstdc++fs)
 target_compile_options(${UI_LIB_NAME} PUBLIC -Wno-narrowing -Wno-write-strings)
 target_compile_definitions(${UI_LIB_NAME} PUBLIC -DUI_DLL)
 set_target_properties(${UI_LIB_NAME} PROPERTIES PREFIX "")
