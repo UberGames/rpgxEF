@@ -27,8 +27,8 @@ set(GAME_LIB_NAME "qagame${ARCH}")
 file(GLOB_RECURSE GAME_SRC "*.h" "*.c" "*.cpp")
 
 
-add_library(${GAME_LIB_NAME} SHARED ${GAME_SRC})
-target_link_libraries(${GAME_LIB_NAME} base_game)
+add_library(${GAME_LIB_NAME} SHARED ${GAME_SRC} $<TARGET_OBJECTS:base_game>)
+target_link_libraries(${GAME_LIB_NAME})
 target_include_directories(${GAME_LIB_NAME} PUBLIC ../lua/include ../json/include)
 target_compile_options(${GAME_LIB_NAME} PUBLIC -fpermissive)
 set_target_properties(${GAME_LIB_NAME} PROPERTIES PREFIX "")
