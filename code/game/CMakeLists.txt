@@ -26,9 +26,17 @@ set(GAME_LIB_NAME "qagame${ARCH}")
 
 file(GLOB_RECURSE GAME_SRC "*.h" "*.c" "*.cpp")
 
+if(UNIX)
+    set(GAME_LINKER_OPTION -lstdc++fs)
+endif(UNIX)
+
+if(WIN32)
+    set(GAME_LINKER_OPTION -static -static-libgcc -static-libstdc++ -lstdc++fs)
+endif(WIN32)
+
 
 add_library(${GAME_LIB_NAME} SHARED ${GAME_SRC} $<TARGET_OBJECTS:base_game>)
-target_link_libraries(${GAME_LIB_NAME})
+target_link_libraries(${GAME_LIB_NAME} ${GAME_LINKER_OPTION})
 target_include_directories(${GAME_LIB_NAME} PUBLIC ../lua/include ../json/include)
 target_compile_options(${GAME_LIB_NAME} PUBLIC -fpermissive)
 set_target_properties(${GAME_LIB_NAME} PROPERTIES PREFIX "")
