@@ -32,5 +32,5 @@ target_link_libraries(${UI_LIB_NAME} -static -lstdc++fs)
 target_compile_options(${UI_LIB_NAME} PUBLIC -Wno-narrowing -Wno-write-strings)
 target_compile_definitions(${UI_LIB_NAME} PUBLIC -DUI_DLL)
 set_target_properties(${UI_LIB_NAME} PROPERTIES PREFIX "")
-
 target_compile_definitions(base_game PUBLIC -DUI_DLL)
+set_property(TARGET ${UI_LIB_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
