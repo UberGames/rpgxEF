@@ -22,13 +22,11 @@ else ()
     message(FATAL_ERROR "Unknown processor:" ${CMAKE_SYSTEM_PROCESSOR})
 endif ()
 
-if(UNIX)
-    set(UI_LINKER_OPTIONS -lstdc++fs)
-endif(UNIX)
 
-if(WIN32)
-    set(UI_LINKER_OPTIONS -static -static-libgcc -static-libstdc++ -lstdc++fs)
-endif(WIN32)
+set(UI_LINKER_OPTIONS -lstdc++fs)
+if(BUILD_STATIC)
+    set(UI_LINKER_OPTIONS -static -static-libgcc -static-libstdc++ ${UI_LINKER_OPTIONS})
+endif(BUILD_STATIC)
 
 set(UI_LIB_NAME "ui${ARCH}")
 
