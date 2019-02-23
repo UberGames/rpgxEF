@@ -22,14 +22,22 @@ else ()
     message(FATAL_ERROR "Unknown processor:" ${CMAKE_SYSTEM_PROCESSOR})
 endif ()
 
+if(UNIX)
+    set(UI_LINKER_OPTIONS -static-libgcc -static-libstdc++ -lstdc++fs)
+endif(UNIX)
+
+if(WIN32)
+    set(UI_LINKER_OPTIONS -static -static-libgcc -static-libstdc++ -lstdc++fs)
+endif(WIN32)
+
 set(UI_LIB_NAME "ui${ARCH}")
 
 file(GLOB_RECURSE UI_SRC "*.h" "*.c" "*.cpp")
 
 add_library(${UI_LIB_NAME} SHARED ${UI_SRC} $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:base_game>)
 target_include_directories(${UI_LIB_NAME} PUBLIC ../json/include ..)
-target_link_libraries(${UI_LIB_NAME} -static -lstdc++fs)
-target_compile_options(${UI_LIB_NAME} PUBLIC -Wno-narrowing -Wno-write-strings -fPIC)
+target_link_libraries(${UI_LIB_NAME} ${UI_LINKER_OPTIONS})
+target_compile_options(${UI_LIB_NAME} PUBLIC -Wno-narrowing -Wno-write-strings)
 target_compile_definitions(${UI_LIB_NAME} PUBLIC -DUI_DLL)
 set_target_properties(${UI_LIB_NAME} PROPERTIES PREFIX "")
 target_compile_definitions(base_game PUBLIC -DUI_DLL)
