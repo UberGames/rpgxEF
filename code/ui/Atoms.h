@@ -118,7 +118,7 @@ namespace ui {
 
         static void ForceMenuOff();
 
-        static void LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
+        static void LerpColor(common::Color a, common::Color b, common::Color& c, float t);
 
         static void DrawBannerString2(int32_t x, int32_t y, const char *str, vec4_t color);
 
@@ -135,11 +135,11 @@ namespace ui {
         static void
         DrawProportionalString(common::Point2dI pos, std::string_view str, int32_t style, common::Color color);
 
-        static void DrawString2(int32_t x, int32_t y, const char *str, vec4_t color, int32_t charw, int32_t charh);
+        static void DrawString2(common::Point2dI pos, std::string_view str, common::Color color, int32_t charw, int32_t charh);
 
-        static void DrawString(int32_t x, int32_t y, const char *str, int32_t style, vec4_t color, qboolean highRes);
+        static void DrawString(common::Point2dI pos, std::string_view str, int32_t style, common::Color color, bool highRes);
 
-        static void DrawChar(int32_t x, int32_t y, int32_t ch, int32_t style, vec4_t color);
+        static void DrawChar(common::Point2dI pos, char ch, int32_t style, common::Color color);
 
         static qboolean IsFullscreen();
 

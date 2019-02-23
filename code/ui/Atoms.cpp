@@ -345,7 +345,7 @@ namespace ui {
         }
 
         if (menu->titleI) {
-            DrawProportionalString(menu->titleX, menu_normal_text[menu->titleI],
+            DrawProportionalString({menu->titleX, menu->titleY}, menu_normal_text[menu->titleI],
                                    UI_RIGHT | UI_BIGFONT, ColorTable[CT_LTORANGE]);
         }
 
@@ -363,15 +363,15 @@ namespace ui {
 
         /* Add foot note */
         if (menu->footNoteEnum) {
-            DrawProportionalString(MENU_TITLE_X, menu_normal_text[menu->footNoteEnum],
-                                   UI_RIGHT | UI_SMALLFONT, colorTable[CT_LTORANGE]);
+            DrawProportionalString({MENU_TITLE_X, 440}, menu_normal_text[menu->footNoteEnum],
+                                   UI_RIGHT | UI_SMALLFONT, ColorTable[CT_LTORANGE]);
             MenuBottomLineEnd_Graphics(menu_normal_text[menu->footNoteEnum], ColorTable[CT_LTBROWN1]);
         }
-        trap_R_SetColor(NULL);
+        trap_R_SetColor(nullptr);
 
         /* Print version */
         if (space)
-            DrawProportionalString(371, Q3_VERSION, UI_TINYFONT, ColorTable[CT_BLACK]);
+            DrawProportionalString({371, 445}, Q3_VERSION, UI_TINYFONT, ColorTable[CT_BLACK]);
     }
 
     void Atoms::MenuFrame(menuframework_s *menu) {
@@ -394,14 +394,14 @@ namespace ui {
 
         /* Add foot note */
         if (menu->footNoteEnum) {
-            DrawProportionalString(MENU_TITLE_X, menu_normal_text[menu->footNoteEnum],
-                                   UI_RIGHT | UI_SMALLFONT, colorTable[CT_LTORANGE]);
-            MenuBottomLineEnd_Graphics(menu_normal_text[menu->footNoteEnum], CT_LTBROWN1);
+            DrawProportionalString({MENU_TITLE_X, 440}, menu_normal_text[menu->footNoteEnum],
+                                   UI_RIGHT | UI_SMALLFONT, ColorTable[CT_LTORANGE]);
+            MenuBottomLineEnd_Graphics(menu_normal_text[menu->footNoteEnum], ColorTable[CT_LTBROWN1]);
         }
 
         /* Print version */
         if (space)
-            DrawProportionalString(371, Q3_VERSION, UI_TINYFONT, colorTable[CT_BLACK]);
+            DrawProportionalString({371, 445}, Q3_VERSION, UI_TINYFONT, ColorTable[CT_BLACK]);
     }
 
     bool Atoms::MenuBottomLineEnd_Graphics(string_view string, Color color) {
@@ -468,8 +468,8 @@ namespace ui {
         DrawHandlePic(368, 136, 111, 7, uis.whiteShader); /* 5th line across bottom of top third section */
 
         if (menu->titleI) {
-            DrawProportionalString(menu->titleX, menu_normal_text[menu->titleI],
-                                   UI_RIGHT | UI_BIGFONT, colorTable[CT_LTORANGE]);
+            DrawProportionalString({menu->titleX, menu->titleY}, menu_normal_text[menu->titleI],
+                                   UI_RIGHT | UI_BIGFONT, ColorTable[CT_LTORANGE]);
         }
     }
 
@@ -512,14 +512,15 @@ namespace ui {
                     return;
                 }
 
-                DrawProportionalString(menuGraphics[i].x,
+                DrawProportionalString({menuGraphics[i].x, menuGraphics[i].y},
                                        text,
                                        menuGraphics[i].style,
-                                       colorTable[menuGraphics[i].color]);
+                                       ColorTable[menuGraphics[i].color]);
             } else if (menuGraphics[i].type == MG_NUMBER) {
                 trap_R_SetColor(colorTable[menuGraphics[i].color]);
                 DrawNumField({menuGraphics[i].x,
-                              menuGraphics[i].max},
+                              menuGraphics[i].y},
+                             menuGraphics[i].max,
                              menuGraphics[i].target,
                              menuGraphics[i].width,
                              menuGraphics[i].height);
@@ -829,7 +830,7 @@ namespace ui {
         trap_Cvar_Create("ui_initialsetup", "0", CVAR_ARCHIVE);
 
         /* TiM - initiate the client side portion of the security code */
-        UI_SecurityCodeSetup();
+        SecurityCodeSetup();
 
         /* trap_Cvar_Create ("rpg_playIntro", "1", CVAR_ARCHIVE ); *//*RPG-X | Phenix | 25/02/2005 */
         UI_LogFuncEnd();
@@ -1266,16 +1267,16 @@ namespace ui {
         trap_Cvar_Set("cl_paused", "0");
     }
 
-    void Atoms::LerpColor(vec_t *a, vec_t *b, vec_t *c, float t) {
+    void Atoms::LerpColor(common::Color a, common::Color b, common::Color& c, float t) {
         int32_t i;
 
         /* lerp and clamp each component */
         for (i = 0; i < 4; i++) {
-            c[i] = a[i] + t * (b[i] - a[i]);
-            if (c[i] < 0)
-                c[i] = 0;
-            else if (c[i] > 1.0)
-                c[i] = 1.0;
+            c.values[i] = a.values[i] + t * (b.values[i] - a.values[i]);
+            if (c.values[i] < 0)
+                c.values[i] = 0;
+            else if (c.values[i] > 1.0)
+                c.values[i] = 1.0;
         }
     }
 
@@ -1433,28 +1434,28 @@ namespace ui {
         sizeScale = ProportionalSizeScale(style);
 
         if (style & UI_TINYFONT) {
-            for(auto it = str.begin(); it != str.end(); ++it) {
-                if(Q_IsColorString(it) && ((style & UI_SHOWCOLOR) == UI_SHOWCOLOR)) {
+            for (auto it = str.begin(); it != str.end(); ++it) {
+                if (Q_IsColorString(it) && ((style & UI_SHOWCOLOR) == UI_SHOWCOLOR)) {
                     colorI = ColorIndex(*(it + 1));
                     trap_R_SetColor(g_color_table[colorI]);
                     it += 2;
                     continue;
                 }
 
-               auto ch = *it & 255;
-                if(ch == ' ') {
+                auto ch = *it & 255;
+                if (ch == ' ') {
                     aw = static_cast<float>(PROP_SPACE_TINY_WIDTH);
-                } else if(propMap[ch][2] > -1) {
+                } else if (propMap[ch][2] > -1) {
                     special = specialTinyPropChars[ch][0];
                     ay = holdY + (specialTinyPropChars[ch][1] * uis.scaley);
-                    fcol = static_cast<float>(propMapTiny[ch][0] / 256.0f);
-                    frow = static_cast<float>(propMapTiny[ch][1] / 256.0f);
-                    fwidth = static_cast<float>(propMapTiny[ch][2] / 256.0f);
+                    fcol = propMapTiny[ch][0] / 256.0f;
+                    frow = propMapTiny[ch][1] / 256.0f;
+                    fwidth = propMapTiny[ch][2] / 256.0f;
                     fheight = static_cast<float>(PROP_TINY_HEIGHT + special) / 256.0f;
                     aw = static_cast<float>(propMapTiny[ch][2]) * uis.scalex * sizeScale;
                     ah = static_cast<float>(PROP_TINY_HEIGHT + special) * uis.scaley * sizeScale;
 
-                    if(IsWidescreen()) {
+                    if (IsWidescreen()) {
                         aw *= uis.widescreen.ratio;
                     }
 
@@ -1465,37 +1466,34 @@ namespace ui {
 
                 ax += aw + static_cast<float>(PROP_GAP_TINY_WIDTH) * uis.scalex * sizeScale;
 
-                if(IsWidescreen()) {
-                    ax -= static_cast<float>(PROP_GAP_TINY_WIDTH * uis.scalex * sizeScale) * (1.0f - uis.widescreen.ratio);
+                if (IsWidescreen()) {
+                    ax -= PROP_GAP_TINY_WIDTH * uis.scalex * sizeScale *
+                          (1.0f - uis.widescreen.ratio);
                 }
             }
         } else if (style & UI_BIGFONT) {
-            s = str;
-            while (*s) {
-                /* Is this a color???? */
-                if (Q_IsColorString(s) && !(style & UI_SHOWCOLOR)) {
-                    colorI = ColorIndex(*(s + 1));
+            for (auto it = str.begin(); it != str.end(); ++it) {
+                if (Q_IsColorString(it) && !(style & UI_SHOWCOLOR)) {
+                    colorI = ColorIndex(*(it + 1));
                     trap_R_SetColor(g_color_table[colorI]);
-                    s += 2;
+                    it += 2;
                     continue;
                 }
 
-                ch = *s & 255;
+                auto ch = *it & 255;
                 if (ch == ' ') {
-                    aw = (float) PROP_SPACE_BIG_WIDTH * uis.scalex;
+                    aw = static_cast<float>(PROP_SPACE_BIG_WIDTH);
                 } else if (propMap[ch][2] != -1) {
-                    /* Because some foreign characters were a little different */
                     special = specialBigPropChars[ch][0];
-                    ay = holdY + (specialBigPropChars[ch][1] * uis.scaley);
+                    ay = holdY + (specialBigPropChars[0][1] * uis.scaley);
 
-                    fcol = (float) propMapBig[ch][0] / 256.0f; /* 256.0f */
-                    frow = (float) propMapBig[ch][1] / 256.0f;
-                    fwidth = (float) propMapBig[ch][2] / 256.0f;
-                    fheight = (float) (PROP_BIG_HEIGHT + special) / 256.0f;
-                    aw = (float) propMapBig[ch][2] * uis.scalex * sizeScale;
-                    ah = (float) (PROP_BIG_HEIGHT + special) * uis.scaley * sizeScale;
+                    fcol = propMapBig[ch][0] / 256.0f;
+                    frow = propMapBig[ch][1] / 256.0f;
+                    fwidth = propMapBig[ch][2] / 256.0f;
+                    fheight = static_cast<float>(PROP_BIG_HEIGHT + special) / 256.0f;
+                    aw = static_cast<float>(propMapBig[ch][2]) * uis.scalex * sizeScale;
+                    ah = static_cast<float>(PROP_BIG_HEIGHT + special) * uis.scaley * sizeScale;
 
-                    /* TiM - adjust for widescreen */
                     if (IsWidescreen()) {
                         aw *= uis.widescreen.ratio;
                     }
@@ -1505,43 +1503,36 @@ namespace ui {
                     aw = 0;
                 }
 
+                ax += aw + static_cast<float>(PROP_GAP_BIG_WIDTH) * uis.scalex * sizeScale;
 
-                ax += (aw + (float) PROP_GAP_BIG_WIDTH * uis.scalex * sizeScale);
-
-                /* again adjust for widescreen */
-                if (IsWidescreen())
-                    ax -= ((float) PROP_GAP_BIG_WIDTH * uis.scalex * sizeScale) * (1.0f - uis.widescreen.ratio);
-
-                s++;
+                if (IsWidescreen()) {
+                    ax -= PROP_GAP_BIG_WIDTH * uis.scalex * sizeScale * (1.0f - uis.widescreen.ratio);
+                }
             }
         } else {
-            s = str;
-            while (*s) {
-                /* Is this a color???? */
-                if (Q_IsColorString(s) && !(style & UI_SHOWCOLOR)) {
-                    colorI = ColorIndex(*(s + 1));
+            for (auto it = str.begin(); it != str.end(); ++it) {
+                if (Q_IsColorString(it) && !(style & UI_SHOWCOLOR)) {
+                    colorI = ColorIndex(*(it + 1));
                     trap_R_SetColor(g_color_table[colorI]);
-                    s += 2;
+                    it += 2;
                     continue;
                 }
 
-                ch = *s & 255;
+                auto ch = *it & 255;
                 if (ch == ' ') {
-                    aw = (float) PROP_SPACE_WIDTH * uis.scalex * sizeScale;
+                    aw = PROP_SPACE_WIDTH * uis.scalex * sizeScale;
                 } else if (propMap[ch][2] != -1) {
-                    /* Because some foreign characters were a little different */
                     special = specialPropChars[ch][0];
                     ay = holdY + (specialPropChars[ch][1] * uis.scaley);
 
-                    fcol = (float) propMap[ch][0] / 256.0f;
-                    frow = (float) propMap[ch][1] / 256.0f;
-                    fwidth = (float) propMap[ch][2] / 256.0f;
-                    fheight = (float) (PROP_HEIGHT + special) / 256.0f;
-                    aw = (float) propMap[ch][2] * uis.scalex * sizeScale;
-                    ah = (float) (PROP_HEIGHT + special) * uis.scaley * sizeScale;
+                    fcol = propMap[ch][0] / 256.0f;
+                    frow = propMap[ch][1] / 256.0f;
+                    fwidth = propMap[ch][2] / 256.0f;
+                    fheight = static_cast<float>(PROP_HEIGHT + special) * sizeScale;
+                    aw = static_cast<float>(propMap[ch][2]) * uis.scalex * sizeScale;
+                    ah = static_cast<float>(PROP_HEIGHT + special) * uis.scaley * sizeScale;
 
-                    /* TiM - adjust for widescreen */
-                    if (ui_handleWidescreen.integer && uis.widescreen.ratio) {
+                    if (IsWidescreen()) {
                         aw *= uis.widescreen.ratio;
                     }
 
@@ -1550,14 +1541,11 @@ namespace ui {
                     aw = 0;
                 }
 
+                ax += aw + static_cast<float>(PROP_GAP_WIDTH) * uis.scalex * sizeScale;
 
-                ax += (aw + (float) PROP_GAP_WIDTH * uis.scalex * sizeScale);
-
-                /* again adjust for widescreen */
-                if (IsWidescreen())
-                    ax -= ((float) PROP_GAP_WIDTH * uis.scalex * sizeScale) * (1.0f - uis.widescreen.ratio);
-
-                s++;
+                if (IsWidescreen()) {
+                    ax -= PROP_GAP_WIDTH * uis.scalex * sizeScale * (1.0f - uis.widescreen.ratio);
+                }
             }
         }
 
@@ -1573,7 +1561,7 @@ namespace ui {
     }
 
     void Atoms::DrawProportionalString(common::Point2dI pos, std::string_view str, int32_t style, common::Color color) {
-        Color drawcolor
+        Color drawcolor;
         size_t width;
         float sizeScale;
         int32_t charstyle = 0;
@@ -1620,7 +1608,7 @@ namespace ui {
         if (style & UI_DROPSHADOW) {
             drawcolor.r = drawcolor.g = drawcolor.b = 0;
             drawcolor.a = color.a;
-            DrawProportionalString2({pos.x + 2, pos.y + 2}, drawcolor, sizeScale, uis.charsetProp, 0);
+            DrawProportionalString2({pos.x + 2, pos.y + 2}, str, drawcolor, sizeScale, uis.charsetProp);
         }
 
         if (style & UI_INVERSE) {
@@ -1628,7 +1616,7 @@ namespace ui {
             drawcolor.g = color.g * 0.7f;
             drawcolor.b = color.b * 0.7f;
             drawcolor.a = color.a;
-            DrawProportionalString2(pos, drawcolor, sizeScale, uis.charsetProp, 0);
+            DrawProportionalString2(pos, str, drawcolor, sizeScale, uis.charsetProp);
             return;
         }
 
@@ -1637,31 +1625,29 @@ namespace ui {
             drawcolor.g = color.g * 0.7f;
             drawcolor.b = color.b * 0.7f;
             drawcolor.a = color.a;
-            DrawProportionalString2(pos, color, sizeScale, uis.charsetProp, 0);
+            DrawProportionalString2(pos, str, color, sizeScale, uis.charsetProp);
 
             drawcolor.r = color.r;
             drawcolor.g = color.g;
             drawcolor.b = color.b;
             drawcolor.a = static_cast<float>(0.5f + 0.5f * std::sin(uis.realtime / PULSE_DIVISOR));
-            DrawProportionalString2(pos, drawcolor, sizeScale, uis.charsetProp, 0);
+            DrawProportionalString2(pos, str, drawcolor, sizeScale, uis.charsetProp);
             return;
         }
 
 
         if (style & UI_TINYFONT) {
-            DrawProportionalString2(pos, color, charstyle, uis.charsetPropTiny, 0);
+            DrawProportionalString2(pos, str, color, charstyle, uis.charsetPropTiny);
         } else if (style & UI_BIGFONT) {
-            DrawProportionalString2(pos, color, charstyle, uis.charsetPropBig, 0);
+            DrawProportionalString2(pos, str, color, charstyle, uis.charsetPropBig);
         } else {
-            DrawProportionalString2(pos, color, charstyle, uis.charsetProp, 0);
+            DrawProportionalString2(pos, str, color, charstyle, uis.charsetProp);
         }
     }
 
-    void Atoms::DrawString2(int32_t x, int32_t y, const char *str, vec_t *color, int32_t charw, int32_t charh) {
-        const char *s;
-        char ch;
-        int32_t forceColor = qfalse; /* APSFIXME; */
-        vec4_t tempcolor;
+    void Atoms::DrawString2(common::Point2dI pos, std::string_view str, common::Color color, int32_t charw, int32_t charh) {
+        auto forceColor = false; /* APSFIXME; */
+        Color tempcolor;
         float ax;
         float ay;
         float aw;
@@ -1669,17 +1655,17 @@ namespace ui {
         float frow;
         float fcol;
 
-        if (y < -charh) {
+        if (pos.y < -charh) {
             /* offscreen */
             return;
         }
 
         /* draw the colored text */
-        trap_R_SetColor(color);
+        trap_R_SetColor(color.values);
 
         /* ax = x * uis.scale + uis.bias; */
-        ax = x * uis.scalex;
-        ay = y * uis.scaley;
+        ax = pos.x * uis.scalex;
+        ay = pos.y * uis.scaley;
         aw = charw * uis.scalex;
         ah = charh * uis.scaley;
 
@@ -1691,51 +1677,43 @@ namespace ui {
                 ax += uis.widescreen.bias;
         }
 
-        s = str;
-        while (*s) {
-            if (!showColorChars) {
-                if (Q_IsColorString(s)) {
-                    if (!forceColor) {
-                        memcpy(tempcolor, g_color_table[ColorIndex(s[1])], sizeof(tempcolor));
-                        tempcolor[3] = color[3];
-                        trap_R_SetColor(tempcolor);
+        for(auto it = str.begin(); it != str.end(); ++it) {
+            if(!showColorChars) {
+                if(Q_IsColorString(it)) {
+                    if(!forceColor) {
+                        tempcolor = g_color_table[ColorIndex(*(it + 1))];
+                        tempcolor.a = color.a;
+                        trap_R_SetColor(tempcolor.values);
                     }
-                    s += 2;
+                    it += 2;
                     continue;
                 }
             }
 
-            ch = *s & 255;
-
-            if (ch != ' ') {
-                /*frow = (ch>>4)*0.0625;
-                fcol = (ch&15)*0.0625;
-                trap_R_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, uis.charset );*/
-
-                frow = (ch >> 4) * 0.0625;
-                fcol = (ch & 15) * 0.0625;
+            auto ch = *it & 255;
+            if(ch == ' ') {
+                frow = static_cast<float>((ch >> 4) * 0.0625);
+                fcol = static_cast<float>((ch & 15) * 0.0625);
 
                 trap_R_DrawStretchPic(ax, ay, aw, ah, fcol, frow, fcol + 0.03125, frow + 0.0625, uis.charset);
-
             }
 
             ax += aw;
-            s++;
         }
 
-        trap_R_SetColor(NULL);
+        trap_R_SetColor(nullptr);
     }
 
-    void Atoms::DrawString(int32_t x, int32_t y, const char *str, int32_t style, vec_t *color, qboolean highRes) {
-        int32_t len;
+    void Atoms::DrawString(common::Point2dI pos, std::string_view str, int32_t style, common::Color color, bool highRes) {
+        size_t len;
         int32_t charw;
         int32_t charh;
-        vec4_t newcolor;
-        vec4_t lowlight;
-        float *drawcolor;
-        vec4_t dropcolor;
+        Color newcolor;
+        Color lowlight;
+        Color drawcolor;
+        Color dropcolor;
 
-        if (!str) {
+        if (str.empty()) {
             return;
         }
 
@@ -1758,10 +1736,10 @@ namespace ui {
         }
 
         if (style & UI_PULSE) {
-            lowlight[0] = 0.8 * color[0];
-            lowlight[1] = 0.8 * color[1];
-            lowlight[2] = 0.8 * color[2];
-            lowlight[3] = 0.8 * color[3];
+            lowlight.r = 0.8 * color.r;
+            lowlight.g = 0.8 * color.g;
+            lowlight.b = 0.8 * color.b;
+            lowlight.a = 0.8 * color.a;
             LerpColor(color, lowlight, newcolor, 0.5 + 0.5 * sin(uis.realtime / PULSE_DIVISOR));
             drawcolor = newcolor;
         } else
@@ -1770,14 +1748,14 @@ namespace ui {
         switch (style & UI_FORMATMASK) {
             case UI_CENTER:
                 /* center justify at x */
-                len = strlen(str);
-                x = x - len * charw / 2;
+                len = str.length();
+                pos.x = static_cast<int32_t>(pos.x - len * charw / 2);
                 break;
 
             case UI_RIGHT:
                 /* right justify at x */
-                len = strlen(str);
-                x = x - len * charw;
+                len = str.length();
+                pos.x = static_cast<int32_t>(pos.x - len * charw);
                 break;
 
             default:
@@ -1792,29 +1770,26 @@ namespace ui {
         }
 
         if (style & UI_DROPSHADOW) {
-            dropcolor[0] = dropcolor[1] = dropcolor[2] = 0;
-            dropcolor[3] = drawcolor[3];
+            dropcolor.r = dropcolor.g = dropcolor.b = 0;
+            dropcolor.a = drawcolor.a;
 
             if (highRes)
-                DrawProportionalString(x + 2, str, style, dropcolor);
+                DrawProportionalString({pos.x + 2, pos.y + 2}, str, style, dropcolor);
             else
-                DrawString2(x + 2, y + 2, str, dropcolor, charw, charh);
+                DrawString2({pos.x + 2, pos.y + 2}, str, dropcolor, charw, charh);
         }
 
         /* TiM - Using a different char set now... */
         if (!highRes) /* keep the low res version for specific instances */
-            DrawString2(x, y, str, drawcolor, charw, charh);
+            DrawString2({pos.x, pos.y}, str, drawcolor, charw, charh);
         else
-            DrawProportionalString(x, str, style, drawcolor);
+            DrawProportionalString(pos, str, style, drawcolor);
     }
 
-    void Atoms::DrawChar(int32_t x, int32_t y, int32_t ch, int32_t style, vec_t *color) {
-        char buff[2];
+    void Atoms::DrawChar(common::Point2dI pos, char ch, int32_t style, common::Color color) {
+        std::string tmp{1, ch};
 
-        buff[0] = ch;
-        buff[1] = '\0';
-
-        DrawString(x, y, buff, style, color, qfalse);
+        DrawString(pos, tmp, style, color, qfalse);
     }
 
     qboolean Atoms::IsFullscreen() {

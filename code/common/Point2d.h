@@ -9,7 +9,7 @@ namespace common {
     class Point2d {
     public:
         template<typename A, typename B, typename = std::enable_if_t<std::is_convertible_v<A, T> && std::is_convertible_v<B, T>>>
-        constexpr explicit Point2d(A _x = 0, B _y = 0) : x{T{_x}}, y{T{_y}} {}
+        constexpr Point2d(A _x = 0, B _y = 0) : x{T{_x}}, y{T{_y}} {}
 
         T x;
         T y;

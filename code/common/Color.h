@@ -10,8 +10,10 @@ namespace common {
         template<typename R, typename G, typename B, typename A, typename = std::enable_if_t<
                 std::is_convertible_v<R, float> && std::is_convertible_v<G, float> && std::is_convertible_v<B, float> &&
                 std::is_convertible_v<A, float>>>
-        constexpr explicit Color(R _r, G _g = 0, B _b = 0, A _a = 0) noexcept :
+        constexpr Color(R _r, G _g = 0, B _b = 0, A _a = 0) noexcept :
                 r{_r}, g{_g}, b{_b}, a{_a} {}
+
+        constexpr Color(vec4_t v) noexcept : r{v[0]}, g{v[1]}, b{v[2]}, a{v[3]} {}
 
         union {
             vec4_t values{};
