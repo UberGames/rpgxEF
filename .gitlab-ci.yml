@@ -1,0 +1,12 @@
+build:
+  script:
+    - "mkdir cmake-build-debug"
+    - "cd cmake-build-debug"
+    - "cmake .."
+    - "cmake --build . --target common"
+    - "cmake --build . --target unittest_common"
+
+test:
+  script:
+    - "cd cmake-build_debug"
+    - "./unittest_common"
