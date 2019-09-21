@@ -594,6 +594,7 @@ void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
 void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
 int32_t Q_log2(int32_t val);
 
+#undef random
 inline auto random()	{ return ((rand () & 0x7fff) / ((float)0x7fff)); }
 #define crandom()	(2.0 * (random() - 0.5))
 

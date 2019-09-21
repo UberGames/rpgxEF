@@ -7,6 +7,8 @@ build:
     - "cmake --build . --target unittest_common"
 
 test:
+  dependencies:
+    - build
   script:
     - "cd cmake-build_debug"
     - "./unittest_common"
