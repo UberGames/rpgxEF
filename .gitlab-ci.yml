@@ -19,4 +19,4 @@ test:
     - "cd cmake-build-debug"
     - "cmake .."
     - "cmake --build . --target unittest_common"
-    - "./unittest_common"
+    - "ls"
