@@ -1,4 +1,9 @@
+stages:
+  - build
+  - test
+
 build:
+  stage: build
   script:
     - "mkdir cmake-build-debug"
     - "cd cmake-build-debug"
@@ -7,6 +12,7 @@ build:
     - "cmake --build . --target unittest_common"
 
 test:
+  stage: test
   dependencies:
     - build
   script:
