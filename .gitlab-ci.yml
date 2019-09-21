@@ -8,7 +8,7 @@ build:
     - "mkdir cmake-build-debug"
     - "cd cmake-build-debug"
     - "cmake .."
-    - "cmake --build . --target common"
+    - "cmake --build . --target common -- -j 8"
 
 test:
   stage: test
@@ -18,9 +18,9 @@ test:
     - "mkdir cmake-build-debug"
     - "cd cmake-build-debug"
     - "cmake .."
-    - "cmake --build . --target unittest_common"
+    - "cmake --build . --target unittest_common -- -j 8"
     - "./code/common/unittest_common -r junit -o results_common.xml"
   artifacts:
     reports:
       junit:
-        - cmake-build-debug/code/common/results_common.xml
+        - cmake-build-debug/results_common.xml
