@@ -569,13 +569,13 @@ namespace ui {
         }
 
         auto xWidth = (charWidth / 3);
-        auto x = position.x;
+        auto x = position.x_;
 
         x += (xWidth) * (width - l);
 
         for (const auto &c : number_str) {
             auto frame = c - '0';
-            DrawHandlePic(x, position.y, 16, 16, uis.smallNumbers[frame]);
+            DrawHandlePic(x, position.y_, 16, 16, uis.smallNumbers[frame]);
             x += xWidth;
 
             l--;
@@ -1416,8 +1416,8 @@ namespace ui {
         trap_R_SetColor(color.values);
 
         /*ax = x * uis.scale + uis.bias;*/
-        ax = pos.x * uis.scalex;
-        ay = pos.y * uis.scaley;
+        ax = pos.x_ * uis.scalex;
+        ay = pos.y_ * uis.scaley;
         holdY = ay;
 
         /* TiM - adjust for widescreen monitors */
@@ -1592,12 +1592,12 @@ namespace ui {
         switch (style & UI_FORMATMASK) {
             case UI_CENTER:
                 width = static_cast<size_t>(ProportionalStringWidth(str, charstyle) * sizeScale);
-                pos.x -= width / 2;
+                pos.x_ -= width / 2;
                 break;
 
             case UI_RIGHT:
                 width = static_cast<size_t>(ProportionalStringWidth(str, charstyle) * sizeScale);
-                pos.x -= width;
+                pos.x_ -= width;
                 break;
 
             case UI_LEFT:
@@ -1608,7 +1608,7 @@ namespace ui {
         if (style & UI_DROPSHADOW) {
             drawcolor.r_ = drawcolor.g_ = drawcolor.b_ = 0;
             drawcolor.a_ = color.a_;
-            DrawProportionalString2({pos.x + 2, pos.y + 2}, str, drawcolor, sizeScale, uis.charsetProp);
+            DrawProportionalString2({pos.x_ + 2, pos.y_ + 2}, str, drawcolor, sizeScale, uis.charsetProp);
         }
 
         if (style & UI_INVERSE) {
@@ -1655,7 +1655,7 @@ namespace ui {
         float frow;
         float fcol;
 
-        if (pos.y < -charh) {
+        if (pos.y_ < -charh) {
             /* offscreen */
             return;
         }
@@ -1664,8 +1664,8 @@ namespace ui {
         trap_R_SetColor(color.values);
 
         /* ax = x * uis.scale + uis.bias; */
-        ax = pos.x * uis.scalex;
-        ay = pos.y * uis.scaley;
+        ax = pos.x_ * uis.scalex;
+        ay = pos.y_ * uis.scaley;
         aw = charw * uis.scalex;
         ah = charh * uis.scaley;
 
@@ -1749,13 +1749,13 @@ namespace ui {
             case UI_CENTER:
                 /* center justify at x */
                 len = str.length();
-                pos.x = static_cast<int32_t>(pos.x - len * charw / 2);
+                pos.x_ = static_cast<int32_t>(pos.x_ - len * charw / 2);
                 break;
 
             case UI_RIGHT:
                 /* right justify at x */
                 len = str.length();
-                pos.x = static_cast<int32_t>(pos.x - len * charw);
+                pos.x_ = static_cast<int32_t>(pos.x_ - len * charw);
                 break;
 
             default:
@@ -1774,14 +1774,14 @@ namespace ui {
             dropcolor.a_ = drawcolor.a_;
 
             if (highRes)
-                DrawProportionalString({pos.x + 2, pos.y + 2}, str, style, dropcolor);
+                DrawProportionalString({pos.x_ + 2, pos.y_ + 2}, str, style, dropcolor);
             else
-                DrawString2({pos.x + 2, pos.y + 2}, str, dropcolor, charw, charh);
+                DrawString2({pos.x_ + 2, pos.y_ + 2}, str, dropcolor, charw, charh);
         }
 
         /* TiM - Using a different char set now... */
         if (!highRes) /* keep the low res version for specific instances */
-            DrawString2({pos.x, pos.y}, str, drawcolor, charw, charh);
+            DrawString2({pos.x_, pos.y_}, str, drawcolor, charw, charh);
         else
             DrawProportionalString(pos, str, style, drawcolor);
     }
