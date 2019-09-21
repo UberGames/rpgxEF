@@ -18,6 +18,12 @@ public:
 
   constexpr Vector(vec3_t v) noexcept : x_{v[0]}, y_{v[1]}, z_{v[2]} {}
 
+  constexpr Vector &clear();
+
+  [[nodiscard]] float length() const;
+
+  [[nodiscard]] constexpr float length_squared() const;
+
   union {
     vec3_t values{};
     struct {
@@ -44,8 +50,24 @@ inline constexpr Vector operator*(const Vector &a, float factor) {
   return {a.x_ * factor, a.y_ * factor, a.z_ * factor};
 }
 
-inline constexpr Vector operator*(float factor, Vector &a) {
+inline constexpr Vector operator*(float factor, const Vector &a) {
   return {a.x_ * factor, a.y_ * factor, a.z_ * factor};
+}
+
+inline constexpr Vector ma(const Vector &v, float s, const Vector &b) {
+  return {v.x_ + b.x_ * s, v.y_ + b.y_ * s, v.z_ + b.z_ * s};
+}
+
+inline constexpr Vector operator-(const Vector &a) {
+  return {-a.x_, -a.y_, -a.z_};
+}
+
+constexpr float distance(const Vector &a, const Vector &b) {
+  return sqrt(dotProduct(b - a, b - a));
+}
+
+constexpr float distance_squared(const Vector &a, const Vector &b) {
+  return dotProduct(b - a, b - a);
 }
 
 } // namespace common

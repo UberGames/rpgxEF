@@ -2,7 +2,22 @@
 #include "Random.h"
 #include <catch2/catch.hpp>
 
-namespace common {}
+namespace common {
+
+constexpr Vector &Vector::clear() {
+  x_ = 0;
+  y_ = 0;
+  z_ = 0;
+  return *this;
+}
+
+float Vector::length() const { return sqrt(dotProduct(*this, *this)); }
+
+constexpr float Vector::length_squared() const {
+  return dotProduct(*this, *this);
+}
+
+} // namespace common
 
 static_assert(common::Vector().x_ == 0.0f);
 static_assert(common::Vector().y_ == 0.0f);
@@ -109,4 +124,99 @@ TEST_CASE("vector_add", "[common::Vector]") {
     REQUIRE(res.y_ == v1.y_ + v2.y_);
     REQUIRE(res.z_ == v1.z_ + v2.z_);
   }
+}
+
+static_assert(common::Vector{1, 2, 3}.clear().x_ == 0.0f);
+static_assert(common::Vector{1, 2, 3}.clear().y_ == 0.0f);
+static_assert(common::Vector{1, 2, 3}.clear().z_ == 0.0f);
+
+TEST_CASE("vector_clear", "[common::Vector]") {
+  REQUIRE(common::Vector{1, 2, 3}.clear().x_ == 0.0f);
+  REQUIRE(common::Vector{1, 2, 3}.clear().y_ == 0.0f);
+  REQUIRE(common::Vector{1, 2, 3}.clear().z_ == 0.0f);
+}
+
+static_assert(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6})
+                  .x_ == 9.00f);
+static_assert(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6})
+                  .y_ == 12.0f);
+static_assert(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6})
+                  .z_ == 15.0f);
+
+TEST_CASE("vector_ma", "[common::Vector]") {
+  REQUIRE(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6}).x_ ==
+          9.00f);
+  REQUIRE(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6}).y_ ==
+          12.0f);
+  REQUIRE(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6}).z_ ==
+          15.0f);
+}
+
+static_assert((-common::Vector{1, 2, -5}).x_ == -1.0f);
+static_assert((-common::Vector{1, 2, -5}).y_ == -2.0f);
+static_assert((-common::Vector{1, 2, -5}).z_ == 5.0f);
+
+static_assert((-common::Vector{-1, -2, 5}).x_ == 1.0f);
+static_assert((-common::Vector{-1, -2, 5}).y_ == 2.0f);
+static_assert((-common::Vector{-1, -2, 5}).z_ == -5.0f);
+
+TEST_CASE("vector_negate", "[common::Vector]") {
+  REQUIRE((-common::Vector{1, 2, -5}).x_ == -1.0f);
+  REQUIRE((-common::Vector{1, 2, -5}).y_ == -2.0f);
+  REQUIRE((-common::Vector{1, 2, -5}).z_ == 5.0f);
+
+  REQUIRE((-common::Vector{-1, -2, 5}).x_ == 1.0f);
+  REQUIRE((-common::Vector{-1, -2, 5}).y_ == 2.0f);
+  REQUIRE((-common::Vector{-1, -2, 5}).z_ == -5.0f);
+}
+
+TEST_CASE("vector_length", "[common::Vector]") {
+  REQUIRE(common::Vector{0, 0, 0}.length() == Approx(0.0f));
+  REQUIRE(common::Vector{1, 0, 0}.length() == Approx(1.0f));
+  REQUIRE(common::Vector{0, 1, 0}.length() == Approx(1.0f));
+  REQUIRE(common::Vector{0, 0, 1}.length() == Approx(1.0f));
+  REQUIRE(common::Vector{1, 1, 1}.length() == Approx(1.7320508075f));
+  REQUIRE(common::Vector{22, 54, -1}.length() == Approx(58.3180932472f));
+}
+
+static_assert(common::Vector{0, 0, 0}.length_squared() == 0.0f);
+static_assert(common::Vector{1, 0, 0}.length_squared() == 1.0f);
+static_assert(common::Vector{0, 1, 0}.length_squared() == 1.0f);
+static_assert(common::Vector{0, 0, 1}.length_squared() == 1.0f);
+static_assert(common::Vector{1, 1, 1}.length_squared() == 3.0f);
+static_assert(common::Vector{22, 54, -1}.length_squared() == 3401.0f);
+
+TEST_CASE("vector_length_squared", "[common::Vector]") {
+  REQUIRE(common::Vector{0, 0, 0}.length_squared() == 0.0f);
+  REQUIRE(common::Vector{1, 0, 0}.length_squared() == 1.0f);
+  REQUIRE(common::Vector{0, 1, 0}.length_squared() == 1.0f);
+  REQUIRE(common::Vector{0, 0, 1}.length_squared() == 1.0f);
+  REQUIRE(common::Vector{1, 1, 1}.length_squared() == 3.0f);
+  REQUIRE(common::Vector{22, 54, -1}.length_squared() == 3401.0f);
+}
+
+static_assert(common::distance_squared({1, 1, 1}, {1, 1, 1}) == 0.0f);
+static_assert(common::distance_squared({1, 1, 1}, {0, 1, 1}) == 1.0f);
+static_assert(common::distance_squared({1, 1, 1}, {1, 0, 1}) == 1.0f);
+static_assert(common::distance_squared({1, 1, 1}, {1, 1, 0}) == 1.0f);
+static_assert(common::distance_squared({2, 2, 2}, {1, 1, 1}) == 3.0f);
+static_assert(common::distance_squared({33, 27, 1}, {11, -27, 2}) == 3401.0f);
+
+TEST_CASE("vector_to_vector_distance_squared", "[common::Vector]") {
+  REQUIRE(common::distance_squared({1, 1, 1}, {1, 1, 1}) == 0.0f);
+  REQUIRE(common::distance_squared({1, 1, 1}, {0, 1, 1}) == 1.0f);
+  REQUIRE(common::distance_squared({1, 1, 1}, {1, 0, 1}) == 1.0f);
+  REQUIRE(common::distance_squared({1, 1, 1}, {1, 1, 0}) == 1.0f);
+  REQUIRE(common::distance_squared({2, 2, 2}, {1, 1, 1}) == 3.0f);
+  REQUIRE(common::distance_squared({33, 27, 1}, {11, -27, 2}) == 3401.0f);
+}
+
+TEST_CASE("vector_to_vector_distance", "[common::Vector]") {
+  REQUIRE(common::distance({1, 1, 1}, {1, 1, 1}) == Approx(0.0f));
+  REQUIRE(common::distance({1, 1, 1}, {0, 1, 1}) == Approx(1.0f));
+  REQUIRE(common::distance({1, 1, 1}, {1, 0, 1}) == Approx(1.0f));
+  REQUIRE(common::distance({1, 1, 1}, {1, 1, 0}) == Approx(1.0f));
+  REQUIRE(common::distance({2, 2, 2}, {1, 1, 1}) == Approx(1.7320508075f));
+  REQUIRE(common::distance({33, 27, 1}, {11, -27, 2}) ==
+          Approx(58.3180932472f));
 }
