@@ -19,4 +19,8 @@ test:
     - "cd cmake-build-debug"
     - "cmake .."
     - "cmake --build . --target unittest_common"
-    - "ls"
+    - "./code/common/unittest_common -r junit -o results_common.xml"
+  artifacts:
+    reports:
+      junit:
+        - results_common.xml
