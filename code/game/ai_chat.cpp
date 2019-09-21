@@ -37,6 +37,7 @@
 #include "match.h"				//string matching types and vars
 //
 #include "g_syscalls.h"
+#include "g_syscalls.h"
 
 
 /*
@@ -280,7 +281,7 @@ static char* BotRandomOpponentName(bot_state_t* bs) {
 		numopponents++;
 	}
 
-	count = random() * numopponents;
+	count = qrandom() * numopponents;
 
 	for (i = 0; i < numopponents; i++) {
 		count--;
@@ -357,7 +358,7 @@ BotRandomWeaponName
 ==================
 */
 static const char* BotRandomWeaponName(void) {
-	int32_t rnd = random() * 8.9;
+	int32_t rnd = qrandom() * 8.9;
 
 	switch (rnd) {
 		case 0: return "Phaser";
@@ -500,7 +501,7 @@ int32_t BotChat_EnterGame(bot_state_t* bs) {
 	}
 
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd) {
+		if (qrandom() > rnd) {
 			return qfalse;
 		}
 	}
@@ -547,7 +548,7 @@ int32_t BotChat_ExitGame(bot_state_t* bs) {
 	}
 
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd) {
+		if (qrandom() > rnd) {
 			return qfalse;
 		}
 	}
@@ -596,7 +597,7 @@ int32_t BotChat_StartLevel(bot_state_t* bs) {
 	}
 
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd) {
+		if (qrandom() > rnd) {
 			return qfalse;
 		}
 	}
@@ -640,7 +641,7 @@ int32_t BotChat_EndLevel(bot_state_t* bs) {
 	}
 
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd) {
+		if (qrandom() > rnd) {
 			return qfalse;
 		}
 	}
@@ -699,7 +700,7 @@ int32_t BotChat_Death(bot_state_t* bs) {
 
 	//if fast chatting is off
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd) {
+		if (qrandom() > rnd) {
 			return qfalse;
 		}
 	}
@@ -747,7 +748,7 @@ int32_t BotChat_Death(bot_state_t* bs) {
 		else if (bs->botdeathtype == MOD_TELEFRAG) {
 			AI_main_BotAIInitialChat(bs, "death_telefrag", name, NULL);
 		} else {
-			if (random() < trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_INSULT, 0, 1)) {
+			if (qrandom() < trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_INSULT, 0, 1)) {
 				AI_main_BotAIInitialChat(bs, "death_insult",
 									 name,												// 0
 									 BotWeaponNameForMeansOfDeath(bs->botdeathtype),		// 1
@@ -785,7 +786,7 @@ int32_t BotChat_Kill(bot_state_t* bs) {
 
 	//if fast chat is off
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd) {
+		if (qrandom() > rnd) {
 			return qfalse;
 		}
 	}
@@ -818,7 +819,7 @@ int32_t BotChat_Kill(bot_state_t* bs) {
 			return qfalse;
 		} else if (bs->enemydeathtype == MOD_TELEFRAG) {
 			AI_main_BotAIInitialChat(bs, "kill_telefrag", name, NULL);
-		} else if (random() < trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_INSULT, 0, 1)) { //choose between insult and praise
+		} else if (qrandom() < trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_INSULT, 0, 1)) { //choose between insult and praise
 			AI_main_BotAIInitialChat(bs, "kill_insult", name, NULL);
 		} else {
 			AI_main_BotAIInitialChat(bs, "kill_praise", name, NULL);
@@ -857,7 +858,7 @@ int32_t BotChat_EnemySuicide(bot_state_t* bs) {
 
 	//if fast chat is off
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd) {
+		if (qrandom() > rnd) {
 			return qfalse;
 		}
 	}
@@ -924,7 +925,7 @@ int32_t BotChat_HitTalking(bot_state_t* bs) {
 
 	//if fast chat is off
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd * 0.5) {
+		if (qrandom() > rnd * 0.5) {
 			return qfalse;
 		}
 	}
@@ -985,7 +986,7 @@ int32_t BotChat_HitNoDeath(bot_state_t* bs) {
 
 	//if fast chat is off
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd * 0.5) {
+		if (qrandom() > rnd * 0.5) {
 			return qfalse;
 		}
 	}
@@ -1043,7 +1044,7 @@ int32_t BotChat_HitNoKill(bot_state_t* bs) {
 
 	//if fast chat is off
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd * 0.5) {
+		if (qrandom() > rnd * 0.5) {
 			return qfalse;
 		}
 	}
@@ -1102,16 +1103,16 @@ int32_t BotChat_Random(bot_state_t* bs) {
 		return qfalse;
 	}
 
-	if (random() > bs->thinktime * 0.1) {
+	if (qrandom() > bs->thinktime * 0.1) {
 		return qfalse;
 	}
 
 	if (bot_fastchat.integer == 0) {
-		if (random() > rnd) {
+		if (qrandom() > rnd) {
 			return qfalse;
 		}
 
-		if (random() > 0.25) {
+		if (qrandom() > 0.25) {
 			return qfalse;
 		}
 	}
@@ -1130,7 +1131,7 @@ int32_t BotChat_Random(bot_state_t* bs) {
 		EasyClientName(bs->lastkilledplayer, name, sizeof(name));
 	}
 	
-	if (random() < trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_MISC, 0, 1)) {
+	if (qrandom() < trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_MISC, 0, 1)) {
 		AI_main_BotAIInitialChat(bs, "random_misc",
 							 BotRandomOpponentName(bs),	// 0
 							 name,						// 1

@@ -422,7 +422,7 @@ static int32_t BotAddressedToBot(bot_state_t* bs, bot_match_t* match) {
 		return qfalse;
 	} else {
 		//make sure not everyone reacts to this message
-		if (random() > (float) 1.0 / (NumPlayersOnSameTeam(bs) - 1)) {
+		if (qrandom() > (float) 1.0 / (NumPlayersOnSameTeam(bs) - 1)) {
 			return qfalse;
 		}
 	}
@@ -571,7 +571,7 @@ static void BotMatch_HelpAccompany(bot_state_t* bs, bot_match_t* match) {
 	bs->teammatevisible_time = trap_AAS_Time();
 
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 
 	//get the team goal time
 	bs->teamgoal_time = BotGetTime(match);
@@ -615,7 +615,7 @@ void BotMatch_DefendKeyArea(bot_state_t *bs, bot_match_t *match) {
 		return;
 	}
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 	//set the ltg type
 	bs->ltgtype = LTG_DEFENDKEYAREA;
 	//get the team goal time
@@ -649,7 +649,7 @@ void BotMatch_GetItem(bot_state_t *bs, bot_match_t *match) {
 		return;
 	}
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 	//set the ltg type
 	bs->ltgtype = LTG_GETITEM;
 	//set the team goal time
@@ -725,7 +725,7 @@ void BotMatch_Camp(bot_state_t *bs, bot_match_t *match) {
 		return;
 	}
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 	//set the ltg type
 	bs->ltgtype = LTG_CAMPORDER;
 	//get the team goal time
@@ -754,7 +754,7 @@ void BotMatch_Patrol(bot_state_t *bs, bot_match_t *match) {
 	//get the patrol waypoints
 	if (!BotGetPatrolWaypoints(bs, match)) return;
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 	//set the ltg type
 	bs->ltgtype = LTG_PATROL;
 	//get the team goal time
@@ -778,7 +778,7 @@ void BotMatch_GetFlag(bot_state_t *bs, bot_match_t *match) {
 	//if not addressed to this bot
 	if (!BotAddressedToBot(bs, match)) return;
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 	//set the ltg type
 	bs->ltgtype = LTG_GETFLAG;
 	//set the team goal time
@@ -799,7 +799,7 @@ void BotMatch_RushBase(bot_state_t *bs, bot_match_t *match) {
 	//if not addressed to this bot
 	if (!BotAddressedToBot(bs, match)) return;
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 	//set the ltg type
 	bs->ltgtype = LTG_RUSHBASE;
 	//set the team goal time
@@ -865,7 +865,7 @@ void BotMatch_ReturnFlag(bot_state_t *bs, bot_match_t *match) {
 	//if not addressed to this bot
 	if (!BotAddressedToBot(bs, match)) return;
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 	//set the ltg type
 	bs->ltgtype = LTG_RETURNFLAG;
 	//set the team goal time
@@ -1347,7 +1347,7 @@ void BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match) {
 	bs->lead_teammate = client;
 	bs->lead_time = trap_AAS_Time() + TEAM_LEAD_TIME;
 	bs->leadvisible_time = 0;
-	bs->leadmessage_time = -(trap_AAS_Time() + 2 * random());
+	bs->leadmessage_time = -(trap_AAS_Time() + 2 * qrandom());
 }
 
 /*
@@ -1373,7 +1373,7 @@ void BotMatch_Kill(bot_state_t *bs, bot_match_t *match) {
 	}
 	bs->teamgoal.entitynum = client;
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 	//set the ltg type
 	bs->ltgtype = LTG_KILL;
 	//set the team goal time

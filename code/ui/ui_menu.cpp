@@ -2664,20 +2664,20 @@ static void Quit_MenuBlinkies(void)
 
 		for (i = 0; i < 5; ++i)
 		{
-			quitmenu_graphics[i + QMG_COL1_NUM1].target = (random() * (900000000)) + 99999999;
-			quitmenu_graphics[i + QMG_COL3_NUM1].target = (random() * (900000000)) + 99999999;
-			quitmenu_graphics[i + QMG_COL4_NUM1].target = (random() * (900000000)) + 99999999;
+			quitmenu_graphics[i + QMG_COL1_NUM1].target = (qrandom() * (900000000)) + 99999999;
+			quitmenu_graphics[i + QMG_COL3_NUM1].target = (qrandom() * (900000000)) + 99999999;
+			quitmenu_graphics[i + QMG_COL4_NUM1].target = (qrandom() * (900000000)) + 99999999;
 		}
 
 		for (i = 0; i < 5; ++i)
 		{
-			quitmenu_graphics[i + QMG_COL2_NUM1].target = (random() * (900000)) + 99999;
+			quitmenu_graphics[i + QMG_COL2_NUM1].target = (qrandom() * (900000)) + 99999;
 		}
 
 		for (i = 0; i < 5; ++i)
 		{
-			quitmenu_graphics[i + QMG_COL5_NUM1].target = (random() * (90)) + 9;
-			quitmenu_graphics[i + QMG_COL6_NUM1].target = (random() * (90)) + 9;
+			quitmenu_graphics[i + QMG_COL5_NUM1].target = (qrandom() * (90)) + 9;
+			quitmenu_graphics[i + QMG_COL6_NUM1].target = (qrandom() * (90)) + 9;
 		}
 
 		quitmenu_graphics[QMG_NUMBERS].target = 1;

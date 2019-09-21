@@ -1546,7 +1546,7 @@ static const uint8_t ELEC_FIRE_STARTOFF = 1;
 static void electric_fire_think(gentity_t *ent)
 {
 	G_AddEvent(ent, EV_FX_ELECFIRE, 0);
-	ent->nextthink = level.time + (750 + (random() * 300));
+	ent->nextthink = level.time + (750 + (qrandom() * 300));
 }
 
 //------------------------------------------
@@ -1638,7 +1638,7 @@ enum fx_forgeBoltSpawnflags_e {
 static void forge_bolt_think(gentity_t *ent)
 {
 	G_AddEvent(ent, EV_FX_FORGE_BOLT, ent->spawnflags & FORGE_BOLT_DELAYED);
-	ent->nextthink = (int)(level.time + (ent->wait + crandom() * ent->wait * 0.25) * 1000);
+	ent->nextthink = (int)(level.time + (ent->wait + cqrandom() * ent->wait * 0.25) * 1000);
 
 	// If a fool gets in the bolt path, zap 'em
 	if (ent->damage != 0)
@@ -2445,7 +2445,7 @@ static void borg_bolt_think(gentity_t *ent)
 {
 	if ((ent->spawnflags & BORG_BOLT_FX_NO_PROXIMITY_FX) != 0)	{
 		G_AddEvent(ent, EV_FX_BORG_BOLT, 0);
-		ent->nextthink = level.time + 100 + random() * 25;
+		ent->nextthink = level.time + 100 + qrandom() * 25;
 	}
 	else {
 		G_AddEvent(ent, EV_FX_BORG_BOLT, 1);

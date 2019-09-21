@@ -340,7 +340,7 @@ Get a random floating point number.
 */
 static int Qmath_Random(lua_State * L)
 {
-	lua_pushnumber(L, random());
+	lua_pushnumber(L, qrandom());
 	return 1;
 }
 
@@ -351,7 +351,7 @@ Get a random floating point number (using crazy random function).
 */
 static int Qmath_Crandom(lua_State * L)
 {
-	lua_pushnumber(L, crandom());
+	lua_pushnumber(L, cqrandom());
 	return 1;
 }
 

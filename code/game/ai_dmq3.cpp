@@ -255,7 +255,7 @@ void BotCTFSeekGoals(bot_state_t *bs) {
 					//last time the team mate was visible
 					bs->teammatevisible_time = trap_AAS_Time();
 					//set the time to send a message to the team mates
-					bs->teammessage_time = trap_AAS_Time() + 2 * random();
+					bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 					//get the team goal time
 					bs->teamgoal_time = trap_AAS_Time() + TEAM_ACCOMPANY_TIME;
 					bs->ltgtype = LTG_TEAMACCOMPANY;
@@ -315,9 +315,9 @@ void BotCTFSeekGoals(bot_state_t *bs) {
 	//if the bot has anough aggression to decide what to do
 	if (BotAggression(bs) < 50) return;
 	//set the time to send a message to the team mates
-	bs->teammessage_time = trap_AAS_Time() + 2 * random();
+	bs->teammessage_time = trap_AAS_Time() + 2 * qrandom();
 	//get the flag or defend the base
-	rnd = random();
+	rnd = qrandom();
 	if (rnd < 0.33 && ctf_redflag.areanum && ctf_blueflag.areanum) {
 		bs->ltgtype = LTG_GETFLAG;
 		//set the time the bot will stop getting the flag
@@ -1068,7 +1068,7 @@ void BotGoCamp(bot_state_t *bs, bot_goal_t *goal) {
 	//get the team goal time
 	camper = 0;
 	if (camper > 0.99) bs->teamgoal_time = 99999;
-	else bs->teamgoal_time = 120 + 180 * camper + random() * 15;
+	else bs->teamgoal_time = 120 + 180 * camper + qrandom() * 15;
 	//set the last time the bot started camping
 	bs->camp_time = trap_AAS_Time();
 	//the teammate that requested the camping
@@ -1136,19 +1136,19 @@ void BotRoamGoal(bot_state_t *bs, vec3_t goal) {
 	for (i = 0; i < 10; i++) {
 		//start at the bot origin
 		VectorCopy(bs->origin, bestorg);
-		rnd = random();
+		rnd = qrandom();
 		if (rnd > 0.25) {
 			//add a random value to the x-coordinate
-			if (random() < 0.5) bestorg[0] -= 800 * random() + 100;
-			else bestorg[0] += 800 * random() + 100;
+			if (qrandom() < 0.5) bestorg[0] -= 800 * qrandom() + 100;
+			else bestorg[0] += 800 * qrandom() + 100;
 		}
 		if (rnd < 0.75) {
 			//add a random value to the y-coordinate
-			if (random() < 0.5) bestorg[1] -= 800 * random() + 100;
-			else bestorg[1] += 800 * random() + 100;
+			if (qrandom() < 0.5) bestorg[1] -= 800 * qrandom() + 100;
+			else bestorg[1] += 800 * qrandom() + 100;
 		}
 		//add a random value to the z-coordinate (NOTE: 48 = maxjump?)
-		bestorg[2] += 2 * 48 * crandom();
+		bestorg[2] += 2 * 48 * cqrandom();
 		//trace a line from the origin to the roam target
 		AI_main_BotAITrace(&trace, bs->origin, NULL, NULL, bestorg, bs->entitynum, MASK_SOLID);
 		//direction and length towards the roam target
@@ -1224,11 +1224,11 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 	movetype = MOVE_WALK;
 	//
 	if (bs->attackcrouch_time < trap_AAS_Time() - 1) {
-		if (random() < jumper) {
+		if (qrandom() < jumper) {
 			movetype = MOVE_JUMP;
 		}
 		//wait at least one second before crouching again
-		else if (bs->attackcrouch_time < trap_AAS_Time() - 1 && random() < croucher) {
+		else if (bs->attackcrouch_time < trap_AAS_Time() - 1 && qrandom() < croucher) {
 			bs->attackcrouch_time = trap_AAS_Time() + croucher * 5;
 		}
 	}
@@ -1260,11 +1260,11 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 	bs->attackstrafe_time += bs->thinktime;
 	//get the strafe change time
 	strafechange_time = 0.4 + (1 - attack_skill) * 0.2;
-	if (attack_skill > 0.7) strafechange_time += crandom() * 0.2;
+	if (attack_skill > 0.7) strafechange_time += cqrandom() * 0.2;
 	//if the strafe direction should be changed
 	if (bs->attackstrafe_time > strafechange_time) {
 		//some magic number :)
-		if (random() > 0.935) {
+		if (qrandom() > 0.935) {
 			//flip the strafe direction
 			bs->flags ^= BFL_STRAFERIGHT;
 			bs->attackstrafe_time = 0;
@@ -1281,7 +1281,7 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 		//reverse the vector depending on the strafe direction
 		if (bs->flags & BFL_STRAFERIGHT) VectorNegate(sideward, sideward);
 		//randomly go back a little
-		if (random() > 0.9) {
+		if (qrandom() > 0.9) {
 			VectorAdd(sideward, backward, sideward);
 		}
 		else {
@@ -1681,7 +1681,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	AI_main_BotEntityInfo(bs->enemy, &entinfo);
 	//if the enemy is invisible then shoot crappy most of the time
 	if (EntityIsInvisible(&entinfo)) {
-		if (random() > 0.1) aim_accuracy *= 0.4;
+		if (qrandom() > 0.1) aim_accuracy *= 0.4;
 	}
 	//
 	VectorSubtract(entinfo.origin, entinfo.lastvisorigin, enemyvelocity);
@@ -1808,9 +1808,9 @@ void BotAimAtEnemy(bot_state_t *bs) {
 				}
 			}
 		}
-		bestorigin[0] += 20 * crandom() * (1 - aim_accuracy);
-		bestorigin[1] += 20 * crandom() * (1 - aim_accuracy);
-		bestorigin[2] += 10 * crandom() * (1 - aim_accuracy);
+		bestorigin[0] += 20 * cqrandom() * (1 - aim_accuracy);
+		bestorigin[1] += 20 * cqrandom() * (1 - aim_accuracy);
+		bestorigin[2] += 10 * cqrandom() * (1 - aim_accuracy);
 	}
 	else {
 		//
@@ -1865,14 +1865,14 @@ void BotAimAtEnemy(bot_state_t *bs) {
 		int i;
 
 		VectorNormalize(dir);
-		for (i = 0; i < 3; i++) dir[i] += 0.3 * crandom() * (1 - aim_accuracy);
+		for (i = 0; i < 3; i++) dir[i] += 0.3 * cqrandom() * (1 - aim_accuracy);
 	}
 	//set the ideal view angles
 	vectoangles(dir, bs->ideal_viewangles);
 	//take the weapon spread into account for lower skilled bots
-	bs->ideal_viewangles[PITCH] += 6 * wi.vspread * crandom() * (1 - aim_accuracy);
+	bs->ideal_viewangles[PITCH] += 6 * wi.vspread * cqrandom() * (1 - aim_accuracy);
 	bs->ideal_viewangles[PITCH] = AngleMod(bs->ideal_viewangles[PITCH]);
-	bs->ideal_viewangles[YAW] += 6 * wi.hspread * crandom() * (1 - aim_accuracy);
+	bs->ideal_viewangles[YAW] += 6 * wi.hspread * cqrandom() * (1 - aim_accuracy);
 	bs->ideal_viewangles[YAW] = AngleMod(bs->ideal_viewangles[YAW]);
 	//if the bots should be really challenging
 	//if the bot is really accurate and has the enemy in view for some time
@@ -1914,7 +1914,7 @@ void BotCheckAttack(bot_state_t *bs) {
 	if (bs->firethrottlewait_time > trap_AAS_Time()) return;
 	firethrottle = 1;
 	if (bs->firethrottleshoot_time < trap_AAS_Time()) {
-		if (random() > firethrottle) {
+		if (qrandom() > firethrottle) {
 			bs->firethrottlewait_time = trap_AAS_Time() + firethrottle;
 			bs->firethrottleshoot_time = 0;
 		}
@@ -1967,7 +1967,7 @@ void BotCheckAttack(bot_state_t *bs) {
 				float points = (wi.proj.damage - 0.5 * trace.fraction * 1000) * 0.5;
 				if (points > 0) {
 //					selfpreservation = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_SELFPRESERVATION, 0, 1);
-//					if (random() < selfpreservation) return;
+//					if (qrandom() < selfpreservation) return;
 					return;
 				}
 			}
@@ -2068,9 +2068,9 @@ void BotMapScripts(bot_state_t *bs) {
 			bs->flags |= BFL_IDEALVIEWSET;
 			VectorSubtract(buttonorg, bs->eye, dir);
 			vectoangles(dir, bs->ideal_viewangles);
-			bs->ideal_viewangles[PITCH] += 8 * crandom() * (1 - aim_accuracy);
+			bs->ideal_viewangles[PITCH] += 8 * cqrandom() * (1 - aim_accuracy);
 			bs->ideal_viewangles[PITCH] = AngleMod(bs->ideal_viewangles[PITCH]);
-			bs->ideal_viewangles[YAW] += 8 * crandom() * (1 - aim_accuracy);
+			bs->ideal_viewangles[YAW] += 8 * cqrandom() * (1 - aim_accuracy);
 			bs->ideal_viewangles[YAW] = AngleMod(bs->ideal_viewangles[YAW]);
 			//
 			if (InFieldOfVision(bs->viewangles, 20, bs->ideal_viewangles))
@@ -2408,7 +2408,7 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 	hordir[2] = 0;
 	//if no direction just take a random direction
 	if (VectorNormalize(hordir) < 0.1) {
-		VectorSet(angles, 0, 360 * random(), 0);
+		VectorSet(angles, 0, 360 * qrandom(), 0);
 		AngleVectors(angles, hordir, NULL, NULL);
 	}
 	//
@@ -2469,7 +2469,7 @@ void BotCheckConsoleMessages(bot_state_t *bs) {
 		//if the chat state is flooded with messages the bot will read them quickly
 		if (trap_BotNumConsoleMessages(bs->cs) < 10) {
 			//if it is a chat message the bot needs some time to read it
-			if (m.type == CMS_CHAT && m.time > trap_AAS_Time() - (1 + random())) break;
+			if (m.type == CMS_CHAT && m.time > trap_AAS_Time() - (1 + qrandom())) break;
 		}
 		//
 		ptr = m.message;
@@ -2532,7 +2532,7 @@ void BotCheckConsoleMessages(bot_state_t *bs) {
 				//if at a valid chat position and not chatting already
 				else if (bs->ainode != AI_dmnet_AINode_Stand && BotValidChatPosition(bs)) {
 					chat_reply = 0;
-					if (random() < 1.5 / (AI_main_NumBots()+1) && random() < chat_reply) {
+					if (qrandom() < 1.5 / (AI_main_NumBots()+1) && qrandom() < chat_reply) {
 						//if bot replies with a chat message
 						if (trap_BotReplyChat(bs->cs, message, context, CONTEXT_REPLY,
 																NULL, NULL,

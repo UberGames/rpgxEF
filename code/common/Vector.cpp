@@ -51,12 +51,12 @@ TEST_CASE("vector_dotproduct", "[common::Vector]") {
   REQUIRE(common::dotProduct({1, 5, 3}, {3, 2, 1}) == Approx(16.0f));
 
   for (auto i = 0; i < 100; i++) {
-    auto v1 = common::Vector{common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000)};
-    auto v2 = common::Vector{common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000)};
+    auto v1 = common::Vector{common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000)};
+    auto v2 = common::Vector{common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000)};
 
     REQUIRE(common::dotProduct(v1, v2) ==
             Approx(v1.x_ * v2.x_ + v1.y_ * v2.y_ + v1.z_ * v2.z_));
@@ -73,12 +73,12 @@ TEST_CASE("vector_substract", "[common::Vector}") {
   REQUIRE((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).z_ == 0.0f);
 
   for (auto i = 0; i < 100; i++) {
-    auto v1 = common::Vector{common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000)};
-    auto v2 = common::Vector{common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000)};
+    auto v1 = common::Vector{common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000)};
+    auto v2 = common::Vector{common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000)};
 
     auto res = v1 - v2;
     REQUIRE(res.x_ == v1.x_ - v2.x_);
@@ -97,12 +97,12 @@ TEST_CASE("vector_add", "[common::Vector]") {
   REQUIRE((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).z_ == 8.0f);
 
   for (auto i = 0; i < 100; i++) {
-    auto v1 = common::Vector{common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000)};
-    auto v2 = common::Vector{common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000),
-                             common::random<float>(-100000, 100000)};
+    auto v1 = common::Vector{common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000)};
+    auto v2 = common::Vector{common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000),
+                             common::getRandom<float>(-100000, 100000)};
 
     auto res = v1 + v2;
     REQUIRE(res.x_ == v1.x_ + v2.x_);

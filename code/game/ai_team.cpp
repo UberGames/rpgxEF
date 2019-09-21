@@ -576,10 +576,10 @@ void BotTeamAI(bot_state_t *bs) {
 		//
 		if (!bs->askteamleader_time && !bs->becometeamleader_time) {
 			if (bs->entergame_time + 10 > trap_AAS_Time()) {
-				bs->askteamleader_time = trap_AAS_Time() + 5 + random() * 10;
+				bs->askteamleader_time = trap_AAS_Time() + 5 + qrandom() * 10;
 			}
 			else {
-				bs->becometeamleader_time = trap_AAS_Time() + 5 + random() * 10;
+				bs->becometeamleader_time = trap_AAS_Time() + 5 + qrandom() * 10;
 			}
 		}
 		if (bs->askteamleader_time && bs->askteamleader_time < trap_AAS_Time()) {
@@ -587,7 +587,7 @@ void BotTeamAI(bot_state_t *bs) {
 			AI_main_BotAIInitialChat(bs, "whoisteamleader", NULL);
 			trap_BotEnterChat(bs->cs, bs->client, CHAT_TEAM);
 			bs->askteamleader_time = 0;
-			bs->becometeamleader_time = trap_AAS_Time() + 15 + random() * 10;
+			bs->becometeamleader_time = trap_AAS_Time() + 15 + qrandom() * 10;
 		}
 		if (bs->becometeamleader_time && bs->becometeamleader_time < trap_AAS_Time()) {
 			AI_main_BotAIInitialChat(bs, "iamteamleader", NULL);
@@ -640,7 +640,7 @@ void BotTeamAI(bot_state_t *bs) {
 			if (bs->lastflagcapture_time < trap_AAS_Time() - 240) {
 				bs->lastflagcapture_time = trap_AAS_Time();
 				//randomly change the CTF strategy
-				if (random() < 0.4) {
+				if (qrandom() < 0.4) {
 					bs->ctfstrategy ^= CTFS_PASSIVE;
 					bs->teamgiveorders_time = trap_AAS_Time();
 				}

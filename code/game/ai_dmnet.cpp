@@ -438,7 +438,7 @@ static int32_t AI_dmnet_BotGetLongTermGoal(bot_state_t* bs, int32_t tfl, int32_t
 				//don't crouch if crouched less than 5 seconds ago
 				if (bs->attackcrouch_time < trap_AAS_Time() - 5) {
 					croucher = 1;
-					if (random() < bs->thinktime * croucher) {
+					if (qrandom() < bs->thinktime * croucher) {
 						bs->attackcrouch_time = trap_AAS_Time() + 5 + croucher * 15;
 					}
 				}
@@ -458,7 +458,7 @@ static int32_t AI_dmnet_BotGetLongTermGoal(bot_state_t* bs, int32_t tfl, int32_t
 						bs->arrive_time = trap_AAS_Time();
 					} else if (bs->attackcrouch_time > trap_AAS_Time()) { //if the bot wants to crouch
 						trap_EA_Crouch(bs->client);
-					} else if (random() < bs->thinktime * 0.3) { //else do some model taunts
+					} else if (qrandom() < bs->thinktime * 0.3) { //else do some model taunts
 						//do a gesture :)
 						trap_EA_Gesture(bs->client);
 					}
@@ -469,7 +469,7 @@ static int32_t AI_dmnet_BotGetLongTermGoal(bot_state_t* bs, int32_t tfl, int32_t
 					VectorSubtract(entinfo.origin, bs->origin, dir);
 					vectoangles(dir, bs->ideal_viewangles);
 					bs->ideal_viewangles[2] *= 0.5;
-				} else if (random() < bs->thinktime * 0.8) { //else look strategically around for enemies
+				} else if (qrandom() < bs->thinktime * 0.8) { //else look strategically around for enemies
 					BotRoamGoal(bs, target);
 					VectorSubtract(target, bs->origin, dir);
 					vectoangles(dir, bs->ideal_viewangles);
@@ -550,7 +550,7 @@ static int32_t AI_dmnet_BotGetLongTermGoal(bot_state_t* bs, int32_t tfl, int32_t
 		VectorSubtract(goal->origin, bs->origin, dir);
 		if (VectorLength(dir) < 70) {
 			trap_BotResetAvoidReach(bs->ms);
-			bs->defendaway_time = trap_AAS_Time() + 2 + 5 * random();
+			bs->defendaway_time = trap_AAS_Time() + 2 + 5 * qrandom();
 			bs->defendaway_range = 250;
 		}
 		return qtrue;
@@ -650,7 +650,7 @@ static int32_t AI_dmnet_BotGetLongTermGoal(bot_state_t* bs, int32_t tfl, int32_t
 			}
 
 			//look strategically around for enemies
-			if (random() < bs->thinktime * 0.8) {
+			if (qrandom() < bs->thinktime * 0.8) {
 				BotRoamGoal(bs, target);
 				VectorSubtract(target, bs->origin, dir);
 				vectoangles(dir, bs->ideal_viewangles);
@@ -661,7 +661,7 @@ static int32_t AI_dmnet_BotGetLongTermGoal(bot_state_t* bs, int32_t tfl, int32_t
 			//don't crouch if crouched less than 5 seconds ago
 			if (bs->attackcrouch_time < trap_AAS_Time() - 5) {
 				croucher = 1;
-				if (random() < bs->thinktime * croucher) {
+				if (qrandom() < bs->thinktime * croucher) {
 					bs->attackcrouch_time = trap_AAS_Time() + 5 + croucher * 15;
 				}
 			}
@@ -821,7 +821,7 @@ static int32_t AI_dmnet_BotGetLongTermGoal(bot_state_t* bs, int32_t tfl, int32_t
 			//base flag is gone, now just walk near the base a bit
 			if (BotCTFCarryingFlag(bs) != 0) {
 				trap_BotResetAvoidReach(bs->ms);
-				bs->rushbaseaway_time = trap_AAS_Time() + 5 + 10 * random();
+				bs->rushbaseaway_time = trap_AAS_Time() + 5 + 10 * qrandom();
 				//FIXME: add chat to tell the others to get back the flag
 				//FIXME: Make them camp?  Get health?  Preserve themselves?
 			} else {
@@ -1142,7 +1142,7 @@ static void AI_dmnet_AIEnter_Respawn(bot_state_t* bs) {
 		bs->respawn_time = trap_AAS_Time() + BotChatTime(bs);
 		bs->respawnchat_time = trap_AAS_Time();
 	} else {
-		bs->respawn_time = trap_AAS_Time() + 1 + random();
+		bs->respawn_time = trap_AAS_Time() + 1 + qrandom();
 		bs->respawnchat_time = 0;
 	}
 
@@ -1234,7 +1234,7 @@ static int32_t AI_dmnet_AINode_Seek_ActivateEntity(bot_state_t* bs) {
 	if ((moveresult.flags & (MOVERESULT_MOVEMENTVIEWSET | MOVERESULT_MOVEMENTVIEW | MOVERESULT_SWIMVIEW)) != 0) {
 		VectorCopy(moveresult.ideal_viewangles, bs->ideal_viewangles);
 	} else if (moveresult.flags & MOVERESULT_WAITING) { //if waiting for something
-		if (random() < bs->thinktime * 0.8) {
+		if (qrandom() < bs->thinktime * 0.8) {
 			BotRoamGoal(bs, target);
 			VectorSubtract(target, bs->origin, dir);
 			vectoangles(dir, bs->ideal_viewangles);
@@ -1392,7 +1392,7 @@ int32_t AI_dmnat_AINode_Seek_NBG(bot_state_t* bs) {
 	if ((moveresult.flags & (MOVERESULT_MOVEMENTVIEWSET|MOVERESULT_MOVEMENTVIEW|MOVERESULT_SWIMVIEW)) != 0) {
 		VectorCopy(moveresult.ideal_viewangles, bs->ideal_viewangles);
 	} else if ((moveresult.flags & MOVERESULT_WAITING) != 0) { //if waiting for something
-		if (random() < bs->thinktime * 0.8) {
+		if (qrandom() < bs->thinktime * 0.8) {
 			BotRoamGoal(bs, target);
 			VectorSubtract(target, bs->origin, dir);
 			vectoangles(dir, bs->ideal_viewangles);
@@ -1493,7 +1493,7 @@ int32_t AI_dmnet_AINode_Seek_LTG(bot_state_t* bs) {
 	bs->enemy = -1;
 
 	if (bs->killedenemy_time > trap_AAS_Time() - 2) {
-		if (random() < bs->thinktime * 1) {
+		if (qrandom() < bs->thinktime * 1) {
 			trap_EA_Gesture(bs->client);
 		}
 	}
@@ -1580,7 +1580,7 @@ int32_t AI_dmnet_AINode_Seek_LTG(bot_state_t* bs) {
 	if ((moveresult.flags & (MOVERESULT_MOVEMENTVIEWSET | MOVERESULT_MOVEMENTVIEW | MOVERESULT_SWIMVIEW)) != 0) {
 		VectorCopy(moveresult.ideal_viewangles, bs->ideal_viewangles);
 	} else if ((moveresult.flags & MOVERESULT_WAITING) != 0) { //if waiting for something
-		if (random() < bs->thinktime * 0.8) {
+		if (qrandom() < bs->thinktime * 0.8) {
 			BotRoamGoal(bs, target);
 			VectorSubtract(target, bs->origin, dir);
 			vectoangles(dir, bs->ideal_viewangles);
@@ -1592,7 +1592,7 @@ int32_t AI_dmnet_AINode_Seek_LTG(bot_state_t* bs) {
 			vectoangles(dir, bs->ideal_viewangles);
 		} else if (VectorLength(moveresult.movedir)) { //FIXME: look at cluster portals?
 			vectoangles(moveresult.movedir, bs->ideal_viewangles);
-		} else if (random() < bs->thinktime * 0.8) {
+		} else if (qrandom() < bs->thinktime * 0.8) {
 			BotRoamGoal(bs, target);
 			VectorSubtract(target, bs->origin, dir);
 			vectoangles(dir, bs->ideal_viewangles);
@@ -1729,7 +1729,7 @@ static int32_t AI_dmnet_AINode_Battle_Fight(bot_state_t* bs) {
 
 	//if the enemy is invisible and not shooting the bot looses track easily
 	if (EntityIsInvisible(&entinfo) && !EntityIsShooting(&entinfo)) {
-		if (random() < 0.2) {
+		if (qrandom() < 0.2) {
 			AI_dmnet_AIEnter_Seek_LTG(bs);
 			return qfalse;
 		}
