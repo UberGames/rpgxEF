@@ -18,9 +18,4 @@ float rsqrt(float number) {
 
 TEST_CASE("math_rsqrt") {
   REQUIRE(common::rsqrt(4) == Approx(0.5f).epsilon(0.01));
-
-  for (auto i = 0; i < 100; i++) {
-    const auto f = common::getRandom<float>();
-    REQUIRE(common::rsqrt(f) == Approx(1.0f / sqrt(f)).epsilon(0.01));
-  }
 }
