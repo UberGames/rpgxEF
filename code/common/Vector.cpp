@@ -1,5 +1,7 @@
 #include "Vector.h"
+#include "Math.h"
 #include "Random.h"
+#include <base_game/q_math.h>
 #include <catch2/catch.hpp>
 
 namespace common {
@@ -15,6 +17,95 @@ float Vector::length() const { return sqrt(dotProduct(*this, *this)); }
 
 constexpr float Vector::length_squared() const {
   return dotProduct(*this, *this);
+}
+
+float Vector::normalize() {
+  const auto len = length();
+
+  if (len < 0 || len > 0) {
+    const auto ilen = 1 / len;
+    x_ *= ilen;
+    y_ *= ilen;
+    z_ *= ilen;
+  }
+
+  return len;
+}
+
+Vector Vector::normalized() const {
+  auto result = *this;
+  result.normalize();
+  return result;
+}
+
+void Vector::normalizeFast() {
+  const auto ilen = common::rsqrt(length_squared());
+  x_ *= ilen;
+  y_ *= ilen;
+  z_ *= ilen;
+}
+
+Vector Vector::normalizedFast() const {
+  auto result = *this;
+  result.normalizeFast();
+  return result;
+}
+
+constexpr void Vector::invert() {
+  x_ = -x_;
+  y_ = -y_;
+  z_ = -z_;
+}
+
+Vector Vector::inverted() const {
+  auto result = *this;
+  result.invert();
+  return result;
+}
+
+float distance(const Vector &a, const Vector &b) {
+  return sqrt(dotProduct(b - a, b - a));
+}
+
+constexpr float distance_squared(const Vector &a, const Vector &b) {
+  return dotProduct(b - a, b - a);
+}
+
+float normalize2(const Vector &v, Vector &out) {
+  const auto len = v.length();
+
+  if (len < 0 || len > 0) {
+    const auto ilen = 1 / len;
+    out.x_ = v.x_ * ilen;
+    out.y_ = v.y_ * ilen;
+    out.z_ = v.z_ * ilen;
+  } else {
+    out.clear();
+  }
+
+  return len;
+}
+
+std::int32_t dirToByte(const Vector &dir) {
+  auto bestd = 0.0f;
+  auto best = 0;
+  for (auto i = 0; i < NUMVERTEXNORMALS; i++) {
+    auto d = dotProduct(dir, bytedirs[i]);
+    if (d > bestd) {
+      bestd = d;
+      best = i;
+    }
+  }
+
+  return best;
+}
+
+Vector byteToDir(std::int32_t b) {
+  if (b < 0 || b >= NUMVERTEXNORMALS) {
+    return vec3_origin;
+  }
+
+  return bytedirs[b];
 }
 
 } // namespace common
@@ -219,4 +310,77 @@ TEST_CASE("vector_to_vector_distance", "[common::Vector]") {
   REQUIRE(common::distance({2, 2, 2}, {1, 1, 1}) == Approx(1.7320508075f));
   REQUIRE(common::distance({33, 27, 1}, {11, -27, 2}) ==
           Approx(58.3180932472f));
+}
+
+static_assert(common::crossProduct({1, 2, 3}, {4, 5, 6}).x_ == -3.0f);
+static_assert(common::crossProduct({1, 2, 3}, {4, 5, 6}).y_ == 6.0f);
+static_assert(common::crossProduct({1, 2, 3}, {4, 5, 6}).z_ == -3.0f);
+
+TEST_CASE("vector_cross_product", "[common::Vector]") {
+  REQUIRE(common::crossProduct({1, 2, 3}, {4, 5, 6}).x_ == -3.0f);
+  REQUIRE(common::crossProduct({1, 2, 3}, {4, 5, 6}).y_ == 6.0f);
+  REQUIRE(common::crossProduct({1, 2, 3}, {4, 5, 6}).z_ == -3.0f);
+}
+
+TEST_CASE("vector_normalize", "[common::Vector]") {
+  auto vec = common::Vector{4, -1, 7};
+  auto res = vec.normalize();
+  REQUIRE(vec.length() == Approx(1.0f));
+  REQUIRE(res == Approx(8.1240384046f));
+}
+
+TEST_CASE("vector_normalize_fast", "[common::Vector]") {
+  auto vec = common::Vector{4, -1, 7};
+  vec.normalizeFast();
+  REQUIRE(vec.length() == Approx(1.0f).epsilon(0.01));
+}
+
+TEST_CASE("vector_normalized", "[common::Vector]") {
+  auto vec = common::Vector{4, -1, 7};
+  REQUIRE(vec.normalized().length() == Approx(1.0f));
+}
+
+TEST_CASE("vector_normalized_fast", "[common::Vector]") {
+  auto vec = common::Vector{4, -1, 7};
+  REQUIRE(vec.normalizedFast().length() == Approx(1.0f).epsilon(0.01));
+}
+
+TEST_CASE("vector_normalize2", "[common::Vector]") {
+  auto vec = common::Vector{4, -1, 7};
+  auto vecr = common::Vector{};
+  auto res = common::normalize2(vec, vecr);
+  REQUIRE(res == Approx(8.1240384046f));
+  REQUIRE(vecr.length() == Approx(1.0f));
+}
+
+TEST_CASE("vector_invert", "[common::Vector]") {
+  auto vec = common::Vector{1, -1, 1};
+  vec.invert();
+  REQUIRE(vec.x_ == Approx(-1.0f));
+  REQUIRE(vec.y_ == Approx(1.0f));
+  REQUIRE(vec.z_ == Approx(-1.0f));
+}
+
+TEST_CASE("vector_inverted", "[common::Vector]") {
+  REQUIRE(common::Vector{1, -1, 1}.inverted().x_ == Approx(-1.0f));
+  REQUIRE(common::Vector{1, -1, 1}.inverted().y_ == Approx(1.0f));
+  REQUIRE(common::Vector{1, -1, 1}.inverted().z_ == Approx(-1.0f));
+}
+
+TEST_CASE("vector_rotate", "[common::Vector]") {
+  auto vec = common::Vector{15, 2, -4};
+  auto rotated = common::rotate(
+      vec, std::array<common::Vector, 3>{
+               common::Vector{4.5, 3, -6}, {1, 0, 7.6}, {1.3, -65, 7.5}});
+  REQUIRE(rotated.x_ == Approx(97.5));
+  REQUIRE(rotated.y_ == Approx(-15.4));
+  REQUIRE(rotated.z_ == Approx(-140.5));
+}
+
+TEST_CASE("byte_to_dir", "[common::Vector]") {
+  // TODO write unit test for common::byteToDir
+}
+
+TEST_CASE("dir_to_byte", "[common::Vector]") {
+  // TODO write unit test for common::dirToByte
 }

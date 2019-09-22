@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <base_game/q_shared.h>
 
 namespace common {
@@ -23,6 +24,18 @@ public:
   [[nodiscard]] float length() const;
 
   [[nodiscard]] constexpr float length_squared() const;
+
+  float normalize();
+
+  void normalizeFast();
+
+  [[nodiscard]] Vector normalized() const;
+
+  [[nodiscard]] Vector normalizedFast() const;
+
+  constexpr void invert();
+
+  [[nodiscard]] Vector inverted() const;
 
   union {
     vec3_t values{};
@@ -62,12 +75,24 @@ inline constexpr Vector operator-(const Vector &a) {
   return {-a.x_, -a.y_, -a.z_};
 }
 
-constexpr float distance(const Vector &a, const Vector &b) {
-  return sqrt(dotProduct(b - a, b - a));
+float distance(const Vector &a, const Vector &b);
+
+constexpr float distance_squared(const Vector &a, const Vector &b);
+
+inline constexpr Vector crossProduct(const Vector &v1, const Vector &v2) {
+  return {v1.y_ * v2.z_ - v1.z_ * v2.y_, v1.z_ * v2.x_ - v1.x_ * v2.z_,
+          v1.x_ * v2.y_ - v1.y_ * v2.x_};
 }
 
-constexpr float distance_squared(const Vector &a, const Vector &b) {
-  return dotProduct(b - a, b - a);
+float normalize2(const Vector &v, Vector &out);
+
+constexpr Vector rotate(const Vector &v, const std::array<Vector, 3> &matrix) {
+  return {dotProduct(v, matrix[0]), dotProduct(v, matrix[1]),
+          dotProduct(v, matrix[2])};
 }
+
+std::int32_t dirToByte(const Vector& dir);
+
+Vector byteToDir(std::int32_t b);
 
 } // namespace common
