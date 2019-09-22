@@ -268,7 +268,6 @@ Vector byteToDir(std::int32_t b) {
   if (b < 0 || b >= BYTE_TO_DIRS.size()) {
     return {};
   }
-
   return BYTE_TO_DIRS[b];
 }
 
