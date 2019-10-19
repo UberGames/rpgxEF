@@ -8,105 +8,105 @@ static_assert(common::Rectangle<int>().left == 0);
 
 static_assert(common::Rectangle<int>(1).left == 1);
 static_assert(common::Rectangle<int>(1).top == 0);
-static_assert(common::Rectangle<int>(1).right == 0);
+static_assert(common::Rectangle<int>(1).right == 1);
 static_assert(common::Rectangle<int>(1).bottom == 0);
 
 static_assert(common::Rectangle<int>(1, -4).left == 1);
 static_assert(common::Rectangle<int>(1, -4).top == -4);
-static_assert(common::Rectangle<int>(1, -4).right == 0);
-static_assert(common::Rectangle<int>(1, -4).bottom == 0);
+static_assert(common::Rectangle<int>(1, -4).right == 1);
+static_assert(common::Rectangle<int>(1, -4).bottom == -4);
 
-static_assert(common::Rectangle<int>(1, -4, 564).left == 1);
-static_assert(common::Rectangle<int>(1, -4, 564).top == -4);
-static_assert(common::Rectangle<int>(1, -4, 564).right == 564);
-static_assert(common::Rectangle<int>(1, -4, 564).bottom == 0);
+static_assert(common::Rectangle<int>(1, -4, 563).left == 1);
+static_assert(common::Rectangle<int>(1, -4, 563).top == -4);
+static_assert(common::Rectangle<int>(1, -4, 563).right == 564);
+static_assert(common::Rectangle<int>(1, -4, 563).bottom == -4);
 
-static_assert(common::Rectangle<int>(1, -4, 564, 45).left == 1);
-static_assert(common::Rectangle<int>(1, -4, 564, 45).top == -4);
-static_assert(common::Rectangle<int>(1, -4, 564, 45).right == 564);
-static_assert(common::Rectangle<int>(1, -4, 564, 45).bottom == 45);
+static_assert(common::Rectangle<int>(1, -4, 563, 49).left == 1);
+static_assert(common::Rectangle<int>(1, -4, 563, 49).top == -4);
+static_assert(common::Rectangle<int>(1, -4, 563, 49).right == 564);
+static_assert(common::Rectangle<int>(1, -4, 563, 49).bottom == 45);
 
-static_assert(common::Rectangle<int>(1.0, -4.3, 23.4f, 45).left == 1);
-static_assert(common::Rectangle<int>(1.0, -4.3, 23.4f, 45).top == -4);
-static_assert(common::Rectangle<int>(1.0, -4.3, 23.4f, 45).right == 23);
-static_assert(common::Rectangle<int>(1.0, -4.3, 23.4f, 45).bottom == 45);
+static_assert(common::Rectangle<int>(1.0, -4.3, 22.4f, 49.3).left == 1);
+static_assert(common::Rectangle<int>(1.0, -4.3, 22.4f, 49.3).top == -4);
+static_assert(common::Rectangle<int>(1.0, -4.3, 22.4f, 49.3).right == 23);
+static_assert(common::Rectangle<int>(1.0, -4.3, 22.4f, 49.3).bottom == 45);
 
 static_assert(common::Rectangle<int>(0, 0, 1, 1).width() == 1);
 static_assert(common::Rectangle<int>(0, 0, 1, 1).height() == 1);
 static_assert(common::Rectangle<int>(0, 0, 1, 1).area() == 1);
 
-static_assert(common::Rectangle<int>(4, 4, 10, 10).width() == 6);
-static_assert(common::Rectangle<int>(4, 4, 10, 10).height() == 6);
-static_assert(common::Rectangle<int>(4, 4, 10, 10).area() == 36);
+static_assert(common::Rectangle<int>(4, 4, 10, 10).width() == 10);
+static_assert(common::Rectangle<int>(4, 4, 10, 10).height() == 10);
+static_assert(common::Rectangle<int>(4, 4, 10, 10).area() == 100);
 
 static_assert(common::Rectangle<int>(1, 2, 3, 4) ==
               common::Rectangle<int>(1, 2, 3, 4));
 static_assert(common::Rectangle<int>(1, 2, 3, 4) !=
               common::Rectangle<int>(4, 3, 2, 1));
 
-static_assert(common::bounds(common::Rectangle<int>{3, 6, 7, 10},
-                             common::Rectangle<int>{4, 7, 6, 9})
+static_assert(common::bounds(common::Rectangle<int>{3, 6, 4, 4},
+                             common::Rectangle<int>{4, 7, 2, 2})
                   .left == 3);
-static_assert(common::bounds(common::Rectangle<int>{3, 6, 7, 10},
-                             common::Rectangle<int>{4, 7, 6, 9})
+static_assert(common::bounds(common::Rectangle<int>{3, 6, 4, 4},
+                             common::Rectangle<int>{4, 7, 2, 2})
                   .top == 6);
-static_assert(common::bounds(common::Rectangle<int>{3, 6, 7, 10},
-                             common::Rectangle<int>{4, 7, 6, 9})
+static_assert(common::bounds(common::Rectangle<int>{3, 6, 4, 4},
+                             common::Rectangle<int>{4, 7, 2, 2})
                   .right == 7);
-static_assert(common::bounds(common::Rectangle<int>{3, 6, 7, 10},
-                             common::Rectangle<int>{4, 7, 6, 9})
+static_assert(common::bounds(common::Rectangle<int>{3, 6, 4, 4},
+                             common::Rectangle<int>{4, 7, 2, 2})
                   .bottom == 10);
 
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{4, 3, 6, 5})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{4, 3, 2, 2})
                   .left == 1);
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{4, 3, 6, 5})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{4, 3, 2, 2})
                   .top == 1);
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{4, 3, 6, 5})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{4, 3, 2, 2})
                   .right == 6);
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{4, 3, 6, 5})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{4, 3, 2, 2})
                   .bottom == 5);
 
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{2, 2, 5, 4})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{2, 2, 3, 2})
                   .left == 1);
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{2, 2, 5, 4})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{2, 2, 3, 2})
                   .top == 1);
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{2, 2, 5, 4})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{2, 2, 3, 2})
                   .right == 5);
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{2, 2, 5, 4})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{2, 2, 3, 2})
                   .bottom == 4);
 
-static_assert(common::bounds(common::Rectangle<int>{2, 2, 5, 4},
-                             common::Rectangle<int>{4, 3, 6, 5})
+static_assert(common::bounds(common::Rectangle<int>{2, 2, 3, 2},
+                             common::Rectangle<int>{4, 3, 2, 2})
                   .left == 2);
-static_assert(common::bounds(common::Rectangle<int>{2, 2, 5, 4},
-                             common::Rectangle<int>{4, 3, 6, 5})
+static_assert(common::bounds(common::Rectangle<int>{2, 2, 3, 2},
+                             common::Rectangle<int>{4, 3, 2, 2})
                   .top == 2);
-static_assert(common::bounds(common::Rectangle<int>{2, 2, 5, 4},
-                             common::Rectangle<int>{4, 3, 6, 5})
+static_assert(common::bounds(common::Rectangle<int>{2, 2, 3, 2},
+                             common::Rectangle<int>{4, 3, 2, 2})
                   .right == 6);
-static_assert(common::bounds(common::Rectangle<int>{2, 2, 5, 4},
-                             common::Rectangle<int>{4, 3, 6, 5})
+static_assert(common::bounds(common::Rectangle<int>{2, 2, 3, 2},
+                             common::Rectangle<int>{4, 3, 2, 2})
                   .bottom == 5);
 
-static_assert(common::bounds(common::Rectangle<int>{3, 6, 7, 10},
-                             common::Rectangle<int>{3, 6, 7, 10})
+static_assert(common::bounds(common::Rectangle<int>{3, 6, 4, 4},
+                             common::Rectangle<int>{3, 6, 4, 4})
                   .left == 3);
-static_assert(common::bounds(common::Rectangle<int>{3, 6, 7, 10},
-                             common::Rectangle<int>{3, 6, 7, 10})
+static_assert(common::bounds(common::Rectangle<int>{3, 6, 4, 4},
+                             common::Rectangle<int>{3, 6, 4, 4})
                   .top == 6);
-static_assert(common::bounds(common::Rectangle<int>{3, 6, 7, 10},
-                             common::Rectangle<int>{3, 6, 7, 10})
+static_assert(common::bounds(common::Rectangle<int>{3, 6, 4, 4},
+                             common::Rectangle<int>{3, 6, 4, 4})
                   .right == 7);
-static_assert(common::bounds(common::Rectangle<int>{3, 6, 7, 10},
-                             common::Rectangle<int>{3, 6, 7, 10})
+static_assert(common::bounds(common::Rectangle<int>{3, 6, 4, 4},
+                             common::Rectangle<int>{3, 6, 4, 4})
                   .bottom == 10);
 
 static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
@@ -119,15 +119,15 @@ static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
                              common::Rectangle<int>{2, 2, 5, 4},
                              common::Rectangle<int>{3, 6, 7, 10})
                   .top == 1);
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{4, 3, 6, 5},
-                             common::Rectangle<int>{2, 2, 5, 4},
-                             common::Rectangle<int>{3, 6, 7, 10})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{4, 3, 2, 2},
+                             common::Rectangle<int>{2, 2, 3, 2},
+                             common::Rectangle<int>{3, 6, 4, 4})
                   .right == 7);
-static_assert(common::bounds(common::Rectangle<int>{1, 1, 3, 3},
-                             common::Rectangle<int>{4, 3, 6, 5},
-                             common::Rectangle<int>{2, 2, 5, 4},
-                             common::Rectangle<int>{3, 6, 7, 10})
+static_assert(common::bounds(common::Rectangle<int>{1, 1, 2, 2},
+                             common::Rectangle<int>{4, 3, 2, 2},
+                             common::Rectangle<int>{2, 2, 3, 2},
+                             common::Rectangle<int>{3, 6, 4, 4})
                   .bottom == 10);
 
 TEST_CASE("rectangle_construct", "[common::Rectangle]") {
@@ -138,43 +138,43 @@ TEST_CASE("rectangle_construct", "[common::Rectangle]") {
 
   REQUIRE(common::Rectangle<int>(1).left == 1);
   REQUIRE(common::Rectangle<int>(1).top == 0);
-  REQUIRE(common::Rectangle<int>(1).right == 0);
+  REQUIRE(common::Rectangle<int>(1).right == 1);
   REQUIRE(common::Rectangle<int>(1).bottom == 0);
 
   REQUIRE(common::Rectangle<int>(1, -4).left == 1);
   REQUIRE(common::Rectangle<int>(1, -4).top == -4);
-  REQUIRE(common::Rectangle<int>(1, -4).right == 0);
-  REQUIRE(common::Rectangle<int>(1, -4).bottom == 0);
+  REQUIRE(common::Rectangle<int>(1, -4).right == 1);
+  REQUIRE(common::Rectangle<int>(1, -4).bottom == -4);
 
-  REQUIRE(common::Rectangle<int>(1, -4, 564).left == 1);
-  REQUIRE(common::Rectangle<int>(1, -4, 564).top == -4);
-  REQUIRE(common::Rectangle<int>(1, -4, 564).right == 564);
-  REQUIRE(common::Rectangle<int>(1, -4, 564).bottom == 0);
+  REQUIRE(common::Rectangle<int>(1, -4, 563).left == 1);
+  REQUIRE(common::Rectangle<int>(1, -4, 563).top == -4);
+  REQUIRE(common::Rectangle<int>(1, -4, 563).right == 564);
+  REQUIRE(common::Rectangle<int>(1, -4, 563).bottom == -4);
 
-  REQUIRE(common::Rectangle<int>(1, -4, 564, 45).left == 1);
-  REQUIRE(common::Rectangle<int>(1, -4, 564, 45).top == -4);
-  REQUIRE(common::Rectangle<int>(1, -4, 564, 45).right == 564);
-  REQUIRE(common::Rectangle<int>(1, -4, 564, 45).bottom == 45);
+  REQUIRE(common::Rectangle<int>(1, -4, 563, 49).left == 1);
+  REQUIRE(common::Rectangle<int>(1, -4, 563, 49).top == -4);
+  REQUIRE(common::Rectangle<int>(1, -4, 563, 49).right == 564);
+  REQUIRE(common::Rectangle<int>(1, -4, 563, 49).bottom == 45);
 
-  REQUIRE(common::Rectangle<int>(1.0, -4.3, 23.4f, 45).left == 1);
-  REQUIRE(common::Rectangle<int>(1.0, -4.3, 23.4f, 45).top == -4);
-  REQUIRE(common::Rectangle<int>(1.0, -4.3, 23.4f, 45).right == 23);
-  REQUIRE(common::Rectangle<int>(1.0, -4.3, 23.4f, 45).bottom == 45);
+  REQUIRE(common::Rectangle<int>(1.0, -4.3, 22.4f, 49.3).left == 1);
+  REQUIRE(common::Rectangle<int>(1.0, -4.3, 22.4f, 49.3).top == -4);
+  REQUIRE(common::Rectangle<int>(1.0, -4.3, 22.4f, 49.3).right == 23);
+  REQUIRE(common::Rectangle<int>(1.0, -4.3, 22.4f, 49.3).bottom == 45);
 }
 
 TEST_CASE("rectangle_width", "[common::Rectangle]") {
   REQUIRE(common::Rectangle<int>(0, 0, 1, 1).width() == 1);
-  REQUIRE(common::Rectangle<int>(4, 4, 10, 10).width() == 6);
+  REQUIRE(common::Rectangle<int>(4, 4, 6, 6).width() == 6);
 }
 
 TEST_CASE("rectangle_height", "[common::Rectangle]") {
   REQUIRE(common::Rectangle<int>(0, 0, 1, 1).height() == 1);
-  REQUIRE(common::Rectangle<int>(4, 4, 10, 10).height() == 6);
+  REQUIRE(common::Rectangle<int>(4, 4, 6, 6).height() == 6);
 }
 
 TEST_CASE("reactangle_area", "[common::Rectangle]") {
   REQUIRE(common::Rectangle<int>(0, 0, 1, 1).area() == 1);
-  REQUIRE(common::Rectangle<int>(4, 4, 10, 10).area() == 36);
+  REQUIRE(common::Rectangle<int>(4, 4, 6, 6).area() == 36);
 }
 
 TEST_CASE("rectangle_equality", "[common::Rectangle]") {
@@ -185,9 +185,9 @@ TEST_CASE("rectangle_equality", "[common::Rectangle]") {
 }
 
 TEST_CASE("rectangle_intersect", "[common::Rectangle]") {
-  auto rect_a = common::Rectangle<int>{1, 1, 3, 3};
-  auto rect_b = common::Rectangle<int>{4, 3, 6, 5};
-  auto rect_c = common::Rectangle<int>{2, 2, 5, 4};
+  auto rect_a = common::Rectangle<int>{1, 1, 2, 2};
+  auto rect_b = common::Rectangle<int>{4, 3, 2, 2};
+  auto rect_c = common::Rectangle<int>{2, 2, 3, 2};
 
   REQUIRE(!common::intersect(rect_a, rect_b));
   REQUIRE(common::intersect(rect_a, rect_a));
@@ -196,16 +196,16 @@ TEST_CASE("rectangle_intersect", "[common::Rectangle]") {
   REQUIRE(common::intersect(rect_c, rect_a));
   REQUIRE(common::intersect(rect_c, rect_b));
 
-  auto rect_d = common::Rectangle<int>{3, 6, 7, 10};
-  auto rect_e = common::Rectangle<int>{4, 7, 6, 9};
+  auto rect_d = common::Rectangle<int>{3, 6, 4, 4};
+  auto rect_e = common::Rectangle<int>{4, 7, 2, 2};
 
   REQUIRE(common::intersect(rect_d, rect_e));
   REQUIRE(common::intersect(rect_e, rect_d));
 }
 
 TEST_CASE("rectangle_intersection", "[common::Rectangle]") {
-  auto rect_d = common::Rectangle<int>{3, 6, 7, 10};
-  auto rect_e = common::Rectangle<int>{4, 7, 6, 9};
+  auto rect_d = common::Rectangle<int>{3, 6, 4, 4};
+  auto rect_e = common::Rectangle<int>{4, 7, 2, 2};
 
   auto intersectopn_d_e = common::intersection(rect_d, rect_e);
   REQUIRE(intersectopn_d_e);
@@ -221,9 +221,9 @@ TEST_CASE("rectangle_intersection", "[common::Rectangle]") {
   REQUIRE(intersection_e_d->right == rect_e.right);
   REQUIRE(intersection_e_d->bottom == rect_e.bottom);
 
-  auto rect_a = common::Rectangle<int>{1, 1, 3, 3};
-  auto rect_b = common::Rectangle<int>{4, 3, 6, 5};
-  auto rect_c = common::Rectangle<int>{2, 2, 5, 4};
+  auto rect_a = common::Rectangle<int>{1, 1, 2, 2};
+  auto rect_b = common::Rectangle<int>{4, 3, 2, 2};
+  auto rect_c = common::Rectangle<int>{2, 2, 3, 2};
 
   auto intersection_a_b = common::intersection(rect_a, rect_b);
   REQUIRE(!intersection_a_b);
@@ -253,8 +253,8 @@ TEST_CASE("rectangle_intersection", "[common::Rectangle]") {
 }
 
 TEST_CASE("rectangle_bounds", "[common::Rectangle]") {
-  auto rect_d = common::Rectangle<int>{3, 6, 7, 10};
-  auto rect_e = common::Rectangle<int>{4, 7, 6, 9};
+  auto rect_d = common::Rectangle<int>{3, 6, 4, 4};
+  auto rect_e = common::Rectangle<int>{4, 7, 2, 2};
 
   auto bounds_d_e = common::bounds(rect_d, rect_e);
   REQUIRE(bounds_d_e.top == rect_d.top);
@@ -262,9 +262,9 @@ TEST_CASE("rectangle_bounds", "[common::Rectangle]") {
   REQUIRE(bounds_d_e.bottom == rect_d.bottom);
   REQUIRE(bounds_d_e.right == rect_d.right);
 
-  auto rect_a = common::Rectangle<int>{1, 1, 3, 3};
-  auto rect_b = common::Rectangle<int>{4, 3, 6, 5};
-  auto rect_c = common::Rectangle<int>{2, 2, 5, 4};
+  auto rect_a = common::Rectangle<int>{1, 1, 2, 2};
+  auto rect_b = common::Rectangle<int>{4, 3, 2, 2};
+  auto rect_c = common::Rectangle<int>{2, 2, 3, 2};
 
   auto bounds_a_b = common::bounds(rect_a, rect_b);
   REQUIRE(bounds_a_b.left == rect_a.left);

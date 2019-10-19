@@ -16,13 +16,20 @@ public:
             typename = std::enable_if_t<
                 std::is_convertible_v<A, T> && std::is_convertible_v<B, T> &&
                 std::is_convertible_v<C, T> && std::is_convertible_v<D, T>>>
-  constexpr explicit Rectangle(A _left, B _top = 0, C _right = 0, D _bottom = 0)
+  constexpr Rectangle(A _left, B _top = 0, C _width = 0, D _height = 0)
       : left{static_cast<T>(_left)}, top{static_cast<T>(_top)},
-        right{static_cast<T>(_right)}, bottom{static_cast<T>(_bottom)} {}
+        right{static_cast<T>(_left + _width)}, bottom{static_cast<T>(
+                                                   _top + _height)} {}
 
-  constexpr T width() const { return right - left; }
-  constexpr T height() const { return bottom - top; }
-  constexpr T area() const { return width() * height(); }
+  [[nodiscard]] constexpr T width() const { return right - left; }
+  [[nodiscard]] constexpr T height() const { return bottom - top; }
+  [[nodiscard]] constexpr T area() const { return width() * height(); }
+
+  Rectangle(const Rectangle &) = default;
+  Rectangle(Rectangle &&) noexcept = default;
+
+  Rectangle &operator=(const Rectangle &) = default;
+  Rectangle &operator=(Rectangle &&) noexcept = default;
 
   constexpr bool operator==(const Rectangle &rhs) const {
     return std::tie(left, top, right, bottom) ==
@@ -56,7 +63,7 @@ std::optional<Rectangle<ResultType>> intersection(const Rectangle<A> &a,
   auto right = std::min(a.right, b.right);
   auto top = std::max(a.top, b.top);
 
-  return Rectangle<ResultType>(left, top, right, bottom);
+  return Rectangle<ResultType>(left, top, right - left, bottom - top);
 }
 
 template <typename A, typename... Args>
@@ -64,8 +71,8 @@ constexpr Rectangle<A> bounds(const Rectangle<A> &a, Args &&... args) {
   if constexpr (sizeof...(args) > 0) {
     auto b = bounds(std::forward<Args>(args)...);
     return Rectangle<A>{std::min(a.left, b.left), std::min(a.top, b.top),
-                        std::max(a.right, b.right),
-                        std::max(a.bottom, b.bottom)};
+                        std::max(a.right, b.right) - std::min(a.left, b.left),
+                        std::max(a.bottom, b.bottom) - std::min(a.top, b.top)};
   }
 
   return a;

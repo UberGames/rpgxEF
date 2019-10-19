@@ -28,6 +28,12 @@ public:
         b_{detail::color_check_bounds(_b)}, a_{detail::color_check_bounds(_a)} {
   }
 
+  constexpr Color(const Color &) = default;
+  constexpr Color(Color &&) = default;
+
+  constexpr Color &operator=(const Color &) = default;
+  constexpr Color &operator=(Color &&) = default;
+
   constexpr Color(vec4_t v) noexcept : r_{v[0]}, g_{v[1]}, b_{v[2]}, a_{v[3]} {}
 
   union {

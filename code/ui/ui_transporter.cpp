@@ -57,7 +57,6 @@ void TransDataReceived(const char *data) {
 	char *temp;
 	int32_t i;
 
-	UI_LogFuncBegin();
 
 	for (i = 0; i < 6; i++) {
 		temp = Info_ValueForKey(data, va("d%i", i));
@@ -65,7 +64,6 @@ void TransDataReceived(const char *data) {
 		Q_strncpyz(srvList[i], temp, sizeof(srvList[i]));
 		srvCount++;
 	}
-	UI_LogFuncEnd();
 }
 
 /*

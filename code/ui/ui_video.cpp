@@ -1139,14 +1139,12 @@ static void GraphicsOptions_SetMenuItems(void)
 
 
 
-void VideoSideButtonsAction(qboolean result)
+void VideoSideButtonsAction(bool result)
 {
-	UI_LogFuncBegin();
 	if (result)	// Yes - do it
 	{
 		Video_MenuEvent(holdControlPtr, holdControlEvent);
 	}
-	UI_LogFuncEnd();
 }
 
 /*

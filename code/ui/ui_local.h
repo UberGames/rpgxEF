@@ -4,10 +4,11 @@
 #define __UI_LOCAL_H__
 
 #include "../base_game//q_shared.h"
-#include "../cgame/tr_types.h"
-#include "ui_public.h"
-#include "keycodes.h"
 #include "../base_game/bg_public.h"
+#include "../cgame/tr_types.h"
+#include "keycodes.h"
+#include "ui_public.h"
+#include <functional>
 
 //RPG-X : TiM
 //Defines for animation code in UI module
@@ -1803,7 +1804,8 @@ extern void UI_InGameMenu(void);
 // ui_confirm.c
 //
 extern void ConfirmMenu_Cache(void);
-extern void UI_ConfirmMenu(const char *question, void(*draw)(void), void(*action)(qboolean result));
+void UI_ConfirmMenu(const std::string& question, std::function<void()> draw,
+                    std::function<void(bool)> action);
 
 //
 // ui_connect.c
@@ -1842,7 +1844,7 @@ enum ui_localMenu_e {
 //
 extern void UI_MotdMenu(void);
 extern void UI_MotdMenu_Cache(void);
-extern void MotdReceiveLine(const char *txt);
+extern void MotdReceiveLine(std::string_view txt);
 extern void MotdReset(void);
 
 //
