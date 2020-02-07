@@ -6,27 +6,16 @@
 
 namespace common {
 
-constexpr Vector &Vector::clear() {
-  x_ = 0;
-  y_ = 0;
-  z_ = 0;
-  return *this;
-}
-
 float Vector::length() const { return sqrt(dotProduct(*this, *this)); }
-
-constexpr float Vector::length_squared() const {
-  return dotProduct(*this, *this);
-}
 
 float Vector::normalize() {
   const auto len = length();
 
   if (len < 0 || len > 0) {
     const auto ilen = 1 / len;
-    x_ *= ilen;
-    y_ *= ilen;
-    z_ *= ilen;
+    x *= ilen;
+    y *= ilen;
+    z *= ilen;
   }
 
   return len;
@@ -40,21 +29,15 @@ Vector Vector::normalized() const {
 
 void Vector::normalizeFast() {
   const auto ilen = common::rsqrt(length_squared());
-  x_ *= ilen;
-  y_ *= ilen;
-  z_ *= ilen;
+  x *= ilen;
+  y *= ilen;
+  z *= ilen;
 }
 
 Vector Vector::normalizedFast() const {
   auto result = *this;
   result.normalizeFast();
   return result;
-}
-
-constexpr void Vector::invert() {
-  x_ = -x_;
-  y_ = -y_;
-  z_ = -z_;
 }
 
 Vector Vector::inverted() const {
@@ -67,18 +50,14 @@ float distance(const Vector &a, const Vector &b) {
   return sqrt(dotProduct(b - a, b - a));
 }
 
-constexpr float distance_squared(const Vector &a, const Vector &b) {
-  return dotProduct(b - a, b - a);
-}
-
 float normalize2(const Vector &v, Vector &out) {
   const auto len = v.length();
 
   if (len < 0 || len > 0) {
     const auto ilen = 1 / len;
-    out.x_ = v.x_ * ilen;
-    out.y_ = v.y_ * ilen;
-    out.z_ = v.z_ * ilen;
+    out.x = v.x * ilen;
+    out.y = v.y * ilen;
+    out.z = v.z * ilen;
   } else {
     out.clear();
   }
@@ -273,43 +252,43 @@ Vector byteToDir(std::int32_t b) {
 
 } // namespace common
 
-static_assert(common::Vector().x_ == 0.0f);
-static_assert(common::Vector().y_ == 0.0f);
-static_assert(common::Vector().z_ == 0.0f);
+static_assert(common::Vector().x == 0.0f);
+static_assert(common::Vector().y == 0.0f);
+static_assert(common::Vector().z == 0.0f);
 
-static_assert(common::Vector(1, 2, 3).x_ == 1.0f);
-static_assert(common::Vector(1, 2, 3).y_ == 2.0f);
-static_assert(common::Vector(1, 2, 3).z_ == 3.0f);
+static_assert(common::Vector(1, 2, 3).x == 1.0f);
+static_assert(common::Vector(1, 2, 3).y == 2.0f);
+static_assert(common::Vector(1, 2, 3).z == 3.0f);
 
-static_assert(common::Vector(1.0f, 2.5f, -3.123f).x_ == 1.0f);
-static_assert(common::Vector(1.0f, 2.5f, -3.123f).y_ == 2.5f);
-static_assert(common::Vector(1.0f, 2.5f, -3.123f).z_ == -3.123f);
+static_assert(common::Vector(1.0f, 2.5f, -3.123f).x == 1.0f);
+static_assert(common::Vector(1.0f, 2.5f, -3.123f).y == 2.5f);
+static_assert(common::Vector(1.0f, 2.5f, -3.123f).z == -3.123f);
 
-static_assert(common::Vector(1.0, 2.5, -3.123).x_ == 1.0f);
-static_assert(common::Vector(1.0, 2.5, -3.123).y_ == 2.5f);
-static_assert(common::Vector(1.0, 2.5, -3.123).z_ == -3.123f);
+static_assert(common::Vector(1.0, 2.5, -3.123).x == 1.0f);
+static_assert(common::Vector(1.0, 2.5, -3.123).y == 2.5f);
+static_assert(common::Vector(1.0, 2.5, -3.123).z == -3.123f);
 
 TEST_CASE("vector_construct", "[common::Vector]") {
-  REQUIRE(common::Vector().x_ == Approx(0.0f));
-  REQUIRE(common::Vector().y_ == Approx(0.0f));
-  REQUIRE(common::Vector().z_ == Approx(0.0f));
+  REQUIRE(common::Vector().x == Approx(0.0f));
+  REQUIRE(common::Vector().y == Approx(0.0f));
+  REQUIRE(common::Vector().z == Approx(0.0f));
 
-  REQUIRE(common::Vector(1, 2, 3).x_ == Approx(1.0f));
-  REQUIRE(common::Vector(1, 2, 3).y_ == Approx(2.0f));
-  REQUIRE(common::Vector(1, 2, 3).z_ == Approx(3.0f));
+  REQUIRE(common::Vector(1, 2, 3).x == Approx(1.0f));
+  REQUIRE(common::Vector(1, 2, 3).y == Approx(2.0f));
+  REQUIRE(common::Vector(1, 2, 3).z == Approx(3.0f));
 
-  REQUIRE(common::Vector(1.0f, 2.5f, -3.123f).x_ == Approx(1.0f));
-  REQUIRE(common::Vector(1.0f, 2.5f, -3.123f).y_ == Approx(2.5f));
-  REQUIRE(common::Vector(1.0f, 2.5f, -3.123f).z_ == Approx(-3.123f));
+  REQUIRE(common::Vector(1.0f, 2.5f, -3.123f).x == Approx(1.0f));
+  REQUIRE(common::Vector(1.0f, 2.5f, -3.123f).y == Approx(2.5f));
+  REQUIRE(common::Vector(1.0f, 2.5f, -3.123f).z == Approx(-3.123f));
 
-  REQUIRE(common::Vector(1.0, 2.5, -3.123).x_ == Approx(1.0f));
-  REQUIRE(common::Vector(1.0, 2.5, -3.123).y_ == Approx(2.5f));
-  REQUIRE(common::Vector(1.0, 2.5, -3.123).z_ == Approx(-3.123f));
+  REQUIRE(common::Vector(1.0, 2.5, -3.123).x == Approx(1.0f));
+  REQUIRE(common::Vector(1.0, 2.5, -3.123).y == Approx(2.5f));
+  REQUIRE(common::Vector(1.0, 2.5, -3.123).z == Approx(-3.123f));
 
   vec3_t vec_3{1, 2, 3};
-  REQUIRE(common::Vector(vec_3).x_ == Approx(1.0f));
-  REQUIRE(common::Vector(vec_3).y_ == Approx(2.0f));
-  REQUIRE(common::Vector(vec_3).z_ == Approx(3.0f));
+  REQUIRE(common::Vector(vec_3).x == Approx(1.0f));
+  REQUIRE(common::Vector(vec_3).y == Approx(2.0f));
+  REQUIRE(common::Vector(vec_3).z == Approx(3.0f));
 }
 
 static_assert(common::dotProduct({1, 2, 3}, {3, 2, 1}) == 10.0f);
@@ -320,108 +299,108 @@ TEST_CASE("vector_dotproduct", "[common::Vector]") {
   REQUIRE(common::dotProduct({1, 5, 3}, {3, 2, 1}) == Approx(16.0f));
 
   for (auto i = 0; i < 100; i++) {
-    auto v1 = common::Vector{common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000)};
-    auto v2 = common::Vector{common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000)};
+    auto v1 = common::Vector{common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000)};
+    auto v2 = common::Vector{common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000)};
 
     REQUIRE(common::dotProduct(v1, v2) ==
-            Approx(v1.x_ * v2.x_ + v1.y_ * v2.y_ + v1.z_ * v2.z_));
+            Approx(v1.x * v2.x + v1.y * v2.y + v1.z * v2.z));
   }
 }
 
-static_assert((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).x_ == 1.0f);
-static_assert((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).y_ == 7.0f);
-static_assert((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).z_ == 0.0f);
+static_assert((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).x == 1.0f);
+static_assert((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).y == 7.0f);
+static_assert((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).z == 0.0f);
 
 TEST_CASE("vector_substract", "[common::Vector}") {
-  REQUIRE((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).x_ == 1.0f);
-  REQUIRE((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).y_ == 7.0f);
-  REQUIRE((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).z_ == 0.0f);
+  REQUIRE((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).x == 1.0f);
+  REQUIRE((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).y == 7.0f);
+  REQUIRE((common::Vector{2, 5, 4} - common::Vector{1, -2, 4}).z == 0.0f);
 
   for (auto i = 0; i < 100; i++) {
-    auto v1 = common::Vector{common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000)};
-    auto v2 = common::Vector{common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000)};
+    auto v1 = common::Vector{common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000)};
+    auto v2 = common::Vector{common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000)};
 
     auto res = v1 - v2;
-    REQUIRE(res.x_ == v1.x_ - v2.x_);
-    REQUIRE(res.y_ == v1.y_ - v2.y_);
-    REQUIRE(res.z_ == v1.z_ - v2.z_);
+    REQUIRE(res.x == v1.x - v2.x);
+    REQUIRE(res.y == v1.y - v2.y);
+    REQUIRE(res.z == v1.z - v2.z);
   }
 }
 
-static_assert((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).x_ == 3.0f);
-static_assert((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).y_ == 3.0f);
-static_assert((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).z_ == 8.0f);
+static_assert((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).x == 3.0f);
+static_assert((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).y == 3.0f);
+static_assert((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).z == 8.0f);
 
 TEST_CASE("vector_add", "[common::Vector]") {
-  REQUIRE((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).x_ == 3.0f);
-  REQUIRE((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).y_ == 3.0f);
-  REQUIRE((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).z_ == 8.0f);
+  REQUIRE((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).x == 3.0f);
+  REQUIRE((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).y == 3.0f);
+  REQUIRE((common::Vector{2, 5, 4} + common::Vector{1, -2, 4}).z == 8.0f);
 
   for (auto i = 0; i < 100; i++) {
-    auto v1 = common::Vector{common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000)};
-    auto v2 = common::Vector{common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000),
-                             common::getRandom<float>(-100000, 100000)};
+    auto v1 = common::Vector{common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000)};
+    auto v2 = common::Vector{common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000),
+                             common::getRandomDouble<float>(-100000, 100000)};
 
     auto res = v1 + v2;
-    REQUIRE(res.x_ == v1.x_ + v2.x_);
-    REQUIRE(res.y_ == v1.y_ + v2.y_);
-    REQUIRE(res.z_ == v1.z_ + v2.z_);
+    REQUIRE(res.x == v1.x + v2.x);
+    REQUIRE(res.y == v1.y + v2.y);
+    REQUIRE(res.z == v1.z + v2.z);
   }
 }
 
-static_assert(common::Vector{1, 2, 3}.clear().x_ == 0.0f);
-static_assert(common::Vector{1, 2, 3}.clear().y_ == 0.0f);
-static_assert(common::Vector{1, 2, 3}.clear().z_ == 0.0f);
+static_assert(common::Vector{1, 2, 3}.clear().x == 0.0f);
+static_assert(common::Vector{1, 2, 3}.clear().y == 0.0f);
+static_assert(common::Vector{1, 2, 3}.clear().z == 0.0f);
 
 TEST_CASE("vector_clear", "[common::Vector]") {
-  REQUIRE(common::Vector{1, 2, 3}.clear().x_ == 0.0f);
-  REQUIRE(common::Vector{1, 2, 3}.clear().y_ == 0.0f);
-  REQUIRE(common::Vector{1, 2, 3}.clear().z_ == 0.0f);
+  REQUIRE(common::Vector{1, 2, 3}.clear().x == 0.0f);
+  REQUIRE(common::Vector{1, 2, 3}.clear().y == 0.0f);
+  REQUIRE(common::Vector{1, 2, 3}.clear().z == 0.0f);
 }
 
 static_assert(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6})
-                  .x_ == 9.00f);
+                  .x == 9.00f);
 static_assert(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6})
-                  .y_ == 12.0f);
+                  .y == 12.0f);
 static_assert(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6})
-                  .z_ == 15.0f);
+                  .z == 15.0f);
 
 TEST_CASE("vector_ma", "[common::Vector]") {
-  REQUIRE(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6}).x_ ==
+  REQUIRE(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6}).x ==
           9.00f);
-  REQUIRE(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6}).y_ ==
+  REQUIRE(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6}).y ==
           12.0f);
-  REQUIRE(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6}).z_ ==
+  REQUIRE(common::ma(common::Vector{1, 2, 3}, 2, common::Vector{4, 5, 6}).z ==
           15.0f);
 }
 
-static_assert((-common::Vector{1, 2, -5}).x_ == -1.0f);
-static_assert((-common::Vector{1, 2, -5}).y_ == -2.0f);
-static_assert((-common::Vector{1, 2, -5}).z_ == 5.0f);
+static_assert((-common::Vector{1, 2, -5}).x == -1.0f);
+static_assert((-common::Vector{1, 2, -5}).y == -2.0f);
+static_assert((-common::Vector{1, 2, -5}).z == 5.0f);
 
-static_assert((-common::Vector{-1, -2, 5}).x_ == 1.0f);
-static_assert((-common::Vector{-1, -2, 5}).y_ == 2.0f);
-static_assert((-common::Vector{-1, -2, 5}).z_ == -5.0f);
+static_assert((-common::Vector{-1, -2, 5}).x == 1.0f);
+static_assert((-common::Vector{-1, -2, 5}).y == 2.0f);
+static_assert((-common::Vector{-1, -2, 5}).z == -5.0f);
 
 TEST_CASE("vector_negate", "[common::Vector]") {
-  REQUIRE((-common::Vector{1, 2, -5}).x_ == -1.0f);
-  REQUIRE((-common::Vector{1, 2, -5}).y_ == -2.0f);
-  REQUIRE((-common::Vector{1, 2, -5}).z_ == 5.0f);
+  REQUIRE((-common::Vector{1, 2, -5}).x == -1.0f);
+  REQUIRE((-common::Vector{1, 2, -5}).y == -2.0f);
+  REQUIRE((-common::Vector{1, 2, -5}).z == 5.0f);
 
-  REQUIRE((-common::Vector{-1, -2, 5}).x_ == 1.0f);
-  REQUIRE((-common::Vector{-1, -2, 5}).y_ == 2.0f);
-  REQUIRE((-common::Vector{-1, -2, 5}).z_ == -5.0f);
+  REQUIRE((-common::Vector{-1, -2, 5}).x == 1.0f);
+  REQUIRE((-common::Vector{-1, -2, 5}).y == 2.0f);
+  REQUIRE((-common::Vector{-1, -2, 5}).z == -5.0f);
 }
 
 TEST_CASE("vector_length", "[common::Vector]") {
@@ -475,14 +454,14 @@ TEST_CASE("vector_to_vector_distance", "[common::Vector]") {
           Approx(58.3180932472f));
 }
 
-static_assert(common::crossProduct({1, 2, 3}, {4, 5, 6}).x_ == -3.0f);
-static_assert(common::crossProduct({1, 2, 3}, {4, 5, 6}).y_ == 6.0f);
-static_assert(common::crossProduct({1, 2, 3}, {4, 5, 6}).z_ == -3.0f);
+static_assert(common::crossProduct({1, 2, 3}, {4, 5, 6}).x == -3.0f);
+static_assert(common::crossProduct({1, 2, 3}, {4, 5, 6}).y == 6.0f);
+static_assert(common::crossProduct({1, 2, 3}, {4, 5, 6}).z == -3.0f);
 
 TEST_CASE("vector_cross_product", "[common::Vector]") {
-  REQUIRE(common::crossProduct({1, 2, 3}, {4, 5, 6}).x_ == -3.0f);
-  REQUIRE(common::crossProduct({1, 2, 3}, {4, 5, 6}).y_ == 6.0f);
-  REQUIRE(common::crossProduct({1, 2, 3}, {4, 5, 6}).z_ == -3.0f);
+  REQUIRE(common::crossProduct({1, 2, 3}, {4, 5, 6}).x == -3.0f);
+  REQUIRE(common::crossProduct({1, 2, 3}, {4, 5, 6}).y == 6.0f);
+  REQUIRE(common::crossProduct({1, 2, 3}, {4, 5, 6}).z == -3.0f);
 }
 
 TEST_CASE("vector_normalize", "[common::Vector]") {
@@ -519,15 +498,15 @@ TEST_CASE("vector_normalize2", "[common::Vector]") {
 TEST_CASE("vector_invert", "[common::Vector]") {
   auto vec = common::Vector{1, -1, 1};
   vec.invert();
-  REQUIRE(vec.x_ == Approx(-1.0f));
-  REQUIRE(vec.y_ == Approx(1.0f));
-  REQUIRE(vec.z_ == Approx(-1.0f));
+  REQUIRE(vec.x == Approx(-1.0f));
+  REQUIRE(vec.y == Approx(1.0f));
+  REQUIRE(vec.z == Approx(-1.0f));
 }
 
 TEST_CASE("vector_inverted", "[common::Vector]") {
-  REQUIRE(common::Vector{1, -1, 1}.inverted().x_ == Approx(-1.0f));
-  REQUIRE(common::Vector{1, -1, 1}.inverted().y_ == Approx(1.0f));
-  REQUIRE(common::Vector{1, -1, 1}.inverted().z_ == Approx(-1.0f));
+  REQUIRE(common::Vector{1, -1, 1}.inverted().x == Approx(-1.0f));
+  REQUIRE(common::Vector{1, -1, 1}.inverted().y == Approx(1.0f));
+  REQUIRE(common::Vector{1, -1, 1}.inverted().z == Approx(-1.0f));
 }
 
 TEST_CASE("vector_rotate", "[common::Vector]") {
@@ -535,9 +514,9 @@ TEST_CASE("vector_rotate", "[common::Vector]") {
   auto rotated = common::rotate(
       vec, std::array<common::Vector, 3>{
                common::Vector{4.5, 3, -6}, {1, 0, 7.6}, {1.3, -65, 7.5}});
-  REQUIRE(rotated.x_ == Approx(97.5));
-  REQUIRE(rotated.y_ == Approx(-15.4));
-  REQUIRE(rotated.z_ == Approx(-140.5));
+  REQUIRE(rotated.x == Approx(97.5));
+  REQUIRE(rotated.y == Approx(-15.4));
+  REQUIRE(rotated.z == Approx(-140.5));
 }
 
 TEST_CASE("byte_to_dir", "[common::Vector]") {

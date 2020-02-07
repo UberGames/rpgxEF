@@ -696,3 +696,5 @@ ASALocalRun/
 healthchecksdb
 
 # End of https://www.gitignore.io/api/clion,macos,linux,python,eclipse,windows,kdevelop4,visualstudio,visualstudiocode
+
+*_wrap.cxx

@@ -32,9 +32,9 @@ set(UI_LIB_NAME "ui${ARCH}")
 
 file(GLOB_RECURSE UI_SRC "*.h" "*.c" "*.cpp")
 
-add_library(ui SHARED ${UI_SRC} $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:base_game> $<TARGET_OBJECTS:catch2_symbols>)
+add_library(ui SHARED ${UI_SRC})
 target_include_directories(ui PUBLIC ../json/include ..)
-target_link_libraries(ui ${UI_LINKER_OPTIONS})
+target_link_libraries(ui ${UI_LINKER_OPTIONS} common base_game catch2_symbols)
 target_compile_options(ui PUBLIC -Wno-narrowing -Wno-write-strings)
 target_compile_definitions(ui PUBLIC -DUI_DLL)
 set_target_properties(ui PROPERTIES PREFIX "")

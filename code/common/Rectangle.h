@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math.h"
 #include <algorithm>
 #include <cstdint>
 #include <optional>
@@ -39,6 +40,11 @@ public:
     return !(rhs == *this);
   }
 
+  [[nodiscard]] constexpr bool empty() const {
+    return equal(left, 0) && equal(top, 0) && equal(right, 0) &&
+           equal(bottom, 0);
+  }
+
   T left;
   T top;
   T right;
@@ -52,16 +58,20 @@ bool intersect(const Rectangle<A> &a, const Rectangle<B> &b) {
 }
 
 template <typename A, typename B, typename ResultType = A>
-std::optional<Rectangle<ResultType>> intersection(const Rectangle<A> &a,
-                                                  const Rectangle<B> &b) {
+Rectangle<ResultType> intersection(const Rectangle<A> &a,
+                                   const Rectangle<B> &b) {
   if (!intersect(a, b)) {
     return {};
   }
 
-  auto left = std::max(a.left, b.left);
-  auto bottom = std::min(a.bottom, b.bottom);
-  auto right = std::min(a.right, b.right);
-  auto top = std::max(a.top, b.top);
+  auto left = std::max(static_cast<ResultType>(a.left),
+                       static_cast<ResultType>(b.left));
+  auto bottom = std::min(static_cast<ResultType>(a.bottom),
+                         static_cast<ResultType>(b.bottom));
+  auto right = std::min(static_cast<ResultType>(a.right),
+                        static_cast<ResultType>(b.right));
+  auto top =
+      std::max(static_cast<ResultType>(a.top), static_cast<ResultType>(b.top));
 
   return Rectangle<ResultType>(left, top, right - left, bottom - top);
 }
@@ -70,9 +80,13 @@ template <typename A, typename... Args>
 constexpr Rectangle<A> bounds(const Rectangle<A> &a, Args &&... args) {
   if constexpr (sizeof...(args) > 0) {
     auto b = bounds(std::forward<Args>(args)...);
-    return Rectangle<A>{std::min(a.left, b.left), std::min(a.top, b.top),
-                        std::max(a.right, b.right) - std::min(a.left, b.left),
-                        std::max(a.bottom, b.bottom) - std::min(a.top, b.top)};
+    return Rectangle<A>{
+        std::min(static_cast<A>(a.left), static_cast<A>(b.left)),
+        std::min(static_cast<A>(a.top), static_cast<A>(b.top)),
+        std::max(static_cast<A>(a.right), static_cast<A>(b.right)) -
+            std::min(static_cast<A>(a.left), static_cast<A>(b.left)),
+        std::max(static_cast<A>(a.bottom), static_cast<A>(b.bottom)) -
+            std::min(static_cast<A>(a.top), static_cast<A>(b.top))};
   }
 
   return a;

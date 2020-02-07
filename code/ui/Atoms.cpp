@@ -1442,7 +1442,7 @@ void Atoms::DrawBannerString(Point2dI pos, std::string_view str, int32_t style,
   }
 
   if (style & UI_DROPSHADOW) {
-    auto drawcolor = common::Color{0, 0, 0, color.a_};
+    auto drawcolor = common::Color{0, 0, 0, color.a};
     DrawBannerString2({pos.x_ + 2, pos.y_ + 2}, str, drawcolor);
   }
 
@@ -1709,32 +1709,32 @@ void Atoms::DrawProportionalString(common::Point2dI pos, std::string_view str,
   }
 
   if (style & UI_DROPSHADOW) {
-    drawcolor.r_ = drawcolor.g_ = drawcolor.b_ = 0;
-    drawcolor.a_ = color.a_;
+    drawcolor.r = drawcolor.g = drawcolor.b = 0;
+    drawcolor.a = color.a;
     DrawProportionalString2({pos.x_ + 2, pos.y_ + 2}, str, drawcolor, sizeScale,
                             uis.charsetProp);
   }
 
   if (style & UI_INVERSE) {
-    drawcolor.r_ = color.r_ * 0.7f;
-    drawcolor.g_ = color.g_ * 0.7f;
-    drawcolor.b_ = color.b_ * 0.7f;
-    drawcolor.a_ = color.a_;
+    drawcolor.r = color.r * 0.7f;
+    drawcolor.g = color.g * 0.7f;
+    drawcolor.b = color.b * 0.7f;
+    drawcolor.a = color.a;
     DrawProportionalString2(pos, str, drawcolor, sizeScale, uis.charsetProp);
     return;
   }
 
   if (style & UI_PULSE) {
-    drawcolor.r_ = color.a_ * 0.7f;
-    drawcolor.g_ = color.g_ * 0.7f;
-    drawcolor.b_ = color.b_ * 0.7f;
-    drawcolor.a_ = color.a_;
+    drawcolor.r = color.a * 0.7f;
+    drawcolor.g = color.g * 0.7f;
+    drawcolor.b = color.b * 0.7f;
+    drawcolor.a = color.a;
     DrawProportionalString2(pos, str, color, sizeScale, uis.charsetProp);
 
-    drawcolor.r_ = color.r_;
-    drawcolor.g_ = color.g_;
-    drawcolor.b_ = color.b_;
-    drawcolor.a_ = static_cast<float>(
+    drawcolor.r = color.r;
+    drawcolor.g = color.g;
+    drawcolor.b = color.b;
+    drawcolor.a = static_cast<float>(
         0.5f + 0.5f * std::sin(uis.realtime / PULSE_DIVISOR));
     DrawProportionalString2(pos, str, drawcolor, sizeScale, uis.charsetProp);
     return;
@@ -1787,7 +1787,7 @@ void Atoms::DrawString2(common::Point2dI pos, std::string_view str,
       if (Q_IsColorString(it)) {
         if (!forceColor) {
           tempcolor = g_color_table[ColorIndex(*(it + 1))];
-          tempcolor.a_ = color.a_;
+          tempcolor.a = color.a;
           trap_R_SetColor(tempcolor.values);
         }
         it += 2;
@@ -1844,10 +1844,10 @@ void Atoms::DrawString(common::Point2dI pos, std::string_view str,
   }
 
   if (style & UI_PULSE) {
-    lowlight.r_ = 0.8 * color.r_;
-    lowlight.g_ = 0.8 * color.g_;
-    lowlight.b_ = 0.8 * color.b_;
-    lowlight.a_ = 0.8 * color.a_;
+    lowlight.r = 0.8 * color.r;
+    lowlight.g = 0.8 * color.g;
+    lowlight.b = 0.8 * color.b;
+    lowlight.a = 0.8 * color.a;
     LerpColor(color, lowlight, newcolor,
               0.5 + 0.5 * sin(uis.realtime / PULSE_DIVISOR));
     drawcolor = newcolor;
@@ -1879,8 +1879,8 @@ void Atoms::DrawString(common::Point2dI pos, std::string_view str,
   }
 
   if (style & UI_DROPSHADOW) {
-    dropcolor.r_ = dropcolor.g_ = dropcolor.b_ = 0;
-    dropcolor.a_ = drawcolor.a_;
+    dropcolor.r = dropcolor.g = dropcolor.b = 0;
+    dropcolor.a = drawcolor.a;
 
     if (highRes)
       DrawProportionalString({pos.x_ + 2, pos.y_ + 2}, str, style, dropcolor);

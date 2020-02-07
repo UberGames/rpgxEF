@@ -208,48 +208,48 @@ TEST_CASE("rectangle_intersection", "[common::Rectangle]") {
   auto rect_e = common::Rectangle<int>{4, 7, 2, 2};
 
   auto intersectopn_d_e = common::intersection(rect_d, rect_e);
-  REQUIRE(intersectopn_d_e);
-  REQUIRE(intersectopn_d_e->left == rect_e.left);
-  REQUIRE(intersectopn_d_e->top == rect_e.top);
-  REQUIRE(intersectopn_d_e->right == rect_e.right);
-  REQUIRE(intersectopn_d_e->bottom == rect_e.bottom);
+  REQUIRE(!intersectopn_d_e.empty());
+  REQUIRE(intersectopn_d_e.left == rect_e.left);
+  REQUIRE(intersectopn_d_e.top == rect_e.top);
+  REQUIRE(intersectopn_d_e.right == rect_e.right);
+  REQUIRE(intersectopn_d_e.bottom == rect_e.bottom);
 
   auto intersection_e_d = common::intersection(rect_e, rect_d);
-  REQUIRE(intersection_e_d);
-  REQUIRE(intersection_e_d->left == rect_e.left);
-  REQUIRE(intersection_e_d->top == rect_e.top);
-  REQUIRE(intersection_e_d->right == rect_e.right);
-  REQUIRE(intersection_e_d->bottom == rect_e.bottom);
+  REQUIRE(!intersection_e_d.empty());
+  REQUIRE(intersection_e_d.left == rect_e.left);
+  REQUIRE(intersection_e_d.top == rect_e.top);
+  REQUIRE(intersection_e_d.right == rect_e.right);
+  REQUIRE(intersection_e_d.bottom == rect_e.bottom);
 
   auto rect_a = common::Rectangle<int>{1, 1, 2, 2};
   auto rect_b = common::Rectangle<int>{4, 3, 2, 2};
   auto rect_c = common::Rectangle<int>{2, 2, 3, 2};
 
   auto intersection_a_b = common::intersection(rect_a, rect_b);
-  REQUIRE(!intersection_a_b);
+  REQUIRE(intersection_a_b.empty());
   auto intersection_b_a = common::intersection(rect_b, rect_a);
-  REQUIRE(!intersection_b_a);
+  REQUIRE(intersection_b_a.empty());
 
   auto intersection_a_c = common::intersection(rect_a, rect_c);
-  REQUIRE(intersection_a_c);
-  REQUIRE(intersection_a_c->left == 2);
-  REQUIRE(intersection_a_c->top == 2);
-  REQUIRE(intersection_a_c->right == 3);
-  REQUIRE(intersection_a_c->bottom == 3);
+  REQUIRE(!intersection_a_c.empty());
+  REQUIRE(intersection_a_c.left == 2);
+  REQUIRE(intersection_a_c.top == 2);
+  REQUIRE(intersection_a_c.right == 3);
+  REQUIRE(intersection_a_c.bottom == 3);
 
   auto intersection_c_a = common::intersection(rect_c, rect_a);
-  REQUIRE(intersection_c_a);
-  REQUIRE(intersection_c_a->left == 2);
-  REQUIRE(intersection_c_a->top == 2);
-  REQUIRE(intersection_c_a->right == 3);
-  REQUIRE(intersection_c_a->bottom == 3);
+  REQUIRE(!intersection_c_a.empty());
+  REQUIRE(intersection_c_a.left == 2);
+  REQUIRE(intersection_c_a.top == 2);
+  REQUIRE(intersection_c_a.right == 3);
+  REQUIRE(intersection_c_a.bottom == 3);
 
   auto intersection_a_a = common::intersection(rect_a, rect_a);
-  REQUIRE(intersection_a_a);
-  REQUIRE(intersection_a_a->left == 1);
-  REQUIRE(intersection_a_a->top == 1);
-  REQUIRE(intersection_a_a->right == 3);
-  REQUIRE(intersection_a_a->bottom == 3);
+  REQUIRE(!intersection_a_a.empty());
+  REQUIRE(intersection_a_a.left == 1);
+  REQUIRE(intersection_a_a.top == 1);
+  REQUIRE(intersection_a_a.right == 3);
+  REQUIRE(intersection_a_a.bottom == 3);
 }
 
 TEST_CASE("rectangle_bounds", "[common::Rectangle]") {
