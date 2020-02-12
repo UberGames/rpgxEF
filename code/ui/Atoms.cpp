@@ -606,13 +606,13 @@ void Atoms::DrawNumField(const Point2dI &position, size_t width, int32_t value,
   }
 
   auto xWidth = (charWidth / 3);
-  auto x = position.x_;
+  auto x = position.x;
 
   x += (xWidth) * (width - l);
 
   for (const auto &c : number_str) {
     auto frame = c - '0';
-    DrawHandlePic({x, position.y_, 16, 16}, uis.smallNumbers[frame]);
+    DrawHandlePic({x, position.y, 16, 16}, uis.smallNumbers[frame]);
     x += xWidth;
 
     l--;
@@ -1388,8 +1388,8 @@ void Atoms::DrawBannerString2(const common::Point2dI &pos, std::string_view str,
   trap_R_SetColor(color.values);
 
   /*ax = x * uis.scale + uis.bias;*/
-  auto ax = pos.x_ * uis.scalex;
-  auto ay = pos.y_ * uis.scaley;
+  auto ax = pos.x * uis.scalex;
+  auto ay = pos.y * uis.scaley;
 
   for (auto ch : str) {
     ch = ch & 255;
@@ -1429,11 +1429,11 @@ void Atoms::DrawBannerString(Point2dI pos, std::string_view str, int32_t style,
 
   switch (style & UI_FORMATMASK) {
   case UI_CENTER:
-    pos.x_ -= width / 2;
+    pos.x -= width / 2;
     break;
 
   case UI_RIGHT:
-    pos.x_ -= width;
+    pos.x -= width;
     break;
 
   case UI_LEFT:
@@ -1443,7 +1443,7 @@ void Atoms::DrawBannerString(Point2dI pos, std::string_view str, int32_t style,
 
   if (style & UI_DROPSHADOW) {
     auto drawcolor = common::Color{0, 0, 0, color.a};
-    DrawBannerString2({pos.x_ + 2, pos.y_ + 2}, str, drawcolor);
+    DrawBannerString2({pos.x + 2, pos.y + 2}, str, drawcolor);
   }
 
   DrawBannerString2(pos, str, color);
@@ -1505,8 +1505,8 @@ void Atoms::DrawProportionalString2(common::Point2dI pos, std::string_view str,
   trap_R_SetColor(color.values);
 
   /*ax = x * uis.scale + uis.bias;*/
-  ax = pos.x_ * uis.scalex;
-  ay = pos.y_ * uis.scaley;
+  ax = pos.x * uis.scalex;
+  ay = pos.y * uis.scaley;
   holdY = ay;
 
   /* TiM - adjust for widescreen monitors */
@@ -1694,13 +1694,13 @@ void Atoms::DrawProportionalString(common::Point2dI pos, std::string_view str,
   case UI_CENTER:
     width = static_cast<size_t>(ProportionalStringWidth(str, charstyle) *
                                 sizeScale);
-    pos.x_ -= width / 2;
+    pos.x -= width / 2;
     break;
 
   case UI_RIGHT:
     width = static_cast<size_t>(ProportionalStringWidth(str, charstyle) *
                                 sizeScale);
-    pos.x_ -= width;
+    pos.x -= width;
     break;
 
   case UI_LEFT:
@@ -1711,7 +1711,7 @@ void Atoms::DrawProportionalString(common::Point2dI pos, std::string_view str,
   if (style & UI_DROPSHADOW) {
     drawcolor.r = drawcolor.g = drawcolor.b = 0;
     drawcolor.a = color.a;
-    DrawProportionalString2({pos.x_ + 2, pos.y_ + 2}, str, drawcolor, sizeScale,
+    DrawProportionalString2({pos.x + 2, pos.y + 2}, str, drawcolor, sizeScale,
                             uis.charsetProp);
   }
 
@@ -1760,7 +1760,7 @@ void Atoms::DrawString2(common::Point2dI pos, std::string_view str,
   float frow;
   float fcol;
 
-  if (pos.y_ < -charh) {
+  if (pos.y < -charh) {
     /* offscreen */
     return;
   }
@@ -1769,8 +1769,8 @@ void Atoms::DrawString2(common::Point2dI pos, std::string_view str,
   trap_R_SetColor(color.values);
 
   /* ax = x * uis.scale + uis.bias; */
-  ax = pos.x_ * uis.scalex;
-  ay = pos.y_ * uis.scaley;
+  ax = pos.x * uis.scalex;
+  ay = pos.y * uis.scaley;
   aw = charw * uis.scalex;
   ah = charh * uis.scaley;
 
@@ -1858,13 +1858,13 @@ void Atoms::DrawString(common::Point2dI pos, std::string_view str,
   case UI_CENTER:
     /* center justify at x */
     len = str.length();
-    pos.x_ = static_cast<int32_t>(pos.x_ - len * charw / 2);
+    pos.x = static_cast<int32_t>(pos.x - len * charw / 2);
     break;
 
   case UI_RIGHT:
     /* right justify at x */
     len = str.length();
-    pos.x_ = static_cast<int32_t>(pos.x_ - len * charw);
+    pos.x = static_cast<int32_t>(pos.x - len * charw);
     break;
 
   default:
@@ -1883,14 +1883,14 @@ void Atoms::DrawString(common::Point2dI pos, std::string_view str,
     dropcolor.a = drawcolor.a;
 
     if (highRes)
-      DrawProportionalString({pos.x_ + 2, pos.y_ + 2}, str, style, dropcolor);
+      DrawProportionalString({pos.x + 2, pos.y + 2}, str, style, dropcolor);
     else
-      DrawString2({pos.x_ + 2, pos.y_ + 2}, str, dropcolor, charw, charh);
+      DrawString2({pos.x + 2, pos.y + 2}, str, dropcolor, charw, charh);
   }
 
   /* TiM - Using a different char set now... */
   if (!highRes) /* keep the low res version for specific instances */
-    DrawString2({pos.x_, pos.y_}, str, drawcolor, charw, charh);
+    DrawString2({pos.x, pos.y}, str, drawcolor, charw, charh);
   else
     DrawProportionalString(pos, str, style, drawcolor);
 }
@@ -1966,7 +1966,7 @@ void Atoms::MouseEvent(const common::Point2dI &delta) {
   }
 
   /* update mouse screen position */
-  uis.cursorx += delta.x_;
+  uis.cursorx += delta.x;
   /* kinda pointless, but looks nice. allow negative offsets for widescreen
    * setups (we must maintain the ratio or buttons will stop working) */
   if (IsWidescreen() && uis.widescreen.state == WIDESCREEN_CENTER) {
@@ -1981,7 +1981,7 @@ void Atoms::MouseEvent(const common::Point2dI &delta) {
       uis.cursorx = SCREEN_WIDTH;
   }
 
-  uis.cursory += delta.y_;
+  uis.cursory += delta.y;
   if (uis.cursory < 0)
     uis.cursory = 0;
   else if (uis.cursory > SCREEN_HEIGHT)

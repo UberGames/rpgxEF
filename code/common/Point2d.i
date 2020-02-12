@@ -12,8 +12,8 @@ public:
   Point2dI(int32_t x, double y);
   Point2dI(double y, int32_t);
 
-  int x_;
-  int y_;
+  int x;
+  int y;
 };
 
 class Point2dD {
@@ -23,8 +23,8 @@ public:
   Point2dD(int32_t x, double y);
   Point2dD(double y, int32_t);
 
-  double x_;
-  double y_;
+  double x;
+  double y;
 };
 
 } // namespace common

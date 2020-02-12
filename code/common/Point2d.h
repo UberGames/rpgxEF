@@ -9,15 +9,15 @@ namespace common {
 
 template <typename T> class Point2d {
 public:
-  constexpr Point2d() : x_{0}, y_{0} {}
+  constexpr Point2d() : x{0}, y{0} {}
 
   template <typename A, typename B,
             typename = std::enable_if_t<std::is_convertible_v<A, T> &&
                                         std::is_convertible_v<B, T>>>
-  constexpr Point2d(A x, B y) : x_{static_cast<T>(x)}, y_{static_cast<T>(y)} {}
-
-  T x_;
-  T y_;
+  constexpr Point2d(A x, B y) : x{static_cast<T>(x)}, y{static_cast<T>(y)} {}
+  
+  T x;
+  T y;
 };
 
 using Point2dI = Point2d<int32_t>;
