@@ -23,9 +23,7 @@ T getRandomInt() {
                       std::numeric_limits<T>::max());
 }
 
-int getRandomInt() {
-  return getRandomInt<int>();
-}
+int getRandomInt();
 
 template <typename T, bool Dummy = true,
           typename = std::enable_if_t<std::is_floating_point_v<T> && Dummy>>
@@ -49,8 +47,6 @@ T getRandomDouble() {
                          std::numeric_limits<T>::max());
 }
 
-double getRandomDouble() {
-  return getRandomDouble<double>();
-}
+double getRandomDouble();
 
 } // namespace common

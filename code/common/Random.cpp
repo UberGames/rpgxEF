@@ -1,6 +1,14 @@
 #include "Random.h"
 #include <catch2/catch.hpp>
 
+namespace common {
+
+int getRandomInt() { return getRandomInt<int>(); }
+
+double getRandomDouble() { return getRandomDouble<double>(); }
+
+} // namespace common
+
 TEST_CASE("random_int", "[common::getRandom]") {
   for (auto x = 0; x < 1000; x++) {
     auto i = common::getRandomInt<int>();

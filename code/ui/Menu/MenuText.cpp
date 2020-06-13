@@ -3,6 +3,7 @@
 //
 
 #include "MenuText.h"
+#include <common/BitTools.h>
 #include <ui/ui_local.h>
 
 namespace ui {
@@ -86,12 +87,12 @@ void MenuText::init() {
       }
     }
 
-    if (style & UI_TINYFONT) {
+    if (common::bit_in(style, UI_TINYFONT)) {
       h = PROP_TINY_HEIGHT;
-    } else if (style & UI_SMALLFONT) {
-      h = SMALLCHAR_HEIGHT;
-    } else if (style & UI_BIGFONT) {
+    } else if (common::bit_in(style, UI_BIGFONT)) {
       h = PROP_BIG_HEIGHT;
+    } else if (common::bit_in(style, UI_SMALLFONT)) {
+      h = SMALLCHAR_HEIGHT;
     } else {
       h = SMALLCHAR_HEIGHT;
     }
@@ -99,9 +100,9 @@ void MenuText::init() {
     h += (lines * (h * 1.25));
   }
 
-  if (common.flags & QMF_RIGHT_JUSTIFY) {
+  if(common.right_justify()) {
     x = x - w;
-  } else if (common.flags & QMF_CENTER_JUSTIFY) {
+  } else if (common.center_justify()) {
     x = x - w / 2;
   }
 

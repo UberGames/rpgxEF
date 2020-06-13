@@ -55,6 +55,7 @@ struct MenuSlider : MenuItem {
   bool mouse_down{false};
 
   void init() override;
+  void draw() override;
 };
 
 } // namespace ui

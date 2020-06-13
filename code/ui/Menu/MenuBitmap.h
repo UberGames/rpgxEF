@@ -19,15 +19,22 @@ struct MenuBitmap : MenuItem {
   MenuFocus focus;
   MenuSize size;
   MenuColor color;
-  struct {
+  struct MenuBitmapText {
     std::size_t id{0};
     std::size_t id2{0};
     common::Point2dI position;
-    common::Color color;
+    MenuColor color;
     std::size_t style{0};
+    std::string text;
+    std::string text_2;
+
+    [[nodiscard]] std::string_view get_text() const;
+    [[nodiscard]] std::string_view get_text_2() const;
+    operator bool() const;
   } text;
 
   void init() override;
+  void draw() override;
 };
 
 } // namespace ui

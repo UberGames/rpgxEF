@@ -17,6 +17,7 @@ struct MenuField : MenuItem {
   void init() override;
 
   void clear();
+  void draw() override;
 };
 
 } // namespace ui

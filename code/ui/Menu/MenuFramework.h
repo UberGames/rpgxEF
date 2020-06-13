@@ -38,58 +38,79 @@ class MenuFramework {
   // TODO: add missing spin list
 
 public:
-  void toggleWrapAround() { wrap_around = !wrap_around; }
-  void enableWrapAround() { wrap_around = true; }
-  void disableWrapAround() { wrap_around = false; }
-  [[nodiscard]] bool isWrapAround() const { return wrap_around; }
+  [[maybe_unused]] void toggleWrapAround() { wrap_around = !wrap_around; }
+  [[maybe_unused]] void enableWrapAround() { wrap_around = true; }
+  [[maybe_unused]] void disableWrapAround() { wrap_around = false; }
+  [[maybe_unused]] [[nodiscard]] bool isWrapAround() const {
+    return wrap_around;
+  }
 
-  void toggleFullscreen() { fullscreen = !fullscreen; }
-  void enableFullscreen() { fullscreen = true; }
-  void disableFullscreen() { fullscreen = false; }
-  [[nodiscard]] bool isFullscreen() const { return fullscreen; }
+  [[maybe_unused]] void toggleFullscreen() { fullscreen = !fullscreen; }
+  [[maybe_unused]] void enableFullscreen() { fullscreen = true; }
+  [[maybe_unused]] void disableFullscreen() { fullscreen = false; }
+  [[maybe_unused]] [[nodiscard]] bool isFullscreen() const {
+    return fullscreen;
+  }
 
-  void toggleNoBackground() { no_background = !no_background; }
-  void enableNoBackground() { no_background = true; }
-  void disableNoBackground() { no_background = true; }
-  [[nodiscard]] bool isNoBackground() const { return no_background; }
+  [[maybe_unused]] void toggleNoBackground() { no_background = !no_background; }
+  [[maybe_unused]] void enableNoBackground() { no_background = true; }
+  [[maybe_unused]] void disableNoBackground() { no_background = true; }
+  [[maybe_unused]] [[nodiscard]] bool isNoBackground() const {
+    return no_background;
+  }
 
-  [[nodiscard]] bool isInitialized() const { return initialized; }
+  [[maybe_unused]] [[nodiscard]] bool isInitialized() const {
+    return initialized;
+  }
 
-  void toggleNoSelecting() { no_selecting = !no_selecting; }
-  void enableNoSelecting() { no_selecting = true; }
-  void disableNoSelecting() { no_selecting = false; }
-  [[nodiscard]] bool isNoSelecting() const { return no_selecting; }
+  [[maybe_unused]] void toggleNoSelecting() { no_selecting = !no_selecting; }
+  [[maybe_unused]] void enableNoSelecting() { no_selecting = true; }
+  [[maybe_unused]] void disableNoSelecting() { no_selecting = false; }
+  [[maybe_unused]] [[nodiscard]] bool isNoSelecting() const {
+    return no_selecting;
+  }
 
-  [[nodiscard]] std::int32_t getCursor() const { return cursor.current; }
-  void setCursor(std::int32_t new_cursor);
+  [[maybe_unused]] [[nodiscard]] std::int32_t getCursor() const {
+    return cursor.current;
+  }
+  [[maybe_unused]] void setCursor(std::int32_t new_cursor);
 
-  [[nodiscard]] const std::vector<std::shared_ptr<MenuItem>> &
+  [[maybe_unused]] [[nodiscard]] const std::vector<std::shared_ptr<MenuItem>> &
   getMenuItems() const {
     return items;
   }
 
-  void setTitle(std::int32_t _title) { title = _title; }
-  void resetTitle() { title = 0; }
+  [[maybe_unused]] void setTitle(std::int32_t _title) { title = _title; }
+  [[maybe_unused]] void resetTitle() { title = 0; }
 
-  void setFootNote(std::int32_t _foot_note) { foot_note = _foot_note; }
-  void resetFootNote() { foot_note = 0; }
+  [[maybe_unused]] void setFootNote(std::int32_t _foot_note) {
+    foot_note = _foot_note;
+  }
+  [[maybe_unused]] void resetFootNote() { foot_note = 0; }
 
-  void setTitlePosition(const common::Point2dI &position) {
+  [[maybe_unused]] void setTitlePosition(const common::Point2dI &position) {
     title_position = position;
   }
-  void resetTitlePosition() { title_position = {}; }
+  [[maybe_unused]] void resetTitlePosition() { title_position = {}; }
 
-  void setDescriptionPosition(const common::Point2dI &position) {
+  [[maybe_unused]] void
+  setDescriptionPosition(const common::Point2dI &position) {
     description_position = position;
   }
-  void resetDescriptionPosition() { description_position = {}; }
+  [[maybe_unused]] void resetDescriptionPosition() {
+    description_position = {};
+  }
+  [[maybe_unused]] [[nodiscard]] common::Point2dI
+  getDescriptionPosition() const {
+    return description_position;
+  }
 
-  void setListPosition(const common::Point2dI &position) {
+  [[maybe_unused]] void setListPosition(const common::Point2dI &position) {
     list_position = position;
   }
-  void resetListPosition() { list_position = {}; }
+  [[maybe_unused]] void resetListPosition() { list_position = {}; }
 
-  void addItem(const std::shared_ptr<MenuItem>& item);
+  [[maybe_unused]] void addItem(const std::shared_ptr<MenuItem> &item);
 
   std::function<void()> draw;
   std::function<sfxHandle_t(std::int32_t key)> key;

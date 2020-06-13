@@ -23,6 +23,7 @@ struct MenuAction : MenuItem {
   bool updated{false};
 
   void init() override;
+  void draw() override;
 };
 
 } // namespace ui

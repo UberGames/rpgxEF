@@ -10,16 +10,6 @@ qboolean    ClientNCSpec = qtrue;		//RPG-X J2J: Private flag for weather the cli
 
 /* float Q_powf ( float x, int y ); */
 
-float Com_Clamp( float min, float max, float value ) {
-	if ( value < min ) {
-		return min;
-	}
-	if ( value > max ) {
-		return max;
-	}
-	return value;
-}
-
 
 /*
 ============

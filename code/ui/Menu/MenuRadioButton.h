@@ -13,6 +13,7 @@ struct MenuRadioButton : MenuItem {
   std::size_t value{0};
 
   void init() override;
+  void draw() override;
 };
 
 } // namespace ui

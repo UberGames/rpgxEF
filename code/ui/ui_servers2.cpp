@@ -1906,20 +1906,20 @@ static void ArenaServers_MenuInit(void)
 
 	ArenaServers_LoadFavorites();
 
-	g_servertype = Com_Clamp(0, 3, ui_browserMaster.integer);
+	g_servertype = Com_Clamp(0.0, 3.0, ui_browserMaster.integer);
 	g_arenaservers.master.curvalue = g_servertype;
 
-	g_gametype = Com_Clamp(0, 13, ui_browserGameType.integer);
+	g_gametype = Com_Clamp(0.0, 13.0, ui_browserGameType.integer);
 	g_arenaservers.gametype.curvalue = g_gametype;
 
 
-	g_sortkey = Com_Clamp(0, 4, ui_browserSortKey.integer);
+	g_sortkey = Com_Clamp(0.0, 4.0, ui_browserSortKey.integer);
 	g_arenaservers.sortkey.curvalue = g_sortkey;
 
-	g_fullservers = Com_Clamp(0, 1, ui_browserShowFull.integer);
+	g_fullservers = Com_Clamp(0.0, 1.0, ui_browserShowFull.integer);
 	g_arenaservers.showfull.curvalue = g_fullservers;
 
-	g_emptyservers = Com_Clamp(0, 1, ui_browserShowEmpty.integer);
+	g_emptyservers = Com_Clamp(0.0, 1.0, ui_browserShowEmpty.integer);
 	g_arenaservers.showempty.curvalue = g_emptyservers;
 
 	// force to initial state and refresh

@@ -12,13 +12,13 @@ void MenuFramework::setCursor(std::int32_t new_cursor) {
   cursor.current = new_cursor;
 }
 
-void MenuFramework::addItem(const std::shared_ptr<MenuItem>& item) {
+void MenuFramework::addItem(const std::shared_ptr<MenuItem> &item) {
   items.emplace_back(item);
   item->common.parent = this;
-  item->common.menu_position = items.size();
-  item->common.flags &= ~QMF_HASMOUSEFOCUS;
+  item->common.menu_position = items.size() - 1;
+  item->common.disable_has_mouse_focus();
 
-  if(!(item->common.flags & QMF_NODEFAULTINIT)) {
+  if (!item->common.no_default_init()) {
     item->init();
   }
 }

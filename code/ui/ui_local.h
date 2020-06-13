@@ -1434,7 +1434,7 @@ enum ui_localMtype_e {
 	MTYPE_BTEXT
 };
 
-enum ui_localQmf_e {
+enum ui_localQmf_e : unsigned int {
 	QMF_BLINK = 0x00000001,
 	QMF_SMALLFONT = 0x00000002,
 	QMF_LEFT_JUSTIFY = 0x00000004,
