@@ -185,19 +185,19 @@ fx_hypospray.o : fx_hypospray.c; $(DO_CC)
 fx_disruptor.o : fx_disruptor.c; $(DO_CC)
 fx_tetrion.o : fx_tetrion.c; $(DO_CC)
 fx_transporter.o : fx_transporter.c; $(DO_CC)
-lua_qmath.o: ../game/lua_qmath.c; $(DO_CC)
-lua_vector.o: ../game/lua_vector.c; $(DO_CC)
+lua_qmath.o: ../game/lua_qmath.cpp; $(DO_CC)
+lua_vector.o: ../game/lua_vector.cpp; $(DO_CC)
 lua_cfx.o: lua_cfx.c; $(DO_CC)
 lua_cent.o: lua_cent.c; $(DO_CC)
 lua_refent.o: lua_refent.c; $(DO_CC);
 
 
 # dependencies from game
-q_shared.o: ../game/q_shared.c; $(DO_CC)
-q_math.o: ../game/q_math.c; $(DO_CC)
-bg_misc.o:  ../game/bg_misc.c; $(DO_CC)
-bg_pmove.o: ../game/bg_pmove.c; $(DO_CC)
-bg_slidemove.o: ../game/bg_slidemove.c; $(DO_CC)
+q_shared.o: ../game/q_shared.cpp; $(DO_CC)
+q_math.o: ../game/q_math.cpp; $(DO_CC)
+bg_misc.o:  ../game/bg_misc.cpp; $(DO_CC)
+bg_pmove.o: ../game/bg_pmove.cpp; $(DO_CC)
+bg_slidemove.o: ../game/bg_slidemove.cpp; $(DO_CC)
 
 # cgame syscalls
 cg_syscalls.o : cg_syscalls.c; $(DO_CC)

@@ -214,7 +214,7 @@ struct gentity_s {
 
 	qboolean	inuse;
 
-	char*		classname;			//!< set in QuakeEd
+	const char*		classname;			//!< set in QuakeEd
 	int			spawnflags;			//!< set in QuakeEd
 
 	qboolean	neverFree;			//!< if true, FreeEntity will only unlink bodyque uses this
@@ -751,7 +751,7 @@ typedef struct {
  * \param[out] out The result.
  * \return Success or fail.
  */
-qboolean G_SpawnString( const char* key, const char* defaultString, char** out );
+qboolean G_SpawnString( const char* key, const char* defaultString, const char** out );
 
 /**
  * \brief Get a float for a custom entity key.
@@ -833,7 +833,7 @@ void BroadcastTeamChange( gclient_t* client, int oldTeam );
  * \param s The new team.
  * \return Success or fail.
  */
-qboolean SetTeam( gentity_t* ent, char* s );
+qboolean SetTeam( gentity_t* ent, const char* s );
 
 /**
  * Cycle different players.
@@ -1002,7 +1002,7 @@ int G_ModelIndex( char* name );
  *
  * \return the sounds index
  */
-int G_SoundIndex( char* name );
+int G_SoundIndex( const char* name );
 
 /**
  * \brief Issue a team command.
@@ -1748,7 +1748,7 @@ void G_Client_LocationsMessage( gentity_t *ent );
  * \param firstTime Indicate whether this was the first connect.
  * \param isBot Indicate if bot or player.
  */
-char* G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot );
+const char* G_Client_Connect( int clientNum, qboolean firstTime, qboolean isBot );
 
 /**
  * Clients user info changed.
@@ -1799,7 +1799,7 @@ void G_ProcessIPBans(void);
 /**
  * Filter a packet.
  */
-qboolean G_FilterPacket (char* from);
+qboolean G_FilterPacket (const char* from);
 
 /**
  * Get a client for a string.
@@ -1814,7 +1814,7 @@ void G_ProcessIDBans( void );
 /**
  * Check ID.
  */
-qboolean CheckID( char*	id );
+qboolean CheckID( const char*	id );
 
 //
 // g_weapon.c
@@ -3016,7 +3016,7 @@ void trap_GetConfigstring( int num, char* buffer, int bufferSize );
 *	\param buffer buffer to store config string in
 *	\param size of buffer
 */
-void trap_GetUserinfo( int num, char* buffer, int bufferSize );
+void trap_GetUserinfo( int num, const char* buffer, int bufferSize );
 
 /**
 *	Set the userinfo for a client
@@ -3146,7 +3146,7 @@ void trap_DebugPolygonDelete(int id);
 
 int		trap_BotLibSetup( void );
 int		trap_BotLibShutdown( void );
-int		trap_BotLibVarSet(char* var_name, char* value);
+int		trap_BotLibVarSet(const char* var_name, const char* value);
 int		trap_BotLibVarGet(char* var_name, char* value, int size);
 int		trap_BotLibDefine(char* string);
 int		trap_BotLibStartFrame(float time);
@@ -3169,9 +3169,9 @@ int			trap_AAS_TraceAreas(vec3_t start, vec3_t end, int* areas, vec3_t* points, 
 
 int			trap_AAS_PointContents(vec3_t point);
 int			trap_AAS_NextBSPEntity(int ent);
-int			trap_AAS_ValueForBSPEpairKey(int ent, char* key, char* value, int size);
+int			trap_AAS_ValueForBSPEpairKey(int ent, const char* key, char* value, int size);
 int			trap_AAS_VectorForBSPEpairKey(int ent, char* key, vec3_t v);
-int			trap_AAS_FloatForBSPEpairKey(int ent, char* key, float* value);
+int			trap_AAS_FloatForBSPEpairKey(int ent, const char* key, float* value);
 int			trap_AAS_IntForBSPEpairKey(int ent, char* key, int* value);
 
 int			trap_AAS_AreaReachability(int areanum);
@@ -3183,7 +3183,7 @@ int			trap_AAS_PredictClientMovement(void* move, int entnum, vec3_t origin, int 
 
 
 void	trap_EA_Say(int client, char* str);
-void	trap_EA_SayTeam(int client, char* str);
+void	trap_EA_SayTeam(int client, const char* str);
 void	trap_EA_SayClass(int client, char* str);
 void	trap_EA_UseItem(int client, char* it);
 void	trap_EA_DropItem(int client, char* it);
@@ -3229,8 +3229,8 @@ void	trap_BotQueueConsoleMessage(int chatstate, int type, char* message);
 void	trap_BotRemoveConsoleMessage(int chatstate, int handle);
 int		trap_BotNextConsoleMessage(int chatstate, void* cm);
 int		trap_BotNumConsoleMessages(int chatstate);
-void	trap_BotInitialChat(int chatstate, char* type, int mcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7 );
-int		trap_BotNumInitialChats(int chatstate, char* type);
+void	trap_BotInitialChat(int chatstate, const char* type, int mcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7 );
+int		trap_BotNumInitialChats(int chatstate, const char* type);
 int		trap_BotReplyChat(int chatstate, char* message, int mcontext, int vcontext, char* var0, char* var1, char* var2, char* var3, char* var4, char* var5, char* var6, char* var7 );
 int		trap_BotChatLength(int chatstate);
 void	trap_BotEnterChat(int chatstate, int client, int sendto);
@@ -3260,7 +3260,7 @@ int		trap_BotTouchingGoal(vec3_t origin, void* goal);
 int		trap_BotItemGoalInVisButNotVisible(int viewer, vec3_t eye, vec3_t viewangles, void* goal);
 int		trap_BotGetNextCampSpotGoal(int num, void* goal);
 int		trap_BotGetMapLocationGoal(char* name, void* goal);
-int		trap_BotGetLevelItemGoal(int index, char* classname, void* goal);
+int		trap_BotGetLevelItemGoal(int index, const char* classname, void* goal);
 float	trap_BotAvoidGoalTime(int goalstate, int number);
 void	trap_BotInitLevelItems(void);
 void	trap_BotUpdateEntityItems(void);
@@ -3362,7 +3362,7 @@ struct luaAlertState_s {
 	char* targets[4];
 };
 
-luaAlertState_t* luaAlertState;
+static luaAlertState_t* luaAlertState;
 
 /* alert shaders */
 typedef struct {

@@ -158,9 +158,9 @@ ui_turbolift.o : ui_turbolift.c; $(DO_CC)
 
 ui_syscalls.o : ui_syscalls.c; $(DO_CC)
 
-q_shared.o: ../game/q_shared.c; $(DO_CC)
-q_math.o: ../game/q_math.c; $(DO_CC)
-bg_misc.o: ../game/bg_misc.c; $(DO_CC)
+q_shared.o: ../game/q_shared.cpp; $(DO_CC)
+q_math.o: ../game/q_math.cpp; $(DO_CC)
+bg_misc.o: ../game/bg_misc.cpp; $(DO_CC)
 
 build_so: $(OBJDEP) $(OBJ) $(SOOBJ)
 ifeq ($(PLATFORM), mingw32)

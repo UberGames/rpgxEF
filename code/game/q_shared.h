@@ -661,7 +661,7 @@ void VectorAverage( vec3_t mins, vec3_t maxs, vec3_t result );
 
 // data is an in/out parm, returns a parsed out token
 
-void	COM_MatchToken( char**buf_p, char *match );
+void	COM_MatchToken( char**buf_p, const char *match );
 
 void SkipBracedSection (char **program);
 void SkipRestOfLine ( char **data );
@@ -749,14 +749,14 @@ float	LittleFloat (float l);
 
 
 void	Swap_Init (void);
-char	* QDECL va(char *format, ...) __attribute__ ((format (printf, 1, 2)));
+char	* QDECL va(const char *format, ...) __attribute__ ((format (printf, 1, 2)));
 
 //=============================================
 
 //
 // key / value info strings
 //
-char *Info_ValueForKey( const char *s, const char *key );
+const char *Info_ValueForKey( const char *s, const char *key );
 void Info_RemoveKey( char *s, const char *key );
 void Info_RemoveKey_big( char *s, const char *key );
 void Info_SetValueForKey( char *s, const char *key, const char *value );
@@ -1210,7 +1210,7 @@ String ID Tables (imported from single player by RPG-X: J2J)
 
 typedef struct stringID_table_s
 {
-	char	*name;
+	const char	*name;
 	int		id;
 } stringID_table_t;
 
