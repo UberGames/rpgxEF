@@ -525,7 +525,7 @@ typedef enum {
 *	in the UI and actual command
 */
 typedef struct {
-  char *consoleName;        //!<item you gotz to plug into the console for this shizzie
+  const char *consoleName;        //!<item you gotz to plug into the console for this shizzie
   int giveType;            //!<eNum depicting which type this val is
   int giveValue;            //!<items such as weapons+holdables reference to here
 } giveItem_t;
@@ -972,7 +972,7 @@ extern int bg_numEmotes; //TiM - added a counter variable since it'd be easier t
 extern int bg_numGiveItems;
 
 gitem_t *BG_FindItemWithClassname(const char *name);
-char *BG_FindClassnameForHoldable(holdable_t pw);
+const char *BG_FindClassnameForHoldable(holdable_t pw);
 gitem_t *BG_FindItem(const char *pickupName/*const char *classname*/ );//RPG-X: RedTechie - Attempting to fix give cmd
 gitem_t *BG_FindItemForWeapon(weapon_t weapon);
 gitem_t *BG_FindItemForAmmo(weapon_t weapon);

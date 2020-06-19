@@ -628,7 +628,7 @@ qboolean BotShouldDetonateDetPack(bot_state_t *bs) {
 
   // find the location of the DetPack
   gentity_t *detpack = NULL;
-  char *classname = BG_FindClassnameForHoldable(HI_DETPACK);
+  const char *classname = BG_FindClassnameForHoldable(HI_DETPACK);
 
   if (!classname) {
     return qfalse;

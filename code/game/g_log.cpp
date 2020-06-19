@@ -176,7 +176,7 @@ int weaponFromMOD[MOD_MAX] =
 	WP_0,				// MOD_FORCEDSUICIDE
 };
 
-char *weaponNameFromIndex[WP_NUM_WEAPONS] = 
+const char *weaponNameFromIndex[WP_NUM_WEAPONS] =
 {
 	"No Weapon",
 	"Phaser",				

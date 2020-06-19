@@ -26,7 +26,7 @@ void UpdateTournamentInfo( void ) {
 	int			mvpNum = -1, mvpPoints = 0, winningCaptures = 0, winningPoints = 0;
 	int			winningTeam=0;
 	int			loseCaptures = 0, losePoints = 0;
-	char		*mvpName = "";
+	const char		*mvpName = "";
 	gclient_t	*cl = NULL;
 	gclient_t	*cl2= NULL;
 	int			secondPlaceTied=0;

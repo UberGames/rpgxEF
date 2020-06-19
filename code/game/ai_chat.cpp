@@ -24,38 +24,40 @@
 #include "be_ai_goal.h"
 #include "be_ai_move.h"
 #include "be_ai_weap.h"
-//
+
 #include "ai_main.h"
 #include "ai_dmq3.h"
 #include "ai_chat.h"
 #include "ai_cmd.h"
 #include "ai_dmnet.h"
-//
+
 #include "chars.h"                //characteristics
 #include "inv.h"                //indexes into the inventory
 #include "syn.h"                //synonyms
 #include "match.h"                //string matching types and vars
+
+#include <string>
+#include <vector>
 
 /*
 ==================
 BotNumActivePlayers
 ==================
 */
-int BotNumActivePlayers(void) {
-  int i, num;
-  char buf[MAX_INFO_STRING];
-  static int maxclis;
+int BotNumActivePlayers() {
+  static int maxclis = 0;
 
-  if (!maxclis)
+  if (maxclis == 0) {
     maxclis = trap_Cvar_VariableIntegerValue("sv_maxclients");
+  }
 
-  num = 0;
-  for (i = 0; i < maxclis && i < MAX_CLIENTS; i++) {
-    trap_GetConfigstring(CS_PLAYERS + i, buf, sizeof(buf));
+  auto num = 0;
+  for (auto i = 0; i < maxclis && i < MAX_CLIENTS; i++) {
+    auto config_string = trap_GetConfigstring(CS_PLAYERS + i, MAX_INFO_STRING);
     //if no config string or no name
-    if (!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) continue;
+    if (config_string.empty() || Info_ValueForKey(config_string, "n").empty()) { continue; }
     //skip spectators
-    if (atoi(Info_ValueForKey(buf, "t")) == TEAM_SPECTATOR) continue;
+    if (std::stoi(Info_ValueForKey(config_string, "t")) == TEAM_SPECTATOR) continue;
     //
     num++;
   }

@@ -991,7 +991,7 @@ gitem_t *BG_FindItemWithClassname(const char *name)
 *	Finds the classname for a holdable.
 *	\return classname for holdable
 */
-char *BG_FindClassnameForHoldable(holdable_t pw)
+const char *BG_FindClassnameForHoldable(holdable_t pw)
 {
 	gitem_t *item = BG_FindItemForHoldable(pw);
 
@@ -999,7 +999,7 @@ char *BG_FindClassnameForHoldable(holdable_t pw)
 	{
 		return item->classname;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /**
