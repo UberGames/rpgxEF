@@ -8,7 +8,7 @@ build:
     - "mkdir cmake-build-debug"
     - "cd cmake-build-debug"
     - "cmake .."
-    - "cmake --build . --target ui -- -j 8"
+    - "cmake --build . -- -j 8"
 
 #test:
 #  stage: test
