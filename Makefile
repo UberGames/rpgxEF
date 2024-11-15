@@ -2099,6 +2099,7 @@ Q3CGOBJ_ = \
   $(B)/$(BASEGAME)/cgame/fx_item.o \
   $(B)/$(BASEGAME)/cgame/fx_grenade.o \
   $(B)/$(BASEGAME)/cgame/fx_compression.o \
+  $(B)/$(BASEGAME)/camge/list.o \
   \
   $(B)/$(BASEGAME)/cgame/q_math.o \
   $(B)/$(BASEGAME)/cgame/q_shared.o
