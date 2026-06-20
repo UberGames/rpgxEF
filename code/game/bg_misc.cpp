@@ -1719,7 +1719,7 @@ qboolean BG_ParseRankNames( char* fileName, rankNames_t rankNames[] ) {
 	}
 
 	memset( &charText, 0, sizeof( charText ) );
-	memset( rankNames, 0, sizeof( rankNames ) );
+	memset( rankNames, 0, sizeof(rankNames_t) * MAX_RANKS );
 
 	trap_FS_Read( charText, file_len, f );
 
