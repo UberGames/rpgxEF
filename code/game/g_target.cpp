@@ -2273,10 +2273,9 @@ void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
       G_UseTargets(ent, activator);
     }
     for (i = 0; i < MAX_GENTITIES; i++) {
-      if (!&g_entities[i]) continue;
+      if (!g_entities[i].inuse) continue;
       if (Q_stricmp(g_entities[i].classname, "func_train") && !Q_stricmp(g_entities[i].swapname, ent->bluename)) {
         target = &g_entities[i];
-        if (!target) continue;
         if (ent->spawnflags & 4) {
           target->use(target, ent, ent);
 #ifdef G_LUA
@@ -2293,7 +2292,6 @@ void target_warp_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
       } else if (!Q_stricmp(g_entities[i].classname, "func_train")
           && !Q_stricmp(g_entities[i].swapname, ent->bluename)) {
         target = &g_entities[i];
-        if (!target) continue;
         if (target->count == 1) {
           target->s.solid = 0;
           target->r.contents = 0;
