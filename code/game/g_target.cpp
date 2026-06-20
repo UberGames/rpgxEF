@@ -80,7 +80,7 @@ void SP_target_give(gentity_t *ent) {
   ent->use = Use_Target_Give;
 
   // don't need to send this to clients
-  ent->r.svFlags &= SVF_NOCLIENT;
+  ent->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(ent);
 }
 
@@ -161,7 +161,7 @@ void SP_target_delay(gentity_t *ent) {
   ent->use = Use_Target_Delay;
 
   // don't need to send this to clients
-  ent->r.svFlags &= SVF_NOCLIENT;
+  ent->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(ent);
 }
 
@@ -573,7 +573,7 @@ void SP_target_kill(gentity_t *self) {
   self->use = target_kill_use;
 
   // don't need to send this to clients
-  self->r.svFlags &= SVF_NOCLIENT;
+  self->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(self);
 }
 
@@ -689,7 +689,7 @@ void SP_target_counter(gentity_t *self) {
   self->use = target_counter_use;
 
   // don't need to send this to clients
-  self->r.svFlags &= SVF_NOCLIENT;
+  self->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(self);
 }
 
@@ -829,7 +829,7 @@ void SP_target_boolean(gentity_t *self) {
   self->use = target_boolean_use;
 
   // don't need to send this to clients
-  self->r.svFlags &= SVF_NOCLIENT;
+  self->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(self);
 }
 
@@ -873,7 +873,7 @@ void SP_target_gravity(gentity_t *self) {
   self->use = target_gravity_use;
 
   // don't need to send this to clients
-  self->r.svFlags &= SVF_NOCLIENT;
+  self->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(self);
 }
 
@@ -936,7 +936,7 @@ void SP_target_evosuit(gentity_t *self) {
   self->use = target_evosuit_use;
 
   // don't need to send this to clients
-  self->r.svFlags &= SVF_NOCLIENT;
+  self->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(self);
 }
 
@@ -1750,7 +1750,7 @@ void SP_target_doorLock(gentity_t *ent) {
   ent->use = target_doorLock_use;
 
   // don't need to send this to clients
-  ent->r.svFlags &= SVF_NOCLIENT;
+  ent->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(ent);
 }
 
@@ -2213,7 +2213,7 @@ void SP_target_alert(gentity_t *ent) {
   ent->health = !(ent->spawnflags & 2);
 
   // don't need to send this to clients
-  ent->r.svFlags &= SVF_NOCLIENT;
+  ent->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(ent);
 }
 //RPG-X | GSIO01 | 11/05/2009 | MOD END
@@ -2385,7 +2385,7 @@ void SP_target_warp(gentity_t *ent) {
   ent->use = target_warp_use;
 
   // don't need to send this to clients
-  ent->r.svFlags &= SVF_NOCLIENT;
+  ent->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(ent);
 }
 
@@ -2418,7 +2418,7 @@ void SP_target_deactivate(gentity_t *ent) {
   ent->use = target_deactivate_use;
 
   // don't need to send this to clients
-  ent->r.svFlags &= SVF_NOCLIENT;
+  ent->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(ent);
 }
 
@@ -2539,7 +2539,7 @@ void SP_target_holodeck(gentity_t *ent) {
   return;
 
   // don't need to send this to clients
-  ent->r.svFlags &= SVF_NOCLIENT;
+  ent->r.svFlags |= SVF_NOCLIENT;
   trap_LinkEntity(ent);
 }
 
