@@ -1875,7 +1875,7 @@ static void Cmd_ForceVote_f(gentity_t *ent) {
 
   trap_Argv(1, msg, sizeof(msg));
 
-  if (msg[0] == 'y' || msg[1] == 'Y' || msg[1] == '1') {
+  if (msg[0] == 'y' || msg[0] == 'Y' || msg[0] == '1') {
     level.voteYes += 999;
     trap_SetConfigstring(CS_VOTE_YES, va("%i", level.voteYes));
     trap_SendServerCommand(ent - g_entities, "print \"You have overridden the vote with yes.\n\"");

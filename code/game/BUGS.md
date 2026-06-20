@@ -247,7 +247,7 @@ No bugs found.
 | B75 | ✅ | `G_Say` (L1510): `other = &g_entities[j]; if (!other)` — dead null check on array element address; `other` can never be NULL |
 | B76 | ✅ | `Cmd_GameCommand_f` (L1655): `order > sizeof(gc_orders) / sizeof(char *)` — off-by-one; `sizeof(gc_orders)/sizeof(char*)` is 7, so `order == 7` passes the check and `gc_orders[7]` is an out-of-bounds read; should be `>=` |
 | B77 | ✅ | `Cmd_Vote_f` (L1824): `if (msg[0] == 'y' \|\| msg[1] == 'Y' \|\| msg[1] == '1')` — second and third conditions check `msg[1]` instead of `msg[0]`; typing "Y" or "1" is incorrectly treated as "no" |
-| B78 | ❌ | `Cmd_ForceVote_f` (L1880): same `msg[1]` typo as B77 — "Y" and "1" votes are misread |
+| B78 | ✅ | `Cmd_ForceVote_f` (L1880): same `msg[1]` typo as B77 — "Y" and "1" votes are misread |
 | B79 | ❌ | `Cmd_ForceKill_f` (L2194): `if (targetNum >= level.maxclients) return` has no lower-bound guard beyond the explicit `== -1` check above it; a `targetNum` of e.g. `-2` passes through and `g_entities[targetNum]` is an out-of-bounds access |
 | B80 | ❌ | `Cmd_ForceKill_f` (L2201): `return` inside the "kill all" loop (`targetNum == -1`) exits the entire function on the first entity that fails a check — all subsequent client slots are skipped; should be `continue` |
 | B81 | ❌ | `Cmd_ForceKill_f` (L2222): `target = &g_entities[p]; if (target == NULL)` — dead null check on array element address; `target` is never NULL |
