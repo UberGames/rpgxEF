@@ -467,7 +467,7 @@ qboolean G_SetupUsablesStrings( void )
 
 	/* fill the buffer with the file data */
 	trap_FS_Read( buffer, file_len, f );
-	buffer[file_len] = '0';
+	buffer[file_len] = '\0';
 
 	trap_FS_FCloseFile( f );
 	
