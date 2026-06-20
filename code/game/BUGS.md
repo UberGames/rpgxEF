@@ -136,6 +136,6 @@
 | B30 | ✅ | `G_Client_UserinfoChanged` (~L1011): `if (qtrue)` — always true (even noted with a `WTF?` comment); `else` branch with `ForceClientSkin(model, "default")` is permanently unreachable |
 | B31 | ✅ | `G_Client_Connect` (~L1660): `if (securityID <= 0 \|\| ...)` where `securityID` is `unsigned long` — `<= 0` is only true when exactly `0` since unsigned values can never be negative |
 | B32 | ✅ | `G_Client_Begin` MOTD (~L1695): `buf[len] = '\0'` where `buf[16000]` and `len` can reach `16000` — writes one byte past the end of the buffer |
-| B33 | ❌ | `G_Client_Spawn` (L1954-1958): `oClass = client->sess.sessionClass;` immediately followed by `if (oClass != client->sess.sessionClass)` — condition is always false; class-change notification never fires |
+| B33 | ✅ | `G_Client_Spawn` (L1954-1958): `oClass = client->sess.sessionClass;` immediately followed by `if (oClass != client->sess.sessionClass)` — condition is always false; class-change notification never fires |
 | B34 | ❌ | `G_Client_Disconnect` (L2197): `if (ent == NULL)` where `ent = &g_entities[clientNum]` — array element address, never NULL; same pattern as B17/B25 |
 | B35 | ✅ | `G_Client_Disconnect` (L2290): `memset(ent, 0, sizeof(ent))` — `sizeof(ent)` is pointer size (8 bytes), not struct size; only the first 8 bytes of `gentity_t` are cleared on disconnect, leaving stale data in `r.contents`, `r.svFlags`, `takedamage`, etc. |
