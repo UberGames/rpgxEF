@@ -976,6 +976,7 @@ void trigger_transporter_touch(gentity_t *ent, gentity_t *other, trace_t *trace)
 	if(!ent->count)
 		if(ent->target_ent->target) {
 			targetEnt = G_PickTarget(ent->target_ent->target);
+			if(!targetEnt) return;
 			VectorAdd(targetEnt->s.origin, offset, target);
 			G_InitTransport(clientNum, target, targetEnt->s.angles);
 		} else {
