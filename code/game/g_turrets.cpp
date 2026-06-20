@@ -510,8 +510,6 @@ void turret_base_think (gentity_t *self)
 	float		enemyDist;
 	gentity_t *lastEnemy;
 	
-	if(!self) return;
-
 	lastEnemy = self->lastEnemy;
 
 	self->nextthink = level.time + FRAMETIME;
