@@ -404,7 +404,7 @@ void Svcmd_BanUser_f( void )
 	trap_Argv( 1, str, sizeof( str ) );
 
 	playerNum = atoi(str);
-	if ( playerNum > MAX_CLIENTS || playerNum < 0 || !g_entities[playerNum].client )
+	if ( playerNum >= MAX_CLIENTS || playerNum < 0 || !g_entities[playerNum].client )
 	{
 		G_Printf("Error: Player ID wasn't valid.\n");
 		return;			
