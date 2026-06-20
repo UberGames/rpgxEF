@@ -1097,7 +1097,7 @@ void CreateShield(gentity_t *ent) {
   // set entity's mins and maxs to new values, make it solid, and link it
   if (xaxis) {
     VectorSet(ent->r.mins, -halfWidth, -SHIELD_HALFTHICKNESS, -(height >> 1));
-    VectorSet(ent->r.maxs, halfWidth, SHIELD_HALFTHICKNESS, height);
+    VectorSet(ent->r.maxs, halfWidth, SHIELD_HALFTHICKNESS, height >> 1);
   } else {
     VectorSet(ent->r.mins, -SHIELD_HALFTHICKNESS, -halfWidth, -(height >> 1));
     VectorSet(ent->r.maxs, SHIELD_HALFTHICKNESS, halfWidth, height >> 1);
