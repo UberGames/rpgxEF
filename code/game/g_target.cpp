@@ -20,11 +20,13 @@ EG "WP_5 | WP_14" etc
 */
 void Use_Target_Give(gentity_t *ent, gentity_t *other, gentity_t *activator) {
   int i;
-  playerState_t *ps = &activator->client->ps;
+  playerState_t *ps = NULL;
 
   if (!activator || !activator->client) {
     return;
   }
+
+  ps = &activator->client->ps;
 
   for (i = 0; i < MAX_WEAPONS; i++) {
     if ((unsigned int) (ent->s.time) & (1 << i)) {
