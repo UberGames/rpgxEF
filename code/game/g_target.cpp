@@ -2089,7 +2089,7 @@ void target_alert_parseShaders(gentity_t *ent) {
 
   // condition green shaders
   if (!ent->message) return;
-  Q_strncpyz(buffer, ent->message, strlen(ent->message));
+  Q_strncpyz(buffer, ent->message, sizeof(buffer));
   txtPtr = buffer;
   token = COM_Parse(&txtPtr);
   while (1) {
@@ -2102,7 +2102,7 @@ void target_alert_parseShaders(gentity_t *ent) {
 
   // condition red shaders
   if (ent->model) {
-    Q_strncpyz(buffer, ent->model, strlen(ent->model));
+    Q_strncpyz(buffer, ent->model, sizeof(buffer));
     txtPtr = buffer;
     token = COM_Parse(&txtPtr);
     while (1) {
@@ -2124,7 +2124,7 @@ void target_alert_parseShaders(gentity_t *ent) {
 
   // condition blue shaders
   if (ent->model2) {
-    Q_strncpyz(buffer, ent->model2, strlen(ent->model2));
+    Q_strncpyz(buffer, ent->model2, sizeof(buffer));
     txtPtr = buffer;
     token = COM_Parse(&txtPtr);
     while (1) {
@@ -2146,7 +2146,7 @@ void target_alert_parseShaders(gentity_t *ent) {
 
   // condition yellow shaders
   if (ent->team) {
-    Q_strncpyz(buffer, ent->team, strlen(ent->team));
+    Q_strncpyz(buffer, ent->team, sizeof(buffer));
     txtPtr = buffer;
     token = COM_Parse(&txtPtr);
     while (1) {
