@@ -1273,8 +1273,6 @@ Same Class
 static qboolean OnSameClass(gentity_t *ent1, gentity_t *ent2) {
   gclient_t *client1 = ent1->client;
   gclient_t *client2 = ent2->client;
-  clientSession_t *sess1 = &client1->sess;
-  clientSession_t *sess2 = &client2->sess;
 
   if (!client1 || !client2) {
     if (!client1 && !client2) {
@@ -1282,11 +1280,11 @@ static qboolean OnSameClass(gentity_t *ent1, gentity_t *ent2) {
         return qtrue;
       }
     } else if (!client1) {
-      if (ent1->classname && atoi(ent1->classname) == sess2->sessionClass) {
+      if (ent1->classname && atoi(ent1->classname) == client2->sess.sessionClass) {
         return qtrue;
       }
     } else {
-      if (ent2->classname && sess1->sessionClass == atoi(ent2->classname)) {
+      if (ent2->classname && client1->sess.sessionClass == atoi(ent2->classname)) {
         return qtrue;
       }
     }
@@ -1294,7 +1292,7 @@ static qboolean OnSameClass(gentity_t *ent1, gentity_t *ent2) {
     return qfalse;
   }
 
-  if (sess1->sessionClass == sess2->sessionClass) {
+  if (client1->sess.sessionClass == client2->sess.sessionClass) {
     return qtrue;
   }
 
