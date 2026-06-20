@@ -228,5 +228,5 @@ No bugs found.
 | B66 | ✅ | `func_usable_pain` (L158): `self->use(self, attacker, attacker)` called without null check — `ALWAYS_ON` entities set `self->use = NULL` at L99 after first trigger; a pain event before `func_usable_think` restores it crashes on the null pointer |
 | B67 | ✅ | `func_usable_die` (L175): same null function pointer call on `self->use` — same root cause as B66 |
 | B68 | ✅ | `G_SetupUsablesStrings` (L468): `buffer[file_len] = '0'` writes ASCII `'0'` (0x30) instead of null terminator `'\0'` (0x00) — buffer is never null-terminated, causing string operations to read past the file data |
-| B69 | ❌ | `G_SetupUsablesStrings` (L460, L467): buffer allocated as 32000 bytes but `file_len` is never capped before `trap_FS_Read`; .usables files larger than 32000 bytes overflow the buffer |
+| B69 | ✅ | `G_SetupUsablesStrings` (L460, L467): buffer allocated as 32000 bytes but `file_len` is never capped before `trap_FS_Read`; .usables files larger than 32000 bytes overflow the buffer |
 | B70 | ❌ | `G_SetupUsablesStrings` (L538-540, L551): no bounds check on `j` against `MAX_ENTSCANNABLES` before writing `level.g_entScannables[j]`, and no bounds check on `i` against `MAX_SCANNABLES` before writing `level.g_scannables[i]` — malformed or oversized .usables files cause out-of-bounds writes |

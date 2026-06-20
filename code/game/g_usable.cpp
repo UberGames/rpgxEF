@@ -465,7 +465,9 @@ qboolean G_SetupUsablesStrings( void )
 		return qfalse;
 	}
 
-	/* fill the buffer with the file data */
+	/* fill the buffer with the file data; cap to buffer size - 1 to leave room for null terminator */
+	if ( file_len >= 32000 )
+		file_len = 32000 - 1;
 	trap_FS_Read( buffer, file_len, f );
 	buffer[file_len] = '\0';
 
