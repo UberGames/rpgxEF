@@ -1464,7 +1464,7 @@ static void target_turbolift_use(gentity_t *self, gentity_t *other, gentity_t *a
   trap_SendServerCommand(activator - g_entities, va("lift %d", self->health));
 }
 
-extern void BG_LanguageFilename(const char *baseName, const char *baseExtension, const char *finalName);
+extern void BG_LanguageFilename(const char *baseName, const char *baseExtension, char *finalName);
 
 /*
 QUAKED target_turbolift (.5 .5 .5) ? x x x x x x x x OFFLINE

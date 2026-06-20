@@ -1487,7 +1487,7 @@ void BG_ParseItemsText(char *buff)
 /*
 *	Creates a filename with an extension based on the value in g_language
 */
-void BG_LanguageFilename(const char *baseName,const char *baseExtension,const char *finalName)
+void BG_LanguageFilename(const char *baseName,const char *baseExtension,char *finalName)
 {
 	char	language[32];
 	fileHandle_t	file;

@@ -88,4 +88,4 @@
 | B7 | ✅ | `bg_giveItem` (L944, L946): duplicate `"coffee"` entry wastes a slot and `bg_numGiveItems = 24` counts it twice |
 | B8 | ✅ | `BG_ParseRankNames` (L1723): `sizeof(rankNames)` on a pointer parameter yields 8 bytes instead of the full array size — should be `sizeof(rankNames_t) * MAX_RANKS` |
 | B9 | ✅ | `BG_ParseItemsText` (L1459): `while (buffer)` never exits at EOF since `COM_ParseExt` leaves `buffer` pointing at the null terminator, not NULL |
-| B10 | ❌ | `BG_LanguageFilename` (L1490): `finalName` parameter declared `const char*` but written to via `Com_sprintf` — type mismatch and undefined behaviour |
+| B10 | ✅ | `BG_LanguageFilename` (L1490): `finalName` parameter declared `const char*` but written to via `Com_sprintf` — type mismatch and undefined behaviour |

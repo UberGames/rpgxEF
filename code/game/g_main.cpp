@@ -895,7 +895,7 @@ static qboolean G_LoadClassData(char *fileName) {
   }
 }
 
-void BG_LanguageFilename(const char *baseName, const char *baseExtension, const char *finalName);
+void BG_LanguageFilename(const char *baseName, const char *baseExtension, char *finalName);
 void SP_target_location(gentity_t *ent);
 
 static void G_LoadTimedMessages(void) {
