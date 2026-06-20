@@ -45,7 +45,7 @@
 | g_syscalls.cpp | ✅ |
 | g_target.cpp | ✅ |
 | g_team.cpp | ✅ |
-| g_trigger.cpp | ❌ |
+| g_trigger.cpp | ✅ |
 | g_turrets.cpp | ❌ |
 | g_ui.cpp | ❌ |
 | g_usable.cpp | ❌ |
