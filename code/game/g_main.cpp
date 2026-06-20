@@ -1647,7 +1647,8 @@ static void Dev_ShowTriggers(gentity_t *ent) {
   ent->nextthink = level.time + 9500;
 
   for (i = 0; i < MAX_GENTITIES; i++) {
-    if ((tar = &g_entities[i]) == NULL) continue;
+    tar = &g_entities[i];
+    if (!tar->inuse) continue;
     if (!Q_stricmpn(tar->classname, "trigger_", 8)) {
       if (!Q_stricmp(tar->classname, "trigger_always")) continue;
       if (tar->r.svFlags & SVF_NOCLIENT)
