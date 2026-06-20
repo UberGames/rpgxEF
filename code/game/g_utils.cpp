@@ -709,7 +709,6 @@ void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm ) {
 
 void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 	int		bits;
-	playerState_t *ps = &ent->client->ps;
 
 	if ( !event ) {
 		G_Printf( "G_AddEvent: zero event added for entity %i\n", ent->s.number );
@@ -718,6 +717,7 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm ) {
 
 	/* clients need to add the event in playerState_t instead of entityState_t */
 	if ( ent->client ) {
+		playerState_t *ps = &ent->client->ps;
 		bits = ps->externalEvent & EV_EVENT_BITS;
 		bits = ( bits + EV_EVENT_BIT1 ) & EV_EVENT_BITS;
 		ps->externalEvent = event | bits;
