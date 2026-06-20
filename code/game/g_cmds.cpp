@@ -2962,12 +2962,12 @@ static void Cmd_ForceRank_f(gentity_t *ent) {
 
   other = &g_entities[targetNum];
 
-  //Lets get old score first just incase
-  OldScore = other->client->ps.persistant[PERS_SCORE]; //ent
-
-  if (!other || !other->inuse || !other->client) {
+  if (!other->inuse || !other->client) {
     return;
   }
+
+  //Lets get old score first just incase
+  OldScore = other->client->ps.persistant[PERS_SCORE]; //ent
 
   //Get the raw rank value
   trap_Argv(2, ArgStr, sizeof(ArgStr));
@@ -3038,6 +3038,8 @@ static void Cmd_Admins_f(gentity_t *ent) {
   Q_strncpyz(send, "The following players are logged in as admins: \n", sizeof(send));
   for (j = 0; j < level.maxclients; j++) {
     target = &g_entities[j];
+    if (!target->inuse || !target->client)
+      continue;
     if (g_classData[target->client->sess.sessionClass].isAdmin)
       Q_strncpyz(send, va("%s %s \n", send, target->client->pers.netname), sizeof(send));
 
@@ -3319,12 +3321,20 @@ static void Cmd_n00b_f(gentity_t *ent) {
 
   targetNum = atoi(arg);
 
+  if (targetNum < 0 || targetNum >= level.maxclients) {
+    return;
+  }
+
   memset(arg, 0, MAX_TOKEN_CHARS);
   trap_Argv(2, arg, sizeof(arg));
 
   timeToBe = atoi(arg);
 
   target = g_entities + targetNum;
+
+  if (!target->inuse || !target->client) {
+    return;
+  }
 
   for (i = 0; g_classData[i].consoleName[0] && i < MAX_CLASSES; i++) {
     if (g_classData[i].isn00b) {
@@ -3445,7 +3455,7 @@ static void Cmd_ForceModel_f(gentity_t *ent) {
 
   Com_sprintf(send, sizeof(send), "%s ^7changed %s^7's model to %s", pers->netname, other->client->pers.netname, str2);
 
-  for (j = MAX_CLIENTS; j > -1; j--) { // j++ to j--, 1024 to MAX_CLIENTS
+  for (j = MAX_CLIENTS - 1; j > -1; j--) { // j++ to j--, 1024 to MAX_CLIENTS
     if (g_entities[j].client) {
       sayA = &g_entities[j];
       G_SayTo(ent, sayA, SAY_ADMIN, COLOR_CYAN, "^7Server: ", send);
@@ -4508,12 +4518,12 @@ static void Cmd_fxGun_f(gentity_t *ent) {
   fxGunData = &ent->client->fxGunData;
 
   if (!Q_stricmp(arg, "default")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
   } else if (!Q_stricmp(arg, "detpack")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     fxGunData->eventNum = EV_DETPACK;
   } else if (!Q_stricmp(arg, "chunks")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     //radius
     trap_Argv(2, arg, sizeof(arg));
     if (!arg[0]) {
@@ -4528,13 +4538,13 @@ static void Cmd_fxGun_f(gentity_t *ent) {
     trap_Argv(3, arg, sizeof(arg));
     if (!arg[0]) {
       trap_SendServerCommand(ent - g_entities, "print \"Syntax: /fxGun chunks <radius> <chunk type: 1-5>\n\" ");
-      memset(fxGunData, 0, sizeof(fxGunData));
+      memset(fxGunData, 0, sizeof(*fxGunData));
       return;
     }
 
     fxGunData->arg_int2 = atoi(arg);
   } else if (!Q_stricmp(arg, "sparks")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     trap_Argv(2, arg, sizeof(arg));
     if (!arg[0]) {
       trap_SendServerCommand(ent - g_entities,
@@ -4553,7 +4563,7 @@ static void Cmd_fxGun_f(gentity_t *ent) {
       fxGunData->arg_int2 = FX_DEFAULT_TIME;
     }
   } else if (!Q_stricmp(arg, "steam")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     fxGunData->eventNum = EV_FX_STEAM;
 
     //optional arg for timelength
@@ -4564,7 +4574,7 @@ static void Cmd_fxGun_f(gentity_t *ent) {
       fxGunData->arg_int2 = FX_DEFAULT_TIME;
     }
   } else if (!Q_stricmp(arg, "drips")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     //type of drips
     trap_Argv(2, arg, sizeof(arg));
     if (!arg[0]) {
@@ -4596,7 +4606,7 @@ static void Cmd_fxGun_f(gentity_t *ent) {
       fxGunData->arg_int2 = FX_DEFAULT_TIME;
     }
   } else if (!Q_stricmp(arg, "smoke")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     //smoke radius
     trap_Argv(2, arg, sizeof(arg));
     if (!arg[0]) {
@@ -4617,7 +4627,7 @@ static void Cmd_fxGun_f(gentity_t *ent) {
     }
 
   } else if (!Q_stricmp(arg, "surf_explosion")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     //explosion radius
     trap_Argv(2, arg, sizeof(arg));
     if (!arg[0]) {
@@ -4642,7 +4652,7 @@ static void Cmd_fxGun_f(gentity_t *ent) {
 
     fxGunData->arg_float2 = atof(arg);
   } else if (!Q_stricmp(arg, "elec_explosion")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     //explosion radius
     trap_Argv(2, arg, sizeof(arg));
     if (!arg[0]) {
@@ -4654,7 +4664,7 @@ static void Cmd_fxGun_f(gentity_t *ent) {
     fxGunData->arg_float1 = atof(arg);
 
   } else if (!Q_stricmp(arg, "fire")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     //time
     trap_Argv(2, arg, sizeof(arg));
     if (!arg[0]) {
@@ -4674,7 +4684,7 @@ static void Cmd_fxGun_f(gentity_t *ent) {
     }
 
   } else if (!Q_stricmp(arg, "shake")) {
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     //time
     trap_Argv(2, arg, sizeof(arg));
     if (!arg[0]) {
@@ -4697,7 +4707,7 @@ static void Cmd_fxGun_f(gentity_t *ent) {
   } else {
     trap_SendServerCommand(ent - g_entities,
                            "print \"Syntax: /fxGun <FX_Name>\nValid Effects:\n  default\n  chunks\n  detpack\n  sparks\n  steam\n  drips\n  smoke\n  surf_explosion\n  elec_explosion \n\" ");
-    memset(fxGunData, 0, sizeof(fxGunData));
+    memset(fxGunData, 0, sizeof(*fxGunData));
     return;
   }
 
@@ -5173,6 +5183,11 @@ static void Cmd_MeActionLocal_f(gentity_t *ent) {
 
     OtherPlayer = &g_entities[i];            //Point OtherPlayer to next player
 
+    //Check is OtherPlayer is valid
+    if (!OtherPlayer->inuse || !OtherPlayer->client) {
+      continue;
+    }
+
     //Send message to admins warning about command being used.
     //TiM - since double spamming is annoying, ensure that the target admin wants this alert
     if (!OtherPlayer->client->noAdminChat && IsAdmin(OtherPlayer))
@@ -5180,11 +5195,6 @@ static void Cmd_MeActionLocal_f(gentity_t *ent) {
                              va("print \"%s" S_COLOR_CYAN" (locally) " S_COLOR_WHITE "%s\n\"",
                                 ent->client->pers.netname,
                                 message));
-
-    //Check is OtherPlayer is valid
-    if (!OtherPlayer || !OtherPlayer->inuse || !OtherPlayer->client) {
-      continue;
-    }
 
     if (trap_InPVS(ent->client->ps.origin, OtherPlayer->client->ps.origin)) {
       //Communicate to the player
