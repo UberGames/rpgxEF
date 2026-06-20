@@ -248,7 +248,7 @@ void QDECL G_LogWeaponFire(int client, int weaponid)
 void QDECL G_LogWeaponDamage(int client, int mod, int amount)
 {
 #ifdef LOGGING_WEAPONS
-	if (client>=MAX_CLIENTS)
+	if (client < 0 || client >= MAX_CLIENTS)
 		return;
 	G_WeaponLogDamage[client][mod] += amount;
 	G_WeaponLogClientTouch[client] = qtrue;
@@ -258,7 +258,7 @@ void QDECL G_LogWeaponDamage(int client, int mod, int amount)
 void QDECL G_LogWeaponKill(int client, int mod)
 {
 #ifdef LOGGING_WEAPONS
-	if (client>=MAX_CLIENTS)
+	if (client < 0 || client >= MAX_CLIENTS)
 		return;
 	G_WeaponLogKills[client][mod]++;
 	G_WeaponLogClientTouch[client] = qtrue;
@@ -268,7 +268,7 @@ void QDECL G_LogWeaponKill(int client, int mod)
 void QDECL G_LogWeaponFrag(int attacker, int deadguy)
 {
 #ifdef LOGGING_WEAPONS
-	if ( (attacker>=MAX_CLIENTS) || (deadguy>=MAX_CLIENTS) )
+	if (attacker < 0 || attacker >= MAX_CLIENTS || deadguy < 0 || deadguy >= MAX_CLIENTS)
 		return;
 	G_WeaponLogFrags[attacker][deadguy]++;
 	G_WeaponLogClientTouch[attacker] = qtrue;
@@ -278,7 +278,7 @@ void QDECL G_LogWeaponFrag(int attacker, int deadguy)
 void QDECL G_LogWeaponDeath(int client, int weaponid)
 {
 #ifdef LOGGING_WEAPONS
-	if (client>=MAX_CLIENTS)
+	if (client < 0 || client >= MAX_CLIENTS)
 		return;
 	G_WeaponLogDeaths[client][weaponid]++;
 	G_WeaponLogClientTouch[client] = qtrue;
@@ -288,7 +288,7 @@ void QDECL G_LogWeaponDeath(int client, int weaponid)
 void QDECL G_LogWeaponPowerup(int client, int powerupid)
 {
 #ifdef LOGGING_WEAPONS
-	if (client>=MAX_CLIENTS)
+	if (client < 0 || client >= MAX_CLIENTS)
 		return;
 	G_WeaponLogPowerups[client][powerupid]++;
 	G_WeaponLogClientTouch[client] = qtrue;
@@ -298,7 +298,7 @@ void QDECL G_LogWeaponPowerup(int client, int powerupid)
 void QDECL G_LogWeaponItem(int client, int itemid)
 {
 #ifdef LOGGING_WEAPONS
-	if (client>=MAX_CLIENTS)
+	if (client < 0 || client >= MAX_CLIENTS)
 		return;
 	G_WeaponLogItems[client][itemid]++;
 	G_WeaponLogClientTouch[client] = qtrue;
