@@ -48,7 +48,7 @@
 | g_target.cpp | ✅ |
 | g_team.cpp | ✅ |
 | g_trigger.cpp | ✅ |
-| g_turrets.cpp | ❌ |
+| g_turrets.cpp | ✅ |
 | g_ui.cpp | ❌ |
 | g_usable.cpp | ✅ |
 | g_utils.cpp | ✅ |
@@ -289,3 +289,11 @@ No bugs found.
 | B107 | ✅ | `G_LogPrintf` (L27): `vsprintf(string + 7, fmt, argptr)` has no length limit — if the formatted message exceeds 1017 bytes the 1024-byte `string` buffer overflows; should be `vsnprintf(string + 7, sizeof(string) - 7, fmt, argptr)` |
 | B108 | ✅ | `G_LogWeaponPickup` (L220) and `G_LogWeaponFire` (L228): no bounds checks on `client` or `weaponid` — all other logging functions in this file have at least a partial bounds check |
 | B109 | ✅ | `G_LogWeaponDamage` (L247), `G_LogWeaponKill` (L257), `G_LogWeaponFrag` (L267), `G_LogWeaponDeath` (L277), `G_LogWeaponPowerup` (L287), `G_LogWeaponItem` (L297): each checks `client >= MAX_CLIENTS` but not `client < 0` — negative index allows OOB array write |
+
+### g_turrets.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B110 | ❌ | `turret_base_think` (L513): `if (!self) return` — dead null check; the engine never calls a think callback with NULL |
+| B111 | ❌ | `laser_arm_fire` (L953): `if (hapless_victim && ...)` after `hapless_victim = &g_entities[trace.entityNum]` — array element address is never NULL; should be `if (hapless_victim->inuse && ...)` |
+| B112 | ❌ | `laser_arm_start` (L1140): `if (!base->startRGBA)` — `startRGBA` is `vec4_t` (array member of `gentity_t`), so the address is never NULL; default colour-init block is unreachable; should be `if (!base->startRGBA[0])` |
