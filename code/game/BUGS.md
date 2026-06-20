@@ -36,7 +36,7 @@
 | g_log.cpp | ✅ |
 | g_lua.cpp | ❌ |
 | g_main.cpp | ✅ |
-| g_mem.cpp | ❌ |
+| g_mem.cpp | ✅ |
 | g_misc.cpp | ✅ |
 | g_missile.cpp | ✅ |
 | g_mover.cpp | ✅ |
