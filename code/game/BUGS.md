@@ -245,7 +245,7 @@ No bugs found.
 | B73 | ✅ | `Cmd_Give_f` (L306): loop decrements `i` from `bg_numGiveItems-1` to `-1`; the "not found" check `if (i >= bg_numGiveItems)` is always false after the loop — should be `if (i < 0)` |
 | B74 | ✅ | `OnSameClass` (L1276-1279): `sess1 = &client1->sess; sess2 = &client2->sess` both dereference `client1`/`client2` before the null checks on those pointers at L1279 — same crash pattern as B40/B55 |
 | B75 | ✅ | `G_Say` (L1510): `other = &g_entities[j]; if (!other)` — dead null check on array element address; `other` can never be NULL |
-| B76 | ❌ | `Cmd_GameCommand_f` (L1655): `order > sizeof(gc_orders) / sizeof(char *)` — off-by-one; `sizeof(gc_orders)/sizeof(char*)` is 7, so `order == 7` passes the check and `gc_orders[7]` is an out-of-bounds read; should be `>=` |
+| B76 | ✅ | `Cmd_GameCommand_f` (L1655): `order > sizeof(gc_orders) / sizeof(char *)` — off-by-one; `sizeof(gc_orders)/sizeof(char*)` is 7, so `order == 7` passes the check and `gc_orders[7]` is an out-of-bounds read; should be `>=` |
 | B77 | ❌ | `Cmd_Vote_f` (L1824): `if (msg[0] == 'y' \|\| msg[1] == 'Y' \|\| msg[1] == '1')` — second and third conditions check `msg[1]` instead of `msg[0]`; typing "Y" or "1" is incorrectly treated as "no" |
 | B78 | ❌ | `Cmd_ForceVote_f` (L1880): same `msg[1]` typo as B77 — "Y" and "1" votes are misread |
 | B79 | ❌ | `Cmd_ForceKill_f` (L2194): `if (targetNum >= level.maxclients) return` has no lower-bound guard beyond the explicit `== -1` check above it; a `targetNum` of e.g. `-2` passes through and `g_entities[targetNum]` is an out-of-bounds access |
