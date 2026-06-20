@@ -220,6 +220,8 @@ void G_LogWeaponInit(void) {
 void QDECL G_LogWeaponPickup(int client, int weaponid)
 {
 #ifdef LOGGING_WEAPONS
+	if (client < 0 || client >= MAX_CLIENTS || weaponid < 0 || weaponid >= WP_NUM_WEAPONS)
+		return;
 	G_WeaponLogPickups[client][weaponid]++;
 	G_WeaponLogClientTouch[client] = qtrue;
 #endif //_LOGGING_WEAPONS
@@ -230,6 +232,8 @@ void QDECL G_LogWeaponFire(int client, int weaponid)
 #ifdef LOGGING_WEAPONS
 	int dur;
 
+	if (client < 0 || client >= MAX_CLIENTS || weaponid < 0 || weaponid >= WP_NUM_WEAPONS)
+		return;
 	G_WeaponLogFired[client][weaponid]++;
 	dur = level.time - G_WeaponLogLastTime[client];
 	if (dur > 5000)		// 5 second max.
