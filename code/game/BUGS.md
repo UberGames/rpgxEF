@@ -99,3 +99,12 @@
 | B13 | ✅ | `G_Damage` (L1054): `inflictor->s.number` and `attacker->s.number` dereferenced in Lua hook before the null checks for `inflictor`/`attacker` (L1068-1073) |
 | B14 | ✅ | `G_Damage` (L1082): `func_forcefield` pain callback passed `take` which is still `0` at that point — force field always receives 0 damage |
 | B15 | ✅ | `G_Damage` (L1116): `client == NULL` check inside `if (client)` block is always false — dead code, likely masking a logic error |
+
+### g_active.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B16 | ✅ | `AddPlayerToDetHits` (L702): missing `break` after filling an empty slot — loop runs to end, then recycling code always overwrites a second slot; recycling while-loop bound check is also wrong (`curHit == &detHits[0]` never triggers, risks out-of-bounds write) |
+| B17 | ❌ | `flushDecoys` (L1306): `if (&g_entities[foundDecoys[removeMe]] == NULL)` — address of array element can never be NULL; should be `if (foundDecoys[removeMe] == ENTITYNUM_NONE)` |
+| B18 | ❌ | `CreateShield` (L1098): x-axis branch sets `maxs[2] = height` but y-axis branch (and origin shift) uses `height >> 1` — x-axis shield is 1.5× taller than intended |
+| B19 | ❌ | `ClientThink_real` (L1908): `memset(&currentCoord, 0, sizeof(currentCoord.origin))` only clears 12 bytes (the origin vec3) — `angles` field of the struct is not zeroed, leaving stale teleport angles |

@@ -705,6 +705,7 @@ static void AddPlayerToDetHits(gentity_t *det, gentity_t *player) {
       detHits[i].detpack = det;
       detHits[i].player = player;
       detHits[i].time = level.time;
+      return;
     }
     lastHit = &detHits[i];
   }
@@ -713,14 +714,15 @@ static void AddPlayerToDetHits(gentity_t *det, gentity_t *player) {
   while (lastHit->time < curHit->time) {
     lastHit = curHit;
     curHit++;
-    // just a safety check here
-    if (curHit == &detHits[0]) {
+    if (curHit >= &detHits[MAX_DETHITS]) {
       break;
     }
   }
-  curHit->detpack = det;
-  curHit->player = player;
-  curHit->time = level.time;
+  if (curHit < &detHits[MAX_DETHITS]) {
+    curHit->detpack = det;
+    curHit->player = player;
+    curHit->time = level.time;
+  }
 }
 
 /**
