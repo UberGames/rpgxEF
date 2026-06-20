@@ -303,7 +303,7 @@ static void Cmd_Give_f(gentity_t *ent) {
     }
   }
 
-  if (i >= bg_numGiveItems) {
+  if (i < 0) {
     trap_SendServerCommand(ent - g_entities, va("print \"ERROR: Specified item not found.\""));
     return;
   }

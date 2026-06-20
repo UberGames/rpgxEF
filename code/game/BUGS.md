@@ -237,3 +237,35 @@ No bugs found.
 |----|--------|-------------|
 | B71 | ✅ | `breakable_die` (L86-89): `self->spawnflags` is read after `G_FreeEntity(self)` in the second `if` — the two conditions are mutually exclusive so no bad write occurs in practice, but reading a freed entity pointer is undefined behaviour; should be `else if` |
 | B72 | ✅ | `ammo_use` (L616-623): `if (self->use != NULL)` inner check is always true when called via the use pointer — dead code that causes the `else` dispensing branch to be unreachable whenever a think is already scheduled, silently cancelling the cycle without restarting it |
+
+### g_cmds.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B73 | ✅ | `Cmd_Give_f` (L306): loop decrements `i` from `bg_numGiveItems-1` to `-1`; the "not found" check `if (i >= bg_numGiveItems)` is always false after the loop — should be `if (i < 0)` |
+| B74 | ❌ | `OnSameClass` (L1276-1279): `sess1 = &client1->sess; sess2 = &client2->sess` both dereference `client1`/`client2` before the null checks on those pointers at L1279 — same crash pattern as B40/B55 |
+| B75 | ❌ | `G_Say` (L1510): `other = &g_entities[j]; if (!other)` — dead null check on array element address; `other` can never be NULL |
+| B76 | ❌ | `Cmd_GameCommand_f` (L1655): `order > sizeof(gc_orders) / sizeof(char *)` — off-by-one; `sizeof(gc_orders)/sizeof(char*)` is 7, so `order == 7` passes the check and `gc_orders[7]` is an out-of-bounds read; should be `>=` |
+| B77 | ❌ | `Cmd_Vote_f` (L1824): `if (msg[0] == 'y' \|\| msg[1] == 'Y' \|\| msg[1] == '1')` — second and third conditions check `msg[1]` instead of `msg[0]`; typing "Y" or "1" is incorrectly treated as "no" |
+| B78 | ❌ | `Cmd_ForceVote_f` (L1880): same `msg[1]` typo as B77 — "Y" and "1" votes are misread |
+| B79 | ❌ | `Cmd_ForceKill_f` (L2194): `if (targetNum >= level.maxclients) return` has no lower-bound guard beyond the explicit `== -1` check above it; a `targetNum` of e.g. `-2` passes through and `g_entities[targetNum]` is an out-of-bounds access |
+| B80 | ❌ | `Cmd_ForceKill_f` (L2201): `return` inside the "kill all" loop (`targetNum == -1`) exits the entire function on the first entity that fails a check — all subsequent client slots are skipped; should be `continue` |
+| B81 | ❌ | `Cmd_ForceKill_f` (L2222): `target = &g_entities[p]; if (target == NULL)` — dead null check on array element address; `target` is never NULL |
+| B82 | ❌ | `Cmd_UnDrag_f` (L2662): `char arg[MAX_TOKEN_CHARS]; if (arg == NULL)` — dead null check on a stack array; the "stop all my drags" branch is permanently unreachable; should be `if (!arg[0])` |
+| B83 | ❌ | `Cmd_disarm_f` (L2788): same dead null check on a stack array `arg` — "just mine" tripwire branch is permanently unreachable; should be `if (!arg[0])` |
+| B84 | ❌ | `Cmd_disarm_f` (L2809): `if (&g_entities[foundTripWires[i]] == NULL)` — dead null check on array element address; same pattern as B17/B25/B39 |
+| B85 | ❌ | `Cmd_Admins_f` (L3044): `g_classData[target->client->sess.sessionClass].isAdmin` accessed inside loop over all client slots without a null check on `target->client` — crashes for spectators or incompletely connected clients |
+| B86 | ❌ | `Cmd_ForceRank_f` (L2969): `OldScore = other->client->ps.persistant[PERS_SCORE]` dereferences `other->client` before the null check on `other->client` at L2971 — same crash pattern as B40/B55 |
+| B87 | ❌ | `Cmd_n00b_f` (L3330): `target = g_entities + targetNum` with no bounds check on `targetNum` before use; `target->client` then accessed at L3337 without a null check |
+| B88 | ❌ | `Cmd_ForceModel_f` (L3451): `for (j = MAX_CLIENTS; j > -1; j--)` starts at `j = MAX_CLIENTS` — one past the last valid client slot; `g_entities[MAX_CLIENTS]` is out-of-range for the client array; should be `MAX_CLIENTS - 1` |
+| B89 | ❌ | `Cmd_MeActionLocal_f` (L5181): `OtherPlayer->client->noAdminChat` accessed before the validity check on `OtherPlayer->client` at L5188 — crashes if `OtherPlayer` is a non-client entity |
+| B90 | ❌ | `Cmd_fxGun_f` (~L4514): `memset(fxGunData, 0, sizeof(fxGunData))` where `fxGunData` is a pointer — `sizeof` yields pointer size (8 bytes) instead of the struct size; only the first 8 bytes of `fxGunData_t` are cleared; same pattern at L4516, L4519, L4540, L4559, L4601, L4623, L4648, L4660, L4680, L4703 |
+| B91 | ❌ | `Cmd_reloadtorpedos_f` (L6008): `return` inside the `while` loop exits the entire function after the first torpedo entity is processed — all subsequent matching entities are skipped; should be `continue` |
+| B92 | ❌ | `Cmd_alert_f` (L5623): `if (!te)` after calling `alertEnt->use(alertEnt, NULL, te)` — `te` is a local pointer and is never set to NULL by `G_FreeEntity`; dead null check |
+| B93 | ❌ | `Cmd_getEntByTargetname_f` (L6274): `if (!&g_entities[i]) continue` — dead null check on array element address; same pattern as B17/B25/B39/B42 |
+| B94 | ❌ | `Cmd_setOrigin` (L6393): `ent2 = &g_entities[i]; if (!ent2)` — dead null check on array element address |
+| B95 | ❌ | `Cmd_UiTransporterLoc_f` (L7091): `trTrigger = &g_entities[entNum]; if (!trTrigger)` — dead null check on array element address |
+| B96 | ❌ | `Cmd_UiTransporterExt_f` (L7170): same dead null check `trTrigger = &g_entities[entNum]; if (!trTrigger)` |
+| B97 | ❌ | `Cmd_SqlLogin_f` (L7212, SQL build only): `if (!uName[0] && !pwd[0])` tests the buffers before `trap_Argv` fills them (at L7226-7227) — reads uninitialized stack memory; logout and usage-print branches never work correctly |
+| B98 | ❌ | `Cmd_spawnTentity_f` (L6661): error path for `fx_spark` with too few args calls `G_FreeEntity(ent)` — frees the calling player entity instead of `newEnt`; all other error paths in the same function correctly free `newEnt` |
+| B99 | ❌ | `Cmd_spawnTentity_f` (L6855): `target_doorlock` optional-arg block calls `trap_Argv(5, arg, sizeof(arg))` twice — once for `swapname` (lockMsg) and again for `truename` (unlockMsg); unlockMsg always receives the same value as lockMsg; second call should be `trap_Argv(6, ...)` |
