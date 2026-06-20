@@ -74,7 +74,7 @@ static qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t 
 	}
 
 	// save off the old position
-	if (pushed_p > &pushed[MAX_GENTITIES]) {
+	if (pushed_p >= &pushed[MAX_GENTITIES]) {
 		G_Error( "pushed_p > &pushed[MAX_GENTITIES]" );
 	}
 	pushed_p->ent = check;
