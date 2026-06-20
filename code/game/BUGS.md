@@ -40,7 +40,7 @@
 | g_mover.cpp | ✅ |
 | g_session.cpp | ✅ |
 | g_spawn.cpp | ✅ |
-| g_sql.cpp | ❌ |
+| g_sql.cpp | ✅ |
 | g_svcmds.cpp | ❌ |
 | g_syscalls.cpp | ❌ |
 | g_target.cpp | ❌ |
