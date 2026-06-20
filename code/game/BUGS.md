@@ -108,3 +108,11 @@
 | B17 | ✅ | `flushDecoys` (L1306): `if (&g_entities[foundDecoys[removeMe]] == NULL)` — address of array element can never be NULL; should be `if (foundDecoys[removeMe] == ENTITYNUM_NONE)` |
 | B18 | ✅ | `CreateShield` (L1098): x-axis branch sets `maxs[2] = height` but y-axis branch (and origin shift) uses `height >> 1` — x-axis shield is 1.5× taller than intended |
 | B19 | ✅ | `ClientThink_real` (L1908): `memset(&currentCoord, 0, sizeof(currentCoord.origin))` only clears 12 bytes (the origin vec3) — `angles` field of the struct is not zeroed, leaving stale teleport angles |
+
+### g_items.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B20 | ✅ | `Padd_Remove` (L183): bounds check `i >= PADD_DATA_MAX` comes after `paddData[i].key` is read — when key is not found, `paddData[PADD_DATA_MAX]` (one past end) is accessed before the check triggers |
+| B21 | ❌ | `Touch_Item` (L504): `numTotalDropped--` unconditionally decrements for every pickup, including world-spawned items that never incremented the counter — counter goes negative, corrupting the thrown-weapon limit |
+| B22 | ❌ | `FinishSpawningItem` (L768): stray debug `Com_Printf("print \"giType %i!\n\"", ...)` spams the server console on every item spawn |

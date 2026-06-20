@@ -180,15 +180,17 @@ void Padd_Remove( gentity_t *key )
     int i = 0;
 
     while ( qtrue ) {
+        if ( i >= PADD_DATA_MAX ) {
+            G_Printf( S_COLOR_RED "Padd_Remove: Can not delete PADD!\n" S_COLOR_WHITE);
+            return;
+        }
+
         if ( paddData[i].key == key ) {
             paddData[i].key = 0;
             paddData[i].value[0] = '\0';
             paddData[i].owner[0] = '\0';
             DPRINTF(( S_COLOR_YELLOW "deleting: %i on %i\n", key, i));
             --paddDataNum;
-            return;
-        } else if ( i >= PADD_DATA_MAX ) {
-            G_Printf( S_COLOR_RED "Padd_Remove: Can not delete PADD!\n" S_COLOR_WHITE);
             return;
         }
 
