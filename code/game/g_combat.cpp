@@ -1080,7 +1080,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		{
 			if ( targ->pain )
 			{
-				targ->pain( targ, inflictor, take );
+				targ->pain( targ, inflictor, damage );
 			}
 		}
 		else if ( targ->use && (targ->moverState == MOVER_POS1 || targ->moverState == ROTATOR_POS1) && Q_stricmp(targ->classname, "func_door") && Q_stricmp(targ->classname, "func_door_rotating") ) 

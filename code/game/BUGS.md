@@ -97,5 +97,5 @@
 | B11 | ✅ | `modNames` (L228): missing comma between `"MOD_SEEKER"` and `"MOD_KNOCKOUT"` causes silent string concatenation — all entries from `MOD_KNOCKOUT` onwards are shifted, breaking obituary logging |
 | B12 | ✅ | `TossClientItems` (L148): `~i` used instead of `~(1 << i)` when clearing `STAT_WEAPONS` bitmask — weapons are never properly removed from player on death |
 | B13 | ✅ | `G_Damage` (L1054): `inflictor->s.number` and `attacker->s.number` dereferenced in Lua hook before the null checks for `inflictor`/`attacker` (L1068-1073) |
-| B14 | ❌ | `G_Damage` (L1082): `func_forcefield` pain callback passed `take` which is still `0` at that point — force field always receives 0 damage |
+| B14 | ✅ | `G_Damage` (L1082): `func_forcefield` pain callback passed `take` which is still `0` at that point — force field always receives 0 damage |
 | B15 | ❌ | `G_Damage` (L1116): `client == NULL` check inside `if (client)` block is always false — dead code, likely masking a logic error |
