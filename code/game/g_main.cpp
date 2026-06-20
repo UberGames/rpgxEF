@@ -2711,7 +2711,7 @@ void G_RunFrame(int levelTime) {
   for (i = 0; i < MAX_CLIENTS; i++) {
     ent = &g_entities[i];
 
-    if (!ent || !ent->client)
+    if (!ent->inuse || !ent->client)
       continue;
 
     client = ent->client;
