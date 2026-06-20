@@ -3056,9 +3056,12 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
   //go to red alert if we are not, this will also activate the shields
   if (ent->falsename) {
     alertEnt = G_Find(NULL, FOFS(falsename), ent->falsename);
-    if (alertEnt->damage != 2) {
+    if (alertEnt && alertEnt->damage != 2) {
       ent->target = ent->falsename;
       G_UseTargets(ent, ent);
+    } else if (!alertEnt) {
+      if (ent->splashDamage == 0)
+        ent->splashDamage = 1;
     }
   } else {
     if (ent->splashDamage == 0)
@@ -3072,7 +3075,7 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
   //disable UI_Transporter if need be.
   if (ent->bluesound) {
     transEnt = G_Find(NULL, FOFS(swapname), ent->bluesound);
-    if (!(transEnt->flags & FL_LOCKED)) {
+    if (transEnt && !(transEnt->flags & FL_LOCKED)) {
       if ((ent->count * pow(ent->health, -1)) < flrandom(0.1, 0.4)) {
         ent->target = ent->bluesound;
         G_UseTargets(ent, ent);
@@ -3083,7 +3086,7 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
   //disable target_turbolift if need be.
   if (ent->bluename) {
     turboEnt = G_Find(NULL, FOFS(swapname), ent->bluename);
-    if (!(turboEnt->flags & FL_LOCKED)) {
+    if (turboEnt && !(turboEnt->flags & FL_LOCKED)) {
       if ((ent->count * pow(ent->health, -1)) < flrandom(0.1, 0.4)) {
         ent->target = ent->bluename;
         G_UseTargets(ent, ent);
@@ -3094,7 +3097,7 @@ void target_shiphealth_use(gentity_t *ent, gentity_t *other, gentity_t *activato
   //disable target_warp if need be.
   if (ent->falsetarget) {
     warpEnt = G_Find(NULL, FOFS(truename), ent->falsetarget);
-    if ((warpEnt->sound1to2) && (warpEnt->sound2to1 == 0)) {
+    if (warpEnt && (warpEnt->sound1to2) && (warpEnt->sound2to1 == 0)) {
       if ((ent->count * pow(ent->health, -1)) < flrandom(0.1, 0.4)) {
         ent->target = ent->falsetarget;
         G_UseTargets(ent, ent);
