@@ -224,7 +224,7 @@ char	*modNames[MOD_MAX] = {
 	"MOD_QUANTUM_ALT_SPLASH",
 
 	"MOD_DETPACK",
-	"MOD_SEEKER"
+	"MOD_SEEKER",
 
 	//expansion pack
 	"MOD_KNOCKOUT",
