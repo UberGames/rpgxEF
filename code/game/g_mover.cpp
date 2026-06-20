@@ -64,11 +64,11 @@ static qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t 
 	vec3_t		forward, right, up;
 	vec3_t		org, org2, move2;
 	gentity_t	*block;
-	playerState_t *ps = &check->client->ps;
+	playerState_t *ps = NULL;
 
 	// EF_MOVER_STOP will just stop when contacting another entity
 	// instead of pushing it, but entities can still ride on top of it
-	if ( ( pusher->s.eFlags & EF_MOVER_STOP ) && 
+	if ( ( pusher->s.eFlags & EF_MOVER_STOP ) &&
 		check->s.groundEntityNum != pusher->s.number ) {
 		return qfalse;
 	}
@@ -81,6 +81,7 @@ static qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t 
 	VectorCopy (check->s.pos.trBase, pushed_p->origin);
 	VectorCopy (check->s.apos.trBase, pushed_p->angles);
 	if ( check->client ) {
+		ps = &check->client->ps;
 		pushed_p->deltayaw = ps->delta_angles[YAW];
 		VectorCopy (ps->origin, pushed_p->origin);
 	}
