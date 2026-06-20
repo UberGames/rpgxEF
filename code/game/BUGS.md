@@ -35,7 +35,7 @@
 | g_lua.cpp | ❌ |
 | g_main.cpp | ❌ |
 | g_mem.cpp | ❌ |
-| g_misc.cpp | ❌ |
+| g_misc.cpp | ✅ |
 | g_missile.cpp | ❌ |
 | g_mover.cpp | ❌ |
 | g_session.cpp | ❌ |
@@ -146,3 +146,13 @@
 |----|--------|-------------|
 | B36 | ✅ | `SP_info_notnull` (L89): missing `return` after `G_FreeEntity(self)` — `G_FreeEntity` zeroes the slot and sets `classname = "freed"`, but execution continues: the second `strcmp` re-sets classname and `G_SetOrigin` is called on the freed entity |
 | B37 | ✅ | `cycleCamera` (L401): if no entity matches `self->target`, both `G_Find` calls return NULL and `setCamera(self, owner->s.number)` dereferences NULL `owner` |
+
+### g_utils.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B38 | ❌ | `BuildShaderStateConfig` (L65): `memset(buff, 0, MAX_STRING_CHARS)` only zeroes 1024 bytes of `buff[MAX_STRING_CHARS*4]` (4096 bytes) — should be `sizeof(buff)` |
+| B39 | ❌ | `G_Spawn` (L560): `if (&g_entities[foundTripWires[i]] != NULL)` — dead null check on array element address, always true; same pattern as B17/B25 |
+| B40 | ❌ | `G_AddEvent` (L712): `playerState_t *ps = &ent->client->ps` dereferences `ent->client` before the `if (ent->client)` guard on L720 — NULL client crashes at the pointer init |
+| B41 | ❌ | `G_GetNearestEnt` (L1028) and `G_GetNearestPlayer` (L1086): `if (distance < 0) distance *= -1` — `VectorLength` always returns ≥ 0, dead code |
+| B42 | ❌ | `G_GetEntityByTargetname` (L1109), `G_GetEntityByTarget` (L1128), `G_GetEntityByBmodel` (L1147): `if (!&g_entities[i]) continue` — dead null check on array element address, three identical instances |
