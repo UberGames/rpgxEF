@@ -3,6 +3,7 @@
 ## Workflow
 
 - One bug fixed = one commit. Always commit immediately after fixing a bug, before moving to the next.
+- BUGS.md updates (status, new entries) are always part of the bug-fix commit, never a separate commit.
 
 ## Progress
 
