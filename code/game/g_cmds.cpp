@@ -1505,7 +1505,7 @@ static void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatT
   // send it to all the apropriate clients
   for (j = level.maxclients - 1; j > -1; j--) { //GSIO changed from i++ to i--
     other = &g_entities[j];
-    if (!other)
+    if (!other->inuse)
       continue;
     if (!other->client)
       continue;
