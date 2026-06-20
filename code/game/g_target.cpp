@@ -992,7 +992,7 @@ static void target_turbolift_endMove(gentity_t *ent) {
   float f = 0;
 
   otherLift = &g_entities[ent->count];
-  if (!otherLift) {
+  if (!otherLift->inuse) {
     target_turbolift_unlock(ent);
     return;
   }
@@ -1153,7 +1153,7 @@ static void target_turbolift_TeleportPlayers(gentity_t *ent) {
   //teleport the players
   targetLift = &g_entities[ent->count];
 
-  if (!targetLift) {
+  if (!targetLift->inuse) {
     target_turbolift_unlock(ent);
     return;
   }
@@ -1236,7 +1236,7 @@ static void target_turbolift_startMove(gentity_t *ent) {
   float f = 0;
 
   otherLift = &g_entities[ent->count];
-  if (!otherLift) {
+  if (!otherLift->inuse) {
     target_turbolift_unlock(ent);
     return;
   }
@@ -1379,7 +1379,7 @@ static void target_turbolift_shutDoors(gentity_t *ent) {
   gentity_t *otherLift = NULL;
 
   otherLift = &g_entities[ent->count];
-  if (!otherLift) {
+  if (!otherLift->inuse) {
     target_turbolift_unlock(ent);
     return;
   }
