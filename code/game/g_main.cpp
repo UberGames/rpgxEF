@@ -594,10 +594,6 @@ void QDECL G_Printf(const char *fmt, ...) {
   vsprintf(text, fmt, argptr);
   va_end (argptr);
 
-  if (trap_Cvar_VariableIntegerValue("developer")) {
-
-  }
-
 #ifdef G_LUA
   // Lua API callbacks
   LuaHook_G_Print(text);
@@ -996,6 +992,12 @@ static void G_LoadHolodeckFile(void) {
   free(info);
 
   if (!file_len) return;
+
+  if (file_len >= 32000) {
+    G_Printf(S_COLOR_RED "ERROR: Holodeck file %s is too large (%i bytes, max 32000).\n", fileRoute, file_len);
+    trap_FS_FCloseFile(f);
+    return;
+  }
 
   buffer = (char *) malloc(32000 * sizeof(char));
   if (!buffer) {
