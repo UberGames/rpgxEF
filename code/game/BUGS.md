@@ -145,4 +145,4 @@
 | ID | Status | Description |
 |----|--------|-------------|
 | B36 | ✅ | `SP_info_notnull` (L89): missing `return` after `G_FreeEntity(self)` — `G_FreeEntity` zeroes the slot and sets `classname = "freed"`, but execution continues: the second `strcmp` re-sets classname and `G_SetOrigin` is called on the freed entity |
-| B37 | ❌ | `cycleCamera` (L401): if no entity matches `self->target`, both `G_Find` calls return NULL and `setCamera(self, owner->s.number)` dereferences NULL `owner` |
+| B37 | ✅ | `cycleCamera` (L401): if no entity matches `self->target`, both `G_Find` calls return NULL and `setCamera(self, owner->s.number)` dereferences NULL `owner` |

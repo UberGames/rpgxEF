@@ -397,8 +397,11 @@ void cycleCamera( gentity_t *self )
 	{
 		//Uh oh! Not targeted at any ents!  Or reached end of list?  Which is it?
 		//for now assume reached end of list and are cycling
-		owner = G_Find( owner, FOFS(targetname), self->target );
+		owner = G_Find( NULL, FOFS(targetname), self->target );
 	}
+
+	if ( owner == NULL )
+		return;
 
 	setCamera( self, owner->s.number );
 
