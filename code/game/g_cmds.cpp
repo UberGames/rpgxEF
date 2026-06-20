@@ -2657,7 +2657,7 @@ static void Cmd_UnDrag_f(gentity_t *ent) {
     return;
   }
 
-  if (arg == NULL) {
+  if (!arg[0]) {
     for (i = 0; i < MAX_CLIENTS; i++) {
       if (DragDat[i].AdminId == clientNum) {
         DragDat[i].AdminId = -1;

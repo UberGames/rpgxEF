@@ -251,7 +251,7 @@ No bugs found.
 | B79 | ✅ | `Cmd_ForceKill_f` (L2194): `if (targetNum >= level.maxclients) return` has no lower-bound guard beyond the explicit `== -1` check above it; a `targetNum` of e.g. `-2` passes through and `g_entities[targetNum]` is an out-of-bounds access |
 | B80 | ✅ | `Cmd_ForceKill_f` (L2201): `return` inside the "kill all" loop (`targetNum == -1`) exits the entire function on the first entity that fails a check — all subsequent client slots are skipped; should be `continue` |
 | B81 | ✅ | `Cmd_ForceKill_f` (L2222): `target = &g_entities[p]; if (target == NULL)` — dead null check on array element address; `target` is never NULL |
-| B82 | ❌ | `Cmd_UnDrag_f` (L2662): `char arg[MAX_TOKEN_CHARS]; if (arg == NULL)` — dead null check on a stack array; the "stop all my drags" branch is permanently unreachable; should be `if (!arg[0])` |
+| B82 | ✅ | `Cmd_UnDrag_f` (L2662): `char arg[MAX_TOKEN_CHARS]; if (arg == NULL)` — dead null check on a stack array; the "stop all my drags" branch is permanently unreachable; should be `if (!arg[0])` |
 | B83 | ❌ | `Cmd_disarm_f` (L2788): same dead null check on a stack array `arg` — "just mine" tripwire branch is permanently unreachable; should be `if (!arg[0])` |
 | B84 | ❌ | `Cmd_disarm_f` (L2809): `if (&g_entities[foundTripWires[i]] == NULL)` — dead null check on array element address; same pattern as B17/B25/B39 |
 | B85 | ❌ | `Cmd_Admins_f` (L3044): `g_classData[target->client->sess.sessionClass].isAdmin` accessed inside loop over all client slots without a null check on `target->client` — crashes for spectators or incompletely connected clients |
