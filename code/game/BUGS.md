@@ -29,7 +29,7 @@
 | g_breakable.cpp | ✅ |
 | g_cinematic.cpp | ❌ |
 | g_client.cpp | ✅ |
-| g_cmds.cpp | ❌ |
+| g_cmds.cpp | ✅ |
 | g_combat.cpp | ✅ |
 | g_fx.cpp | ❌ |
 | g_items.cpp | ✅ |
@@ -266,6 +266,6 @@ No bugs found.
 | B94 | ✅ | `Cmd_setOrigin` (L6393): `ent2 = &g_entities[i]; if (!ent2)` — dead null check on array element address |
 | B95 | ✅ | `Cmd_UiTransporterLoc_f` (L7091): `trTrigger = &g_entities[entNum]; if (!trTrigger)` — dead null check on array element address |
 | B96 | ✅ | `Cmd_UiTransporterExt_f` (L7170): same dead null check `trTrigger = &g_entities[entNum]; if (!trTrigger)` |
-| B97 | ❌ | `Cmd_SqlLogin_f` (L7212, SQL build only): `if (!uName[0] && !pwd[0])` tests the buffers before `trap_Argv` fills them (at L7226-7227) — reads uninitialized stack memory; logout and usage-print branches never work correctly |
-| B98 | ❌ | `Cmd_spawnTentity_f` (L6661): error path for `fx_spark` with too few args calls `G_FreeEntity(ent)` — frees the calling player entity instead of `newEnt`; all other error paths in the same function correctly free `newEnt` |
-| B99 | ❌ | `Cmd_spawnTentity_f` (L6855): `target_doorlock` optional-arg block calls `trap_Argv(5, arg, sizeof(arg))` twice — once for `swapname` (lockMsg) and again for `truename` (unlockMsg); unlockMsg always receives the same value as lockMsg; second call should be `trap_Argv(6, ...)` |
+| B97 | ✅ | `Cmd_SqlLogin_f` (L7212, SQL build only): `if (!uName[0] && !pwd[0])` tests the buffers before `trap_Argv` fills them (at L7226-7227) — reads uninitialized stack memory; logout and usage-print branches never work correctly |
+| B98 | ✅ | `Cmd_spawnTentity_f` (L6661): error path for `fx_spark` with too few args calls `G_FreeEntity(ent)` — frees the calling player entity instead of `newEnt`; all other error paths in the same function correctly free `newEnt` |
+| B99 | ✅ | `Cmd_spawnTentity_f` (L6855): `target_doorlock` optional-arg block calls `trap_Argv(5, arg, sizeof(arg))` twice — once for `swapname` (lockMsg) and again for `truename` (unlockMsg); unlockMsg always receives the same value as lockMsg; second call should be `trap_Argv(6, ...)` |

@@ -6664,7 +6664,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
       //newEnt = G_Spawn();
       newEnt->classname = G_NewString("fx_spark");
       if (numArgs < 3) {
-        G_FreeEntity(ent);
+        G_FreeEntity(newEnt);
         trap_SendServerCommand(clientNum, "print \"Insufficent number of arguments for fx_spark!\n\"");
         trap_SendServerCommand(clientNum, "print \"Usage: spawnTEnt fx_spark wait target (targetname spawnflags)\n\"");
         return;
@@ -6858,7 +6858,7 @@ static void Cmd_spawnTentity_f(gentity_t *ent) {
         newEnt->swapname = G_NewString(arg);
       }
       if (numArgs >= 6) {
-        trap_Argv(5, arg, sizeof(arg));
+        trap_Argv(6, arg, sizeof(arg));
         newEnt->truename = G_NewString(arg);
       }
       G_CallSpawn(newEnt);
@@ -7214,6 +7214,12 @@ static void Cmd_SqlLogin_f(gentity_t *ent) {
 
 	if(!sql_use.integer || !ent || !ent->client) return;
 
+	clientNum = ent->client->ps.clientNum;
+	client = ent->client;
+
+	trap_Argv(1, uName, sizeof(uName));
+	trap_Argv(2, pwd, sizeof(pwd));
+
 	//logout if no argument and player is loged in
 	if(!uName[0] && !pwd[0] && ent->client->uid) {
 		ent->client->uid = 0;
@@ -7225,12 +7231,6 @@ static void Cmd_SqlLogin_f(gentity_t *ent) {
 		trap_SendServerCommand( ent-g_entities, va("print \"\nUsage: Allows a player to login via the User-DB\nCommand: userlogin <User Name> <User Password>\nEntering userlogin without password will log you out if you are loged in\n\" ") );
 		return;
 	}
-
-	clientNum = ent->client->ps.clientNum;
-	client = ent->client;
-
-	trap_Argv(1, uName, sizeof(uName));
-	trap_Argv(2, pwd, sizeof(pwd));
 
 	res = G_Sql_UserDB_Login(uName, pwd, clientNum);
 
