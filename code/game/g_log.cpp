@@ -24,7 +24,7 @@ void QDECL G_LogPrintf( const char *fmt, ... ) {
 	Com_sprintf( string, sizeof(string), "%3i:%i%i ", min, tens, sec );
 
 	va_start( argptr, fmt );
-	vsprintf( string +7 , fmt,argptr );
+	vsnprintf( string + 7, sizeof(string) - 7, fmt, argptr );
 	va_end( argptr );
 
 	if ( g_dedicated.integer ) {
