@@ -38,7 +38,7 @@
 | g_misc.cpp | ✅ |
 | g_missile.cpp | ✅ |
 | g_mover.cpp | ✅ |
-| g_session.cpp | ❌ |
+| g_session.cpp | ✅ |
 | g_spawn.cpp | ✅ |
 | g_sql.cpp | ❌ |
 | g_svcmds.cpp | ❌ |
@@ -156,6 +156,18 @@
 | B40 | ✅ | `G_AddEvent` (L712): `playerState_t *ps = &ent->client->ps` dereferences `ent->client` before the `if (ent->client)` guard on L720 — NULL client crashes at the pointer init |
 | B41 | ✅ | `G_GetNearestEnt` (L1028) and `G_GetNearestPlayer` (L1086): `if (distance < 0) distance *= -1` — `VectorLength` always returns ≥ 0, dead code |
 | B42 | ✅ | `G_GetEntityByTargetname` (L1109), `G_GetEntityByTarget` (L1128), `G_GetEntityByBmodel` (L1147): `if (!&g_entities[i]) continue` — dead null check on array element address; replaced with `inuse` check to skip freed slots |
+
+### g_session.cpp
+
+No bugs found.
+
+### g_sql.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B48 | ❌ | Multiple `sqlite3_bind_text` calls (L152, L196, L223, L245, L249, L262, L312, L318, L527): pass `sizeof(uName)` or `sizeof(hashedpw)` as the length argument — these are pointers, so sizeof yields 8 (pointer size) instead of the string length; should be `-1` to let SQLite call strlen internally |
+| B49 | ❌ | `G_Sql_UserDB_CheckRight` (L391): `if(right & right)` — a value ANDed with itself is always true for any non-zero input; should be `if(rights & right)` to test whether the fetched bitmask contains the requested right; as written the function always returns `qtrue` if any row exists |
+| B50 | ❌ | `G_Sql_UserDB_RemoveRight` (L487): `rights &= right` should be `rights &= ~right` — current code clears all bits except those in `right` (the opposite of removing a right) |
 
 ### g_spawn.cpp
 
