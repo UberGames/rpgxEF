@@ -503,7 +503,9 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		return;
 	}
 
-	numTotalDropped--;
+	if ( ent->flags & (FL_DROPPED_ITEM | FL_THROWN_ITEM) ) {
+		numTotalDropped--;
+	}
 
 	G_LogPrintf( "Item: %i %s\n", other->s.number, ent->item->classname );
 
