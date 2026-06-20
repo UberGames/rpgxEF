@@ -149,7 +149,7 @@ qboolean G_Sql_UserDB_Del(const char *uName) {
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, uName, -1, SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
@@ -193,7 +193,7 @@ qboolean G_Sql_UserDB_Del(const char *uName) {
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, uName, -1, SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
@@ -220,7 +220,7 @@ qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, uName, -1, SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
@@ -242,11 +242,11 @@ qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, uName, -1, SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 2, hashedpw, sizeof(hashedpw), free);
+	res = sqlite3_bind_text(stmt, 2, hashedpw, -1, free);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
@@ -259,7 +259,7 @@ qboolean G_Sql_UserDB_Add(const char *uName, const char *password) {
 	if(G_Sql_Check_PrepareReturn(res)) {
 		return qfalse;
 	}
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, uName, -1, SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
@@ -309,13 +309,13 @@ qboolean G_Sql_UserDB_Login(const char *uName, const char *pwd, int clientnum) {
 		return qfalse;
 	}
 
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, uName, -1, SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
 
 	hashedpw = G_Sql_Md5(pwd);
-	res = sqlite3_bind_text(stmt, 2, hashedpw, sizeof(hashedpw), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 2, hashedpw, -1, SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return qfalse;
 	}
@@ -524,7 +524,7 @@ int	G_Sql_UserDB_GetUID(const char *uName) {
 		return -1;
 	}
 
-	res = sqlite3_bind_text(stmt, 1, uName, sizeof(uName), SQLITE_STATIC);
+	res = sqlite3_bind_text(stmt, 1, uName, -1, SQLITE_STATIC);
 	if(G_Sql_Check_BindReturn(res)) {
 		return -1;
 	}
