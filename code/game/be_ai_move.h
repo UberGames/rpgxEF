@@ -15,6 +15,9 @@
  *****************************************************************************/
 
 //movement types
+
+#pragma once
+
 #define MOVE_WALK						1
 #define MOVE_CROUCH						2
 #define MOVE_JUMP						4

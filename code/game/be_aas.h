@@ -1,18 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
-//
-
-/*****************************************************************************
- * name:		be_aas.h
- *
- * desc:		Area Awareness System, stuff exported to the AI
- *
- * $Archive: /StarTrek/Code-DM/game/be_aas.h $
- * $Author: Jmonroe $ 
- * $Revision: 1 $
- * $Modtime: 1/21/00 10:12p $
- * $Date: 1/25/00 6:26p $
- *
- *****************************************************************************/
+#pragma once
 
 #ifndef MAX_STRINGFIELD
 #define MAX_STRINGFIELD				80

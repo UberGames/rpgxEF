@@ -15,6 +15,11 @@
  *****************************************************************************/
 
 //!setup the deathmatch AI
+
+#pragma once
+
+#include "be_ai_move.h"
+
 void BotSetupDeathmatchAI(void);
 //!shutdown the deathmatch AI
 void BotShutdownDeathmatchAI(void);

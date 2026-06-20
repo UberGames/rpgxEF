@@ -1,17 +1,6 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
-//
-/*****************************************************************************
- * name:		be_ai_goal.h
- *
- * desc:		goal AI
- *
- * $Archive: /StarTrek/Code-DM/game/be_ai_goal.h $
- * $Author: Mgummelt $ 
- * $Revision: 2 $
- * $Modtime: 3/12/01 1:53p $
- * $Date: 3/12/01 4:43p $
- *
- *****************************************************************************/
+#pragma once
+
+#include "q_shared.h"
 
 #define MAX_AVOIDGOALS			64
 #define MAX_GOALSTACK			8

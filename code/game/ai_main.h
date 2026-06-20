@@ -1,20 +1,10 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
-//
+#pragma once
 
-/*****************************************************************************
- * name:		ai_main.h
- *
- * desc:		Quake3 bot AI
- *
- * $Archive: /StarTrek/Code-DM/game/ai_main.h $
- * $Author: Jmonroe $ 
- * $Revision: 1 $
- * $Modtime: 1/21/00 10:12p $
- * $Date: 1/25/00 6:26p $
- *
- *****************************************************************************/
+#include "be_ai_goal.h"
+#include "g_local.h"
+#include "be_aas.h"
+#include "botlib.h"
 
-//#define DEBUG
 #define CTF
 
 #define MAX_ITEMS					256
@@ -219,7 +209,7 @@ void BotEntityInfo(int entnum, aas_entityinfo_t *info);
 // from the game source
 void	QDECL BotAI_Print(int type, const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
 void	QDECL QDECL BotAI_BotInitialChat( bot_state_t *bs, const char *type, ... );
-void	BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask);
+void BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask);
 int		BotAI_GetClientState( int clientNum, playerState_t *state );
 int		BotAI_GetEntityState( int entityNum, entityState_t *state );
 int		BotAI_GetSnapshotEntity( int clientNum, int sequence, entityState_t *state );

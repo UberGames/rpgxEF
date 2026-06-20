@@ -13,8 +13,8 @@ namespace ai::main {
 
 void QDECL QDECL BotInitialChat(bot_state_t *bs, std::string_view type, ...) {
   auto vars = std::array<char *, MAX_MATCHVARIABLES>{};
-  auto ap = va_list{};
-  va_start(ap, type.data());
+  va_list ap;
+  va_start(ap, type);
   auto *p = va_arg(ap, char *);
   for (auto i = 0; i < MAX_MATCHVARIABLES; i++) {
     if (!p) {
