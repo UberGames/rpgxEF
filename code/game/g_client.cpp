@@ -1646,7 +1646,7 @@ void G_Client_Begin(int clientNum, qboolean careAboutWarmup, qboolean isBot, qbo
 
     securityID = (unsigned) atoul(Info_ValueForKey(userInfo, "sv_securityCode"));
 
-    if (securityID <= 0 || securityID >= 0xffffffff) {
+    if (securityID == 0 || securityID >= 0xffffffff) {
       trap_SendServerCommand(clientNum, va("configID %s", ent->client->pers.ip));
     }
   }
