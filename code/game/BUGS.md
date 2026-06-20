@@ -260,12 +260,12 @@ No bugs found.
 | B88 | ✅ | `Cmd_ForceModel_f` (L3451): `for (j = MAX_CLIENTS; j > -1; j--)` starts at `j = MAX_CLIENTS` — one past the last valid client slot; `g_entities[MAX_CLIENTS]` is out-of-range for the client array; should be `MAX_CLIENTS - 1` |
 | B89 | ✅ | `Cmd_MeActionLocal_f` (L5181): `OtherPlayer->client->noAdminChat` accessed before the validity check on `OtherPlayer->client` at L5188 — crashes if `OtherPlayer` is a non-client entity |
 | B90 | ✅ | `Cmd_fxGun_f` (~L4514): `memset(fxGunData, 0, sizeof(fxGunData))` where `fxGunData` is a pointer — `sizeof` yields pointer size (8 bytes) instead of the struct size; only the first 8 bytes of `fxGunData_t` are cleared; same pattern at L4516, L4519, L4540, L4559, L4601, L4623, L4648, L4660, L4680, L4703 |
-| B91 | ❌ | `Cmd_reloadtorpedos_f` (L6008): `return` inside the `while` loop exits the entire function after the first torpedo entity is processed — all subsequent matching entities are skipped; should be `continue` |
-| B92 | ❌ | `Cmd_alert_f` (L5623): `if (!te)` after calling `alertEnt->use(alertEnt, NULL, te)` — `te` is a local pointer and is never set to NULL by `G_FreeEntity`; dead null check |
-| B93 | ❌ | `Cmd_getEntByTargetname_f` (L6274): `if (!&g_entities[i]) continue` — dead null check on array element address; same pattern as B17/B25/B39/B42 |
-| B94 | ❌ | `Cmd_setOrigin` (L6393): `ent2 = &g_entities[i]; if (!ent2)` — dead null check on array element address |
-| B95 | ❌ | `Cmd_UiTransporterLoc_f` (L7091): `trTrigger = &g_entities[entNum]; if (!trTrigger)` — dead null check on array element address |
-| B96 | ❌ | `Cmd_UiTransporterExt_f` (L7170): same dead null check `trTrigger = &g_entities[entNum]; if (!trTrigger)` |
+| B91 | ✅ | `Cmd_reloadtorpedos_f` (L6008): `return` inside the `while` loop exits the entire function after the first torpedo entity is processed — all subsequent matching entities are skipped; should be `continue` |
+| B92 | ✅ | `Cmd_alert_f` (L5623): `if (!te)` after calling `alertEnt->use(alertEnt, NULL, te)` — `te` is a local pointer and is never set to NULL by `G_FreeEntity`; dead null check |
+| B93 | ✅ | `Cmd_getEntByTargetname_f` (L6274): `if (!&g_entities[i]) continue` — dead null check on array element address; same pattern as B17/B25/B39/B42 |
+| B94 | ✅ | `Cmd_setOrigin` (L6393): `ent2 = &g_entities[i]; if (!ent2)` — dead null check on array element address |
+| B95 | ✅ | `Cmd_UiTransporterLoc_f` (L7091): `trTrigger = &g_entities[entNum]; if (!trTrigger)` — dead null check on array element address |
+| B96 | ✅ | `Cmd_UiTransporterExt_f` (L7170): same dead null check `trTrigger = &g_entities[entNum]; if (!trTrigger)` |
 | B97 | ❌ | `Cmd_SqlLogin_f` (L7212, SQL build only): `if (!uName[0] && !pwd[0])` tests the buffers before `trap_Argv` fills them (at L7226-7227) — reads uninitialized stack memory; logout and usage-print branches never work correctly |
 | B98 | ❌ | `Cmd_spawnTentity_f` (L6661): error path for `fx_spark` with too few args calls `G_FreeEntity(ent)` — frees the calling player entity instead of `newEnt`; all other error paths in the same function correctly free `newEnt` |
 | B99 | ❌ | `Cmd_spawnTentity_f` (L6855): `target_doorlock` optional-arg block calls `trap_Argv(5, arg, sizeof(arg))` twice — once for `swapname` (lockMsg) and again for `truename` (unlockMsg); unlockMsg always receives the same value as lockMsg; second call should be `trap_Argv(6, ...)` |

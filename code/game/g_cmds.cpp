@@ -5627,7 +5627,7 @@ static void Cmd_alert_f(gentity_t *ent) {
     te->classname = NULL;
   }
   alertEnt->use(alertEnt, NULL, te);
-  if (!te)
+  if (!te->inuse)
     G_Printf("te got removed\n");
 }
 
@@ -6012,7 +6012,6 @@ static void Cmd_reloadtorpedos_f(gentity_t *ent) {
           torpedo->count = atoi(arg);
       }
     }
-    return;
   }
 }
 
@@ -6278,7 +6277,7 @@ static void Cmd_getEntByTargetname_f(gentity_t *ent) {
   trap_Argv(1, arg, sizeof(arg));
 
   for (i = 0; i < MAX_GENTITIES; i++) {
-    if (!&g_entities[i]) continue;
+    if (!g_entities[i].inuse) continue;
     t = &g_entities[i];
     if (t->targetname && !Q_stricmpn(t->targetname, arg, strlen(arg)))
       G_PrintfClient(ent, "ENT %i: %s", i, t->classname);
@@ -6397,7 +6396,7 @@ static void Cmd_setOrigin(gentity_t *ent) {
 
   ent2 = &g_entities[i];
 
-  if (!ent2)
+  if (!ent2->inuse)
     return;
 
   VectorCopy(origin, ent2->s.origin);
@@ -7095,7 +7094,7 @@ static void Cmd_UiTransporterLoc_f(gentity_t *ent) {
 
   trTrigger = &g_entities[entNum];
 
-  if (!trTrigger) return;
+  if (!trTrigger->inuse) return;
 
   trap_Argv(2, arg, sizeof(arg));
   targetLoc = atoi(arg);
@@ -7174,7 +7173,7 @@ static void Cmd_UiTransporterExt_f(gentity_t *ent) {
 
   trTrigger = &g_entities[entNum];
 
-  if (!trTrigger) return;
+  if (!trTrigger->inuse) return;
 
   trTrigger->count = 1;
   trTrigger->health = srvNum;
