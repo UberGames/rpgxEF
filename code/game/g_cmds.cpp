@@ -2217,7 +2217,7 @@ static void Cmd_ForceKill_f(gentity_t *ent) {
       }
     } // end iterations
 
-    if (target == NULL) {
+    if (!target->inuse || !target->client) {
       return;
     }
 
