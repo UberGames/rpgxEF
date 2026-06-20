@@ -333,6 +333,9 @@ void G_ProcessIDBans( void )
 	if ( !f || !fileLen )
 		return;
 
+	if ( fileLen >= (int)sizeof(buffer) )
+		fileLen = sizeof(buffer) - 1;
+
 	trap_FS_Read( buffer, fileLen, f );
 
 	if ( !buffer[0] )

@@ -174,7 +174,7 @@ No bugs found.
 | ID | Status | Description |
 |----|--------|-------------|
 | B51 | ✅ | `Svcmd_BanUser_f` (L407): `playerNum > MAX_CLIENTS` — off-by-one; allows `playerNum == MAX_CLIENTS` as valid, which is an out-of-range client slot; should be `>=` |
-| B52 | ❌ | `G_ProcessIDBans` (L336, L341): reads file into `buffer[16000]` with no cap on `fileLen`, then writes `buffer[fileLen] = '\0'` — if the file is ≥ 16000 bytes the read overflows the buffer and the null terminator is written past the end |
+| B52 | ✅ | `G_ProcessIDBans` (L336, L341): reads file into `buffer[16000]` with no cap on `fileLen`, then writes `buffer[fileLen] = '\0'` — if the file is ≥ 16000 bytes the read overflows the buffer and the null terminator is written past the end |
 | B53 | ❌ | `Svcmd_RemoveID_f` (L533): `id = &idFilters[atoi(str)]` with no bounds check — a negative or out-of-range index accesses outside `idFilters[MAX_IDFILTERS]`; the subsequent `if (!id)` is a dead null check on an array-element address that never catches this |
 
 ### g_spawn.cpp
