@@ -50,7 +50,7 @@
 | g_ui.cpp | ❌ |
 | g_usable.cpp | ❌ |
 | g_utils.cpp | ❌ |
-| g_weapon.cpp | ❌ |
+| g_weapon.cpp | ✅ |
 | list.cpp | ❌ |
 | lua_cinematic.cpp | ❌ |
 | lua_cvar.cpp | ❌ |
@@ -124,4 +124,4 @@
 | B23 | ✅ | `WP_FireDisruptor` (L562): primary-fire damage uses `PHASER_DAMAGE` — by design |
 | B24 | ✅ | `WP_FireCompressionRifle` (L419): alt-fire damage uses `PHASER_DAMAGE` — by design |
 | B25 | ✅ | `WP_FireGrenade` (L724): `&g_entities[foundTripWires[removeMe]] == NULL` — same dead pointer-to-array-element null check as B17; should be `foundTripWires[removeMe] == ENTITYNUM_NONE` |
-| B26 | ❌ | `G_Weapon_CalcMuzzlePoint` (L1496): `Q_fabs(viewangles[PITCH] > 89.0f)` — closing paren misplaced; fabs wraps the boolean comparison instead of the angle, so looking straight up (negative pitch) is never caught |
+| B26 | ✅ | `G_Weapon_CalcMuzzlePoint` (L1496): `Q_fabs(viewangles[PITCH] > 89.0f)` — closing paren misplaced; fabs wraps the boolean comparison instead of the angle, so looking straight up (negative pitch) is never caught |

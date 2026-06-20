@@ -1493,7 +1493,7 @@ void G_Weapon_CalcMuzzlePoint ( gentity_t *ent, vec3_t fwd, vec3_t rt, vec3_t vu
 		{	/* Crouching.  Use the add-to-Z method to adjust vertically. */
 			VectorMA(muzzlePoint, WP_MuzzlePoint[weapontype][0], fwd, muzzlePoint);
 			VectorMA(muzzlePoint, WP_MuzzlePoint[weapontype][1], rt, muzzlePoint);
-			if ( ent->client->ps.eFlags & EF_FULL_ROTATE && Q_fabs( ent->client->ps.viewangles[PITCH] > 89.0f ) ) {
+			if ( ent->client->ps.eFlags & EF_FULL_ROTATE && Q_fabs( ent->client->ps.viewangles[PITCH] ) > 89.0f ) {
 				muzzlePoint[2] -= 20 + WP_MuzzlePoint[weapontype][2];
 			}
 			else
