@@ -943,7 +943,6 @@ giveItem_t	bg_giveItem[] = {
 	{ "phaser_rifle",		TYPE_WEAPON,			WP_6					},
 	{ "coffee",				TYPE_WEAPON,			WP_4					},
 	{ "disruptor",			TYPE_WEAPON,			WP_10					},
-	{ "coffee",				TYPE_WEAPON,			WP_4					},
 	{ "admin_gun",			TYPE_WEAPON,			WP_8					},
 	{ "tr-116",				TYPE_WEAPON,			WP_7					},
 	{ "photon_burst",		TYPE_WEAPON,			WP_9					},
@@ -960,7 +959,7 @@ giveItem_t	bg_giveItem[] = {
 };
 
 /* TiM - Meh... just define the number... doing fancy array stuff seems to make PCs 'splode O_o */
-int	bg_numGiveItems = 24;
+int	bg_numGiveItems = 23;
 
 /**
 *	\brief Finds an item by it's classname
