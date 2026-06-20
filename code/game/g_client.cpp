@@ -488,7 +488,6 @@ G_Client_Respawn
 */
 extern char *ClassNameForValue(pclass_t pClass);
 void G_Client_Respawn(gentity_t *ent) {
-  qboolean borg = qfalse;
   gentity_t *tent;
   playerState_t *ps;
 
@@ -499,12 +498,8 @@ void G_Client_Respawn(gentity_t *ent) {
   ps = &ent->client->ps;
 
   // add a teleportation effect
-  if (borg)
-    tent = G_TempEntity(ps->origin, EV_BORG_TELEPORT);
-  else {
-    tent = G_TempEntity(ps->origin, EV_PLAYER_TRANSPORT_IN);
-    ps->powerups[PW_QUAD] = level.time + 4000;
-  }
+  tent = G_TempEntity(ps->origin, EV_PLAYER_TRANSPORT_IN);
+  ps->powerups[PW_QUAD] = level.time + 4000;
 
   tent->s.clientNum = ent->s.clientNum;
 }
