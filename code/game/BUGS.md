@@ -196,6 +196,14 @@ No bugs found.
 | B61 | ✅ | `target_serverchange_use` (L2454): `TransDat[ent->client->ps.clientNum]` — `ent` is the target_serverchange entity, not a player; `ent->client` is NULL; should be `activator->client->ps.clientNum` |
 | B62 | ✅ | `target_shiphealth_use` (L3058, L3073, L3084, L3095): `alertEnt`/`transEnt`/`turboEnt`/`warpEnt` each assigned from `G_Find(...)` then immediately dereferenced without a null check — if no matching entity exists the dereference crashes |
 
+### g_trigger.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B63 | ❌ | `Use_target_push` (L367): `(pm_type != PM_NORMAL) \|\| (pm_type != PM_NOCLIP)` — a value can never equal both simultaneously, so this is always true; the function always returns early and never applies the push velocity; should be `&&` |
+| B64 | ❌ | `trigger_teleport_use` (L600-603): missing braces — `ent->flags ^= FL_LOCKED` is not inside the `if(!Q_stricmp(...))` block and runs unconditionally on every call, toggling the lock regardless of whether `swapname` matches |
+| B65 | ❌ | `trigger_transporter_touch` (L977): `targetEnt = G_PickTarget(ent->target_ent->target)` result used without null check — if no target is found `VectorAdd(targetEnt->s.origin, ...)` on the next line crashes |
+
 ### g_spawn.cpp
 
 | ID | Status | Description |
