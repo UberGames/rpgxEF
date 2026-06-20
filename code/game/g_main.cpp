@@ -2619,13 +2619,13 @@ void G_RunFrame(int levelTime) {
     }
 
     es = &ent->s;
-    ps = &ent->client->ps;
 
     // clear events that are too old
     if (level.time - ent->eventTime > EVENT_VALID_MSEC) {
       if (es->event) {
         es->event = 0;
         if (ent->client) {
+          ps = &ent->client->ps;
           ps->externalEvent = 0;
           ps->events[0] = 0;
           ps->events[1] = 0;
