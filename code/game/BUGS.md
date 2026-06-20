@@ -193,7 +193,7 @@ No bugs found.
 | B58 | ✅ | `target_turbolift_startMove` (L1318): `if (lights->luaUse);` — trailing semicolon makes `LuaHook_G_EntityUse` on the next line unconditional, calling the hook even when `lights->luaUse` is NULL |
 | B59 | ✅ | `target_alert_parseShaders` (L2090, L2103, L2125, L2147): `Q_strncpyz(buffer, src, strlen(src))` — `Q_strncpyz` treats its third arg as the buffer size and null-terminates at `size-1`, so passing `strlen(src)` drops the last character; should be `sizeof(buffer)` |
 | B60 | ✅ | `target_warp_use` (L2274, L2277, L2294): `if (!&g_entities[i]) continue` and `target = &g_entities[i]; if (!target) continue` — dead null checks on array element addresses; should check `g_entities[i].inuse` to skip freed slots |
-| B61 | ❌ | `target_serverchange_use` (L2454): `TransDat[ent->client->ps.clientNum]` — `ent` is the target_serverchange entity, not a player; `ent->client` is NULL; should be `activator->client->ps.clientNum` |
+| B61 | ✅ | `target_serverchange_use` (L2454): `TransDat[ent->client->ps.clientNum]` — `ent` is the target_serverchange entity, not a player; `ent->client` is NULL; should be `activator->client->ps.clientNum` |
 | B62 | ❌ | `target_shiphealth_use` (L3058, L3073, L3084, L3095): `alertEnt`/`transEnt`/`turboEnt`/`warpEnt` each assigned from `G_Find(...)` then immediately dereferenced without a null check — if no matching entity exists the dereference crashes |
 
 ### g_spawn.cpp

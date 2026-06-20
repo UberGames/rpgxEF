@@ -2438,7 +2438,8 @@ void target_serverchange_think(gentity_t *ent) {
 }
 
 void target_serverchange_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-  if (!activator || !activator->client) {
+  if (!activator || !activator->inuse || !activator->client ||
+      activator->client->pers.connected != CON_CONNECTED) {
     ent->s.time2 = !ent->s.time2;
     return;
   }
@@ -2451,7 +2452,7 @@ void target_serverchange_use(gentity_t *ent, gentity_t *other, gentity_t *activa
   if (rpg_serverchange.integer && ent->s.time2) {
     ent->think = target_serverchange_think;
     ent->nextthink = level.time + 3000;
-    TransDat[ent->client->ps.clientNum].beamTime = level.time + 8000;
+    TransDat[activator->client->ps.clientNum].beamTime = level.time + 8000;
     activator->client->ps.powerups[PW_BEAM_OUT] = level.time + 8000;
     ent->touched = activator;
     ent->targetname2 = level.srvChangeData.ip[ent->count];
