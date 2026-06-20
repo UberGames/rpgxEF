@@ -26,7 +26,7 @@
 | g_bot.cpp | ❌ |
 | g_breakable.cpp | ❌ |
 | g_cinematic.cpp | ❌ |
-| g_client.cpp | ❌ |
+| g_client.cpp | ✅ |
 | g_cmds.cpp | ❌ |
 | g_combat.cpp | ✅ |
 | g_fx.cpp | ❌ |
