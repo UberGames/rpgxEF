@@ -2783,7 +2783,7 @@ static void Cmd_disarm_f(gentity_t *ent) {
 
   trap_Argv(1, arg, sizeof(arg));
 
-  if (arg == NULL) { //J2J
+  if (!arg[0]) { //J2J
     //Just mine
     while ((tripwire = G_Find(tripwire, FOFS(classname), "tripwire")) != NULL) {
       if (tripwire->parent != ent) {
@@ -2804,12 +2804,11 @@ static void Cmd_disarm_f(gentity_t *ent) {
   if (tripcount != 0) {
     for (i = 0; i < tripcount; i++) {
       //remove it... or blow it?
-      if (&g_entities[foundTripWires[i]] == NULL) {
-        return;
-      } else {
-        G_FreeEntity(&g_entities[foundTripWires[i]]);
-        foundTripWires[i] = ENTITYNUM_NONE;
+      if (!g_entities[foundTripWires[i]].inuse) {
+        continue;
       }
+      G_FreeEntity(&g_entities[foundTripWires[i]]);
+      foundTripWires[i] = ENTITYNUM_NONE;
     }
     trap_SendServerCommand(ent->client->ps.clientNum, va("print \"Disarmed %i tripmines\n\"", tripcount));
   } else {
