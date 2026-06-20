@@ -125,3 +125,17 @@
 | B24 | ✅ | `WP_FireCompressionRifle` (L419): alt-fire damage uses `PHASER_DAMAGE` — by design |
 | B25 | ✅ | `WP_FireGrenade` (L724): `&g_entities[foundTripWires[removeMe]] == NULL` — same dead pointer-to-array-element null check as B17; should be `foundTripWires[removeMe] == ENTITYNUM_NONE` |
 | B26 | ✅ | `G_Weapon_CalcMuzzlePoint` (L1496): `Q_fabs(viewangles[PITCH] > 89.0f)` — closing paren misplaced; fabs wraps the boolean comparison instead of the angle, so looking straight up (negative pitch) is never caught |
+
+### g_client.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B27 | ❌ | Duplicate `#define MAX_SPAWN_POINTS 256` — defined at L154 and again at L189 in the same file |
+| B28 | ❌ | `G_Client_Respawn` (~L492): `borg` local variable is always `qfalse`, making the `EV_BORG_TELEPORT` branch permanently dead code |
+| B29 | ❌ | `G_Client_UserinfoChanged` (~L923): `if (!ent) return;` where `ent = g_entities + clientNum` — array element address, never NULL; dead guard |
+| B30 | ❌ | `G_Client_UserinfoChanged` (~L1011): `if (qtrue)` — always true (even noted with a `WTF?` comment); `else` branch with `ForceClientSkin(model, "default")` is permanently unreachable |
+| B31 | ❌ | `G_Client_Connect` (~L1660): `if (securityID <= 0 \|\| ...)` where `securityID` is `unsigned long` — `<= 0` is only true when exactly `0` since unsigned values can never be negative |
+| B32 | ❌ | `G_Client_Begin` MOTD (~L1695): `buf[len] = '\0'` where `buf[16000]` and `len` can reach `16000` — writes one byte past the end of the buffer |
+| B33 | ❌ | `G_Client_Spawn` (L1954-1958): `oClass = client->sess.sessionClass;` immediately followed by `if (oClass != client->sess.sessionClass)` — condition is always false; class-change notification never fires |
+| B34 | ❌ | `G_Client_Disconnect` (L2197): `if (ent == NULL)` where `ent = &g_entities[clientNum]` — array element address, never NULL; same pattern as B17/B25 |
+| B35 | ✅ | `G_Client_Disconnect` (L2290): `memset(ent, 0, sizeof(ent))` — `sizeof(ent)` is pointer size (8 bytes), not struct size; only the first 8 bytes of `gentity_t` are cleared on disconnect, leaving stale data in `r.contents`, `r.svFlags`, `takedamage`, etc. |
