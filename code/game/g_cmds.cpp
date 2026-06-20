@@ -2196,8 +2196,8 @@ static void Cmd_ForceKill_f(gentity_t *ent) {
   if (targetNum == -1) {
     for (p = 0; p < level.maxclients; p++) {
       target = &g_entities[p];
-      if (!target || !target->inuse || !target->client) {
-        return;
+      if (!target->inuse || !target->client) {
+        continue;
       }
 
       ps = &target->client->ps;
