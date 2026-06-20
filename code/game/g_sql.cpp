@@ -484,7 +484,7 @@ qboolean G_Sql_UserDB_RemoveRight(int uid, int right) {
 	}
 	sqlite3_finalize(stmt);
 
-	rights &= right;
+	rights &= ~right;
 
 	res = sqlite3_prepare_v2(user_db, SQL_USER_MOD_RIGHTS, -1, &stmt, 0);
 	if(G_Sql_Check_PrepareReturn(res)) {
