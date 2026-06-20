@@ -155,4 +155,4 @@
 | B39 | ✅ | `G_Spawn` (L560): `if (&g_entities[foundTripWires[i]] != NULL)` — dead null check on array element address, always true; same pattern as B17/B25 |
 | B40 | ✅ | `G_AddEvent` (L712): `playerState_t *ps = &ent->client->ps` dereferences `ent->client` before the `if (ent->client)` guard on L720 — NULL client crashes at the pointer init |
 | B41 | ✅ | `G_GetNearestEnt` (L1028) and `G_GetNearestPlayer` (L1086): `if (distance < 0) distance *= -1` — `VectorLength` always returns ≥ 0, dead code |
-| B42 | ❌ | `G_GetEntityByTargetname` (L1109), `G_GetEntityByTarget` (L1128), `G_GetEntityByBmodel` (L1147): `if (!&g_entities[i]) continue` — dead null check on array element address, three identical instances |
+| B42 | ✅ | `G_GetEntityByTargetname` (L1109), `G_GetEntityByTarget` (L1128), `G_GetEntityByBmodel` (L1147): `if (!&g_entities[i]) continue` — dead null check on array element address; replaced with `inuse` check to skip freed slots |

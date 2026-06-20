@@ -1101,7 +1101,7 @@ int G_GetEntityByTargetname(const char *targetname, list_p entities) {
 	}
 
 	for(i = MAX_GENTITIES - 1; i > -1; i--) {
-		if(!&g_entities[i]) continue;
+		if(!g_entities[i].inuse) continue;
 		t = &g_entities[i];
 		if(t->targetname && !Q_strncmp(t->targetname, targetname, strlen(targetname))) {
 			entities->append_ptr(entities, t, LT_DATA);
@@ -1120,7 +1120,7 @@ int G_GetEntityByTarget(const char *target, list_p entities) {
 	}
 
 	for(i = MAX_GENTITIES - 1; i > -1; i--) {
-		if(!&g_entities[i]) continue;
+		if(!g_entities[i].inuse) continue;
 		t = &g_entities[i];
 		if(t->target && !Q_strncmp(t->target, target, strlen(target))) {
 			entities->append_ptr(entities, t, LT_DATA);
@@ -1139,7 +1139,7 @@ int G_GetEntityByBmodel(char *bmodel, list_p entities) {
 	}
 
 	for(i = MAX_GENTITIES - 1; i > -1; i--) {
-		if(!&g_entities[i]) continue;
+		if(!g_entities[i].inuse) continue;
 		t = &g_entities[i];
 		if(t->model && !Q_strncmp(t->model, bmodel, strlen(bmodel))) {
 			entities->append_ptr(entities, t, LT_DATA);
