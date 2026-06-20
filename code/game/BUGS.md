@@ -74,3 +74,14 @@
 | B2 | ✅ | `BotChatTest` (L1073): same copy-paste error as B1 — `lasthurt_client` passed instead of `lasthurt_mod` |
 | B3 | ✅ | `BotChat_HitNoKill` (L817): `bs->enemy` can be `-1`; `g_entities[bs->enemy].client` is accessed without bounds or null check |
 | B4 | ✅ | All `BotChat_*` functions: `rnd = 0` makes `random() > rnd` true ~100% of the time, effectively disabling bot chat unless `bot_fastchat` is set |
+
+### bg_misc.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B5 | ✅ | `EndWord` (L1843): inverted loop condition `!*pos` means the function always returns immediately without advancing — should be `*pos` |
+| B6 | ❌ | `BG_EvaluateTrajectory` (L1184) and `BG_EvaluateTrajectoryDelta` (L1223): error messages print `tr->trTime` instead of `tr->trType` |
+| B7 | ❌ | `bg_giveItem` (L944, L946): duplicate `"coffee"` entry wastes a slot and `bg_numGiveItems = 24` counts it twice |
+| B8 | ❌ | `BG_ParseRankNames` (L1723): `sizeof(rankNames)` on a pointer parameter yields 8 bytes instead of the full array size — should be `sizeof(rankNames_t) * MAX_RANKS` |
+| B9 | ❌ | `BG_ParseItemsText` (L1459): `while (buffer)` never exits at EOF since `COM_ParseExt` leaves `buffer` pointing at the null terminator, not NULL |
+| B10 | ❌ | `BG_LanguageFilename` (L1490): `finalName` parameter declared `const char*` but written to via `Com_sprintf` — type mismatch and undefined behaviour |

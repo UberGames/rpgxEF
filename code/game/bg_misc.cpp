@@ -1840,7 +1840,7 @@ Returns a pointer to the position of the next space, null, or newline.
 */
 char *EndWord(char *pos)
 {
-	while (!*pos && *pos != ' ' && *pos != '\n') {
+	while (*pos && *pos != ' ' && *pos != '\n') {
 		++pos;
 	}
 
