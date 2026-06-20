@@ -155,7 +155,8 @@ void func_usable_use (gentity_t *self, gentity_t *other, gentity_t *activator)
  */
 void func_usable_pain(gentity_t *self, gentity_t *attacker, int damage)
 {
-	self->use( self, attacker, attacker );
+	if ( self->use )
+		self->use( self, attacker, attacker );
 }
 
 /**
