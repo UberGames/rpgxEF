@@ -173,7 +173,8 @@ void func_usable_pain(gentity_t *self, gentity_t *attacker, int damage)
 void func_usable_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
 {
 	self->takedamage = qfalse;
-	self->use( self, inflictor, attacker );
+	if ( self->use )
+		self->use( self, inflictor, attacker );
 }
 
 /*QUAKED func_usable (0 .5 .8) ? STARTOFF AUTOANIM x ALWAYS_ON NOBLOCKCHECK x x x ADMIN_ONLY NO_ACTIVATOR NO_AREAPORTAL DEACTIVATED
