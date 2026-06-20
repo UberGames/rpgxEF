@@ -597,10 +597,11 @@ void trigger_teleport_think(gentity_t *ent) {
  * @param activator the activator
  */
 void trigger_teleport_use(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	if(!Q_stricmp(ent->swapname, activator->target))
+	if(!Q_stricmp(ent->swapname, activator->target)) {
 		if(ent->flags & FL_LOCKED)
 			ent->nextthink = level.time + (ent->wait * 1000);
 		ent->flags ^= FL_LOCKED;
+	}
 }
 
 
