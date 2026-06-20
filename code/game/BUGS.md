@@ -4,6 +4,7 @@
 
 - One bug fixed = one commit. Always commit immediately after fixing a bug, before moving to the next.
 - BUGS.md updates (status, new entries) are always part of the bug-fix commit, never a separate commit.
+- For each compilation unit: find ALL bugs first and add them to BUGS.md, then stop and wait for the user to direct which ones to fix.
 
 ## Progress
 
@@ -219,3 +220,13 @@ No bugs found.
 | B45 | ✅ | `G_MoverPush` (L77): `if (pushed_p > &pushed[MAX_GENTITIES])` — off-by-one: when `pushed_p == &pushed[MAX_GENTITIES]` the check is false, then L80 writes `pushed_p->ent` one slot past the array end; must be `>=` |
 | B46 | ✅ | `InitMover` (L1039-1040): "angular movement" copy block uses `s.pos.trType` / `s.pos.trBase` instead of `s.apos.trType` / `s.apos.trBase` — overwrites the translational position base with `apos1` and leaves `s.apos.trBase` uninitialised for all entities using `InitMover` |
 | B47 | ✅ | `Reached_AdvancedMover` (L3150): `G_Printf(S_COLOR_RED "DEBUG: ent->apos1: ...")` left in production code — spams the server console on every mover waypoint arrival, same pattern as B22 |
+
+### g_usable.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B66 | ❌ | `func_usable_pain` (L158): `self->use(self, attacker, attacker)` called without null check — `ALWAYS_ON` entities set `self->use = NULL` at L99 after first trigger; a pain event before `func_usable_think` restores it crashes on the null pointer |
+| B67 | ❌ | `func_usable_die` (L175): same null function pointer call on `self->use` — same root cause as B66 |
+| B68 | ❌ | `G_SetupUsablesStrings` (L468): `buffer[file_len] = '0'` writes ASCII `'0'` (0x30) instead of null terminator `'\0'` (0x00) — buffer is never null-terminated, causing string operations to read past the file data |
+| B69 | ❌ | `G_SetupUsablesStrings` (L460, L467): buffer allocated as 32000 bytes but `file_len` is never capped before `trap_FS_Read`; .usables files larger than 32000 bytes overflow the buffer |
+| B70 | ❌ | `G_SetupUsablesStrings` (L538-540, L551): no bounds check on `j` against `MAX_ENTSCANNABLES` before writing `level.g_entScannables[j]`, and no bounds check on `i` against `MAX_SCANNABLES` before writing `level.g_scannables[i]` — malformed or oversized .usables files cause out-of-bounds writes |
