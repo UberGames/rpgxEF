@@ -295,5 +295,5 @@ No bugs found.
 | ID | Status | Description |
 |----|--------|-------------|
 | B110 | ✅ | `turret_base_think` (L513): `if (!self) return` — dead null check; the engine never calls a think callback with NULL |
-| B111 | ❌ | `laser_arm_fire` (L953): `if (hapless_victim && ...)` after `hapless_victim = &g_entities[trace.entityNum]` — array element address is never NULL; should be `if (hapless_victim->inuse && ...)` |
+| B111 | ✅ | `laser_arm_fire` (L953): `if (hapless_victim && ...)` after `hapless_victim = &g_entities[trace.entityNum]` — array element address is never NULL; should be `if (hapless_victim->inuse && ...)` |
 | B112 | ❌ | `laser_arm_start` (L1140): `if (!base->startRGBA)` — `startRGBA` is `vec4_t` (array member of `gentity_t`), so the address is never NULL; default colour-init block is unreachable; should be `if (!base->startRGBA[0])` |

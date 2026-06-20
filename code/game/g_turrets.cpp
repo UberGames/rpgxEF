@@ -948,7 +948,7 @@ void laser_arm_fire (gentity_t *ent)
 		if ( trace.entityNum < ENTITYNUM_WORLD )
 		{
 			gentity_t *hapless_victim = &g_entities[trace.entityNum];
-			if ( hapless_victim && hapless_victim->takedamage && ent->damage )
+			if ( hapless_victim->inuse && hapless_victim->takedamage && ent->damage )
 			{
 				G_Damage( hapless_victim, ent, ent->nextTrain->activator, fwd, trace.endpos, ent->damage, DAMAGE_ALL_TEAMS, 1 );
 			}
