@@ -1070,7 +1070,7 @@ void BotChatTest(bot_state_t *bs) {
     trap_BotEnterChat(bs->cs, bs->client, CHAT_ALL);
   }
   ClientName(g_entities[bs->client].client->lasthurt_client, name, sizeof(name));
-  weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurt_client);
+  weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurt_mod);
   num = trap_BotNumInitialChats(bs->cs, "hit_talking");
   for (i = 0; i < num; i++) {
     BotAI_BotInitialChat(bs, "hit_talking", name, weap, NULL);
