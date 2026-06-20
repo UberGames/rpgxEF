@@ -395,7 +395,7 @@ int BotChat_EnterGame(bot_state_t *bs) {
   if (bs->lastchat_time > trap_AAS_Time() - 3) return qfalse;
   //don't chat in teamplay
   if (TeamPlayIsOn()) return qfalse;
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_ENTEREXITGAME, 0, 1);
   if (!bot_fastchat.integer) {
     if (random() > rnd) return qfalse;
   }
@@ -426,7 +426,7 @@ int BotChat_ExitGame(bot_state_t *bs) {
   if (bs->lastchat_time > trap_AAS_Time() - 3) return qfalse;
   //don't chat in teamplay
   if (TeamPlayIsOn()) return qfalse;
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_ENTEREXITGAME, 0, 1);
   if (!bot_fastchat.integer) {
     if (random() > rnd) return qfalse;
   }
@@ -458,7 +458,7 @@ int BotChat_StartLevel(bot_state_t *bs) {
   if (bs->lastchat_time > trap_AAS_Time() - 3) return qfalse;
   //don't chat in teamplay
   if (TeamPlayIsOn()) return qfalse;
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_STARTENDLEVEL, 0, 1);
   if (!bot_fastchat.integer) {
     if (random() > rnd) return qfalse;
   }
@@ -485,7 +485,7 @@ int BotChat_EndLevel(bot_state_t *bs) {
   if (bs->lastchat_time > trap_AAS_Time() - 3) return qfalse;
   //don't chat in teamplay
   if (TeamPlayIsOn()) return qfalse;
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_STARTENDLEVEL, 0, 1);
   if (!bot_fastchat.integer) {
     if (random() > rnd) return qfalse;
   }
@@ -532,7 +532,7 @@ int BotChat_Death(bot_state_t *bs) {
 
   if (bot_nochat.integer) return qfalse;
   if (bs->lastchat_time > trap_AAS_Time() - 3) return qfalse;
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_DEATH, 0, 1);
   //if fast chatting is off
   if (!bot_fastchat.integer) {
     if (random() > rnd) return qfalse;
@@ -627,7 +627,7 @@ int BotChat_Kill(bot_state_t *bs) {
 
   if (bot_nochat.integer) return qfalse;
   if (bs->lastchat_time > trap_AAS_Time() - 3) return qfalse;
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_KILL, 0, 1);
   //if fast chat is off
   if (!bot_fastchat.integer) {
     if (random() > rnd) return qfalse;
@@ -684,7 +684,7 @@ int BotChat_EnemySuicide(bot_state_t *bs) {
   if (bs->lastchat_time > trap_AAS_Time() - 3) return qfalse;
   if (BotNumActivePlayers() <= 1) return qfalse;
   //
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_ENEMYSUICIDE, 0, 1);
   //don't chat in teamplay
   if (TeamPlayIsOn()) return qfalse;
   //if fast chat is off
@@ -723,7 +723,7 @@ int BotChat_HitTalking(bot_state_t *bs) {
   //
   if (lasthurt_client < 0 || lasthurt_client >= MAX_CLIENTS) return qfalse;
   //
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_HITTALKING, 0, 1);
   //don't chat in teamplay
   if (TeamPlayIsOn()) return qfalse;
   //if fast chat is off
@@ -762,7 +762,7 @@ int BotChat_HitNoDeath(bot_state_t *bs) {
   if (bot_nochat.integer) return qfalse;
   if (bs->lastchat_time > trap_AAS_Time() - 3) return qfalse;
   if (BotNumActivePlayers() <= 1) return qfalse;
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_HITNODEATH, 0, 1);
   //don't chat in teamplay
   if (TeamPlayIsOn()) return qfalse;
   //if fast chat is off
@@ -799,7 +799,7 @@ int BotChat_HitNoKill(bot_state_t *bs) {
   if (bot_nochat.integer) return qfalse;
   if (bs->lastchat_time > trap_AAS_Time() - 3) return qfalse;
   if (BotNumActivePlayers() <= 1) return qfalse;
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_HITNOKILL, 0, 1);
   //don't chat in teamplay
   if (TeamPlayIsOn()) return qfalse;
   //if fast chat is off
@@ -844,7 +844,7 @@ int BotChat_Random(bot_state_t *bs) {
       bs->ltgtype == LTG_RUSHBASE)
     return qfalse;
   //
-  rnd = 0;
+  rnd = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_CHAT_RANDOM, 0, 1);
   if (random() > bs->thinktime * 0.1) return qfalse;
   if (!bot_fastchat.integer) {
     if (random() > rnd) return qfalse;
