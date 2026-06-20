@@ -1002,8 +1002,7 @@ void G_Client_UserinfoChanged(int clientNum) {
   Q_strncpyz(model, Info_ValueForKey(userinfo, "model"), sizeof(model));
 
   // team
-  if (qtrue) // WTF? alsways true?
-  {//borg class doesn't need to use team color
+  {
     switch (sess->sessionTeam) {
       case TEAM_RED:
         // decide if we are going to have to reset a skin cos it's not applicable to a race selected
@@ -1096,10 +1095,6 @@ void G_Client_UserinfoChanged(int clientNum) {
       // don't ever use a default skin in teamplay, it would just waste memory
       ForceClientSkin(model, "red");
     }
-  } else {
-    ForceClientSkin(model, "default");
-    Info_SetValueForKey(userinfo, "model", model);
-    trap_SetUserinfo(clientNum, userinfo);
   }
 
   if (rpg_rpg.integer != 0 && rpg_forceclasscolor.integer != 0 && g_gametype.integer < GT_TEAM) {
