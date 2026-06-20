@@ -388,7 +388,7 @@ qboolean G_Sql_UserDB_CheckRight(int uid, int right) {
 
 	if(res == SQLITE_ROW) {
 		rights = (long)sqlite3_column_int64(stmt, 0);
-		if(right & right) {
+		if(rights & right) {
 			sqlite3_finalize(stmt);
 			return qtrue;
 		} else {
