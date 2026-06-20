@@ -1,5 +1,9 @@
 # Bug Tracker — rpgxEF game module
 
+## Workflow
+
+- One bug fixed = one commit. Always commit immediately after fixing a bug, before moving to the next.
+
 ## Progress
 
 | File | Status |
