@@ -2189,7 +2189,7 @@ static void Cmd_ForceKill_f(gentity_t *ent) {
 
   trap_Argv(1, arg, sizeof(arg));
   targetNum = atoi(arg);
-  if (targetNum >= level.maxclients) {
+  if (targetNum < -1 || targetNum >= level.maxclients) {
     return;
   }
 
