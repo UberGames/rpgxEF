@@ -277,7 +277,7 @@ No bugs found.
 | B100 | ✅ | `G_Printf` (L597): empty `if (trap_Cvar_VariableIntegerValue("developer")) { }` body — developer check does nothing; dead code |
 | B101 | ✅ | `G_LoadHolodeckFile` (L1007): reads file into 32000-byte stack buffer without capping `file_len` first — file larger than 32000 bytes overflows the buffer (same pattern as B52/B69) |
 | B102 | ✅ | `G_LoadServerChangeFile` (L1129): `memset(&level.srvChangeData, 0, sizeof(&level.srvChangeData))` — `sizeof` of pointer yields 8 bytes instead of `sizeof(level.srvChangeData)`; only first 8 bytes of the struct are zeroed (same pattern as B35/B38) |
-| B103 | ❌ | `G_LoadLocationsFile` (L1335/L1410): `Q_strncmp(token, "LocationsList2", 19)` compares 19 bytes for a 14-char string; `Q_strncmp(token, "LocationsList", 18)` compares 18 bytes for a 13-char string — lengths should be 15 and 14 (including null terminator) or matched to actual string lengths |
+| B103 | ✅ | `G_LoadLocationsFile` (L1335/L1410): `Q_strncmp(token, "LocationsList2", 19)` compares 19 bytes for a 14-char string; `Q_strncmp(token, "LocationsList", 18)` compares 18 bytes for a 13-char string — lengths should be 15 and 14 (including null terminator) or matched to actual string lengths |
 | B104 | ❌ | `Dev_ShowTriggers` (L1648): `if ((tar = &g_entities[i]) == NULL) continue` — dead null check on array element address; should be `if (!tar->inuse) continue` |
 | B105 | ❌ | `G_RunFrame` (L2619): `ps = &ent->client->ps` computed unconditionally before the `if (!ent->client)` guard at L2653 — dereferences null pointer for non-client entities |
 | B106 | ❌ | `G_RunFrame` (L2711): `if (!ent || !ent->client)` after `ent = &g_entities[i]` — `!ent` is always false (array element address); should be `if (!ent->inuse || !ent->client)` |

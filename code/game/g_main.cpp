@@ -1334,7 +1334,7 @@ static void G_LoadLocationsFile(void) {
     if (!token[0])
       break;
 
-    if (!Q_strncmp(token, "LocationsList2", 19)) { // new style locations list with restricted locations
+    if (!Q_strncmp(token, "LocationsList2", 14)) { // new style locations list with restricted locations
       token = COM_Parse(&textPtr);
       if (Q_strncmp(token, "{", 1) != 0) {
         G_Printf(S_COLOR_RED "ERROR: LocationsList2 had no opening brace ( { )!\n");
@@ -1409,7 +1409,7 @@ static void G_LoadLocationsFile(void) {
         //--
         token = COM_Parse(&textPtr);
       }
-    } else if (!Q_strncmp(token, "LocationsList", 18)) // old stly locations file
+    } else if (!Q_strncmp(token, "LocationsList", 13)) // old stly locations file
     {
       token = COM_Parse(&textPtr);
       if (Q_strncmp(token, "{", 1) != 0) {
