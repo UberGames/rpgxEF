@@ -769,8 +769,6 @@ void FinishSpawningItem( gentity_t *ent ) {
 	ent->use = Use_Item;
 
 	
-	Com_Printf("print \"giType %i!\n\"", ent->item->giType);
-
 	if ( ent->spawnflags & 1 ) {
 		// suspended
 		G_SetOrigin( ent, ent->s.origin );
