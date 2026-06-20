@@ -145,7 +145,7 @@ void TossClientItems( gentity_t *self, qboolean dis_con ) {
 	// then remove weapons
 
 	for (i = 0; i < WP_NUM_WEAPONS; ++i) {
-		ps->stats[STAT_WEAPONS] &= ~i;
+		ps->stats[STAT_WEAPONS] &= ~(1 << i);
 		ps->ammo[i] = 0;
 	}
 
