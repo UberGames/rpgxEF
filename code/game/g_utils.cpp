@@ -557,7 +557,7 @@ gentity_t *G_Spawn( void ) {
 			for ( i = 0; i < tripcount; i++ )
 			{
 				/* remove it... or blow it? */
-				if ( &g_entities[foundTripWires[i]] != NULL )
+				if ( foundTripWires[i] != ENTITYNUM_NONE )
 				{
 					G_FreeEntity( &g_entities[foundTripWires[i]] );
 					foundTripWires[i] = ENTITYNUM_NONE;
