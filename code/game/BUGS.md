@@ -236,4 +236,4 @@ No bugs found.
 | ID | Status | Description |
 |----|--------|-------------|
 | B71 | ✅ | `breakable_die` (L86-89): `self->spawnflags` is read after `G_FreeEntity(self)` in the second `if` — the two conditions are mutually exclusive so no bad write occurs in practice, but reading a freed entity pointer is undefined behaviour; should be `else if` |
-| B72 | ❌ | `ammo_use` (L616-623): `if (self->use != NULL)` inner check is always true when called via the use pointer — dead code that causes the `else` dispensing branch to be unreachable whenever a think is already scheduled, silently cancelling the cycle without restarting it |
+| B72 | ✅ | `ammo_use` (L616-623): `if (self->use != NULL)` inner check is always true when called via the use pointer — dead code that causes the `else` dispensing branch to be unreachable whenever a think is already scheduled, silently cancelling the cycle without restarting it |

@@ -615,55 +615,50 @@ void ammo_use( gentity_t *self, gentity_t *other, gentity_t *activator)
 
 	if (self->think != NULL)
 	{
-		if (self->use != NULL)
+		self->think = 0; /*NULL*/
+		self->nextthink = -1;
+	}
+
+	if ( other && other->client )
+	{
+		for ( i = 0; i < WP_NUM_WEAPONS && dif == 0; i++ )
+		{//go through all weapons
+			if ( (other->client->ps.stats[STAT_WEAPONS]&( 1 << i )) )
+			{//has this weapon
+				dif = Max_Weapon(i) - other->client->ps.ammo[i];//needs ammo?
+			}
+		}
+	}
+	else
+	{	// Being triggered to be used up
+		dif = 1;
+		self->count = 0;
+	}
+
+	// Does player already have full ammo?
+	if ( dif > 0 )
+	{
+		G_Sound(self, G_SoundIndex("sound/player/suitenergy.wav") );
+
+		if ((dif >= self->count) || (self->count<1)) // use it all up?
 		{
-			self->think = 0; /*NULL*/
-			self->nextthink = -1;
+			ammo_shutdown(self);
 		}
 	}
 	else
 	{
-		if ( other && other->client )
-		{
-			for ( i = 0; i < WP_NUM_WEAPONS && dif == 0; i++ )
-			{//go through all weapons
-				if ( (other->client->ps.stats[STAT_WEAPONS]&( 1 << i )) )
-				{//has this weapon
-					dif = Max_Weapon(i) - other->client->ps.ammo[i];//needs ammo?
-				}
-			}
-		}
-		else
-		{	// Being triggered to be used up
-			dif = 1;
-			self->count = 0;
-		}
+		G_Sound(self, G_SoundIndex("sound/weapons/noammo.wav") );
+	}
+	// Use target when used
+	if (self->spawnflags & 8)
+	{
+		G_UseTargets( self, activator );
+	}
 
-		// Does player already have full ammo?
-		if ( dif > 0 )
-		{
-			G_Sound(self, G_SoundIndex("sound/player/suitenergy.wav") );
-
-			if ((dif >= self->count) || (self->count<1)) // use it all up?
-			{
-				ammo_shutdown(self);
-			}
-		}	
-		else
-		{
-			G_Sound(self, G_SoundIndex("sound/weapons/noammo.wav") );
-		}
-		// Use target when used
-		if (self->spawnflags & 8)
-		{
-			G_UseTargets( self, activator );	
-		}
-
-		self->use = 0; /*NULL*/
-		self->enemy = other;
-		self->think = ammo_think;
-		self->nextthink = level.time + 50;
-	}	
+	self->use = 0; /*NULL*/
+	self->enemy = other;
+	self->think = ammo_think;
+	self->nextthink = level.time + 50;
 }
 
 /**
