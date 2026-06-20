@@ -733,7 +733,7 @@ int BotChat_HitTalking(bot_state_t *bs) {
   if (!BotValidChatPosition(bs)) return qfalse;
   //
   ClientName(g_entities[bs->client].client->lasthurt_client, name, sizeof(name));
-  weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurt_client);
+  weap = BotWeaponNameForMeansOfDeath(g_entities[bs->client].client->lasthurt_mod);
   //
   BotAI_BotInitialChat(bs, "hit_talking", name, weap, NULL);
   bs->lastchat_time = trap_AAS_Time();
