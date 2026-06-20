@@ -1455,9 +1455,10 @@ void BG_ParseItemsText(char *buff)
 	COM_BeginParseSession();
 
 	buffer = buff;
-	while ( buffer ) 
+	while ( buffer && *buffer )
 	{
 		token = COM_ParseExt( &buffer, qtrue );
+		if ( !token[0] ) break;
 
 		i=0;
 		while (itemnames[i])
