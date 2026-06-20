@@ -3046,7 +3046,7 @@ std::string trap_GetConfigstring(int num, int buffer_size);
 *	\param buffer buffer to store config string in
 *	\param size of buffer
 */
-void trap_GetUserinfo(int num, const char *buffer, int bufferSize);
+void trap_GetUserinfo(int num, char *buffer, int bufferSize);
 
 /**
 *	Set the userinfo for a client

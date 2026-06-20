@@ -117,7 +117,7 @@ std::string trap_GetConfigstring(int num, int buffer_size) {
   return result;
 }
 
-void trap_GetUserinfo(int num, const char *buffer, int bufferSize) {
+void trap_GetUserinfo(int num, char *buffer, int bufferSize) {
   syscall(G_GET_USERINFO, num, buffer, bufferSize);
 }
 
