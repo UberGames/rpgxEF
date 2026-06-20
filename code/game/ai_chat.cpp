@@ -810,6 +810,8 @@ int BotChat_HitNoKill(bot_state_t *bs) {
   //
   if (BotVisibleEnemies(bs)) return qfalse;
   //
+  if (bs->enemy < 0 || bs->enemy >= MAX_CLIENTS) return qfalse;
+  if (!g_entities[bs->enemy].client) return qfalse;
   BotEntityInfo(bs->enemy, &entinfo);
   if (EntityIsShooting(&entinfo)) return qfalse;
   //
