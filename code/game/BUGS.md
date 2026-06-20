@@ -42,7 +42,7 @@
 | g_spawn.cpp | ✅ |
 | g_sql.cpp | ✅ |
 | g_svcmds.cpp | ✅ |
-| g_syscalls.cpp | ❌ |
+| g_syscalls.cpp | ✅ |
 | g_target.cpp | ❌ |
 | g_team.cpp | ❌ |
 | g_trigger.cpp | ❌ |
