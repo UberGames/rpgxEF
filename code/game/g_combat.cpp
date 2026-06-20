@@ -1048,13 +1048,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	if(!targ) return;
 
-#ifdef G_LUA
-	if(targ->luaHurt && !targ->client)
-	{
-		LuaHook_G_EntityHurt(targ->luaHurt, targ->s.number, inflictor->s.number, attacker->s.number);
-	}
-#endif
-
 	if (!targ->takedamage) {
 		return;
 	}
@@ -1071,6 +1064,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if ( !attacker ) {
 		attacker = &g_entities[ENTITYNUM_WORLD];
 	}
+
+#ifdef G_LUA
+	if(targ->luaHurt && !targ->client)
+	{
+		LuaHook_G_EntityHurt(targ->luaHurt, targ->s.number, inflictor->s.number, attacker->s.number);
+	}
+#endif
 
 	// shootable doors / buttons don't actually have any health
 	if ( (targ->s.eType == ET_MOVER && Q_stricmp("func_breakable", targ->classname) != 0 && Q_stricmp("misc_model_breakable", targ->classname) != 0) ||
