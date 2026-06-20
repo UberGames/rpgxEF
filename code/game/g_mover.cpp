@@ -3148,7 +3148,6 @@ void Reached_AdvancedMover(gentity_t *ent) {
 
 	ent->s.loopSound = ent->soundLoop;
 
-	G_Printf(S_COLOR_RED "DEBUG: ent->apos1: %s, ent->apos2: %s\n", vtos(ent->apos1), vtos(ent->apos2));
 
 	if(ent->moverState == MOVER_1TO2) {
 		SetMoverState(ent, MOVER_POS2, level.time);
