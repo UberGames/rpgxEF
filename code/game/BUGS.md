@@ -161,4 +161,4 @@
 
 | ID | Status | Description |
 |----|--------|-------------|
-| B43 | ❌ | `G_ParseField` (L562-566): `F_VECTOR4` case reads components 1–3 into `vec` (`vec3_t`) instead of `vec4`, and all four write-back assignments use index `[0]` — only the last value survives, indices 1–3 are never written; `startRGBA`/`finalRGBA` entity fields are always wrong |
+| B43 | ✅ | `G_ParseField` (L562-566): `F_VECTOR4` case reads components 1–3 into `vec` (`vec3_t`) instead of `vec4`, and all four write-back assignments use index `[0]` — only the last value survives, indices 1–3 are never written; `startRGBA`/`finalRGBA` entity fields are always wrong |
