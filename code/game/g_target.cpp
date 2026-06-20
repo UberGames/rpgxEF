@@ -1317,8 +1317,8 @@ static void target_turbolift_startMove(gentity_t *ent) {
             if (!Q_stricmp(lights->targetname2, va("%s_dn", otherLift->target))) {
               lights->use(lights, lights, ent);
 #ifdef G_LUA
-              if (lights->luaUse);
-              LuaHook_G_EntityUse(lights->luaUse, lights - g_entities, ent - g_entities, ent - g_entities);
+              if (lights->luaUse)
+                LuaHook_G_EntityUse(lights->luaUse, lights - g_entities, ent - g_entities, ent - g_entities);
 #endif
             }
           } else if (time2 > 0 && lights->targetname2) {
