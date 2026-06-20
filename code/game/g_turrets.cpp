@@ -1135,10 +1135,10 @@ void laser_arm_start (gentity_t *base)
 	base->s.modelindex = G_ModelIndex("models/mapobjects/dn/laser_base.md3");
 	base->s.eType = ET_GENERAL;
 
-	if ( !base->startRGBA )
+	if ( !base->startRGBA[0] )
 	{	base->startRGBA[0] = 1.0;
 		base->startRGBA[1] = 0.85;
-		base->startRGBA[2] = 0.15 ;
+		base->startRGBA[2] = 0.15;
 		base->startRGBA[3] = 0.75;
 	}
 	/* anglespeed - how fast it can track the player, entered in degrees per second, so we divide by FRAMETIME/1000 */
