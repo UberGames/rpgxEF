@@ -49,7 +49,7 @@
 | g_turrets.cpp | ❌ |
 | g_ui.cpp | ❌ |
 | g_usable.cpp | ❌ |
-| g_utils.cpp | ❌ |
+| g_utils.cpp | ✅ |
 | g_weapon.cpp | ✅ |
 | list.cpp | ❌ |
 | lua_cinematic.cpp | ❌ |
@@ -156,3 +156,9 @@
 | B40 | ✅ | `G_AddEvent` (L712): `playerState_t *ps = &ent->client->ps` dereferences `ent->client` before the `if (ent->client)` guard on L720 — NULL client crashes at the pointer init |
 | B41 | ✅ | `G_GetNearestEnt` (L1028) and `G_GetNearestPlayer` (L1086): `if (distance < 0) distance *= -1` — `VectorLength` always returns ≥ 0, dead code |
 | B42 | ✅ | `G_GetEntityByTargetname` (L1109), `G_GetEntityByTarget` (L1128), `G_GetEntityByBmodel` (L1147): `if (!&g_entities[i]) continue` — dead null check on array element address; replaced with `inuse` check to skip freed slots |
+
+### g_spawn.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B43 | ❌ | `G_ParseField` (L562-566): `F_VECTOR4` case reads components 1–3 into `vec` (`vec3_t`) instead of `vec4`, and all four write-back assignments use index `[0]` — only the last value survives, indices 1–3 are never written; `startRGBA`/`finalRGBA` entity fields are always wrong |
