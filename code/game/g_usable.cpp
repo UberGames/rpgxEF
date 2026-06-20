@@ -539,6 +539,9 @@ qboolean G_SetupUsablesStrings( void )
 
 						token++; /* skip the 'e' */
 
+						if ( j >= MAX_ENTSCANNABLES )
+							break;
+
 						level.g_entScannables[j][0] = atoi( token );
 						token = COM_ParseExt( &textPtr, qfalse );
 						level.g_entScannables[j][1] = atoi( token );
@@ -552,6 +555,9 @@ qboolean G_SetupUsablesStrings( void )
 				}
 				else
 				{
+					if ( i >= MAX_SCANNABLES )
+						break;
+
 					level.g_scannables[i] = atoi( token );
 
 					/* ensure a valid number was passed, else ignore it */
