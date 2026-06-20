@@ -36,10 +36,10 @@
 | g_main.cpp | ❌ |
 | g_mem.cpp | ❌ |
 | g_misc.cpp | ✅ |
-| g_missile.cpp | ❌ |
+| g_missile.cpp | ✅ |
 | g_mover.cpp | ❌ |
 | g_session.cpp | ❌ |
-| g_spawn.cpp | ❌ |
+| g_spawn.cpp | ✅ |
 | g_sql.cpp | ❌ |
 | g_svcmds.cpp | ❌ |
 | g_syscalls.cpp | ❌ |
