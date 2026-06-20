@@ -16,7 +16,7 @@
 | ai_dmq3.cpp | ❌ |
 | ai_main.cpp | ❌ |
 | ai_team.cpp | ❌ |
-| bg_misc.cpp | ❌ |
+| bg_misc.cpp | ✅ |
 | bg_panimate.cpp | ❌ |
 | bg_pmove.cpp | ❌ |
 | bg_slidemove.cpp | ❌ |
