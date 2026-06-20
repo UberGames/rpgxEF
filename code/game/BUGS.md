@@ -169,6 +169,14 @@ No bugs found.
 | B49 | ✅ | `G_Sql_UserDB_CheckRight` (L391): `if(right & right)` — a value ANDed with itself is always true for any non-zero input; should be `if(rights & right)` to test whether the fetched bitmask contains the requested right; as written the function always returns `qtrue` if any row exists |
 | B50 | ✅ | `G_Sql_UserDB_RemoveRight` (L487): `rights &= right` should be `rights &= ~right` — current code clears all bits except those in `right` (the opposite of removing a right) |
 
+### g_svcmds.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B51 | ❌ | `Svcmd_BanUser_f` (L407): `playerNum > MAX_CLIENTS` — off-by-one; allows `playerNum == MAX_CLIENTS` as valid, which is an out-of-range client slot; should be `>=` |
+| B52 | ❌ | `G_ProcessIDBans` (L336, L341): reads file into `buffer[16000]` with no cap on `fileLen`, then writes `buffer[fileLen] = '\0'` — if the file is ≥ 16000 bytes the read overflows the buffer and the null terminator is written past the end |
+| B53 | ❌ | `Svcmd_RemoveID_f` (L533): `id = &idFilters[atoi(str)]` with no bounds check — a negative or out-of-range index accesses outside `idFilters[MAX_IDFILTERS]`; the subsequent `if (!id)` is a dead null check on an array-element address that never catches this |
+
 ### g_spawn.cpp
 
 | ID | Status | Description |
