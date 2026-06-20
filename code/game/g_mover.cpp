@@ -1037,8 +1037,8 @@ void InitMover( gentity_t *ent ) {
 	VectorCopy( ent->pos1, ent->s.pos.trBase );
 
 	// we also need support for angular movement (func_mover)
-	ent->s.pos.trType = TR_STATIONARY;
-	VectorCopy( ent->apos1, ent->s.pos.trBase );
+	ent->s.apos.trType = TR_STATIONARY;
+	VectorCopy( ent->apos1, ent->s.apos.trBase );
 
 	// calculate time to reach second position from speed
 	VectorSubtract( ent->pos2, ent->pos1, move );

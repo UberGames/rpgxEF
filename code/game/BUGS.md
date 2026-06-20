@@ -169,6 +169,6 @@
 |----|--------|-------------|
 | B44 | ✅ | `G_TryPushingEntity` (L67): `playerState_t *ps = &check->client->ps` declared unconditionally at function top, but `check->client` can be NULL for ET_ITEM entities (which the caller permits); `if (check->client)` guards appear later (L83, L95, L101, L112) — same crash pattern as B40 |
 | B45 | ✅ | `G_MoverPush` (L77): `if (pushed_p > &pushed[MAX_GENTITIES])` — off-by-one: when `pushed_p == &pushed[MAX_GENTITIES]` the check is false, then L80 writes `pushed_p->ent` one slot past the array end; must be `>=` |
-| B46 | ❌ | `InitMover` (L1039-1040): "angular movement" copy block uses `s.pos.trType` / `s.pos.trBase` instead of `s.apos.trType` / `s.apos.trBase` — overwrites the translational position base with `apos1` and leaves `s.apos.trBase` uninitialised for all entities using `InitMover` |
+| B46 | ✅ | `InitMover` (L1039-1040): "angular movement" copy block uses `s.pos.trType` / `s.pos.trBase` instead of `s.apos.trType` / `s.apos.trBase` — overwrites the translational position base with `apos1` and leaves `s.apos.trBase` uninitialised for all entities using `InitMover` |
 | B47 | ❌ | `Reached_AdvancedMover` (L3150): `G_Printf(S_COLOR_RED "DEBUG: ent->apos1: ...")` left in production code — spams the server console on every mover waypoint arrival, same pattern as B22 |
 | B48 | ❌ | `use_stasis_door` (L3451): bare `return;` as the first statement makes all logic in the function permanently unreachable — stasis doors assigned `ent->use = use_stasis_door` can never be toggled by a use event |
