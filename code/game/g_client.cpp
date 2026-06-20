@@ -186,7 +186,6 @@ SelectRandomDeathmatchSpawnPoint
 go to a random point that doesn't telefrag
 ================
 */
-#define    MAX_SPAWN_POINTS    256
 /**
 *	go to a random point that doesn't telefrag
 */
