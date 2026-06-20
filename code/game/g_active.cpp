@@ -1908,7 +1908,7 @@ static void ClientThink_real(gentity_t *ent) {
       TransDat[ps->clientNum].beamed = qfalse;
 
       memset(&TransDat[ps->clientNum].currentCoord, 0,
-             sizeof(TransDat[ps->clientNum].currentCoord.origin));
+             sizeof(TransDat[ps->clientNum].currentCoord));
 
       if (g_entities[ps->clientNum].flags & FL_CLAMPED) {
         //reset everything if player was beamed by trigger_transporter
