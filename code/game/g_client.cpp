@@ -1681,6 +1681,8 @@ void G_Client_Begin(int clientNum, qboolean careAboutWarmup, qboolean isBot, qbo
       return;
     }
 
+    if (len >= (int)sizeof(buf))
+      len = sizeof(buf) - 1;
     trap_FS_Read(buf, len, file);
 
     p = &buf[0];
