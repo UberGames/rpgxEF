@@ -85,7 +85,7 @@ void breakable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, 
 	
 	if(!(self->spawnflags & 256))
 		G_FreeEntity( self );
-	if(self->spawnflags & 256)
+	else
 		self->count = 0;
 }
 
