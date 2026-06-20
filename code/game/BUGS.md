@@ -33,7 +33,7 @@
 | g_combat.cpp | ✅ |
 | g_fx.cpp | ❌ |
 | g_items.cpp | ✅ |
-| g_log.cpp | ❌ |
+| g_log.cpp | ✅ |
 | g_lua.cpp | ❌ |
 | g_main.cpp | ✅ |
 | g_mem.cpp | ❌ |
@@ -281,3 +281,11 @@ No bugs found.
 | B104 | ✅ | `Dev_ShowTriggers` (L1648): `if ((tar = &g_entities[i]) == NULL) continue` — dead null check on array element address; should be `if (!tar->inuse) continue` |
 | B105 | ✅ | `G_RunFrame` (L2619): `ps = &ent->client->ps` computed unconditionally before the `if (!ent->client)` guard at L2653 — dereferences null pointer for non-client entities |
 | B106 | ✅ | `G_RunFrame` (L2711): `if (!ent || !ent->client)` after `ent = &g_entities[i]` — `!ent` is always false (array element address); should be `if (!ent->inuse || !ent->client)` |
+
+### g_log.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B107 | ❌ | `G_LogPrintf` (L27): `vsprintf(string + 7, fmt, argptr)` has no length limit — if the formatted message exceeds 1017 bytes the 1024-byte `string` buffer overflows; should be `vsnprintf(string + 7, sizeof(string) - 7, fmt, argptr)` |
+| B108 | ❌ | `G_LogWeaponPickup` (L220) and `G_LogWeaponFire` (L228): no bounds checks on `client` or `weaponid` — all other logging functions in this file have at least a partial bounds check |
+| B109 | ❌ | `G_LogWeaponDamage` (L247), `G_LogWeaponKill` (L257), `G_LogWeaponFrag` (L267), `G_LogWeaponDeath` (L277), `G_LogWeaponPowerup` (L287), `G_LogWeaponItem` (L297): each checks `client >= MAX_CLIENTS` but not `client < 0` — negative index allows OOB array write |
