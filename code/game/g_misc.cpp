@@ -85,8 +85,10 @@ none
 "targetname" - have whatever is required point at this.
 */
 void SP_info_notnull( gentity_t *self ){
-	if(!Q_stricmp(self->classname, "ref_tag") && !rpg_allowspmaps.integer)
+	if(!Q_stricmp(self->classname, "ref_tag") && !rpg_allowspmaps.integer) {
 		G_FreeEntity(self);
+		return;
+	}
 
 	if(strcmp(self->classname, "info_notnull")) {
 		self->classname = G_NewString("info_notnull");
