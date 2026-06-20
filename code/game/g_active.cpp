@@ -1305,7 +1305,7 @@ void flushDecoys(gentity_t *ent) {
 
     if (removeMe != -1) {
       //remove it... or blow it?
-      if (&g_entities[foundDecoys[removeMe]] == NULL) {
+      if (foundDecoys[removeMe] == ENTITYNUM_NONE) {
         break;
       } else {
         G_FreeEntity(&g_entities[foundDecoys[removeMe]]);
