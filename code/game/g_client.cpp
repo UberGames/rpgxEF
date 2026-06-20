@@ -2178,7 +2178,7 @@ void G_Client_Disconnect(int32_t clientNum) {
   int32_t i = 0;
 
   ent = &g_entities[clientNum];
-  if ((ent == NULL) || (ent->client == NULL)) {
+  if (ent->client->pers.connected == CON_DISCONNECTED) {
     return;
   }
 
