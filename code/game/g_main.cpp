@@ -1128,7 +1128,7 @@ static void G_LoadServerChangeFile(void) {
   buffer[file_len] = '\0';
   trap_FS_FCloseFile(f);
 
-  memset(&level.srvChangeData, 0, sizeof(&level.srvChangeData));
+  memset(&level.srvChangeData, 0, sizeof(level.srvChangeData));
 
   G_Printf("Loading ServerChangeConfig '%s'.\n", fileRoute);
 
