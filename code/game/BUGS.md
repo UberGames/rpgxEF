@@ -116,3 +116,12 @@
 | B20 | ✅ | `Padd_Remove` (L183): bounds check `i >= PADD_DATA_MAX` comes after `paddData[i].key` is read — when key is not found, `paddData[PADD_DATA_MAX]` (one past end) is accessed before the check triggers |
 | B21 | ✅ | `Touch_Item` (L504): `numTotalDropped--` unconditionally decrements for every pickup, including world-spawned items that never incremented the counter — counter goes negative, corrupting the thrown-weapon limit |
 | B22 | ✅ | `FinishSpawningItem` (L768): stray debug `Com_Printf("print \"giType %i!\n\"", ...)` spams the server console on every item spawn |
+
+### g_weapon.cpp
+
+| ID | Status | Description |
+|----|--------|-------------|
+| B23 | ✅ | `WP_FireDisruptor` (L562): primary-fire damage uses `PHASER_DAMAGE` — by design |
+| B24 | ✅ | `WP_FireCompressionRifle` (L419): alt-fire damage uses `PHASER_DAMAGE` — by design |
+| B25 | ✅ | `WP_FireGrenade` (L724): `&g_entities[foundTripWires[removeMe]] == NULL` — same dead pointer-to-array-element null check as B17; should be `foundTripWires[removeMe] == ENTITYNUM_NONE` |
+| B26 | ❌ | `G_Weapon_CalcMuzzlePoint` (L1496): `Q_fabs(viewangles[PITCH] > 89.0f)` — closing paren misplaced; fabs wraps the boolean comparison instead of the angle, so looking straight up (negative pitch) is never caught |
