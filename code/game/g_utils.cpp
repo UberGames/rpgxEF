@@ -1025,9 +1025,6 @@ gentity_t *G_GetNearestEnt(char *classname, vec3_t origin, float radius, list_p 
 			VectorCopy(origin, dist);
 		}
 		distance = VectorLength(dist);
-		if(distance < 0) {
-			distance *= -1;
-		}
 		if(distance < minDist) {
 			if(classname && !Q_stricmp(classname, t->classname)) {
 				minDist = distance;
@@ -1083,8 +1080,6 @@ gentity_t *G_GetNearestPlayer(vec3_t origin, float radius, list_p ignore ) {
 		if(t->client) {
 			VectorSubtract(origin, t->r.currentOrigin, dist);
 			distance = VectorLength(dist);
-			if(distance < 0)
-				distance *= -1;
 			if(distance < minDist) {
 				minDist = distance;
 				nearest = t;
