@@ -533,12 +533,13 @@ void Svcmd_RemoveID_f ( void )
 
 	trap_Argv( 1, str, sizeof( str ) );
 
-	id = &idFilters[atoi(str)];
-	if ( !id )
+	int idx = atoi(str);
+	if ( idx < 0 || idx >= numIDFilters )
 	{
 		G_Printf( "Specified ID not found.\n" );
 		return;
 	}
+	id = &idFilters[idx];
 
 	memset( id, 0, sizeof( idFilter_t ) );
 
