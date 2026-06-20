@@ -914,7 +914,7 @@ void G_Client_UserinfoChanged(int clientNum) {
   model[0] = 0;
 
   ent = g_entities + clientNum;
-  if (!ent) return;
+  if (ent->client->pers.connected == CON_DISCONNECTED) return;
   client = ent->client;
   pers = &client->pers;
   sess = &client->sess;

@@ -132,7 +132,7 @@
 |----|--------|-------------|
 | B27 | ✅ | Duplicate `#define MAX_SPAWN_POINTS 256` — defined at L154 and again at L189 in the same file |
 | B28 | ✅ | `G_Client_Respawn` (~L492): `borg` local variable is always `qfalse`, making the `EV_BORG_TELEPORT` branch permanently dead code |
-| B29 | ❌ | `G_Client_UserinfoChanged` (~L923): `if (!ent) return;` where `ent = g_entities + clientNum` — array element address, never NULL; dead guard |
+| B29 | ✅ | `G_Client_UserinfoChanged` (~L923): `if (!ent) return;` where `ent = g_entities + clientNum` — array element address, never NULL; replaced with `ent->client->pers.connected == CON_DISCONNECTED` check |
 | B30 | ❌ | `G_Client_UserinfoChanged` (~L1011): `if (qtrue)` — always true (even noted with a `WTF?` comment); `else` branch with `ForceClientSkin(model, "default")` is permanently unreachable |
 | B31 | ❌ | `G_Client_Connect` (~L1660): `if (securityID <= 0 \|\| ...)` where `securityID` is `unsigned long` — `<= 0` is only true when exactly `0` since unsigned values can never be negative |
 | B32 | ❌ | `G_Client_Begin` MOTD (~L1695): `buf[len] = '\0'` where `buf[16000]` and `len` can reach `16000` — writes one byte past the end of the buffer |
